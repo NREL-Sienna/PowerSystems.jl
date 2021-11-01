@@ -896,9 +896,9 @@ function make_ramplimits(
         down = ramp
     else
         up = get(gen, rampupcol, ramp)
-        up = typeof(up) == String ? tryparse(Float64, up) : up
+        up = typeof(up) <: AbstractString ? tryparse(Float64, up) : up
         down = get(gen, rampdncol, ramp)
-        down = typeof(down) == String ? tryparse(Float64, down) : down
+        down = typeof(down) <: AbstractString ? tryparse(Float64, down) : down
     end
     ramplimits = isnothing(up) && isnothing(down) ? nothing : (up = up, down = down)
     return ramplimits
@@ -906,10 +906,11 @@ end
 
 function make_timelimits(gen, up_column::Symbol, down_column::Symbol)
     up_time = get(gen, up_column, nothing)
-    up_time = typeof(up_time) == String ? tryparse(Float64, up_time) : up_time
+    up_time = typeof(up_time) <: AbstractString ? tryparse(Float64, up_time) : up_time
 
     down_time = get(gen, down_column, nothing)
-    down_time = typeof(down_time) == String ? tryparse(Float64, down_time) : down_time
+    down_time =
+        typeof(down_time) <: AbstractString ? tryparse(Float64, down_time) : down_time
 
     timelimits =
         isnothing(up_time) && isnothing(down_time) ? nothing :
@@ -1446,7 +1447,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                field_info.per_unit_conversion.To == IS.UnitSystem.SYSTEM_BASE
                 @debug "convert to $(field_info.per_unit_conversion.To)" _group =
                     IS.LOG_GROUP_PARSING field_info.custom_name
-                value = value isa String ? tryparse(Float64, value) : value
+                value = value isa AbstractString ? tryparse(Float64, value) : value
                 value = data.base_power == 0.0 ? 0.0 : value / data.base_power
             elseif field_info.per_unit_conversion.From == IS.UnitSystem.NATURAL_UNITS &&
                    field_info.per_unit_conversion.To == IS.UnitSystem.DEVICE_BASE
@@ -1469,7 +1470,7 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                         "$(reference_info.name) is required for p.u. conversion",
                     ),
                 )
-                value = value isa String ? tryparse(Float64, value) : value
+                value = value isa AbstractString ? tryparse(Float64, value) : value
                 value = reference_value == 0.0 ? 0.0 : value / reference_value
             elseif field_info.per_unit_conversion.From != field_info.per_unit_conversion.To
                 throw(
