@@ -336,14 +336,15 @@ end
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
 """
 function set_units_base_system!(system::System, settings::String)
-    system.units_settings.unit_system = UNIT_SYSTEM_MAPPING[uppercase(settings)]
-    @info "Unit System changed to $(UNIT_SYSTEM_MAPPING[uppercase(settings)])"
+    set_units_base_system!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
     return
 end
 
 function set_units_base_system!(system::System, settings::UnitSystem)
-    system.units_settings.unit_system = settings
-    @info "Unit System changed to $settings"
+    if system.units_settings.unit_system != settings
+        system.units_settings.unit_system = settings
+        @info "Unit System changed to $settings"
+    end
     return
 end
 
