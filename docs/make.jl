@@ -95,7 +95,7 @@ for (section, folder) in folders
                           outputdir;
                           name = outputfile,
                           credit = false,
-                          documenter = true,
+                          flavor = Literate.DocumenterFlavor(),
                           postprocess = insert_md,
                           execute = execute)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))

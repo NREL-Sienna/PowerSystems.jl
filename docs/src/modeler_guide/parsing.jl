@@ -1,5 +1,3 @@
-#src execute = true
-
 # # [Parsing Data](@id parsing)
 #
 # `PowerSystems.jl` supports the creation of a `System` from a variety of common data formats:
@@ -257,79 +255,75 @@
 # per-unit conversion by dividing the value by the entry in `My Column`. System base
 # per-unit conversions always divide the value by the system `base_power` value
 # instantiated when constructing a `System`.
-#
+
 # ##### [Unit conversion](@id csv_units)
-#
+
 # PowerSystems provides a limited set of unit conversions. For example, if
 # `power_system_inputs.json` indicates that a value's unit is degrees but
 # your values are in radians then you can set `unit: radian` in
 # your YAML file. Other valid `unit` entries include `GW`, `GWh`, `MW`, `MWh`, `kW`,
 # and `kWh`.
-#
 
 # ## [`PowerSystemTableData` Accepted CSV Columns](@id tabledata_input_config)
-#
+
 # The following tables describe default CSV column definitions accepted by the
 # `PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:
-#
 
-# ```@raw
-# using PowerSystems
-# function create_md()
-#     descriptor = PowerSystems._read_config_file(joinpath(
-#         dirname(pathof(PowerSystems)),
-#         "descriptors",
-#         "power_system_inputs.json",
-#     ))
-#     columns = [
-#         "name",
-#         "description",
-#         "unit",
-#         "unit_system",
-#         "base_reference",
-#         "default_value",
-#         "value_options",
-#         "value_range",
-#     ]
-#     header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n"
-#     s = ""
-#     for (cat, items) in descriptor
-#         csv = ""
-#         for name in PowerSystems.INPUT_CATEGORY_NAMES
-#             if name[2] == cat
-#                 csv = name[1]
-#                 break
-#             end
-#         end
-#         csv == "" && continue
-#         s = string(s, "### $csv.csv:\n\n")
-#         s = string(s, header)
-#         for item in items
-#             extra_cols = setdiff(keys(item), columns)
-#             if !isempty(extra_cols)
-#                 throw(@error "config file fields not included in header" extra_cols)
-#             end
-#             row = []
-#             for col in columns
-#                 val = string(get(item, col, " "))
-#                 if col == "default_value" && val == " "
-#                     val = "*REQUIRED*"
-#                 end
-#                 push!(row, val)
-#             end
-#             s = string(s, "|" * join(row, "|") * "|\n")
-#         end
-#         s = string(s, "\n")
-#     end
-#     s = replace(s, r"[_$]" => s"\\\g<0>");
-#     return s
-# end
-# txt = create_md();
-# fname = joinpath(dirname(dirname(pathof(PowerSystems))), "docs", "src", "modeler_guide", "generated_inputs_tables.md")
-# open(fname, "w") do io
-#       write(io, txt)
-# end
-# println(" ");
-# ```
+using PowerSystems #hide
+function create_md() #hide
+    descriptor = PowerSystems._read_config_file(joinpath( #hide
+        dirname(pathof(PowerSystems)), #hide
+        "descriptors", #hide
+        "power_system_inputs.json", #hide
+    )) #hide
+    columns = [ #hide
+        "name", #hide
+        "description", #hide
+        "unit", #hide
+        "unit_system", #hide
+        "base_reference", #hide
+        "default_value", #hide
+        "value_options", #hide
+        "value_range", #hide
+    ] #hide
+    header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n" #hide
+    s = "" #hide
+    for (cat, items) in descriptor #hide
+        csv = "" #hide
+        for name in PowerSystems.INPUT_CATEGORY_NAMES #hide
+            if name[2] == cat #hide
+                csv = name[1] #hide
+                break #hide
+            end #hide
+        end #hide
+        csv == "" && continue #hide
+        s = string(s, "### $csv.csv:\n\n") #hide
+        s = string(s, header) #hide
+        for item in items #hide
+            extra_cols = setdiff(keys(item), columns) #hide
+            if !isempty(extra_cols) #hide
+                throw(@error "config file fields not included in header" extra_cols) #hide
+            end #hide
+            row = [] #hide
+            for col in columns #hide
+                val = string(get(item, col, " ")) #hide
+                if col == "default_value" && val == " " #hide
+                    val = "*REQUIRED*" #hide
+                end #hide
+                push!(row, val) #hide
+            end #hide
+            s = string(s, "|" * join(row, "|") * "|\n") #hide
+        end #hide
+        s = string(s, "\n") #hide
+    end #hide
+    s = replace(s, r"[_$]" => s"\\\g<0>"); #hide
+    return s #hide
+end #hide
+txt = create_md(); #hide
+fname = joinpath(dirname(dirname(pathof(PowerSystems))), "docs", "src", "modeler_guide", "generated_inputs_tables.md") #hide
+open(fname, "w") do io #hide
+      write(io, txt) #hide
+end #hide
+nothing #hide
 
 # APPEND_MARKDOWN("docs/src/modeler_guide/generated_inputs_tables.md")
