@@ -24,7 +24,12 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     end
 
     println(io)
-    IS.show_time_series_data(io, sys.data, backend = :html, tf = PrettyTables.tf_html_simple)
+    IS.show_time_series_data(
+        io,
+        sys.data,
+        backend = :html,
+        tf = PrettyTables.tf_html_simple,
+    )
     return
 end
 
