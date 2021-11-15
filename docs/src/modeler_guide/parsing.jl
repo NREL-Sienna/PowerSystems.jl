@@ -1,3 +1,4 @@
+#src EXECUTE = TRUE
 # # [Parsing Data](@id parsing)
 #
 # `PowerSystems.jl` supports the creation of a `System` from a variety of common data formats:
@@ -269,61 +270,61 @@
 # The following tables describe default CSV column definitions accepted by the
 # `PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:
 
-using PowerSystems #hide
-function create_md() #hide
-    descriptor = PowerSystems._read_config_file(joinpath( #hide
-        dirname(pathof(PowerSystems)), #hide
-        "descriptors", #hide
-        "power_system_inputs.json", #hide
-    )) #hide
-    columns = [ #hide
-        "name", #hide
-        "description", #hide
-        "unit", #hide
-        "unit_system", #hide
-        "base_reference", #hide
-        "default_value", #hide
-        "value_options", #hide
-        "value_range", #hide
-    ] #hide
-    header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n" #hide
-    s = "" #hide
-    for (cat, items) in descriptor #hide
-        csv = "" #hide
-        for name in PowerSystems.INPUT_CATEGORY_NAMES #hide
-            if name[2] == cat #hide
-                csv = name[1] #hide
-                break #hide
-            end #hide
-        end #hide
-        csv == "" && continue #hide
-        s = string(s, "### $csv.csv:\n\n") #hide
-        s = string(s, header) #hide
-        for item in items #hide
-            extra_cols = setdiff(keys(item), columns) #hide
-            if !isempty(extra_cols) #hide
-                throw(@error "config file fields not included in header" extra_cols) #hide
-            end #hide
-            row = [] #hide
-            for col in columns #hide
-                val = string(get(item, col, " ")) #hide
-                if col == "default_value" && val == " " #hide
-                    val = "*REQUIRED*" #hide
-                end #hide
-                push!(row, val) #hide
-            end #hide
-            s = string(s, "|" * join(row, "|") * "|\n") #hide
-        end #hide
-        s = string(s, "\n") #hide
-    end #hide
-    s = replace(s, r"[_$]" => s"\\\g<0>"); #hide
-    return s #hide
-end #hide
-txt = create_md(); #hide
-fname = joinpath(dirname(dirname(pathof(PowerSystems))), "docs", "src", "modeler_guide", "generated_inputs_tables.md") #hide
-open(fname, "w") do io #hide
-      write(io, txt) #hide
-end #hide
-nothing #hide
+using PowerSystems #src
+function create_md() #src
+    descriptor = PowerSystems._read_config_file(joinpath( #src
+        dirname(pathof(PowerSystems)), #src
+        "descriptors", #src
+        "power_system_inputs.json", #src
+    )) #src
+    columns = [ #src
+        "name", #src
+        "description", #src
+        "unit", #src
+        "unit_system", #src
+        "base_reference", #src
+        "default_value", #src
+        "value_options", #src
+        "value_range", #src
+    ] #src
+    header = "| " * join(columns, " | ") * " |\n" * repeat("|----", length(columns)) * "|\n" #src
+    s = "" #src
+    for (cat, items) in descriptor #src
+        csv = "" #src
+        for name in PowerSystems.INPUT_CATEGORY_NAMES #src
+            if name[2] == cat #src
+                csv = name[1] #src
+                break #src
+            end #src
+        end #src
+        csv == "" && continue #src
+        s = string(s, "### $csv.csv:\n\n") #src
+        s = string(s, header) #src
+        for item in items #src
+            extra_cols = setdiff(keys(item), columns) #src
+            if !isempty(extra_cols) #src
+                throw(@error "config file fields not included in header" extra_cols) #src
+            end #src
+            row = [] #src
+            for col in columns #src
+                val = string(get(item, col, " ")) #src
+                if col == "default_value" && val == " " #src
+                    val = "*REQUIRED*" #src
+                end #src
+                push!(row, val) #src
+            end #src
+            s = string(s, "|" * join(row, "|") * "|\n") #src
+        end #src
+        s = string(s, "\n") #src
+    end #src
+    s = replace(s, r"[_$]" => s"\\\g<0>"); #src
+    return s #src
+end #src
+txt = create_md(); #src
+fname = joinpath(dirname(dirname(pathof(PowerSystems))), "docs", "src", "modeler_guide", "generated_inputs_tables.md") #src
+open(fname, "w") do io #src
+      write(io, txt) #src
+end #src
+nothing #src
 
 # APPEND_MARKDOWN("docs/src/modeler_guide/generated_inputs_tables.md")

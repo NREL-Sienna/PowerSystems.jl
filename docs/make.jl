@@ -91,11 +91,13 @@ for (section, folder) in folders
         infile_path = joinpath(pwd(), "docs", "src", inputfile)
         outputfile = string("generated_", replace("$file", ".jl" => ""))
         execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
+        execute && include(infile_path)
         Literate.markdown(infile_path,
                           outputdir;
                           name = outputfile,
                           credit = false,
                           flavor = Literate.DocumenterFlavor(),
+                          documenter = true,
                           postprocess = insert_md,
                           execute = execute)
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
