@@ -20,6 +20,7 @@ pages = OrderedDict(
             "modeler_guide/type_structure.md",
             "modeler_guide/system.md",
             "modeler_guide/time_series.md",
+            "modeler_guide/enumerated_types.md",
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
             "modeler_guide/market_bid_cost.md",
