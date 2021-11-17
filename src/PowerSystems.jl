@@ -199,7 +199,6 @@ export PTDF
 export Ybus
 export LODF
 export Adjacency
-export GeneratorCostModels
 export AngleUnits
 export BusTypes
 export LoadModels

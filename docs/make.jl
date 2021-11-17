@@ -20,6 +20,7 @@ pages = OrderedDict(
             "modeler_guide/type_structure.md",
             "modeler_guide/system.md",
             "modeler_guide/time_series.md",
+            "modeler_guide/enumerated_types.md",
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
             "modeler_guide/market_bid_cost.md",
@@ -91,10 +92,12 @@ for (section, folder) in folders
         infile_path = joinpath(pwd(), "docs", "src", inputfile)
         outputfile = string("generated_", replace("$file", ".jl" => ""))
         execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
+        execute && include(infile_path)
         Literate.markdown(infile_path,
                           outputdir;
                           name = outputfile,
                           credit = false,
+                          flavor = Literate.DocumenterFlavor(),
                           documenter = true,
                           postprocess = insert_md,
                           execute = execute)

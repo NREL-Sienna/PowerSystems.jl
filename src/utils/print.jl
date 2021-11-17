@@ -20,11 +20,16 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     show_system_table(io, sys, backend = :html)
 
     if IS.get_num_components(sys.data.components) > 0
-        show_components_table(io, sys, backend = :html)
+        show_components_table(io, sys, backend = :html, tf = PrettyTables.tf_html_simple)
     end
 
     println(io)
-    IS.show_time_series_data(io, sys.data, backend = :html)
+    IS.show_time_series_data(
+        io,
+        sys.data,
+        backend = :html,
+        tf = PrettyTables.tf_html_simple,
+    )
     return
 end
 
