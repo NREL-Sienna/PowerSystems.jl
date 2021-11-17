@@ -21,8 +21,8 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VirtualInertia model are:
-	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
 	θ_oc: Phase angle displacement of the virtual synchronous generator model
+	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model
 - `n_states::Int`: VirtualInertia has two states
 """
 mutable struct VirtualInertia <: ActivePowerControl
@@ -36,18 +36,18 @@ mutable struct VirtualInertia <: ActivePowerControl
     P_ref::Float64
     ext::Dict{String, Any}
     "The states of the VirtualInertia model are:
-	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,
-	θ_oc: Phase angle displacement of the virtual synchronous generator model"
+	θ_oc: Phase angle displacement of the virtual synchronous generator model
+	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model"
     states::Vector{Symbol}
     "VirtualInertia has two states"
     n_states::Int
 end
 
 function VirtualInertia(Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), )
-    VirtualInertia(Ta, kd, kω, P_ref, ext, [:ω_oc, :θ_oc], 2, )
+    VirtualInertia(Ta, kd, kω, P_ref, ext, [:θ_oc, :ω_oc], 2, )
 end
 
-function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), states=[:ω_oc, :θ_oc], n_states=2, )
+function VirtualInertia(; Ta, kd, kω, P_ref=1.0, ext=Dict{String, Any}(), states=[:θ_oc, :ω_oc], n_states=2, )
     VirtualInertia(Ta, kd, kω, P_ref, ext, states, n_states, )
 end
 

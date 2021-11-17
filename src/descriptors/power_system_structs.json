@@ -10480,8 +10480,8 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the VirtualInertia model are:\n\tω_oc: Speed of the rotating reference frame of the virtual synchronous generator model,\n\tθ_oc: Phase angle displacement of the virtual synchronous generator model",
-          "internal_default": "[:ω_oc, :θ_oc]",
+          "comment": "The states of the VirtualInertia model are:\n\tθ_oc: Phase angle displacement of the virtual synchronous generator model\n\tω_oc: Speed of the rotating reference frame of the virtual synchronous generator model",
+          "internal_default": "[:θ_oc, :ω_oc]",
           "data_type": "Vector{Symbol}"
         },
         {
