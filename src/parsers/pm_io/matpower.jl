@@ -236,7 +236,8 @@ function _parse_matpower_string(data_string::String)
             gen_data = row_to_typed_dict(gen_row, _mp_gen_columns)
             bus_data = get(pv_bus_lookup, gen_data["gen_bus"], nothing)
             if bus_data !== nothing
-                if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES && bus_data["vm"] != gen_data["vg"]
+                if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES &&
+                   bus_data["vm"] != gen_data["vg"]
                     @info "Correcting vm in bus $(gen_data["gen_bus"]) to $(gen_data["vg"]) to match generator set-point"
                     bus_data["vm"] = gen_data["vg"]
                 end
