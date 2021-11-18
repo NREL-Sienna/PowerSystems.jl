@@ -230,7 +230,7 @@ function _parse_matpower_string(data_string::String)
         )
     end
 
-        if haskey(matlab_data, "mpc.gen")
+    if haskey(matlab_data, "mpc.gen")
         gens = []
         for (i, gen_row) in enumerate(matlab_data["mpc.gen"])
             gen_data = row_to_typed_dict(gen_row, _mp_gen_columns)
