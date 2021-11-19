@@ -149,5 +149,5 @@ end
             @test !isnothing(mline)
             @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
         end
-    @test_logs (:error,) match_mode = :any test_conversion()
+    @test_logs (:error,) min_level = Logging.Error match_mode = :any test_conversion()
 end

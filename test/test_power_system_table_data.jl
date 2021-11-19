@@ -127,7 +127,7 @@ end
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
                   get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
-    @test_logs (:error,) match_mode = :any consistency_test()
+    @test_logs (:error,) match_mode = :any min_level = Logging.Error consistency_test()
 end
 
 @testset "Test reserve direction" begin
