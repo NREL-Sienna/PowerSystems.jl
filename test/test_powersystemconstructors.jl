@@ -86,8 +86,16 @@ end
 
 @testset "Test System constructor from Matpower" begin
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
-    sys =
-        PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys"; runchecks = true)
+    kwarg_test =
+        () -> begin
+            sys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_case5_re_sys";
+                runchecks = true,
+                force_build = true,
+            )
+        end
+    @test_logs (:error,) min_level = Logging.Error match_mode = :any kwarg_test()
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
@@ -113,34 +121,45 @@ end
 end
 
 @testset "Test component conversion" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
-    l = get_component(Line, sys, "bus2-bus3-i_4")
-    initial_time = Dates.DateTime("2020-01-01T00:00:00")
-    dates = collect(initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"))
-    data = collect(1:24)
-    ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
-    name = "active_power_flow"
-    time_series = SingleTimeSeries(name = name, data = ta)
-    add_time_series!(sys, l, time_series)
-    @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
-    PSY.convert_component!(MonitoredLine, l, sys)
-    @test isnothing(get_component(Line, sys, "bus2-bus3-i_4"))
-    mline = get_component(MonitoredLine, sys, "bus2-bus3-i_4")
-    @test !isnothing(mline)
-    @test get_name(mline) == "bus2-bus3-i_4"
-    @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
-    @test_throws ErrorException convert_component!(
-        Line,
-        get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
-        sys,
-    )
-    convert_component!(
-        Line,
-        get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
-        sys,
-        force = true,
-    )
-    line = get_component(Line, sys, "bus2-bus3-i_4")
-    @test !isnothing(mline)
-    @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
+    # This signature is used to capture expected error logs from parsing matpower
+    test_conversion =
+        () -> begin
+            sys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_case5_re_sys";
+                force_build = true,
+            )
+            l = get_component(Line, sys, "bus2-bus3-i_4")
+            initial_time = Dates.DateTime("2020-01-01T00:00:00")
+            dates = collect(
+                initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"),
+            )
+            data = collect(1:24)
+            ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
+            name = "active_power_flow"
+            time_series = SingleTimeSeries(name = name, data = ta)
+            add_time_series!(sys, l, time_series)
+            @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
+            PSY.convert_component!(MonitoredLine, l, sys)
+            @test isnothing(get_component(Line, sys, "bus2-bus3-i_4"))
+            mline = get_component(MonitoredLine, sys, "bus2-bus3-i_4")
+            @test !isnothing(mline)
+            @test get_name(mline) == "bus2-bus3-i_4"
+            @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
+            @test_throws ErrorException convert_component!(
+                Line,
+                get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
+                sys,
+            )
+            convert_component!(
+                Line,
+                get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
+                sys,
+                force = true,
+            )
+            line = get_component(Line, sys, "bus2-bus3-i_4")
+            @test !isnothing(mline)
+            @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
+        end
+    @test_logs (:error,) min_level = Logging.Error match_mode = :any test_conversion()
 end

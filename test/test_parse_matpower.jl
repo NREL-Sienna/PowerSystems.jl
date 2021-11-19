@@ -15,6 +15,8 @@ POWER_MODELS_KEYS = [
 ]
 
 badfiles = Dict("case30.m" => PSY.InvalidValue)
+voltage_inconsistent_files =
+    ["RTS_GMLC.m", "case5_re.m", "case5_re_intid.m", "case5_re_uc.m", "case5_re_uc_pwl.m"]
 
 @testset "Parse Matpower data files" begin
     files = [x for x in readdir(joinpath(MATPOWER_DIR)) if splitext(x)[2] == ".m"]
@@ -26,7 +28,12 @@ badfiles = Dict("case30.m" => PSY.InvalidValue)
         @info "Parsing $f..."
         path = joinpath(MATPOWER_DIR, f)
 
-        pm_dict = PowerSystems.parse_file(path)
+        if f in voltage_inconsistent_files
+            continue
+        else
+            pm_dict = PowerSystems.parse_file(path)
+        end
+
         for key in POWER_MODELS_KEYS
             @test haskey(pm_dict, key)
         end
@@ -58,7 +65,12 @@ end
         @info "Parsing $f..."
         path = joinpath(joinpath(DATA_DIR, "pm_data", "matpower"), f)
 
-        pm_dict = PowerSystems.parse_file(path)
+        if f in voltage_inconsistent_files
+            continue
+        else
+            pm_dict = PowerSystems.parse_file(path)
+        end
+
         for key in POWER_MODELS_KEYS
             @test haskey(pm_dict, key)
         end
@@ -74,5 +86,24 @@ end
             sys = System(PowerSystems.PowerModelsData(pm_dict))
             @info "Successfully parsed $path to System struct"
         end
+    end
+end
+
+@testset "Parse Matpower files with voltage inconsistencies" begin
+    test_parse = (path) -> begin
+        pm_dict = PowerSystems.parse_file(path)
+
+        for key in POWER_MODELS_KEYS
+            @test haskey(pm_dict, key)
+        end
+        @info "Successfully parsed $path to PowerModels dict"
+        sys = System(PowerSystems.PowerModelsData(pm_dict))
+        @info "Successfully parsed $path to System struct"
+        @test isa(sys, System)
+    end
+    for f in voltage_inconsistent_files
+        @info "Parsing $f..."
+        path = joinpath(MATPOWER_DIR, f)
+        @test_logs (:error,) match_mode = :any test_parse(path)
     end
 end

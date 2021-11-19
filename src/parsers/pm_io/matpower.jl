@@ -4,6 +4,8 @@
 #                                                                       #
 #########################################################################
 
+const MP_FIX_VOLTAGE_BUSES = [2, 3]
+
 "Parses the matpwer data from either a filename or an IO object"
 function parse_matpower(io::IO; validate = true)::Dict
     mp_data = _parse_matpower_string(read(io, String))
@@ -209,11 +211,15 @@ function _parse_matpower_string(data_string::String)
 
     if haskey(matlab_data, "mpc.bus")
         buses = []
+        pv_bus_lookup = Dict{Int, Any}()
         for bus_row in matlab_data["mpc.bus"]
             bus_data = row_to_typed_dict(bus_row, _mp_bus_columns)
             bus_data["index"] = check_type(Int, bus_row[1])
             bus_data["source_id"] = ["bus", bus_data["index"]]
             push!(buses, bus_data)
+            if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES
+                pv_bus_lookup[bus_data["index"]] = bus_data
+            end
         end
         case["bus"] = buses
     else
@@ -226,8 +232,26 @@ function _parse_matpower_string(data_string::String)
 
     if haskey(matlab_data, "mpc.gen")
         gens = []
+        corrected_pv_bus_vm = Dict{Int, Float64}()
         for (i, gen_row) in enumerate(matlab_data["mpc.gen"])
             gen_data = row_to_typed_dict(gen_row, _mp_gen_columns)
+            bus_data = get(pv_bus_lookup, gen_data["gen_bus"], nothing)
+            if bus_data !== nothing
+                if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES &&
+                   bus_data["vm"] != gen_data["vg"]
+                    @info "Correcting vm in bus $(gen_data["gen_bus"]) to $(gen_data["vg"]) to match generator set-point"
+                    if gen_data["gen_bus"] ∈ keys(corrected_pv_bus_vm)
+                        if corrected_pv_bus_vm[gen_data["gen_bus"]] != gen_data["vg"]
+                            @error(
+                                "Generator voltage set-points for bus $(gen_data["gen_bus"]) are inconsistent. This can lead to unexpected results"
+                            )
+                        end
+                    else
+                        bus_data["vm"] = gen_data["vg"]
+                        corrected_pv_bus_vm[gen_data["gen_bus"]] = gen_data["vg"]
+                    end
+                end
+            end
             gen_data["index"] = i
             gen_data["source_id"] = ["gen", i]
             push!(gens, gen_data)

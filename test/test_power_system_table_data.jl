@@ -24,102 +24,118 @@ end
 end
 
 @testset "consistency between PowerSystemTableData and standardfiles" begin
-    mpsys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
-    cdmsys = PSB.build_system(PSB.PSITestSystems, "test_RTS_GMLC_sys")
-    mp_iter = get_components(HydroGen, mpsys)
-    mp_generators = LazyDictFromIterator(String, HydroGen, mp_iter, get_name)
-    for cdmgen in get_components(HydroGen, cdmsys)
-        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
-        if isnothing(mpgen)
-            error("did not find $cdmgen")
-        end
-        @test cdmgen.available == mpgen.available
-        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        gen_dat = (
-            structname = nothing,
-            fields = (
-                :active_power,
-                :reactive_power,
-                :rating,
-                :active_power_limits,
-                :reactive_power_limits,
-                :ramp_limits,
-            ),
-        )
-        function check_fields(chk_dat)
-            for field in chk_dat.fields
-                n = get(chk_dat, :structname, nothing)
-                (cdmd, mpd) =
-                    isnothing(n) ? (cdmgen, mpgen) :
-                    (getfield(cdmgen, n), getfield(mpgen, n))
-                cdmgen_val = getfield(cdmd, field)
-                mpgen_val = getfield(mpd, field)
-                if isnothing(cdmgen_val) || isnothing(mpgen_val)
-                    @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
-                    continue
+    # This signature is used to capture expected error logs from parsing matpower
+    consistency_test =
+        () -> begin
+            mpsys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_RTS_GMLC_sys";
+                force_build = true,
+            )
+            cdmsys = PSB.build_system(
+                PSB.PSITestSystems,
+                "test_RTS_GMLC_sys";
+                force_build = true,
+            )
+            mp_iter = get_components(HydroGen, mpsys)
+            mp_generators = LazyDictFromIterator(String, HydroGen, mp_iter, get_name)
+            for cdmgen in get_components(HydroGen, cdmsys)
+                mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+                if isnothing(mpgen)
+                    error("did not find $cdmgen")
                 end
-                @test cdmgen_val == mpgen_val
+                @test cdmgen.available == mpgen.available
+                @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+                gen_dat = (
+                    structname = nothing,
+                    fields = (
+                        :active_power,
+                        :reactive_power,
+                        :rating,
+                        :active_power_limits,
+                        :reactive_power_limits,
+                        :ramp_limits,
+                    ),
+                )
+                function check_fields(chk_dat)
+                    for field in chk_dat.fields
+                        n = get(chk_dat, :structname, nothing)
+                        (cdmd, mpd) =
+                            isnothing(n) ? (cdmgen, mpgen) :
+                            (getfield(cdmgen, n), getfield(mpgen, n))
+                        cdmgen_val = getfield(cdmd, field)
+                        mpgen_val = getfield(mpd, field)
+                        if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                            @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                            continue
+                        end
+                        @test cdmgen_val == mpgen_val
+                    end
+                end
+                check_fields(gen_dat)
             end
-        end
-        check_fields(gen_dat)
-    end
 
-    mp_iter = get_components(ThermalGen, mpsys)
-    mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
-    for cdmgen in get_components(ThermalGen, cdmsys)
-        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
-        @test cdmgen.available == mpgen.available
-        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:active_power_limits, :reactive_power_limits, :ramp_limits)
-            cdmgen_val = getfield(cdmgen, field)
-            mpgen_val = getfield(mpgen, field)
-            if isnothing(cdmgen_val) || isnothing(mpgen_val)
-                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
-                continue
+            mp_iter = get_components(ThermalGen, mpsys)
+            mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
+            for cdmgen in get_components(ThermalGen, cdmsys)
+                mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+                @test cdmgen.available == mpgen.available
+                @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+                for field in (:active_power_limits, :reactive_power_limits, :ramp_limits)
+                    cdmgen_val = getfield(cdmgen, field)
+                    mpgen_val = getfield(mpgen, field)
+                    if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                        @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                        continue
+                    end
+                    @test cdmgen_val == mpgen_val
+                end
+
+                if length(mpgen.operation_cost.variable) == 4
+                    @test [
+                        isapprox(
+                            cdmgen.operation_cost.variable[i][1],
+                            mpgen.operation_cost.variable[i][1],
+                            atol = 0.1,
+                        ) for i in 1:4
+                    ] == [true, true, true, true]
+                    #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
+                end
             end
-            @test cdmgen_val == mpgen_val
-        end
 
-        if length(mpgen.operation_cost.variable) == 4
-            @test [
-                isapprox(
-                    cdmgen.operation_cost.variable[i][1],
-                    mpgen.operation_cost.variable[i][1],
-                    atol = 0.1,
-                ) for i in 1:4
-            ] == [true, true, true, true]
-            #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
-        end
-    end
-
-    mp_iter = get_components(RenewableGen, mpsys)
-    mp_generators = LazyDictFromIterator(String, RenewableGen, mp_iter, get_name)
-    for cdmgen in get_components(RenewableGen, cdmsys)
-        mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
-        # Disabled since data is inconsisten between sources
-        #@test cdmgen.available == mpgen.available
-        @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
-        for field in (:rating, :power_factor)
-            cdmgen_val = getfield(cdmgen, field)
-            mpgen_val = getfield(mpgen, field)
-            if isnothing(cdmgen_val) || isnothing(mpgen_val)
-                @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
-                continue
+            mp_iter = get_components(RenewableGen, mpsys)
+            mp_generators =
+                LazyDictFromIterator(String, RenewableGen, mp_iter, get_name)
+            for cdmgen in get_components(RenewableGen, cdmsys)
+                mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
+                # Disabled since data is inconsisten between sources
+                #@test cdmgen.available == mpgen.available
+                @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
+                for field in (:rating, :power_factor)
+                    cdmgen_val = getfield(cdmgen, field)
+                    mpgen_val = getfield(mpgen, field)
+                    if isnothing(cdmgen_val) || isnothing(mpgen_val)
+                        @warn "Skip value with nothing" repr(cdmgen_val) repr(mpgen_val)
+                        continue
+                    end
+                    @test cdmgen_val == mpgen_val
+                end
+                #@test compare_values_without_uuids(cdmgen.operation_cost, mpgen.operation_cost)
             end
-            @test cdmgen_val == mpgen_val
+
+            cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
+            @test get_rate(cdm_ac_branches[2]) ==
+                  get_rate(get_branch(mpsys, cdm_ac_branches[2]))
+            @test get_rate(cdm_ac_branches[6]) ==
+                  get_rate(get_branch(mpsys, cdm_ac_branches[6]))
+            @test get_rate(cdm_ac_branches[120]) ==
+                  get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+
+            cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
+            @test get_active_power_limits_from(cdm_dc_branches[1]) ==
+                  get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
-        #@test compare_values_without_uuids(cdmgen.operation_cost, mpgen.operation_cost)
-    end
-
-    cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
-    @test get_rate(cdm_ac_branches[2]) == get_rate(get_branch(mpsys, cdm_ac_branches[2]))
-    @test get_rate(cdm_ac_branches[6]) == get_rate(get_branch(mpsys, cdm_ac_branches[6]))
-    @test get_rate(cdm_ac_branches[120]) ==
-          get_rate(get_branch(mpsys, cdm_ac_branches[120]))
-
-    cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
-    @test get_active_power_limits_from(cdm_dc_branches[1]) ==
-          get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
+    @test_logs (:error,) match_mode = :any min_level = Logging.Error consistency_test()
 end
 
 @testset "Test reserve direction" begin
