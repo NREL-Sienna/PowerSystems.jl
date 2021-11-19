@@ -2,7 +2,7 @@
 base_dir = dirname(dirname(pathof(PowerSystems)))
 
 @testset "Check bus index" begin
-    # This format is to capture error logs
+    # This signature is used to capture expected error logs from parsing matpower
     test_bus_index =
         () -> begin
             sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
@@ -24,7 +24,7 @@ base_dir = dirname(dirname(pathof(PowerSystems)))
 end
 
 @testset "Test unique bus numbers" begin
-    # This format is to capture error logs
+    # This signature is used to capture expected error logs from parsing matpower
     test_bus_numbers =
         () -> begin
             sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
