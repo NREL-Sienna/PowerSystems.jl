@@ -86,8 +86,16 @@ end
 
 @testset "Test System constructor from Matpower" begin
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
-    sys =
-        PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys"; runchecks = true)
+    kwarg_test =
+        () -> begin
+            sys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_case5_re_sys";
+                runchecks = true,
+                force_build = true,
+            )
+        end
+    @test_logs (:error,) min_level = Logging.Error match_mode = :any kwarg_test()
 end
 
 @testset "Test accessor functions of PowerSystems auto-generated types" begin
@@ -116,7 +124,11 @@ end
     # This signature is used to capture expected error logs from parsing matpower
     test_conversion =
         () -> begin
-            sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
+            sys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_case5_re_sys";
+                force_build = true,
+            )
             l = get_component(Line, sys, "bus2-bus3-i_4")
             initial_time = Dates.DateTime("2020-01-01T00:00:00")
             dates = collect(

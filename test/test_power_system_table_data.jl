@@ -27,8 +27,16 @@ end
     # This signature is used to capture expected error logs from parsing matpower
     consistency_test =
         () -> begin
-            mpsys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
-            cdmsys = PSB.build_system(PSB.PSITestSystems, "test_RTS_GMLC_sys")
+            mpsys = PSB.build_system(
+                PSB.MatPowerTestSystems,
+                "matpower_RTS_GMLC_sys";
+                force_build = true,
+            )
+            cdmsys = PSB.build_system(
+                PSB.PSITestSystems,
+                "test_RTS_GMLC_sys";
+                force_build = true,
+            )
             mp_iter = get_components(HydroGen, mpsys)
             mp_generators = LazyDictFromIterator(String, HydroGen, mp_iter, get_name)
             for cdmgen in get_components(HydroGen, cdmsys)
