@@ -122,8 +122,6 @@ get_time_series_container(value::InterruptibleLoad) = value.time_series_containe
 """Get [`InterruptibleLoad`](@ref) `internal`."""
 get_internal(value::InterruptibleLoad) = value.internal
 
-"""Set [`InterruptibleLoad`](@ref) `name`."""
-set_name!(value::InterruptibleLoad, val) = value.name = val
 """Set [`InterruptibleLoad`](@ref) `available`."""
 set_available!(value::InterruptibleLoad, val) = value.available = val
 """Set [`InterruptibleLoad`](@ref) `bus`."""

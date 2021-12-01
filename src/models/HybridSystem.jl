@@ -182,7 +182,6 @@ InfrastructureSystems.get_time_series_container(value::HybridSystem) =
 """Get [`HybridSystem`](@ref) `internal`."""
 get_internal(value::HybridSystem) = value.internal
 
-InfrastructureSystems.set_name!(value::HybridSystem, val) = value.name = val
 """Set [`HybridSystem`](@ref) `available`."""
 set_available!(value::HybridSystem, val) = value.available = val
 """Get [`HybridSystem`](@ref) `status`."""

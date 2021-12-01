@@ -154,8 +154,6 @@ get_time_series_container(value::GenericBattery) = value.time_series_container
 """Get [`GenericBattery`](@ref) `internal`."""
 get_internal(value::GenericBattery) = value.internal
 
-"""Set [`GenericBattery`](@ref) `name`."""
-set_name!(value::GenericBattery, val) = value.name = val
 """Set [`GenericBattery`](@ref) `available`."""
 set_available!(value::GenericBattery, val) = value.available = val
 """Set [`GenericBattery`](@ref) `bus`."""

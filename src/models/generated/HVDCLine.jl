@@ -107,8 +107,6 @@ get_time_series_container(value::HVDCLine) = value.time_series_container
 """Get [`HVDCLine`](@ref) `internal`."""
 get_internal(value::HVDCLine) = value.internal
 
-"""Set [`HVDCLine`](@ref) `name`."""
-set_name!(value::HVDCLine, val) = value.name = val
 """Set [`HVDCLine`](@ref) `available`."""
 set_available!(value::HVDCLine, val) = value.available = val
 """Set [`HVDCLine`](@ref) `active_power_flow`."""

@@ -188,8 +188,6 @@ get_time_series_container(value::ThermalMultiStart) = value.time_series_containe
 """Get [`ThermalMultiStart`](@ref) `internal`."""
 get_internal(value::ThermalMultiStart) = value.internal
 
-"""Set [`ThermalMultiStart`](@ref) `name`."""
-set_name!(value::ThermalMultiStart, val) = value.name = val
 """Set [`ThermalMultiStart`](@ref) `available`."""
 set_available!(value::ThermalMultiStart, val) = value.available = val
 """Set [`ThermalMultiStart`](@ref) `status`."""

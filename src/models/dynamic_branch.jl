@@ -74,7 +74,6 @@ get_services(value::DynamicBranch) = get_services(value.branch)
 """Get DynamicBranch ext."""
 get_ext(value::DynamicBranch) = get_ext(value.branch)
 
-set_name!(value::DynamicBranch, val::String) = set_name!(value.branch, val)
 """Set DynamicBranch available."""
 set_available!(value::DynamicBranch, val::Bool) = set_available!(value.branch, val)
 """Set DynamicBranch active_power_flow."""

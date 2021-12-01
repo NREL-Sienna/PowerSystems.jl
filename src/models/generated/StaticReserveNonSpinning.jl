@@ -65,8 +65,6 @@ get_ext(value::StaticReserveNonSpinning) = value.ext
 """Get [`StaticReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::StaticReserveNonSpinning) = value.internal
 
-"""Set [`StaticReserveNonSpinning`](@ref) `name`."""
-set_name!(value::StaticReserveNonSpinning, val) = value.name = val
 """Set [`StaticReserveNonSpinning`](@ref) `available`."""
 set_available!(value::StaticReserveNonSpinning, val) = value.available = val
 """Set [`StaticReserveNonSpinning`](@ref) `time_frame`."""

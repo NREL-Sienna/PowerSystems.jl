@@ -144,8 +144,6 @@ get_time_series_container(value::HydroDispatch) = value.time_series_container
 """Get [`HydroDispatch`](@ref) `internal`."""
 get_internal(value::HydroDispatch) = value.internal
 
-"""Set [`HydroDispatch`](@ref) `name`."""
-set_name!(value::HydroDispatch, val) = value.name = val
 """Set [`HydroDispatch`](@ref) `available`."""
 set_available!(value::HydroDispatch, val) = value.available = val
 """Set [`HydroDispatch`](@ref) `bus`."""

@@ -78,8 +78,6 @@ get_time_series_container(value::FixedAdmittance) = value.time_series_container
 """Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
-"""Set [`FixedAdmittance`](@ref) `name`."""
-set_name!(value::FixedAdmittance, val) = value.name = val
 """Set [`FixedAdmittance`](@ref) `available`."""
 set_available!(value::FixedAdmittance, val) = value.available = val
 """Set [`FixedAdmittance`](@ref) `bus`."""

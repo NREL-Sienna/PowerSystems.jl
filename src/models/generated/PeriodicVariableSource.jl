@@ -119,8 +119,6 @@ get_ext(value::PeriodicVariableSource) = value.ext
 """Get [`PeriodicVariableSource`](@ref) `internal`."""
 get_internal(value::PeriodicVariableSource) = value.internal
 
-"""Set [`PeriodicVariableSource`](@ref) `name`."""
-set_name!(value::PeriodicVariableSource, val) = value.name = val
 """Set [`PeriodicVariableSource`](@ref) `R_th`."""
 set_R_th!(value::PeriodicVariableSource, val) = value.R_th = val
 """Set [`PeriodicVariableSource`](@ref) `X_th`."""

@@ -162,8 +162,6 @@ get_time_series_container(value::ThermalStandard) = value.time_series_container
 """Get [`ThermalStandard`](@ref) `internal`."""
 get_internal(value::ThermalStandard) = value.internal
 
-"""Set [`ThermalStandard`](@ref) `name`."""
-set_name!(value::ThermalStandard, val) = value.name = val
 """Set [`ThermalStandard`](@ref) `available`."""
 set_available!(value::ThermalStandard, val) = value.available = val
 """Set [`ThermalStandard`](@ref) `status`."""

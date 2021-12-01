@@ -74,8 +74,6 @@ get_internal(value::ReserveDemandCurve) = value.internal
 
 """Set [`ReserveDemandCurve`](@ref) `variable`."""
 set_variable!(value::ReserveDemandCurve, val) = value.variable = val
-"""Set [`ReserveDemandCurve`](@ref) `name`."""
-set_name!(value::ReserveDemandCurve, val) = value.name = val
 """Set [`ReserveDemandCurve`](@ref) `available`."""
 set_available!(value::ReserveDemandCurve, val) = value.available = val
 """Set [`ReserveDemandCurve`](@ref) `time_frame`."""
