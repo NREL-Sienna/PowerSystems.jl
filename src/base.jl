@@ -694,11 +694,7 @@ Throws ArgumentError if the type is not stored.
 """
 # the argument order in this function is un-julian and should be deprecated in 2.0
 function remove_components!(::Type{T}, sys::System) where {T <: Component}
-    components = IS.remove_components!(T, sys.data)
-    for component in components
-        handle_component_removal!(sys, component)
-    end
-    return components
+    return remove_components!(sys, T)
 end
 
 function remove_components!(sys::System, ::Type{T}) where {T <: Component}
@@ -727,6 +723,25 @@ Set the name for a component that is attached to the system.
 set_name!(sys::System, component::Component, name::AbstractString) =
     set_name!(sys.data, component, name)
 
+"""
+Set the name of a component.
+
+Throws an exception if the component is attached to a system.
+"""
+function set_name!(component::Component, name::AbstractString)
+    # The units setting is nothing until the component is attached to the system.
+    if get_units_setting(component) !== nothing
+        # This is not allowed because components are stored in the system in a Dict
+        # keyed by name.
+        error(
+            "The component is attached to a system. " *
+            "Call set_name!(system, component, name) instead.",
+        )
+    end
+
+    component.name = name
+end
+
 function clear_units!(component::Component)
     get_internal(component).units_info = nothing
     return
@@ -741,7 +756,6 @@ function remove_component!(sys::System, component::T) where {T <: Component}
     check_component_removal(sys, component)
     IS.remove_component!(sys.data, component)
     handle_component_removal!(sys, component)
-    clear_units!(component)
     return
 end
 
@@ -1649,12 +1663,12 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
 end
 
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
-    handle_component_addition_common!(sys, component)
+    _handle_branch_addition_common!(sys, component)
     return
 end
 
 function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)
-    handle_component_addition_common!(sys, component)
+    _handle_branch_addition_common!(sys, component)
     remove_component!(sys, component.branch)
     return
 end
@@ -1681,7 +1695,7 @@ function handle_component_addition!(
     end
 end
 
-function handle_component_addition_common!(sys::System, component::Branch)
+function _handle_branch_addition_common!(sys::System, component::Branch)
     # If this arc is already attached to the system, assign it to the branch.
     # Else, add it to the system.
     arc = get_arc(component)
@@ -1697,6 +1711,7 @@ end
 Throws ArgumentError if the bus number is not stored in the system.
 """
 function handle_component_removal!(sys::System, bus::Bus)
+    _handle_component_removal_common!(bus)
     number = get_number(bus)
     @assert number in sys.bus_numbers "bus number $number is not stored"
     pop!(sys.bus_numbers, number)
@@ -1704,6 +1719,7 @@ function handle_component_removal!(sys::System, bus::Bus)
 end
 
 function handle_component_removal!(sys::System, device::Device)
+    _handle_component_removal_common!(device)
     # This may have to be refactored if handle_component_removal! needs to be implemented
     # for a subtype.
     clear_services!(device)
@@ -1711,12 +1727,14 @@ function handle_component_removal!(sys::System, device::Device)
 end
 
 function handle_component_removal!(sys::System, service::Service)
+    _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
         _remove_service!(device, service)
     end
 end
 
 function handle_component_removal!(sys::System, value::T) where {T <: AggregationTopology}
+    _handle_component_removal_common!(value)
     for device in get_components(Bus, sys)
         if get_aggregation_topology_accessor(T)(device) == value
             _remove_aggregration_topology!(device, value)
@@ -1725,6 +1743,7 @@ function handle_component_removal!(sys::System, value::T) where {T <: Aggregatio
 end
 
 function handle_component_removal!(sys::System, dyn_injector::DynamicInjection)
+    _handle_component_removal_common!(dyn_injector)
     injectors = get_components_by_name(StaticInjection, sys, get_name(dyn_injector))
     found = false
     for static_injector in injectors
@@ -1738,6 +1757,10 @@ function handle_component_removal!(sys::System, dyn_injector::DynamicInjection)
     end
 
     @assert found
+end
+
+function _handle_component_removal_common!(component)
+    clear_units!(component)
 end
 
 """

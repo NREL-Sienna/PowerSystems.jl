@@ -72,8 +72,6 @@ get_time_series_container(value::VariableReserve) = value.time_series_container
 """Get [`VariableReserve`](@ref) `internal`."""
 get_internal(value::VariableReserve) = value.internal
 
-"""Set [`VariableReserve`](@ref) `name`."""
-set_name!(value::VariableReserve, val) = value.name = val
 """Set [`VariableReserve`](@ref) `available`."""
 set_available!(value::VariableReserve, val) = value.available = val
 """Set [`VariableReserve`](@ref) `time_frame`."""

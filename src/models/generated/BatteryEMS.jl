@@ -161,8 +161,6 @@ get_time_series_container(value::BatteryEMS) = value.time_series_container
 """Get [`BatteryEMS`](@ref) `internal`."""
 get_internal(value::BatteryEMS) = value.internal
 
-"""Set [`BatteryEMS`](@ref) `name`."""
-set_name!(value::BatteryEMS, val) = value.name = val
 """Set [`BatteryEMS`](@ref) `available`."""
 set_available!(value::BatteryEMS, val) = value.available = val
 """Set [`BatteryEMS`](@ref) `bus`."""

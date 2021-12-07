@@ -124,8 +124,6 @@ get_time_series_container(value::MonitoredLine) = value.time_series_container
 """Get [`MonitoredLine`](@ref) `internal`."""
 get_internal(value::MonitoredLine) = value.internal
 
-"""Set [`MonitoredLine`](@ref) `name`."""
-set_name!(value::MonitoredLine, val) = value.name = val
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""

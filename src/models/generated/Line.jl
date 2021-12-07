@@ -116,8 +116,6 @@ get_time_series_container(value::Line) = value.time_series_container
 """Get [`Line`](@ref) `internal`."""
 get_internal(value::Line) = value.internal
 
-"""Set [`Line`](@ref) `name`."""
-set_name!(value::Line, val) = value.name = val
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""

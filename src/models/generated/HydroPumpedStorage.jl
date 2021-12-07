@@ -232,8 +232,6 @@ get_time_series_container(value::HydroPumpedStorage) = value.time_series_contain
 """Get [`HydroPumpedStorage`](@ref) `internal`."""
 get_internal(value::HydroPumpedStorage) = value.internal
 
-"""Set [`HydroPumpedStorage`](@ref) `name`."""
-set_name!(value::HydroPumpedStorage, val) = value.name = val
 """Set [`HydroPumpedStorage`](@ref) `available`."""
 set_available!(value::HydroPumpedStorage, val) = value.available = val
 """Set [`HydroPumpedStorage`](@ref) `bus`."""

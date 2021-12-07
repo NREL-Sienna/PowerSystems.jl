@@ -113,8 +113,6 @@ get_time_series_container(value::VSCDCLine) = value.time_series_container
 """Get [`VSCDCLine`](@ref) `internal`."""
 get_internal(value::VSCDCLine) = value.internal
 
-"""Set [`VSCDCLine`](@ref) `name`."""
-set_name!(value::VSCDCLine, val) = value.name = val
 """Set [`VSCDCLine`](@ref) `available`."""
 set_available!(value::VSCDCLine, val) = value.available = val
 """Set [`VSCDCLine`](@ref) `active_power_flow`."""

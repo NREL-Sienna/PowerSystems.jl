@@ -72,8 +72,6 @@ get_time_series_container(value::VariableReserveNonSpinning) = value.time_series
 """Get [`VariableReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::VariableReserveNonSpinning) = value.internal
 
-"""Set [`VariableReserveNonSpinning`](@ref) `name`."""
-set_name!(value::VariableReserveNonSpinning, val) = value.name = val
 """Set [`VariableReserveNonSpinning`](@ref) `available`."""
 set_available!(value::VariableReserveNonSpinning, val) = value.available = val
 """Set [`VariableReserveNonSpinning`](@ref) `time_frame`."""

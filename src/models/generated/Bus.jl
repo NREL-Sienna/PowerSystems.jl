@@ -121,8 +121,6 @@ get_internal(value::Bus) = value.internal
 
 """Set [`Bus`](@ref) `number`."""
 set_number!(value::Bus, val) = value.number = val
-"""Set [`Bus`](@ref) `name`."""
-set_name!(value::Bus, val) = value.name = val
 """Set [`Bus`](@ref) `bustype`."""
 set_bustype!(value::Bus, val) = value.bustype = val
 """Set [`Bus`](@ref) `angle`."""

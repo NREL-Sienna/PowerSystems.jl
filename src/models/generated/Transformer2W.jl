@@ -110,8 +110,6 @@ get_time_series_container(value::Transformer2W) = value.time_series_container
 """Get [`Transformer2W`](@ref) `internal`."""
 get_internal(value::Transformer2W) = value.internal
 
-"""Set [`Transformer2W`](@ref) `name`."""
-set_name!(value::Transformer2W, val) = value.name = val
 """Set [`Transformer2W`](@ref) `available`."""
 set_available!(value::Transformer2W, val) = value.available = val
 """Set [`Transformer2W`](@ref) `active_power_flow`."""

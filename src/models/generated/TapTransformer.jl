@@ -116,8 +116,6 @@ get_time_series_container(value::TapTransformer) = value.time_series_container
 """Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
-"""Set [`TapTransformer`](@ref) `name`."""
-set_name!(value::TapTransformer, val) = value.name = val
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
 """Set [`TapTransformer`](@ref) `active_power_flow`."""

@@ -64,8 +64,6 @@ get_time_series_container(value::Area) = value.time_series_container
 """Get [`Area`](@ref) `internal`."""
 get_internal(value::Area) = value.internal
 
-"""Set [`Area`](@ref) `name`."""
-set_name!(value::Area, val) = value.name = val
 """Set [`Area`](@ref) `peak_active_power`."""
 set_peak_active_power!(value::Area, val) = value.peak_active_power = set_value(value, val)
 """Set [`Area`](@ref) `peak_reactive_power`."""

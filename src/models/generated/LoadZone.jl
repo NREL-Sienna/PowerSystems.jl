@@ -58,8 +58,6 @@ get_time_series_container(value::LoadZone) = value.time_series_container
 """Get [`LoadZone`](@ref) `internal`."""
 get_internal(value::LoadZone) = value.internal
 
-"""Set [`LoadZone`](@ref) `name`."""
-set_name!(value::LoadZone, val) = value.name = val
 """Set [`LoadZone`](@ref) `peak_active_power`."""
 set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, val)
 """Set [`LoadZone`](@ref) `peak_reactive_power`."""

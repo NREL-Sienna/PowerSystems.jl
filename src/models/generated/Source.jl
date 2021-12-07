@@ -111,8 +111,6 @@ get_ext(value::Source) = value.ext
 """Get [`Source`](@ref) `internal`."""
 get_internal(value::Source) = value.internal
 
-"""Set [`Source`](@ref) `name`."""
-set_name!(value::Source, val) = value.name = val
 """Set [`Source`](@ref) `available`."""
 set_available!(value::Source, val) = value.available = val
 """Set [`Source`](@ref) `bus`."""

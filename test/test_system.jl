@@ -246,6 +246,11 @@ end
     add_component!(sys, bus)
     set_name!(sys, bus, "new_name")
     @test get_component(Bus, sys, "new_name") === bus
+
+    @test_throws ErrorException set_name!(bus, "new_name2")
+    remove_component!(sys, bus)
+    set_name!(bus, "new_name2")
+    @test get_name(bus) == "new_name2"
 end
 
 @testset "Test forecast parameters" begin

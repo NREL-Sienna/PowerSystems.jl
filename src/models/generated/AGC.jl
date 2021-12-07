@@ -99,8 +99,6 @@ get_ext(value::AGC) = value.ext
 """Get [`AGC`](@ref) `internal`."""
 get_internal(value::AGC) = value.internal
 
-"""Set [`AGC`](@ref) `name`."""
-set_name!(value::AGC, val) = value.name = val
 """Set [`AGC`](@ref) `available`."""
 set_available!(value::AGC, val) = value.available = val
 """Set [`AGC`](@ref) `bias`."""

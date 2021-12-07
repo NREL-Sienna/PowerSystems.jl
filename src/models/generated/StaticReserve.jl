@@ -65,8 +65,6 @@ get_ext(value::StaticReserve) = value.ext
 """Get [`StaticReserve`](@ref) `internal`."""
 get_internal(value::StaticReserve) = value.internal
 
-"""Set [`StaticReserve`](@ref) `name`."""
-set_name!(value::StaticReserve, val) = value.name = val
 """Set [`StaticReserve`](@ref) `available`."""
 set_available!(value::StaticReserve, val) = value.available = val
 """Set [`StaticReserve`](@ref) `time_frame`."""

@@ -117,8 +117,6 @@ get_time_series_container(value::RenewableFix) = value.time_series_container
 """Get [`RenewableFix`](@ref) `internal`."""
 get_internal(value::RenewableFix) = value.internal
 
-"""Set [`RenewableFix`](@ref) `name`."""
-set_name!(value::RenewableFix, val) = value.name = val
 """Set [`RenewableFix`](@ref) `available`."""
 set_available!(value::RenewableFix, val) = value.available = val
 """Set [`RenewableFix`](@ref) `bus`."""

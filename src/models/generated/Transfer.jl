@@ -64,8 +64,6 @@ get_time_series_container(value::Transfer) = value.time_series_container
 """Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
-"""Set [`Transfer`](@ref) `name`."""
-set_name!(value::Transfer, val) = value.name = val
 """Set [`Transfer`](@ref) `available`."""
 set_available!(value::Transfer, val) = value.available = val
 """Set [`Transfer`](@ref) `requirement`."""

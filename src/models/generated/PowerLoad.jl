@@ -115,8 +115,6 @@ get_time_series_container(value::PowerLoad) = value.time_series_container
 """Get [`PowerLoad`](@ref) `internal`."""
 get_internal(value::PowerLoad) = value.internal
 
-"""Set [`PowerLoad`](@ref) `name`."""
-set_name!(value::PowerLoad, val) = value.name = val
 """Set [`PowerLoad`](@ref) `available`."""
 set_available!(value::PowerLoad, val) = value.available = val
 """Set [`PowerLoad`](@ref) `bus`."""

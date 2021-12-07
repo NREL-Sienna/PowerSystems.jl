@@ -121,8 +121,6 @@ get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_c
 """Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
-"""Set [`PhaseShiftingTransformer`](@ref) `name`."""
-set_name!(value::PhaseShiftingTransformer, val) = value.name = val
 """Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
 """Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
