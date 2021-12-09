@@ -816,6 +816,8 @@ function calculate_variable_cost(
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = var_cost[1][1] * fuel_cost + vom
         fixed = 0.0
+    else
+        @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
     end
     return var_cost, fixed, fuel_cost
 end
@@ -857,7 +859,7 @@ end
 function calculate_uc_cost(data, gen, fuel_cost)
     startup_cost = gen.startup_cost
     if isnothing(startup_cost)
-        if hasfield(typeof(gen), :startup_heat_cold_cost)
+        if !isnothing(gen.startup_heat_cold_cost)
             startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
         else
             startup_cost = 0.0
