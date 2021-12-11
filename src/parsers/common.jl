@@ -69,17 +69,16 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     generator = nothing
 
     # Try to match the unit_type if it's defined. If it's nothing then just match on fuel.
-    for ut in (unit_type, nothing)
-        for fu in (fuel, nothing)
-            key = (fuel = fu, unit_type = ut)
-            if haskey(mappings, key)
-                generator = mappings[key]
-                break
-            end
+    for ut in (unit_type, nothing), fu in (fuel, nothing)
+        key = (fuel = fu, unit_type = ut)
+        if haskey(mappings, key)
+            generator = mappings[key]
+            break
         end
     end
 
     if isnothing(generator)
+        @show (fuel = fuel, unit_type = unit_type)
         @error "No mapping for generator fuel=$fuel unit_type=$unit_type"
     end
 
