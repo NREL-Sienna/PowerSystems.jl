@@ -783,6 +783,9 @@ function calculate_variable_cost(
             (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
             c in var_cost if !in(nothing, c)
         ])
+        if isempty(var_cost)
+            @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
+        end
     else
         var_cost = [(0.0, 0.0)]
     end
@@ -816,8 +819,6 @@ function calculate_variable_cost(
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = var_cost[1][1] * fuel_cost + vom
         fixed = 0.0
-    else
-        @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
     end
     return var_cost, fixed, fuel_cost
 end

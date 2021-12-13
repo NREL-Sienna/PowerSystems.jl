@@ -78,7 +78,6 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     end
 
     if isnothing(generator)
-        @show (fuel = fuel, unit_type = unit_type)
         @error "No mapping for generator fuel=$fuel unit_type=$unit_type"
     end
 
