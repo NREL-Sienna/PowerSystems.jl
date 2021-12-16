@@ -11776,6 +11776,71 @@
         }
       ],
       "supertype": "DynamicInjection"
+    },
+    {
+      "struct_name": "NeuralODE_RELU",
+      "docstring": "Densely connected NODE with RELU activation function and variable number of states.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "n_layers",
+          "comment": "Number of hidden layers",
+          "null_value": 0,
+          "data_type": "Int"
+        },
+        {
+          "name": "n_neurons",
+          "comment": "Neurons per hidden layer",
+          "null_value": 0,
+          "data_type": "Int"
+        },
+        {
+          "name": "n_feedback_states",
+          "comment": "Number of feedback states. The total number of states equals n_feedback_states + 2 for real and imaginary output current.",
+          "null_value": 0,
+          "data_type": "Int"
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "State for time, voltage and angle",
+          "internal_default": "[:Vt, :θt]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true, 
+          "null_value": 2,
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
     }
   ],
   "struct_validation_descriptors": [
