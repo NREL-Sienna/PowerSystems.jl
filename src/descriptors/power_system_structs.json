@@ -11778,8 +11778,8 @@
       "supertype": "DynamicInjection"
     },
     {
-      "struct_name": "NeuralODE_RELU",
-      "docstring": "Densely connected NODE with RELU activation function and variable number of states.",
+      "struct_name": "NeuralODE",
+      "docstring": "Densely connected NODE with variable number of feedback states.",
       "fields": [
         {
           "null_value": "init",
@@ -11806,6 +11806,26 @@
           "data_type": "Int"
         },
         {
+          "name": "nn_parameters",
+          "comment": "Weights and biases of the nn which defines the dynamics of the component",
+          "null_value": [
+            0.0
+          ],
+          "data_type": "Vector{Float64}"
+        },
+        {
+          "name": "activation_function",
+          "comment": "Activation function for input and hidden layers. Output layer has identity activation.",
+          "null_value": 0,
+          "data_type": "String"
+        },
+        {
+          "name": "initialize_to_zero",
+          "comment": "If true, initialize the output current to zero. Assumes the NODE was trained and will be used with another device at the same bus which accounts for steady state current to match the PF solution.",
+          "null_value": false,
+          "data_type": "Bool"
+        },
+        {
           "name": "base_power",
           "comment": "Base power",
           "null_value": 0.0,
@@ -11815,8 +11835,8 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "State for time, voltage and angle",
-          "internal_default": "[:Vt, :θt]",
+          "comment": "Real output current, imaginary output current",
+          "internal_default": "[:Ir, :Ii]",
           "data_type": "Vector{Symbol}"
         },
         {
