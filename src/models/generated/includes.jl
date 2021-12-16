@@ -96,6 +96,7 @@ include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
+include("NeuralODE.jl")
 
 export get_A1
 export get_A2
@@ -320,6 +321,7 @@ export get_Xq_p
 export get_Xq_pp
 export get_Y
 export get_Zerox
+export get_activation_function
 export get_active_power
 export get_active_power_flow
 export get_active_power_limits
@@ -373,6 +375,7 @@ export get_inflow
 export get_initial_ace
 export get_initial_energy
 export get_initial_storage
+export get_initialize_to_zero
 export get_input_active_power_limits
 export get_input_code
 export get_internal_angle
@@ -413,8 +416,12 @@ export get_max_active_power
 export get_max_reactive_power
 export get_model
 export get_must_run
+export get_n_feedback_states
+export get_n_layers
+export get_n_neurons
 export get_n_states
 export get_name
+export get_nn_parameters
 export get_no_load
 export get_number
 export get_operation_cost
@@ -716,6 +723,7 @@ export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
 export set_Zerox!
+export set_activation_function!
 export set_active_power!
 export set_active_power_flow!
 export set_active_power_limits!
@@ -769,6 +777,7 @@ export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
 export set_initial_storage!
+export set_initialize_to_zero!
 export set_input_active_power_limits!
 export set_input_code!
 export set_internal_angle!
@@ -809,8 +818,12 @@ export set_max_active_power!
 export set_max_reactive_power!
 export set_model!
 export set_must_run!
+export set_n_feedback_states!
+export set_n_layers!
+export set_n_neurons!
 export set_n_states!
 export set_name!
+export set_nn_parameters!
 export set_no_load!
 export set_number!
 export set_operation_cost!
