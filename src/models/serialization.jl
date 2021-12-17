@@ -101,7 +101,9 @@ function deserialize_uuid_handling(field_type, val, component_cache)
         value = IS.deserialize(field_type.b, val, component_cache)
     elseif field_type <: InfrastructureSystemsType
         value = deserialize(field_type, val)
-    elseif field_type <: Union{Nothing, InfrastructureSystemsType}
+    elseif field_type isa Union && field_type.a <: Nothing && !(field_type.b <: Union)
+        # Nothing has already been handled. Apply the second type as long as there isn't a
+        # third. Julia appears to always put the Nothing in field a.
         value = deserialize(field_type.b, val)
     else
         value = deserialize(field_type, val)
