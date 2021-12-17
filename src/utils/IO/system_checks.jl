@@ -6,7 +6,8 @@
 function buscheck(buses)
     for b in buses
         if isnothing(b.bustype)
-            @warn "Bus/Nodes data does not contain information to build an a network"
+            @warn "Bus/Nodes data does not contain information to build an a network" maxlog =
+                10
         end
     end
     return

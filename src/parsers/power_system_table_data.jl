@@ -783,6 +783,9 @@ function calculate_variable_cost(
             (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
             c in var_cost if !in(nothing, c)
         ])
+        if isempty(var_cost)
+            @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
+        end
     else
         var_cost = [(0.0, 0.0)]
     end
@@ -857,7 +860,7 @@ end
 function calculate_uc_cost(data, gen, fuel_cost)
     startup_cost = gen.startup_cost
     if isnothing(startup_cost)
-        if hasfield(typeof(gen), :startup_heat_cold_cost)
+        if !isnothing(gen.startup_heat_cold_cost)
             startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
         else
             startup_cost = 0.0
@@ -1192,7 +1195,7 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     end
 
     if length(head) != 1
-        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.3.x" maxlog =
+        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.6.x" maxlog =
             1 # this currently selects the first head storage with no control on how to make that selection, in the future throw an error.
     #throw(DataFormatError("storage generator must have exactly 1 head storage defined")) #TODO: uncomment this in next version
     elseif length(tail) > 1

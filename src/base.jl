@@ -1478,7 +1478,7 @@ end
 """
 Return bus with name.
 """
-function get_bus(sys::System, name::String)
+function get_bus(sys::System, name::AbstractString)
     return get_component(Bus, sys, name)
 end
 
