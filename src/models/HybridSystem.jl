@@ -24,7 +24,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     renewable_unit::Union{Nothing, RenewableGen}
     # interconnection Data
     "Thermal limited MVA Power Output of the unit. <= Capacity"
-    interconnection_impedance::Union{Nothing, ComplexF64}
+    interconnection_impedance::ComplexF64
     interconnection_rating::Union{Nothing, Float64}
     input_active_power_limits::Union{Nothing, Min_Max}
     output_active_power_limits::Union{Nothing, Min_Max}
@@ -52,7 +52,7 @@ function HybridSystem(;
     electric_load = nothing,
     storage = nothing,
     renewable_unit = nothing,
-    interconnection_impedance = nothing,
+    interconnection_impedance = 0.0,
     interconnection_rating = nothing,
     input_active_power_limits = nothing,
     output_active_power_limits = nothing,
@@ -104,7 +104,7 @@ function HybridSystem(::Nothing)
         electric_load = PowerLoad(nothing),
         storage = GenericBattery(nothing),
         renewable_unit = RenewableDispatch(nothing),
-        interconnection_impedance = nothing,
+        interconnection_impedance = 0.0,
         interconnection_rating = nothing,
         input_active_power_limits = nothing,
         output_active_power_limits = nothing,
