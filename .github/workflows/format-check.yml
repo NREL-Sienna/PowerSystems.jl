@@ -21,7 +21,7 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
 
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install JuliaFormatter and format
         run: |
           julia  -e 'include(".github/workflows/formatter/formatter_code.jl")'
