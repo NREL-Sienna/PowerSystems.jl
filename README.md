@@ -22,7 +22,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 - Load (Static, and Curtailable)
 - Services (Reserves, Transfers)
 - TimeSeries (Deterministic, Scenarios, Probabilistic)
-- Dynamic Generators 
+- Dynamic Generators
 - Dynamic Inverter
 
 For a more exhaustive list check the [Documentation](https://nrel-siip.github.io/PowerSystems.jl/stable).
