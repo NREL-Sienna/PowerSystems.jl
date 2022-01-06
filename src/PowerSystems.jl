@@ -233,6 +233,7 @@ export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
 export copy_time_series!
+export copy_subcomponent_time_series!
 export add_component!
 export add_components!
 export remove_component!

@@ -39,6 +39,8 @@ end
     thermal_unit = nothing
     subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4
+    expected_time_series_names = Set{String}()
+    num_time_series = 0
     for subcomponent in subcomponents
         @test !PSY.is_attached(subcomponent, sys)
         @test IS.is_attached(subcomponent, sys.data.masked_components)
@@ -47,12 +49,20 @@ end
         elseif subcomponent isa ThermalStandard
             thermal_unit = subcomponent
         end
+        for ts in get_time_series_multiple(subcomponent)
+            push!(
+                expected_time_series_names,
+                PSY.make_subsystem_time_series_name(subcomponent, ts),
+            )
+            num_time_series += 1
+        end
     end
     @test electric_load !== nothing
     @test thermal_unit !== nothing
 
     ts = collect(get_time_series_multiple(h_sys, type = TimeSeriesData))
-    @test length(ts) == 0
+    @test length(ts) == num_time_series
+    @test Set((get_name(x) for x in ts)) == expected_time_series_names
 
     @test get_time_series(SingleTimeSeries, electric_load, "max_active_power") isa
           SingleTimeSeries
@@ -117,4 +127,10 @@ end
     forecast = Deterministic(name, data, resolution)
     add_time_series!(sys, thermal_unit, forecast)
     @test get_time_series(Deterministic, thermal_unit, name) isa Deterministic
+    copy_subcomponent_time_series!(h_sys, thermal_unit)
+    @test get_time_series(
+        Deterministic,
+        h_sys,
+        PSY.make_subsystem_time_series_name(thermal_unit, forecast),
+    ) isa Deterministic
 end
