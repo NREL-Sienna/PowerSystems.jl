@@ -1689,6 +1689,7 @@ function handle_component_addition!(
     for subcomponent in get_subcomponents(subsystem)
         if is_attached(subcomponent, sys)
             IS.mask_component!(sys.data, subcomponent)
+            copy_subcomponent_time_series!(subsystem, subcomponent)
         else
             IS.add_masked_component!(sys.data, subcomponent)
         end
