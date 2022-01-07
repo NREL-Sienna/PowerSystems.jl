@@ -298,7 +298,7 @@ Add buses and areas to the System from the raw data.
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     ix = 1
-    for bus in iterate_rows(data, InputCategory.BUS)
+    for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
         name = bus.name
         bus_type =
             isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes, bus.bus_type)
@@ -325,7 +325,6 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             load_zone = get_component(LoadZone, sys, string(zone)),
         )
         add_component!(sys, ps_bus)
-        ix += 1
 
         # add load if the following info is nonzero
         if (bus.max_active_power != 0.0) || (bus.max_reactive_power != 0.0)
@@ -609,8 +608,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
         reactive_powers = Vector{Float64}()
-        ix = 1
-        for bus in iterate_rows(data, InputCategory.BUS)
+        for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
             bus_number = isnothing(bus.bus_id) ? ix : bus.bus_id
             if bus.zone == zone
                 push!(bus_numbers, bus_number)
@@ -621,7 +619,6 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
                 reactive_power = bus.max_reactive_power
                 push!(reactive_powers, reactive_power)
             end
-            ix += 1
         end
 
         name = string(zone)
