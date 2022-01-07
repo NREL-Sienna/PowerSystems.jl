@@ -297,7 +297,6 @@ Add buses and areas to the System from the raw data.
 
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
-    ix = 1
     for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
         name = bus.name
         bus_type =
