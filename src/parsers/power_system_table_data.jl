@@ -297,6 +297,7 @@ Add buses and areas to the System from the raw data.
 
 """
 function bus_csv_parser!(sys::System, data::PowerSystemTableData)
+    ix = 1
     for bus in iterate_rows(data, InputCategory.BUS)
         name = bus.name
         bus_type =
@@ -310,9 +311,10 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             add_component!(sys, area)
         end
         zone = get(bus, :zone, nothing)
+        bus_id = isnothing(bus.bus_id) ? ix : bus.bus_id
 
         ps_bus = Bus(;
-            number = bus.bus_id,
+            number = bus_id,
             name = name,
             bustype = bus_type,
             angle = bus.angle,
@@ -323,6 +325,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             load_zone = get_component(LoadZone, sys, string(zone)),
         )
         add_component!(sys, ps_bus)
+        ix += 1
 
         # add load if the following info is nonzero
         if (bus.max_active_power != 0.0) || (bus.max_reactive_power != 0.0)
@@ -606,9 +609,10 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
         bus_numbers = Set{Int}()
         active_powers = Vector{Float64}()
         reactive_powers = Vector{Float64}()
+        ix = 1
         for bus in iterate_rows(data, InputCategory.BUS)
+            bus_number = isnothing(bus.bus_id) ? ix : bus.bus_id
             if bus.zone == zone
-                bus_number = bus.bus_id
                 push!(bus_numbers, bus_number)
 
                 active_power = bus.max_active_power
@@ -617,6 +621,7 @@ function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
                 reactive_power = bus.max_reactive_power
                 push!(reactive_powers, reactive_power)
             end
+            ix += 1
         end
 
         name = string(zone)
@@ -1194,14 +1199,18 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
         end
     end
 
-    if length(head) != 1
-        @warn "storage generator should have exactly 1 head storage defined: this will throw an error in v1.6.x" maxlog =
-            1 # this currently selects the first head storage with no control on how to make that selection, in the future throw an error.
-    #throw(DataFormatError("storage generator must have exactly 1 head storage defined")) #TODO: uncomment this in next version
+    if length(head) < 1
+        throw(DataFormatError("No head storage found for storage generator $gen_name"))
+    elseif length(head) > 1
+        throw(
+            DataFormatError(
+                " $gen_name storage generator must have exactly 1 head storage defined",
+            ),
+        )
     elseif length(tail) > 1
         throw(
             DataFormatError(
-                "storage generator cannot have more than 1 tail storage defined",
+                "$gen_name storage generator cannot have more than 1 tail storage defined",
             ),
         )
     end
