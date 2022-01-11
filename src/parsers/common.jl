@@ -64,7 +64,7 @@ end
 
 """Return the PowerSystems generator type for this fuel and unit_type."""
 function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType})
-    fuel = uppercase(fuel)
+    fuel = isnothing(fuel) ? "" : uppercase(fuel)
     unit_type = uppercase(unit_type)
     generator = nothing
 
@@ -85,8 +85,8 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
 end
 
 function get_branch_type(
-    tap::Float64,
-    alpha::Float64,
+    tap::Union{Float64, Int},
+    alpha::Union{Float64, Int},
     is_transformer::Union{Bool, Nothing} = nothing,
 )
     if isnothing(is_transformer)
@@ -143,6 +143,13 @@ function convert_units!(
         )
     end
     return value
+end
+
+function convert_units!(
+    value::Int,
+    unit_conversion::NamedTuple{(:From, :To), Tuple{String, String}},
+)
+    return convert_units!(convert(Float64, value), unit_conversion)
 end
 
 function parse_enum_mapping(::Type{ThermalFuels}, fuel::AbstractString)

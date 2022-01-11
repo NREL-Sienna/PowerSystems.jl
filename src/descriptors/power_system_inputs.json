@@ -1010,7 +1010,8 @@
     "bus": [
         {
             "name": "bus_id",
-            "description": "Numeric Bus ID"
+            "description": "Numeric Bus ID",
+            "default_value": null
         },
         {
             "name": "name",
