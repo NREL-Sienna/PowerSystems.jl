@@ -14,7 +14,7 @@ jobs:
       matrix:
         julia-version: [1]
         os: [ubuntu-latest]
-        package_name: [PowerSimulations, PowerSimulationsDynamics]
+        package_name: [PowerSimulations, PowerSimulationsDynamics, PowerSystemCaseBuilder]
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
