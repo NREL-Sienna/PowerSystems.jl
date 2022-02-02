@@ -1011,13 +1011,13 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "LOAD")
         for load in data["LOAD"]
             load_bus = bus_lookup[load["I"]]
-            if load["AREA"] == nothing
+            if load["AREA"] === nothing
                 load["AREA"] = load_bus["AREA"]
             end
-            if load["ZONE"] == nothing
+            if load["ZONE"] === nothing
                 load["ZONE"] = load_bus["ZONE"]
             end
-            if load["OWNER"] == nothing
+            if load["OWNER"] === nothing
                 load["OWNER"] = load_bus["OWNER"]
             end
         end
@@ -1026,10 +1026,10 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "GENERATOR")
         for gen in data["GENERATOR"]
             gen_bus = bus_lookup[gen["I"]]
-            if haskey(gen, "OWNER") && gen["OWNER"] == nothing
+            if haskey(gen, "OWNER") && gen["OWNER"] === nothing
                 gen["OWNER"] = gen_bus["OWNER"]
             end
-            if gen["MBASE"] == nothing
+            if gen["MBASE"] === nothing
                 gen["MBASE"] = sbase
             end
         end
@@ -1038,7 +1038,7 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "BRANCH")
         for branch in data["BRANCH"]
             branch_bus = bus_lookup[branch["I"]]
-            if haskey(branch, "OWNER") && branch["OWNER"] == nothing
+            if haskey(branch, "OWNER") && branch["OWNER"] === nothing
                 branch["OWNER"] = branch_bus["OWNER"]
             end
         end
@@ -1048,12 +1048,12 @@ function _correct_nothing_values!(data::Dict)
         for transformer in data["TRANSFORMER"]
             transformer_bus = bus_lookup[transformer["I"]]
             for base_id in ["SBASE1-2", "SBASE2-3", "SBASE3-1"]
-                if haskey(transformer, base_id) && transformer[base_id] == nothing
+                if haskey(transformer, base_id) && transformer[base_id] === nothing
                     transformer[base_id] = sbase
                 end
             end
             for winding_id in ["WINDV1", "WINDV2", "WINDV3"]
-                if haskey(transformer, winding_id) && transformer[winding_id] == nothing
+                if haskey(transformer, winding_id) && transformer[winding_id] === nothing
                     if transformer["CW"] == 2
                         transformer[winding_id] = transformer_bus["BASKV"]
                     else
@@ -1076,10 +1076,10 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "GNE DEVICE")
         for gne in data["GNE DEVICE"]
             gne_bus = bus_lookup[gne["I"]]
-            if haskey(gne, "OWNER") && gne["OWNER"] == nothing
+            if haskey(gne, "OWNER") && gne["OWNER"] === nothing
                 gne["OWNER"] = gne_bus["OWNER"]
             end
-            if haskey(gne, "NMETR") && gne["NMETR"] == nothing
+            if haskey(gne, "NMETR") && gne["NMETR"] === nothing
                 gne["NMETR"] = gne_bus["NTERM"]
             end
         end
@@ -1088,16 +1088,16 @@ function _correct_nothing_values!(data::Dict)
     if haskey(data, "INDUCTION MACHINE")
         for indm in data["INDUCTION MACHINE"]
             indm_bus = bus_lookup[indm["I"]]
-            if indm["AREA"] == nothing
+            if indm["AREA"] === nothing
                 indm["AREA"] = indm_bus["AREA"]
             end
-            if indm["ZONE"] == nothing
+            if indm["ZONE"] === nothing
                 indm["ZONE"] = indm_bus["ZONE"]
             end
-            if indm["OWNER"] == nothing
+            if indm["OWNER"] === nothing
                 indm["OWNER"] = indm_bus["OWNER"]
             end
-            if indm["MBASE"] == nothing
+            if indm["MBASE"] === nothing
                 indm["MBASE"] = sbase
             end
         end
