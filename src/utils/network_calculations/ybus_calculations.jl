@@ -43,7 +43,7 @@ function _ybus!(
     Y_t = 1 / (get_r(br) + get_x(br) * 1im)
     Y11 = Y_t
     b = get_primary_shunt(br)
-    if !isfinite(Y11) || !isfinite(Y_y) || !isfinite(b)
+    if !isfinite(Y11) || !isfinite(Y_t) || !isfinite(b)
         error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
     end
     ybus[bus_from_no, bus_from_no] += Y11
