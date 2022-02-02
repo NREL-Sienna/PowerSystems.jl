@@ -11,35 +11,41 @@ end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
-    b::ACBranch,
+    br::ACBranch,
     num_bus::Dict{Int, Int},
 )
-    arc = get_arc(b)
+    arc = get_arc(br)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]
-    Y_l = (1 / (get_r(b) + get_x(b) * 1im))
-    Y11 = Y_l + (1im * get_b(b).from)
+    Y_l = (1 / (get_r(br) + get_x(br) * 1im))
+    Y11 = Y_l + (1im * get_b(br).from)
+    if !isfinite(Y11) || !isfinite(Y_l)
+        error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
+    end
     ybus[bus_from_no, bus_from_no] += Y11
     Y12 = -Y_l
     ybus[bus_from_no, bus_to_no] += Y12
     #Y21 = Y12
     ybus[bus_to_no, bus_from_no] += Y12
-    Y22 = Y_l + (1im * get_b(b).to)
+    Y22 = Y_l + (1im * get_b(br).to)
     ybus[bus_to_no, bus_to_no] += Y22
     return
 end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
-    b::Transformer2W,
+    br::Transformer2W,
     num_bus::Dict{Int, Int},
 )
-    arc = get_arc(b)
+    arc = get_arc(br)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]
-    Y_t = 1 / (get_r(b) + get_x(b) * 1im)
+    Y_t = 1 / (get_r(br) + get_x(br) * 1im)
     Y11 = Y_t
-    b = get_primary_shunt(b)
+    b = get_primary_shunt(br)
+    if !isfinite(Y11) || !isfinite(Y_y) || !isfinite(b)
+        error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
+    end
     ybus[bus_from_no, bus_from_no] += Y11
     ybus[bus_from_no, bus_to_no] += -Y_t
     ybus[bus_to_no, bus_from_no] += -Y_t
@@ -49,20 +55,23 @@ end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
-    b::TapTransformer,
+    br::TapTransformer,
     num_bus::Dict{Int, Int},
 )
-    arc = get_arc(b)
+    arc = get_arc(br)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]
 
-    Y_t = 1 / (get_r(b) + get_x(b) * 1im)
-    c = 1 / get_tap(b)
-    b = get_primary_shunt(b)
+    Y_t = 1 / (get_r(br) + get_x(br) * 1im)
+    c = 1 / get_tap(br)
+    b = get_primary_shunt(br)
 
     Y11 = (Y_t * c^2)
     ybus[bus_from_no, bus_from_no] += Y11
     Y12 = (-Y_t * c)
+    if !isfinite(Y11) || !isfinite(Y12) || !isfinite(b)
+        error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
+    end
     ybus[bus_from_no, bus_to_no] += Y12
     #Y21 = Y12
     ybus[bus_to_no, bus_from_no] += Y12
@@ -73,17 +82,20 @@ end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
-    b::PhaseShiftingTransformer,
+    br::PhaseShiftingTransformer,
     num_bus::Dict{Int, Int},
 )
-    arc = get_arc(b)
+    arc = get_arc(br)
     bus_from_no = num_bus[arc.from.number]
     bus_to_no = num_bus[arc.to.number]
-    Y_t = 1 / (get_r(b) + get_x(b) * 1im)
-    tap = (get_tap(b) * exp(get_α(b) * 1im))
-    c_tap = (get_tap(b) * exp(-1 * get_α(b) * 1im))
-    b = get_primary_shunt(b)
+    Y_t = 1 / (get_r(br) + get_x(br) * 1im)
+    tap = (get_tap(br) * exp(get_α(br) * 1im))
+    c_tap = (get_tap(br) * exp(-1 * get_α(br) * 1im))
+    b = get_primary_shunt(br)
     Y11 = (Y_t / abs(tap)^2)
+    if !isfinite(Y11) || !isfinite(Y_t) || !isfinite(b * c_tap)
+        error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
+    end
     ybus[bus_from_no, bus_from_no] += Y11
     Y12 = (-Y_t / c_tap)
     ybus[bus_from_no, bus_to_no] += Y12
