@@ -448,7 +448,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     else
                         br_r, br_x = transformer["R1-2"], transformer["X1-2"]
                     end
-                    per_unit_factor = (
+                    per_unit_factor =
+                        (
                             transformer["NOMV1"]^2 /
                             _get_bus_value(transformer["I"], "base_kv", pm_data)^2
                         ) * (pm_data["baseMVA"] / transformer["SBASE1-2"])
