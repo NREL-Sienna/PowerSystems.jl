@@ -448,16 +448,17 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     else
                         br_r, br_x = transformer["R1-2"], transformer["X1-2"]
                     end
-                    br_r *=
+                    per_unit_factor =
                         (
                             transformer["NOMV1"]^2 /
                             _get_bus_value(transformer["I"], "base_kv", pm_data)^2
                         ) * (pm_data["baseMVA"] / transformer["SBASE1-2"])
-                    br_x *=
-                        (
-                            transformer["NOMV1"]^2 /
-                            _get_bus_value(transformer["I"], "base_kv", pm_data)^2
-                        ) * (pm_data["baseMVA"] / transformer["SBASE1-2"])
+                    if per_unit_factor == 0
+                        @warn "Per unit conversion for transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) couldn't be done, assuming system base instead. Check field NOMV1 is valid"
+                        per_unit_factor = 1
+                    end
+                    br_r *= per_unit_factor
+                    br_x *= per_unit_factor
                 end
 
                 # Zeq scaling for tap2 (see eq (4.21b) in PROGRAM APPLICATION GUIDE 1 in PSSE installation folder)
