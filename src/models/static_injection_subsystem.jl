@@ -16,25 +16,37 @@ function copy_subcomponent_time_series!(
     subsystem::StaticInjectionSubsystem,
     subcomponent::Component,
 )
-    existing_ts = Set((typeof(x), get_name(x)) for x in get_time_series_multiple(subsystem))
-    name_mapping = Dict{String, String}()
+    existing_ts = Set(
+        (typeof(ts), get_name(ts_m)) for
+        (ts, ts_m) in IS.get_time_series_with_metadata_multiple(subsystem)
+    )
+    name_mapping = Dict{Tuple{String, String}, String}()
+    device_name = get_name(subcomponent)
     for ts in get_time_series_multiple(subcomponent)
         name = get_name(ts)
         key = (typeof(ts), name)
         if !(key in existing_ts)
             new_name = make_subsystem_time_series_name(subcomponent, ts)
             if name in keys(name_mapping)
-                IS.@assert_op new_name == name_mapping[name]
+                IS.@assert_op new_name == name_mapping[(device_name, name)]
                 continue
             end
-            name_mapping[name] = new_name
+            name_mapping[(device_name, name)] = new_name
         end
     end
 
-    copy_time_series!(subsystem, subcomponent, name_mapping = name_mapping)
+    IS.copy_time_series!(subsystem, subcomponent, name_mapping = name_mapping)
     @info "Copied time series from $(summary(subcomponent)) to $(summary(subsystem))"
 end
 
 function make_subsystem_time_series_name(subcomponent::Component, ts::TimeSeriesData)
-    return IS.strip_module_name(typeof(subcomponent)) * "__" * get_name(ts)
+    return make_subsystem_time_series_name(typeof(subcomponent), get_name(ts))
+end
+
+function make_subsystem_time_series_name(subcomponent::Component, label::String)
+    return make_subsystem_time_series_name(typeof(subcomponent), label)
+end
+
+function make_subsystem_time_series_name(subcomponent::Type{<:Component}, label::String)
+    return IS.strip_module_name(subcomponent) * "__" * label
 end
