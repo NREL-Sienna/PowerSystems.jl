@@ -1186,21 +1186,18 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     tail = []
     for s in iterate_rows(data, InputCategory.STORAGE)
         if s.generator_name == gen_name
-            position = get(s, :position, "head")
-            if occursin("tail", lowercase(position))
-                push!(tail, s)
-            else
+            if occursin("head", normalize(s.position, casefold = true))
                 push!(head, s)
+            elseif occursin("tail", normalize(s.position, casefold = true))
+                push!(tail, s)
             end
         end
     end
 
-    if length(head) < 1
-        throw(DataFormatError("No head storage found for storage generator $gen_name"))
-    elseif length(head) > 1
+    if length(head) != 1
         throw(
             DataFormatError(
-                " $gen_name storage generator must have exactly 1 head storage defined",
+                "Exactly 1 head storage is required but $gen_name has $(length(head)) head storages defined",
             ),
         )
     elseif length(tail) > 1

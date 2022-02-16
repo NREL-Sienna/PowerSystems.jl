@@ -364,6 +364,7 @@ import LinearAlgebra: LAPACK.getri!
 import LinearAlgebra: LAPACK.getrf!
 import LinearAlgebra: BLAS.gemm
 import LinearAlgebra
+import Unicode: normalize
 import Logging
 import Dates
 import TimeSeries
