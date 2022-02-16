@@ -123,18 +123,48 @@ function convert_units!(
     value::Float64,
     unit_conversion::NamedTuple{(:From, :To), Tuple{String, String}},
 )
-    if unit_conversion.From == "degree" && unit_conversion.To == "radian"
+    if uppercase(unit_conversion.From) == uppercase("degree") &&
+       uppercase(unit_conversion.To) == uppercase("radian")
         value = deg2rad(value)
-    elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
+    elseif uppercase(unit_conversion.From) == uppercase("radian") &&
+           uppercase(unit_conversion.To) == uppercase("degree")
         value = rad2deg(value)
-    elseif unit_conversion.From == "GW" && unit_conversion.To == "MW"
+    elseif uppercase(unit_conversion.From) == uppercase("TW") &&
+           uppercase(unit_conversion.To) == uppercase("MW")
+        value *= 1e6
+    elseif uppercase(unit_conversion.From) == uppercase("TWh") &&
+           uppercase(unit_conversion.To) == uppercase("MWh")
+        value *= 1e6
+    elseif uppercase(unit_conversion.From) == uppercase("GW") &&
+           uppercase(unit_conversion.To) == uppercase("MW")
         value *= 1000
-    elseif unit_conversion.From == "GWh" && unit_conversion.To == "MWh"
+    elseif uppercase(unit_conversion.From) == uppercase("GWh") &&
+           uppercase(unit_conversion.To) == uppercase("MWh")
         value *= 1000
-    elseif unit_conversion.From == "kW" && unit_conversion.To == "MW"
+    elseif uppercase(unit_conversion.From) == uppercase("kW") &&
+           uppercase(unit_conversion.To) == uppercase("MW")
         value /= 1000
-    elseif unit_conversion.From == "kWh" && unit_conversion.To == "MWh"
+    elseif uppercase(unit_conversion.From) == uppercase("kWh") &&
+           uppercase(unit_conversion.To) == uppercase("MWh")
         value /= 1000
+    elseif uppercase(unit_conversion.From) == uppercase("hour") &&
+           uppercase(unit_conversion.To) == uppercase("second")
+        value *= 3600
+    elseif uppercase(unit_conversion.From) == uppercase("minute") &&
+           uppercase(unit_conversion.To) == uppercase("second")
+        value *= 60
+    elseif uppercase(unit_conversion.From) == uppercase("hour") &&
+           uppercase(unit_conversion.To) == uppercase("minute")
+        value *= 60
+    elseif uppercase(unit_conversion.From) == uppercase("minute") &&
+           uppercase(unit_conversion.To) == uppercase("hour")
+        value /= 60
+    elseif uppercase(unit_conversion.From) == uppercase("second") &&
+           uppercase(unit_conversion.To) == uppercase("minute")
+        value /= 60
+    elseif uppercase(unit_conversion.From) == uppercase("second") &&
+           uppercase(unit_conversion.To) == uppercase("hour")
+        value /= 3600
     else
         throw(
             DataFormatError(
