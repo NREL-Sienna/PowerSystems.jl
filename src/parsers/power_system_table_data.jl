@@ -1187,7 +1187,7 @@ function get_storage_by_generator(data::PowerSystemTableData, gen_name::Abstract
     for s in iterate_rows(data, InputCategory.STORAGE)
         if s.generator_name == gen_name
             position = get(s, :position, "head")
-            if position == "tail"
+            if occursin("tail", lowercase(position))
                 push!(tail, s)
             else
                 push!(head, s)
