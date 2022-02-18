@@ -24,6 +24,7 @@ merge!(
         "W2" => PrimeMovers.WT,
         "WIND" => PrimeMovers.WT,
         "PV" => PrimeMovers.PVe,
+        "PVe" => PrimeMovers.PVe,
         "RTPV" => PrimeMovers.PVe,
         "NB" => PrimeMovers.ST,
         "STEAM" => PrimeMovers.ST,
@@ -119,22 +120,63 @@ function calculate_rating(active_power_max::Float64, reactive_power_max::Float64
     return sqrt(active_power_max^2 + reactive_power_max^2)
 end
 
+function string_compare(str1, str2; casefold = true)
+    return normalize(str1, casefold = casefold) === normalize(str2, casefold = casefold)
+end
+
+function string_occursin(str1, str2; casefold = true)
+    return occursin(
+        normalize(str1, casefold = casefold),
+        normalize(srt2, casefold = casefold),
+    )
+end
+
 function convert_units!(
     value::Float64,
     unit_conversion::NamedTuple{(:From, :To), Tuple{String, String}},
 )
-    if unit_conversion.From == "degree" && unit_conversion.To == "radian"
+    if string_compare(unit_conversion.From, "degree") &&
+       string_compare(unit_conversion.To, "radian")
         value = deg2rad(value)
-    elseif unit_conversion.From == "radian" && unit_conversion.To == "degree"
+    elseif string_compare(unit_conversion.From, "radian") &&
+           string_compare(unit_conversion.To, "degree")
         value = rad2deg(value)
-    elseif unit_conversion.From == "GW" && unit_conversion.To == "MW"
+    elseif string_compare(unit_conversion.From, "TW") &&
+           string_compare(unit_conversion.To, "MW")
+        value *= 1e6
+    elseif string_compare(unit_conversion.From, "TWh") &&
+           string_compare(unit_conversion.To, "MWh")
+        value *= 1e6
+    elseif string_compare(unit_conversion.From, "GW") &&
+           string_compare(unit_conversion.To, "MW")
         value *= 1000
-    elseif unit_conversion.From == "GWh" && unit_conversion.To == "MWh"
+    elseif string_compare(unit_conversion.From, "GWh") &&
+           string_compare(unit_conversion.To, "MWh")
         value *= 1000
-    elseif unit_conversion.From == "kW" && unit_conversion.To == "MW"
+    elseif string_compare(unit_conversion.From, "kW") &&
+           string_compare(unit_conversion.To, "MW")
         value /= 1000
-    elseif unit_conversion.From == "kWh" && unit_conversion.To == "MWh"
+    elseif string_compare(unit_conversion.From, "kWh") &&
+           string_compare(unit_conversion.To, "MWh")
         value /= 1000
+    elseif string_compare(unit_conversion.From, "hour") &&
+           string_compare(unit_conversion.To, "second")
+        value *= 3600
+    elseif string_compare(unit_conversion.From, "minute") &&
+           string_compare(unit_conversion.To, "second")
+        value *= 60
+    elseif string_compare(unit_conversion.From, "hour") &&
+           string_compare(unit_conversion.To, "minute")
+        value *= 60
+    elseif string_compare(unit_conversion.From, "minute") &&
+           string_compare(unit_conversion.To, "hour")
+        value /= 60
+    elseif string_compare(unit_conversion.From, "second") &&
+           string_compare(unit_conversion.To, "minute")
+        value /= 60
+    elseif string_compare(unit_conversion.From, "second") &&
+           string_compare(unit_conversion.To, "hour")
+        value /= 3600
     else
         throw(
             DataFormatError(
