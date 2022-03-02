@@ -1,4 +1,3 @@
-
 @testset "Test functionality of System" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     summary(devnull, sys)
@@ -84,6 +83,17 @@
     clear_time_series!(sys)
     @test length(collect(get_time_series_multiple(sys))) == 0
     @test IS.get_internal(sys) isa IS.InfrastructureSystemsInternal
+end
+
+@testset "Test get_componets filter_func" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    gen = first(get_components(ThermalStandard, sys))
+    name = get_name(gen)
+    generators = get_components(ThermalStandard, sys) do gen
+        get_name(gen) == name && get_available(gen)
+    end
+
+    @test length(generators) == 1 && get_name(first(generators)) == name
 end
 
 @testset "Test handling of bus_numbers" begin
