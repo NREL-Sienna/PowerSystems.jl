@@ -1050,36 +1050,6 @@ function add_time_series!(sys::System, components, time_series::TimeSeriesData)
     return IS.add_time_series!(sys.data, components, time_series)
 end
 
-"""
-Efficiently add all time series data in one component to another by copying the underlying
-references.
-
-# Arguments
-- `dst::Component`: Destination component
-- `src::Component`: Source component
-- `name_mapping::Dict = nothing`: Optionally map src names to different dst names.
-  If provided and src has a time series with a name not present in name_mapping, that
-  time series will not copied. If name_mapping is nothing then all time series will be
-  copied with src's names.
-- `scaling_factor_multiplier_mapping::Dict = nothing`: Optionally map src
-  scaling_factor_multipliers to dst scaling_factor_multipliers. Same behaviors as
-  name_mapping.
-"""
-function copy_time_series!(
-    dst::Component,
-    src::Component;
-    name_mapping::Union{Nothing, Dict{String, String}} = nothing,
-    scaling_factor_multiplier_mapping::Union{Nothing, Dict{String, String}} = nothing,
-)
-    IS.copy_time_series!(
-        dst,
-        src,
-        name_mapping = name_mapping,
-        scaling_factor_multiplier_mapping = scaling_factor_multiplier_mapping,
-    )
-    return
-end
-
 #=
 # TODO 1.0: do we need this functionality? not currently present in IS
 """
