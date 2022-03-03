@@ -401,6 +401,7 @@ import InfrastructureSystems:
     DataFormatError,
     InvalidRange,
     InvalidValue,
+    copy_time_series!,
     get_count,
     get_data,
     get_horizon,
