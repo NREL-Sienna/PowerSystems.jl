@@ -7,10 +7,10 @@ abstract type TurbineGov <: DynamicGeneratorComponent end
 
 """
 Obtain coefficients (A, B) of the function Se(x) = B(x - A)^2/x for
-Se(E1) = B(E1 - A)^2/E1 and Se(E2) = B(E2 - A)^2/2
+Se(E1) = B(E1 - A)^2/E1 and Se(E2) = B(E2 - A)^2/E2
 and uses the negative solution of the quadratic equation 
 """
-function get_avr_saturation(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float64})
+function calculate_saturation_coefficients(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float64})
     if ((E[1] == 0) & (E[2] == 0)) || ((Se[1] == 0) & (Se[2] == 0))
         return (0.0, 0.0)
     end
@@ -30,4 +30,11 @@ function get_avr_saturation(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float
 
     @assert abs(B - Se[1] * E[1] / (E[1] - A)^2) <= 1e-2
     return (A, B)
+end
+
+"""
+Obtain coefficients for an AVR 
+"""
+function get_avr_saturation(E::Tuple{Float64, Float64}, Se::Tuple{Float64, Float64})
+    return calculate_saturation_coefficients(E, Se)
 end
