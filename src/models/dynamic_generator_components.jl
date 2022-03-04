@@ -14,7 +14,7 @@ function calculate_saturation_coefficients(
     E::Tuple{Float64, Float64},
     Se::Tuple{Float64, Float64},
 )
-    if ((E[1] == 0) & (E[2] == 0)) || ((Se[1] == 0) & (Se[2] == 0))
+    if ((E[1] == 0.0) || (E[2] == 0.0)) || ((Se[1] == 0.0) || (Se[2] == 0.0))
         return (0.0, 0.0)
     end
     if (E[2] <= E[1]) || (Se[2] <= Se[1])
