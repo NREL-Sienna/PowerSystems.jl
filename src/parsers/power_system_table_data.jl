@@ -340,6 +340,16 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
             )
             add_component!(sys, load)
         end
+
+        if (bus.shunt_b != 0.0) || (bus.shunt_g != 0.0)
+            shunt = FixedAdmittance(
+                name = name,
+                available = true,
+                bus = ps_bus,
+                Y = (bus.shunt_g + bus.shunt_b * im),
+            )
+            add_component!(sys, shunt)
+        end
     end
 end
 
