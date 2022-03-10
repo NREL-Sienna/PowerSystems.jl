@@ -17,10 +17,16 @@ function Base.show(io::IO, ::MIME"text/plain", sys::System)
 end
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
-    show_system_table(io, sys, backend = :html)
+    show_system_table(io, sys, backend = :html, standalone = false)
 
     if IS.get_num_components(sys.data.components) > 0
-        show_components_table(io, sys, backend = :html, tf = PrettyTables.tf_html_simple)
+        show_components_table(
+            io,
+            sys,
+            backend = :html,
+            tf = PrettyTables.tf_html_simple,
+            standalone = false,
+        )
     end
 
     println(io)
