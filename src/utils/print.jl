@@ -29,6 +29,7 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
         sys.data,
         backend = :html,
         tf = PrettyTables.tf_html_simple,
+        standalone = false,
     )
     return
 end
