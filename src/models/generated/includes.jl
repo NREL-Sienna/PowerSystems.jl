@@ -51,6 +51,8 @@ include("ESAC6A.jl")
 include("ESST1A.jl")
 include("EXPIC1.jl")
 include("ESST4B.jl")
+include("EXST1.jl")
+include("EX4VSA.jl")
 include("BaseMachine.jl")
 include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
@@ -126,9 +128,11 @@ export get_D_lp
 export get_D_turb
 export get_D_up
 export get_Dm
+export get_E_lim
 export get_E_sat
 export get_Efd_lim
 export get_Freq_Flag
+export get_G
 export get_H
 export get_H_ex
 export get_H_hp
@@ -136,6 +140,7 @@ export get_H_ip
 export get_H_lp
 export get_I_lr
 export get_I_max
+export get_Iflim
 export get_Io_lim
 export get_Iqinj_lim
 export get_Iqr_lims
@@ -209,6 +214,7 @@ export get_Ls_lim
 export get_Lv_pnts
 export get_Lvpl1
 export get_Lvpl_sw
+export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
 export get_PSS_flags
@@ -234,6 +240,7 @@ export get_Rp
 export get_Rrpwr
 export get_Rselect
 export get_Se
+export get_Spar
 export get_T1
 export get_T2
 export get_T3
@@ -345,6 +352,7 @@ export get_bustype
 export get_cf
 export get_contributing_services
 export get_conversion_factor
+export get_d
 export get_dP_lim
 export get_db
 export get_dbd_pnts
@@ -358,6 +366,7 @@ export get_energy_shortage_cost
 export get_energy_surplus_cost
 export get_eq_p
 export get_ext
+export get_f
 export get_fdbd_pnts
 export get_fe_lim
 export get_fixed
@@ -522,9 +531,11 @@ export set_D_lp!
 export set_D_turb!
 export set_D_up!
 export set_Dm!
+export set_E_lim!
 export set_E_sat!
 export set_Efd_lim!
 export set_Freq_Flag!
+export set_G!
 export set_H!
 export set_H_ex!
 export set_H_hp!
@@ -532,6 +543,7 @@ export set_H_ip!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
+export set_Iflim!
 export set_Io_lim!
 export set_Iqinj_lim!
 export set_Iqr_lims!
@@ -605,6 +617,7 @@ export set_Ls_lim!
 export set_Lv_pnts!
 export set_Lvpl1!
 export set_Lvpl_sw!
+export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
 export set_PSS_flags!
@@ -630,6 +643,7 @@ export set_Rp!
 export set_Rrpwr!
 export set_Rselect!
 export set_Se!
+export set_Spar!
 export set_T1!
 export set_T2!
 export set_T3!
@@ -741,6 +755,7 @@ export set_bustype!
 export set_cf!
 export set_contributing_services!
 export set_conversion_factor!
+export set_d!
 export set_dP_lim!
 export set_db!
 export set_dbd_pnts!
@@ -754,6 +769,7 @@ export set_energy_shortage_cost!
 export set_energy_surplus_cost!
 export set_eq_p!
 export set_ext!
+export set_f!
 export set_fdbd_pnts!
 export set_fe_lim!
 export set_fixed!
