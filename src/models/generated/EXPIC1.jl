@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct EXPIC1 <: AVR
         Tr::Float64

@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct RoundRotorMachine <: Machine
         R::Float64

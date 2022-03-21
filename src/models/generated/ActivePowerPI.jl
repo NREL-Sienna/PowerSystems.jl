@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ActivePowerPI <: ActivePowerControl
         Kp_p::Float64

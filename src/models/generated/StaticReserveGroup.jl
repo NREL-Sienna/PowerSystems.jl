@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
         name::String
