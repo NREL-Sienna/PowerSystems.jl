@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct SteamTurbineGov1 <: TurbineGov
         R::Float64

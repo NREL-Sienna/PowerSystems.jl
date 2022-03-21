@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
         bus_control::Int

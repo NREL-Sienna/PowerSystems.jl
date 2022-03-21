@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ReducedOrderPLL <: FrequencyEstimator
         ω_lp::Float64
