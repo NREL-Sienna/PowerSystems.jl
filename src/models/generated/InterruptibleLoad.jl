@@ -149,4 +149,3 @@ set_services!(value::InterruptibleLoad, val) = value.services = val
 set_ext!(value::InterruptibleLoad, val) = value.ext = val
 """Set [`InterruptibleLoad`](@ref) `time_series_container`."""
 set_time_series_container!(value::InterruptibleLoad, val) = value.time_series_container = val
-

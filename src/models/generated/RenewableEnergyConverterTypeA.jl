@@ -194,4 +194,3 @@ set_R_source!(value::RenewableEnergyConverterTypeA, val) = value.R_source = val
 set_X_source!(value::RenewableEnergyConverterTypeA, val) = value.X_source = val
 """Set [`RenewableEnergyConverterTypeA`](@ref) `ext`."""
 set_ext!(value::RenewableEnergyConverterTypeA, val) = value.ext = val
-

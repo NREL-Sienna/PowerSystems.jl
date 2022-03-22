@@ -74,4 +74,3 @@ set_efficiency!(value::TGFixed, val) = value.efficiency = val
 set_P_ref!(value::TGFixed, val) = value.P_ref = val
 """Set [`TGFixed`](@ref) `ext`."""
 set_ext!(value::TGFixed, val) = value.ext = val
-

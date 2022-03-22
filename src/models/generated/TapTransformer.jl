@@ -143,4 +143,3 @@ set_services!(value::TapTransformer, val) = value.services = val
 set_ext!(value::TapTransformer, val) = value.ext = val
 """Set [`TapTransformer`](@ref) `time_series_container`."""
 set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
-

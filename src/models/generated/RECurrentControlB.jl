@@ -158,4 +158,3 @@ set_T_iq!(value::RECurrentControlB, val) = value.T_iq = val
 set_I_max!(value::RECurrentControlB, val) = value.I_max = val
 """Set [`RECurrentControlB`](@ref) `ext`."""
 set_ext!(value::RECurrentControlB, val) = value.ext = val
-

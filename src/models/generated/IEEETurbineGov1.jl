@@ -256,4 +256,3 @@ set_P_ref!(value::IEEETurbineGov1, val) = value.P_ref = val
 set_ext!(value::IEEETurbineGov1, val) = value.ext = val
 """Set [`IEEETurbineGov1`](@ref) `states_types`."""
 set_states_types!(value::IEEETurbineGov1, val) = value.states_types = val
-

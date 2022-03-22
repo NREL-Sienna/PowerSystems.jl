@@ -235,4 +235,3 @@ set_must_run!(value::ThermalMultiStart, val) = value.must_run = val
 set_ext!(value::ThermalMultiStart, val) = value.ext = val
 """Set [`ThermalMultiStart`](@ref) `time_series_container`."""
 set_time_series_container!(value::ThermalMultiStart, val) = value.time_series_container = val
-

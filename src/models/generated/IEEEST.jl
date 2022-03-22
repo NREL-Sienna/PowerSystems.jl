@@ -240,4 +240,3 @@ set_Vcl!(value::IEEEST, val) = value.Vcl = val
 set_ext!(value::IEEEST, val) = value.ext = val
 """Set [`IEEEST`](@ref) `states_types`."""
 set_states_types!(value::IEEEST, val) = value.states_types = val
-

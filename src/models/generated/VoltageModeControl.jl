@@ -154,4 +154,3 @@ set_ωad!(value::VoltageModeControl, val) = value.ωad = val
 set_kad!(value::VoltageModeControl, val) = value.kad = val
 """Set [`VoltageModeControl`](@ref) `ext`."""
 set_ext!(value::VoltageModeControl, val) = value.ext = val
-

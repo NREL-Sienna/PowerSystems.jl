@@ -381,4 +381,3 @@ set_P_ref!(value::GeneralGovModel, val) = value.P_ref = val
 set_ext!(value::GeneralGovModel, val) = value.ext = val
 """Set [`GeneralGovModel`](@ref) `states_types`."""
 set_states_types!(value::GeneralGovModel, val) = value.states_types = val
-

@@ -82,4 +82,3 @@ set_V_ref!(value::AVRFixed, val) = value.V_ref = val
 set_ext!(value::AVRFixed, val) = value.ext = val
 """Set [`AVRFixed`](@ref) `states_types`."""
 set_states_types!(value::AVRFixed, val) = value.states_types = val
-

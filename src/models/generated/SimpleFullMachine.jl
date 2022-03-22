@@ -191,4 +191,3 @@ set_ext!(value::SimpleFullMachine, val) = value.ext = val
 set_inv_d_fluxlink!(value::SimpleFullMachine, val) = value.inv_d_fluxlink = val
 """Set [`SimpleFullMachine`](@ref) `inv_q_fluxlink`."""
 set_inv_q_fluxlink!(value::SimpleFullMachine, val) = value.inv_q_fluxlink = val
-
