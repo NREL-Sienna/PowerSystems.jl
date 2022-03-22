@@ -140,4 +140,3 @@ set_services!(value::VSCDCLine, val) = value.services = val
 set_ext!(value::VSCDCLine, val) = value.ext = val
 """Set [`VSCDCLine`](@ref) `time_series_container`."""
 set_time_series_container!(value::VSCDCLine, val) = value.time_series_container = val
-

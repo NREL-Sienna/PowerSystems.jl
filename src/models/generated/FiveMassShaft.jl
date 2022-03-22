@@ -240,4 +240,3 @@ set_K_lp!(value::FiveMassShaft, val) = value.K_lp = val
 set_K_ex!(value::FiveMassShaft, val) = value.K_ex = val
 """Set [`FiveMassShaft`](@ref) `ext`."""
 set_ext!(value::FiveMassShaft, val) = value.ext = val
-

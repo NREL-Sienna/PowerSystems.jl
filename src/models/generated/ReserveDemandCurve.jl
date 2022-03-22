@@ -85,4 +85,3 @@ set_time_frame!(value::ReserveDemandCurve, val) = value.time_frame = val
 set_ext!(value::ReserveDemandCurve, val) = value.ext = val
 """Set [`ReserveDemandCurve`](@ref) `time_series_container`."""
 set_time_series_container!(value::ReserveDemandCurve, val) = value.time_series_container = val
-

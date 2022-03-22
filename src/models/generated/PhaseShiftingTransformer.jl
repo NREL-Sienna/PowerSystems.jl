@@ -150,4 +150,3 @@ set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
 """Set [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
 set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val
-

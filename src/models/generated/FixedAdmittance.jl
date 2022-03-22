@@ -93,4 +93,3 @@ set_services!(value::FixedAdmittance, val) = value.services = val
 set_ext!(value::FixedAdmittance, val) = value.ext = val
 """Set [`FixedAdmittance`](@ref) `time_series_container`."""
 set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val
-

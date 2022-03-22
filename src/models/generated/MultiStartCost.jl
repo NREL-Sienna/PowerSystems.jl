@@ -72,4 +72,3 @@ set_fixed!(value::MultiStartCost, val) = value.fixed = val
 set_start_up!(value::MultiStartCost, val) = value.start_up = val
 """Set [`MultiStartCost`](@ref) `shut_down`."""
 set_shut_down!(value::MultiStartCost, val) = value.shut_down = val
-

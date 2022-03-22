@@ -81,4 +81,3 @@ set_rf!(value::LCFilter, val) = value.rf = val
 set_cf!(value::LCFilter, val) = value.cf = val
 """Set [`LCFilter`](@ref) `ext`."""
 set_ext!(value::LCFilter, val) = value.ext = val
-

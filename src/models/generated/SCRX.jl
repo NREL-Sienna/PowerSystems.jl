@@ -140,4 +140,3 @@ set_V_ref!(value::SCRX, val) = value.V_ref = val
 set_ext!(value::SCRX, val) = value.ext = val
 """Set [`SCRX`](@ref) `states_types`."""
 set_states_types!(value::SCRX, val) = value.states_types = val
-

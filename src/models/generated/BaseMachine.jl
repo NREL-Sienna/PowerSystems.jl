@@ -83,4 +83,3 @@ set_Xd_p!(value::BaseMachine, val) = value.Xd_p = val
 set_eq_p!(value::BaseMachine, val) = value.eq_p = val
 """Set [`BaseMachine`](@ref) `ext`."""
 set_ext!(value::BaseMachine, val) = value.ext = val
-

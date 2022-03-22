@@ -167,4 +167,3 @@ set_Td0_pp!(value::AndersonFouadMachine, val) = value.Td0_pp = val
 set_Tq0_pp!(value::AndersonFouadMachine, val) = value.Tq0_pp = val
 """Set [`AndersonFouadMachine`](@ref) `ext`."""
 set_ext!(value::AndersonFouadMachine, val) = value.ext = val
-

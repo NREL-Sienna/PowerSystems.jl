@@ -68,4 +68,3 @@ set_rf!(value::RLFilter, val) = value.rf = val
 set_lf!(value::RLFilter, val) = value.lf = val
 """Set [`RLFilter`](@ref) `ext`."""
 set_ext!(value::RLFilter, val) = value.ext = val
-

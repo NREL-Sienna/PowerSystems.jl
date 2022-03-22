@@ -264,4 +264,3 @@ set_saturation_coeffs!(value::ESAC6A, val) = value.saturation_coeffs = val
 set_ext!(value::ESAC6A, val) = value.ext = val
 """Set [`ESAC6A`](@ref) `states_types`."""
 set_states_types!(value::ESAC6A, val) = value.states_types = val
-
