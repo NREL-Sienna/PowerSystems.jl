@@ -11566,6 +11566,141 @@
       "supertype": "InnerControl"
     },
     {
+      "struct_name": "DER_A",
+      "docstring": "Parameters of the Inner Control part of the REECB model in PSS/E",
+      "fields": [
+        {
+          "name": "Q_Flag",
+          "comment": "Q Flag used for I_qinj",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PQ_Flag",
+          "comment": "PQ Flag used for the Current Limit Logic",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Vdip_lim",
+          "comment": "Limits for Voltage Dip Logic `(Vdip, Vup)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_rv",
+          "comment": "Voltage Filter Time Constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dbd_pnts",
+          "comment": "Voltage error deadband thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "K_qv",
+          "comment": "Reactive current injection gain during over and undervoltage conditions",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqinj_lim",
+          "comment": "Limits for Iqinj `(I_qh1, I_ql1)`",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_ref0",
+          "comment": "User defined reference. If 0, PSID initializes to initial terminal voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_vp",
+          "comment": "Voltage regulator proportional gain (used when QFlag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_vi",
+          "comment": "Voltage regulator integral gain (used when QFlag = 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_iq",
+          "comment": "Time constant for low-pass filter for state q_V when QFlag = 0",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "I_max",
+          "comment": "Maximum limit on total converter current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of the RECurrentControlB depends on the Flags",
+          "internal_default": "PowerSystems.get_REControlB_states(Q_Flag)",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of the RECurrentControlB depends on the Flags",
+          "internal_default": "2",
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "InnerControl"
+    },
+    {
       "struct_name": "Source",
       "docstring": "This struct acts as an infinity bus.",
       "fields": [
