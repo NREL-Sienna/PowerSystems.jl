@@ -94,6 +94,7 @@ include("ReactivePowerPI.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
+include("DER_A.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
 
