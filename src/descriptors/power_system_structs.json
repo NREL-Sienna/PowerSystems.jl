@@ -10363,233 +10363,6 @@
       "supertype": "Converter"
     },
     {
-      "struct_name": "DERD",
-      "docstring": "Parameters of a Detailed Distributed Energy Resource Model",
-      "fields": [
-        {
-          "name": "Qref_Flag",
-          "comment": "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control",
-          "null_value": 1,
-          "data_type": "Int",
-          "valid_range": {
-            "min": 1,
-            "max": 3
-          }
-        },
-        {
-          "name": "PQ_Flag",
-          "comment": "Active and reactive power priority mode. 0 for Q priority, 1 for P priority",
-          "null_value": 0,
-          "data_type": "Int",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          }
-        },
-        {
-          "name": "Gen_Flag",
-          "comment": "Define generator or storage system. 0 unit is a storage device, 1 unit is a generator",
-          "null_value": 0,
-          "data_type": "Int",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          }
-        },
-        {
-          "name": "PerOp_Flag",
-          "comment": "Defines operation of permisible region in VRT characteristic. 0 for cease, 1 for continuous operation",
-          "null_value": 0,
-          "data_type": "Int",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          }
-        },
-        {
-          "name": "Trv",
-          "comment": "Time constant for voltage measurement transducer",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0.0,
-            "max": null
-          }
-        },
-        {
-          "name": "V1",
-          "comment": "V1 parameter in volt-var curve",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "V2",
-          "comment": "V2 parameter in volt-var curve",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "V3",
-          "comment": "V3 parameter in volt-var curve",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "V4",
-          "comment": "V4 parameter in volt-var curve",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Q_lim",
-          "comment": "Reactive power limits in pu (Q_min, Q_max)",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-        },
-        
-
-
-
-
-
-
-
-
-        {
-          "name": "Lv_pnts",
-          "comment": "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-        },
-        {
-          "name": "Io_lim",
-          "comment": "Current limit (pu) for high voltage reactive current management (specified as a negative value)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
-        },
-        {
-          "name": "T_fltr",
-          "comment": "Voltage filter time constant for low voltage active current management (s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "K_hv",
-          "comment": "Overvoltage compensation gain used in the high voltage reactive current management",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Iqr_lims",
-          "comment": "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)",
-          "null_value": "(min=0.0, max=0.0)",
-          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
-        },
-        {
-          "name": "Accel",
-          "comment": "Acceleration factor",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          }
-        },
-        {
-          "name": "Lvpl_sw",
-          "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
-          "null_value": 0,
-          "data_type": "Int",
-          "valid_range": {
-            "min": 0,
-            "max": 1
-          }
-        },
-        {
-          "name": "Q_ref",
-          "comment": "Initial machine reactive power from power flow",
-          "null_value": 0,
-          "default": "1.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "R_source",
-          "comment": "Output resistor used for the Thevenin Equivalent",
-          "null_value": 0,
-          "default": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "X_source",
-          "comment": "Output resistor used for the Thevenin Equivalent",
-          "null_value": 0,
-          "default": "1.0e5",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "ext",
-          "data_type": "Dict{String, Any}",
-          "null_value": "Dict{String, Any}()",
-          "default": "Dict{String, Any}()"
-        },
-        {
-          "name": "states",
-          "exclude_setter": true,
-          "comment": "The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
-          "internal_default": "[:Ip, :Iq, :Vmeas]",
-          "data_type": "Vector{Symbol}"
-        },
-        {
-          "name": "n_states",
-          "exclude_setter": true,
-          "comment": "RenewableEnergyConverterTypeA has 3 states",
-          "internal_default": 3,
-          "data_type": "Int"
-        }
-      ],
-      "supertype": "Converter"
-    },
-    {
       "struct_name": "FixedDCSource",
       "docstring": "Parameters of a Fixed DC Source that returns a fixed DC voltage",
       "fields": [
@@ -12427,6 +12200,365 @@
           "data_type": "InfrastructureSystemsInternal",
           "internal_default": "InfrastructureSystemsInternal()",
           "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
+    },
+    {
+      "struct_name": "GenericDER",
+      "docstring": "Parameters of a Generic Distributed Energy Resource Model",
+      "fields": [
+        {
+          "name": "Qref_Flag",
+          "comment": "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control",
+          "null_value": 1,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        {
+          "name": "PQ_Flag",
+          "comment": "Active and reactive power priority mode. 0 for Q priority, 1 for P priority",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Gen_Flag",
+          "comment": "Define generator or storage system. 0 unit is a storage device, 1 unit is a generator",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PerOp_Flag",
+          "comment": "Defines operation of permisible region in VRT characteristic. 0 for cease, 1 for continuous operation",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Recon_Flag",
+          "comment": "Defines if DER can reconnect after voltage ride-through disconnection",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Trv",
+          "comment": "Voltage measurement transducer's time constant, in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "VV_pnts",
+          "comment": "Y-axis Volt-var curve points (V1,V2,V3,V4)",
+          "null_value": "(V1=0.0, V2=0.0, V3=0.0, V4=0.0)",
+          "data_type":  "NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}"
+        },
+        {
+          "name": "Q_lim",
+          "comment": "Reactive power limits in pu (Q_min, Q_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Tp",
+          "comment": "Power measurement transducer's time constant, in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "e_lim",
+          "comment": "Error limit in PI controller for q control (e_min, e_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Kpq",
+          "comment": "PI controller proportional gain for q control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kiq",
+          "comment": "PI controller integral gain for q control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqr_lim",
+          "comment": "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "I_max",
+          "comment": "Max. inverter's current",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tg",
+          "comment": "Current control's time constant, in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "kWh_Cap",
+          "comment": "BESS capacity in kWh",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "SOC_ini",
+          "comment": "Initial state of charge (SOC) in pu",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": 1.0
+          }
+        },
+        {
+          "name": "SOC_lim",
+          "comment": "Battery's SOC limits (SOC_min, SOC_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Trf",
+          "comment": "Time constant to estimate system frequency, in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "fdbd_pnts",
+          "comment": "Frequency error dead band thresholds `(fdbd1, fdbd2)`",
+          "null_value": "(fdbd1=0.0, fdbd2=0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "D_dn",
+          "comment": "reciprocal of droop for over-frequency conditions, in pu",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "D_up",
+          "comment": "reciprocal of droop for under-frequency conditions, in pu",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "fe_lim",
+          "comment": "Frequency error limits in pu (fe_min, fe_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Kpp",
+          "comment": "PI controller proportional gain for p control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kip",
+          "comment": "PI controller integral gain for p control",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_lim",
+          "comment": "Active power limits in pu (P_min, P_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "dP_lim",
+          "comment": "Ramp rate limits for active power in pu/s (dP_min, dP_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "T_pord",
+          "comment": "Power filter time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "rrpwr",
+          "comment": "Ramp rate for real power increase following a fault, in pu/s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "VRT_pnts",
+          "comment": "Voltage ride through v points (vrt1,vrt2,vrt3,vrt4,vrt5)",
+          "null_value": "(vrt1=0.0, vrt2=0.0, vrt3=0.0, vrt4=0.0, vrt5=0.0)",
+          "data_type":  "NamedTuple{(:vrt1, :vrt2, :vrt3, :vrt4, :vrt5), Tuple{Float64, Float64, Float64, Float64, Float64}}"
+        },
+        {
+          "name": "TVRT_pnts",
+          "comment": "Voltage ride through time points (tvrt1,tvrt2,tvrt3)",
+          "null_value": "(tvrt1=0.0, tvrt2=0.0, tvrt3=0.0)",
+          "data_type":  "NamedTuple{(:tvrt1, :tvrt2, :tvrt3), Tuple{Float64, Float64, Float64}}"
+        },
+        {
+          "name": "tV_delay",
+          "comment": "Time delay for reconnection after voltage ride-through disconnection",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },  
+        {
+          "name": "VES_lim",
+          "comment": "Min and max voltage for entering service (VES_min,VES_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "FRT_pnts",
+          "comment": "Frequency ride through v points (frt1,frt2,frt3,frt4)",
+          "null_value": "(frt1=0.0, frt2=0.0, frt3=0.0, frt4=0.0)",
+          "data_type":  "NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}"
+        },
+        {
+          "name": "TFRT_pnts",
+          "comment": "Frequency ride through time points (tfrt1,tfrt2)",
+          "null_value": "(tfrt1=0.0, tfrt2=0.0)",
+          "data_type":  "NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "tF_delay",
+          "comment": "Time delay for reconnection after frequency ride-through disconnection",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },  
+        {
+          "name": "FES_lim",
+          "comment": "Min and max frequency for entering service (FES_min,FES_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference reactive power, in pu",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference active power, in pu",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\tx1: ,\tx2: ,\tx3, \tx4: ,\tx5: ,\tx6:, \tx7: ,\tx8: ,\tx9: ",
+          "internal_default": "[:x1, :x2, :x3, :x4, x5:, x6:, x7:, x8:, x9:]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "DER-D has 9 states",
+          "internal_default": 9,
+          "data_type": "Int"
         }
       ],
       "supertype": "DynamicInjection"
