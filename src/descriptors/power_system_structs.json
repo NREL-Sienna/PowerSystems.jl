@@ -8438,10 +8438,10 @@
         {
           "name": "T",
           "comment": "Time constant for washout filter",
-          "null_value": 0.01,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.01,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -8459,7 +8459,7 @@
         {
           "name": "T3",
           "comment": "Time constant",
-          "null_value": 0.01,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0.01,
@@ -8481,7 +8481,7 @@
         {
           "name": "T4",
           "comment": "Time constant",
-          "null_value": 0.01,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0.01,
@@ -10244,6 +10244,233 @@
             "max": null
           }
         },
+        {
+          "name": "Lv_pnts",
+          "comment": "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Io_lim",
+          "comment": "Current limit (pu) for high voltage reactive current management (specified as a negative value)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": null,
+            "max": 0
+          }
+        },
+        {
+          "name": "T_fltr",
+          "comment": "Voltage filter time constant for low voltage active current management (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "K_hv",
+          "comment": "Overvoltage compensation gain used in the high voltage reactive current management",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iqr_lims",
+          "comment": "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Accel",
+          "comment": "Acceleration factor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Lvpl_sw",
+          "comment": "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Initial machine reactive power from power flow",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "R_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "X_source",
+          "comment": "Output resistor used for the Thevenin Equivalent",
+          "null_value": 0,
+          "default": "1.0e5",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
+          "internal_default": "[:Ip, :Iq, :Vmeas]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "RenewableEnergyConverterTypeA has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        }
+      ],
+      "supertype": "Converter"
+    },
+    {
+      "struct_name": "DERD",
+      "docstring": "Parameters of a Detailed Distributed Energy Resource Model",
+      "fields": [
+        {
+          "name": "Qref_Flag",
+          "comment": "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control",
+          "null_value": 1,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 1,
+            "max": 3
+          }
+        },
+        {
+          "name": "PQ_Flag",
+          "comment": "Active and reactive power priority mode. 0 for Q priority, 1 for P priority",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Gen_Flag",
+          "comment": "Define generator or storage system. 0 unit is a storage device, 1 unit is a generator",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PerOp_Flag",
+          "comment": "Defines operation of permisible region in VRT characteristic. 0 for cease, 1 for continuous operation",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Trv",
+          "comment": "Time constant for voltage measurement transducer",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "V1",
+          "comment": "V1 parameter in volt-var curve",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V2",
+          "comment": "V2 parameter in volt-var curve",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V3",
+          "comment": "V3 parameter in volt-var curve",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V4",
+          "comment": "V4 parameter in volt-var curve",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_lim",
+          "comment": "Reactive power limits in pu (Q_min, Q_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        
+
+
+
+
+
+
+
+
         {
           "name": "Lv_pnts",
           "comment": "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)",
