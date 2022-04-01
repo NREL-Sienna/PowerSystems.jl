@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         SOC_ini::Float64
         SOC_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         Trf::Float64
-        fdbd_pnts::Tuple{Float64, Float64}
+        fdbd_pnts::NamedTuple{(:fdbd1, :fdbd2), Tuple{Float64, Float64}}
         D_dn::Float64
         D_up::Float64
         fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
@@ -69,7 +69,7 @@ Parameters of a Generic Distributed Energy Resource Model
 - `SOC_ini::Float64`: Initial state of charge (SOC) in pu, validation range: `(0, 1)`
 - `SOC_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Battery's SOC limits (SOC_min, SOC_max)
 - `Trf::Float64`: Time constant to estimate system frequency, in s, validation range: `(0, nothing)`
-- `fdbd_pnts::Tuple{Float64, Float64}`: Frequency error dead band thresholds `(fdbd1, fdbd2)`
+- `fdbd_pnts::NamedTuple{(:fdbd1, :fdbd2), Tuple{Float64, Float64}}`: Frequency error dead band thresholds `(fdbd1, fdbd2)`
 - `D_dn::Float64`: reciprocal of droop for over-frequency conditions, in pu, validation range: `(0, nothing)`
 - `D_up::Float64`: reciprocal of droop for under-frequency conditions, in pu, validation range: `(0, nothing)`
 - `fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Frequency error limits in pu (fe_min, fe_max)
@@ -90,7 +90,7 @@ Parameters of a Generic Distributed Energy Resource Model
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:	x1: ,	x2: ,	x3, 	x4: ,	x5: ,	x6:, 	x7: ,	x8: ,	x9: 
+- `states::Vector{Symbol}`: The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 
 - `n_states::Int`: DER-D has 9 states
 """
 mutable struct GenericDER <: DynamicInjection
@@ -133,7 +133,7 @@ mutable struct GenericDER <: DynamicInjection
     "Time constant to estimate system frequency, in s"
     Trf::Float64
     "Frequency error dead band thresholds `(fdbd1, fdbd2)`"
-    fdbd_pnts::Tuple{Float64, Float64}
+    fdbd_pnts::NamedTuple{(:fdbd1, :fdbd2), Tuple{Float64, Float64}}
     "reciprocal of droop for over-frequency conditions, in pu"
     D_dn::Float64
     "reciprocal of droop for under-frequency conditions, in pu"
@@ -173,17 +173,17 @@ mutable struct GenericDER <: DynamicInjection
     "Reference active power, in pu"
     P_ref::Float64
     ext::Dict{String, Any}
-    "The states are:	x1: ,	x2: ,	x3, 	x4: ,	x5: ,	x6:, 	x7: ,	x8: ,	x9: "
+    "The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 "
     states::Vector{Symbol}
     "DER-D has 9 states"
     n_states::Int
 end
 
 function GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref=0.0, P_ref=1.0, ext=Dict{String, Any}(), )
-    GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref, P_ref, ext, [:x1, :x2, :x3, :x4, x5:, x6:, x7:, x8:, x9:], 9, )
+    GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref, P_ref, ext, [:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], 9, )
 end
 
-function GenericDER(; Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref=0.0, P_ref=1.0, ext=Dict{String, Any}(), states=[:x1, :x2, :x3, :x4, x5:, x6:, x7:, x8:, x9:], n_states=9, )
+function GenericDER(; Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref=0.0, P_ref=1.0, ext=Dict{String, Any}(), states=[:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], n_states=9, )
     GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref, P_ref, ext, states, n_states, )
 end
 
