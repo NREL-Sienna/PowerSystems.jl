@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct STAB1 <: PSS
         KT::Float64
@@ -130,4 +133,3 @@ set_H_lim!(value::STAB1, val) = value.H_lim = val
 set_ext!(value::STAB1, val) = value.ext = val
 """Set [`STAB1`](@ref) `states_types`."""
 set_states_types!(value::STAB1, val) = value.states_types = val
-
