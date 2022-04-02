@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct GenericDER <: DynamicInjection
         Qref_Flag::Int
@@ -398,4 +401,3 @@ set_Q_ref!(value::GenericDER, val) = value.Q_ref = val
 set_P_ref!(value::GenericDER, val) = value.P_ref = val
 """Set [`GenericDER`](@ref) `ext`."""
 set_ext!(value::GenericDER, val) = value.ext = val
-
