@@ -8421,6 +8421,122 @@
       "supertype": "PSS"
     },
     {
+      "struct_name": "STAB1",
+      "docstring": "Speed-Sensitive Stabilizing Model",
+      "fields": [
+        {
+          "name": "KT",
+          "comment": "K/T for washout filter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T",
+          "comment": "Time constant for washout filter",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1T3",
+          "comment": "Time constant division T1/T3",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2T4",
+          "comment": "Time constant division T2/T4",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T4",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "H_lim",
+          "comment": "PSS output limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T2 lead-lag block, \n\tx_p3: T3/T4 lead-lag block,",
+          "internal_default": "[:x_p1, :x_p2, :x_p3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "STAB1 has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "STAB1 has 3 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "PSS"
+    },
+    {
       "struct_name": "SingleMass",
       "docstring": "Parameters of single mass shaft model. Typically represents the rotor mass.",
       "fields": [
