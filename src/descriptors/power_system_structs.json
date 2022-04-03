@@ -8096,6 +8096,216 @@
       "supertype": "Machine"
     },
     {
+      "struct_name": "GENQECRR",
+      "docstring": "Parameters of 4-states round-rotor synchronous machine with optional saturation characteristic:\nBased on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org",
+      "fields": [
+        {
+          "name": "sat_flag",
+          "comment": "Flag for saturation characteristic. 0 Exponential saturation, 1 scaled quadratic saturation, 2 quadratic saturation",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 2
+           }
+          },
+        {
+          "name": "R",
+          "comment": "Armature resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "d-axis transient rotor time constant, in s",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "d-axis sub-transient rotor time constant, in s",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "q-axis transient rotor time constant, in s",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_pp",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "q-axis sub-transient rotor time constant, in s",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "d-axis synchronous reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "q-axis synchronous reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_p",
+          "comment": "d-axis transient reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq_p",
+          "comment": "q-axis transient reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_pp",
+          "comment": "d-axis subtransient reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq_pp",
+          "comment": "q-axis subtransient reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xl",
+          "comment": "Stator leakage reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Se",
+          "comment": "Saturation factor at 1 and 1.2 pu flux",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "Kw",
+          "comment": "field current compensation factor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "γ_d1",
+          "comment": "γ_d1 parameter",
+          "internal_default": "(Xd_pp - Xl) / (Xd_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_q1",
+          "comment": "γ_q1 parameter",
+          "internal_default": "(Xd_pp - Xl) / (Xq_p - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_d2",
+          "comment": "γ_d2 parameter",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_q2",
+          "comment": "γ_q2 parameter",
+          "internal_default": "(Xq_p - Xd_pp) / (Xq_p - Xl)^2",
+          "data_type": "Float64"
+        },
+        {
+          "name": "γ_qd",
+          "comment": "γ_qd parameter",
+          "internal_default": "(Xq - Xl) / (Xd - Xl)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
+          "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "GENQECRR has 4 states",
+          "internal_default": 4,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "Machine"
+    },
+    {
       "struct_name": "PSSFixed",
       "docstring": "Parameters of a PSS that returns a fixed voltage to add to the reference for the AVR",
       "fields": [
