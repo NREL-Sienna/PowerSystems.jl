@@ -8096,8 +8096,8 @@
       "supertype": "Machine"
     },
     {
-      "struct_name": "GENQECRR",
-      "docstring": "Parameters of 4-states round-rotor synchronous machine with optional saturation characteristic:\nBased on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org",
+      "struct_name": "GENQEC",
+      "docstring": "Parameters of 4-states synchronous machine with optional saturation characteristic:\nBased on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org",
       "fields": [
         {
           "name": "sat_flag",
@@ -8237,7 +8237,7 @@
         },
         {
           "name": "Kw",
-          "comment": "field current compensation factor",
+          "comment": "Rotor field current compensation factor",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -8260,7 +8260,7 @@
         {
           "name": "γ_q1",
           "comment": "γ_q1 parameter",
-          "internal_default": "(Xd_pp - Xl) / (Xq_p - Xl)",
+          "internal_default": "(Xq_pp - Xl) / (Xq_p - Xl)",
           "data_type": "Float64"
         },
         {
@@ -8272,7 +8272,7 @@
         {
           "name": "γ_q2",
           "comment": "γ_q2 parameter",
-          "internal_default": "(Xq_p - Xd_pp) / (Xq_p - Xl)^2",
+          "internal_default": "(Xq_p - Xq_pp) / (Xq_p - Xl)^2",
           "data_type": "Float64"
         },
         {
@@ -8291,7 +8291,7 @@
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "GENQECRR has 4 states",
+          "comment": "GENQEC has 4 states",
           "internal_default": 4,
           "data_type": "Int"
         },
