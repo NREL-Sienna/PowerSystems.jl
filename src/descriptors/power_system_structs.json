@@ -11566,8 +11566,8 @@
       "supertype": "InnerControl"
     },
     {
-      "struct_name": "DER_A",
-      "docstring": "Parameters of the Inner Control part of the REECB model in PSS/E",
+      "struct_name": "AggregateDistributedGenerationA",
+      "docstring": "Parameters of the DERA1 model in PSS/E",
       "fields": [
         {
           "name": "Pf_Flag",
@@ -11611,7 +11611,7 @@
         },
         {
           "name": "Vtrip_Flag",
-          "comment": "Vtrip_Flag description",
+          "comment": "Flag to enable/disable voltage trip logic",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
@@ -11621,7 +11621,7 @@
         },
         {
           "name": "Ftrip_Flag",
-          "comment": "Ftrip_Flag description",
+          "comment": "Flag to enable/disable frequency trip logic",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
@@ -11651,7 +11651,7 @@
         },
         {
           "name": "dbd1",
-          "comment": "(pu) lower voltage deadband (<=0)",
+          "comment": "Lower voltage deadband (<=0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11661,7 +11661,7 @@
         },
         {
           "name": "dbd2",
-          "comment": "(pu) upper voltage deadband (>0)",
+          "comment": "Upper voltage deadband (>0 (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11671,7 +11671,7 @@
         },
         {
           "name": "K_qv",
-          "comment": "(pu) Proportional voltage control gain",
+          "comment": "Proportional voltage control gain (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11711,7 +11711,7 @@
         },
         {
           "name": "D_dn",
-          "comment": "(pu) Reciprocal of droop for over-frequency conditions (>0)",
+          "comment": "Reciprocal of droop for over-frequency conditions (>0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11721,7 +11721,7 @@
         },
         {
           "name": "D_up",
-          "comment": "(pu) Reciprocal of droop for under-frequency conditions <=0)",
+          "comment": "Reciprocal of droop for under-frequency conditions <=0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11731,7 +11731,7 @@
         },
         {
           "name": "fdbd1",
-          "comment": "(pu) deadband for frequency control, lower threshold (<=0)",
+          "comment": "Deadband for frequency control, lower threshold (<=0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11741,7 +11741,7 @@
         },
         {
           "name": "fdbd2",
-          "comment": "(pu) deadband for frequency control, upper threshold (>=0)",
+          "comment": "Deadband for frequency control, upper threshold (>=0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11751,7 +11751,7 @@
         },
         {
           "name": "femax",
-          "comment": "(pu) frequency error upper limit",
+          "comment": "Frequency error upper limit (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11761,7 +11761,7 @@
         },
         {
           "name": "femin",
-          "comment": "(pu) frequency error lower limit",
+          "comment": "Frequency error lower limit (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11771,7 +11771,7 @@
         },
         {
           "name": "Pmax",
-          "comment": "(pu) maximum power limit",
+          "comment": "Maximum power limit (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11781,7 +11781,7 @@
         },
         {
           "name": "Pmin",
-          "comment": "(pu) minimum power limit",
+          "comment": "Minimum power limit (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11791,7 +11791,7 @@
         },
         {
           "name": "dPmax",
-          "comment": "(pu/s) power reference maximum ramp rate (>0)",
+          "comment": "Power reference maximum ramp rate (>0) (pu/s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11801,7 +11801,7 @@
         },
         {
           "name": "dPmin",
-          "comment": "(pu/s) minimum ramp rate",
+          "comment": "Minimum ramp rate (pu/s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11821,7 +11821,7 @@
         },
         {
           "name": "Kpg",
-          "comment": "(pu) PI controller proportional gain",
+          "comment": "PI controller proportional gain (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11831,7 +11831,7 @@
         },
         {
           "name": "Kig",
-          "comment": "(pu) PI controller integral gain",
+          "comment": "PI controller integral gain (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11841,7 +11841,7 @@
         },
         {
           "name": "I_max",
-          "comment": "(pu) Maximum limit on total converter current",
+          "comment": "Maximum limit on total converter current (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11851,7 +11851,7 @@
         },
         {
           "name": "vl0",
-          "comment": "(pu) inverter voltage break-point for low voltage cut-out",
+          "comment": "Inverter voltage break-point for low voltage cut-out (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11861,7 +11861,7 @@
         },
         {
           "name": "vl1",
-          "comment": "(pu) inverter voltage break-point for low voltage cut-out (vl1 > vl0)",
+          "comment": "Inverter voltage break-point for low voltage cut-out (vl1 > vl0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11871,7 +11871,7 @@
         },
         {
           "name": "vh0",
-          "comment": "(pu) inverter voltage break-point for high voltage cut-out",
+          "comment": "Inverter voltage break-point for high voltage cut-out (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11881,7 +11881,7 @@
         },
         {
           "name": "vh1",
-          "comment": "(pu) inverter voltage break-point for high voltage cut-out (vh1<vh0)",
+          "comment": "Inverter voltage break-point for high voltage cut-out (vh1<vh0) (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11891,7 +11891,7 @@
         },
         {
           "name": "tv10",
-          "comment": "(s), low voltage cut-out timer corresponding to voltage vl0",
+          "comment": "Low voltage cut-out timer corresponding to voltage vl0 (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11901,7 +11901,7 @@
         },
         {
           "name": "tvl1",
-          "comment": "(s), low voltage cut-out timer corresponding to voltage vl1",
+          "comment": "Low voltage cut-out timer corresponding to voltage vl1 (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11911,7 +11911,7 @@
         },
         {
           "name": "tvh0",
-          "comment": "(s), high voltage cut-out timer corresponding to voltage vh0",
+          "comment": "High voltage cut-out timer corresponding to voltage vh0 (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11921,7 +11921,7 @@
         },
         {
           "name": "tvh1",
-          "comment": "(s), high voltage cut-out timer corresponding to voltage vh1",
+          "comment": "High voltage cut-out timer corresponding to voltage vh1 (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11931,7 +11931,7 @@
         },
         {
           "name": "Vrfrac",
-          "comment": "fraction of device that recovers after voltage comes back to within vl1 < V < vh1 (0 <= Vrfrac <= 1)",
+          "comment": "Fraction of device that recovers after voltage comes back to within vl1 < V < vh1 (0 <= Vrfrac <= 1)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11941,7 +11941,7 @@
         },
         {
           "name": "fl",
-          "comment": "(Hz), inverter frequency break-point for low frequency cut-out",
+          "comment": "Inverter frequency break-point for low frequency cut-out (Hz)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11951,7 +11951,7 @@
         },
         {
           "name": "fh",
-          "comment": "(Hz), inverter frequency break-point for high frequency cut-out",
+          "comment": "Inverter frequency break-point for high frequency cut-out (Hz)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11961,7 +11961,7 @@
         },
         {
           "name": "tfl",
-          "comment": "(s), low frequency cut-out timer corresponding to frequency fl",
+          "comment": "Low frequency cut-out timer corresponding to frequency fl (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11971,7 +11971,7 @@
         },
         {
           "name": "tfh",
-          "comment": "(s), high frequency cut-out timer corresponding to frequency fh",
+          "comment": "High frequency cut-out timer corresponding to frequency fh (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11981,7 +11981,7 @@
         },
         {
           "name": "Tg",
-          "comment": "(s), current control time constant (to represent behavior of inner control loops) (> 0)",
+          "comment": "Current control time constant (to represent behavior of inner control loops) (> 0) (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -11991,7 +11991,7 @@
         },
         {
           "name": "rrpwr",
-          "comment": "(pu/s), ramp rate for real power increase following a fault",
+          "comment": "Ramp rate for real power increase following a fault (pu/s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -12001,7 +12001,7 @@
         },
         {
           "name": "Tv",
-          "comment": "(s), time constant on the output of the multiplier",
+          "comment": "Time constant on the output of the multiplier (s)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -12011,7 +12011,7 @@
         },
         {
           "name": "Vpr",
-          "comment": "(pu), voltage below which frequency tripping is disabled",
+          "comment": "Voltage below which frequency tripping is disabled (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -12021,7 +12021,7 @@
         },
         {
           "name": "Iqhl",
-          "comment": "(pu), Upper limit on reactive current injection Iqinj",
+          "comment": "Upper limit on reactive current injection Iqinj (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -12031,7 +12031,7 @@
         },
         {
           "name": "Iqll",
-          "comment": "(pu), Lower limit on reactive current injection Iqinj",
+          "comment": "Lower limit on reactive current injection Iqinj (pu)",
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
@@ -12048,19 +12048,19 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states of the RECurrentControlB depends on the Flags",
-          "internal_default": "PowerSystems.get_REControlB_states(Q_Flag)",
+          "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
+          "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "The states of the RECurrentControlB depends on the Flags",
-          "internal_default": "2",
+          "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
+          "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
           "data_type": "Int"
         }
       ],
-      "supertype": "InnerControl"
+      "supertype": "DynamicInjection"
     },
     {
       "struct_name": "Source",
