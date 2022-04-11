@@ -26,7 +26,6 @@ This file is auto-generated. Do not edit.
         γ_q1::Float64
         γ_d2::Float64
         γ_q2::Float64
-        γ_qd::Float64
         states::Vector{Symbol}
         n_states::Int
         internal::InfrastructureSystemsInternal
@@ -56,12 +55,11 @@ Based on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org
 - `γ_q1::Float64`: γ_q1 parameter
 - `γ_d2::Float64`: γ_d2 parameter
 - `γ_q2::Float64`: γ_q2 parameter
-- `γ_qd::Float64`: γ_qd parameter
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
-	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
-	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis
+	ψd_p: flux linkage in the first equivalent damping circuit in the d-axis,
+	ψq_p: flux linkage in the first equivalent damping circuit in the q-axis
 - `n_states::Int`: GENQEC has 4 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -105,13 +103,11 @@ mutable struct GENQEC <: Machine
     γ_d2::Float64
     "γ_q2 parameter"
     γ_q2::Float64
-    "γ_qd parameter"
-    γ_qd::Float64
     "The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
-	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
-	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis"
+	ψd_p: flux linkage in the first equivalent damping circuit in the d-axis,
+	ψq_p: flux linkage in the first equivalent damping circuit in the q-axis"
     states::Vector{Symbol}
     "GENQEC has 4 states"
     n_states::Int
@@ -120,11 +116,11 @@ mutable struct GENQEC <: Machine
 end
 
 function GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext=Dict{String, Any}(), )
-    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, (Xq - Xl) / (Xd - Xl), [:eq_p, :ed_p, :ψ_kd, :ψ_kq], 4, InfrastructureSystemsInternal(), )
+    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, [:eq_p, :ed_p, :ψd_p, :ψq_p], 4, InfrastructureSystemsInternal(), )
 end
 
-function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, γ_qd=(Xq - Xl) / (Xd - Xl), states=[:eq_p, :ed_p, :ψ_kd, :ψ_kq], n_states=4, internal=InfrastructureSystemsInternal(), )
-    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, γ_d1, γ_q1, γ_d2, γ_q2, γ_qd, states, n_states, internal, )
+function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, states=[:eq_p, :ed_p, :ψd_p, :ψq_p], n_states=4, internal=InfrastructureSystemsInternal(), )
+    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, γ_d1, γ_q1, γ_d2, γ_q2, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -189,8 +185,6 @@ get_γ_q1(value::GENQEC) = value.γ_q1
 get_γ_d2(value::GENQEC) = value.γ_d2
 """Get [`GENQEC`](@ref) `γ_q2`."""
 get_γ_q2(value::GENQEC) = value.γ_q2
-"""Get [`GENQEC`](@ref) `γ_qd`."""
-get_γ_qd(value::GENQEC) = value.γ_qd
 """Get [`GENQEC`](@ref) `states`."""
 get_states(value::GENQEC) = value.states
 """Get [`GENQEC`](@ref) `n_states`."""
@@ -238,5 +232,3 @@ set_γ_q1!(value::GENQEC, val) = value.γ_q1 = val
 set_γ_d2!(value::GENQEC, val) = value.γ_d2 = val
 """Set [`GENQEC`](@ref) `γ_q2`."""
 set_γ_q2!(value::GENQEC, val) = value.γ_q2 = val
-"""Set [`GENQEC`](@ref) `γ_qd`."""
-set_γ_qd!(value::GENQEC, val) = value.γ_qd = val

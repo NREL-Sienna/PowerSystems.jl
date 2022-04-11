@@ -8276,16 +8276,10 @@
           "data_type": "Float64"
         },
         {
-          "name": "γ_qd",
-          "comment": "γ_qd parameter",
-          "internal_default": "(Xq - Xl) / (Xd - Xl)",
-          "data_type": "Float64"
-        },
-        {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
-          "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
+          "comment": "The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψd_p: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_p: flux linkage in the first equivalent damping circuit in the q-axis",
+          "internal_default": "[:eq_p, :ed_p, :ψd_p, :ψq_p]",
           "data_type": "Vector{Symbol}"
         },
         {
