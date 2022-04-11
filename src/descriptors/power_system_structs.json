@@ -11571,7 +11571,7 @@
       "fields": [
         {
           "name": "Pf_Flag",
-          "comment": "Pf_flag description",
+          "comment": "Flag for Power Factor Control",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
@@ -11581,7 +11581,7 @@
         },
         {
           "name": "Freq_Flag",
-          "comment": "Freq_Flag description",
+          "comment": "Flag to enable/disable frequency control",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
@@ -11591,7 +11591,7 @@
         },
         {
           "name": "PQ_Flag",
-          "comment": "PQ_Flag description",
+          "comment": "Flag used to enforce maximum current",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
@@ -11601,7 +11601,7 @@
         },
         {
           "name": "Gen_Flag",
-          "comment": "Freq_Flag description",
+          "comment": "Flag to specify generator or storage",
           "null_value": 0,
           "data_type": "Int",
           "valid_range": {
