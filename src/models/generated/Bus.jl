@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct Bus <: Topology
         number::Int
@@ -137,4 +140,3 @@ set_area!(value::Bus, val) = value.area = val
 set_load_zone!(value::Bus, val) = value.load_zone = val
 """Set [`Bus`](@ref) `ext`."""
 set_ext!(value::Bus, val) = value.ext = val
-

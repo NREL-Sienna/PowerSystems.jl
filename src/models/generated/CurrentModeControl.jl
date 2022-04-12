@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct CurrentModeControl <: InnerControl
         kpc::Float64
@@ -80,4 +83,3 @@ set_kic!(value::CurrentModeControl, val) = value.kic = val
 set_kffv!(value::CurrentModeControl, val) = value.kffv = val
 """Set [`CurrentModeControl`](@ref) `ext`."""
 set_ext!(value::CurrentModeControl, val) = value.ext = val
-

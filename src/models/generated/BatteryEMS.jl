@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct BatteryEMS <: Storage
         name::String
@@ -197,4 +200,3 @@ set_services!(value::BatteryEMS, val) = value.services = val
 set_ext!(value::BatteryEMS, val) = value.ext = val
 """Set [`BatteryEMS`](@ref) `time_series_container`."""
 set_time_series_container!(value::BatteryEMS, val) = value.time_series_container = val
-

@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ActivePowerDroop <: ActivePowerControl
         Rp::Float64
@@ -78,4 +81,3 @@ set_ωz!(value::ActivePowerDroop, val) = value.ωz = val
 set_P_ref!(value::ActivePowerDroop, val) = value.P_ref = val
 """Set [`ActivePowerDroop`](@ref) `ext`."""
 set_ext!(value::ActivePowerDroop, val) = value.ext = val
-

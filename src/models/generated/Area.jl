@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct Area <: AggregationTopology
         name::String
@@ -72,4 +75,3 @@ set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = set_val
 set_load_response!(value::Area, val) = value.load_response = val
 """Set [`Area`](@ref) `time_series_container`."""
 set_time_series_container!(value::Area, val) = value.time_series_container = val
-

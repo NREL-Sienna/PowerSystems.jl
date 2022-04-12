@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct LCLFilter <: Filter
         lf::Float64
@@ -104,4 +107,3 @@ set_lg!(value::LCLFilter, val) = value.lg = val
 set_rg!(value::LCLFilter, val) = value.rg = val
 """Set [`LCLFilter`](@ref) `ext`."""
 set_ext!(value::LCLFilter, val) = value.ext = val
-

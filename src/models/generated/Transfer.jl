@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct Transfer <: Service
         name::String
@@ -72,4 +75,3 @@ set_requirement!(value::Transfer, val) = value.requirement = val
 set_ext!(value::Transfer, val) = value.ext = val
 """Set [`Transfer`](@ref) `time_series_container`."""
 set_time_series_container!(value::Transfer, val) = value.time_series_container = val
-

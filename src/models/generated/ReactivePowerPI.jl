@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ReactivePowerPI <: ReactivePowerControl
         Kp_q::Float64
@@ -96,4 +99,3 @@ set_V_ref!(value::ReactivePowerPI, val) = value.V_ref = val
 set_Q_ref!(value::ReactivePowerPI, val) = value.Q_ref = val
 """Set [`ReactivePowerPI`](@ref) `ext`."""
 set_ext!(value::ReactivePowerPI, val) = value.ext = val
-

@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct Source <: StaticInjection
         name::String
@@ -131,4 +134,3 @@ set_internal_angle!(value::Source, val) = value.internal_angle = val
 set_services!(value::Source, val) = value.services = val
 """Set [`Source`](@ref) `ext`."""
 set_ext!(value::Source, val) = value.ext = val
-

@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct FixedDCSource <: DCSource
         voltage::Float64
@@ -61,4 +64,3 @@ get_internal(value::FixedDCSource) = value.internal
 set_voltage!(value::FixedDCSource, val) = value.voltage = val
 """Set [`FixedDCSource`](@ref) `ext`."""
 set_ext!(value::FixedDCSource, val) = value.ext = val
-

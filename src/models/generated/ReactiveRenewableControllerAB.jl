@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
         bus_control::Int
@@ -290,4 +293,3 @@ set_Q_ref!(value::ReactiveRenewableControllerAB, val) = value.Q_ref = val
 set_V_ref!(value::ReactiveRenewableControllerAB, val) = value.V_ref = val
 """Set [`ReactiveRenewableControllerAB`](@ref) `ext`."""
 set_ext!(value::ReactiveRenewableControllerAB, val) = value.ext = val
-

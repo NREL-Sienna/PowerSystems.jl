@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct SimpleAFMachine <: Machine
         R::Float64
@@ -164,4 +167,3 @@ set_Td0_pp!(value::SimpleAFMachine, val) = value.Td0_pp = val
 set_Tq0_pp!(value::SimpleAFMachine, val) = value.Tq0_pp = val
 """Set [`SimpleAFMachine`](@ref) `ext`."""
 set_ext!(value::SimpleAFMachine, val) = value.ext = val
-

@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct StorageManagementCost <: OperationalCost
         variable::VariableCost
@@ -78,4 +81,3 @@ set_shut_down!(value::StorageManagementCost, val) = value.shut_down = val
 set_energy_shortage_cost!(value::StorageManagementCost, val) = value.energy_shortage_cost = val
 """Set [`StorageManagementCost`](@ref) `energy_surplus_cost`."""
 set_energy_surplus_cost!(value::StorageManagementCost, val) = value.energy_surplus_cost = val
-

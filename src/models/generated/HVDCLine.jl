@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct HVDCLine <: DCBranch
         name::String
@@ -129,4 +132,3 @@ set_services!(value::HVDCLine, val) = value.services = val
 set_ext!(value::HVDCLine, val) = value.ext = val
 """Set [`HVDCLine`](@ref) `time_series_container`."""
 set_time_series_container!(value::HVDCLine, val) = value.time_series_container = val
-

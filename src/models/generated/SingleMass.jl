@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct SingleMass <: Shaft
         H::Float64
@@ -75,4 +78,3 @@ set_H!(value::SingleMass, val) = value.H = val
 set_D!(value::SingleMass, val) = value.D = val
 """Set [`SingleMass`](@ref) `ext`."""
 set_ext!(value::SingleMass, val) = value.ext = val
-

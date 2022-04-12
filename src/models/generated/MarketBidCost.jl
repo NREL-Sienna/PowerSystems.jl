@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct MarketBidCost <: OperationalCost
         no_load::Float64
@@ -70,4 +73,3 @@ set_shut_down!(value::MarketBidCost, val) = value.shut_down = val
 set_variable!(value::MarketBidCost, val) = value.variable = val
 """Set [`MarketBidCost`](@ref) `ancillary_services`."""
 set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = val
-

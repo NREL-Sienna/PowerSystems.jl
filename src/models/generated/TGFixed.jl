@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct TGFixed <: TurbineGov
         efficiency::Float64
@@ -71,4 +74,3 @@ set_efficiency!(value::TGFixed, val) = value.efficiency = val
 set_P_ref!(value::TGFixed, val) = value.P_ref = val
 """Set [`TGFixed`](@ref) `ext`."""
 set_ext!(value::TGFixed, val) = value.ext = val
-

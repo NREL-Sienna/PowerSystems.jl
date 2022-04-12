@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct KauraPLL <: FrequencyEstimator
         ω_lp::Float64
@@ -84,4 +87,3 @@ set_kp_pll!(value::KauraPLL, val) = value.kp_pll = val
 set_ki_pll!(value::KauraPLL, val) = value.ki_pll = val
 """Set [`KauraPLL`](@ref) `ext`."""
 set_ext!(value::KauraPLL, val) = value.ext = val
-

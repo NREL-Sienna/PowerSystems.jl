@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ThreePartCost <: OperationalCost
         variable::VariableCost
@@ -60,4 +63,3 @@ set_fixed!(value::ThreePartCost, val) = value.fixed = val
 set_start_up!(value::ThreePartCost, val) = value.start_up = val
 """Set [`ThreePartCost`](@ref) `shut_down`."""
 set_shut_down!(value::ThreePartCost, val) = value.shut_down = val
-

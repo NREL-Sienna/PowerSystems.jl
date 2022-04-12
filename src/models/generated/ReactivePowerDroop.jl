@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ReactivePowerDroop <: ReactivePowerControl
         kq::Float64
@@ -76,4 +79,3 @@ set_ωf!(value::ReactivePowerDroop, val) = value.ωf = val
 set_V_ref!(value::ReactivePowerDroop, val) = value.V_ref = val
 """Set [`ReactivePowerDroop`](@ref) `ext`."""
 set_ext!(value::ReactivePowerDroop, val) = value.ext = val
-

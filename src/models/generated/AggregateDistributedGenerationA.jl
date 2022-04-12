@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct AggregateDistributedGenerationA <: DynamicInjection
         Pf_Flag::Int
@@ -362,4 +365,3 @@ set_Vpr!(value::AggregateDistributedGenerationA, val) = value.Vpr = val
 set_Iq_lim!(value::AggregateDistributedGenerationA, val) = value.Iq_lim = val
 """Set [`AggregateDistributedGenerationA`](@ref) `ext`."""
 set_ext!(value::AggregateDistributedGenerationA, val) = value.ext = val
-

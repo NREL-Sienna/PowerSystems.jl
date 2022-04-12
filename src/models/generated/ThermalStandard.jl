@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct ThermalStandard <: ThermalGen
         name::String
@@ -198,4 +201,3 @@ set_time_at_status!(value::ThermalStandard, val) = value.time_at_status = val
 set_ext!(value::ThermalStandard, val) = value.ext = val
 """Set [`ThermalStandard`](@ref) `time_series_container`."""
 set_time_series_container!(value::ThermalStandard, val) = value.time_series_container = val
-

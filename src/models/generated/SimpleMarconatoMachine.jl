@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct SimpleMarconatoMachine <: Machine
         R::Float64
@@ -186,4 +189,3 @@ set_ext!(value::SimpleMarconatoMachine, val) = value.ext = val
 set_γd!(value::SimpleMarconatoMachine, val) = value.γd = val
 """Set [`SimpleMarconatoMachine`](@ref) `γq`."""
 set_γq!(value::SimpleMarconatoMachine, val) = value.γq = val
-

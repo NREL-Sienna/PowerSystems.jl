@@ -1,6 +1,9 @@
 #=
 This file is auto-generated. Do not edit.
 =#
+
+#! format: off
+
 """
     mutable struct EXAC1A <: AVR
         Tr::Float64
@@ -226,4 +229,3 @@ set_saturation_coeffs!(value::EXAC1A, val) = value.saturation_coeffs = val
 set_ext!(value::EXAC1A, val) = value.ext = val
 """Set [`EXAC1A`](@ref) `states_types`."""
 set_states_types!(value::EXAC1A, val) = value.states_types = val
-
