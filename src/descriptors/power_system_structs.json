@@ -11650,24 +11650,10 @@
           }
         },
         {
-          "name": "dbd1",
-          "comment": "Lower voltage deadband (<=0) (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
-        },
-        {
-          "name": "dbd2",
-          "comment": "Upper voltage deadband (>0 (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "dbd_pnts",
+          "comment": "Voltage deadband thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
           "name": "K_qv",
@@ -11730,84 +11716,28 @@
           }
         },
         {
-          "name": "fdbd1",
-          "comment": "Deadband for frequency control, lower threshold (<=0) (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
+          "name": "fdbd_pnts",
+          "comment": "Frequency control deadband thresholds `(fdbd1, fdbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
         },
         {
-          "name": "fdbd2",
-          "comment": "Deadband for frequency control, upper threshold (>=0) (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "fe_lim",
+          "comment": "Frequency error limits (femin, femax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "femax",
-          "comment": "Frequency error upper limit (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "P_lim",
+          "comment": "Power limits (Pmin, Pmax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "femin",
-          "comment": "Frequency error lower limit (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Pmax",
-          "comment": "Maximum power limit (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Pmin",
-          "comment": "Minimum power limit (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "dPmax",
-          "comment": "Power reference maximum ramp rate (>0) (pu/s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "dPmin",
-          "comment": "Minimum ramp rate (pu/s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": null,
-            "max": 0
-          }
+          "name": "dP_lim",
+          "comment": "Power reference ramp rate limits (dPmin, dPmax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "Tpord",
@@ -11850,84 +11780,16 @@
           }
         },
         {
-          "name": "vl0",
-          "comment": "Inverter voltage break-point for low voltage cut-out (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "vl_pnts",
+          "comment": "Low voltage cutout points `[(tv10, vl0), (tv11, vl1)]`",
+          "null_value": "[(0.0, 0.0), (0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}"
         },
         {
-          "name": "vl1",
-          "comment": "Inverter voltage break-point for low voltage cut-out (vl1 > vl0) (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "vh0",
-          "comment": "Inverter voltage break-point for high voltage cut-out (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "vh1",
-          "comment": "Inverter voltage break-point for high voltage cut-out (vh1<vh0) (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "tv10",
-          "comment": "Low voltage cut-out timer corresponding to voltage vl0 (s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "tvl1",
-          "comment": "Low voltage cut-out timer corresponding to voltage vl1 (s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "tvh0",
-          "comment": "High voltage cut-out timer corresponding to voltage vh0 (s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "tvh1",
-          "comment": "High voltage cut-out timer corresponding to voltage vh1 (s)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "vh_pnts",
+          "comment": "High voltage cutout points `[(tvh0, vh0), (tvh1, vh1)]`",
+          "null_value": "[(0.0, 0.0), (0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}"
         },
         {
           "name": "Vrfrac",
@@ -12020,24 +11882,10 @@
           }
         },
         {
-          "name": "Iqhl",
-          "comment": "Upper limit on reactive current injection Iqinj (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
-          "name": "Iqll",
-          "comment": "Lower limit on reactive current injection Iqinj (pu)",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
+          "name": "Iq_lim",
+          "comment": "Reactive current injection limits (Iqll, Iqhl)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
           "name": "ext",
