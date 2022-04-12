@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct AVRSimple <: AVR
         Kv::Float64
@@ -85,3 +82,4 @@ set_V_ref!(value::AVRSimple, val) = value.V_ref = val
 set_ext!(value::AVRSimple, val) = value.ext = val
 """Set [`AVRSimple`](@ref) `states_types`."""
 set_states_types!(value::AVRSimple, val) = value.states_types = val
+

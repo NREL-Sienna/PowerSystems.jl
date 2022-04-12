@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct RLFilter <: Filter
         rf::Float64
@@ -68,3 +65,4 @@ set_rf!(value::RLFilter, val) = value.rf = val
 set_lf!(value::RLFilter, val) = value.lf = val
 """Set [`RLFilter`](@ref) `ext`."""
 set_ext!(value::RLFilter, val) = value.ext = val
+

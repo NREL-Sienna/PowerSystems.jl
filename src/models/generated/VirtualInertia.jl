@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct VirtualInertia <: ActivePowerControl
         Ta::Float64
@@ -90,3 +87,4 @@ set_kω!(value::VirtualInertia, val) = value.kω = val
 set_P_ref!(value::VirtualInertia, val) = value.P_ref = val
 """Set [`VirtualInertia`](@ref) `ext`."""
 set_ext!(value::VirtualInertia, val) = value.ext = val
+

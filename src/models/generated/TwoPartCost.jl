@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct TwoPartCost <: OperationalCost
         variable::VariableCost
@@ -45,3 +42,4 @@ get_fixed(value::TwoPartCost) = value.fixed
 set_variable!(value::TwoPartCost, val) = value.variable = val
 """Set [`TwoPartCost`](@ref) `fixed`."""
 set_fixed!(value::TwoPartCost, val) = value.fixed = val
+

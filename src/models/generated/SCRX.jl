@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct SCRX <: AVR
         Ta_Tb::Float64
@@ -140,3 +137,4 @@ set_V_ref!(value::SCRX, val) = value.V_ref = val
 set_ext!(value::SCRX, val) = value.ext = val
 """Set [`SCRX`](@ref) `states_types`."""
 set_states_types!(value::SCRX, val) = value.states_types = val
+

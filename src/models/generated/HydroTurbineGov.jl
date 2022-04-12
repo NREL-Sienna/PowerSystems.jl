@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct HydroTurbineGov <: TurbineGov
         R::Float64
@@ -180,3 +177,4 @@ set_P_ref!(value::HydroTurbineGov, val) = value.P_ref = val
 set_ext!(value::HydroTurbineGov, val) = value.ext = val
 """Set [`HydroTurbineGov`](@ref) `states_types`."""
 set_states_types!(value::HydroTurbineGov, val) = value.states_types = val
+

@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct RenewableFix <: RenewableGen
         name::String
@@ -142,3 +139,4 @@ set_services!(value::RenewableFix, val) = value.services = val
 set_ext!(value::RenewableFix, val) = value.ext = val
 """Set [`RenewableFix`](@ref) `time_series_container`."""
 set_time_series_container!(value::RenewableFix, val) = value.time_series_container = val
+

@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct ESDC2A <: AVR
         Tr::Float64
@@ -210,3 +207,4 @@ set_saturation_coeffs!(value::ESDC2A, val) = value.saturation_coeffs = val
 set_ext!(value::ESDC2A, val) = value.ext = val
 """Set [`ESDC2A`](@ref) `states_types`."""
 set_states_types!(value::ESDC2A, val) = value.states_types = val
+

@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
         name::String
@@ -76,3 +73,4 @@ set_time_frame!(value::StaticReserveNonSpinning, val) = value.time_frame = val
 set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = val
 """Set [`StaticReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
+

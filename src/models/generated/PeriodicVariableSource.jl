@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct PeriodicVariableSource <: DynamicInjection
         name::String
@@ -142,3 +139,4 @@ set_internal_angle_coefficients!(value::PeriodicVariableSource, val) = value.int
 set_base_power!(value::PeriodicVariableSource, val) = value.base_power = val
 """Set [`PeriodicVariableSource`](@ref) `ext`."""
 set_ext!(value::PeriodicVariableSource, val) = value.ext = val
+

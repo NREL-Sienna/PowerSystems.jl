@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct HydroPumpedStorage <: HydroGen
         name::String
@@ -291,3 +288,4 @@ set_services!(value::HydroPumpedStorage, val) = value.services = val
 set_ext!(value::HydroPumpedStorage, val) = value.ext = val
 """Set [`HydroPumpedStorage`](@ref) `time_series_container`."""
 set_time_series_container!(value::HydroPumpedStorage, val) = value.time_series_container = val
+

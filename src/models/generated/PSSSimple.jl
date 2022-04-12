@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct PSSSimple <: PSS
         K_ω::Float64
@@ -73,3 +70,4 @@ set_K_ω!(value::PSSSimple, val) = value.K_ω = val
 set_K_p!(value::PSSSimple, val) = value.K_p = val
 """Set [`PSSSimple`](@ref) `ext`."""
 set_ext!(value::PSSSimple, val) = value.ext = val
+

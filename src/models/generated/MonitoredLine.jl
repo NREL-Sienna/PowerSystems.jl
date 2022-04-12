@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct MonitoredLine <: ACBranch
         name::String
@@ -153,3 +150,4 @@ set_services!(value::MonitoredLine, val) = value.services = val
 set_ext!(value::MonitoredLine, val) = value.ext = val
 """Set [`MonitoredLine`](@ref) `time_series_container`."""
 set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val
+

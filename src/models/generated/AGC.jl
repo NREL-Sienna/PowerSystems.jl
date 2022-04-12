@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct AGC <: Service
         name::String
@@ -120,3 +117,4 @@ set_area!(value::AGC, val) = value.area = val
 set_initial_ace!(value::AGC, val) = value.initial_ace = val
 """Set [`AGC`](@ref) `ext`."""
 set_ext!(value::AGC, val) = value.ext = val
+

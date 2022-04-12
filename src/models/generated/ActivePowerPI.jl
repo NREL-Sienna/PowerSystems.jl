@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct ActivePowerPI <: ActivePowerControl
         Kp_p::Float64
@@ -90,3 +87,4 @@ set_ωz!(value::ActivePowerPI, val) = value.ωz = val
 set_P_ref!(value::ActivePowerPI, val) = value.P_ref = val
 """Set [`ActivePowerPI`](@ref) `ext`."""
 set_ext!(value::ActivePowerPI, val) = value.ext = val
+

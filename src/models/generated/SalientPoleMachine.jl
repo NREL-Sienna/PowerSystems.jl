@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct SalientPoleMachine <: Machine
         R::Float64
@@ -177,3 +174,4 @@ set_γ_d1!(value::SalientPoleMachine, val) = value.γ_d1 = val
 set_γ_q1!(value::SalientPoleMachine, val) = value.γ_q1 = val
 """Set [`SalientPoleMachine`](@ref) `γ_d2`."""
 set_γ_d2!(value::SalientPoleMachine, val) = value.γ_d2 = val
+

@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
         name::String
@@ -85,3 +82,4 @@ set_requirement!(value::VariableReserve, val) = value.requirement = val
 set_ext!(value::VariableReserve, val) = value.ext = val
 """Set [`VariableReserve`](@ref) `time_series_container`."""
 set_time_series_container!(value::VariableReserve, val) = value.time_series_container = val
+

@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct PSSFixed <: PSS
         V_pss::Float64
@@ -64,3 +61,4 @@ get_internal(value::PSSFixed) = value.internal
 set_V_pss!(value::PSSFixed, val) = value.V_pss = val
 """Set [`PSSFixed`](@ref) `ext`."""
 set_ext!(value::PSSFixed, val) = value.ext = val
+

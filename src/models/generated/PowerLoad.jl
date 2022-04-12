@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct PowerLoad <: StaticLoad
         name::String
@@ -140,3 +137,4 @@ set_services!(value::PowerLoad, val) = value.services = val
 set_ext!(value::PowerLoad, val) = value.ext = val
 """Set [`PowerLoad`](@ref) `time_series_container`."""
 set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
+

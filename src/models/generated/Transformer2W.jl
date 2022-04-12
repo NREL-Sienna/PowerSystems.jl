@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct Transformer2W <: ACBranch
         name::String
@@ -135,3 +132,4 @@ set_services!(value::Transformer2W, val) = value.services = val
 set_ext!(value::Transformer2W, val) = value.ext = val
 """Set [`Transformer2W`](@ref) `time_series_container`."""
 set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
+

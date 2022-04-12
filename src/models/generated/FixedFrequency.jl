@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct FixedFrequency <: FrequencyEstimator
         frequency::Float64
@@ -56,3 +53,4 @@ get_n_states(value::FixedFrequency) = value.n_states
 set_frequency!(value::FixedFrequency, val) = value.frequency = val
 """Set [`FixedFrequency`](@ref) `ext`."""
 set_ext!(value::FixedFrequency, val) = value.ext = val
+

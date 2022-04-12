@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct ESST1A <: AVR
         UEL_flags::Int
@@ -237,3 +234,4 @@ set_V_ref!(value::ESST1A, val) = value.V_ref = val
 set_ext!(value::ESST1A, val) = value.ext = val
 """Set [`ESST1A`](@ref) `states_types`."""
 set_states_types!(value::ESST1A, val) = value.states_types = val
+

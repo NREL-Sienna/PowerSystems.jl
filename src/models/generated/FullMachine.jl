@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct FullMachine <: Machine
         R::Float64
@@ -193,3 +190,4 @@ set_ext!(value::FullMachine, val) = value.ext = val
 set_inv_d_fluxlink!(value::FullMachine, val) = value.inv_d_fluxlink = val
 """Set [`FullMachine`](@ref) `inv_q_fluxlink`."""
 set_inv_q_fluxlink!(value::FullMachine, val) = value.inv_q_fluxlink = val
+

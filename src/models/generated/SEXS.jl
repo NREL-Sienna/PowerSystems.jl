@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct SEXS <: AVR
         Ta_Tb::Float64
@@ -118,3 +115,4 @@ set_V_ref!(value::SEXS, val) = value.V_ref = val
 set_ext!(value::SEXS, val) = value.ext = val
 """Set [`SEXS`](@ref) `states_types`."""
 set_states_types!(value::SEXS, val) = value.states_types = val
+

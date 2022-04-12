@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct AverageConverter <: Converter
         rated_voltage::Float64
@@ -67,3 +64,4 @@ set_rated_voltage!(value::AverageConverter, val) = value.rated_voltage = val
 set_rated_current!(value::AverageConverter, val) = value.rated_current = val
 """Set [`AverageConverter`](@ref) `ext`."""
 set_ext!(value::AverageConverter, val) = value.ext = val
+

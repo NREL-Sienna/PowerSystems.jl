@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct StaticReserveGroup{T <: ReserveDirection} <: Service
         name::String
@@ -74,3 +71,4 @@ set_available!(value::StaticReserveGroup, val) = value.available = val
 set_requirement!(value::StaticReserveGroup, val) = value.requirement = val
 """Set [`StaticReserveGroup`](@ref) `ext`."""
 set_ext!(value::StaticReserveGroup, val) = value.ext = val
+

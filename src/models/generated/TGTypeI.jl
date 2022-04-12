@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct TGTypeI <: TurbineGov
         R::Float64
@@ -134,3 +131,4 @@ set_valve_position_limits!(value::TGTypeI, val) = value.valve_position_limits = 
 set_P_ref!(value::TGTypeI, val) = value.P_ref = val
 """Set [`TGTypeI`](@ref) `ext`."""
 set_ext!(value::TGTypeI, val) = value.ext = val
+

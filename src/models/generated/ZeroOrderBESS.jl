@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct ZeroOrderBESS <: DCSource
         rated_voltage::Float64
@@ -166,3 +163,4 @@ set_kii!(value::ZeroOrderBESS, val) = value.kii = val
 set_Vdc_ref!(value::ZeroOrderBESS, val) = value.Vdc_ref = val
 """Set [`ZeroOrderBESS`](@ref) `ext`."""
 set_ext!(value::ZeroOrderBESS, val) = value.ext = val
+

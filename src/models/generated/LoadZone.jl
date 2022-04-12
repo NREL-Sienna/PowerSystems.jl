@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct LoadZone <: AggregationTopology
         name::String
@@ -67,3 +64,4 @@ set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_val
 set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, val)
 """Set [`LoadZone`](@ref) `time_series_container`."""
 set_time_series_container!(value::LoadZone, val) = value.time_series_container = val
+

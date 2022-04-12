@@ -1,9 +1,6 @@
 #=
 This file is auto-generated. Do not edit.
 =#
-
-#! format: off
-
 """
     mutable struct RenewableEnergyConverterTypeA <: Converter
         T_g::Float64
@@ -194,3 +191,4 @@ set_R_source!(value::RenewableEnergyConverterTypeA, val) = value.R_source = val
 set_X_source!(value::RenewableEnergyConverterTypeA, val) = value.X_source = val
 """Set [`RenewableEnergyConverterTypeA`](@ref) `ext`."""
 set_ext!(value::RenewableEnergyConverterTypeA, val) = value.ext = val
+
