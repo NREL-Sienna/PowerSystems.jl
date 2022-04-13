@@ -6337,6 +6337,317 @@
       "supertype": "AVR"
     },
     {
+      "struct_name": "EXST1",
+      "docstring": "IEEE Type ST1 Excitation System (PTI version)",
+      "fields": [
+        {
+          "name": "Tr",
+          "comment": "Voltage Measurement Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vi_lim",
+          "comment": "Voltage input limits (Vi_min, Vi_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Tc",
+          "comment": "Numerator lead-lag (lead) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Denominator lead-lag (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ka",
+          "comment": "Amplifier Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Amplifier Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Vr_lim",
+          "comment": "Voltage regulator limits (regulator output) (Vr_min, Vr_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Kc",
+          "comment": "Current field constant limiter multiplier",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kf",
+          "comment": "Excitation control system stabilizer gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": 0.3
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tf",
+          "comment": "Excitation control system stabilizer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": "eps()",
+            "max": null
+          },
+          "validation_action": "error"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tVm: Sensed Terminal Voltage,\n\tVrll: Lead-Lag state,\n\tVr: Regulator Output, \n\tVfb: Feedback state",
+          "internal_default": "[:Vm, :Vrll, :Vr, :Vfb]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The EXST1 has 4 states",
+          "internal_default": 4,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
+      "struct_name": "EX4VSA",
+      "docstring": "IEEE Excitation System for Voltage Security Assesment",
+      "fields": [
+        {
+          "name": "Iflim",
+          "comment": "OEL Field current limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "d",
+          "comment": "OEL parameter d",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "f",
+          "comment": "OEL parameter f",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Spar",
+          "comment": "OEL parameter Spar",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K1",
+          "comment": "OEL delay time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "K2",
+          "comment": "OEL parameter K2",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Oel_lim",
+          "comment": "Oel integrator limits (Oel_min, Oel_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "G",
+          "comment": "AVR Exciter Gain",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Ta",
+          "comment": "Numerator lead-lag (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Tb",
+          "comment": "Denominator lead-lag (lag) time constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "Te",
+          "comment": "Exciter Time Constant in s",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "E_lim",
+          "comment": "Voltage regulator limits (regulator output) (E_min, E_max)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference Voltage Set-point",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tVll: Lead-lag internal state,\n\tVex: Exciter Output, \n\toel: OEL integrator state",
+          "internal_default": "[:Vll, :Vex, :oel]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The EX4VSA has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "AVR"
+    },
+    {
       "struct_name": "BaseMachine",
       "docstring": "Parameters of a Classic Machine: GENCLS in PSSE and PSLF",
       "fields": [
@@ -8097,6 +8408,122 @@
           "name": "states_types",
           "comment": "IEEEST has 7 differential states",
           "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "PSS"
+    },
+    {
+      "struct_name": "STAB1",
+      "docstring": "Speed-Sensitive Stabilizing Model",
+      "fields": [
+        {
+          "name": "KT",
+          "comment": "K/T for washout filter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T",
+          "comment": "Time constant for washout filter",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1T3",
+          "comment": "Time constant division T1/T3",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2T4",
+          "comment": "Time constant division T2/T4",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T4",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "H_lim",
+          "comment": "PSS output limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T2 lead-lag block, \n\tx_p3: T3/T4 lead-lag block,",
+          "internal_default": "[:x_p1, :x_p2, :x_p3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "STAB1 has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "STAB1 has 3 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
           "data_type": "Vector{StateTypes}"
         },
         {
