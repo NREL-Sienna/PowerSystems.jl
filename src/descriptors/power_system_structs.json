@@ -8246,6 +8246,13 @@
           }
         },
         {
+          "name": "saturation_coeffs",
+          "comment": "Coefficients (A,B) of the saturation function",
+          "data_type": "Tuple{Float64, Float64}",
+          "null_value": "(0.0, 0.0)",
+          "default": "PowerSystems.get_genqec_saturation(Se, sat_flag)"
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",

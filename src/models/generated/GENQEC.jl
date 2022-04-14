@@ -21,6 +21,7 @@ This file is auto-generated. Do not edit.
         Xl::Float64
         Se::Tuple{Float64, Float64}
         Kw::Float64
+        saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
         γ_d1::Float64
         γ_q1::Float64
@@ -50,6 +51,7 @@ Based on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org
 - `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux
 - `Kw::Float64`: Rotor field current compensation factor, validation range: `(0, nothing)`
+- `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the saturation function
 - `ext::Dict{String, Any}`
 - `γ_d1::Float64`: γ_d1 parameter
 - `γ_q1::Float64`: γ_q1 parameter
@@ -94,6 +96,8 @@ mutable struct GENQEC <: Machine
     Se::Tuple{Float64, Float64}
     "Rotor field current compensation factor"
     Kw::Float64
+    "Coefficients (A,B) of the saturation function"
+    saturation_coeffs::Tuple{Float64, Float64}
     ext::Dict{String, Any}
     "γ_d1 parameter"
     γ_d1::Float64
@@ -115,12 +119,12 @@ mutable struct GENQEC <: Machine
     internal::InfrastructureSystemsInternal
 end
 
-function GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext=Dict{String, Any}(), )
-    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, [:eq_p, :ed_p, :ψd_p, :ψq_p], 4, InfrastructureSystemsInternal(), )
+function GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs=PowerSystems.get_genqec_saturation(Se, sat_flag), ext=Dict{String, Any}(), )
+    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, [:eq_p, :ed_p, :ψd_p, :ψq_p], 4, InfrastructureSystemsInternal(), )
 end
 
-function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, states=[:eq_p, :ed_p, :ψd_p, :ψq_p], n_states=4, internal=InfrastructureSystemsInternal(), )
-    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, ext, γ_d1, γ_q1, γ_d2, γ_q2, states, n_states, internal, )
+function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs=PowerSystems.get_genqec_saturation(Se, sat_flag), ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, states=[:eq_p, :ed_p, :ψd_p, :ψq_p], n_states=4, internal=InfrastructureSystemsInternal(), )
+    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs, ext, γ_d1, γ_q1, γ_d2, γ_q2, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -141,6 +145,7 @@ function GENQEC(::Nothing)
         Xl=0,
         Se=(0.0, 0.0),
         Kw=0,
+        saturation_coeffs=(0.0, 0.0),
         ext=Dict{String, Any}(),
     )
 end
@@ -175,6 +180,8 @@ get_Xl(value::GENQEC) = value.Xl
 get_Se(value::GENQEC) = value.Se
 """Get [`GENQEC`](@ref) `Kw`."""
 get_Kw(value::GENQEC) = value.Kw
+"""Get [`GENQEC`](@ref) `saturation_coeffs`."""
+get_saturation_coeffs(value::GENQEC) = value.saturation_coeffs
 """Get [`GENQEC`](@ref) `ext`."""
 get_ext(value::GENQEC) = value.ext
 """Get [`GENQEC`](@ref) `γ_d1`."""
@@ -222,6 +229,8 @@ set_Xl!(value::GENQEC, val) = value.Xl = val
 set_Se!(value::GENQEC, val) = value.Se = val
 """Set [`GENQEC`](@ref) `Kw`."""
 set_Kw!(value::GENQEC, val) = value.Kw = val
+"""Set [`GENQEC`](@ref) `saturation_coeffs`."""
+set_saturation_coeffs!(value::GENQEC, val) = value.saturation_coeffs = val
 """Set [`GENQEC`](@ref) `ext`."""
 set_ext!(value::GENQEC, val) = value.ext = val
 """Set [`GENQEC`](@ref) `γ_d1`."""
