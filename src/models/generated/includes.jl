@@ -17,6 +17,7 @@ include("VSCDCLine.jl")
 include("InterruptibleLoad.jl")
 include("FixedAdmittance.jl")
 include("PowerLoad.jl")
+include("ExponentialLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -334,6 +335,7 @@ export get_Xq_pp
 export get_Y
 export get_Zerox
 export get_active_power
+export get_active_power_coefficient
 export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
@@ -453,6 +455,7 @@ export get_rating
 export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
+export get_reactive_power_coefficient
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
@@ -742,6 +745,7 @@ export set_Xq_pp!
 export set_Y!
 export set_Zerox!
 export set_active_power!
+export set_active_power_coefficient!
 export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
@@ -861,6 +865,7 @@ export set_rating!
 export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
+export set_reactive_power_coefficient!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
