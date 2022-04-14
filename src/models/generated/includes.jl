@@ -135,8 +135,8 @@ export get_E_sat
 export get_Efd_lim
 export get_Freq_Flag
 export get_Ftrip_Flag
-export get_Gen_Flag
 export get_G
+export get_Gen_Flag
 export get_H
 export get_H_ex
 export get_H_hp
@@ -563,8 +563,8 @@ export set_E_sat!
 export set_Efd_lim!
 export set_Freq_Flag!
 export set_Ftrip_Flag!
-export set_Gen_Flag!
 export set_G!
+export set_Gen_Flag!
 export set_H!
 export set_H_ex!
 export set_H_hp!
