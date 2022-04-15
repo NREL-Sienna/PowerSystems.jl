@@ -77,6 +77,8 @@ export DynamicBranch
 export HybridSystem
 export RegulationDevice
 
+export AggregateDistributedGenerationA
+
 #AVR Exports
 export AVR
 export AVRFixed
