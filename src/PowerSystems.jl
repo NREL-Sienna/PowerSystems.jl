@@ -506,6 +506,7 @@ include("models/devices.jl")
 # Dynamic Composed types
 include("models/dynamic_generator.jl")
 include("models/dynamic_inverter.jl")
+include("models/dynamic_loads.jl")
 include("models/dynamic_machines.jl")
 include("models/RoundRotorExponential.jl")
 include("models/RoundRotorQuadratic.jl")
