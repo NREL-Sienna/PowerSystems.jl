@@ -6,6 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct AggregateDistributedGenerationA <: DynamicInjection
+        name::String
         Pf_Flag::Int
         Freq_Flag::Int
         PQ_Flag::Int
@@ -44,11 +45,13 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
+        internal::InfrastructureSystemsInternal
     end
 
 Parameters of the DERA1 model in PSS/E
 
 # Arguments
+- `name::String`
 - `Pf_Flag::Int`: Flag for Power Factor Control, validation range: `(0, 1)`
 - `Freq_Flag::Int`: Flag to enable/disable frequency control, validation range: `(0, 1)`
 - `PQ_Flag::Int`: Flag used to enforce maximum current, validation range: `(0, 1)`
@@ -87,8 +90,10 @@ Parameters of the DERA1 model in PSS/E
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: The states of AggregateDistributedGenerationA depends on the Flags
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AggregateDistributedGenerationA <: DynamicInjection
+    name::String
     "Flag for Power Factor Control"
     Pf_Flag::Int
     "Flag to enable/disable frequency control"
@@ -164,19 +169,22 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     states::Vector{Symbol}
     "The states of AggregateDistributedGenerationA depends on the Flags"
     n_states::Int
+    "power system internal reference, do not modify"
+    internal::InfrastructureSystemsInternal
 end
 
-function AggregateDistributedGenerationA(Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext=Dict{String, Any}(), )
-    AggregateDistributedGenerationA(Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], )
+function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext=Dict{String, Any}(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
 end
 
-function AggregateDistributedGenerationA(; Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext=Dict{String, Any}(), states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], )
-    AggregateDistributedGenerationA(Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext, states, n_states, )
+function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext=Dict{String, Any}(), states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], internal=InfrastructureSystemsInternal(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
 function AggregateDistributedGenerationA(::Nothing)
     AggregateDistributedGenerationA(;
+        name="init",
         Pf_Flag=0,
         Freq_Flag=0,
         PQ_Flag=0,
@@ -216,6 +224,8 @@ function AggregateDistributedGenerationA(::Nothing)
     )
 end
 
+"""Get [`AggregateDistributedGenerationA`](@ref) `name`."""
+get_name(value::AggregateDistributedGenerationA) = value.name
 """Get [`AggregateDistributedGenerationA`](@ref) `Pf_Flag`."""
 get_Pf_Flag(value::AggregateDistributedGenerationA) = value.Pf_Flag
 """Get [`AggregateDistributedGenerationA`](@ref) `Freq_Flag`."""
@@ -292,6 +302,8 @@ get_ext(value::AggregateDistributedGenerationA) = value.ext
 get_states(value::AggregateDistributedGenerationA) = value.states
 """Get [`AggregateDistributedGenerationA`](@ref) `n_states`."""
 get_n_states(value::AggregateDistributedGenerationA) = value.n_states
+"""Get [`AggregateDistributedGenerationA`](@ref) `internal`."""
+get_internal(value::AggregateDistributedGenerationA) = value.internal
 
 """Set [`AggregateDistributedGenerationA`](@ref) `Pf_Flag`."""
 set_Pf_Flag!(value::AggregateDistributedGenerationA, val) = value.Pf_Flag = val

@@ -11997,6 +11997,12 @@
       "docstring": "Parameters of the DERA1 model in PSS/E",
       "fields": [
         {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
           "name": "Pf_Flag",
           "comment": "Flag for Power Factor Control",
           "null_value": 0,
@@ -12333,6 +12339,13 @@
           "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
           "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
           "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "DynamicInjection"
