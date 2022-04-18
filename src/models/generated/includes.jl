@@ -67,7 +67,6 @@ include("GENQEC.jl")
 include("PSSFixed.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
-include("STAB1.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -139,7 +138,6 @@ export get_H
 export get_H_ex
 export get_H_hp
 export get_H_ip
-export get_H_lim
 export get_H_lp
 export get_I_lr
 export get_I_max
@@ -157,7 +155,6 @@ export get_K5
 export get_K6
 export get_K7
 export get_K8
-export get_KT
 export get_K_c
 export get_K_d
 export get_K_ex
@@ -246,11 +243,8 @@ export get_Rrpwr
 export get_Rselect
 export get_Se
 export get_Spar
-export get_T
 export get_T1
-export get_T1T3
 export get_T2
-export get_T2T4
 export get_T3
 export get_T4
 export get_T5
@@ -549,7 +543,6 @@ export set_H!
 export set_H_ex!
 export set_H_hp!
 export set_H_ip!
-export set_H_lim!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
@@ -567,7 +560,6 @@ export set_K5!
 export set_K6!
 export set_K7!
 export set_K8!
-export set_KT!
 export set_K_c!
 export set_K_d!
 export set_K_ex!
@@ -656,11 +648,8 @@ export set_Rrpwr!
 export set_Rselect!
 export set_Se!
 export set_Spar!
-export set_T!
 export set_T1!
-export set_T1T3!
 export set_T2!
-export set_T2T4!
 export set_T3!
 export set_T4!
 export set_T5!

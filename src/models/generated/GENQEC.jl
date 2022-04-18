@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states synchronous machine with optional saturation characteristic:
+Parameters of 7-states synchronous machine with optional saturation characteristic:
 Based on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org
 
 # Arguments
@@ -60,9 +60,12 @@ Based on WECC Report: GENQEC Generator Dynamic Model Specification, www.wecc.org
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
-	ψd_p: flux linkage in the first equivalent damping circuit in the d-axis,
-	ψq_p: flux linkage in the first equivalent damping circuit in the q-axis
-- `n_states::Int`: GENQEC has 4 states
+	ψd_p: flux linkage in damper winding in the d-axis,
+	ψq_p: flux linkage in damper winding in the q-axis,
+	I_d: d-axis current (algebraic state), 
+	I_q: q-axis current (algebraic state), 
+	Se: Saturation factor (algebraic state)
+- `n_states::Int`: GENQEC has 7 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GENQEC <: Machine
@@ -110,20 +113,23 @@ mutable struct GENQEC <: Machine
     "The states are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
-	ψd_p: flux linkage in the first equivalent damping circuit in the d-axis,
-	ψq_p: flux linkage in the first equivalent damping circuit in the q-axis"
+	ψd_p: flux linkage in damper winding in the d-axis,
+	ψq_p: flux linkage in damper winding in the q-axis,
+	I_d: d-axis current (algebraic state), 
+	I_q: q-axis current (algebraic state), 
+	Se: Saturation factor (algebraic state)"
     states::Vector{Symbol}
-    "GENQEC has 4 states"
+    "GENQEC has 7 states"
     n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs=PowerSystems.get_genqec_saturation(Se, sat_flag), ext=Dict{String, Any}(), )
-    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, [:eq_p, :ed_p, :ψd_p, :ψq_p], 4, InfrastructureSystemsInternal(), )
+    GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs, ext, (Xd_pp - Xl) / (Xd_p - Xl), (Xq_pp - Xl) / (Xq_p - Xl), (Xd_p - Xd_pp) / (Xd_p - Xl)^2, (Xq_p - Xq_pp) / (Xq_p - Xl)^2, [:eq_p, :ed_p, :ψd_p, :ψq_p, :I_d, :I_q, :Se], 7, InfrastructureSystemsInternal(), )
 end
 
-function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs=PowerSystems.get_genqec_saturation(Se, sat_flag), ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, states=[:eq_p, :ed_p, :ψd_p, :ψq_p], n_states=4, internal=InfrastructureSystemsInternal(), )
+function GENQEC(; sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs=PowerSystems.get_genqec_saturation(Se, sat_flag), ext=Dict{String, Any}(), γ_d1=(Xd_pp - Xl) / (Xd_p - Xl), γ_q1=(Xq_pp - Xl) / (Xq_p - Xl), γ_d2=(Xd_p - Xd_pp) / (Xd_p - Xl)^2, γ_q2=(Xq_p - Xq_pp) / (Xq_p - Xl)^2, states=[:eq_p, :ed_p, :ψd_p, :ψq_p, :I_d, :I_q, :Se], n_states=7, internal=InfrastructureSystemsInternal(), )
     GENQEC(sat_flag, R, Td0_p, Td0_pp, Tq0_p, Tq0_pp, Xd, Xq, Xd_p, Xq_p, Xd_pp, Xq_pp, Xl, Se, Kw, saturation_coeffs, ext, γ_d1, γ_q1, γ_d2, γ_q2, states, n_states, internal, )
 end
 
