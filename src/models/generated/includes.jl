@@ -63,6 +63,7 @@ include("OneDOneQMachine.jl")
 include("SimpleAFMachine.jl")
 include("SimpleFullMachine.jl")
 include("SimpleMarconatoMachine.jl")
+include("GENQEC.jl")
 include("PSSFixed.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
@@ -210,6 +211,7 @@ export get_Kpg
 export get_Ks
 export get_Kt
 export get_Kv
+export get_Kw
 export get_L_1d
 export get_L_1q
 export get_L_ad
@@ -483,6 +485,7 @@ export get_rf
 export get_rg
 export get_rrpwr
 export get_rv
+export get_sat_flag
 export get_saturation_coeffs
 export get_services
 export get_shut_down
@@ -638,6 +641,7 @@ export set_Kpg!
 export set_Ks!
 export set_Kt!
 export set_Kv!
+export set_Kw!
 export set_L_1d!
 export set_L_1q!
 export set_L_ad!
@@ -911,6 +915,7 @@ export set_rf!
 export set_rg!
 export set_rrpwr!
 export set_rv!
+export set_sat_flag!
 export set_saturation_coeffs!
 export set_services!
 export set_shut_down!
