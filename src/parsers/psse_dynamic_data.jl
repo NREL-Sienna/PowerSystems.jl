@@ -447,7 +447,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 @warn "No series reactance found. Setting it to 1e-6"
                 x = 1e-6
             end
-            s = _make_source(g, r, x)
+            s = _make_source(g, r, x, get_base_power(sys))
             remove_component!(typeof(g), sys, _name)
             add_component!(sys, s)
         elseif all(.!ismissing.(temp_dict[_id]))
