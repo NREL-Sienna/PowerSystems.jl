@@ -96,11 +96,13 @@ end
 Internal branch name retreval from pm2ps_dict
 """
 function _get_pm_branch_name(device_dict, bus_f, bus_t)
+    # Additional if-else are used to catch line id in PSSe parsing cases
     if haskey(device_dict, "name")
         index = device_dict["name"]
-    elseif device_dict["source_id"][1] == "branch"
+    elseif device_dict["source_id"][1] == "branch" && length(device_dict["source_id"]) > 2
         index = strip(device_dict["source_id"][4])
-    elseif device_dict["source_id"][1] == "transformer"
+    elseif device_dict["source_id"][1] == "transformer" &&
+           length(device_dict["source_id"]) > 3
         index = strip(device_dict["source_id"][5])
     else
         index = device_dict["index"]
