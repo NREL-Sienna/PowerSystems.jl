@@ -12436,10 +12436,11 @@
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
-          "name": "ext",
-          "data_type": "Dict{String, Any}",
-          "null_value": "Dict{String, Any}()",
-          "default": "Dict{String, Any}()"
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
         },
         {
           "name": "states",
@@ -12454,6 +12455,12 @@
           "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
           "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
           "data_type": "Int"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
         },
         {
           "name": "internal",
