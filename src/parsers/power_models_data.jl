@@ -96,7 +96,17 @@ end
 Internal branch name retreval from pm2ps_dict
 """
 function _get_pm_branch_name(device_dict, bus_f, bus_t)
-    index = get(device_dict, "name", device_dict["index"])
+    # Additional if-else are used to catch line id in PSSe parsing cases
+    if haskey(device_dict, "name")
+        index = device_dict["name"]
+    elseif device_dict["source_id"][1] == "branch" && length(device_dict["source_id"]) > 2
+        index = strip(device_dict["source_id"][4])
+    elseif device_dict["source_id"][1] == "transformer" &&
+           length(device_dict["source_id"]) > 3
+        index = strip(device_dict["source_id"][5])
+    else
+        index = device_dict["index"]
+    end
     return "$(get_name(bus_f))-$(get_name(bus_t))-i_$index"
 end
 
@@ -637,7 +647,6 @@ function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["branch"]
-        d["name"] = get(d, "name", d_key)
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
