@@ -566,6 +566,15 @@ end
         Iq_lim = (min = 0.0, max = 0.0),
         ext = Dict{String, Any}(),
     )
+
+    sys = System(100)
+    bus = Bus(nothing)
+    add_component!(sys, bus)
+    static_injector = ThermalStandard(nothing)
+    add_component!(sys, static_injector)
+    add_component!(sys, dera, static_injector)
+    DERAs = collect(get_components(AggregateDistributedGenerationA, sys))
+    @test length(DERAs) == 1
 end
 
 @testset "Forward functions" begin
