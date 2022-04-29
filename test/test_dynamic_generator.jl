@@ -493,47 +493,47 @@ end
         PerOp_Flag = 0,
         Recon_Flag = 0,
         Trv = 0,
-        VV_pnts = (V1=0.0, V2=0.0, V3=0.0, V4=0.0),
-        Q_lim = (min=0.0, max=0.0),
+        VV_pnts = (V1 = 0.0, V2 = 0.0, V3 = 0.0, V4 = 0.0),
+        Q_lim = (min = 0.0, max = 0.0),
         Tp = 0,
-        e_lim = (min=0.0, max=0.0),
+        e_lim = (min = 0.0, max = 0.0),
         Kpq = 0,
         Kiq = 0,
-        Iqr_lim = (min=0.0, max=0.0),
+        Iqr_lim = (min = 0.0, max = 0.0),
         I_max = 0,
         Tg = 0,
         kWh_Cap = 0,
         SOC_ini = 0,
-        SOC_lim = (min=0.0, max=0.0),
+        SOC_lim = (min = 0.0, max = 0.0),
         Trf = 0,
-        fdbd_pnts = (fdbd1=0.0, fdbd2=0.0),
+        fdbd_pnts = (fdbd1 = 0.0, fdbd2 = 0.0),
         D_dn = 0,
         D_up = 0,
-        fe_lim = (min=0.0, max=0.0),
+        fe_lim = (min = 0.0, max = 0.0),
         Kpp = 0,
         Kip = 0,
-        P_lim = (min=0.0, max=0.0),
-        dP_lim = (min=0.0, max=0.0),
+        P_lim = (min = 0.0, max = 0.0),
+        dP_lim = (min = 0.0, max = 0.0),
         T_pord = 0,
         rrpwr = 0,
-        VRT_pnts = (vrt1=0.0, vrt2=0.0, vrt3=0.0, vrt4=0.0, vrt5=0.0),
-        TVRT_pnts = (tvrt1=0.0, tvrt2=0.0, tvrt3=0.0),
+        VRT_pnts = (vrt1 = 0.0, vrt2 = 0.0, vrt3 = 0.0, vrt4 = 0.0, vrt5 = 0.0),
+        TVRT_pnts = (tvrt1 = 0.0, tvrt2 = 0.0, tvrt3 = 0.0),
         tV_delay = 0,
-        VES_lim = (min=0.0, max=0.0),
-        FRT_pnts = (frt1=0.0, frt2=0.0, frt3=0.0, frt4=0.0),
-        TFRT_pnts = (tfrt1=0.0, tfrt2=0.0),
+        VES_lim = (min = 0.0, max = 0.0),
+        FRT_pnts = (frt1 = 0.0, frt2 = 0.0, frt3 = 0.0, frt4 = 0.0),
+        TFRT_pnts = (tfrt1 = 0.0, tfrt2 = 0.0),
         tF_delay = 0,
-        FES_lim = (min=0.0, max=0.0),
+        FES_lim = (min = 0.0, max = 0.0),
         Pfa_ref = 0,
         Q_ref = 0,
         P_ref = 0,
         base_power = 0,
-        ext=Dict{String, Any}(),
+        ext = Dict{String, Any}(),
     )
     @test derd isa PowerSystems.Component
 
-#invalid Qref_Flag    
-@test_throws ErrorException GenericDER(
+    #invalid Qref_Flag
+    @test_throws ErrorException GenericDER(
         name = "init",
         Qref_Flag = 4,
         PQ_Flag = 0,
@@ -541,42 +541,53 @@ end
         PerOp_Flag = 0,
         Recon_Flag = 0,
         Trv = 0,
-        VV_pnts = (V1=0.0, V2=0.0, V3=0.0, V4=0.0),
-        Q_lim = (min=0.0, max=0.0),
+        VV_pnts = (V1 = 0.0, V2 = 0.0, V3 = 0.0, V4 = 0.0),
+        Q_lim = (min = 0.0, max = 0.0),
         Tp = 0,
-        e_lim = (min=0.0, max=0.0),
+        e_lim = (min = 0.0, max = 0.0),
         Kpq = 0,
         Kiq = 0,
-        Iqr_lim = (min=0.0, max=0.0),
+        Iqr_lim = (min = 0.0, max = 0.0),
         I_max = 0,
         Tg = 0,
         kWh_Cap = 0,
         SOC_ini = 0,
-        SOC_lim = (min=0.0, max=0.0),
+        SOC_lim = (min = 0.0, max = 0.0),
         Trf = 0,
-        fdbd_pnts = (fdbd1=0.0, fdbd2=0.0),
+        fdbd_pnts = (fdbd1 = 0.0, fdbd2 = 0.0),
         D_dn = 0,
         D_up = 0,
-        fe_lim = (min=0.0, max=0.0),
+        fe_lim = (min = 0.0, max = 0.0),
         Kpp = 0,
         Kip = 0,
-        P_lim = (min=0.0, max=0.0),
-        dP_lim = (min=0.0, max=0.0),
+        P_lim = (min = 0.0, max = 0.0),
+        dP_lim = (min = 0.0, max = 0.0),
         T_pord = 0,
         rrpwr = 0,
-        VRT_pnts = (vrt1=0.0, vrt2=0.0, vrt3=0.0, vrt4=0.0, vrt5=0.0),
-        TVRT_pnts = (tvrt1=0.0, tvrt2=0.0, tvrt3=0.0),
+        VRT_pnts = (vrt1 = 0.0, vrt2 = 0.0, vrt3 = 0.0, vrt4 = 0.0, vrt5 = 0.0),
+        TVRT_pnts = (tvrt1 = 0.0, tvrt2 = 0.0, tvrt3 = 0.0),
         tV_delay = 0,
-        VES_lim = (min=0.0, max=0.0),
-        FRT_pnts = (frt1=0.0, frt2=0.0, frt3=0.0, frt4=0.0),
-        TFRT_pnts = (tfrt1=0.0, tfrt2=0.0),
+        VES_lim = (min = 0.0, max = 0.0),
+        FRT_pnts = (frt1 = 0.0, frt2 = 0.0, frt3 = 0.0, frt4 = 0.0),
+        TFRT_pnts = (tfrt1 = 0.0, tfrt2 = 0.0),
         tF_delay = 0,
-        FES_lim = (min=0.0, max=0.0),
+        FES_lim = (min = 0.0, max = 0.0),
         Pfa_ref = 0,
         Q_ref = 0,
         P_ref = 0,
         base_power = 0,
-        ext=Dict{String, Any}(),
+        ext = Dict{String, Any}(),
+    )
+
+    sys = System(100)
+    bus = Bus(nothing)
+    add_component!(sys, bus)
+    static_injector = ThermalStandard(nothing)
+    add_component!(sys, static_injector)
+    add_component!(sys, derd, static_injector)
+    DERDs = collect(get_components(GenericDER, sys))
+    @test length(DERDs) == 1
+end
 
 @testset "Aggregate Distributed Generation" begin
     #valid (non-default) Freq_Flag
@@ -667,12 +678,6 @@ end
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
     add_component!(sys, static_injector)
-    add_component!(sys, derd, static_injector)
-    DERDs = collect(get_components(GenericDER, sys))
-    @test length(DERDs) == 1
-end
-
-
     add_component!(sys, dera, static_injector)
     DERAs = collect(get_components(AggregateDistributedGenerationA, sys))
     @test length(DERAs) == 1
