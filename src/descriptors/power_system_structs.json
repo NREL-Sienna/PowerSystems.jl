@@ -1419,6 +1419,121 @@
       "supertype": "StaticLoad"
     },
     {
+      "struct_name": "ExponentialLoad",
+      "docstring": "Data structure for a static exponential load.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "active_power_coefficient",
+          "comment": "Coefficient relating voltage dependence for power P = P0 * V^α",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "reactive_power_coefficient",
+          "comment": "Coefficient relating voltage dependence for power Q = Q0 * V^β",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "max_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "services",
+          "data_type": "Vector{Service}",
+          "comment": "Services that this device contributes to",
+          "null_value": "Device[]",
+          "default": "Device[]"
+        },
+        {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "time_series_container",
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "StaticLoad"
+    },
+    {
       "struct_name": "HydroEnergyReservoir",
       "fields": [
         {
@@ -8421,6 +8536,122 @@
       "supertype": "PSS"
     },
     {
+      "struct_name": "STAB1",
+      "docstring": "Speed-Sensitive Stabilizing Model",
+      "fields": [
+        {
+          "name": "KT",
+          "comment": "K/T for washout filter",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T",
+          "comment": "Time constant for washout filter",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T1T3",
+          "comment": "Time constant division T1/T3",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T3",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T2T4",
+          "comment": "Time constant division T2/T4",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "T4",
+          "comment": "Time constant",
+          "null_value": 0.01,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0.01,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "H_lim",
+          "comment": "PSS output limit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 0.5
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T2 lead-lag block, \n\tx_p3: T3/T4 lead-lag block,",
+          "internal_default": "[:x_p1, :x_p2, :x_p3]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "STAB1 has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        },
+        {
+          "name": "states_types",
+          "comment": "STAB1 has 3 differential states",
+          "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+          "data_type": "Vector{StateTypes}"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "PSS"
+    },
+    {
       "struct_name": "SingleMass",
       "docstring": "Parameters of single mass shaft model. Typically represents the rotor mass.",
       "fields": [
@@ -11875,6 +12106,371 @@
         }
       ],
       "supertype": "InnerControl"
+    },
+    {
+      "struct_name": "AggregateDistributedGenerationA",
+      "docstring": "Parameters of the DERA1 model in PSS/E",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "Pf_Flag",
+          "comment": "Flag for Power Factor Control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Freq_Flag",
+          "comment": "Flag to enable/disable frequency control",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "PQ_Flag",
+          "comment": "Flag used to enforce maximum current",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Gen_Flag",
+          "comment": "Flag to specify generator or storage",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Vtrip_Flag",
+          "comment": "Flag to enable/disable voltage trip logic",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "Ftrip_Flag",
+          "comment": "Flag to enable/disable frequency trip logic",
+          "null_value": 0,
+          "data_type": "Int",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "T_rv",
+          "comment": "Voltage measurement transducer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Trf",
+          "comment": "Frequency measurement transducer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "dbd_pnts",
+          "comment": "Voltage deadband thresholds `(dbd1, dbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "K_qv",
+          "comment": "Proportional voltage control gain (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "V_ref0",
+          "comment": "User defined reference. If 0, PSID initializes to initial terminal voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tp",
+          "comment": "Power measurement transducer time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_iq",
+          "comment": "Time constant for low-pass filter for state q_V when QFlag = 0",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "D_dn",
+          "comment": "Reciprocal of droop for over-frequency conditions (>0) (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "D_up",
+          "comment": "Reciprocal of droop for under-frequency conditions <=0) (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "fdbd_pnts",
+          "comment": "Frequency control deadband thresholds `(fdbd1, fdbd2)`",
+          "null_value": "(0.0, 0.0)",
+          "data_type": "Tuple{Float64, Float64}"
+        },
+        {
+          "name": "fe_lim",
+          "comment": "Frequency error limits (femin, femax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "P_lim",
+          "comment": "Power limits (Pmin, Pmax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "dP_lim",
+          "comment": "Power reference ramp rate limits (dPmin, dPmax)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "Tpord",
+          "comment": "Power filter time constant",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kpg",
+          "comment": "PI controller proportional gain (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Kig",
+          "comment": "PI controller integral gain (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "I_max",
+          "comment": "Maximum limit on total converter current (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "vl_pnts",
+          "comment": "Low voltage cutout points `[(tv10, vl0), (tv11, vl1)]`",
+          "null_value": "[(0.0, 0.0), (0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}"
+        },
+        {
+          "name": "vh_pnts",
+          "comment": "High voltage cutout points `[(tvh0, vh0), (tvh1, vh1)]`",
+          "null_value": "[(0.0, 0.0), (0.0, 0.0)]",
+          "data_type": "Vector{Tuple{Float64,Float64}}"
+        },
+        {
+          "name": "Vrfrac",
+          "comment": "Fraction of device that recovers after voltage comes back to within vl1 < V < vh1 (0 <= Vrfrac <= 1)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "fl",
+          "comment": "Inverter frequency break-point for low frequency cut-out (Hz)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "fh",
+          "comment": "Inverter frequency break-point for high frequency cut-out (Hz)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "tfl",
+          "comment": "Low frequency cut-out timer corresponding to frequency fl (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "tfh",
+          "comment": "High frequency cut-out timer corresponding to frequency fh (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tg",
+          "comment": "Current control time constant (to represent behavior of inner control loops) (> 0) (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "rrpwr",
+          "comment": "Ramp rate for real power increase following a fault (pu/s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tv",
+          "comment": "Time constant on the output of the multiplier (s)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Vpr",
+          "comment": "Voltage below which frequency tripping is disabled (pu)",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Iq_lim",
+          "comment": "Reactive current injection limits (Iqll, Iqhl)",
+          "null_value": "(min=0.0, max=0.0)",
+          "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
+          "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
+          "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
+          "data_type": "Int"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
     },
     {
       "struct_name": "Source",

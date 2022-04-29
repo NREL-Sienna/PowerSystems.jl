@@ -17,6 +17,7 @@ include("VSCDCLine.jl")
 include("InterruptibleLoad.jl")
 include("FixedAdmittance.jl")
 include("PowerLoad.jl")
+include("ExponentialLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -66,6 +67,7 @@ include("SimpleMarconatoMachine.jl")
 include("PSSFixed.jl")
 include("PSSSimple.jl")
 include("IEEEST.jl")
+include("STAB1.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -96,6 +98,7 @@ include("ReactivePowerPI.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
+include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
 include("GenericDER.jl")
@@ -135,17 +138,20 @@ export get_Efd_lim
 export get_FES_lim
 export get_FRT_pnts
 export get_Freq_Flag
+export get_Ftrip_Flag
 export get_G
 export get_Gen_Flag
 export get_H
 export get_H_ex
 export get_H_hp
 export get_H_ip
+export get_H_lim
 export get_H_lp
 export get_I_lr
 export get_I_max
 export get_Iflim
 export get_Io_lim
+export get_Iq_lim
 export get_Iqinj_lim
 export get_Iqr_lim
 export get_Iqr_lims
@@ -159,6 +165,7 @@ export get_K5
 export get_K6
 export get_K7
 export get_K8
+export get_KT
 export get_K_c
 export get_K_d
 export get_K_ex
@@ -199,6 +206,7 @@ export get_Ki_p
 export get_Ki_q
 export get_Kip
 export get_Kiq
+export get_Kig
 export get_Kl
 export get_Kp
 export get_Kp_gov
@@ -207,6 +215,7 @@ export get_Kp_p
 export get_Kp_q
 export get_Kpp
 export get_Kpq
+export get_Kpg
 export get_Ks
 export get_Kt
 export get_Kv
@@ -232,6 +241,7 @@ export get_P_lim_inner
 export get_P_ref
 export get_PerOp_Flag
 export get_Pfa_ref
+export get_Pf_Flag
 export get_Q_Flag
 export get_Q_lim
 export get_Q_lim_inner
@@ -256,8 +266,11 @@ export get_SOC_ini
 export get_SOC_lim
 export get_Se
 export get_Spar
+export get_T
 export get_T1
+export get_T1T3
 export get_T2
+export get_T2T4
 export get_T3
 export get_T4
 export get_T5
@@ -300,6 +313,7 @@ export get_Tj
 export get_Tk
 export get_Tp
 export get_Tpelec
+export get_Tpord
 export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
@@ -308,6 +322,7 @@ export get_Trv
 export get_Ts
 export get_Tsa
 export get_Tsb
+export get_Tv
 export get_Tw
 export get_U0
 export get_UEL_flags
@@ -336,7 +351,10 @@ export get_Vf
 export get_Vi_lim
 export get_Vm_lim
 export get_Vo_lim
+export get_Vpr
 export get_Vr_lim
+export get_Vrfrac
+export get_Vtrip_Flag
 export get_Wf_nl
 export get_X_c
 export get_X_source
@@ -351,6 +369,7 @@ export get_Xq_pp
 export get_Y
 export get_Zerox
 export get_active_power
+export get_active_power_coefficient
 export get_active_power_flow
 export get_active_power_limits
 export get_active_power_limits_from
@@ -392,7 +411,9 @@ export get_ext
 export get_f
 export get_fdbd_pnts
 export get_fe_lim
+export get_fh
 export get_fixed
+export get_fl
 export get_flow_limits
 export get_frequency
 export get_from
@@ -471,6 +492,7 @@ export get_rating
 export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
+export get_reactive_power_coefficient
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
@@ -502,6 +524,8 @@ export get_switch
 export get_tF_delay
 export get_tV_delay
 export get_tap
+export get_tfh
+export get_tfl
 export get_time_at_status
 export get_time_frame
 export get_time_limits
@@ -511,6 +535,8 @@ export get_to
 export get_to_branch_control
 export get_valve_position_limits
 export get_variable
+export get_vh_pnts
+export get_vl_pnts
 export get_voltage
 export get_voltage_limits
 export get_x
@@ -564,17 +590,20 @@ export set_Efd_lim!
 export set_FES_lim!
 export set_FRT_pnts!
 export set_Freq_Flag!
+export set_Ftrip_Flag!
 export set_G!
 export set_Gen_Flag!
 export set_H!
 export set_H_ex!
 export set_H_hp!
 export set_H_ip!
+export set_H_lim!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
 export set_Iflim!
 export set_Io_lim!
+export set_Iq_lim!
 export set_Iqinj_lim!
 export set_Iqr_lim!
 export set_Iqr_lims!
@@ -588,6 +617,7 @@ export set_K5!
 export set_K6!
 export set_K7!
 export set_K8!
+export set_KT!
 export set_K_c!
 export set_K_d!
 export set_K_ex!
@@ -628,6 +658,7 @@ export set_Ki_p!
 export set_Ki_q!
 export set_Kip!
 export set_Kiq!
+export set_Kig!
 export set_Kl!
 export set_Kp!
 export set_Kp_gov!
@@ -636,6 +667,7 @@ export set_Kp_p!
 export set_Kp_q!
 export set_Kpp!
 export set_Kpq!
+export set_Kpg!
 export set_Ks!
 export set_Kt!
 export set_Kv!
@@ -661,6 +693,7 @@ export set_P_lim_inner!
 export set_P_ref!
 export set_PerOp_Flag!
 export set_Pfa_ref!
+export set_Pf_Flag!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_lim_inner!
@@ -685,8 +718,11 @@ export set_SOC_ini!
 export set_SOC_lim!
 export set_Se!
 export set_Spar!
+export set_T!
 export set_T1!
+export set_T1T3!
 export set_T2!
+export set_T2T4!
 export set_T3!
 export set_T4!
 export set_T5!
@@ -729,6 +765,7 @@ export set_Tj!
 export set_Tk!
 export set_Tp!
 export set_Tpelec!
+export set_Tpord!
 export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
@@ -737,6 +774,7 @@ export set_Trv!
 export set_Ts!
 export set_Tsa!
 export set_Tsb!
+export set_Tv!
 export set_Tw!
 export set_U0!
 export set_UEL_flags!
@@ -765,7 +803,10 @@ export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
 export set_Vo_lim!
+export set_Vpr!
 export set_Vr_lim!
+export set_Vrfrac!
+export set_Vtrip_Flag!
 export set_Wf_nl!
 export set_X_c!
 export set_X_source!
@@ -780,6 +821,7 @@ export set_Xq_pp!
 export set_Y!
 export set_Zerox!
 export set_active_power!
+export set_active_power_coefficient!
 export set_active_power_flow!
 export set_active_power_limits!
 export set_active_power_limits_from!
@@ -821,7 +863,9 @@ export set_ext!
 export set_f!
 export set_fdbd_pnts!
 export set_fe_lim!
+export set_fh!
 export set_fixed!
+export set_fl!
 export set_flow_limits!
 export set_frequency!
 export set_from!
@@ -900,6 +944,7 @@ export set_rating!
 export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
+export set_reactive_power_coefficient!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
@@ -931,6 +976,8 @@ export set_switch!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
+export set_tfh!
+export set_tfl!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
@@ -940,6 +987,8 @@ export set_to!
 export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!
+export set_vh_pnts!
+export set_vl_pnts!
 export set_voltage!
 export set_voltage_limits!
 export set_x!

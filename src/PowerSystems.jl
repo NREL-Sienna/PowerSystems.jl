@@ -79,6 +79,7 @@ export HybridSystem
 export RegulationDevice
 
 export GenericDER
+export AggregateDistributedGenerationA
 
 #AVR Exports
 export AVR
