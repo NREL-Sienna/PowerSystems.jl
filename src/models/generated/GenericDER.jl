@@ -6,6 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct GenericDER <: DynamicInjection
+        name::String
         Qref_Flag::Int
         PQ_Flag::Int
         Gen_Flag::Int
@@ -43,16 +44,20 @@ This file is auto-generated. Do not edit.
         TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}
         tF_delay::Float64
         FES_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Pfa_ref::Float64
         Q_ref::Float64
         P_ref::Float64
-        ext::Dict{String, Any}
+        base_power::Float64
         states::Vector{Symbol}
         n_states::Int
+        ext::Dict{String, Any}
+        internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Generic Distributed Energy Resource Model
+Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf
 
 # Arguments
+- `name::String`
 - `Qref_Flag::Int`: Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control, validation range: `(1, 3)`
 - `PQ_Flag::Int`: Active and reactive power priority mode. 0 for Q priority, 1 for P priority, validation range: `(0, 1)`
 - `Gen_Flag::Int`: Define generator or storage system. 0 unit is a storage device, 1 unit is a generator, validation range: `(0, 1)`
@@ -90,13 +95,17 @@ Parameters of a Generic Distributed Energy Resource Model
 - `TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}`: Frequency ride through time points (tfrt1,tfrt2)
 - `tF_delay::Float64`: Time delay for reconnection after frequency ride-through disconnection, validation range: `(0, nothing)`
 - `FES_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Min and max frequency for entering service (FES_min,FES_max)
+- `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `base_power::Float64`: Base power
 - `states::Vector{Symbol}`: The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 
-- `n_states::Int`: DER-D has 9 states
+- `n_states::Int`: GenericDER has 9 states
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericDER <: DynamicInjection
+    name::String
     "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control"
     Qref_Flag::Int
     "Active and reactive power priority mode. 0 for Q priority, 1 for P priority"
@@ -171,28 +180,35 @@ mutable struct GenericDER <: DynamicInjection
     tF_delay::Float64
     "Min and max frequency for entering service (FES_min,FES_max)"
     FES_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    "Reference power factor"
+    Pfa_ref::Float64
     "Reference reactive power, in pu"
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    ext::Dict{String, Any}
+    "Base power"
+    base_power::Float64
     "The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 "
     states::Vector{Symbol}
-    "DER-D has 9 states"
+    "GenericDER has 9 states"
     n_states::Int
+    ext::Dict{String, Any}
+    "power system internal reference, do not modify"
+    internal::InfrastructureSystemsInternal
 end
 
-function GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref=0.0, P_ref=1.0, ext=Dict{String, Any}(), )
-    GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref, P_ref, ext, [:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], 9, )
+function GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), )
+    GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref, Q_ref, P_ref, base_power, ext, [:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], 9, InfrastructureSystemsInternal(), )
 end
 
-function GenericDER(; Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref=0.0, P_ref=1.0, ext=Dict{String, Any}(), states=[:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], n_states=9, )
-    GenericDER(Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Q_ref, P_ref, ext, states, n_states, )
+function GenericDER(; name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=[:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], n_states=9, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
 function GenericDER(::Nothing)
     GenericDER(;
+        name="init",
         Qref_Flag=1,
         PQ_Flag=0,
         Gen_Flag=0,
@@ -230,12 +246,16 @@ function GenericDER(::Nothing)
         TFRT_pnts=(tfrt1=0.0, tfrt2=0.0),
         tF_delay=0,
         FES_lim=(min=0.0, max=0.0),
+        Pfa_ref=0,
         Q_ref=0,
         P_ref=0,
+        base_power=0,
         ext=Dict{String, Any}(),
     )
 end
 
+"""Get [`GenericDER`](@ref) `name`."""
+get_name(value::GenericDER) = value.name
 """Get [`GenericDER`](@ref) `Qref_Flag`."""
 get_Qref_Flag(value::GenericDER) = value.Qref_Flag
 """Get [`GenericDER`](@ref) `PQ_Flag`."""
@@ -310,16 +330,22 @@ get_TFRT_pnts(value::GenericDER) = value.TFRT_pnts
 get_tF_delay(value::GenericDER) = value.tF_delay
 """Get [`GenericDER`](@ref) `FES_lim`."""
 get_FES_lim(value::GenericDER) = value.FES_lim
+"""Get [`GenericDER`](@ref) `Pfa_ref`."""
+get_Pfa_ref(value::GenericDER) = value.Pfa_ref
 """Get [`GenericDER`](@ref) `Q_ref`."""
 get_Q_ref(value::GenericDER) = value.Q_ref
 """Get [`GenericDER`](@ref) `P_ref`."""
 get_P_ref(value::GenericDER) = value.P_ref
-"""Get [`GenericDER`](@ref) `ext`."""
-get_ext(value::GenericDER) = value.ext
+"""Get [`GenericDER`](@ref) `base_power`."""
+get_base_power(value::GenericDER) = value.base_power
 """Get [`GenericDER`](@ref) `states`."""
 get_states(value::GenericDER) = value.states
 """Get [`GenericDER`](@ref) `n_states`."""
 get_n_states(value::GenericDER) = value.n_states
+"""Get [`GenericDER`](@ref) `ext`."""
+get_ext(value::GenericDER) = value.ext
+"""Get [`GenericDER`](@ref) `internal`."""
+get_internal(value::GenericDER) = value.internal
 
 """Set [`GenericDER`](@ref) `Qref_Flag`."""
 set_Qref_Flag!(value::GenericDER, val) = value.Qref_Flag = val
@@ -395,9 +421,13 @@ set_TFRT_pnts!(value::GenericDER, val) = value.TFRT_pnts = val
 set_tF_delay!(value::GenericDER, val) = value.tF_delay = val
 """Set [`GenericDER`](@ref) `FES_lim`."""
 set_FES_lim!(value::GenericDER, val) = value.FES_lim = val
+"""Set [`GenericDER`](@ref) `Pfa_ref`."""
+set_Pfa_ref!(value::GenericDER, val) = value.Pfa_ref = val
 """Set [`GenericDER`](@ref) `Q_ref`."""
 set_Q_ref!(value::GenericDER, val) = value.Q_ref = val
 """Set [`GenericDER`](@ref) `P_ref`."""
 set_P_ref!(value::GenericDER, val) = value.P_ref = val
+"""Set [`GenericDER`](@ref) `base_power`."""
+set_base_power!(value::GenericDER, val) = value.base_power = val
 """Set [`GenericDER`](@ref) `ext`."""
 set_ext!(value::GenericDER, val) = value.ext = val

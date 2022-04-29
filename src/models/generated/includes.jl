@@ -231,6 +231,7 @@ export get_P_lim
 export get_P_lim_inner
 export get_P_ref
 export get_PerOp_Flag
+export get_Pfa_ref
 export get_Q_Flag
 export get_Q_lim
 export get_Q_lim_inner
@@ -659,6 +660,7 @@ export set_P_lim!
 export set_P_lim_inner!
 export set_P_ref!
 export set_PerOp_Flag!
+export set_Pfa_ref!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_lim_inner!

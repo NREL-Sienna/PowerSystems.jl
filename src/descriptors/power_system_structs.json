@@ -12090,8 +12090,14 @@
     },
     {
       "struct_name": "GenericDER",
-      "docstring": "Parameters of a Generic Distributed Energy Resource Model",
+      "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf",
       "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
         {
           "name": "Qref_Flag",
           "comment": "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control",
@@ -12403,6 +12409,17 @@
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
         },
         {
+          "name": "Pfa_ref",
+          "comment": "Reference power factor",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "Q_ref",
           "comment": "Reference reactive power, in pu",
           "null_value": 0,
@@ -12425,11 +12442,12 @@
           }
         },
         {
-          "name": "ext",
-          "data_type": "Dict{String, Any}",
-          "null_value": "Dict{String, Any}()",
-          "default": "Dict{String, Any}()"
-        },
+        "name": "base_power",
+        "comment": "Base power",
+        "null_value": 0.0,
+        "data_type": "Float64",
+        "default": "100.0"
+      },
         {
           "name": "states",
           "exclude_setter": true,
@@ -12440,9 +12458,22 @@
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "DER-D has 9 states",
+          "comment": "GenericDER has 9 states",
           "internal_default": 9,
           "data_type": "Int"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
         }
       ],
       "supertype": "DynamicInjection"
