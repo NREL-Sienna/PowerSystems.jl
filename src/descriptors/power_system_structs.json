@@ -12448,20 +12448,20 @@
         "data_type": "Float64",
         "default": "100.0"
       },
-        {
-          "name": "states",
-          "exclude_setter": true,
-          "comment": "The states are:\tx1 ,\tx2 ,\tx3, \tx4, \tx5 ,\tx6 , \tx7 ,\tx8 ,\tx9 ",
-          "internal_default": "[:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9]",
-          "data_type": "Vector{Symbol}"
-        },
-        {
-          "name": "n_states",
-          "exclude_setter": true,
-          "comment": "GenericDER has 9 states",
-          "internal_default": 9,
-          "data_type": "Int"
-        },
+      {
+        "name": "states",
+        "exclude_setter": true,
+        "comment": "The states of GenericDER depend on the Flags",
+        "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[1]",
+        "data_type": "Vector{Symbol}"
+      },
+      {
+        "name": "n_states",
+        "exclude_setter": true,
+        "comment": "The states of GenericDER depend on the Flags",
+        "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[2]",
+        "data_type": "Int"
+      },
         {
           "name": "ext",
           "data_type": "Dict{String, Any}",

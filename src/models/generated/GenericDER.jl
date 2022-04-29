@@ -99,8 +99,8 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power
-- `states::Vector{Symbol}`: The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 
-- `n_states::Int`: GenericDER has 9 states
+- `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
+- `n_states::Int`: The states of GenericDER depend on the Flags
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -188,9 +188,9 @@ mutable struct GenericDER <: DynamicInjection
     P_ref::Float64
     "Base power"
     base_power::Float64
-    "The states are:	x1 ,	x2 ,	x3, 	x4, 	x5 ,	x6 , 	x7 ,	x8 ,	x9 "
+    "The states of GenericDER depend on the Flags"
     states::Vector{Symbol}
-    "GenericDER has 9 states"
+    "The states of GenericDER depend on the Flags"
     n_states::Int
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
@@ -198,10 +198,10 @@ mutable struct GenericDER <: DynamicInjection
 end
 
 function GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), )
-    GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref, Q_ref, P_ref, base_power, ext, [:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], 9, InfrastructureSystemsInternal(), )
+    GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref, Q_ref, P_ref, base_power, ext, PowerSystems.get_GenericDER_states(Qref_Flag)[1], PowerSystems.get_GenericDER_states(Qref_Flag)[2], InfrastructureSystemsInternal(), )
 end
 
-function GenericDER(; name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=[:x1, :x2, :x3, :x4, :x5, :x6, :x7, :x8, :x9], n_states=9, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function GenericDER(; name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=PowerSystems.get_GenericDER_states(Qref_Flag)[1], n_states=PowerSystems.get_GenericDER_states(Qref_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     GenericDER(name, Qref_Flag, PQ_Flag, Gen_Flag, PerOp_Flag, Recon_Flag, Trv, VV_pnts, Q_lim, Tp, e_lim, Kpq, Kiq, Iqr_lim, I_max, Tg, kWh_Cap, SOC_ini, SOC_lim, Trf, fdbd_pnts, D_dn, D_up, fe_lim, Kpp, Kip, P_lim, dP_lim, T_pord, rrpwr, VRT_pnts, TVRT_pnts, tV_delay, VES_lim, FRT_pnts, TFRT_pnts, tF_delay, FES_lim, Pfa_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
 end
 
