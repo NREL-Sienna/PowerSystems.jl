@@ -101,6 +101,7 @@ include("RECurrentControlB.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
+include("GenericDER.jl")
 
 export get_A1
 export get_A2
@@ -134,6 +135,8 @@ export get_Dm
 export get_E_lim
 export get_E_sat
 export get_Efd_lim
+export get_FES_lim
+export get_FRT_pnts
 export get_Freq_Flag
 export get_Ftrip_Flag
 export get_G
@@ -150,6 +153,7 @@ export get_Iflim
 export get_Io_lim
 export get_Iq_lim
 export get_Iqinj_lim
+export get_Iqr_lim
 export get_Iqr_lims
 export get_K
 export get_K0
@@ -200,6 +204,8 @@ export get_Ki_load
 export get_Ki_mw
 export get_Ki_p
 export get_Ki_q
+export get_Kip
+export get_Kiq
 export get_Kig
 export get_Kl
 export get_Kp
@@ -207,6 +213,8 @@ export get_Kp_gov
 export get_Kp_load
 export get_Kp_p
 export get_Kp_q
+export get_Kpp
+export get_Kpq
 export get_Kpg
 export get_Ks
 export get_Kt
@@ -231,11 +239,14 @@ export get_PSS_flags
 export get_P_lim
 export get_P_lim_inner
 export get_P_ref
+export get_PerOp_Flag
+export get_Pfa_ref
 export get_Pf_Flag
 export get_Q_Flag
 export get_Q_lim
 export get_Q_lim_inner
 export get_Q_ref
+export get_Qref_Flag
 export get_R
 export get_R_1d
 export get_R_1q
@@ -246,10 +257,13 @@ export get_R_lim
 export get_R_open
 export get_R_source
 export get_R_th
+export get_Recon_Flag
 export get_Ref_Flag
 export get_Rp
 export get_Rrpwr
 export get_Rselect
+export get_SOC_ini
+export get_SOC_lim
 export get_Se
 export get_Spar
 export get_T
@@ -262,6 +276,8 @@ export get_T4
 export get_T5
 export get_T6
 export get_T7
+export get_TFRT_pnts
+export get_TVRT_pnts
 export get_T_AA
 export get_T_act
 export get_T_eng
@@ -302,6 +318,7 @@ export get_Tq0_p
 export get_Tq0_pp
 export get_Tr
 export get_Trf
+export get_Trv
 export get_Ts
 export get_Tsa
 export get_Tsb
@@ -313,8 +330,11 @@ export get_U_c
 export get_VB_max
 export get_VC_Flag
 export get_VELM
+export get_VES_lim
 export get_VFE_lim
 export get_VH_max
+export get_VRT_pnts
+export get_VV_pnts
 export get_V_Flag
 export get_V_frz
 export get_V_lim
@@ -421,6 +441,7 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
+export get_kWh_Cap
 export get_kad
 export get_kd
 export get_kffi
@@ -500,6 +521,8 @@ export get_status
 export get_storage_capacity
 export get_storage_target
 export get_switch
+export get_tF_delay
+export get_tV_delay
 export get_tap
 export get_tfh
 export get_tfl
@@ -564,6 +587,8 @@ export set_Dm!
 export set_E_lim!
 export set_E_sat!
 export set_Efd_lim!
+export set_FES_lim!
+export set_FRT_pnts!
 export set_Freq_Flag!
 export set_Ftrip_Flag!
 export set_G!
@@ -580,6 +605,7 @@ export set_Iflim!
 export set_Io_lim!
 export set_Iq_lim!
 export set_Iqinj_lim!
+export set_Iqr_lim!
 export set_Iqr_lims!
 export set_K!
 export set_K0!
@@ -630,6 +656,8 @@ export set_Ki_load!
 export set_Ki_mw!
 export set_Ki_p!
 export set_Ki_q!
+export set_Kip!
+export set_Kiq!
 export set_Kig!
 export set_Kl!
 export set_Kp!
@@ -637,6 +665,8 @@ export set_Kp_gov!
 export set_Kp_load!
 export set_Kp_p!
 export set_Kp_q!
+export set_Kpp!
+export set_Kpq!
 export set_Kpg!
 export set_Ks!
 export set_Kt!
@@ -661,11 +691,14 @@ export set_PSS_flags!
 export set_P_lim!
 export set_P_lim_inner!
 export set_P_ref!
+export set_PerOp_Flag!
+export set_Pfa_ref!
 export set_Pf_Flag!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_lim_inner!
 export set_Q_ref!
+export set_Qref_Flag!
 export set_R!
 export set_R_1d!
 export set_R_1q!
@@ -676,10 +709,13 @@ export set_R_lim!
 export set_R_open!
 export set_R_source!
 export set_R_th!
+export set_Recon_Flag!
 export set_Ref_Flag!
 export set_Rp!
 export set_Rrpwr!
 export set_Rselect!
+export set_SOC_ini!
+export set_SOC_lim!
 export set_Se!
 export set_Spar!
 export set_T!
@@ -692,6 +728,8 @@ export set_T4!
 export set_T5!
 export set_T6!
 export set_T7!
+export set_TFRT_pnts!
+export set_TVRT_pnts!
 export set_T_AA!
 export set_T_act!
 export set_T_eng!
@@ -732,6 +770,7 @@ export set_Tq0_p!
 export set_Tq0_pp!
 export set_Tr!
 export set_Trf!
+export set_Trv!
 export set_Ts!
 export set_Tsa!
 export set_Tsb!
@@ -743,8 +782,11 @@ export set_U_c!
 export set_VB_max!
 export set_VC_Flag!
 export set_VELM!
+export set_VES_lim!
 export set_VFE_lim!
 export set_VH_max!
+export set_VRT_pnts!
+export set_VV_pnts!
 export set_V_Flag!
 export set_V_frz!
 export set_V_lim!
@@ -851,6 +893,7 @@ export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
+export set_kWh_Cap!
 export set_kad!
 export set_kd!
 export set_kffi!
@@ -930,6 +973,8 @@ export set_status!
 export set_storage_capacity!
 export set_storage_target!
 export set_switch!
+export set_tF_delay!
+export set_tV_delay!
 export set_tap!
 export set_tfh!
 export set_tfl!

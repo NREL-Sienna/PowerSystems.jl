@@ -72,11 +72,13 @@ export BatteryEMS
 export DynamicComponent
 export DynamicInjection
 export DynamicGenerator
+
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
 export RegulationDevice
 
+export GenericDER
 export AggregateDistributedGenerationA
 
 #AVR Exports
