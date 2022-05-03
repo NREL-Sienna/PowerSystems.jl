@@ -1657,8 +1657,8 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states are:\n\tψ_sq: stator flux in the q-axis,\n\tψ_sd: stator flux in the d-axis,\n\tψ_rq: rotor flux in the q-axis,\n\tψ_rd: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
-          "internal_default": "[:ψ_sq, :ψ_sd, :ψ_rq, :ψ_rd, :ωr]",
+          "comment": "The states are:\n\tψ_qs: stator flux in the q-axis,\n\tψ_ds: stator flux in the d-axis,\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+          "internal_default": "[:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr]",
           "data_type": "Vector{Symbol}"
         },
         {
@@ -1802,8 +1802,8 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states are:\n\tψ_rq: rotor flux in the q-axis,\n\tψ_rd: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
-          "internal_default": "[:ψ_rq, :ψ_rd, :ωr]",
+          "comment": "The states are:\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+          "internal_default": "[:ψ_qr, :ψ_dr, :ωr]",
           "data_type": "Vector{Symbol}"
         },
         {
