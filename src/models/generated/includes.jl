@@ -18,6 +18,8 @@ include("InterruptibleLoad.jl")
 include("FixedAdmittance.jl")
 include("PowerLoad.jl")
 include("ExponentialLoad.jl")
+include("SingleCageInductionMachine.jl")
+include("SimplifiedSingleCageInductionMachine.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -103,6 +105,7 @@ include("Source.jl")
 include("PeriodicVariableSource.jl")
 include("GenericDER.jl")
 
+export get_A
 export get_A1
 export get_A2
 export get_A3
@@ -114,8 +117,11 @@ export get_A_set
 export get_Accel
 export get_Ae
 export get_At
+export get_B
+export get_B_shunt
 export get_Be
 export get_Brkpt
+export get_C
 export get_D
 export get_DB_h
 export get_DB_l
@@ -260,7 +266,9 @@ export get_R_th
 export get_Recon_Flag
 export get_Ref_Flag
 export get_Rp
+export get_Rr
 export get_Rrpwr
+export get_Rs
 export get_Rselect
 export get_SOC_ini
 export get_SOC_lim
@@ -363,9 +371,12 @@ export get_Xd
 export get_Xd_p
 export get_Xd_pp
 export get_Xl
+export get_Xm
 export get_Xq
 export get_Xq_p
 export get_Xq_pp
+export get_Xr
+export get_Xs
 export get_Y
 export get_Zerox
 export get_active_power
@@ -551,10 +562,12 @@ export get_γq
 export get_θp
 export get_θp_rad
 export get_τ_limits
+export get_τ_ref
 export get_ω_lp
 export get_ωad
 export get_ωf
 export get_ωz
+export set_A!
 export set_A1!
 export set_A2!
 export set_A3!
@@ -566,8 +579,11 @@ export set_A_set!
 export set_Accel!
 export set_Ae!
 export set_At!
+export set_B!
+export set_B_shunt!
 export set_Be!
 export set_Brkpt!
+export set_C!
 export set_D!
 export set_DB_h!
 export set_DB_l!
@@ -712,7 +728,9 @@ export set_R_th!
 export set_Recon_Flag!
 export set_Ref_Flag!
 export set_Rp!
+export set_Rr!
 export set_Rrpwr!
+export set_Rs!
 export set_Rselect!
 export set_SOC_ini!
 export set_SOC_lim!
@@ -815,9 +833,12 @@ export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
 export set_Xl!
+export set_Xm!
 export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
+export set_Xr!
+export set_Xs!
 export set_Y!
 export set_Zerox!
 export set_active_power!
@@ -1003,6 +1024,7 @@ export set_γq!
 export set_θp!
 export set_θp_rad!
 export set_τ_limits!
+export set_τ_ref!
 export set_ω_lp!
 export set_ωad!
 export set_ωf!

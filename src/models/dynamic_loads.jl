@@ -17,3 +17,13 @@ function get_AggregateDistributedGenerationA_states(Freq_Flag::Int)
         error("Unsupported value of Freq_Flag")
     end
 end
+
+function calculate_IM_torque_params(A::Float64, B::Float64)
+    C = 1.0 - A - B
+    if A < 0.0 || B < 0.0 || C < 0.0
+        error(
+            "Unsupported values of A = $(A), B = $(B) or C = $(C). A, B and C must be positive and add up to 1.0",
+        )
+    end
+    return C
+end
