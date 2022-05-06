@@ -603,7 +603,6 @@ end
         Trf = 0,
         dbd_pnts = (0.0, 0.0),
         K_qv = 0,
-        V_ref0 = 0,
         Tp = 0,
         T_iq = 0,
         D_dn = 0,
@@ -628,6 +627,11 @@ end
         Tv = 0,
         Vpr = 0,
         Iq_lim = (min = 0.0, max = 0.0),
+        V_ref = 0,
+        Pfa_ref = 0,
+        Q_ref = 0,
+        P_ref = 0,
+        base_power = 0,
         ext = Dict{String, Any}(),
     )
     @test dera isa PowerSystems.Component
@@ -645,7 +649,6 @@ end
         Trf = 0,
         dbd_pnts = (0.0, 0.0),
         K_qv = 0,
-        V_ref0 = 0,
         Tp = 0,
         T_iq = 0,
         D_dn = 0,
@@ -670,6 +673,11 @@ end
         Tv = 0,
         Vpr = 0,
         Iq_lim = (min = 0.0, max = 0.0),
+        V_ref = 0,
+        Pfa_ref = 0,
+        Q_ref = 0,
+        P_ref = 0,
+        base_power = 0,
         ext = Dict{String, Any}(),
     )
 
