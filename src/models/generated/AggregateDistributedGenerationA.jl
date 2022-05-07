@@ -17,7 +17,6 @@ This file is auto-generated. Do not edit.
         Trf::Float64
         dbd_pnts::Tuple{Float64, Float64}
         K_qv::Float64
-        V_ref0::Float64
         Tp::Float64
         T_iq::Float64
         D_dn::Float64
@@ -42,6 +41,10 @@ This file is auto-generated. Do not edit.
         Tv::Float64
         Vpr::Float64
         Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        V_ref::Float64
+        Pfa_ref::Float64
+        Q_ref::Float64
+        P_ref::Float64
         base_power::Float64
         states::Vector{Symbol}
         n_states::Int
@@ -63,7 +66,6 @@ Parameters of the DERA1 model in PSS/E
 - `Trf::Float64`: Frequency measurement transducer time constant, validation range: `(0, nothing)`
 - `dbd_pnts::Tuple{Float64, Float64}`: Voltage deadband thresholds `(dbd1, dbd2)`
 - `K_qv::Float64`: Proportional voltage control gain (pu), validation range: `(0, nothing)`
-- `V_ref0::Float64`: User defined reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
 - `Tp::Float64`: Power measurement transducer time constant, validation range: `(0, nothing)`
 - `T_iq::Float64`: Time constant for low-pass filter for state q_V when QFlag = 0, validation range: `(0, nothing)`
 - `D_dn::Float64`: Reciprocal of droop for over-frequency conditions (>0) (pu), validation range: `(0, nothing)`
@@ -88,6 +90,10 @@ Parameters of the DERA1 model in PSS/E
 - `Tv::Float64`: Time constant on the output of the multiplier (s), validation range: `(0, nothing)`
 - `Vpr::Float64`: Voltage below which frequency tripping is disabled (pu), validation range: `(0, nothing)`
 - `Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Reactive current injection limits (Iqll, Iqhl)
+- `V_ref::Float64`: User defined voltage reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
+- `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
+- `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power
 - `states::Vector{Symbol}`: The states of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: The states of AggregateDistributedGenerationA depends on the Flags
@@ -116,8 +122,6 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     dbd_pnts::Tuple{Float64, Float64}
     "Proportional voltage control gain (pu)"
     K_qv::Float64
-    "User defined reference. If 0, PSID initializes to initial terminal voltage"
-    V_ref0::Float64
     "Power measurement transducer time constant"
     Tp::Float64
     "Time constant for low-pass filter for state q_V when QFlag = 0"
@@ -166,6 +170,14 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     Vpr::Float64
     "Reactive current injection limits (Iqll, Iqhl)"
     Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    "User defined voltage reference. If 0, PSID initializes to initial terminal voltage"
+    V_ref::Float64
+    "Reference power factor"
+    Pfa_ref::Float64
+    "Reference reactive power, in pu"
+    Q_ref::Float64
+    "Reference active power, in pu"
+    P_ref::Float64
     "Base power"
     base_power::Float64
     "The states of AggregateDistributedGenerationA depends on the Flags"
@@ -177,12 +189,12 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     internal::InfrastructureSystemsInternal
 end
 
-function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, base_power=100.0, ext=Dict{String, Any}(), )
-    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, base_power, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
+function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, Q_ref, P_ref, base_power, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
 end
 
-function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, base_power=100.0, states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, V_ref0, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, base_power, states, n_states, ext, internal, )
+function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -199,7 +211,6 @@ function AggregateDistributedGenerationA(::Nothing)
         Trf=0,
         dbd_pnts=(0.0, 0.0),
         K_qv=0,
-        V_ref0=0,
         Tp=0,
         T_iq=0,
         D_dn=0,
@@ -224,6 +235,10 @@ function AggregateDistributedGenerationA(::Nothing)
         Tv=0,
         Vpr=0,
         Iq_lim=(min=0.0, max=0.0),
+        V_ref=0,
+        Pfa_ref=0,
+        Q_ref=0,
+        P_ref=0,
         base_power=0,
         ext=Dict{String, Any}(),
     )
@@ -251,8 +266,6 @@ get_Trf(value::AggregateDistributedGenerationA) = value.Trf
 get_dbd_pnts(value::AggregateDistributedGenerationA) = value.dbd_pnts
 """Get [`AggregateDistributedGenerationA`](@ref) `K_qv`."""
 get_K_qv(value::AggregateDistributedGenerationA) = value.K_qv
-"""Get [`AggregateDistributedGenerationA`](@ref) `V_ref0`."""
-get_V_ref0(value::AggregateDistributedGenerationA) = value.V_ref0
 """Get [`AggregateDistributedGenerationA`](@ref) `Tp`."""
 get_Tp(value::AggregateDistributedGenerationA) = value.Tp
 """Get [`AggregateDistributedGenerationA`](@ref) `T_iq`."""
@@ -301,6 +314,14 @@ get_Tv(value::AggregateDistributedGenerationA) = value.Tv
 get_Vpr(value::AggregateDistributedGenerationA) = value.Vpr
 """Get [`AggregateDistributedGenerationA`](@ref) `Iq_lim`."""
 get_Iq_lim(value::AggregateDistributedGenerationA) = value.Iq_lim
+"""Get [`AggregateDistributedGenerationA`](@ref) `V_ref`."""
+get_V_ref(value::AggregateDistributedGenerationA) = value.V_ref
+"""Get [`AggregateDistributedGenerationA`](@ref) `Pfa_ref`."""
+get_Pfa_ref(value::AggregateDistributedGenerationA) = value.Pfa_ref
+"""Get [`AggregateDistributedGenerationA`](@ref) `Q_ref`."""
+get_Q_ref(value::AggregateDistributedGenerationA) = value.Q_ref
+"""Get [`AggregateDistributedGenerationA`](@ref) `P_ref`."""
+get_P_ref(value::AggregateDistributedGenerationA) = value.P_ref
 """Get [`AggregateDistributedGenerationA`](@ref) `base_power`."""
 get_base_power(value::AggregateDistributedGenerationA) = value.base_power
 """Get [`AggregateDistributedGenerationA`](@ref) `states`."""
@@ -332,8 +353,6 @@ set_Trf!(value::AggregateDistributedGenerationA, val) = value.Trf = val
 set_dbd_pnts!(value::AggregateDistributedGenerationA, val) = value.dbd_pnts = val
 """Set [`AggregateDistributedGenerationA`](@ref) `K_qv`."""
 set_K_qv!(value::AggregateDistributedGenerationA, val) = value.K_qv = val
-"""Set [`AggregateDistributedGenerationA`](@ref) `V_ref0`."""
-set_V_ref0!(value::AggregateDistributedGenerationA, val) = value.V_ref0 = val
 """Set [`AggregateDistributedGenerationA`](@ref) `Tp`."""
 set_Tp!(value::AggregateDistributedGenerationA, val) = value.Tp = val
 """Set [`AggregateDistributedGenerationA`](@ref) `T_iq`."""
@@ -382,6 +401,14 @@ set_Tv!(value::AggregateDistributedGenerationA, val) = value.Tv = val
 set_Vpr!(value::AggregateDistributedGenerationA, val) = value.Vpr = val
 """Set [`AggregateDistributedGenerationA`](@ref) `Iq_lim`."""
 set_Iq_lim!(value::AggregateDistributedGenerationA, val) = value.Iq_lim = val
+"""Set [`AggregateDistributedGenerationA`](@ref) `V_ref`."""
+set_V_ref!(value::AggregateDistributedGenerationA, val) = value.V_ref = val
+"""Set [`AggregateDistributedGenerationA`](@ref) `Pfa_ref`."""
+set_Pfa_ref!(value::AggregateDistributedGenerationA, val) = value.Pfa_ref = val
+"""Set [`AggregateDistributedGenerationA`](@ref) `Q_ref`."""
+set_Q_ref!(value::AggregateDistributedGenerationA, val) = value.Q_ref = val
+"""Set [`AggregateDistributedGenerationA`](@ref) `P_ref`."""
+set_P_ref!(value::AggregateDistributedGenerationA, val) = value.P_ref = val
 """Set [`AggregateDistributedGenerationA`](@ref) `base_power`."""
 set_base_power!(value::AggregateDistributedGenerationA, val) = value.base_power = val
 """Set [`AggregateDistributedGenerationA`](@ref) `ext`."""

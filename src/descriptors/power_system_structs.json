@@ -12504,16 +12504,6 @@
           }
         },
         {
-          "name": "V_ref0",
-          "comment": "User defined reference. If 0, PSID initializes to initial terminal voltage",
-          "null_value": 0,
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          }
-        },
-        {
           "name": "Tp",
           "comment": "Power measurement transducer time constant",
           "null_value": 0,
@@ -12724,6 +12714,50 @@
           "comment": "Reactive current injection limits (Iqll, Iqhl)",
           "null_value": "(min=0.0, max=0.0)",
           "data_type": "NamedTuple{(:min, :max), Tuple{Float64, Float64}}"
+        },
+        {
+          "name": "V_ref",
+          "comment": "User defined voltage reference. If 0, PSID initializes to initial terminal voltage",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Pfa_ref",
+          "comment": "Reference power factor",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference reactive power, in pu",
+          "null_value": 0,
+          "default": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "P_ref",
+          "comment": "Reference active power, in pu",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
         {
           "name": "base_power",
