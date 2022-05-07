@@ -105,7 +105,7 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
     # You can also call test_accessors wherever an instance has been created.
 
-    types_to_skip = (System, TestDevice, TestRenDevice)
+    types_to_skip = (TestDevice, TestRenDevice)
     types = vcat(
         IS.get_all_concrete_subtypes(Component),
         IS.get_all_concrete_subtypes(DynamicComponent),
@@ -117,6 +117,18 @@ end
         ps_type in types_to_skip && continue
         component = ps_type(nothing)
         test_accessors(component)
+    end
+end
+
+@testset "Test required accessor functions of subtypes of Component " begin
+    types = IS.get_all_concrete_subtypes(Component)
+    types_to_skip = (TestDevice, TestRenDevice)
+    sort!(types, by = x -> string(x))
+    for ps_type in types
+        ps_type in types_to_skip && continue
+        component = ps_type(nothing)
+        @test get_name(component) isa String
+        @test IS.get_internal(component) isa IS.InfrastructureSystemsInternal
     end
 end
 
