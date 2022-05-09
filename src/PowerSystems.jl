@@ -80,6 +80,8 @@ export RegulationDevice
 
 export GenericDER
 export AggregateDistributedGenerationA
+export SingleCageInductionMachine
+export SimplifiedSingleCageInductionMachine
 
 #AVR Exports
 export AVR

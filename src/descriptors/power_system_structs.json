@@ -1534,6 +1534,296 @@
       "supertype": "StaticLoad"
     },
     {
+      "struct_name": "SingleCageInductionMachine",
+      "docstring": "Parameters of 5-states three-phase single cage induction machine with quadratic torque-speed relationship.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "Rs",
+          "comment": "Armature stator resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Rr",
+          "comment": "Rotor resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xs",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Stator Self Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xr",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Rotor Self Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xm",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Stator-Rotor Mutual Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "H",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Motor Inertia Constant [s]",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A",
+          "data_type": "Float64",
+          "null_value": "0.0",
+          "comment": "Torque-Speed Quadratic Term",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "B",
+          "data_type": "Float64",
+          "null_value": "0.0",
+          "comment": "Torque-Speed Linear Term",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "C",
+          "comment": "Torque-Speed Constant Term",
+          "internal_default": "PowerSystems.calculate_IM_torque_params(A, B)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "τ_ref",
+          "comment": "Reference torque parameter",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "B_shunt",
+          "comment": "Susceptance Initialization Corrector Term",
+          "internal_default": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tψ_qs: stator flux in the q-axis,\n\tψ_ds: stator flux in the d-axis,\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+          "internal_default": "[:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "SingleCageInductionMachine has 5 states",
+          "internal_default": 5,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
+    },
+    {
+      "struct_name": "SimplifiedSingleCageInductionMachine",
+      "docstring": "Parameters of 3-states three-phase single cage induction machine with quadratic torque-speed relationship.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "Rs",
+          "comment": "Armature stator resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Rr",
+          "comment": "Rotor resistance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xs",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Stator Self Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xr",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Rotor Self Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xm",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Stator-Rotor Mutual Reactance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "H",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Motor Inertia Constant [s]",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "A",
+          "data_type": "Float64",
+          "null_value": "0.0",
+          "comment": "Torque-Speed Quadratic Term",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "B",
+          "data_type": "Float64",
+          "null_value": "0.0",
+          "comment": "Torque-Speed Linear Term",
+          "valid_range": {
+            "min": 0,
+            "max": 1
+          }
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "C",
+          "comment": "Torque-Speed Constant Term",
+          "internal_default": "PowerSystems.calculate_IM_torque_params(A, B)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "τ_ref",
+          "comment": "Reference torque parameter",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "B_shunt",
+          "comment": "Susceptance Initialization Corrector Term",
+          "internal_default": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+          "internal_default": "[:ψ_qr, :ψ_dr, :ωr]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "SimplifiedSingleCageInductionMachine has 3 states",
+          "internal_default": 3,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
+    },
+    {
       "struct_name": "HydroEnergyReservoir",
       "fields": [
         {
