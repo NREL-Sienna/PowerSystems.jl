@@ -62,6 +62,7 @@
         H = 0.5,
         A = 0.2,
         B = 0.9,
+        base_power = 100.0,
     )
 
     sys = System(100)
