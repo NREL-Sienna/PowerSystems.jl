@@ -31,8 +31,8 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `name::String`
 - `R_s::Float64`: Armature stator resistance, validation range: `(0, nothing)`
 - `R_r::Float64`: Rotor resistance, validation range: `(0, nothing)`
-- `X_ls::Float64`: Stator Self Reactance, validation range: `(0, nothing)`
-- `X_lr::Float64`: Rotor Self Reactance, validation range: `(0, nothing)`
+- `X_ls::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
+- `X_lr::Float64`: Rotor Leakage Reactance, validation range: `(0, nothing)`
 - `X_m::Float64`: Stator-Rotor Mutual Reactance, validation range: `(0, nothing)`
 - `H::Float64`: Motor Inertia Constant [s], validation range: `(0, nothing)`
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
@@ -55,9 +55,9 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     R_s::Float64
     "Rotor resistance"
     R_r::Float64
-    "Stator Self Reactance"
+    "Stator Leakage Reactance"
     X_ls::Float64
-    "Rotor Self Reactance"
+    "Rotor Leakage Reactance"
     X_lr::Float64
     "Stator-Rotor Mutual Reactance"
     X_m::Float64

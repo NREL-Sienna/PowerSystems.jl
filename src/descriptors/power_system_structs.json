@@ -1567,7 +1567,7 @@
           "name": "X_ls",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Stator Self Reactance",
+          "comment": "Stator Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1577,7 +1577,7 @@
           "name": "X_lr",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Rotor Self Reactance",
+          "comment": "Rotor Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1715,7 +1715,7 @@
           "name": "X_ls",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Stator Self Reactance",
+          "comment": "Stator Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
@@ -1725,7 +1725,7 @@
           "name": "X_lr",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Rotor Self Reactance",
+          "comment": "Rotor Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
