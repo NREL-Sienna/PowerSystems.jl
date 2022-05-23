@@ -1544,7 +1544,7 @@
           "data_type": "String"
         },
         {
-          "name": "Rs",
+          "name": "R_s",
           "comment": "Armature stator resistance",
           "null_value": 0,
           "data_type": "Float64",
@@ -1554,7 +1554,7 @@
           }
         },
         {
-          "name": "Rr",
+          "name": "R_r",
           "comment": "Rotor resistance",
           "null_value": 0,
           "data_type": "Float64",
@@ -1564,27 +1564,27 @@
           }
         },
         {
-          "name": "Xs",
+          "name": "X_ls",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Stator Self Reactance",
+          "comment": "Stator Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
           }
         },
         {
-          "name": "Xr",
+          "name": "X_lr",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Rotor Self Reactance",
+          "comment": "Rotor Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
           }
         },
         {
-          "name": "Xm",
+          "name": "X_m",
           "data_type": "Float64",
           "null_value": 0,
           "comment": "Stator-Rotor Mutual Reactance",
@@ -1628,7 +1628,10 @@
           "comment": "Base power",
           "null_value": 0.0,
           "data_type": "Float64",
-          "default": "100.0"
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
         {
           "name": "ext",
@@ -1689,7 +1692,7 @@
           "data_type": "String"
         },
         {
-          "name": "Rs",
+          "name": "R_s",
           "comment": "Armature stator resistance",
           "null_value": 0,
           "data_type": "Float64",
@@ -1699,7 +1702,7 @@
           }
         },
         {
-          "name": "Rr",
+          "name": "R_r",
           "comment": "Rotor resistance",
           "null_value": 0,
           "data_type": "Float64",
@@ -1709,27 +1712,27 @@
           }
         },
         {
-          "name": "Xs",
+          "name": "X_ls",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Stator Self Reactance",
+          "comment": "Stator Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
           }
         },
         {
-          "name": "Xr",
+          "name": "X_lr",
           "data_type": "Float64",
           "null_value": 0,
-          "comment": "Rotor Self Reactance",
+          "comment": "Rotor Leakage Reactance",
           "valid_range": {
             "min": 0,
             "max": null
           }
         },
         {
-          "name": "Xm",
+          "name": "X_m",
           "data_type": "Float64",
           "null_value": 0,
           "comment": "Stator-Rotor Mutual Reactance",
@@ -1773,7 +1776,10 @@
           "comment": "Base power",
           "null_value": 0.0,
           "data_type": "Float64",
-          "default": "100.0"
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
         {
           "name": "ext",
