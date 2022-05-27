@@ -34,6 +34,16 @@ end
 
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
+    br::DynamicBranch,
+    num_bus::Dict{Int, Int},
+)
+    _ybus!(ybus, br.branch, num_bus)
+    return
+end
+
+
+function _ybus!(
+    ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     br::Transformer2W,
     num_bus::Dict{Int, Int},
 )

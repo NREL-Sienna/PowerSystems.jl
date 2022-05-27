@@ -20,6 +20,8 @@ This file is auto-generated. Do not edit.
         C::Float64
         τ_ref::Float64
         B_shunt::Float64
+        X_ad::Float64
+        X_aq::Float64
         states::Vector{Symbol}
         n_states::Int
         internal::InfrastructureSystemsInternal
@@ -42,6 +44,8 @@ Parameters of 5-states three-phase single cage induction machine with quadratic 
 - `C::Float64`: Torque-Speed Constant Term
 - `τ_ref::Float64`: Reference torque parameter
 - `B_shunt::Float64`: Susceptance Initialization Corrector Term
+- `X_ad::Float64`: Equivalent d-axis reactance
+- `X_aq::Float64`: Equivalent q-axis reactance
 - `states::Vector{Symbol}`: The states are:
 	ψ_qs: stator flux in the q-axis,
 	ψ_ds: stator flux in the d-axis,
@@ -78,6 +82,10 @@ mutable struct SingleCageInductionMachine <: DynamicInjection
     τ_ref::Float64
     "Susceptance Initialization Corrector Term"
     B_shunt::Float64
+    "Equivalent d-axis reactance"
+    X_ad::Float64
+    "Equivalent q-axis reactance"
+    X_aq::Float64
     "The states are:
 	ψ_qs: stator flux in the q-axis,
 	ψ_ds: stator flux in the d-axis,
@@ -92,11 +100,11 @@ mutable struct SingleCageInductionMachine <: DynamicInjection
 end
 
 function SingleCageInductionMachine(name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext=Dict{String, Any}(), )
-    SingleCageInductionMachine(name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext, PowerSystems.calculate_IM_torque_params(A, B), 1.0, 0.0, [:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr], 5, InfrastructureSystemsInternal(), )
+    SingleCageInductionMachine(name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext, PowerSystems.calculate_IM_torque_params(A, B), 1.0, 0.0, (1.0 / X_m + 1.0 / X_ls + 1.0 / X_lr)^(-1), X_ad, [:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr], 5, InfrastructureSystemsInternal(), )
 end
 
-function SingleCageInductionMachine(; name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext=Dict{String, Any}(), C=PowerSystems.calculate_IM_torque_params(A, B), τ_ref=1.0, B_shunt=0.0, states=[:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr], n_states=5, internal=InfrastructureSystemsInternal(), )
-    SingleCageInductionMachine(name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext, C, τ_ref, B_shunt, states, n_states, internal, )
+function SingleCageInductionMachine(; name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext=Dict{String, Any}(), C=PowerSystems.calculate_IM_torque_params(A, B), τ_ref=1.0, B_shunt=0.0, X_ad=(1.0 / X_m + 1.0 / X_ls + 1.0 / X_lr)^(-1), X_aq=X_ad, states=[:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr], n_states=5, internal=InfrastructureSystemsInternal(), )
+    SingleCageInductionMachine(name, R_s, R_r, X_ls, X_lr, X_m, H, A, B, base_power, ext, C, τ_ref, B_shunt, X_ad, X_aq, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -144,6 +152,10 @@ get_C(value::SingleCageInductionMachine) = value.C
 get_τ_ref(value::SingleCageInductionMachine) = value.τ_ref
 """Get [`SingleCageInductionMachine`](@ref) `B_shunt`."""
 get_B_shunt(value::SingleCageInductionMachine) = value.B_shunt
+"""Get [`SingleCageInductionMachine`](@ref) `X_ad`."""
+get_X_ad(value::SingleCageInductionMachine) = value.X_ad
+"""Get [`SingleCageInductionMachine`](@ref) `X_aq`."""
+get_X_aq(value::SingleCageInductionMachine) = value.X_aq
 """Get [`SingleCageInductionMachine`](@ref) `states`."""
 get_states(value::SingleCageInductionMachine) = value.states
 """Get [`SingleCageInductionMachine`](@ref) `n_states`."""
@@ -177,3 +189,7 @@ set_C!(value::SingleCageInductionMachine, val) = value.C = val
 set_τ_ref!(value::SingleCageInductionMachine, val) = value.τ_ref = val
 """Set [`SingleCageInductionMachine`](@ref) `B_shunt`."""
 set_B_shunt!(value::SingleCageInductionMachine, val) = value.B_shunt = val
+"""Set [`SingleCageInductionMachine`](@ref) `X_ad`."""
+set_X_ad!(value::SingleCageInductionMachine, val) = value.X_ad = val
+"""Set [`SingleCageInductionMachine`](@ref) `X_aq`."""
+set_X_aq!(value::SingleCageInductionMachine, val) = value.X_aq = val
