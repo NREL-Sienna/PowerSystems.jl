@@ -1658,6 +1658,18 @@
           "data_type": "Float64"
         },
         {
+          "name": "X_ad",
+          "comment": "Equivalent d-axis reactance",
+          "internal_default": "(1.0 / X_m + 1.0 / X_ls + 1.0 / X_lr)^(-1)",
+          "data_type": "Float64"
+        },
+        {
+          "name": "X_aq",
+          "comment": "Equivalent q-axis reactance",
+          "internal_default": "X_ad",
+          "data_type": "Float64"
+        },
+        {
           "name": "states",
           "exclude_setter": true,
           "comment": "The states are:\n\tψ_qs: stator flux in the q-axis,\n\tψ_ds: stator flux in the d-axis,\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
@@ -1803,6 +1815,24 @@
           "name": "B_shunt",
           "comment": "Susceptance Initialization Corrector Term",
           "internal_default": "0.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "X_ss",
+          "comment": "Stator self reactance",
+          "internal_default": "X_ls + X_m",
+          "data_type": "Float64"
+        },
+        {
+          "name": "X_rr",
+          "comment": "Rotor self reactance",
+          "internal_default": "X_lr + X_m",
+          "data_type": "Float64"
+        },
+        {
+          "name": "X_p",
+          "comment": "Transient reactance",
+          "internal_default": "X_ss - X_m^2 / X_rr",
           "data_type": "Float64"
         },
         {
