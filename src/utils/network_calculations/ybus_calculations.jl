@@ -56,10 +56,11 @@ function _ybus!(
     if !isfinite(Y11) || !isfinite(Y_t) || !isfinite(b)
         error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
     end
-    ybus[bus_from_no, bus_from_no] += Y11
+
+    ybus[bus_from_no, bus_from_no] += Y11 - (1im * b)
     ybus[bus_from_no, bus_to_no] += -Y_t
     ybus[bus_to_no, bus_from_no] += -Y_t
-    ybus[bus_to_no, bus_to_no] += Y_t + (1im * b)
+    ybus[bus_to_no, bus_to_no] += Y_t
     return
 end
 
@@ -77,7 +78,7 @@ function _ybus!(
     b = get_primary_shunt(br)
 
     Y11 = (Y_t * c^2)
-    ybus[bus_from_no, bus_from_no] += Y11
+    ybus[bus_from_no, bus_from_no] += Y11 - (1im * b)
     Y12 = (-Y_t * c)
     if !isfinite(Y11) || !isfinite(Y12) || !isfinite(b)
         error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
@@ -86,7 +87,7 @@ function _ybus!(
     #Y21 = Y12
     ybus[bus_to_no, bus_from_no] += Y12
     Y22 = Y_t
-    ybus[bus_to_no, bus_to_no] += Y22 + (1im * b)
+    ybus[bus_to_no, bus_to_no] += Y22
     return
 end
 
@@ -106,13 +107,13 @@ function _ybus!(
     if !isfinite(Y11) || !isfinite(Y_t) || !isfinite(b * c_tap)
         error("Data in $(get_name(br)) is incorrect. r = $(get_r(br)), x = $(get_x(br))")
     end
-    ybus[bus_from_no, bus_from_no] += Y11
+    ybus[bus_from_no, bus_from_no] += Y11 - (1im * b)
     Y12 = (-Y_t / c_tap)
     ybus[bus_from_no, bus_to_no] += Y12
     Y21 = (-Y_t / tap)
     ybus[bus_to_no, bus_from_no] += Y21
     Y22 = Y_t
-    ybus[bus_to_no, bus_to_no] += Y22 + (1im * b)
+    ybus[bus_to_no, bus_to_no] += Y22
     return
 end
 
