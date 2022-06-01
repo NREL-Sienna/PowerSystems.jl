@@ -41,7 +41,6 @@ function _ybus!(
     return
 end
 
-
 function _ybus!(
     ybus::SparseArrays.SparseMatrixCSC{ComplexF64, Int},
     br::Transformer2W,
