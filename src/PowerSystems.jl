@@ -125,6 +125,7 @@ export PSS
 export PSSFixed
 export PSSSimple
 export IEEEST
+export STAB1
 
 #Shaft Exports
 export Shaft
