@@ -33,8 +33,8 @@ Speed-Sensitive Stabilizing Model
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: washout filter,
-	x_p2: T1/T2 lead-lag block, 
-	x_p3: T3/T4 lead-lag block,
+	x_p2: T1/T3 lead-lag block, 
+	x_p3: T2/T4 lead-lag block,
 - `n_states::Int`: STAB1 has 3 states
 - `states_types::Vector{StateTypes}`: STAB1 has 3 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -57,8 +57,8 @@ mutable struct STAB1 <: PSS
     ext::Dict{String, Any}
     "The states are:
 	x_p1: washout filter,
-	x_p2: T1/T2 lead-lag block, 
-	x_p3: T3/T4 lead-lag block,"
+	x_p2: T1/T3 lead-lag block, 
+	x_p3: T2/T4 lead-lag block,"
     states::Vector{Symbol}
     "STAB1 has 3 states"
     n_states::Int

@@ -8950,7 +8950,7 @@
         {
           "name": "states",
           "exclude_setter": true,
-          "comment": "The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T2 lead-lag block, \n\tx_p3: T3/T4 lead-lag block,",
+          "comment": "The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T3 lead-lag block, \n\tx_p3: T2/T4 lead-lag block,",
           "internal_default": "[:x_p1, :x_p2, :x_p3]",
           "data_type": "Vector{Symbol}"
         },
