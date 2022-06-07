@@ -43,6 +43,7 @@ This file is auto-generated. Do not edit.
         Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
         V_ref::Float64
         Pfa_ref::Float64
+        ω_ref::Float64
         Q_ref::Float64
         P_ref::Float64
         base_power::Float64
@@ -92,6 +93,7 @@ Parameters of the DERA1 model in PSS/E
 - `Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Reactive current injection limits (Iqll, Iqhl)
 - `V_ref::Float64`: User defined voltage reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
 - `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
+- `ω_ref::Float64`: Reference frequency, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power
@@ -174,6 +176,8 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     V_ref::Float64
     "Reference power factor"
     Pfa_ref::Float64
+    "Reference frequency"
+    ω_ref::Float64
     "Reference reactive power, in pu"
     Q_ref::Float64
     "Reference active power, in pu"
@@ -189,12 +193,12 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     internal::InfrastructureSystemsInternal
 end
 
-function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), )
-    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, Q_ref, P_ref, base_power, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
+function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, ω_ref=1.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, ω_ref, Q_ref, P_ref, base_power, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
 end
 
-function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
+function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, ω_ref=1.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, ω_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -237,6 +241,7 @@ function AggregateDistributedGenerationA(::Nothing)
         Iq_lim=(min=0.0, max=0.0),
         V_ref=0,
         Pfa_ref=0,
+        ω_ref=0,
         Q_ref=0,
         P_ref=0,
         base_power=0,
@@ -318,6 +323,8 @@ get_Iq_lim(value::AggregateDistributedGenerationA) = value.Iq_lim
 get_V_ref(value::AggregateDistributedGenerationA) = value.V_ref
 """Get [`AggregateDistributedGenerationA`](@ref) `Pfa_ref`."""
 get_Pfa_ref(value::AggregateDistributedGenerationA) = value.Pfa_ref
+"""Get [`AggregateDistributedGenerationA`](@ref) `ω_ref`."""
+get_ω_ref(value::AggregateDistributedGenerationA) = value.ω_ref
 """Get [`AggregateDistributedGenerationA`](@ref) `Q_ref`."""
 get_Q_ref(value::AggregateDistributedGenerationA) = value.Q_ref
 """Get [`AggregateDistributedGenerationA`](@ref) `P_ref`."""
@@ -405,6 +412,8 @@ set_Iq_lim!(value::AggregateDistributedGenerationA, val) = value.Iq_lim = val
 set_V_ref!(value::AggregateDistributedGenerationA, val) = value.V_ref = val
 """Set [`AggregateDistributedGenerationA`](@ref) `Pfa_ref`."""
 set_Pfa_ref!(value::AggregateDistributedGenerationA, val) = value.Pfa_ref = val
+"""Set [`AggregateDistributedGenerationA`](@ref) `ω_ref`."""
+set_ω_ref!(value::AggregateDistributedGenerationA, val) = value.ω_ref = val
 """Set [`AggregateDistributedGenerationA`](@ref) `Q_ref`."""
 set_Q_ref!(value::AggregateDistributedGenerationA, val) = value.Q_ref = val
 """Set [`AggregateDistributedGenerationA`](@ref) `P_ref`."""
