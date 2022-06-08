@@ -147,6 +147,7 @@ export SteamTurbineGov1
 export Converter
 export AverageConverter
 export RenewableEnergyConverterTypeA
+export RenewableEnergyVoltageConverterTypeA
 
 # DC Source Exports
 export DCSource
