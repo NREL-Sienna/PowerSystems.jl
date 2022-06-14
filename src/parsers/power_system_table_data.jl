@@ -789,7 +789,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
-        generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
+        generator =
+            make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
@@ -1093,7 +1094,14 @@ function make_thermal_generator_multistart(
     )
 end
 
-function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
+function make_hydro_generator(
+    gen_type,
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus,
+    gen_storage,
+)
     @debug "Making HydroGen" _group = IS.LOG_GROUP_PARSING gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1114,7 +1122,7 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
         if !haskey(head_dict, gen.name)
             throw(DataFormatError("Cannot find head storage for $(gen.csv) in storage.csv"))
         end
-        storage = (head=head_dict[gen.name], tail=get(tail_dict, gen.name, nothing))
+        storage = (head = head_dict[gen.name], tail = get(tail_dict, gen.name, nothing))
 
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
