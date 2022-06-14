@@ -1,4 +1,3 @@
-
 const POWER_SYSTEM_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
@@ -551,6 +550,8 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         cost_colnames = _CostPointColumns(zip(cost_point_fields, output_point_fields))
     end
 
+    gen_storage = cache_storage(data::PowerSystemTableData)
+
     for gen in iterate_rows(data, InputCategory.GENERATOR)
         @debug "making generator:" _group = IS.LOG_GROUP_PARSING gen.name
         bus = get_bus(sys, gen.bus_id)
@@ -558,12 +559,36 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
             throw(DataFormatError("could not find $(gen.bus_id)"))
         end
 
-        generator = make_generator(data, gen, cost_colnames, bus)
+        generator = make_generator(data, gen, cost_colnames, bus, gen_storage)
         @debug "adding gen:" _group = IS.LOG_GROUP_PARSING generator
         if !isnothing(generator)
             add_component!(sys, generator)
         end
     end
+end
+
+function cache_storage(data::PowerSystemTableData)
+    gen_head_dict = Dict()
+    gen_tail_dict = Dict()
+    if !haskey(data.category_to_df, InputCategory.STORAGE)
+        return gen_head_dict, gen_tail_dict
+    end
+    for s in iterate_rows(data, InputCategory.STORAGE)
+        if occursin("head", normalize(s.position, casefold = true))
+            if !haskey(gen_head_dict, s.generator_name)
+                gen_head_dict[s.generator_name] = s
+            else
+                throw(DataFormatError("Duplicate head storage found for gen $s"))
+            end
+        elseif occursin("tail", normalize(s.position, casefold = true))
+            if !haskey(gen_tail_dict, s.generator_name)
+                gen_tail_dict[s.generator_name] = s
+            else
+                throw(DataFormatError("Duplicate tail storage found for gen $s"))
+            end
+        end
+    end
+    return gen_head_dict, gen_tail_dict
 end
 
 """
@@ -752,7 +777,7 @@ function get_reserve_direction(direction::AbstractString)
 end
 
 """Creates a generator of any type."""
-function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
+function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
     generator = nothing
     gen_type =
         get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
@@ -764,12 +789,16 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
     elseif gen_type <: HydroGen
-        generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus)
+        generator = make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == GenericBattery
-        storage = get_storage_by_generator(data, gen.name).head
-        generator = make_storage(data, gen, storage, bus)
+        head_dict, _ = gen_storage
+        if !haskey(head_dict, gen.name)
+            throw(DataFormatError("Cannot find storage for $(gen.name) in storage.csv"))
+        end
+        storage = head_dict[gen.name]
+        generator = make_storage(data, gen, bus, storage)
     else
         @error "Skipping unsupported generator" gen.name gen_type
     end
@@ -1064,7 +1093,7 @@ function make_thermal_generator_multistart(
     )
 end
 
-function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus)
+function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
     @debug "Making HydroGen" _group = IS.LOG_GROUP_PARSING gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
@@ -1081,7 +1110,11 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
 
-        storage = get_storage_by_generator(data, gen.name)
+        head_dict, tail_dict = gen_storage
+        if !haskey(head_dict, gen.name)
+            throw(DataFormatError("Cannot find head storage for $(gen.csv) in storage.csv"))
+        end
+        storage = (head=head_dict[gen.name], tail=get(tail_dict, gen.name, nothing))
 
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
@@ -1191,37 +1224,6 @@ function make_hydro_generator(gen_type, data::PowerSystemTableData, gen, cost_co
     return hydro_gen
 end
 
-function get_storage_by_generator(data::PowerSystemTableData, gen_name::AbstractString)
-    head = []
-    tail = []
-    for s in iterate_rows(data, InputCategory.STORAGE)
-        if s.generator_name == gen_name
-            if occursin("head", normalize(s.position, casefold = true))
-                push!(head, s)
-            elseif occursin("tail", normalize(s.position, casefold = true))
-                push!(tail, s)
-            end
-        end
-    end
-
-    if length(head) != 1
-        throw(
-            DataFormatError(
-                "Exactly 1 head storage is required but $gen_name has $(length(head)) head storages defined",
-            ),
-        )
-    elseif length(tail) > 1
-        throw(
-            DataFormatError(
-                "$gen_name storage generator cannot have more than 1 tail storage defined",
-            ),
-        )
-    end
-    tail = length(tail) > 0 ? tail[1] : nothing
-
-    return (head = head[1], tail = tail)
-end
-
 function make_renewable_generator(
     gen_type,
     data::PowerSystemTableData,
@@ -1275,8 +1277,8 @@ function make_renewable_generator(
     return generator
 end
 
-function make_storage(data::PowerSystemTableData, gen, storage, bus)
-    @debug "Making Storge" _group = IS.LOG_GROUP_PARSING storage.name
+function make_storage(data::PowerSystemTableData, gen, bus, storage)
+    @debug "Making Storage" _group = IS.LOG_GROUP_PARSING storage.name
     state_of_charge_limits =
         (min = storage.min_storage_capacity, max = storage.storage_capacity)
     input_active_power_limits = (
