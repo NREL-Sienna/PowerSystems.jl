@@ -389,6 +389,7 @@ import Base.to_index
 import NLsolve
 import InteractiveUtils
 import PrettyTables
+import PowerFlowData
 
 import InfrastructureSystems
 import InfrastructureSystems:
