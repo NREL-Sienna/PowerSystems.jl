@@ -167,7 +167,7 @@ end
 
 # Disabling this because not all matpower files define areas even when bus definitions
 # contain area references.
-#function read_area!(sys::System, data; kwargs...)
+#function read_area!(sys::System, data::Dict; kwargs...)
 #    if !haskey(data, "areas")
 #        @info "There are no Areas in this file"
 #        return
@@ -179,7 +179,7 @@ end
 #    end
 #end
 
-function read_bus!(sys::System, data; kwargs...)
+function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
