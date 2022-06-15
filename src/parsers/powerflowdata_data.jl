@@ -11,7 +11,6 @@ function PowerFlowDataNetwork(file::Union{String,IO}; kwargs...)
     return PowerFlowDataNetwork(PowerFlowData.parse_network(file))
 end
 
-
 """
 Constructs a System from PowerModelsData.
 
@@ -68,7 +67,7 @@ function read_bus!(
     kwargs...,
 )
     @info "Reading bus data"
-    bus_number_to_bus = Dict{Int,Bus}()
+    bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes)
 
@@ -88,24 +87,23 @@ function read_bus!(
         area = get_component(Area, sys, area_name)
         if isnothing(area)
             area = Area(area_name)
-            add_component!(sys, area; skip_validation=SKIP_PM_VALIDATION)
+            add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
         end
 
         bus = Bus(
             bus_number,
             bus_name,
             bus_types[buses.ide[ix]],
-            clamp(buses.va[ix]*(π/180), -π/2, π/2),
+            clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
             buses.vm[ix],
-            (min=buses.nvlo[ix], max=buses.nvhi[ix]),
+            (min = buses.nvlo[ix], max = buses.nvhi[ix]),
             buses.basekv[ix],
             area,
         )
 
-
         bus_number_to_bus[bus_number] = bus
 
-        add_component!(sys, bus; skip_validation=SKIP_PM_VALIDATION)
+        add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
     return bus_number_to_bus
