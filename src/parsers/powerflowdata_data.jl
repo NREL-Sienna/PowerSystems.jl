@@ -61,8 +61,12 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     return sys
 end
 
-
-function read_bus!(sys::System, buses::PowerFlowData.Buses33, data::PowerFlowData.Network; kwargs...)
+function read_bus!(
+    sys::System,
+    buses::PowerFlowData.Buses33,
+    data::PowerFlowData.Network;
+    kwargs...,
+)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int,Bus}()
 
