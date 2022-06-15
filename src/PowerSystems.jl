@@ -61,6 +61,7 @@ export ElectricLoad
 export StaticLoad
 export PowerLoad
 export PowerLoadPF
+export StandardLoad
 export FixedAdmittance
 export ControllableLoad
 export InterruptibleLoad
