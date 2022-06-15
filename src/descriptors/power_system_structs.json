@@ -1419,6 +1419,147 @@
       "supertype": "StaticLoad"
     },
     {
+      "struct_name": "StandardLoad",
+      "docstring": "Data structure for a standard load.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "null_value": "false",
+          "name": "available",
+          "data_type": "Bool"
+        },
+        {
+          "name": "bus",
+          "null_value": "Bus(nothing)",
+          "data_type": "Bus"
+        },
+        {
+          "name": "constant_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "constant_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "impedance_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "impedance_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "current_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "current_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_constant_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_constant_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_impedance_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_impedance_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_current_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_current_reactive_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
+          "name": "services",
+          "data_type": "Vector{Service}",
+          "comment": "Services that this device contributes to",
+          "null_value": "Device[]",
+          "default": "Device[]"
+        },
+        {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection device",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "time_series_container",
+          "comment": "internal time_series storage",
+          "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+          "data_type": "InfrastructureSystems.TimeSeriesContainer",
+          "default": "InfrastructureSystems.TimeSeriesContainer()"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "StaticLoad"
+    },
+    {
       "struct_name": "ExponentialLoad",
       "docstring": "Data structure for a static exponential load.",
       "fields": [
@@ -13489,7 +13630,7 @@
             "min": 0.0,
             "max": null
           }
-        },  
+        },
         {
           "name": "VES_lim",
           "comment": "Min and max voltage for entering service (VES_min,VES_max)",
@@ -13517,7 +13658,7 @@
             "min": 0.0,
             "max": null
           }
-        },  
+        },
         {
           "name": "FES_lim",
           "comment": "Min and max frequency for entering service (FES_min,FES_max)",
