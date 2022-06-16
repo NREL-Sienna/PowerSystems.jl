@@ -47,9 +47,8 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
 
     sys = System(data.caseid.sbase; frequency = data.caseid.basfrq, kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
-    #read_loads!(sys, data, bus_number_to_bus; kwargs...)
-    #read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
-    #read_gen!(sys, data, bus_number_to_bus; kwargs...)
+    read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_gen!(sys, data, bus_number_to_bus; kwargs...)
     #read_branch!(sys, data, bus_number_to_bus; kwargs...)
     #read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     #read_dcline!(sys, data, bus_number_to_bus; kwargs...)
@@ -90,6 +89,8 @@ function read_bus!(
             add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
         end
 
+        # TODO: LoadZones need to be created and populated here
+
         bus = Bus(
             bus_number,
             bus_name,
@@ -107,4 +108,47 @@ function read_bus!(
     end
 
     return bus_number_to_bus
+end
+
+function read_loads!(
+    sys::System,
+    loads::PowerFlowData.Loads,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    if isempty(loads)
+        @error "There are no loads in this file"
+        return
+    end
+    for ix in eachindex(loads.i)
+        total_load =
+            loads.pl[ix] +
+            loads.ql[ix] +
+            loads.ip[ix] +
+            loads.iq[ix] +
+            loads.yp[ix] +
+            loads.yq[ix]
+        if total_load != 0.0
+            bus = bus_number_to_bus[loads.i[ix]]
+
+            load_name = "$(get_name(bus))_load_$(loads.id[ix])"
+            has_component(PowerLoad, sys, load_name) &&
+                throw(DataFormatError("Found duplicate load names of $(load_name)"))
+
+            load = PowerLoad(;
+                name = load_name,
+                available = true,
+                model = LoadModels.ConstantPower,
+                bus = bus,
+                active_power = loads.pl[ix] / sys_mbase,
+                reactive_power = loads.ql[ix] / sys_mbase,
+                max_active_power = loads.pl[ix] / sys_mbase,
+                max_reactive_power = loads.ql[ix] / sys_mbase,
+                base_power = sys_mbase,
+            )
+
+            add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+        end
+    end
 end
