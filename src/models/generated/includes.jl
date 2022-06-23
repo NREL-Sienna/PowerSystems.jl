@@ -17,6 +17,7 @@ include("VSCDCLine.jl")
 include("InterruptibleLoad.jl")
 include("FixedAdmittance.jl")
 include("PowerLoad.jl")
+include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
@@ -409,8 +410,12 @@ export get_bus
 export get_bus_control
 export get_bustype
 export get_cf
+export get_constant_active_power
+export get_constant_reactive_power
 export get_contributing_services
 export get_conversion_factor
+export get_current_active_power
+export get_current_reactive_power
 export get_d
 export get_dP_lim
 export get_db
@@ -439,6 +444,8 @@ export get_fs
 export get_fuel
 export get_fuel_flag
 export get_gate_position_limits
+export get_impedance_active_power
+export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
 export get_initial_energy
@@ -481,6 +488,12 @@ export get_loss
 export get_lv
 export get_magnitude
 export get_max_active_power
+export get_max_constant_active_power
+export get_max_constant_reactive_power
+export get_max_current_active_power
+export get_max_current_reactive_power
+export get_max_impedance_active_power
+export get_max_impedance_reactive_power
 export get_max_reactive_power
 export get_model
 export get_must_run
@@ -876,8 +889,12 @@ export set_bus!
 export set_bus_control!
 export set_bustype!
 export set_cf!
+export set_constant_active_power!
+export set_constant_reactive_power!
 export set_contributing_services!
 export set_conversion_factor!
+export set_current_active_power!
+export set_current_reactive_power!
 export set_d!
 export set_dP_lim!
 export set_db!
@@ -906,6 +923,8 @@ export set_fs!
 export set_fuel!
 export set_fuel_flag!
 export set_gate_position_limits!
+export set_impedance_active_power!
+export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
@@ -948,6 +967,12 @@ export set_loss!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
+export set_max_constant_active_power!
+export set_max_constant_reactive_power!
+export set_max_current_active_power!
+export set_max_current_reactive_power!
+export set_max_impedance_active_power!
+export set_max_impedance_reactive_power!
 export set_max_reactive_power!
 export set_model!
 export set_must_run!
