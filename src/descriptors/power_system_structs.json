@@ -13073,6 +13073,17 @@
             "min": 0,
             "max": null
           }
+        }, 
+        {
+          "name": "ω_ref",
+          "comment": "Reference frequency",
+          "null_value": 0,
+          "default": "1.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
         },
         {
           "name": "Q_ref",
