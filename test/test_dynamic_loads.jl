@@ -2,28 +2,30 @@
     #valid (non-default) A and B
     im = SingleCageInductionMachine(
         name = "init",
-        Rs = 0.0,
-        Rr = 0.018,
-        Xs = 0.1,
-        Xr = 0.18,
-        Xm = 3.2,
+        R_s = 0.0,
+        R_r = 0.018,
+        X_ls = 0.1,
+        X_lr = 0.18,
+        X_m = 3.2,
         H = 0.5,
         A = 0.2,
         B = 0.0,
+        base_power = 100.0,
     )
     @test im isa PowerSystems.Component
 
     #invalid A, B or C
     @test_throws ErrorException SingleCageInductionMachine(
         name = "init",
-        Rs = 0.0,
-        Rr = 0.018,
-        Xs = 0.1,
-        Xr = 0.18,
-        Xm = 3.2,
+        R_s = 0.0,
+        R_r = 0.018,
+        X_ls = 0.1,
+        X_lr = 0.18,
+        X_m = 3.2,
         H = 0.5,
         A = 0.2,
         B = 0.9,
+        base_power = 100.0,
     )
 
     sys = System(100)
@@ -37,28 +39,30 @@
 
     im = SimplifiedSingleCageInductionMachine(
         name = "init",
-        Rs = 0.0,
-        Rr = 0.018,
-        Xs = 0.1,
-        Xr = 0.18,
-        Xm = 3.2,
+        R_s = 0.0,
+        R_r = 0.018,
+        X_ls = 0.1,
+        X_lr = 0.18,
+        X_m = 3.2,
         H = 0.5,
         A = 0.2,
         B = 0.0,
+        base_power = 100.0,
     )
     @test im isa PowerSystems.Component
 
     #invalid A, B or C
     @test_throws ErrorException SimplifiedSingleCageInductionMachine(
         name = "init",
-        Rs = 0.0,
-        Rr = 0.018,
-        Xs = 0.1,
-        Xr = 0.18,
-        Xm = 3.2,
+        R_s = 0.0,
+        R_r = 0.018,
+        X_ls = 0.1,
+        X_lr = 0.18,
+        X_m = 3.2,
         H = 0.5,
         A = 0.2,
         B = 0.9,
+        base_power = 100.0,
     )
 
     sys = System(100)

@@ -61,6 +61,7 @@ export ElectricLoad
 export StaticLoad
 export PowerLoad
 export PowerLoadPF
+export StandardLoad
 export FixedAdmittance
 export ControllableLoad
 export InterruptibleLoad
@@ -125,6 +126,7 @@ export PSS
 export PSSFixed
 export PSSSimple
 export IEEEST
+export STAB1
 
 #Shaft Exports
 export Shaft
@@ -146,6 +148,7 @@ export SteamTurbineGov1
 export Converter
 export AverageConverter
 export RenewableEnergyConverterTypeA
+export RenewableEnergyVoltageConverterTypeA
 
 # DC Source Exports
 export DCSource
