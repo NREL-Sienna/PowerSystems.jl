@@ -15,10 +15,14 @@
     @test P_control isa PowerSystems.DeviceParameter
     P_control_PI = ActivePowerPI(2.0, 20.0, 50.0)
     @test P_control_PI isa PowerSystems.DeviceParameter
+    P_VOC = ActiveVirtualOscillator(0.0033, pi/4)
+    @test P_VOC isa PowerSystems.DeviceParameter
     Q_control = ReactivePowerDroop(0.2, 1000.0)
     @test Q_control isa PowerSystems.DeviceParameter
     Q_control_PI = ReactivePowerPI(2.0, 20.0, 50.0)
     @test Q_control_PI isa PowerSystems.DeviceParameter
+    Q_VOC = ReactiveVirtualOscillator(0.0796)
+    @test Q_VOC isa PowerSystems.DeviceParameter
     outer_control = OuterControl(virtual_H, Q_control)
     @test outer_control isa PowerSystems.DynamicComponent
     test_accessors(outer_control)
@@ -28,6 +32,10 @@
     outer_control_PI = OuterControl(P_control_PI, Q_control_PI)
     @test outer_control_PI isa PowerSystems.DynamicComponent
     test_accessors(outer_control_PI)
+    outer_control_VOC = OuterControl(P_VOC, Q_VOC)
+    @test outer_control_PI isa PowerSystems.DynamicComponent
+    test_accessors(outer_control_PI)
+    
     vsc = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
     vsc2 = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
