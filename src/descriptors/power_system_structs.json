@@ -7932,6 +7932,184 @@
       "supertype": "Machine"
     },
     {
+      "struct_name": "SauerPaiMachine",
+      "docstring": "Parameters of synchronous machine: Sauer Pai model",
+      "fields": [
+        {
+          "name": "R",
+          "comment": "Resistance after EMF in machine per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in d-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactance after EMF in q-axis per unit",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_p",
+          "comment": "Transient reactance after EMF in d-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq_p",
+          "comment": "Transient reactance after EMF in q-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xd_pp",
+          "comment": "Sub-Transient reactance after EMF in d-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xq_pp",
+          "comment": "Sub-Transient reactance after EMF in q-axis per unit",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Xl",
+          "comment": "Stator Leakage Reactance",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_p",
+          "comment": "Time constant of transient d-axis voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_p",
+          "comment": "Time constant of transient q-axis voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Td0_pp",
+          "comment": "Time constant of sub-transient d-axis voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "Tq0_pp",
+          "comment": "Time constant of sub-transient q-axis voltage",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "γ_d1",
+          "data_type": "Float64",
+          "internal_default": "(Xd_pp-Xl)/(Xd_p-Xl)",
+          "comment": ""
+        },
+        {
+          "name": "γ_q1",
+          "data_type": "Float64",
+          "internal_default": "(Xq_pp-Xl)/(Xq_p-Xl)",
+          "comment": ""
+        },
+        {
+          "name": "γ_d2",
+          "data_type": "Float64",
+          "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
+          "comment": ""
+        },
+        {
+          "name": "γ_q2",
+          "data_type": "Float64",
+          "internal_default": "(Xq_p - Xq_pp) / (Xq_p - Xl)^2",
+          "comment": ""
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage\n\tψd_pp: subtransient flux linkage in the d-axis\n\tψq_pp: subtransient flux linkage in the q-axis",
+          "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :ψd_pp, :ψq_pp]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "SauerPaiMachine has 6 states",
+          "internal_default": 6,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "Machine"
+    },
+    {
       "struct_name": "MarconatoMachine",
       "docstring": "Parameters of 6-states synchronous machine: Marconato model",
       "fields": [
