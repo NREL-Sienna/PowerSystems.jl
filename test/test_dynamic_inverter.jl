@@ -15,7 +15,7 @@
     @test P_control isa PowerSystems.DeviceParameter
     P_control_PI = ActivePowerPI(2.0, 20.0, 50.0)
     @test P_control_PI isa PowerSystems.DeviceParameter
-    P_VOC = ActiveVirtualOscillator(0.0033, pi/4)
+    P_VOC = ActiveVirtualOscillator(0.0033, pi / 4)
     @test P_VOC isa PowerSystems.DeviceParameter
     Q_control = ReactivePowerDroop(0.2, 1000.0)
     @test Q_control isa PowerSystems.DeviceParameter
