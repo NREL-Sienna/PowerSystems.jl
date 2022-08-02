@@ -48,7 +48,7 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     sys = System(data.caseid.sbase; frequency = data.caseid.basfrq, kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    read_gen!(sys, data, bus_number_to_bus; kwargs...)
+    read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
     #read_branch!(sys, data, bus_number_to_bus; kwargs...)
     #read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     #read_dcline!(sys, data, bus_number_to_bus; kwargs...)
@@ -70,7 +70,7 @@ function read_bus!(
     bus_types = instances(MatpowerBusTypes)
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
-    for ix in 1:length(buses)
+    for ix in eachindex(buses.i)
         # d id the data dict for each bus
         # d_key is bus key
         bus_name = _get_name(buses.name[ix])
@@ -197,9 +197,10 @@ function read_loads!(
         if total_load != 0.0
             bus = bus_number_to_bus[loads.i[ix]]
 
-            load_name = "$(get_name(bus))_load_$(loads.id[ix])"
-            has_component(PowerLoad, sys, load_name) &&
+            load_name = "load-$(get_name(bus))-$(loads.i[ix])-$(loads_id[ix])"
+            if has_component(PowerLoad, sys, load_name)
                 throw(DataFormatError("Found duplicate load names of $(load_name)"))
+            end
 
             load = PowerLoad(;
                 name = load_name,
@@ -216,4 +217,44 @@ function read_loads!(
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
+    return nothing
+end
+
+function read_gen!(
+    sys::System,
+    gens::PowerFlowData.Generators,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    @info "Reading generator data"
+
+    if isempty(gens)
+        @error "There are no generators in this file"
+        return
+    end
+
+    for ix in eachindex(gens.i)
+        bus = bus_number_to_bus[loads.i[ix]]
+
+        gen_name = "gen-$(get_name(bus))-$(gens.i[ix])-$(gens.id[ix])"
+        if has_component(ThermalStandard, sys, gen_name)
+            throw(DataFormatError("Found duplicate load names of $(gen_name)"))
+        end
+
+        load = PowerLoad(;
+            name = load_name,
+            available = true,
+            model = LoadModels.ConstantPower,
+            bus = bus,
+            active_power = loads.pl[ix] / sys_mbase,
+            reactive_power = loads.ql[ix] / sys_mbase,
+            max_active_power = loads.pl[ix] / sys_mbase,
+            max_reactive_power = loads.ql[ix] / sys_mbase,
+            base_power = sys_mbase,
+        )
+
+        add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+    end
+
 end

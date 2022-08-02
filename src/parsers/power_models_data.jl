@@ -493,7 +493,7 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading generator data"
 
     if !haskey(data, "gen")
