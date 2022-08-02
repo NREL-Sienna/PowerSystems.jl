@@ -15,7 +15,7 @@ end
 Constructs a System from PowerModelsData.
 
 # Arguments
-- `pm_data::Union{PowerModelsData, Union{String, IO}}`: PowerModels data object or supported
+- `pfd_data::Union{PowerFlowDataNetwork, Union{String, IO}}`: PowerModels data object or supported
 load flow case (*.m, *.raw)
 
 # Keyword arguments
@@ -65,7 +65,6 @@ function read_bus!(
     data::PowerFlowData.Network;
     kwargs...,
 )
-    @info "Reading bus data v$(net.data.caseid.rev)"
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes)
@@ -116,14 +115,12 @@ function read_bus!(
     return bus_number_to_bus
 end
 
-
 function read_bus!(
     sys::System,
     buses::PowerFlowData.Buses30,
     data::PowerFlowData.Network;
     kwargs...,
 )
-    @info "Reading bus data PSSe v30"
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes)
@@ -152,7 +149,6 @@ function read_bus!(
             add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
         end
 
-
         # TODO: LoadZones need to be created and populated here
 
         bus = Bus(
@@ -171,12 +167,7 @@ function read_bus!(
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
 
         if buses.bl[ix] > 0 || buses.gl[ix] > 0
-            shunt = FixedAdmittance(
-                bus_name,
-                true,
-                bus,
-                buses.gl[ix] + 1im*buses.bl[ix],
-            )
+            shunt = FixedAdmittance(bus_name, true, bus, buses.gl[ix] + 1im * buses.bl[ix])
             add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
         end
     end
