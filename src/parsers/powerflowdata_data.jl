@@ -65,7 +65,7 @@ function read_bus!(
     data::PowerFlowData.Network;
     kwargs...,
 )
-    @info "Reading bus data"
+    @info "Reading bus data v$(net.data.caseid.rev)"
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes)
@@ -81,8 +81,14 @@ function read_bus!(
             ),
         )
         bus_number = buses.i[ix]
-        area_ix = data.area_interchanges.i .== buses.area[ix]
-        area_name = first(data.area_interchanges.arname[area_ix])
+        if isempty(data.area_interchanges)
+            area_name = string(buses.area[ix])
+            @debug "File doesn't contain area names"
+        else
+            area_ix = data.area_interchanges.i .== buses.area[ix]
+            area_name = first(data.area_interchanges.arname[area_ix])
+        end
+
         area = get_component(Area, sys, area_name)
         if isnothing(area)
             area = Area(area_name)
@@ -105,6 +111,74 @@ function read_bus!(
         bus_number_to_bus[bus_number] = bus
 
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+    end
+
+    return bus_number_to_bus
+end
+
+
+function read_bus!(
+    sys::System,
+    buses::PowerFlowData.Buses30,
+    data::PowerFlowData.Network;
+    kwargs...,
+)
+    @info "Reading bus data PSSe v30"
+    bus_number_to_bus = Dict{Int, Bus}()
+
+    bus_types = instances(MatpowerBusTypes)
+
+    _get_name = get(kwargs, :bus_name_formatter, strip)
+    for ix in 1:length(buses)
+        # d id the data dict for each bus
+        # d_key is bus key
+        bus_name = _get_name(buses.name[ix])
+        has_component(Bus, sys, bus_name) && throw(
+            DataFormatError(
+                "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
+            ),
+        )
+        bus_number = buses.i[ix]
+        if isempty(data.area_interchanges)
+            area_name = string(buses.area[ix])
+            @debug "File doesn't contain area names"
+        else
+            area_ix = data.area_interchanges.i .== buses.area[ix]
+            area_name = first(data.area_interchanges.arname[area_ix])
+        end
+        area = get_component(Area, sys, area_name)
+        if isnothing(area)
+            area = Area(area_name)
+            add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
+        end
+
+
+        # TODO: LoadZones need to be created and populated here
+
+        bus = Bus(
+            bus_number,
+            bus_name,
+            bus_types[buses.ide[ix]],
+            clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
+            buses.vm[ix],
+            nothing, # PSSe 30 data doesn't have magnitude limits
+            buses.basekv[ix],
+            area,
+        )
+
+        bus_number_to_bus[bus_number] = bus
+
+        add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+
+        if buses.bl[ix] > 0 || buses.gl[ix] > 0
+            shunt = FixedAdmittance(
+                bus_name,
+                true,
+                bus,
+                buses.gl[ix] + 1im*buses.bl[ix],
+            )
+            add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
+        end
     end
 
     return bus_number_to_bus
