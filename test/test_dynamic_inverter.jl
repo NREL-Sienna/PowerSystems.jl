@@ -35,7 +35,6 @@
     outer_control_VOC = OuterControl(P_VOC, Q_VOC)
     @test outer_control_PI isa PowerSystems.DynamicComponent
     test_accessors(outer_control_PI)
-    
     vsc = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
     @test vsc isa PowerSystems.DynamicComponent
     vsc2 = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
