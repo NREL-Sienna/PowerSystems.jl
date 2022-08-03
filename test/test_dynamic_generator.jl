@@ -121,6 +121,22 @@ branch_OMIB = [
     )
     @test oneDoneQ isa PowerSystems.DynamicComponent
 
+    SauerPai = SauerPaiMachine(
+        R = 0.0,
+        Xd = 0.920,
+        Xq = 0.130,
+        Xd_p = 0.300,
+        Xq_p = 0.228,
+        Xd_pp = 0.220,
+        Xq_pp = 0.290,
+        Xl = 0.1,
+        Td0_p = 5.2,
+        Tq0_p = 0.85,
+        Td0_pp = 0.029,
+        Tq0_pp = 0.034,
+    )
+    @test SauerPai isa PowerSystems.DynamicComponent
+
     AndersonFouad = AndersonFouadMachine(
         R = 0.0,
         Xd = 0.8979,
