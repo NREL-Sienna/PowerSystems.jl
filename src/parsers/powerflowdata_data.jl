@@ -51,8 +51,20 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_branch!(sys, data.branches, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
-    read_switched_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    read_dcline!(sys, data.multi_terminal_dc, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_switched_shunt!(
+        sys,
+        data.fixed_shunts,
+        data.caseid.sbase,
+        bus_number_to_bus;
+        kwargs...,
+    )
+    read_dcline!(
+        sys,
+        data.multi_terminal_dc,
+        data.caseid.sbase,
+        bus_number_to_bus;
+        kwargs...,
+    )
 
     if runchecks
         check(sys)
@@ -228,7 +240,12 @@ function read_loads!(
     return nothing
 end
 
-function _get_active_power_limits(pt::Float64, pb::Float64, machine_base::Float64, system_base::Float64)
+function _get_active_power_limits(
+    pt::Float64,
+    pb::Float64,
+    machine_base::Float64,
+    system_base::Float64,
+)
     min_p = 0.0
     if pb < 0.0
         @info "Min power in dataset is negative, active_power_limits minimum set to 0.0"
@@ -275,13 +292,21 @@ function read_gen!(
             bus = bus,
             active_power = gens.pg[ix] / gens.mbase[ix],
             reactive_power = gens.qg[ix] / gens.mbase[ix],
-            active_power_limits = _get_active_power_limits(gens.pt[ix], gens.pb[ix], gens.mbase[ix], sys_mbase),
-            reactive_power_limits = (min = gens.qb[ix] / sys_mbase, max = gens.qt[ix] / sys_mbase),
+            active_power_limits = _get_active_power_limits(
+                gens.pt[ix],
+                gens.pb[ix],
+                gens.mbase[ix],
+                sys_mbase,
+            ),
+            reactive_power_limits = (
+                min = gens.qb[ix] / sys_mbase,
+                max = gens.qt[ix] / sys_mbase,
+            ),
             base_power = gens.mbase[ix],
             rating = gens.mbase[ix],
             ramp_limits = nothing,
             time_limits = nothing,
-            operation_cost = TwoPartCost(0.0, 0.0)
+            operation_cost = TwoPartCost(0.0, 0.0),
         )
 
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
@@ -307,9 +332,9 @@ function read_branch!(
         bus_from = bus_number_to_bus[branches.i[ix]]
         bus_to = bus_number_to_bus[branches.j[ix]]
         branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))-$(branches.ckt[ix])"
-        max_rate = max(branches.rate_a[ix],branches.rate_b[ix], branches.rate_c[ix])
+        max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
         if max_rate == 0.0
-            max_rate = abs(1/(branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
+            max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
         end
         branch = Line(
             name = branch_name,
@@ -320,8 +345,8 @@ function read_branch!(
             r = branches.r[ix],
             x = branches.x[ix],
             b = (from = branches.bi[ix], to = branches.bj[ix]),
-            angle_limits = (min = -π/2, max = π/2),
-            rate = max_rate
+            angle_limits = (min = -π / 2, max = π / 2),
+            rate = max_rate,
         )
 
         add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
@@ -350,7 +375,8 @@ function read_shunt!(
     return nothing
 end
 
-function read_dcline!(sys::System,
+function read_dcline!(
+    sys::System,
     dc_lines::PowerFlowData.TwoTerminalDCLines,
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, Bus};
