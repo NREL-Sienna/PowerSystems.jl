@@ -49,13 +49,14 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    #read_branch!(sys, data, bus_number_to_bus; kwargs...)
-    #read_shunt!(sys, data, bus_number_to_bus; kwargs...)
-    #read_dcline!(sys, data, bus_number_to_bus; kwargs...)
-    #read_storage!(sys, data, bus_number_to_bus; kwargs...)
-    #if runchecks
-    #    check(sys)
-    #end
+    read_branch!(sys, data.branches, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_shunt!(sys, data, bus_number_to_bus; kwargs...)
+    read_switched_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_dcline!(sys, data.multi_terminal_dc, data.caseid.sbase, bus_number_to_bus; kwargs...)
+
+    if runchecks
+        check(sys)
+    end
     return sys
 end
 
@@ -197,20 +198,27 @@ function read_loads!(
         if total_load != 0.0
             bus = bus_number_to_bus[loads.i[ix]]
 
-            load_name = "load-$(get_name(bus))-$(loads.i[ix])-$(loads_id[ix])"
+            load_name = "load-$(get_name(bus))-$(loads.i[ix])-$(loads.id[ix])"
             if has_component(PowerLoad, sys, load_name)
                 throw(DataFormatError("Found duplicate load names of $(load_name)"))
             end
 
-            load = PowerLoad(;
+            load = StandardLoad(;
                 name = load_name,
                 available = true,
-                model = LoadModels.ConstantPower,
                 bus = bus,
-                active_power = loads.pl[ix] / sys_mbase,
-                reactive_power = loads.ql[ix] / sys_mbase,
-                max_active_power = loads.pl[ix] / sys_mbase,
-                max_reactive_power = loads.ql[ix] / sys_mbase,
+                constant_active_power = loads.pl[ix] / sys_mbase,
+                constant_reactive_power = loads.ql[ix] / sys_mbase,
+                impedance_active_power = loads.yp[ix] / sys_mbase,
+                impedance_reactive_power = loads.yq[ix] / sys_mbase,
+                current_active_power = loads.ip[ix] / sys_mbase,
+                current_reactive_power = loads.iq[ix] / sys_mbase,
+                max_constant_active_power = loads.pl[ix] / sys_mbase,
+                max_constant_reactive_power = loads.ql[ix] / sys_mbase,
+                max_impedance_active_power = loads.yp[ix] / sys_mbase,
+                max_impedance_reactive_power = loads.yq[ix] / sys_mbase,
+                max_current_active_power = loads.ip[ix] / sys_mbase,
+                max_current_reactive_power = loads.iq[ix] / sys_mbase,
                 base_power = sys_mbase,
             )
 
@@ -218,6 +226,21 @@ function read_loads!(
         end
     end
     return nothing
+end
+
+function _get_active_power_limits(pt::Float64, pb::Float64, machine_base::Float64, system_base::Float64)
+    min_p = 0.0
+    if pb < 0.0
+        @info "Min power in dataset is negative, active_power_limits minimum set to 0.0"
+    else
+        min_p = pb
+    end
+
+    if machine_base != system_base && pt >= machine_base
+        @info "Max active power limit is $(pt/machine_base) than the generator base. Check the data"
+    end
+
+    return (min = min_p / machine_base, max = pt / machine_base)
 end
 
 function read_gen!(
@@ -235,26 +258,103 @@ function read_gen!(
     end
 
     for ix in eachindex(gens.i)
-        bus = bus_number_to_bus[loads.i[ix]]
+        bus = get(bus_number_to_bus, gens.i[ix], nothing)
+        if isnothing(bus)
+            error("Incorrect bus id for generator $(gens.i[ix])-$(gens.id[ix])")
+        end
 
         gen_name = "gen-$(get_name(bus))-$(gens.i[ix])-$(gens.id[ix])"
         if has_component(ThermalStandard, sys, gen_name)
             throw(DataFormatError("Found duplicate load names of $(gen_name)"))
         end
 
-        load = PowerLoad(;
-            name = load_name,
-            available = true,
-            model = LoadModels.ConstantPower,
+        load = ThermalStandard(;
+            name = gen_name,
+            available = gens.stat[ix] > 0 ? true : false,
+            status = gens.stat[ix] > 0 ? true : false,
             bus = bus,
-            active_power = loads.pl[ix] / sys_mbase,
-            reactive_power = loads.ql[ix] / sys_mbase,
-            max_active_power = loads.pl[ix] / sys_mbase,
-            max_reactive_power = loads.ql[ix] / sys_mbase,
-            base_power = sys_mbase,
+            active_power = gens.pg[ix] / gens.mbase[ix],
+            reactive_power = gens.qg[ix] / gens.mbase[ix],
+            active_power_limits = _get_active_power_limits(gens.pt[ix], gens.pb[ix], gens.mbase[ix], sys_mbase),
+            reactive_power_limits = (min = gens.qb[ix] / sys_mbase, max = gens.qt[ix] / sys_mbase),
+            base_power = gens.mbase[ix],
+            rating = gens.mbase[ix],
+            ramp_limits = nothing,
+            time_limits = nothing,
+            operation_cost = TwoPartCost(0.0, 0.0)
         )
 
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
+    return nothing
+end
 
+function read_branch!(
+    sys::System,
+    branches::PowerFlowData.Branches30,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    @info "Reading line data"
+
+    if isempty(branches)
+        @error "There are no lines in this file"
+        return
+    end
+
+    for ix in eachindex(branches.i)
+        bus_from = bus_number_to_bus[branches.i[ix]]
+        bus_to = bus_number_to_bus[branches.j[ix]]
+        branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))-$(branches.ckt[ix])"
+        max_rate = max(branches.rate_a[ix],branches.rate_b[ix], branches.rate_c[ix])
+        if max_rate == 0.0
+            max_rate = abs(1/(branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
+        end
+        branch = Line(
+            name = branch_name,
+            available = branches.st[ix] > 0 ? true : false,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = Arc(bus_from, bus_to),
+            r = branches.r[ix],
+            x = branches.x[ix],
+            b = (from = branches.bi[ix], to = branches.bj[ix]),
+            angle_limits = (min = -π/2, max = π/2),
+            rate = max_rate
+        )
+
+        add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
+    end
+
+    return nothing
+end
+
+function read_shunt!(
+    sys::System,
+    ::Nothing,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return nothing
+end
+
+function read_shunt!(
+    sys::System,
+    ::PowerFlowData.SwitchedShunts30,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return nothing
+end
+
+function read_dcline!(sys::System,
+    dc_lines::PowerFlowData.TwoTerminalDCLines,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return nothing
 end

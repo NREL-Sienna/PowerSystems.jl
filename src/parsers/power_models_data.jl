@@ -637,7 +637,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -670,7 +670,7 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -698,7 +698,7 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
@@ -717,7 +717,7 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
     end
 end
 
-function read_storage!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_storage!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading storage data"
     if !haskey(data, "storage")
         @info "There is no storage data in this file"
