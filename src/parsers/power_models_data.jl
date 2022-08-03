@@ -717,7 +717,12 @@ function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus};
     end
 end
 
-function read_storage!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_storage!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
     @info "Reading storage data"
     if !haskey(data, "storage")
         @info "There is no storage data in this file"
