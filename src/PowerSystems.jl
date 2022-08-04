@@ -175,6 +175,8 @@ export ReactivePowerDroop
 export ActivePowerDroop
 export ActivePowerPI
 export ReactivePowerPI
+export ActiveVirtualOscillator
+export ReactiveVirtualOscillator
 export ActiveRenewableControllerAB
 export ReactiveRenewableControllerAB
 

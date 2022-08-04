@@ -96,10 +96,12 @@ include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ActivePowerPI.jl")
+include("ActiveVirtualOscillator.jl")
 include("ActiveRenewableControllerAB.jl")
 include("ReactiveRenewableControllerAB.jl")
 include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
+include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
@@ -466,6 +468,8 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
+export get_k1
+export get_k2
 export get_kWh_Cap
 export get_kad
 export get_kd
@@ -583,7 +587,9 @@ export get_θp
 export get_θp_rad
 export get_τ_limits
 export get_τ_ref
+export get_ψ
 export get_ω_lp
+export get_ω_ref
 export get_ωad
 export get_ωf
 export get_ωz
@@ -945,6 +951,8 @@ export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
+export set_k1!
+export set_k2!
 export set_kWh_Cap!
 export set_kad!
 export set_kd!
@@ -1062,7 +1070,9 @@ export set_θp!
 export set_θp_rad!
 export set_τ_limits!
 export set_τ_ref!
+export set_ψ!
 export set_ω_lp!
+export set_ω_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!
