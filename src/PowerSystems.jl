@@ -114,6 +114,7 @@ export SalientPoleQuadratic
 export RoundRotorExponential
 export SalientPoleExponential
 export OneDOneQMachine
+export SauerPaiMachine
 export MarconatoMachine
 export SimpleMarconatoMachine
 export AndersonFouadMachine
