@@ -67,7 +67,7 @@ end
     @test tStandardLoad isa PowerSystems.Component
     tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tLoad = InterruptibleLoad(nothing)
+    tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
 end
 

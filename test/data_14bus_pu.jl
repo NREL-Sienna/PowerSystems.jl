@@ -813,7 +813,7 @@ loads14(nodes14) = [
         "Bus2",
         true,
         nodes14[2],
-        LoadModels.ConstantPower,
+
         0.217,
         0.127,
         100.0,
@@ -824,7 +824,7 @@ loads14(nodes14) = [
         "Bus3",
         true,
         nodes14[3],
-        LoadModels.ConstantPower,
+
         0.942,
         0.19,
         100.0,
@@ -835,7 +835,7 @@ loads14(nodes14) = [
         "Bus4",
         true,
         nodes14[4],
-        LoadModels.ConstantPower,
+
         0.478,
         -0.039,
         100.0,
@@ -846,7 +846,7 @@ loads14(nodes14) = [
         "Bus5",
         true,
         nodes14[5],
-        LoadModels.ConstantPower,
+
         0.076,
         0.016,
         100.0,
@@ -857,7 +857,7 @@ loads14(nodes14) = [
         "Bus6",
         true,
         nodes14[6],
-        LoadModels.ConstantPower,
+
         0.112,
         0.075,
         100.0,
@@ -868,7 +868,7 @@ loads14(nodes14) = [
         "Bus9",
         true,
         nodes14[9],
-        LoadModels.ConstantPower,
+
         0.295,
         0.166,
         100.0,
@@ -879,7 +879,7 @@ loads14(nodes14) = [
         "Bus10",
         true,
         nodes14[10],
-        LoadModels.ConstantPower,
+
         0.09,
         0.058,
         100.0,
@@ -890,7 +890,7 @@ loads14(nodes14) = [
         "Bus11",
         true,
         nodes14[11],
-        LoadModels.ConstantPower,
+
         0.035,
         0.018,
         100.0,
@@ -901,7 +901,7 @@ loads14(nodes14) = [
         "Bus12",
         true,
         nodes14[12],
-        LoadModels.ConstantPower,
+
         0.061,
         0.016,
         100.0,
@@ -912,7 +912,7 @@ loads14(nodes14) = [
         "Bus13",
         true,
         nodes14[13],
-        LoadModels.ConstantPower,
+
         0.135,
         0.058,
         100.0,
@@ -923,7 +923,7 @@ loads14(nodes14) = [
         "Bus14",
         true,
         nodes14[14],
-        LoadModels.ConstantPower,
+
         0.149,
         0.050,
         100.0,
