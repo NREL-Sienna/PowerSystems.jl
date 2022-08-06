@@ -1429,6 +1429,17 @@
           "data_type": "Bus"
         },
         {
+          "name": "base_power",
+          "comment": "Base power of the unit in MVA",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          },
+          "validation_action": "warn"
+        },
+        {
           "name": "constant_active_power",
           "null_value": "0.0",
           "data_type": "Float64",
@@ -1511,17 +1522,6 @@
           "default": "0.0",
           "data_type": "Float64",
           "needs_conversion": true
-        },
-        {
-          "name": "base_power",
-          "comment": "Base power of the unit in MVA",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "valid_range": {
-            "min": 0,
-            "max": null
-          },
-          "validation_action": "warn"
         },
         {
           "name": "services",
