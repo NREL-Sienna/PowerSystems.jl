@@ -12,13 +12,6 @@ IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 
 IS.@scoped_enum(BusTypes, ISOLATED = 1, PQ = 2, PV = 3, REF = 4, SLACK = 5,)
 
-IS.@scoped_enum(
-    LoadModels,
-    ConstantImpedance = 1, # Z
-    ConstantCurrent = 2,   # I
-    ConstantPower = 3,     # P
-)
-
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
 IS.@scoped_enum(
