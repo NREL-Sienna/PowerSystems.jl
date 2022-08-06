@@ -564,36 +564,9 @@ loadbus4_ts_DA = [
 ]
 
 loads5(nodes5) = [
-    PowerLoad(
-        "Bus2",
-        true,
-        nodes5[2],
-        3.0,
-        0.9861,
-        100.0,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus3",
-        true,
-        nodes5[3],
-        3.0,
-        0.9861,
-        100.0,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus4",
-        true,
-        nodes5[4],
-        4.0,
-        1.3147,
-        100.0,
-        4.0,
-        1.3147,
-    ),
+    PowerLoad("Bus2", true, nodes5[2], 3.0, 0.9861, 100.0, 3.0, 0.9861),
+    PowerLoad("Bus3", true, nodes5[3], 3.0, 0.9861, 100.0, 3.0, 0.9861),
+    PowerLoad("Bus4", true, nodes5[4], 4.0, 1.3147, 100.0, 4.0, 1.3147),
 ];
 
 interruptible(nodes5) = [
