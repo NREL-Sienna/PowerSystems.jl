@@ -49,7 +49,6 @@ Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnit
 Base.convert(::Type{BusTypes}, val::AbstractString) = get_enum_value(BusTypes, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
-Base.convert(::Type{LoadModels}, val::AbstractString) = get_enum_value(LoadModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
 Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateTypes, val)
 Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)
