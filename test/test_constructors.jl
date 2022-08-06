@@ -63,12 +63,10 @@ end
 @testset "Load Constructors" begin
     tPowerLoad = PowerLoad(nothing)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF(nothing)
+    tStandardLoad = StandardLoad(nothing)
     @test tPowerLoadPF isa PowerSystems.Component
     tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
-    @test tPowerLoadPF isa PowerSystems.Component
     tLoad = InterruptibleLoad(nothing)
     @test tLoad isa PowerSystems.Component
 end
