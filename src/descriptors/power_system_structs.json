@@ -1163,7 +1163,7 @@
       "supertype": "DCBranch"
     },
     {
-      "struct_name": "InterruptibleLoad",
+      "struct_name": "InterruptiblePowerLoad",
       "fields": [
         {
           "null_value": "init",
@@ -1180,11 +1180,6 @@
           "name": "bus",
           "null_value": "Bus(nothing)",
           "data_type": "Bus"
-        },
-        {
-          "name": "model",
-          "null_value": "LoadModels.ConstantPower",
-          "data_type": "LoadModels"
         },
         {
           "name": "active_power",
@@ -1339,11 +1334,6 @@
           "name": "bus",
           "null_value": "Bus(nothing)",
           "data_type": "Bus"
-        },
-        {
-          "name": "model",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, LoadModels}"
         },
         {
           "name": "active_power",
@@ -13368,7 +13358,7 @@
             "min": 0,
             "max": null
           }
-        }, 
+        },
         {
           "name": "ω_ref",
           "comment": "Reference frequency",

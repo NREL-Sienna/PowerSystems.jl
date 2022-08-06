@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::Bus
-        model::Union{Nothing, LoadModels}
         active_power::Float64
         reactive_power::Float64
         base_power::Float64
@@ -28,7 +27,6 @@ Data structure for a static power load.
 - `name::String`
 - `available::Bool`
 - `bus::Bus`
-- `model::Union{Nothing, LoadModels}`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -44,7 +42,6 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
     bus::Bus
-    model::Union{Nothing, LoadModels}
     active_power::Float64
     reactive_power::Float64
     "Base power of the unit in MVA"
@@ -62,12 +59,12 @@ mutable struct PowerLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
+function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,7 +73,6 @@ function PowerLoad(::Nothing)
         name="init",
         available=false,
         bus=Bus(nothing),
-        model=nothing,
         active_power=0.0,
         reactive_power=0.0,
         base_power=0.0,
@@ -95,8 +91,6 @@ get_name(value::PowerLoad) = value.name
 get_available(value::PowerLoad) = value.available
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
-"""Get [`PowerLoad`](@ref) `model`."""
-get_model(value::PowerLoad) = value.model
 """Get [`PowerLoad`](@ref) `active_power`."""
 get_active_power(value::PowerLoad) = get_value(value, value.active_power)
 """Get [`PowerLoad`](@ref) `reactive_power`."""
@@ -122,8 +116,6 @@ get_internal(value::PowerLoad) = value.internal
 set_available!(value::PowerLoad, val) = value.available = val
 """Set [`PowerLoad`](@ref) `bus`."""
 set_bus!(value::PowerLoad, val) = value.bus = val
-"""Set [`PowerLoad`](@ref) `model`."""
-set_model!(value::PowerLoad, val) = value.model = val
 """Set [`PowerLoad`](@ref) `active_power`."""
 set_active_power!(value::PowerLoad, val) = value.active_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `reactive_power`."""
