@@ -214,7 +214,6 @@ export LODF
 export Adjacency
 export AngleUnits
 export BusTypes
-export LoadModels
 export PrimeMovers
 export ThermalFuels
 export StateTypes
