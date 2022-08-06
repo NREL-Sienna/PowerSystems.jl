@@ -16,7 +16,6 @@ const ENUMS = (
     BusTypes,
     GeneratorCostModels,
     InputCategory,
-    LoadModels,
     PrimeMovers,
     StateTypes,
     ThermalFuels,
