@@ -121,7 +121,7 @@ function set_units_setting!(value::RegulationDevice, settings::SystemUnitsSettin
 end
 
 RegulationDeviceSupportedTypes = DataType[
-    InterruptibleLoad,
+    InterruptiblePowerLoad ,
     HydroDispatch,
     HydroEnergyReservoir,
     RenewableDispatch,
