@@ -63,7 +63,7 @@ export PowerLoad
 export StandardLoad
 export FixedAdmittance
 export ControllableLoad
-export InterruptibleLoad
+export InterruptiblePowerLoad
 
 export Storage
 export GenericBattery
