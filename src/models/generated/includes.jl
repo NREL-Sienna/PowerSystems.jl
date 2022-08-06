@@ -14,7 +14,7 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("HVDCLine.jl")
 include("VSCDCLine.jl")
-include("InterruptibleLoad.jl")
+include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("PowerLoad.jl")
 include("StandardLoad.jl")
@@ -506,7 +506,6 @@ export get_max_current_reactive_power
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
 export get_max_reactive_power
-export get_model
 export get_must_run
 export get_n_states
 export get_name
@@ -995,7 +994,6 @@ export set_max_current_reactive_power!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_reactive_power!
-export set_model!
 export set_must_run!
 export set_n_states!
 export set_name!
