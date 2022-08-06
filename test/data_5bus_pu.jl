@@ -568,7 +568,7 @@ loads5(nodes5) = [
         "Bus2",
         true,
         nodes5[2],
-        LoadModels.ConstantPower,
+
         3.0,
         0.9861,
         100.0,
@@ -579,7 +579,7 @@ loads5(nodes5) = [
         "Bus3",
         true,
         nodes5[3],
-        LoadModels.ConstantPower,
+
         3.0,
         0.9861,
         100.0,
@@ -590,7 +590,7 @@ loads5(nodes5) = [
         "Bus4",
         true,
         nodes5[4],
-        LoadModels.ConstantPower,
+
         4.0,
         1.3147,
         100.0,
@@ -600,11 +600,11 @@ loads5(nodes5) = [
 ];
 
 interruptible(nodes5) = [
-    InterruptibleLoad(
+    InterruptiblePowerLoad(
         "IloadBus4",
         true,
         nodes5[4],
-        LoadModels.ConstantPower,
+
         0.10,
         0.0,
         0.10,
