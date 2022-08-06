@@ -220,17 +220,38 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     return bus_number_to_bus
 end
 
-function make_load(d, bus, sys_mbase; kwargs...)
+function make_power_load(d, bus, sys_mbase; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
         available = true,
-        model = LoadModels.ConstantPower,
         bus = bus,
         active_power = d["pd"],
         reactive_power = d["qd"],
         max_active_power = d["pd"],
         max_reactive_power = d["qd"],
+        base_power = sys_mbase,
+    )
+end
+
+function make_standard_load(d, bus, sys_mbase; kwargs...)
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return StandardLoad(;
+        name = _get_name(d),
+        available = true,
+        bus = bus,
+        constant_active_power = d["pd"],
+        constant_reactive_power = d["qd"],
+        current_active_power = d["pi"],
+        current_reactive_power = d["qi"],
+        impedance_active_power = d["py"],
+        impedance_reactive_power = d["qy"],
+        max_constant_active_power = d["pd"],
+        max_constant_reactive_power = d["qd"],
+        max_current_active_power = d["pi"],
+        max_current_reactive_power = d["qi"],
+        max_impedance_active_power = d["py"],
+        max_impedance_reactive_power = d["qy"],
         base_power = sys_mbase,
     )
 end
@@ -246,12 +267,21 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         d = data["load"][d_key]
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
-            load = make_load(d, bus, sys_mbase; kwargs...)
-            has_component(PowerLoad, sys, get_name(load)) && throw(
-                DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                ),
-            )
+            if data["source_type"] == "pti"
+                load = make_standard_load(d, bus, sys_mbase; kwargs...)
+                has_component(StandardLoad, sys, get_name(load)) && throw(
+                    DataFormatError(
+                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    ),
+                )
+            else
+                load = make_power_load(d, bus, sys_mbase; kwargs...)
+                has_component(PowerLoad, sys, get_name(load)) && throw(
+                    DataFormatError(
+                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    ),
+                )
+            end
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end

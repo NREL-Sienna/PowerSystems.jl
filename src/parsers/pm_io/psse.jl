@@ -293,42 +293,19 @@ by `["I", "ID"]` in the PSS(R)E Load specification.
 """
 function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["load"] = []
-    bus_lookup = Dict{Int, Any}()
     if haskey(pti_data, "LOAD")
         for load in pti_data["LOAD"]
             sub_data = Dict{String, Any}()
             sub_data["load_bus"] = pop!(load, "I")
             sub_data["pd"] = pop!(load, "PL")
             sub_data["qd"] = pop!(load, "QL")
+            sub_data["pi"] = pop!(load, "IP")
+            sub_data["qi"] = pop!(load, "IQ")
+            sub_data["py"] = pop!(load, "YP")
+            sub_data["qy"] = pop!(load, "YQ")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
             sub_data["status"] = pop!(load, "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
-            # Only build lookup once if necessary
-            if (load["IP"] != 0.0) ||
-               (load["IQ"] != 0.0) ||
-               (load["YP"] != 0.0) ||
-               (load["YQ"] != 0.0)
-                if isempty(bus_lookup)
-                    bus_lookup = Dict(bus["index"] => bus for bus in pm_data["bus"])
-                end
-                bus_vm = bus_lookup[sub_data["load_bus"]]["vm"]
-                if (load["IP"] != 0.0) || (load["IQ"] != 0.0)
-                    # Uses matpower transformation instead of pd = real(V*I) and qd = imag(V*I)
-                    # where I and V are in vector form.
-                    sub_data["pd"] += bus_vm * load["IP"]
-                    sub_data["qd"] += bus_vm * load["IQ"]
-                    @warn "Load id = $(sub_data["index"]) detected as I Load  IP = $(load["IP"]) IQ = $(load["IQ"]). Converting to Power Load Pd = $(bus_vm*load["IP"]) Qd = $(bus_vm*load["IQ"]) using Vm = $(bus_vm)"
-                end
-                if (load["YP"] != 0.0) || (load["YQ"] != 0.0)
-                    # Uses matpower transformation instead of pd = real(V*(V*Y)^*) and qd = imag(V*(V*Y)^*)
-                    # where Y and V are in vector form.
-                    sub_data["pd"] += bus_vm^2 * load["YP"]
-                    # NOTE: In PSSe reactive power in constant admittance loads is negative for inductive loads and positive for capacitive loads
-                    sub_data["qd"] -= bus_vm^2 * load["YQ"]
-                    @warn "Load id = $(sub_data["index"]) detected as Z Load YP = $(load["YP"]) YQ = $(load["YQ"]). Converting to Power Load Pd = $(bus_vm^2*load["YP"]) Qd = $(-1*bus_vm^2*load["YQ"]) using Vm = $(bus_vm)"
-                end
-            end
-
             if import_all
                 _import_remaining_keys!(sub_data, load)
             end
