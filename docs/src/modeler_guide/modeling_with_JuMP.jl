@@ -16,23 +16,12 @@ using PowerSystems
 const PSY = PowerSystems
 using JuMP
 using Ipopt
+using PowerSystemsCaseBuilder
 
 # The first step is to load the test data used throughout the rest of these tutorials
 # (or set `DATA_DIR` as appropriate if it already exists).
 
-DATA_DIR = "../../../data"
-if !isdir(DATA_DIR)
-    download(PowerSystems.UtilsData.TestData, folder = DATA_DIR)
-end
-
-# !!! note
-#     `isdir` checks if the directory exists, so you should only need to download the
-#     data once.
-
-system_data = System(joinpath(DATA_DIR, "matpower/case5_re.m"))
-add_time_series!(system_data, joinpath(DATA_DIR,"forecasts/5bus_ts/timeseries_pointers_da.json"))
-to_json(system_data, "system_data.json")
-
+system_data =  build_system(PSISystems, "c_sys5_pjm")
 
 function ed_model(system::System, optimizer)
     ed_m = Model(optimizer)
@@ -69,5 +58,4 @@ function ed_model(system::System, optimizer)
     return optimize!(ed_m)
 end
 
-system_data = System("system_data.json")
 results = ed_model(system_data, Ipopt.Optimizer)
