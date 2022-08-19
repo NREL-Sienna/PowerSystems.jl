@@ -1767,7 +1767,7 @@
         {
           "name": "base_power",
           "comment": "Base power",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -1927,7 +1927,7 @@
         {
           "name": "base_power",
           "comment": "Base power",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -2565,7 +2565,7 @@
           "default": "1.0",
           "valid_range": {
             "min": 0,
-            "max": 1.0
+            "max": 1
           },
           "validation_action": "warn"
         },
@@ -4422,7 +4422,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": 1.0
+            "max": 1
           },
           "validation_action": "warn"
         },
@@ -4460,8 +4460,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": -1.0,
-            "max": 1.0
+            "min": -1,
+            "max": 1
           },
           "validation_action": "warn"
         },
@@ -4472,7 +4472,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": 2.0
+            "max": 2
           },
           "validation_action": "error"
         },
@@ -6088,7 +6088,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": 2.0
+            "max": 2
           },
           "validation_action": "error"
         },
@@ -7812,7 +7812,7 @@
         {
           "name": "L_d",
           "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7822,7 +7822,7 @@
         {
           "name": "L_q",
           "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7832,7 +7832,7 @@
         {
           "name": "L_ad",
           "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7842,7 +7842,7 @@
         {
           "name": "L_aq",
           "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7852,7 +7852,7 @@
         {
           "name": "L_f1d",
           "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7862,7 +7862,7 @@
         {
           "name": "L_ff",
           "comment": "Field rotor winding inductance, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7872,7 +7872,7 @@
         {
           "name": "L_1d",
           "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -7882,7 +7882,7 @@
         {
           "name": "L_1q",
           "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8570,7 +8570,7 @@
         {
           "name": "L_d",
           "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the d-axis of the rotor, in per unit. This value is denoted as L_ad + L_l in Kundur (and Ld in Machowski).",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8580,7 +8580,7 @@
         {
           "name": "L_q",
           "comment": "Inductance of fictitious damping that represent the effect of the three-phase stator winding in the q-axis of the rotor, in per unit. This value is denoted as L_aq + L_l in Kundur.",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8590,7 +8590,7 @@
         {
           "name": "L_ad",
           "comment": "Mutual inductance between stator winding and rotor field (and damping) winding inductance on d-axis, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8600,7 +8600,7 @@
         {
           "name": "L_aq",
           "comment": "Mutual inductance between stator winding and rotor damping winding inductance on q-axis, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8610,7 +8610,7 @@
         {
           "name": "L_f1d",
           "comment": "Mutual inductance between rotor field winding and rotor damping winding inductance on d-axis, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8620,7 +8620,7 @@
         {
           "name": "L_ff",
           "comment": "Field rotor winding inductance, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8630,7 +8630,7 @@
         {
           "name": "L_1d",
           "comment": "Inductance of the d-axis rotor damping circuit, in per unit",
-          "null_value": 1.0,
+          "null_value": 1,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -8640,7 +8640,7 @@
         {
           "name": "L_1q",
           "comment": "Inductance of the q-axis rotor damping circuit, in per unit",
-          "null_value": 2.0,
+          "null_value": 2,
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
@@ -9660,7 +9660,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": 5.0
+            "max": 5
           }
         },
         {
@@ -9806,7 +9806,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9817,7 +9817,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9828,7 +9828,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9839,7 +9839,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9856,7 +9856,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9867,7 +9867,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9878,7 +9878,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9889,7 +9889,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9900,7 +9900,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9911,7 +9911,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9922,7 +9922,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9933,7 +9933,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9944,7 +9944,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9955,7 +9955,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9966,7 +9966,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9977,7 +9977,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9988,7 +9988,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -9999,7 +9999,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10010,7 +10010,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10021,7 +10021,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10043,7 +10043,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10054,7 +10054,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10065,7 +10065,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10076,7 +10076,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           },
           "validation_action": "warn"
@@ -10334,7 +10334,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": 1.0
+            "max": 1
           },
           "validation_action": "error"
         },
@@ -10362,7 +10362,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": "eps()",
-            "max": 3.0
+            "max": 3
           },
           "validation_action": "error"
         },
@@ -10512,7 +10512,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": -0.3,
-            "max": 0.0
+            "max": 0
           },
           "validation_action": "warn"
         },
@@ -10529,7 +10529,7 @@
           "data_type": "Float64",
           "valid_range": {
             "min": 0,
-            "max": 1.0
+            "max": 1
           },
           "validation_action": "warn"
         },
@@ -13368,7 +13368,7 @@
             "min": 0,
             "max": null
           }
-        }, 
+        },
         {
           "name": "ω_ref",
           "comment": "Reference frequency",
@@ -13405,7 +13405,7 @@
         {
           "name": "base_power",
           "comment": "Base power",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "default": "100.0"
         },
@@ -13571,7 +13571,7 @@
         {
           "name": "internal_voltage_bias",
           "comment": "a0 term of the Fourier Series for the voltage",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "default": "0.0"
         },
@@ -13579,7 +13579,7 @@
           "name": "internal_voltage_frequencies",
           "comment": "Frequencies in radians/s",
           "null_value": [
-            0.0
+            0
           ],
           "data_type": "Vector{Float64}",
           "default": "[0.0]"
@@ -13594,7 +13594,7 @@
         {
           "name": "internal_angle_bias",
           "comment": "a0 term of the Fourier Series for the angle",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "default": "0.0"
         },
@@ -13602,7 +13602,7 @@
           "name": "internal_angle_frequencies",
           "comment": "Frequencies in radians/s",
           "null_value": [
-            0.0
+            0
           ],
           "data_type": "Vector{Float64}",
           "default": "[0.0]"
@@ -13612,12 +13612,12 @@
           "comment": "Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
           "null_value": "[(0.0, 0.0)]",
           "data_type": "Vector{Tuple{Float64,Float64}}",
-          "default":"[(0.0, 0.0)]"
+          "default": "[(0.0, 0.0)]"
         },
         {
           "name": "base_power",
           "comment": "Base power",
-          "null_value": 0.0,
+          "null_value": 0,
           "data_type": "Float64",
           "default": "100.0"
         },
@@ -13717,7 +13717,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13725,7 +13725,7 @@
           "name": "VV_pnts",
           "comment": "Y-axis Volt-var curve points (V1,V2,V3,V4)",
           "null_value": "(V1=0.0, V2=0.0, V3=0.0, V4=0.0)",
-          "data_type":  "NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}"
+          "data_type": "NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}"
         },
         {
           "name": "Q_lim",
@@ -13739,7 +13739,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13791,7 +13791,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13801,7 +13801,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13811,8 +13811,8 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
-            "max": 1.0
+            "min": 0,
+            "max": 1
           }
         },
         {
@@ -13827,7 +13827,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13843,7 +13843,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13853,7 +13853,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13901,7 +13901,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13911,7 +13911,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13919,13 +13919,13 @@
           "name": "VRT_pnts",
           "comment": "Voltage ride through v points (vrt1,vrt2,vrt3,vrt4,vrt5)",
           "null_value": "(vrt1=0.0, vrt2=0.0, vrt3=0.0, vrt4=0.0, vrt5=0.0)",
-          "data_type":  "NamedTuple{(:vrt1, :vrt2, :vrt3, :vrt4, :vrt5), Tuple{Float64, Float64, Float64, Float64, Float64}}"
+          "data_type": "NamedTuple{(:vrt1, :vrt2, :vrt3, :vrt4, :vrt5), Tuple{Float64, Float64, Float64, Float64, Float64}}"
         },
         {
           "name": "TVRT_pnts",
           "comment": "Voltage ride through time points (tvrt1,tvrt2,tvrt3)",
           "null_value": "(tvrt1=0.0, tvrt2=0.0, tvrt3=0.0)",
-          "data_type":  "NamedTuple{(:tvrt1, :tvrt2, :tvrt3), Tuple{Float64, Float64, Float64}}"
+          "data_type": "NamedTuple{(:tvrt1, :tvrt2, :tvrt3), Tuple{Float64, Float64, Float64}}"
         },
         {
           "name": "tV_delay",
@@ -13933,7 +13933,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -13947,13 +13947,13 @@
           "name": "FRT_pnts",
           "comment": "Frequency ride through v points (frt1,frt2,frt3,frt4)",
           "null_value": "(frt1=0.0, frt2=0.0, frt3=0.0, frt4=0.0)",
-          "data_type":  "NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}"
+          "data_type": "NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}"
         },
         {
           "name": "TFRT_pnts",
           "comment": "Frequency ride through time points (tfrt1,tfrt2)",
           "null_value": "(tfrt1=0.0, tfrt2=0.0)",
-          "data_type":  "NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}"
+          "data_type": "NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}"
         },
         {
           "name": "tF_delay",
@@ -13961,7 +13961,7 @@
           "null_value": 0,
           "data_type": "Float64",
           "valid_range": {
-            "min": 0.0,
+            "min": 0,
             "max": null
           }
         },
@@ -14005,26 +14005,26 @@
           }
         },
         {
-        "name": "base_power",
-        "comment": "Base power",
-        "null_value": 0.0,
-        "data_type": "Float64",
-        "default": "100.0"
-      },
-      {
-        "name": "states",
-        "exclude_setter": true,
-        "comment": "The states of GenericDER depend on the Flags",
-        "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[1]",
-        "data_type": "Vector{Symbol}"
-      },
-      {
-        "name": "n_states",
-        "exclude_setter": true,
-        "comment": "The states of GenericDER depend on the Flags",
-        "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[2]",
-        "data_type": "Int"
-      },
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0,
+          "data_type": "Float64",
+          "default": "100.0"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states of GenericDER depend on the Flags",
+          "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[1]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "The states of GenericDER depend on the Flags",
+          "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[2]",
+          "data_type": "Int"
+        },
         {
           "name": "ext",
           "data_type": "Dict{String, Any}",
