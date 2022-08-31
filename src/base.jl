@@ -91,7 +91,7 @@ struct System <: IS.InfrastructureSystemsType
     end
 end
 
-function System(data, base_power, internal; kwargs...)
+function System(data, base_power::Float64, internal; kwargs...)
     unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
@@ -99,12 +99,12 @@ function System(data, base_power, internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(base_power; kwargs...)
+function System(base_power::Float64; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power; internal = IS.InfrastructureSystemsInternal(), kwargs...)
+function System(data, base_power::Float64; internal = IS.InfrastructureSystemsInternal(), kwargs...)
     return System(data, base_power, internal; kwargs...)
 end
 
@@ -151,7 +151,7 @@ function System(
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
-    base_power = 100.0,
+    base_power::Float64 = 100.0,
     services = nothing,
     kwargs...,
 )
