@@ -91,7 +91,7 @@ struct System <: IS.InfrastructureSystemsType
     end
 end
 
-function System(data, base_power::Float64, internal; kwargs...)
+function System(data, base_power::Number, internal; kwargs...)
     unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
@@ -106,7 +106,7 @@ end
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
 function System(
     data,
-    base_power::Float64;
+    base_power::Number;
     internal = IS.InfrastructureSystemsInternal(),
     kwargs...,
 )
@@ -1363,7 +1363,7 @@ function IS.deserialize(
         time_series_directory = time_series_directory,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units; internal = internal, kwargs...)
+    sys = System(data, units, internal; kwargs...)
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
