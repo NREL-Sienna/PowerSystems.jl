@@ -84,7 +84,7 @@ end
     data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
     for d in [data_polynomial, data_pwl]
         @testset "Add deterministic from $(typeof(d)) to ReserveDemandCurve variable cost" begin
-            sys = System(100)
+            sys = System(100.0)
             reserve = ReserveDemandCurve{ReserveUp}(nothing)
             add_component!(sys, reserve)
             forecast = IS.Deterministic("variable_cost", d, resolution)

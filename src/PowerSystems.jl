@@ -271,6 +271,8 @@ export show_components
 export get_subcomponents
 export get_components_by_name
 export get_available_components
+export get_existing_device_types
+export get_existing_component_types
 export get_forecast_horizon
 export get_forecast_initial_timestamp
 export get_forecast_interval
@@ -355,6 +357,13 @@ export get_participation_factor
 export get_cost
 export get_units_base
 export get_runchecks
+export get_thermal_unit
+export get_electric_load
+export get_storage
+export get_renewable_unit
+export get_interconnection_rating
+export get_interconnection_impedance
+
 export set_runchecks!
 export check
 export check_component
