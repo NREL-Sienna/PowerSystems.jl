@@ -1,6 +1,6 @@
 @testset "Test add/remove services" begin
     @testset "Case: $direction" for direction in [ReserveDown; ReserveUp; ReserveSymmetric]
-        sys = System(100)
+        sys = System(100.0)
         devices = []
         for i in 1:2
             bus = Bus(nothing)
@@ -34,7 +34,7 @@
             @test length(get_services(device)) == 0
         end
 
-        sys = System(100)
+        sys = System(100.0)
         devices = []
         for i in 1:2
             bus = Bus(nothing)
@@ -57,7 +57,7 @@
 end
 
 @testset "Test add_component Service" begin
-    sys = System(100)
+    sys = System(100.0)
     static_reserve = StaticReserve{ReserveDown}(nothing)
     add_component!(sys, static_reserve)
     services = get_components(StaticReserve{ReserveDown}, sys)
@@ -66,7 +66,7 @@ end
 end
 
 @testset "Test add_service errors" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     service = StaticReserve{ReserveDown}(nothing)
     # Bus is not a Device.
@@ -78,7 +78,7 @@ end
 end
 
 @testset "Test remove service from device" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     bus.name = "bus1"
     bus.number = 1
@@ -97,7 +97,7 @@ end
 end
 
 @testset "Test has service" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     bus.name = "bus1"
     bus.number = 1
@@ -118,7 +118,7 @@ end
 end
 
 @testset "Test remove device with service" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     bus.name = "bus1"
     bus.number = 1
@@ -147,7 +147,7 @@ end
 end
 
 @testset "Test add device with service" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     bus.name = "bus1"
     bus.number = 1
@@ -165,7 +165,7 @@ end
 end
 
 @testset "Test get_contributing_devices" begin
-    sys = System(100)
+    sys = System(100.0)
     devices = []
     services = []
     for i in 1:5
@@ -222,7 +222,7 @@ end
 end
 
 @testset "Test get_component combinations" begin
-    sys = System(100)
+    sys = System(100.0)
     reserves = (
         StaticReserve{ReserveUp}(nothing),
         StaticReserve{ReserveDown}(nothing),
@@ -319,7 +319,7 @@ end
 
 @testset "Test StaticReserveGroup" begin
     # create system
-    sys = System(100)
+    sys = System(100.0)
     # add buses and generators
     devices = []
     for i in 1:2
@@ -361,7 +361,7 @@ end
 end
 
 @testset "Test StaticReserveGroup errors" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
 
@@ -394,7 +394,7 @@ end
 
 @testset "Test ReserveNonSpinning" begin
     # create system
-    sys = System(100)
+    sys = System(100.0)
     # add buses and generators
     devices = []
     for i in 1:2

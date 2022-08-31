@@ -175,7 +175,7 @@ function create_system_with_dynamic_inverter()
         0.2,
     ) #kad:: Active damping gain
 
-    sys = System(100)
+    sys = System(100.0)
     for bus in nodes_OMIB
         add_component!(sys, bus)
     end

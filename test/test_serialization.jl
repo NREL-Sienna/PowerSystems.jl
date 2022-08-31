@@ -98,7 +98,7 @@ end
 end
 
 @testset "Test JSON serialization of StaticGroupReserve" begin
-    sys = System(100)
+    sys = System(100.0)
     devices = []
     for i in 1:2
         bus = Bus(nothing)
@@ -134,7 +134,7 @@ end
 end
 
 @testset "Test JSON serialization of MarketBidCost" begin
-    sys = System(100)
+    sys = System(100.0)
     generators = [ThermalStandard(nothing), ThermalMultiStart(nothing)]
     for i in 1:2
         bus = Bus(nothing)
@@ -162,7 +162,7 @@ end
 end
 
 @testset "Test JSON serialization of ReserveDemandCurve" begin
-    sys = System(100)
+    sys = System(100.0)
     devices = []
     for i in 1:2
         bus = Bus(nothing)
