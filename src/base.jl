@@ -99,7 +99,7 @@ function System(data, base_power::Float64, internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(base_power::Float64; kwargs...)
+function System(base_power::Number; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
