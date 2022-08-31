@@ -1497,7 +1497,7 @@ function get_buses(sys::System, bus_numbers::Set{Int})
 end
 
 """
-Return all the device types in the system. It does not return component types
+Return all the device types in the system. It does not return component types or masked components.
 """
 function get_existing_device_types(sys::System)
     device_types = Vector{DataType}()
@@ -1510,7 +1510,7 @@ function get_existing_device_types(sys::System)
 end
 
 """
-Return all the component types in the system.
+Return all the component types in the system. It does not return masked components.
 """
 function get_existing_component_types(sys::System)
     return collect(keys(sys.data.components.data))
