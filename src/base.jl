@@ -104,7 +104,12 @@ function System(base_power::Float64; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power::Float64; internal = IS.InfrastructureSystemsInternal(), kwargs...)
+function System(
+    data,
+    base_power::Float64;
+    internal = IS.InfrastructureSystemsInternal(),
+    kwargs...,
+)
     return System(data, base_power, internal; kwargs...)
 end
 
