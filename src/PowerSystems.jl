@@ -310,6 +310,8 @@ export get_compression_settings
 export CompressionSettings
 export CompressionTypes
 
+
+
 #export make_time_series
 export get_bus_numbers
 export get_name
@@ -357,6 +359,13 @@ export get_participation_factor
 export get_cost
 export get_units_base
 export get_runchecks
+export get_thermal_unit
+export get_electric_load
+export get_storage
+export get_renewable_unit
+export get_interconnection_rating
+export get_interconnection_impedance
+
 export set_runchecks!
 export check
 export check_component
