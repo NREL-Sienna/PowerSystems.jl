@@ -1491,6 +1491,26 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     return buses
 end
 
+"""
+Return all the device types in the system. It does not return component types
+"""
+function get_existing_device_types(sys::System)
+    device_types = Vector{DataType}()
+    for component_type in keys(sys.data.components.data)
+        if component_type <: Device
+            push!(device_types, component_type)
+        end
+    end
+    return device_types
+end
+
+"""
+Return all the component types in the system.
+"""
+function get_existing_component_types(sys::System)
+    return collect(keys(sys.data.components.data))
+end
+
 function _is_deserialization_in_progress(sys::System)
     ext = get_ext(sys)
     return get(ext, "deserialization_in_progress", false)

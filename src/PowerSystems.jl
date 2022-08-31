@@ -271,6 +271,8 @@ export show_components
 export get_subcomponents
 export get_components_by_name
 export get_available_components
+export get_existing_device_types
+export get_existing_component_types
 export get_forecast_horizon
 export get_forecast_initial_timestamp
 export get_forecast_interval
