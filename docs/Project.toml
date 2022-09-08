@@ -11,7 +11,6 @@ PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
 
 [compat]
-CSV = "~0.9"
 Documenter = "0.27"
 InfrastructureSystems = "1"
 julia = "^1.6"
