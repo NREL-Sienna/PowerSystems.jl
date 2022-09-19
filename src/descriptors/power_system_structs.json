@@ -2001,6 +2001,188 @@
       "supertype": "DynamicInjection"
     },
     {
+      "struct_name": "ActiveConstantPowerLoad",
+      "docstring": "Parameters of x-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "r_load",
+          "comment": "DC-side resistor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "c_dc",
+          "comment": "DC-side capacitor",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "rf",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Converter side filter resistance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "lf",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Converter side filter inductance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "cf",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "AC Converter filter capacitance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "rg",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Network side filter resistance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "lg",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Network side filter inductance",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kp_pll",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Proportional constant for PI-PLL block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ki_pll",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Integral constant for PI-PLL block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kpv",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Proportional constant for Voltage Control block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kiv",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Integral constant for Voltage Control block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kpc",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Proportional constant for Current Control block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "kic",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Integral constant for Current Control block",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "V_ref",
+          "comment": "Reference torque parameter",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "ω_ref",
+          "comment": "Susceptance Initialization Corrector Term",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+          "internal_default": "[:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "ActiveConstantPowerLoad has 11 states",
+          "internal_default": 11,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
+    },
+    {
       "struct_name": "HydroEnergyReservoir",
       "fields": [
         {

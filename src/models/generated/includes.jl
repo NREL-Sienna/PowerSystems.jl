@@ -21,6 +21,7 @@ include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
+include("ActiveConstantPowerLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -412,6 +413,7 @@ export get_branch_id_control
 export get_bus
 export get_bus_control
 export get_bustype
+export get_c_dc
 export get_cf
 export get_constant_active_power
 export get_constant_reactive_power
@@ -518,6 +520,7 @@ export get_prime_mover
 export get_pump_efficiency
 export get_q_nl
 export get_r
+export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
 export get_rate
@@ -895,6 +898,7 @@ export set_branch_id_control!
 export set_bus!
 export set_bus_control!
 export set_bustype!
+export set_c_dc!
 export set_cf!
 export set_constant_active_power!
 export set_constant_reactive_power!
@@ -1001,6 +1005,7 @@ export set_prime_mover!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!
+export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
 export set_rate!
