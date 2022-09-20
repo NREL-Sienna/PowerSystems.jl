@@ -2141,6 +2141,16 @@
           }
         },
         {
+          "name": "base_power",
+          "comment": "Base power",
+          "null_value": 0.0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
           "name": "ext",
           "data_type": "Dict{String, Any}",
           "null_value": "Dict{String, Any}()",
