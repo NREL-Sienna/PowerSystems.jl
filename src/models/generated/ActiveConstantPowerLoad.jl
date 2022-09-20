@@ -56,6 +56,7 @@ Parameters of x-states active power load based on the paper Dynamic Stability of
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 
+	v_dc: DC voltage at the capacitor, 
 	γd: d-axis Current controller integrator state, 
 	γq: q-axis Current controller integrator state, 
 	ir_cnv: Real current out of the converter,
@@ -108,6 +109,7 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 
+	v_dc: DC voltage at the capacitor, 
 	γd: d-axis Current controller integrator state, 
 	γq: q-axis Current controller integrator state, 
 	ir_cnv: Real current out of the converter,
@@ -124,10 +126,10 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 end
 
 function ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 11, InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 12, InfrastructureSystemsInternal(), )
 end
 
-function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=11, internal=InfrastructureSystemsInternal(), )
+function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=12, internal=InfrastructureSystemsInternal(), )
     ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, P_ref, Q_ref, V_ref, ω_ref, states, n_states, internal, )
 end
 
