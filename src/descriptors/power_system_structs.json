@@ -2147,14 +2147,26 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "P_ref",
+          "comment": "Reference active power parameter",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
+          "name": "Q_ref",
+          "comment": "Reference reactive power parameter",
+          "internal_default": "1.0",
+          "data_type": "Float64"
+        },
+        {
           "name": "V_ref",
-          "comment": "Reference torque parameter",
+          "comment": "Reference voltage parameter",
           "internal_default": "1.0",
           "data_type": "Float64"
         },
         {
           "name": "ω_ref",
-          "comment": "Susceptance Initialization Corrector Term",
+          "comment": "Reference frequency parameter",
           "internal_default": "1.0",
           "data_type": "Float64"
         },

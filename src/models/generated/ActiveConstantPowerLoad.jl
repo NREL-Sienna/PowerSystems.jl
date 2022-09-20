@@ -21,6 +21,8 @@ This file is auto-generated. Do not edit.
         kpc::Float64
         kic::Float64
         ext::Dict{String, Any}
+        P_ref::Float64
+        Q_ref::Float64
         V_ref::Float64
         ω_ref::Float64
         states::Vector{Symbol}
@@ -46,8 +48,10 @@ Parameters of x-states active power load based on the paper Dynamic Stability of
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
-- `V_ref::Float64`: Reference torque parameter
-- `ω_ref::Float64`: Susceptance Initialization Corrector Term
+- `P_ref::Float64`: Reference active power parameter
+- `Q_ref::Float64`: Reference reactive power parameter
+- `V_ref::Float64`: Reference voltage parameter
+- `ω_ref::Float64`: Reference frequency parameter
 - `states::Vector{Symbol}`: The states are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
@@ -92,9 +96,13 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     "Integral constant for Current Control block"
     kic::Float64
     ext::Dict{String, Any}
-    "Reference torque parameter"
+    "Reference active power parameter"
+    P_ref::Float64
+    "Reference reactive power parameter"
+    Q_ref::Float64
+    "Reference voltage parameter"
     V_ref::Float64
-    "Susceptance Initialization Corrector Term"
+    "Reference frequency parameter"
     ω_ref::Float64
     "The states are:
 	θ_pll: PLL deviation angle, 
@@ -116,11 +124,11 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 end
 
 function ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, 1.0, 1.0, [:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 11, InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 11, InfrastructureSystemsInternal(), )
 end
 
-function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), V_ref=1.0, ω_ref=1.0, states=[:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=11, internal=InfrastructureSystemsInternal(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, V_ref, ω_ref, states, n_states, internal, )
+function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, ϵ_pll, :η, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=11, internal=InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, ext, P_ref, Q_ref, V_ref, ω_ref, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -174,6 +182,10 @@ get_kpc(value::ActiveConstantPowerLoad) = value.kpc
 get_kic(value::ActiveConstantPowerLoad) = value.kic
 """Get [`ActiveConstantPowerLoad`](@ref) `ext`."""
 get_ext(value::ActiveConstantPowerLoad) = value.ext
+"""Get [`ActiveConstantPowerLoad`](@ref) `P_ref`."""
+get_P_ref(value::ActiveConstantPowerLoad) = value.P_ref
+"""Get [`ActiveConstantPowerLoad`](@ref) `Q_ref`."""
+get_Q_ref(value::ActiveConstantPowerLoad) = value.Q_ref
 """Get [`ActiveConstantPowerLoad`](@ref) `V_ref`."""
 get_V_ref(value::ActiveConstantPowerLoad) = value.V_ref
 """Get [`ActiveConstantPowerLoad`](@ref) `ω_ref`."""
@@ -213,6 +225,10 @@ set_kpc!(value::ActiveConstantPowerLoad, val) = value.kpc = val
 set_kic!(value::ActiveConstantPowerLoad, val) = value.kic = val
 """Set [`ActiveConstantPowerLoad`](@ref) `ext`."""
 set_ext!(value::ActiveConstantPowerLoad, val) = value.ext = val
+"""Set [`ActiveConstantPowerLoad`](@ref) `P_ref`."""
+set_P_ref!(value::ActiveConstantPowerLoad, val) = value.P_ref = val
+"""Set [`ActiveConstantPowerLoad`](@ref) `Q_ref`."""
+set_Q_ref!(value::ActiveConstantPowerLoad, val) = value.Q_ref = val
 """Set [`ActiveConstantPowerLoad`](@ref) `V_ref`."""
 set_V_ref!(value::ActiveConstantPowerLoad, val) = value.V_ref = val
 """Set [`ActiveConstantPowerLoad`](@ref) `ω_ref`."""
