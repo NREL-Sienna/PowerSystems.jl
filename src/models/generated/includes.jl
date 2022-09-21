@@ -21,6 +21,7 @@ include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
+include("GenericDynamicLoad.jl")
 include("ActiveConstantPowerLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
@@ -302,6 +303,7 @@ export get_T_g
 export get_T_iq
 export get_T_p
 export get_T_pord
+export get_T_q
 export get_T_rate
 export get_T_rv
 export get_Ta
@@ -390,6 +392,7 @@ export get_Xq_p
 export get_Xq_pp
 export get_Y
 export get_Zerox
+export get_a
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
@@ -579,6 +582,7 @@ export get_voltage
 export get_voltage_limits
 export get_x
 export get_α
+export get_β
 export get_γ_d1
 export get_γ_d2
 export get_γ_q1
@@ -787,6 +791,7 @@ export set_T_g!
 export set_T_iq!
 export set_T_p!
 export set_T_pord!
+export set_T_q!
 export set_T_rate!
 export set_T_rv!
 export set_Ta!
@@ -875,6 +880,7 @@ export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
 export set_Zerox!
+export set_a!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!
@@ -1064,6 +1070,7 @@ export set_voltage!
 export set_voltage_limits!
 export set_x!
 export set_α!
+export set_β!
 export set_γ_d1!
 export set_γ_d2!
 export set_γ_q1!

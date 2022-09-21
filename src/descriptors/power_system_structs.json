@@ -2001,6 +2001,106 @@
       "supertype": "DynamicInjection"
     },
     {
+      "struct_name": "GenericDynamicLoad",
+      "docstring": "Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILITY ANALYSIS USING GENERIC DYNAMIC LOAD MODELS by W. Xu and Y. Mansour, IEEE Transactions on Power Systems, 1994.",
+      "fields": [
+        {
+          "null_value": "init",
+          "name": "name",
+          "exclude_setter": true,
+          "data_type": "String"
+        },
+        {
+          "name": "a",
+          "comment": "Active power static exponential coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "b",
+          "comment": "Reactive power static exponential coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "α",
+          "comment": "Active power transient exponential coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "β",
+          "comment": "Reactive power transient exponential coefficient",
+          "null_value": 0,
+          "data_type": "Float64",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_p",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Active Power Time Constant",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "T_q",
+          "data_type": "Float64",
+          "null_value": 0,
+          "comment": "Reactive Power Time Constant",
+          "valid_range": {
+            "min": 0,
+            "max": null
+          }
+        },
+        {
+          "name": "ext",
+          "data_type": "Dict{String, Any}",
+          "null_value": "Dict{String, Any}()",
+          "default": "Dict{String, Any}()"
+        },
+        {
+          "name": "states",
+          "exclude_setter": true,
+          "comment": "The states are:\n\tx_p: Integrator state of the active power,\n\tx_q: Integrator state of the reactive power,",
+          "internal_default": "[:x_p, :x_q]",
+          "data_type": "Vector{Symbol}"
+        },
+        {
+          "name": "n_states",
+          "exclude_setter": true,
+          "comment": "GenericDynamicLoad has 2 states",
+          "internal_default": 2,
+          "data_type": "Int"
+        },
+        {
+          "name": "internal",
+          "comment": "power system internal reference, do not modify",
+          "data_type": "InfrastructureSystemsInternal",
+          "internal_default": "InfrastructureSystemsInternal()",
+          "exclude_setter": true
+        }
+      ],
+      "supertype": "DynamicInjection"
+    },
+    {
       "struct_name": "ActiveConstantPowerLoad",
       "docstring": "Parameters of x-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.",
       "fields": [
