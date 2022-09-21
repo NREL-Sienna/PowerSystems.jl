@@ -2184,13 +2184,13 @@
           "name": "states",
           "exclude_setter": true,
           "comment": "The states are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tv_dc: DC voltage at the capacitor, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
-          "internal_default": "[:θ_pll, ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
+          "internal_default": "[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
           "data_type": "Vector{Symbol}"
         },
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "ActiveConstantPowerLoad has 11 states",
+          "comment": "ActiveConstantPowerLoad has 12 states",
           "internal_default": 12,
           "data_type": "Int"
         },

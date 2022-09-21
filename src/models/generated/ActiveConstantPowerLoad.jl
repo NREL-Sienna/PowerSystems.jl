@@ -67,7 +67,7 @@ Parameters of x-states active power load based on the paper Dynamic Stability of
 	vi_filter: Imaginary voltage at the filter's capacitor,
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
-- `n_states::Int`: ActiveConstantPowerLoad has 11 states
+- `n_states::Int`: ActiveConstantPowerLoad has 12 states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ActiveConstantPowerLoad <: DynamicInjection
@@ -123,17 +123,17 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
-    "ActiveConstantPowerLoad has 11 states"
+    "ActiveConstantPowerLoad has 12 states"
     n_states::Int
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
 function ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 12, InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 12, InfrastructureSystemsInternal(), )
 end
 
-function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=12, internal=InfrastructureSystemsInternal(), )
+function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=12, internal=InfrastructureSystemsInternal(), )
     ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, P_ref, Q_ref, V_ref, ω_ref, states, n_states, internal, )
 end
 
