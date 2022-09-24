@@ -58,7 +58,7 @@
 end
 
 @testset "Dynamic Inverter" begin
-    sys = create_system_with_dynamic_inverter()
+    sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
     inverters = collect(get_components(DynamicInverter, sys))
     @test length(inverters) == 1
     test_inverter = inverters[1]
