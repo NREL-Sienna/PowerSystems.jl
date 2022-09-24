@@ -1,59 +1,10 @@
 
-const DESCRIPTORS = joinpath(RTS_GMLC_DIR, "user_descriptors.yaml")
-const MULTISTART_MAPPING = joinpath(RTS_GMLC_DIR, "generator_mapping_multi_start.yaml")
-
 mutable struct TestDevice <: Device
     name::String
 end
 
 mutable struct TestRenDevice <: RenewableGen
     name::String
-end
-
-function create_rts_system(time_series_resolution = Dates.Hour(1))
-    data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
-    return System(data; time_series_resolution = time_series_resolution)
-end
-
-function create_rts_multistart_system(time_series_resolution = Dates.Hour(1))
-    data = PowerSystemTableData(
-        RTS_GMLC_DIR,
-        100.0,
-        DESCRIPTORS;
-        generator_mapping_file = MULTISTART_MAPPING,
-    )
-    return System(data; time_series_resolution = time_series_resolution)
-end
-
-function create_rts_system_with_hybrid_system(; add_forecasts = true)
-    sys = PSB.build_system(
-        PSB.PSITestSystems,
-        "test_RTS_GMLC_sys",
-        add_forecasts = add_forecasts,
-    )
-    thermal_unit = first(get_components(ThermalStandard, sys))
-    bus = get_bus(thermal_unit)
-    electric_load = first(get_components(PowerLoad, sys))
-    storage = first(get_components(GenericBattery, sys))
-    renewable_unit = first(get_components(RenewableDispatch, sys))
-
-    name = "Test H"
-    h_sys = HybridSystem(
-        name = name,
-        available = true,
-        status = true,
-        bus = bus,
-        active_power = 1.0,
-        reactive_power = 1.0,
-        thermal_unit = thermal_unit,
-        electric_load = electric_load,
-        storage = storage,
-        renewable_unit = renewable_unit,
-        base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
-    )
-    add_component!(sys, h_sys)
-    return sys
 end
 
 """Return the first component of type component_type that matches the name of other."""
