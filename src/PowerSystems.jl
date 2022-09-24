@@ -181,7 +181,6 @@ export ReactiveRenewableControllerAB
 
 # InnerControl Export
 export InnerControl
-export CurrentControl
 export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
