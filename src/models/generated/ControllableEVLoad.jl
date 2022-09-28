@@ -15,6 +15,9 @@ This file is auto-generated. Do not edit.
         base_power::Float64
         max_active_power::Float64
         max_reactive_power::Float64
+        delta_power_min::Float64
+        delta_power_max::Float64
+        delta_charge_min::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -34,6 +37,9 @@ Data structure for a shiftable EV charging power load.
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
+- `delta_power_min::Float64`
+- `delta_power_max::Float64`
+- `delta_charge_min::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -51,6 +57,9 @@ mutable struct ControllableEVLoad <: ControllableLoad
     base_power::Float64
     max_active_power::Float64
     max_reactive_power::Float64
+    delta_power_min::Float64
+    delta_power_max::Float64
+    delta_charge_min::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -62,12 +71,12 @@ mutable struct ControllableEVLoad <: ControllableLoad
     internal::InfrastructureSystemsInternal
 end
 
-function ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, delta_power_min, delta_power_max, delta_charge_min, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, delta_power_min, delta_power_max, delta_charge_min, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ControllableEVLoad(; name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
+function ControllableEVLoad(; name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, delta_power_min, delta_power_max, delta_charge_min, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    ControllableEVLoad(name, available, bus, model, active_power, reactive_power, base_power, max_active_power, max_reactive_power, delta_power_min, delta_power_max, delta_charge_min, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,6 +91,9 @@ function ControllableEVLoad(::Nothing)
         base_power=0.0,
         max_active_power=0.0,
         max_reactive_power=0.0,
+        delta_power_min=0.0,
+        delta_power_max=0.0,
+        delta_charge_min=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -107,6 +119,12 @@ get_base_power(value::ControllableEVLoad) = value.base_power
 get_max_active_power(value::ControllableEVLoad) = get_value(value, value.max_active_power)
 """Get [`ControllableEVLoad`](@ref) `max_reactive_power`."""
 get_max_reactive_power(value::ControllableEVLoad) = get_value(value, value.max_reactive_power)
+"""Get [`ControllableEVLoad`](@ref) `delta_power_min`."""
+get_delta_power_min(value::ControllableEVLoad) = get_value(value, value.delta_power_min)
+"""Get [`ControllableEVLoad`](@ref) `delta_power_max`."""
+get_delta_power_max(value::ControllableEVLoad) = get_value(value, value.delta_power_max)
+"""Get [`ControllableEVLoad`](@ref) `delta_charge_min`."""
+get_delta_charge_min(value::ControllableEVLoad) = get_value(value, value.delta_charge_min)
 """Get [`ControllableEVLoad`](@ref) `services`."""
 get_services(value::ControllableEVLoad) = value.services
 """Get [`ControllableEVLoad`](@ref) `dynamic_injector`."""
@@ -134,6 +152,12 @@ set_base_power!(value::ControllableEVLoad, val) = value.base_power = val
 set_max_active_power!(value::ControllableEVLoad, val) = value.max_active_power = set_value(value, val)
 """Set [`ControllableEVLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::ControllableEVLoad, val) = value.max_reactive_power = set_value(value, val)
+"""Set [`ControllableEVLoad`](@ref) `delta_power_min`."""
+set_delta_power_min!(value::ControllableEVLoad, val) = value.delta_power_min = set_value(value, val)
+"""Set [`ControllableEVLoad`](@ref) `delta_power_max`."""
+set_delta_power_max!(value::ControllableEVLoad, val) = value.delta_power_max = set_value(value, val)
+"""Set [`ControllableEVLoad`](@ref) `delta_charge_min`."""
+set_delta_charge_min!(value::ControllableEVLoad, val) = value.delta_charge_min = set_value(value, val)
 """Set [`ControllableEVLoad`](@ref) `services`."""
 set_services!(value::ControllableEVLoad, val) = value.services = val
 """Set [`ControllableEVLoad`](@ref) `ext`."""

@@ -1479,6 +1479,24 @@
             "needs_conversion": true
           },
           {
+            "name": "delta_power_min",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "needs_conversion": true
+          },
+          {
+            "name": "delta_power_max",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "needs_conversion": true
+          },
+          {
+            "name": "delta_charge_min",
+            "null_value": "0.0",
+            "data_type": "Float64",
+            "needs_conversion": true
+          },
+          {
             "name": "services",
             "data_type": "Vector{Service}",
             "comment": "Services that this device contributes to",
@@ -13466,7 +13484,7 @@
             "min": 0,
             "max": null
           }
-        }, 
+        },
         {
           "name": "ω_ref",
           "comment": "Reference frequency",

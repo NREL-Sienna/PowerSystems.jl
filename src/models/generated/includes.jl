@@ -426,6 +426,9 @@ export get_db
 export get_dbd_pnts
 export get_dc_dc_inductor
 export get_dc_link_capacitance
+export get_delta_charge_min
+export get_delta_power_max
+export get_delta_power_min
 export get_delta_t
 export get_dynamic_injector
 export get_e_lim
@@ -909,6 +912,9 @@ export set_db!
 export set_dbd_pnts!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
+export set_delta_charge_min!
+export set_delta_power_max!
+export set_delta_power_min!
 export set_delta_t!
 export set_dynamic_injector!
 export set_e_lim!
