@@ -91,7 +91,7 @@ struct System <: IS.InfrastructureSystemsType
     end
 end
 
-function System(data, base_power, internal; kwargs...)
+function System(data, base_power::Number, internal; kwargs...)
     unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
@@ -99,12 +99,17 @@ function System(data, base_power, internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(base_power; kwargs...)
+function System(base_power::Number; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power; internal = IS.InfrastructureSystemsInternal(), kwargs...)
+function System(
+    data,
+    base_power::Number;
+    internal = IS.InfrastructureSystemsInternal(),
+    kwargs...,
+)
     return System(data, base_power, internal; kwargs...)
 end
 
@@ -151,7 +156,7 @@ function System(
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
-    base_power = 100.0,
+    base_power::Float64 = 100.0,
     services = nothing,
     kwargs...,
 )
@@ -1358,7 +1363,7 @@ function IS.deserialize(
         time_series_directory = time_series_directory,
     )
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units; internal = internal, kwargs...)
+    sys = System(data, units, internal; kwargs...)
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
@@ -1489,6 +1494,26 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
+end
+
+"""
+Return all the device types in the system. It does not return component types or masked components.
+"""
+function get_existing_device_types(sys::System)
+    device_types = Vector{DataType}()
+    for component_type in keys(sys.data.components.data)
+        if component_type <: Device
+            push!(device_types, component_type)
+        end
+    end
+    return device_types
+end
+
+"""
+Return all the component types in the system. It does not return masked components.
+"""
+function get_existing_component_types(sys::System)
+    return collect(keys(sys.data.components.data))
 end
 
 function _is_deserialization_in_progress(sys::System)

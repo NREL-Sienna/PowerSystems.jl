@@ -1,7 +1,7 @@
 # Non functional system data. This code is just for testing.
 # Do not copy paste this code.
 @testset "Test Dynamic Source" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     set_bustype!(bus, BusTypes.SLACK)
     add_component!(sys, bus)
@@ -14,7 +14,7 @@
 end
 
 @testset "Test Dynamic Source" begin
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     set_bustype!(bus, BusTypes.REF)
     add_component!(sys, bus)

@@ -28,7 +28,7 @@
         base_power = 100.0,
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
@@ -65,7 +65,7 @@
         base_power = 100.0,
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)

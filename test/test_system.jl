@@ -181,7 +181,7 @@ end
 end
 
 @testset "Test missing Arc bus" begin
-    sys = System(100)
+    sys = System(100.0)
     line = Line(nothing)
     @test_throws(IS.ArgumentError, add_component!(sys, line))
 end
@@ -196,7 +196,7 @@ end
 end
 
 @testset "Test system ext" begin
-    sys = System(100)
+    sys = System(100.0)
     ext = get_ext(sys)
     ext["data"] = 2
     @test get_ext(sys)["data"] == 2
@@ -205,7 +205,7 @@ end
 end
 
 @testset "Test system checks" begin
-    sys = System(100)
+    sys = System(100.0)
     @test_logs (:warn, r"There are no .* Components in the System") match_mode = :any check(
         sys,
     )

@@ -436,7 +436,7 @@ end
     )
     @test Gen3AVR isa PowerSystems.Component
 
-    sys = System(100)
+    sys = System(100.0)
     for bus in nodes_OMIB
         add_component!(sys, bus)
     end
@@ -595,7 +595,7 @@ end
         ext = Dict{String, Any}(),
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
@@ -697,7 +697,7 @@ end
         ext = Dict{String, Any}(),
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
