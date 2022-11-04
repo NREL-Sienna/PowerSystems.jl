@@ -49,7 +49,7 @@ function System(pm_data::PowerModelsData; kwargs...)
         throw(DataFormatError("There are no buses in this file."))
     end
 
-    @info "Constructing SIIP PowerSystems System from Power Models" data["name"] data["source_type"]
+    @info "Constructing System from Power Models" data["name"] data["source_type"]
 
     sys = System(data["baseMVA"]; kwargs...)
 
@@ -180,7 +180,7 @@ end
 #end
 
 function read_bus!(sys::System, data; kwargs...)
-    @info "Reading Bus data in PowerModels dict to populate SIIP PSY System ..."
+    @info "Reading Bus data in PowerModels dict to populate System ..."
 
     bus_number_to_bus = Dict{Int, Bus}()
 
@@ -237,7 +237,7 @@ function make_load(d, bus, sys_mbase; kwargs...)
 end
 
 function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading Load data in PowerModels dict to populate SIIP PowerSystems System ..."
+    @info "Reading Load data in PowerModels dict to populate System ..."
 
     if !haskey(data, "load")
         @error "There are no loads in this file"
@@ -270,7 +270,7 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading LoadZones data in PowerModels dict to populate SIIP PSY System ..."
+    @info "Reading LoadZones data in PowerModels dict to populate System ..."
 
     zones = Set{Int}()
     for (i, bus) in data["bus"]
@@ -499,7 +499,7 @@ end
 Transfer generators to ps_dict according to their classification
 """
 function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading Generator data in PowerModels dict to populate SIIP PSY System ..."
+    @info "Reading Generator data in PowerModels dict to populate System ..."
    
     if !haskey(data, "gen")
         @error "There are no Generators in this file"
@@ -643,7 +643,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
 end
 
 function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading Branch data in PowerModels dict to populate SIIP PSY System ..."
+    @info "Reading Branch data in PowerModels dict to populate System ..."
    
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -677,7 +677,7 @@ function make_dcline(name, d, bus_f, bus_t)
 end
 
 function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading DC Line data in PowerModels dict to populate SIIP PowerSystems System ..."
+    @info "Reading DC Line data in PowerModels dict to populate System ..."
    
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -706,7 +706,7 @@ function make_shunt(name, d, bus)
 end
 
 function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading Shunt data in PowerModels dict to populate SIIP PowerSystems System ..."
+    @info "Reading Shunt data in PowerModels dict to populate System ..."
     
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
