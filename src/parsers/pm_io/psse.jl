@@ -964,7 +964,7 @@ into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
 function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = true, correct_branch_rating = true)::Dict
-    correct_branch_rating= get(kwargs, :correct_branch_rating, true)
+    
     pm_data = Dict{String, Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")

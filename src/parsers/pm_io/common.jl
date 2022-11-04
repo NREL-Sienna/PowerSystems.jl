@@ -44,7 +44,7 @@ Runs various data quality checks on a PowerModels data dictionary.
 Applies modifications in some cases.  Reports modified component ids.
 """
 function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating = true)
-    correct_branch_rating= get(kwargs, :correct_branch_rating, true)
+    
     mod_bus = Dict{Symbol, Set{Int}}()
     mod_gen = Dict{Symbol, Set{Int}}()
     mod_branch = Dict{Symbol, Set{Int}}()
