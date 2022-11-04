@@ -49,7 +49,7 @@ function System(pm_data::PowerModelsData; kwargs...)
         throw(DataFormatError("There are no buses in this file."))
     end
 
-    @info "Constructing SIIP PowerSystems System from Power Models" data["name"] data["source_type"]
+    @info "Constructing System from Power Models" data["name"] data["source_type"]
 
     sys = System(data["baseMVA"]; kwargs...)
 
@@ -257,7 +257,7 @@ function make_standard_load(d, bus, sys_mbase; kwargs...)
 end
 
 function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading Load data in PowerModels dict to populate SIIP PowerSystems System ..."
+    @info "Reading Load data in PowerModels dict to populate System ..."
 
     if !haskey(data, "load")
         @error "There are no loads in this file"
@@ -299,7 +299,7 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
-    @info "Reading LoadZones data in PowerModels dict to populate SIIP PSY System ..."
+    @info "Reading LoadZones data in PowerModels dict to populate System ..."
 
     zones = Set{Int}()
     for (i, bus) in data["bus"]
