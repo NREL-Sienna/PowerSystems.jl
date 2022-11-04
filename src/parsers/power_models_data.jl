@@ -247,16 +247,14 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
     sys_mbase = data["baseMVA"]
     for d_key in keys(data["load"])
         d = data["load"][d_key]
-        if d["pd"] != 0.0
-            bus = bus_number_to_bus[d["load_bus"]]
-            load = make_load(d, bus, sys_mbase; kwargs...)
-            has_component(PowerLoad, sys, get_name(load)) && throw(
-                DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                ),
-            )
-            add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
-        end
+        bus = bus_number_to_bus[d["load_bus"]]
+        load = make_load(d, bus, sys_mbase; kwargs...)
+        has_component(PowerLoad, sys, get_name(load)) && throw(
+            DataFormatError(
+                "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+            ),
+        )
+        add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
