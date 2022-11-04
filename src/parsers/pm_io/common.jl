@@ -18,14 +18,14 @@ function parse_file(file::String; import_all = false, validate = true)
 end
 
 "Parses the iostream from a file"
-function parse_file(io::IO; import_all = false, validate = true, filetype = "json")
+function parse_file(io::IO; import_all = false, validate = true, correct_branch_rating = true, filetype = "json")
     if filetype == "m"
         pm_data = parse_matpower(io, validate = validate)
     elseif filetype == "raw"
         @info(
             "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines"
         )
-        pm_data = parse_psse(io; import_all = import_all, validate = validate)
+        pm_data = parse_psse(io; import_all = import_all, validate = validate, correct_branch_rating = correct_branch_rating)
     elseif filetype == "json"
         pm_data = parse_json(io; validate = validate)
     else
@@ -42,7 +42,8 @@ end
 Runs various data quality checks on a PowerModels data dictionary.
 Applies modifications in some cases.  Reports modified component ids.
 """
-function correct_network_data!(data::Dict{String, <:Any})
+function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating = true)
+    correct_branch_rating= get(kwargs, :correct_branch_rating, true)
     mod_bus = Dict{Symbol, Set{Int}}()
     mod_gen = Dict{Symbol, Set{Int}}()
     mod_branch = Dict{Symbol, Set{Int}}()
@@ -57,7 +58,11 @@ function correct_network_data!(data::Dict{String, <:Any})
 
     mod_branch[:xfer_fix] = correct_transformer_parameters!(data)
     mod_branch[:vad_bounds] = correct_voltage_angle_differences!(data)
-    mod_branch[:mva_zero] = correct_thermal_limits!(data)
+    mod_branch[:mva_zero] = 
+    if (correct_branch_rating)
+        correct_thermal_limits!(data)
+    end
+   
     #mod_branch[:ma_zero] = correct_current_limits!(data)
     mod_branch[:orientation] = correct_branch_directions!(data)
     check_branch_loops(data)
