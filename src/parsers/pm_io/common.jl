@@ -62,6 +62,8 @@ function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating =
     mod_branch[:mva_zero] = 
     if (correct_branch_rating)
         correct_thermal_limits!(data)
+    else
+        Set{Int}()
     end
    
     #mod_branch[:ma_zero] = correct_current_limits!(data)
