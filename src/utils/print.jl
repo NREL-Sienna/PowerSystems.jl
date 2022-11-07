@@ -5,25 +5,25 @@ function Base.summary(sys::System)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", sys::System)
-    show_system_table(io, sys, backend = :auto)
+    show_system_table(io, sys, backend = Val(:auto))
 
     if IS.get_num_components(sys.data.components) > 0
-        show_components_table(io, sys, backend = :auto)
+        show_components_table(io, sys, backend = Val(:auto))
     end
 
     println(io)
-    IS.show_time_series_data(io, sys.data, backend = :auto)
+    IS.show_time_series_data(io, sys.data, backend = Val(:auto))
     return
 end
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
-    show_system_table(io, sys, backend = :html, standalone = false)
+    show_system_table(io, sys, backend = Val(:html), standalone = false)
 
     if IS.get_num_components(sys.data.components) > 0
         show_components_table(
             io,
             sys,
-            backend = :html,
+            backend = Val(:html),
             tf = PrettyTables.tf_html_simple,
             standalone = false,
         )
@@ -33,7 +33,7 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     IS.show_time_series_data(
         io,
         sys.data,
-        backend = :html,
+        backend = Val(:html),
         tf = PrettyTables.tf_html_simple,
         standalone = false,
     )
