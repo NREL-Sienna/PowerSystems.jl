@@ -11,8 +11,13 @@ Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 function PowerModelsData(file::Union{String, IO}; kwargs...)
     validate = get(kwargs, :pm_data_corrections, true)
     import_all = get(kwargs, :import_all, false)
-    correct_branch_rating= get(kwargs, :correct_branch_rating, true)
-    pm_dict = parse_file(file; import_all = import_all, validate = validate, correct_branch_rating = correct_branch_rating)
+    correct_branch_rating = get(kwargs, :correct_branch_rating, true)
+    pm_dict = parse_file(
+        file;
+        import_all = import_all,
+        validate = validate,
+        correct_branch_rating = correct_branch_rating,
+    )
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data
@@ -244,7 +249,7 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         @error "There are no loads in this file"
         return
     end
-  
+
     sys_mbase = data["baseMVA"]
     for d_key in keys(data["load"])
         d = data["load"][d_key]
@@ -499,7 +504,7 @@ Transfer generators to ps_dict according to their classification
 """
 function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading Generator data in PowerModels dict to populate System ..."
-   
+
     if !haskey(data, "gen")
         @error "There are no Generators in this file"
         return nothing
@@ -643,7 +648,7 @@ end
 
 function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading Branch data in PowerModels dict to populate System ..."
-   
+
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
         return
@@ -677,7 +682,7 @@ end
 
 function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data in PowerModels dict to populate System ..."
-   
+
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
         return
@@ -706,7 +711,7 @@ end
 
 function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading Shunt data in PowerModels dict to populate System ..."
-    
+
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
         return
