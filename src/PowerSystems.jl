@@ -376,6 +376,10 @@ export make_logging_config_file
 export MultiLogger
 export LogEventTracker
 export UnitSystem
+export StructField
+export StructDefinition
+export generate_struct_file
+export generate_struct_files
 
 #################################################################################
 # Imports
@@ -462,7 +466,9 @@ import InfrastructureSystems:
     make_logging_config_file,
     validate_struct,
     MultiLogger,
-    LogEventTracker
+    LogEventTracker,
+    StructField,
+    StructDefinition
 
 const IS = InfrastructureSystems
 
@@ -492,6 +498,7 @@ abstract type Device <: Component end
 # Include utilities
 include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
+include("utils/generate_struct_files.jl")
 
 include("definitions.jl")
 include("models/static_models.jl")

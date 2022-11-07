@@ -134,6 +134,9 @@ PSY.get_name(val::MyDevice) = val.name
 end
 ```
 
-It is possible to use advanced future for the autogeneration of structs. It is not mandatory
-to use these tools to create custom struct but it can be useful if you need to generate multiple
-custom structs for your model. The details are in [this section](@ref type_structure).
+### Auto-Generating Custom Structs
+It is possible to use an advanced future to auto-generate structs in Julia source code files.
+It is not mandatory to use these tools, but it can be useful if you need to generate multiple
+custom structs for your model. Please refer to the docstrings for the functions `generate_struct`
+and `generate_structs`. Full details are in the InfrastructureSystems documentation at
+https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/
