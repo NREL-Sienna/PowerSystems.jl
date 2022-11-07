@@ -5,7 +5,12 @@ Parses a Matpower .m `file` or PTI (PSS(R)E-v33) .raw `file` into a
 PowerModels data structure. All fields from PTI files will be imported if
 `import_all` is true (Default: false).
 """
-function parse_file(file::String; import_all = false, validate = true, correct_branch_rating = true)
+function parse_file(
+    file::String;
+    import_all = false,
+    validate = true,
+    correct_branch_rating = true,
+)
     pm_data = open(file) do io
         pm_data = parse_file(
             io;
@@ -19,14 +24,25 @@ function parse_file(file::String; import_all = false, validate = true, correct_b
 end
 
 "Parses the iostream from a file"
-function parse_file(io::IO; import_all = false, validate = true, correct_branch_rating = true, filetype = "json")
+function parse_file(
+    io::IO;
+    import_all = false,
+    validate = true,
+    correct_branch_rating = true,
+    filetype = "json",
+)
     if filetype == "m"
         pm_data = parse_matpower(io, validate = validate)
     elseif filetype == "raw"
         @info(
             "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines"
         )
-        pm_data = parse_psse(io; import_all = import_all, validate = validate, correct_branch_rating = correct_branch_rating)
+        pm_data = parse_psse(
+            io;
+            import_all = import_all,
+            validate = validate,
+            correct_branch_rating = correct_branch_rating,
+        )
     elseif filetype == "json"
         pm_data = parse_json(io; validate = validate)
     else
@@ -43,8 +59,7 @@ end
 Runs various data quality checks on a PowerModels data dictionary.
 Applies modifications in some cases.  Reports modified component ids.
 """
-function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating = true)
-    
+function correct_network_data!(data::Dict{String, <:Any}; correct_branch_rating = true)
     mod_bus = Dict{Symbol, Set{Int}}()
     mod_gen = Dict{Symbol, Set{Int}}()
     mod_branch = Dict{Symbol, Set{Int}}()
@@ -59,8 +74,7 @@ function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating =
 
     mod_branch[:xfer_fix] = correct_transformer_parameters!(data)
     mod_branch[:vad_bounds] = correct_voltage_angle_differences!(data)
-    mod_branch[:mva_zero] = 
-    if (correct_branch_rating)
+    mod_branch[:mva_zero] = if (correct_branch_rating)
         correct_thermal_limits!(data)
     else
         # Set rate_a as 0.0 for those branch dict entries witn no "rate_a" key
@@ -81,7 +95,7 @@ function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating =
 
         Set{Int}()
     end
-   
+
     #mod_branch[:ma_zero] = correct_current_limits!(data)
     mod_branch[:orientation] = correct_branch_directions!(data)
     check_branch_loops(data)

@@ -11,8 +11,13 @@ Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 function PowerModelsData(file::Union{String, IO}; kwargs...)
     validate = get(kwargs, :pm_data_corrections, true)
     import_all = get(kwargs, :import_all, false)
-    correct_branch_rating= get(kwargs, :correct_branch_rating, true)
-    pm_dict = parse_file(file; import_all = import_all, validate = validate, correct_branch_rating = correct_branch_rating)
+    correct_branch_rating = get(kwargs, :correct_branch_rating, true)
+    pm_dict = parse_file(
+        file;
+        import_all = import_all,
+        validate = validate,
+        correct_branch_rating = correct_branch_rating,
+    )
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data

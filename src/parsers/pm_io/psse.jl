@@ -963,8 +963,12 @@ Converts PSS(R)E-style data parsed from a PTI raw file, passed by `pti_data`
 into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
-function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = true, correct_branch_rating = true)::Dict
-    
+function _pti_to_powermodels!(
+    pti_data::Dict;
+    import_all = false,
+    validate = true,
+    correct_branch_rating = true,
+)::Dict
     pm_data = Dict{String, Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")
@@ -1022,7 +1026,7 @@ function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = tru
     end
 
     if validate
-        correct_network_data!(pm_data,correct_branch_rating = correct_branch_rating)
+        correct_network_data!(pm_data, correct_branch_rating = correct_branch_rating)
     end
 
     return pm_data
