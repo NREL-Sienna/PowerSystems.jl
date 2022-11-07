@@ -63,6 +63,22 @@ function correct_network_data!(data::Dict{String, <:Any};correct_branch_rating =
     if (correct_branch_rating)
         correct_thermal_limits!(data)
     else
+        # Set rate_a as 0.0 for those branch dict entries witn no "rate_a" key
+        branches = [branch for branch in values(data["branch"])]
+        if haskey(data, "ne_branch")
+            append!(branches, values(data["ne_branch"]))
+        end
+
+        for branch in branches
+            if !haskey(branch, "rate_a")
+                if haskey(data, "conductors")
+                    error("Multiconductor Not Supported in PowerSystems")
+                else
+                    branch["rate_a"] = 0.0
+                end
+            end
+        end
+
         Set{Int}()
     end
    
