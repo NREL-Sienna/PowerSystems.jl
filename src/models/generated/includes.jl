@@ -473,6 +473,7 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
+export get_is_filter_differential
 export get_k1
 export get_k2
 export get_kWh_Cap
@@ -961,6 +962,7 @@ export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
+export set_is_filter_differential!
 export set_k1!
 export set_k2!
 export set_kWh_Cap!

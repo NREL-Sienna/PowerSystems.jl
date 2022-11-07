@@ -2102,7 +2102,7 @@
     },
     {
       "struct_name": "ActiveConstantPowerLoad",
-      "docstring": "Parameters of x-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.",
+      "docstring": "Parameters of 12-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.",
       "fields": [
         {
           "null_value": "init",
@@ -2279,6 +2279,12 @@
           "comment": "Reference frequency parameter",
           "internal_default": "1.0",
           "data_type": "Float64"
+        },
+        {
+          "name": "is_filter_differential",
+          "comment": "Boolean to decide if filter states are differential or algebraic",
+          "internal_default": "1",
+          "data_type": "Int"
         },
         {
           "name": "states",

@@ -26,12 +26,13 @@ This file is auto-generated. Do not edit.
         Q_ref::Float64
         V_ref::Float64
         ω_ref::Float64
+        is_filter_differential::Int
         states::Vector{Symbol}
         n_states::Int
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of x-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.
+Parameters of 12-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.
 
 # Arguments
 - `name::String`
@@ -54,6 +55,7 @@ Parameters of x-states active power load based on the paper Dynamic Stability of
 - `Q_ref::Float64`: Reference reactive power parameter
 - `V_ref::Float64`: Reference voltage parameter
 - `ω_ref::Float64`: Reference frequency parameter
+- `is_filter_differential::Int`: Boolean to decide if filter states are differential or algebraic
 - `states::Vector{Symbol}`: The states are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
@@ -109,6 +111,8 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     V_ref::Float64
     "Reference frequency parameter"
     ω_ref::Float64
+    "Boolean to decide if filter states are differential or algebraic"
+    is_filter_differential::Int
     "The states are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
@@ -130,11 +134,11 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 end
 
 function ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, 1.0, 1.0, 1.0, 1.0, [:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 12, InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, 1.0, 1.0, 1.0, 1.0, 1, [:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 12, InfrastructureSystemsInternal(), )
 end
 
-function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, states=[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=12, internal=InfrastructureSystemsInternal(), )
-    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, P_ref, Q_ref, V_ref, ω_ref, states, n_states, internal, )
+function ActiveConstantPowerLoad(; name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext=Dict{String, Any}(), P_ref=1.0, Q_ref=1.0, V_ref=1.0, ω_ref=1.0, is_filter_differential=1, states=[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=12, internal=InfrastructureSystemsInternal(), )
+    ActiveConstantPowerLoad(name, r_load, c_dc, rf, lf, cf, rg, lg, kp_pll, ki_pll, kpv, kiv, kpc, kic, base_power, ext, P_ref, Q_ref, V_ref, ω_ref, is_filter_differential, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -199,6 +203,8 @@ get_Q_ref(value::ActiveConstantPowerLoad) = value.Q_ref
 get_V_ref(value::ActiveConstantPowerLoad) = value.V_ref
 """Get [`ActiveConstantPowerLoad`](@ref) `ω_ref`."""
 get_ω_ref(value::ActiveConstantPowerLoad) = value.ω_ref
+"""Get [`ActiveConstantPowerLoad`](@ref) `is_filter_differential`."""
+get_is_filter_differential(value::ActiveConstantPowerLoad) = value.is_filter_differential
 """Get [`ActiveConstantPowerLoad`](@ref) `states`."""
 get_states(value::ActiveConstantPowerLoad) = value.states
 """Get [`ActiveConstantPowerLoad`](@ref) `n_states`."""
@@ -244,3 +250,5 @@ set_Q_ref!(value::ActiveConstantPowerLoad, val) = value.Q_ref = val
 set_V_ref!(value::ActiveConstantPowerLoad, val) = value.V_ref = val
 """Set [`ActiveConstantPowerLoad`](@ref) `ω_ref`."""
 set_ω_ref!(value::ActiveConstantPowerLoad, val) = value.ω_ref = val
+"""Set [`ActiveConstantPowerLoad`](@ref) `is_filter_differential`."""
+set_is_filter_differential!(value::ActiveConstantPowerLoad, val) = value.is_filter_differential = val
