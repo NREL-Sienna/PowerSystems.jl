@@ -102,6 +102,29 @@ end
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)
     add_component!(sys, al, static_load)
-    ALs = collect(get_components(SingleCageInductionMachine, sys))
+    ALs = collect(get_components(ActiveConstantPowerLoad, sys))
+    @test length(ALs) == 1
+end
+
+@testset "Generic Dynamic Load Model" begin
+    #valid model
+    al = GenericDynamicLoad(
+        name = "init",
+        a = 1.0,
+        b = 1.0,
+        α = 1.2,
+        β = 1.2,
+        T_p = 3.0,
+        T_q = 3.0,
+    )
+    @test al isa PowerSystems.Component
+
+    sys = System(100.0)
+    bus = Bus(nothing)
+    add_component!(sys, bus)
+    static_load = PowerLoad(nothing)
+    add_component!(sys, static_load)
+    add_component!(sys, al, static_load)
+    ALs = collect(get_components(GenericDynamicLoad, sys))
     @test length(ALs) == 1
 end
