@@ -2077,6 +2077,12 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "base_power",
+          "comment": "Base Power",
+          "internal_default": "100.0",
+          "data_type": "Float64"
+        },
+        {
           "name": "states",
           "exclude_setter": true,
           "comment": "The states are:\n\tx_p: Integrator state of the active power,\n\tx_q: Integrator state of the reactive power,",

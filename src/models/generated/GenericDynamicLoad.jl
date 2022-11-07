@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         T_p::Float64
         T_q::Float64
         ext::Dict{String, Any}
+        base_power::Float64
         states::Vector{Symbol}
         n_states::Int
         internal::InfrastructureSystemsInternal
@@ -30,6 +31,7 @@ Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILIT
 - `T_p::Float64`: Active Power Time Constant, validation range: `(0, nothing)`
 - `T_q::Float64`: Reactive Power Time Constant, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
+- `base_power::Float64`: Base Power
 - `states::Vector{Symbol}`: The states are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,
@@ -51,6 +53,8 @@ mutable struct GenericDynamicLoad <: DynamicInjection
     "Reactive Power Time Constant"
     T_q::Float64
     ext::Dict{String, Any}
+    "Base Power"
+    base_power::Float64
     "The states are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,"
@@ -62,11 +66,11 @@ mutable struct GenericDynamicLoad <: DynamicInjection
 end
 
 function GenericDynamicLoad(name, a, b, α, β, T_p, T_q, ext=Dict{String, Any}(), )
-    GenericDynamicLoad(name, a, b, α, β, T_p, T_q, ext, [:x_p, :x_q], 2, InfrastructureSystemsInternal(), )
+    GenericDynamicLoad(name, a, b, α, β, T_p, T_q, ext, 100.0, [:x_p, :x_q], 2, InfrastructureSystemsInternal(), )
 end
 
-function GenericDynamicLoad(; name, a, b, α, β, T_p, T_q, ext=Dict{String, Any}(), states=[:x_p, :x_q], n_states=2, internal=InfrastructureSystemsInternal(), )
-    GenericDynamicLoad(name, a, b, α, β, T_p, T_q, ext, states, n_states, internal, )
+function GenericDynamicLoad(; name, a, b, α, β, T_p, T_q, ext=Dict{String, Any}(), base_power=100.0, states=[:x_p, :x_q], n_states=2, internal=InfrastructureSystemsInternal(), )
+    GenericDynamicLoad(name, a, b, α, β, T_p, T_q, ext, base_power, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -99,6 +103,8 @@ get_T_p(value::GenericDynamicLoad) = value.T_p
 get_T_q(value::GenericDynamicLoad) = value.T_q
 """Get [`GenericDynamicLoad`](@ref) `ext`."""
 get_ext(value::GenericDynamicLoad) = value.ext
+"""Get [`GenericDynamicLoad`](@ref) `base_power`."""
+get_base_power(value::GenericDynamicLoad) = value.base_power
 """Get [`GenericDynamicLoad`](@ref) `states`."""
 get_states(value::GenericDynamicLoad) = value.states
 """Get [`GenericDynamicLoad`](@ref) `n_states`."""
@@ -120,3 +126,5 @@ set_T_p!(value::GenericDynamicLoad, val) = value.T_p = val
 set_T_q!(value::GenericDynamicLoad, val) = value.T_q = val
 """Set [`GenericDynamicLoad`](@ref) `ext`."""
 set_ext!(value::GenericDynamicLoad, val) = value.ext = val
+"""Set [`GenericDynamicLoad`](@ref) `base_power`."""
+set_base_power!(value::GenericDynamicLoad, val) = value.base_power = val
