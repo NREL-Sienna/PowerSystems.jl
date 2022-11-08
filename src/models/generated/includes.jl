@@ -21,6 +21,8 @@ include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
+include("DynamicExponentialLoad.jl")
+include("ActiveConstantPowerLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -301,6 +303,7 @@ export get_T_g
 export get_T_iq
 export get_T_p
 export get_T_pord
+export get_T_q
 export get_T_rate
 export get_T_rv
 export get_Ta
@@ -389,6 +392,7 @@ export get_Xq_p
 export get_Xq_pp
 export get_Y
 export get_Zerox
+export get_a
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
@@ -412,6 +416,7 @@ export get_branch_id_control
 export get_bus
 export get_bus_control
 export get_bustype
+export get_c_dc
 export get_cf
 export get_constant_active_power
 export get_constant_reactive_power
@@ -468,6 +473,7 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
+export get_is_filter_differential
 export get_k1
 export get_k2
 export get_kWh_Cap
@@ -518,6 +524,7 @@ export get_prime_mover
 export get_pump_efficiency
 export get_q_nl
 export get_r
+export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
 export get_rate
@@ -576,6 +583,7 @@ export get_voltage
 export get_voltage_limits
 export get_x
 export get_α
+export get_β
 export get_γ_d1
 export get_γ_d2
 export get_γ_q1
@@ -784,6 +792,7 @@ export set_T_g!
 export set_T_iq!
 export set_T_p!
 export set_T_pord!
+export set_T_q!
 export set_T_rate!
 export set_T_rv!
 export set_Ta!
@@ -872,6 +881,7 @@ export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
 export set_Zerox!
+export set_a!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!
@@ -895,6 +905,7 @@ export set_branch_id_control!
 export set_bus!
 export set_bus_control!
 export set_bustype!
+export set_c_dc!
 export set_cf!
 export set_constant_active_power!
 export set_constant_reactive_power!
@@ -951,6 +962,7 @@ export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
+export set_is_filter_differential!
 export set_k1!
 export set_k2!
 export set_kWh_Cap!
@@ -1001,6 +1013,7 @@ export set_prime_mover!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!
+export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
 export set_rate!
@@ -1059,6 +1072,7 @@ export set_voltage!
 export set_voltage_limits!
 export set_x!
 export set_α!
+export set_β!
 export set_γ_d1!
 export set_γ_d2!
 export set_γ_q1!
