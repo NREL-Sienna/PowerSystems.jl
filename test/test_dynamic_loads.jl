@@ -106,9 +106,9 @@ end
     @test length(ALs) == 1
 end
 
-@testset "Generic Dynamic Load Model" begin
+@testset "Dynamic Exponential Load Model" begin
     #valid model
-    al = GenericDynamicLoad(
+    al = DynamicExponentialLoad(
         name = "init",
         a = 1.0,
         b = 1.0,
@@ -125,6 +125,6 @@ end
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)
     add_component!(sys, al, static_load)
-    ALs = collect(get_components(GenericDynamicLoad, sys))
+    ALs = collect(get_components(DynamicExponentialLoad, sys))
     @test length(ALs) == 1
 end

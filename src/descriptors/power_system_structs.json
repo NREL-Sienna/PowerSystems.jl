@@ -2001,7 +2001,7 @@
       "supertype": "DynamicInjection"
     },
     {
-      "struct_name": "GenericDynamicLoad",
+      "struct_name": "DynamicExponentialLoad",
       "docstring": "Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILITY ANALYSIS USING GENERIC DYNAMIC LOAD MODELS by W. Xu and Y. Mansour, IEEE Transactions on Power Systems, 1994.",
       "fields": [
         {
@@ -2092,7 +2092,7 @@
         {
           "name": "n_states",
           "exclude_setter": true,
-          "comment": "GenericDynamicLoad has 2 states",
+          "comment": "DynamicExponentialLoad has 2 states",
           "internal_default": 2,
           "data_type": "Int"
         },
