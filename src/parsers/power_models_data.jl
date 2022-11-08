@@ -231,7 +231,7 @@ function make_load(d, bus, sys_mbase; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         model = LoadModels.ConstantPower,
         bus = bus,
         active_power = d["pd"],
