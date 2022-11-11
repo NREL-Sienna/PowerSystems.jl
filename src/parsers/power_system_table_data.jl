@@ -881,19 +881,19 @@ function calculate_variable_cost(
     ])
 
     var_cost = [
-        ((var_cost[i][1] + vom) * var_cost[i][2], var_cost[i][2]) .*
-        gen.active_power_limits_max .* base_power for i in 1:length(var_cost)
+        ((var_cost[i][1] + vom), (var_cost[i][2] .*
+        gen.active_power_limits_max .* base_power)) for i in 1:length(var_cost)
     ]
 
     if length(var_cost) > 1
         fixed = max(
             0.0,
             var_cost[1][1] -
-            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+            (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
     elseif length(var_cost) == 1
-        var_cost = var_cost[1][1] + vom
+        var_cost = var_cost[1][1]
         fixed = 0.0
     end
 
