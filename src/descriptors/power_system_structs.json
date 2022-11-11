@@ -11851,6 +11851,12 @@
           "default": "Dict{String, Any}()"
         },
         {
+          "name": "is_filter_differential",
+          "comment": "Boolean to decide if filter states are differential or algebraic",
+          "internal_default": "1",
+          "data_type": "Int"
+        },
+        {
           "name": "states",
           "exclude_setter": true,
           "comment": "The states of the LCLFilter model are:\n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",

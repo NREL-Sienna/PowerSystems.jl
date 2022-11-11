@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         lg::Float64
         rg::Float64
         ext::Dict{String, Any}
+        is_filter_differential::Int
         states::Vector{Symbol}
         n_states::Int
     end
@@ -25,6 +26,7 @@ Parameters of a LCL filter outside the converter, the states are in the grid's r
 - `lg::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
 - `rg::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
+- `is_filter_differential::Int`: Boolean to decide if filter states are differential or algebraic
 - `states::Vector{Symbol}`: The states of the LCLFilter model are:
 	ir_cnv: Real current out of the converter,
 	ii_cnv: Imaginary current out of the converter,
@@ -46,6 +48,8 @@ mutable struct LCLFilter <: Filter
     "Series resistance in p.u. of converter filter to the grid"
     rg::Float64
     ext::Dict{String, Any}
+    "Boolean to decide if filter states are differential or algebraic"
+    is_filter_differential::Int
     "The states of the LCLFilter model are:
 	ir_cnv: Real current out of the converter,
 	ii_cnv: Imaginary current out of the converter,
@@ -59,11 +63,11 @@ mutable struct LCLFilter <: Filter
 end
 
 function LCLFilter(lf, rf, cf, lg, rg, ext=Dict{String, Any}(), )
-    LCLFilter(lf, rf, cf, lg, rg, ext, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, )
+    LCLFilter(lf, rf, cf, lg, rg, ext, 1, [:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], 6, )
 end
 
-function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), states=[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=6, )
-    LCLFilter(lf, rf, cf, lg, rg, ext, states, n_states, )
+function LCLFilter(; lf, rf, cf, lg, rg, ext=Dict{String, Any}(), is_filter_differential=1, states=[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter], n_states=6, )
+    LCLFilter(lf, rf, cf, lg, rg, ext, is_filter_differential, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,6 +94,8 @@ get_lg(value::LCLFilter) = value.lg
 get_rg(value::LCLFilter) = value.rg
 """Get [`LCLFilter`](@ref) `ext`."""
 get_ext(value::LCLFilter) = value.ext
+"""Get [`LCLFilter`](@ref) `is_filter_differential`."""
+get_is_filter_differential(value::LCLFilter) = value.is_filter_differential
 """Get [`LCLFilter`](@ref) `states`."""
 get_states(value::LCLFilter) = value.states
 """Get [`LCLFilter`](@ref) `n_states`."""
@@ -107,3 +113,5 @@ set_lg!(value::LCLFilter, val) = value.lg = val
 set_rg!(value::LCLFilter, val) = value.rg = val
 """Set [`LCLFilter`](@ref) `ext`."""
 set_ext!(value::LCLFilter, val) = value.ext = val
+"""Set [`LCLFilter`](@ref) `is_filter_differential`."""
+set_is_filter_differential!(value::LCLFilter, val) = value.is_filter_differential = val
