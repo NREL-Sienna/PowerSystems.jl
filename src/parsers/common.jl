@@ -14,6 +14,8 @@ merge!(
         "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "DFO" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "SYNC_COND" => ThermalFuels.OTHER,
+        "GEOTHERMAL " => ThermalFuels.GEOTHERMAL,
+        "AG_BIPRODUCT"=> ThermalFuels.AG_BIPRODUCT
     ),
 )
 
@@ -25,16 +27,22 @@ merge!(
         "WIND" => PrimeMovers.WT,
         "PV" => PrimeMovers.PVe,
         "PVe" => PrimeMovers.PVe,
+        "SOLAR" => PrimeMovers.PVe,
         "RTPV" => PrimeMovers.PVe,
         "NB" => PrimeMovers.ST,
         "STEAM" => PrimeMovers.ST,
         "HYDRO" => PrimeMovers.HY,
         "ROR" => PrimeMovers.HY,
+        "PUMP" => PrimeMovers.PS,
+        "PUMPED_HYDRO" => PrimeMovers.PS,
         "NUCLEAR" => PrimeMovers.ST,
         "SYNC_COND" => PrimeMovers.OT,
         "CSP" => PrimeMovers.CP,
         "UN" => PrimeMovers.OT,
         "STORAGE" => PrimeMovers.BA,
+        "ICE" => PrimeMovers.IC,
+
+
     ),
 )
 
