@@ -15,7 +15,7 @@ merge!(
         "DFO" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "SYNC_COND" => ThermalFuels.OTHER,
         "GEOTHERMAL " => ThermalFuels.GEOTHERMAL,
-        "AG_BIPRODUCT"=> ThermalFuels.AG_BIPRODUCT
+        "AG_BIPRODUCT" => ThermalFuels.AG_BIPRODUCT,
     ),
 )
 
@@ -41,8 +41,6 @@ merge!(
         "UN" => PrimeMovers.OT,
         "STORAGE" => PrimeMovers.BA,
         "ICE" => PrimeMovers.IC,
-
-
     ),
 )
 

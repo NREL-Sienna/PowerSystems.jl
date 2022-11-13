@@ -881,8 +881,10 @@ function calculate_variable_cost(
     ])
 
     var_cost = [
-        ((var_cost[i][1] + vom), (var_cost[i][2] .*
-        gen.active_power_limits_max .* base_power)) for i in 1:length(var_cost)
+        (
+            (var_cost[i][1] + vom),
+            (var_cost[i][2] .* gen.active_power_limits_max .* base_power),
+        ) for i in 1:length(var_cost)
     ]
 
     if length(var_cost) > 1
@@ -1122,7 +1124,9 @@ function make_hydro_generator(
 
         head_dict, tail_dict = gen_storage
         if !haskey(head_dict, gen.name)
-            throw(DataFormatError("Cannot find head storage for $(gen.name) in storage.csv"))
+            throw(
+                DataFormatError("Cannot find head storage for $(gen.name) in storage.csv"),
+            )
         end
         storage = (head = head_dict[gen.name], tail = get(tail_dict, gen.name, nothing))
 
