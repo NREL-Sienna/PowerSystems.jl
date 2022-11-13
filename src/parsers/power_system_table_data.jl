@@ -531,6 +531,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     heat_rate_fields = Vector{Symbol}()
     cost_point_fields = Vector{Symbol}()
     fields = get_user_fields(data, InputCategory.GENERATOR)
+
     for field in fields
         if occursin("output_point", field)
             push!(output_point_fields, Symbol(field))
@@ -540,7 +541,6 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
             push!(cost_point_fields, Symbol(field))
         end
     end
-
     @assert length(output_point_fields) > 0
     if length(heat_rate_fields) > 0 && length(cost_point_fields) > 0
         throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
@@ -548,6 +548,8 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         cost_colnames = _HeatRateColumns(zip(heat_rate_fields, output_point_fields))
     elseif length(cost_point_fields) > 0
         cost_colnames = _CostPointColumns(zip(cost_point_fields, output_point_fields))
+    else
+        throw(IS.DataFormatError("Configuration for cost terms not recognized"))
     end
 
     gen_storage = cache_storage(data::PowerSystemTableData)
@@ -879,19 +881,19 @@ function calculate_variable_cost(
     ])
 
     var_cost = [
-        ((var_cost[i][1] + vom) * var_cost[i][2], var_cost[i][2]) .*
-        gen.active_power_limits_max .* base_power for i in 1:length(var_cost)
+        ((var_cost[i][1] + vom), (var_cost[i][2] .*
+        gen.active_power_limits_max .* base_power)) for i in 1:length(var_cost)
     ]
 
     if length(var_cost) > 1
         fixed = max(
             0.0,
             var_cost[1][1] -
-            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
+            (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
     elseif length(var_cost) == 1
-        var_cost = var_cost[1][1] + vom
+        var_cost = var_cost[1][1]
         fixed = 0.0
     end
 
@@ -1120,7 +1122,7 @@ function make_hydro_generator(
 
         head_dict, tail_dict = gen_storage
         if !haskey(head_dict, gen.name)
-            throw(DataFormatError("Cannot find head storage for $(gen.csv) in storage.csv"))
+            throw(DataFormatError("Cannot find head storage for $(gen.name) in storage.csv"))
         end
         storage = (head = head_dict[gen.name], tail = get(tail_dict, gen.name, nothing))
 
