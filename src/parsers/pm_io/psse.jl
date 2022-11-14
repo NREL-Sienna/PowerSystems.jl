@@ -156,6 +156,7 @@ Parses PSS(R)E-style Branch data into a PowerModels-style Dict. "source_id" is
 given by `["I", "J", "CKT"]` in PSS(R)E Branch specification.
 """
 function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Branch data into a PowerModels Dict..."
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for (i, branch) in enumerate(pti_data["BRANCH"])
@@ -213,6 +214,7 @@ Parses PSS(R)E-style Generator data in a PowerModels-style Dict. "source_id" is
 given by `["I", "ID"]` in PSS(R)E Generator specification.
 """
 function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Generator data into a PowerModels Dict..."
     pm_data["gen"] = []
     if haskey(pti_data, "GENERATOR")
         for gen in pti_data["GENERATOR"]
@@ -257,6 +259,7 @@ Parses PSS(R)E-style Bus data into a PowerModels-style Dict. "source_id" is give
 by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
     pm_data["bus"] = []
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
@@ -292,6 +295,7 @@ Parses PSS(R)E-style Load data into a PowerModels-style Dict. "source_id" is giv
 by `["I", "ID"]` in the PSS(R)E Load specification.
 """
 function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Load data into a PowerModels Dict..."
     pm_data["load"] = []
     if haskey(pti_data, "LOAD")
         for load in pti_data["LOAD"]
@@ -324,6 +328,7 @@ for Switched Shunts, as given by the PSS(R)E Fixed and Switched Shunts
 specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
     pm_data["shunt"] = []
 
     if haskey(pti_data, "FIXED SHUNT")
@@ -380,6 +385,7 @@ transformer is two-winding, and 1, 2, or 3 for three-winding, and the remaining
 keys are defined in the PSS(R)E Transformer specification.
 """
 function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Transformer data into a PowerModels Dict..."
     if !haskey(pm_data, "branch")
         pm_data["branch"] = []
     end
@@ -782,6 +788,7 @@ converter bus, and "IBUS2" is the "IBUS" of the second converter bus, in the
 PSS(R)E Voltage Source Converter specification.
 """
 function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Two-Terminal and VSC DC line data into a PowerModels Dict..."
     pm_data["dcline"] = []
 
     if haskey(pti_data, "TWO-TERMINAL DC")
@@ -938,11 +945,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
     return
 end
 
 function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "This PSS(R)E parser currently doesn't support Switch data parsing..."
     pm_data["switch"] = []
     return
 end
@@ -954,7 +963,12 @@ Converts PSS(R)E-style data parsed from a PTI raw file, passed by `pti_data`
 into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
-function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = true)::Dict
+function _pti_to_powermodels!(
+    pti_data::Dict;
+    import_all = false,
+    validate = true,
+    correct_branch_rating = true,
+)::Dict
     pm_data = Dict{String, Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")
@@ -1012,7 +1026,7 @@ function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = tru
     end
 
     if validate
-        correct_network_data!(pm_data)
+        correct_network_data!(pm_data, correct_branch_rating = correct_branch_rating)
     end
 
     return pm_data

@@ -173,7 +173,8 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); kwargs...)
+        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
     elseif lowercase(ext) == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")

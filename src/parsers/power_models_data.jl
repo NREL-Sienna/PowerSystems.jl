@@ -11,7 +11,13 @@ Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 function PowerModelsData(file::Union{String, IO}; kwargs...)
     validate = get(kwargs, :pm_data_corrections, true)
     import_all = get(kwargs, :import_all, false)
-    pm_dict = parse_file(file; import_all = import_all, validate = validate)
+    correct_branch_rating = get(kwargs, :correct_branch_rating, true)
+    pm_dict = parse_file(
+        file;
+        import_all = import_all,
+        validate = validate,
+        correct_branch_rating = correct_branch_rating,
+    )
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data
@@ -257,6 +263,8 @@ function make_standard_load(d, bus, sys_mbase; kwargs...)
 end
 
 function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading Load data in PowerModels dict to populate System ..."
+
     if !haskey(data, "load")
         @error "There are no loads in this file"
         return
@@ -297,6 +305,8 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading LoadZones data in PowerModels dict to populate System ..."
+
     zones = Set{Int}()
     for (i, bus) in data["bus"]
         push!(zones, bus["zone"])
