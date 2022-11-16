@@ -104,7 +104,7 @@ end
     #SingleTimeSeries Tests
     ts = SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
     @test ts isa PowerSystems.TimeSeriesData
-    ts = SingleTimeSeries(name = "scalingfactor", data = data)
+    ts = SingleTimeSeries(; name = "scalingfactor", data = data)
     @test ts isa PowerSystems.TimeSeriesData
     # TODO 1.0
     #Probabilistic Tests
@@ -125,7 +125,7 @@ end
     @test get_rating(regulation) == 0.0
     set_rating!(regulation, 10.0)
     @test get_rating(regulation) == 10.0
-    regulation = RegulationDevice(original_device, droop = 0.5)
+    regulation = RegulationDevice(original_device; droop = 0.5)
     @test get_droop(regulation) == 0.5
     @test get_participation_factor(regulation) == (up = 0.0, dn = 0.0)
     @test get_reserve_limit_up(regulation) == 0.0

@@ -8,7 +8,7 @@ TEST_MSG = "test log message"
 
     orig_logger = global_logger()
     try
-        logger = configure_logging(
+        logger = configure_logging(;
             console_level = Logging.Warn,
             file_level = Logging.Debug,
             filename = logfile,
@@ -29,7 +29,7 @@ TEST_MSG = "test log message"
 
     # Verify logging with no file.
     try
-        logger = configure_logging(
+        logger = configure_logging(;
             console_level = Logging.Warn,
             file_level = Logging.Info,
             filename = nothing,

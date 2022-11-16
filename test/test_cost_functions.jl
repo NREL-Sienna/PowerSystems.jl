@@ -34,12 +34,12 @@ end
         set_service_bid!(sys, generator, s, forecast)
     end
 
-    cost_forecast = get_variable_cost(generator, market_bid, start_time = initial_time)
+    cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)).cost ==
           first(data_polynomial[initial_time])
 
     for s in generator.services
-        service_cost = get_services_bid(generator, market_bid, s, start_time = initial_time)
+        service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
         @test first(TimeSeries.values(service_cost)).cost ==
               first(service_data[initial_time])
     end
@@ -61,7 +61,7 @@ end
     forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
     set_variable_cost!(sys, generator, forecast)
 
-    cost_forecast = get_variable_cost(generator, market_bid, start_time = initial_time)
+    cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)).cost == first(data_pwl[initial_time])
 end
 
@@ -89,7 +89,7 @@ end
             add_component!(sys, reserve)
             forecast = IS.Deterministic("variable_cost", d, resolution)
             set_variable_cost!(sys, reserve, forecast)
-            cost_forecast = get_variable_cost(reserve, start_time = initial_time)
+            cost_forecast = get_variable_cost(reserve; start_time = initial_time)
             @test first(TimeSeries.values(cost_forecast)).cost == first(d[initial_time])
         end
     end

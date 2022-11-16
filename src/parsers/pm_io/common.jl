@@ -32,7 +32,7 @@ function parse_file(
     filetype = "json",
 )
     if filetype == "m"
-        pm_data = parse_matpower(io, validate = validate)
+        pm_data = parse_matpower(io; validate = validate)
     elseif filetype == "raw"
         @info(
             "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines"

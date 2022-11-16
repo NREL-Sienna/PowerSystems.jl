@@ -27,7 +27,7 @@ const ENUM_MAPPINGS = Dict()
 for enum in ENUMS
     ENUM_MAPPINGS[enum] = Dict()
     for value in instances(enum)
-        ENUM_MAPPINGS[enum][normalize(string(value), casefold = true)] = value
+        ENUM_MAPPINGS[enum][normalize(string(value); casefold = true)] = value
     end
 end
 
@@ -37,7 +37,7 @@ function get_enum_value(enum, value::AbstractString)
         throw(ArgumentError("enum=$enum is not valid"))
     end
 
-    val = normalize(value, casefold = true)
+    val = normalize(value; casefold = true)
     if !haskey(ENUM_MAPPINGS[enum], val)
         throw(ArgumentError("enum=$enum does not have value=$val"))
     end

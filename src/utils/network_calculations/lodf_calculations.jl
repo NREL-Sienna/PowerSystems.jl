@@ -57,9 +57,9 @@ Builds the LODF matrix from a system. The return is a LOLDF array indexed with t
 """
 function LODF(sys::System, dist_slack::Vector{Float64} = [0.1])
     branches = sort!(
-        collect(get_components(ACBranch, sys)),
+        collect(get_components(ACBranch, sys));
         by = x -> (get_number(get_arc(x).from), get_number(get_arc(x).to)),
     )
-    nodes = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    nodes = sort!(collect(get_components(Bus, sys)); by = x -> get_number(x))
     return LODF(branches, nodes, dist_slack)
 end

@@ -36,9 +36,9 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
 
     # make system
     sys = System(
-        pm_data,
+        pm_data;
         bus_name_formatter = bus_name_formatter,
-        load_name_formatter = load_name_formatter;
+        load_name_formatter = load_name_formatter,
         kwargs...,
     )
 
@@ -65,7 +65,7 @@ function TamuSystem(tamu_folder::AbstractString; kwargs...)
     end
 
     loads = DataFrames.DataFrame(
-        CSV.File(load_file, skipto = 3, header = fixed_cols),
+        CSV.File(load_file; skipto = 3, header = fixed_cols);
         copycols = false,
     )
 

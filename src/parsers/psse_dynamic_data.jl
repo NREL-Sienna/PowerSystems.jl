@@ -118,7 +118,7 @@ function _make_source(g::StaticInjection, r::Float64, x::Float64, sys_base::Floa
     machine_base = get_base_power(g)
     r_sysbase = r * (sys_base / machine_base)
     x_sysbase = x * (sys_base / machine_base)
-    return Source(
+    return Source(;
         name = get_name(g),
         available = true,
         bus = get_bus(g),

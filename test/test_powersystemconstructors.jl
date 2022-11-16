@@ -112,7 +112,7 @@ end
         IS.get_all_concrete_subtypes(PowerSystems.ActivePowerControl),
         IS.get_all_concrete_subtypes(PowerSystems.ReactivePowerControl),
     )
-    sort!(types, by = x -> string(x))
+    sort!(types; by = x -> string(x))
     for ps_type in types
         ps_type in types_to_skip && continue
         component = ps_type(nothing)
@@ -123,7 +123,7 @@ end
 @testset "Test required accessor functions of subtypes of Component " begin
     types = IS.get_all_concrete_subtypes(Component)
     types_to_skip = (TestDevice, TestRenDevice)
-    sort!(types, by = x -> string(x))
+    sort!(types; by = x -> string(x))
     for ps_type in types
         ps_type in types_to_skip && continue
         component = ps_type(nothing)
@@ -149,7 +149,7 @@ end
             data = collect(1:24)
             ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
             name = "active_power_flow"
-            time_series = SingleTimeSeries(name = name, data = ta)
+            time_series = SingleTimeSeries(; name = name, data = ta)
             add_time_series!(sys, l, time_series)
             @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
             PSY.convert_component!(MonitoredLine, l, sys)
@@ -166,7 +166,7 @@ end
             convert_component!(
                 Line,
                 get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
-                sys,
+                sys;
                 force = true,
             )
             line = get_component(Line, sys, "bus2-bus3-i_4")

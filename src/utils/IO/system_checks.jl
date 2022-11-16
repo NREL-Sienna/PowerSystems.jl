@@ -88,8 +88,11 @@ function total_load_rating(sys::System)
     base_power = get_base_power(sys)
     controllable_loads = get_components(ControllableLoad, sys)
     cl =
-        isempty(controllable_loads) ? 0.0 :
-        sum(get_max_active_power.(controllable_loads)) * base_power
+        if isempty(controllable_loads)
+            0.0
+        else
+            sum(get_max_active_power.(controllable_loads)) * base_power
+        end
     @debug "System has $cl MW of ControllableLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     static_loads = get_components(StaticLoad, sys)
     sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
@@ -97,8 +100,11 @@ function total_load_rating(sys::System)
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
     fa_loads = get_components(FixedAdmittance, sys)
     fa =
-        isempty(fa_loads) ? 0.0 :
-        sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+        if isempty(fa_loads)
+            0.0
+        else
+            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+        end
     @debug "System has $fa MW of FixedAdmittance assuming admittance values are in P.U." _group =
         IS.LOG_GROUP_SYSTEM_CHECKS
     total_load = cl + sl + fa

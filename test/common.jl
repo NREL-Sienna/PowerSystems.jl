@@ -47,7 +47,7 @@ function create_system_with_dynamic_inverter()
         Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
-    battery = GenericBattery(
+    battery = GenericBattery(;
         name = "Battery",
         prime_mover = PrimeMovers.BA,
         available = true,
@@ -74,7 +74,7 @@ function create_system_with_dynamic_inverter()
             true, #available
             0.0, #active power flow initial condition (from-to)
             0.0, #reactive power flow initial condition (from-to)
-            Arc(from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
+            Arc(; from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
             0.01, #resistance in pu
             0.05, #reactance in pu
             (from = 0.0, to = 0.0), #susceptance in pu
@@ -252,7 +252,7 @@ function validate_serialization(
         bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
-        return sys2, PSY.compare_values(sys, sys2, compare_uuids = !assign_new_uuids)
+        return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_uuids)
     finally
         cd(orig_dir)
     end

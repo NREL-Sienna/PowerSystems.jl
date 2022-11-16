@@ -61,8 +61,11 @@ end
                     for field in chk_dat.fields
                         n = get(chk_dat, :structname, nothing)
                         (cdmd, mpd) =
-                            isnothing(n) ? (cdmgen, mpgen) :
-                            (getfield(cdmgen, n), getfield(mpgen, n))
+                            if isnothing(n)
+                                (cdmgen, mpgen)
+                            else
+                                (getfield(cdmgen, n), getfield(mpgen, n))
+                            end
                         cdmgen_val = getfield(cdmd, field)
                         mpgen_val = getfield(mpd, field)
                         if isnothing(cdmgen_val) || isnothing(mpgen_val)
@@ -95,7 +98,7 @@ end
                     @test [
                         isapprox(
                             cdmgen.operation_cost.variable[i][1],
-                            mpgen.operation_cost.variable[i][1],
+                            mpgen.operation_cost.variable[i][1];
                             atol = 0.1,
                         ) for i in 1:4
                     ] == [true, true, true, true]
@@ -152,13 +155,13 @@ end
     rawsys_hr = PowerSystemTableData(
         fivebus_dir,
         100.0,
-        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml");
         generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
     )
     rawsys = PowerSystemTableData(
         fivebus_dir,
         100.0,
-        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml");
         generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
     )
     sys_hr = System(rawsys_hr)

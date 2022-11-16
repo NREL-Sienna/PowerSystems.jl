@@ -68,9 +68,9 @@ end
 # Handle the base case when we have more indices than lookups:
 function _to_index_tuple(idx::NTuple{N}, ::NTuple{0}) where {N}
     return ntuple(k -> begin
-        i = idx[k]
-        (i == 1) ? 1 : error("invalid index $i")
-    end, Val(N))
+            i = idx[k]
+            (i == 1) ? 1 : error("invalid index $i")
+        end, Val(N))
 end
 
 # Handle the base case when we have fewer indices than lookups:
