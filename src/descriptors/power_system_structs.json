@@ -1286,6 +1286,14 @@
           "data_type": "Complex{Float64}"
         },
         {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection model for admittance",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
