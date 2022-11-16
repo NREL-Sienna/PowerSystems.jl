@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::Bus
         Y::Complex{Float64}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -23,6 +24,7 @@ This file is auto-generated. Do not edit.
 - `available::Bool`
 - `bus::Bus`
 - `Y::Complex{Float64}`: System per-unit value
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -34,6 +36,8 @@ mutable struct FixedAdmittance <: ElectricLoad
     bus::Bus
     "System per-unit value"
     Y::Complex{Float64}
+    "corresponding dynamic injection model for admittance"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -43,12 +47,12 @@ mutable struct FixedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    FixedAdmittance(name, available, bus, Y, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    FixedAdmittance(name, available, bus, Y, services, ext, time_series_container, internal, )
+function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -58,6 +62,7 @@ function FixedAdmittance(::Nothing)
         available=false,
         bus=Bus(nothing),
         Y=0.0,
+        dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
@@ -72,6 +77,8 @@ get_available(value::FixedAdmittance) = value.available
 get_bus(value::FixedAdmittance) = value.bus
 """Get [`FixedAdmittance`](@ref) `Y`."""
 get_Y(value::FixedAdmittance) = value.Y
+"""Get [`FixedAdmittance`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::FixedAdmittance) = value.dynamic_injector
 """Get [`FixedAdmittance`](@ref) `services`."""
 get_services(value::FixedAdmittance) = value.services
 """Get [`FixedAdmittance`](@ref) `ext`."""
