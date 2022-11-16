@@ -207,10 +207,6 @@ export StaticReserveGroup
 export StaticReserveNonSpinning
 export VariableReserveNonSpinning
 
-export PTDF
-export Ybus
-export LODF
-export Adjacency
 export AngleUnits
 export BusTypes
 export PrimeMovers
@@ -232,11 +228,6 @@ export NormalizationFactor
 export NormalizationTypes
 
 export get_dynamic_components
-
-export solve_powerflow!
-export solve_powerflow
-export validate_connectivity
-export find_connected_components
 
 export parse_file
 export add_time_series!
@@ -555,15 +546,6 @@ include("utils/IO/branchdata_checks.jl")
 
 # cost function TimeSeries convertion
 include("models/cost_function_timeseries.jl")
-
-# network calculations
-include("utils/network_calculations/common.jl")
-include("utils/network_calculations/ybus_calculations.jl")
-include("utils/network_calculations/ptdf_calculations.jl")
-include("utils/network_calculations/lodf_calculations.jl")
-
-#PowerFlow
-include("utils/power_flow.jl")
 
 #Conversions
 include("utils/conversion.jl")
