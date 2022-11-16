@@ -11,14 +11,14 @@ end
     output_directory = mktempdir()
     descriptor_file = joinpath(output_directory, "power_system_structs.json")
     cp(orig_descriptor_file, descriptor_file)
-    new_struct = StructDefinition(
+    new_struct = StructDefinition(;
         struct_name = "MyThermalStandard",
         docstring = "Custom ThermalStandard",
         supertype = "ThermalGen",
         is_component = true,
         fields = [
-            StructField(name = "name", data_type = String, comment = "name"),
-            StructField(
+            StructField(; name = "name", data_type = String, comment = "name"),
+            StructField(;
                 name = "active_power",
                 data_type = Float64,
                 valid_range = "active_power_limits",
@@ -27,13 +27,13 @@ end
                 comment = "active power",
                 needs_conversion = true,
             ),
-            StructField(
+            StructField(;
                 name = "active_power_limits",
                 needs_conversion = true,
                 data_type = "NamedTuple{(:min, :max), Tuple{Float64, Float64}}",
                 null_value = "(min=0.0, max=0.0)",
             ),
-            StructField(
+            StructField(;
                 name = "rating",
                 data_type = Float64,
                 valid_range = Dict("min" => 0.0, "max" => nothing),
@@ -44,7 +44,7 @@ end
     )
     redirect_stdout(devnull) do
         generate_struct_file(
-            new_struct,
+            new_struct;
             filename = descriptor_file,
             output_directory = output_directory,
         )

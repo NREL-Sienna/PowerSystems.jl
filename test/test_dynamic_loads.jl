@@ -1,6 +1,6 @@
 @testset "Induction Motor" begin
     #valid (non-default) A and B
-    im = SingleCageInductionMachine(
+    im = SingleCageInductionMachine(;
         name = "init",
         R_s = 0.0,
         R_r = 0.018,
@@ -37,7 +37,7 @@
     IMs = collect(get_components(SingleCageInductionMachine, sys))
     @test length(IMs) == 1
 
-    im = SimplifiedSingleCageInductionMachine(
+    im = SimplifiedSingleCageInductionMachine(;
         name = "init",
         R_s = 0.0,
         R_r = 0.018,
@@ -77,7 +77,7 @@ end
 
 @testset "Active Constant Power Load Model" begin
     #valid model
-    al = ActiveConstantPowerLoad(
+    al = ActiveConstantPowerLoad(;
         name = "init",
         r_load = 70.0,
         c_dc = 2040e-6,
@@ -108,7 +108,7 @@ end
 
 @testset "Dynamic Exponential Load Model" begin
     #valid model
-    al = DynamicExponentialLoad(
+    al = DynamicExponentialLoad(;
         name = "init",
         a = 1.0,
         b = 1.0,

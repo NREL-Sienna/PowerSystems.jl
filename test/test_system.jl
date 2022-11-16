@@ -35,7 +35,7 @@
 
     buses = PowerSystems.get_buses(sys, Set(bus_numbers))
     sort!(bus_numbers)
-    sort!(buses, by = x -> x.number)
+    sort!(buses; by = x -> x.number)
     @test length(bus_numbers) == length(buses)
     for (bus_number, bus) in zip(bus_numbers, buses)
         @test bus_number == bus.number
@@ -239,7 +239,7 @@ end
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, ["1"])
     name = "max_active_power"
-    ts = SingleTimeSeries(name = name, data = ta)
+    ts = SingleTimeSeries(; name = name, data = ta)
     add_time_series!(sys, components, ts)
 
     for i in 1:len
@@ -280,7 +280,7 @@ end
     horizon = 24
     data = SortedDict(initial_time => ones(horizon), second_time => ones(horizon))
 
-    forecast = Deterministic(data = data, name = name, resolution = resolution)
+    forecast = Deterministic(; data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)
 
     @test get_time_series_resolution(sys) == resolution
@@ -307,7 +307,7 @@ end
 end
 
 @testset "Test deepcopy with runchecks disabled" begin
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     @test !get_runchecks(sys)
     sys2 = deepcopy(sys)
     @test sys2 isa System
@@ -361,12 +361,12 @@ end
 end
 
 @testset "Test with compression enabled" begin
-    @test get_compression_settings(System(100.0)) == CompressionSettings(enabled = false)
+    @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
-    settings = CompressionSettings(enabled = true, type = CompressionTypes.BLOSC)
-    @test get_compression_settings(System(100.0, compression = settings)) == settings
-    @test get_compression_settings(System(100.0, enable_compression = true)) ==
-          CompressionSettings(enabled = true)
+    settings = CompressionSettings(; enabled = true, type = CompressionTypes.BLOSC)
+    @test get_compression_settings(System(100.0; compression = settings)) == settings
+    @test get_compression_settings(System(100.0; enable_compression = true)) ==
+          CompressionSettings(; enabled = true)
 end
 
 @testset "Test compare_values" begin

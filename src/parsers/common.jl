@@ -127,13 +127,13 @@ function calculate_rating(active_power_max::Float64, reactive_power_max::Float64
 end
 
 function string_compare(str1, str2; casefold = true)
-    return normalize(str1, casefold = casefold) === normalize(str2, casefold = casefold)
+    return normalize(str1; casefold = casefold) === normalize(str2; casefold = casefold)
 end
 
 function string_occursin(str1, str2; casefold = true)
     return occursin(
-        normalize(str1, casefold = casefold),
-        normalize(srt2, casefold = casefold),
+        normalize(str1; casefold = casefold),
+        normalize(srt2; casefold = casefold),
     )
 end
 

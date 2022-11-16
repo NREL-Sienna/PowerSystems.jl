@@ -22,7 +22,7 @@ function configure_logging(;
     file_level = Logging.Info,
     filename::Union{Nothing, AbstractString} = "power-systems.log",
 )
-    return IS.configure_logging(
+    return IS.configure_logging(;
         console = true,
         console_stream = stderr,
         console_level = console_level,

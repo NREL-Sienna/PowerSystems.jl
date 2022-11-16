@@ -168,12 +168,18 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_x"] = pop!(branch, "X")
             sub_data["g_fr"] = pop!(branch, "GI")
             sub_data["b_fr"] =
-                branch["BI"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
-                pop!(branch, "BI")
+                if branch["BI"] == 0.0 && branch["B"] != 0.0
+                    branch["B"] / 2
+                else
+                    pop!(branch, "BI")
+                end
             sub_data["g_to"] = pop!(branch, "GJ")
             sub_data["b_to"] =
-                branch["BJ"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
-                pop!(branch, "BJ")
+                if branch["BJ"] == 0.0 && branch["B"] != 0.0
+                    branch["B"] / 2
+                else
+                    pop!(branch, "BJ")
+                end
             sub_data["rate_a"] = pop!(branch, "RATEA")
             sub_data["rate_b"] = pop!(branch, "RATEB")
             sub_data["rate_c"] = pop!(branch, "RATEC")
@@ -800,8 +806,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             # Unit conversions?
             power_demand =
-                dcline["MDC"] == 1 ? abs(dcline["SETVL"]) :
-                dcline["MDC"] == 2 ? abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000) : 0
+                if dcline["MDC"] == 1
+                    abs(dcline["SETVL"])
+                elseif dcline["MDC"] == 2
+                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                else
+                    0
+                end
 
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
@@ -879,9 +890,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["f_bus"] = pop!(dcside, "IBUS")
             sub_data["t_bus"] = pop!(acside, "IBUS")
             sub_data["br_status"] =
-                pop!(dcline, "MDC") == 0 ||
-                pop!(dcside, "TYPE") == 0 ||
-                pop!(acside, "TYPE") == 0 ? 0 : 1
+                if pop!(dcline, "MDC") == 0 ||
+                   pop!(dcside, "TYPE") == 0 ||
+                   pop!(acside, "TYPE") == 0
+                    0
+                else
+                    1
+                end
 
             sub_data["pf"] = 0.0
             sub_data["pt"] = 0.0
@@ -893,13 +908,17 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["vt"] = pop!(acside, "MODE") == 1 ? pop!(acside, "ACSET") : 1.0
 
             sub_data["pmaxf"] =
-                dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0 ?
-                max(abs(dcside["MAXQ"]), abs(dcside["MINQ"])) :
-                min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
+                if dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0
+                    max(abs(dcside["MAXQ"]), abs(dcside["MINQ"]))
+                else
+                    min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
+                end
             sub_data["pmaxt"] =
-                acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0 ?
-                max(abs(acside["MAXQ"]), abs(acside["MINQ"])) :
-                min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
+                if acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0
+                    max(abs(acside["MAXQ"]), abs(acside["MINQ"]))
+                else
+                    min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
+                end
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
@@ -1026,7 +1045,7 @@ function _pti_to_powermodels!(
     end
 
     if validate
-        correct_network_data!(pm_data, correct_branch_rating = correct_branch_rating)
+        correct_network_data!(pm_data; correct_branch_rating = correct_branch_rating)
     end
 
     return pm_data

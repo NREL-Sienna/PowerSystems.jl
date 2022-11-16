@@ -40,7 +40,7 @@ function post_deserialize_conversion!(sys::System, raw)
                     ts = get_time_series(
                         AbstractDeterministic,
                         component,
-                        get_name(ts_metadata),
+                        get_name(ts_metadata);
                         len = get_horizon(ts_metadata),
                         count = 1,
                     )

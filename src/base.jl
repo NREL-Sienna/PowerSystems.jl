@@ -1808,12 +1808,12 @@ function IS.compare_values(
                 end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 match = false
             end
         else
@@ -1834,7 +1834,7 @@ function _create_system_data_from_kwargs(; kwargs...)
     compression = get(kwargs, :compression, nothing)
     if compression === nothing
         enabled = get(kwargs, :enable_compression, false)
-        compression = IS.CompressionSettings(enabled = enabled)
+        compression = IS.CompressionSettings(; enabled = enabled)
     end
     validation_descriptor_file =
         get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)

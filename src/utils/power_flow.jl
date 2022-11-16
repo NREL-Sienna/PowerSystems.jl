@@ -146,7 +146,7 @@ function _write_pf_sol!(sys::System, nl_result)
     end
 
     result = round.(nl_result.zero; digits = 7)
-    buses = enumerate(sort!(collect(get_components(Bus, sys)), by = x -> get_number(x)))
+    buses = enumerate(sort!(collect(get_components(Bus, sys)); by = x -> get_number(x)))
 
     for (ix, bus) in buses
         if bus.bustype == BusTypes.REF
@@ -188,7 +188,7 @@ Return power flow results in dictionary of dataframes.
 function _write_results(sys::System, nl_result)
     @info("Voltages are exported in pu. Powers are exported in MW/MVAr.")
     result = round.(nl_result.zero; digits = 7)
-    buses = sort!(collect(get_components(Bus, sys)), by = x -> get_number(x))
+    buses = sort!(collect(get_components(Bus, sys)); by = x -> get_number(x))
     N_BUS = length(buses)
     bus_map = Dict(buses .=> 1:N_BUS)
     sys_basepower = get_base_power(sys)
@@ -249,7 +249,7 @@ function _write_results(sys::System, nl_result)
         P_to_from_vect[ix], Q_to_from_vect[ix] = flow_func(b, V_to, V_from) .* sys_basepower
     end
 
-    bus_df = DataFrames.DataFrame(
+    bus_df = DataFrames.DataFrame(;
         bus_number = get_number.(buses),
         Vm = Vm_vect,
         θ = θ_vect,
@@ -261,7 +261,7 @@ function _write_results(sys::System, nl_result)
         Q_net = Q_gen_vect - Q_load_vect,
     )
 
-    branch_df = DataFrames.DataFrame(
+    branch_df = DataFrames.DataFrame(;
         line_name = get_name.(branches),
         bus_from = get_number.(get_from.(get_arc.(branches))),
         bus_to = get_number.(get_to.(get_arc.(branches))),
@@ -367,10 +367,10 @@ end
 
 function _solve_powerflow(system::System, finite_diff::Bool; kwargs...)
     ybus_kw = [:check_connectivity, :connectivity_method]
-    ybus_kwargs = (k for k in kwargs if first(k) ∈ ybus_kw)
+    ybus_kwargs = (k for k in kwargs if first(k) in ybus_kw)
     kwargs = (k for k in kwargs if first(k) ∉ ybus_kw)
 
-    buses = sort!(collect(get_components(Bus, system)), by = x -> get_number(x))
+    buses = sort!(collect(get_components(Bus, system)); by = x -> get_number(x))
     N_BUS = length(buses)
 
     # assumes the ordering in YBus is the same as in the buses.

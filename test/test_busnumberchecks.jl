@@ -6,7 +6,8 @@ base_dir = dirname(dirname(pathof(PowerSystems)))
     test_bus_index =
         () -> begin
             sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
-            @test sort([b.number for b in collect(get_components(Bus, sys))]) == [1, 2, 3, 4, 10]
+            @test sort([b.number for b in collect(get_components(Bus, sys))]) ==
+                  [1, 2, 3, 4, 10]
             @test sort(
                 collect(
                     Set([b.arc.from.number for b in collect(get_components(Branch, sys))]),

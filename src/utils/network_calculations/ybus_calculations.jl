@@ -161,7 +161,7 @@ function Ybus(
     check_connectivity::Bool = true,
     kwargs...,
 )
-    nodes = sort!(collect(nodes), by = x -> get_number(x))
+    nodes = sort!(collect(nodes); by = x -> get_number(x))
     bus_ax = get_number.(nodes)
     axes = (bus_ax, bus_ax)
     bus_lookup = _make_ax_ref(bus_ax)
@@ -245,7 +245,7 @@ Builds a Adjacency from the system. The return is an N x N Adjacency Array index
 """
 function Adjacency(sys::System; check_connectivity::Bool = true, kwargs...)
     nodes = sort!(
-        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED));
         by = x -> get_number(x),
     )
     branches = get_components(Branch, sys, get_available)
@@ -290,7 +290,7 @@ function validate_connectivity(
     connectivity_method::Function = goderya_connectivity,
 )
     nodes = sort!(
-        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED)),
+        collect(get_components(Bus, sys, x -> get_bustype(x) != BusTypes.ISOLATED));
         by = x -> get_number(x),
     )
     branches = get_components(Branch, sys, get_available)

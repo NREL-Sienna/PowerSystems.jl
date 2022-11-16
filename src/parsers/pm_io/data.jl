@@ -40,7 +40,7 @@ function calc_theta_delta_bounds(data::Dict{String, <:Any})
         angle_maxs = [branch["angmax"][c] for branch in branches]
 
         sort!(angle_mins)
-        sort!(angle_maxs, rev = true)
+        sort!(angle_maxs; rev = true)
 
         if length(angle_mins) > 1
             # note that, this can occur when dclines are present
@@ -1041,7 +1041,7 @@ function correct_voltage_angle_differences!(data::Dict{String, <:Any}, default_p
     end
 
     @assert("per_unit" in keys(data) && data["per_unit"])
-    default_pad_deg = round(rad2deg(default_pad), digits = 2)
+    default_pad_deg = round(rad2deg(default_pad); digits = 2)
 
     modified = Set{Int}()
 
@@ -1593,7 +1593,7 @@ function check_storage_parameters(data::Dict{String, Any})
                 ),
             )
         end
-        if !isapprox(strg["x"], 0.0, atol = 1e-6, rtol = 1e-6)
+        if !isapprox(strg["x"], 0.0; atol = 1e-6, rtol = 1e-6)
             throw(
                 DataFormatError(
                     "storage unit $(strg["index"]) has a non-zero reactance $(strg["x"]), which is currently ignored",
@@ -2868,7 +2868,7 @@ function _resolve_swithces!(data::Dict{String, <:Any})
         end
     end
 
-    update_bus_ids!(data, bus_id_map, injective = false)
+    update_bus_ids!(data, bus_id_map; injective = false)
 
     for (i, branch) in data["branch"]
         if branch["f_bus"] == branch["t_bus"]
@@ -2897,7 +2897,7 @@ function move_genfuel_and_gentype!(data::Dict{String, Any}) # added by PSY
 
     toplevkeys = ("genfuel", "gentype")
     sublevkeys = ("fuel", "type")
-    for i in range(1, stop = length(toplevkeys))
+    for i in range(1; stop = length(toplevkeys))
         if haskey(data, toplevkeys[i])
             # check that lengths of category and generators match
             if length(data[toplevkeys[i]]) != ngen

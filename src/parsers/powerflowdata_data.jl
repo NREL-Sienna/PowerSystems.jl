@@ -336,7 +336,7 @@ function read_branch!(
         if max_rate == 0.0
             max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
         end
-        branch = Line(
+        branch = Line(;
             name = branch_name,
             available = branches.st[ix] > 0 ? true : false,
             active_power_flow = 0.0,

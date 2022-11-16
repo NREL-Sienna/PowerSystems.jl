@@ -190,7 +190,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     bus_number_to_bus = Dict{Int, Bus}()
 
     bus_types = instances(MatpowerBusTypes)
-    bus_data = sort!(collect(data["bus"]), by = x -> parse(Int, x[1]))
+    bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
@@ -345,7 +345,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     curtailcost = TwoPartCost(0.0, 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
-    return HydroDispatch( # No way to define storage parameters for gens in PM so can only make HydroDispatch
+    return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -502,7 +502,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     end
 
     base_conversion = sys_mbase / d["mbase"]
-    thermal_gen = ThermalStandard(
+    thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
         available = true,
@@ -725,7 +725,7 @@ function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t)
-        add_component!(sys, dcline, skip_validation = SKIP_PM_VALIDATION)
+        add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
