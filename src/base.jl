@@ -25,7 +25,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "1.0.1"
+const DATA_FORMAT_VERSION = "2.0.0"
 
 """
 System
