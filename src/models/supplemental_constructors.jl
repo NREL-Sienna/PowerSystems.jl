@@ -115,6 +115,8 @@ function InterruptibleLoad(
     ext = Dict{String, Any}(),
     time_series_container = InfrastructureSystems.TimeSeriesContainer(),
 )
+    @warn("The InterruptibleLoad constructor that accepts a model type has been removed and \\
+    is no longer used. Calling this method will automatically create an InterruptiblePowerLoad")
     InterruptiblePowerLoad(
         name,
         available,
@@ -150,6 +152,8 @@ function InterruptibleLoad(;
     time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
+    @warn("The InterruptibleLoad constructor that accepts a model type has been removed and \\
+    is no longer used. Calling this method will automatically create an InterruptiblePowerLoad")
     InterruptiblePowerLoad(
         name,
         available,
