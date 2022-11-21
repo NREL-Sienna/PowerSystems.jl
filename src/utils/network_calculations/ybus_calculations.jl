@@ -167,7 +167,7 @@ function Ybus(
     bus_lookup = _make_ax_ref(bus_ax)
     look_up = (bus_lookup, bus_lookup)
     ybus = _buildybus(branches, nodes, fixed_admittances)
-    if check_connectivity
+    if check_connectivity && length(nodes) > 1
         connected = validate_connectivity(ybus, nodes, bus_lookup; kwargs...)
         !connected && throw(DataFormatError("Network not connected"))
     end
