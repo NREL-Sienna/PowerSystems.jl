@@ -1,4 +1,4 @@
-@testset "PSSE Parsing " begin
+@testset "PSSE Parsing" begin
     files = readdir(PSSE_RAW_DIR)
     if length(files) == 0
         error("No test files in the folder")
@@ -21,7 +21,7 @@
     @test_throws PowerSystems.DataFormatError System(pm_data)
 end
 
-@testset "PSSE PowerModel Parsing " begin
+@testset "PSSE PowerModel Parsing" begin
     PM_PSSE_PATH = joinpath(DATA_DIR, "pm_data", "pti")
     files = readdir(PM_PSSE_PATH)
     if length(files) == 0
