@@ -24,6 +24,10 @@ function pre_deserialize_conversion!(raw, sys::System)
                 end
             end
         end
+    elseif old == "1.0.1"
+        # Version 1.0.1 can be converted
+        @warn("System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving")
+        return
     else
         error("conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
     end
@@ -48,6 +52,11 @@ function post_deserialize_conversion!(sys::System, raw)
                 end
             end
         end
+    elseif old == "1.0.1"
+        # Version 1.0.1 can be converted
+        raw["data_format_version"] = DATA_FORMAT_VERSION
+        @warn("System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving")
+        return
     else
         error("conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
     end
