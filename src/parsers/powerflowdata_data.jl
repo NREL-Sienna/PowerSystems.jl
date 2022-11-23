@@ -45,15 +45,26 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
 
     @info "Constructing System from PowerFlowData version v$(data.caseid.rev)"
 
-    sys = System(data.caseid.sbase; frequency = data.caseid.basfrq, kwargs...)
+    if isa(data.caseid.sbase, Missing)
+        error("Base power not specified in .raw file. Data parsing can not continue")
+    end
+
+    if isa(data.caseid.basfrq, Missing)
+        @warn "Frequency value missing from .raw file. Using default 60 Hz"
+        frequency = 60.0
+    else
+        frequency = data.caseid.basfrq
+    end
+
+    sys = System(data.caseid.sbase; frequency = frequency, kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_branch!(sys, data.branches, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    read_shunt!(sys, data, bus_number_to_bus; kwargs...)
+    read_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_switched_shunt!(
         sys,
-        data.fixed_shunts,
+        data.switched_shunts,
         data.caseid.sbase,
         bus_number_to_bus;
         kwargs...,
@@ -154,6 +165,9 @@ function read_bus!(
             @debug "File doesn't contain area names"
         else
             area_ix = data.area_interchanges.i .== buses.area[ix]
+            if all(.!area_ix)
+                error("Area numbering is incorrectly specified in PSSe file")
+            end
             area_name = first(data.area_interchanges.arname[area_ix])
         end
         area = get_component(Area, sys, area_name)
@@ -356,31 +370,84 @@ function read_branch!(
 end
 
 function read_shunt!(
+    ::System,
+    ::Nothing,
+    ::Float64,
+    ::Dict{Int, Bus};
+    kwargs...,
+)
+    @debug "No data for Fixed Shunts"
+    return
+end
+
+function read_shunt!(
+    sys::System,
+    data::PowerFlowData.FixedShunts,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return
+end
+
+function read_switched_shunt!(
     sys::System,
     ::Nothing,
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-    return nothing
+    @debug "No data for Switched Shunts"
+    return
 end
 
-function read_shunt!(
+function read_switched_shunt!(
     sys::System,
     ::PowerFlowData.SwitchedShunts30,
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-    return nothing
+    return
 end
 
 function read_dcline!(
     sys::System,
-    dc_lines::PowerFlowData.TwoTerminalDCLines,
+    ::Nothing,
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-    return nothing
+    @debug "No data for HVDC Line"
+    return
+end
+
+function read_dcline!(
+    sys::System,
+    data::PowerFlowData.TwoTerminalDCLines30,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return
+end
+
+function read_dcline!(
+    sys::System,
+    data::PowerFlowData.TwoTerminalDCLines33,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return
+end
+
+function read_dcline!(
+    sys::System,
+    data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID30},
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return
 end
