@@ -25,7 +25,6 @@ function _parse_dyr_file(file::AbstractString)
     dyr_text = read(file, String)
     start = 1
     parsed_values = Dict{Int, Dict}()
-    models = Vector{String}()
     while start < length(dyr_text)
         val = findnext('/', dyr_text, start)
         if isnothing(val)
