@@ -224,7 +224,7 @@ end
 end
 
 function _make_bus()
-    return Bus(
+    return Bus(;
         number = 1,
         name = "bus1",
         bustype = BusTypes.REF,
@@ -238,7 +238,7 @@ function _make_bus()
 end
 
 @testset "Test add_component with runchecks enabled" begin
-    sys = System(100.0, runchecks = true)
+    sys = System(100.0; runchecks = true)
     @test get_runchecks(sys)
     bus = _make_bus()
     add_component!(sys, bus)
@@ -253,12 +253,12 @@ end
     )
 
     # Allowed with skip_validation.
-    add_component!(sys, bus, skip_validation = true)
+    add_component!(sys, bus; skip_validation = true)
     @test !get_runchecks(sys)
 end
 
 @testset "Test add_component with runchecks disabled" begin
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     bus = _make_bus()
 
     # Make the bus invalid.
@@ -267,7 +267,7 @@ end
 end
 
 @testset "Test serialization and range checks" begin
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     bus = _make_bus()
 
     # Make the bus invalid.
@@ -283,7 +283,7 @@ end
 
 @testset "Test serialization and system checks" begin
     # Serialize/deserialize an invalid system.
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     @test !get_runchecks(sys)
     bus = _make_bus()
     set_bustype!(bus, BusTypes.PQ)
@@ -295,7 +295,7 @@ end
         validate_serialization(sys, runchecks = true)
     )
 
-    sys, result = validate_serialization(sys, runchecks = false)
+    sys, result = validate_serialization(sys; runchecks = false)
     @test result
     @test !get_runchecks(sys)
 end
@@ -303,7 +303,7 @@ end
 @testset "Test runchecks" begin
     sys = System(100.0)
     @test get_runchecks(sys)
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     @test !get_runchecks(sys)
     set_runchecks!(sys, true)
     @test get_runchecks(sys)
@@ -312,7 +312,7 @@ end
 end
 
 @testset "Test check_component" begin
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     bus = _make_bus()
 
     # Make the bus invalid.

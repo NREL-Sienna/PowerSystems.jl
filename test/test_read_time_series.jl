@@ -52,7 +52,7 @@ end
     timeseries = get_data(ts_base)
     max_value = maximum(TimeSeries.values(timeseries))
 
-    file_metadata = IS.TimeSeriesFileMetadata(
+    file_metadata = IS.TimeSeriesFileMetadata(;
         simulation = "DAY_AHEAD",
         category = "Generator",
         component_name = "122_HYDRO_1",

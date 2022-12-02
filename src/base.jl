@@ -25,7 +25,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "1.0.1"
+const DATA_FORMAT_VERSION = "2.0.0"
 
 """
 System
@@ -173,7 +173,8 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); kwargs...)
+        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
     elseif lowercase(ext) == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
@@ -1807,12 +1808,12 @@ function IS.compare_values(
                 end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 match = false
             end
         else
@@ -1833,7 +1834,7 @@ function _create_system_data_from_kwargs(; kwargs...)
     compression = get(kwargs, :compression, nothing)
     if compression === nothing
         enabled = get(kwargs, :enable_compression, false)
-        compression = IS.CompressionSettings(enabled = enabled)
+        compression = IS.CompressionSettings(; enabled = enabled)
     end
     validation_descriptor_file =
         get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)

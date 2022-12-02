@@ -1249,7 +1249,7 @@ function _get_line_elements(line::AbstractString)
         )
     end
 
-    line_comment = split(line, _comment_split, limit = 2)
+    line_comment = split(line, _comment_split; limit = 2)
     line = strip(line_comment[1])
     comment = length(line_comment) > 1 ? strip(line_comment[2]) : ""
 

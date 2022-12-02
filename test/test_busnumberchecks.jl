@@ -5,8 +5,9 @@ base_dir = dirname(dirname(pathof(PowerSystems)))
     # This signature is used to capture expected error logs from parsing matpower
     test_bus_index =
         () -> begin
-            sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
-            @test sort([b.number for b in collect(get_components(Bus, sys))]) == [1, 2, 3, 4, 10]
+            sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
+            @test sort([b.number for b in collect(get_components(Bus, sys))]) ==
+                  [1, 2, 3, 4, 10]
             @test sort(
                 collect(
                     Set([b.arc.from.number for b in collect(get_components(Branch, sys))]),
@@ -27,7 +28,7 @@ end
     # This signature is used to capture expected error logs from parsing matpower
     test_bus_numbers =
         () -> begin
-            sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
+            sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
             number = 100
             bus1 = Bus(;
                 number = number,

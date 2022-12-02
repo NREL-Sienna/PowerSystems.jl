@@ -53,7 +53,12 @@ function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <
     @debug "deserialize Component" _group = IS.LOG_GROUP_SERIALIZATION T data
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
-        val = data[string(name)]
+        field_name = string(name)
+        if haskey(data, field_name)
+            val = data[field_name]
+        else
+            continue
+        end
         if val isa Dict && haskey(val, IS.METADATA_KEY)
             vals[name] = deserialize_uuid_handling(
                 IS.get_type_from_serialization_metadata(IS.get_serialization_metadata(val)),

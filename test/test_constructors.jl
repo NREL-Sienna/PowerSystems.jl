@@ -63,13 +63,11 @@ end
 @testset "Load Constructors" begin
     tPowerLoad = PowerLoad(nothing)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF(nothing)
-    @test tPowerLoadPF isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 100.0, 0.0, 0.0)
+    tStandardLoad = StandardLoad(nothing)
+    @test tStandardLoad isa PowerSystems.Component
+    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
-    @test tPowerLoadPF isa PowerSystems.Component
-    tLoad = InterruptibleLoad(nothing)
+    tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
 end
 
@@ -106,7 +104,7 @@ end
     #SingleTimeSeries Tests
     ts = SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
     @test ts isa PowerSystems.TimeSeriesData
-    ts = SingleTimeSeries(name = "scalingfactor", data = data)
+    ts = SingleTimeSeries(; name = "scalingfactor", data = data)
     @test ts isa PowerSystems.TimeSeriesData
     # TODO 1.0
     #Probabilistic Tests
@@ -127,7 +125,7 @@ end
     @test get_rating(regulation) == 0.0
     set_rating!(regulation, 10.0)
     @test get_rating(regulation) == 10.0
-    regulation = RegulationDevice(original_device, droop = 0.5)
+    regulation = RegulationDevice(original_device; droop = 0.5)
     @test get_droop(regulation) == 0.5
     @test get_participation_factor(regulation) == (up = 0.0, dn = 0.0)
     @test get_reserve_limit_up(regulation) == 0.0

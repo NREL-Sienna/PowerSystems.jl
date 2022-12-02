@@ -1163,7 +1163,7 @@
       "supertype": "DCBranch"
     },
     {
-      "struct_name": "InterruptibleLoad",
+      "struct_name": "InterruptiblePowerLoad",
       "fields": [
         {
           "null_value": "init",
@@ -1180,11 +1180,6 @@
           "name": "bus",
           "null_value": "Bus(nothing)",
           "data_type": "Bus"
-        },
-        {
-          "name": "model",
-          "null_value": "LoadModels.ConstantPower",
-          "data_type": "LoadModels"
         },
         {
           "name": "active_power",
@@ -1291,6 +1286,14 @@
           "data_type": "Complex{Float64}"
         },
         {
+          "name": "dynamic_injector",
+          "data_type": "Union{Nothing, DynamicInjection}",
+          "comment": "corresponding dynamic injection model for admittance",
+          "null_value": "nothing",
+          "exclude_setter": true,
+          "default": "nothing"
+        },
+        {
           "name": "services",
           "data_type": "Vector{Service}",
           "comment": "Services that this device contributes to",
@@ -1339,11 +1342,6 @@
           "name": "bus",
           "null_value": "Bus(nothing)",
           "data_type": "Bus"
-        },
-        {
-          "name": "model",
-          "null_value": "nothing",
-          "data_type": "Union{Nothing, LoadModels}"
         },
         {
           "name": "active_power",
@@ -1439,78 +1437,6 @@
           "data_type": "Bus"
         },
         {
-          "name": "constant_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "constant_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "impedance_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "impedance_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "current_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "current_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_constant_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_constant_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_impedance_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_impedance_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_current_active_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
-          "name": "max_current_reactive_power",
-          "null_value": "0.0",
-          "data_type": "Float64",
-          "needs_conversion": true
-        },
-        {
           "name": "base_power",
           "comment": "Base power of the unit in MVA",
           "null_value": "0.0",
@@ -1520,6 +1446,90 @@
             "max": null
           },
           "validation_action": "warn"
+        },
+        {
+          "name": "constant_active_power",
+          "null_value": "0.0",
+          "data_type": "Float64",
+          "default": "0.0",
+          "needs_conversion": true
+        },
+        {
+          "name": "constant_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "impedance_active_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "impedance_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "current_active_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "current_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_constant_active_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_constant_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_impedance_active_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_impedance_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_current_active_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
+        },
+        {
+          "name": "max_current_reactive_power",
+          "null_value": "0.0",
+          "default": "0.0",
+          "data_type": "Float64",
+          "needs_conversion": true
         },
         {
           "name": "services",

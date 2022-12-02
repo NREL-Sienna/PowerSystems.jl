@@ -16,7 +16,7 @@ function generate_struct_file(
     output_directory = nothing,
 )
     generate_struct_files(
-        [definition],
+        [definition];
         filename = filename,
         output_directory = output_directory,
     )
@@ -49,7 +49,7 @@ function generate_struct_files(definitions; filename = nothing, output_directory
     end
 
     IS.generate_struct_files(
-        definitions,
+        definitions;
         filename = filename,
         output_directory = output_directory,
     )

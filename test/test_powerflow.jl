@@ -44,11 +44,11 @@ set_r!(br, 2.0)
     @test_logs(
         (:error, "The powerflow solver returned convergence = false"),
         match_mode = :any,
-        @test !solve_powerflow!(pf_sys5_re, finite_diff = true)
+        @test !solve_powerflow!(pf_sys5_re; finite_diff = true)
     )
     #Compare results between finite diff methods and Jacobian method
     res_finite_diff = solve_powerflow(
-        PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false),
+        PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false);
         finite_diff = true,
     )
     res_jacobian = solve_powerflow(
