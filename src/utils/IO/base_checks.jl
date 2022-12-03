@@ -13,7 +13,7 @@ function orderedlimits(
     return limits
 end
 
-function getresolution(ts::TimeSeries.TimeArray)
+function get_resolution(ts::TimeSeries.TimeArray)
     tstamps = TimeSeries.timestamp(ts)
     timediffs = unique([tstamps[ix] - tstamps[ix - 1] for ix in 2:length(tstamps)])
 

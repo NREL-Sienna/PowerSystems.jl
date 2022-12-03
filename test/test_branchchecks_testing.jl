@@ -6,10 +6,10 @@ import TimeSeries: TimeArray
     onesec = TimeArray([DateTime(today()) + Dates.Second(i) for i in 1:5], ones(5))
     onehour = TimeArray([DateTime(today()) + Dates.Hour(i) for i in 1:5], ones(5))
 
-    @test PowerSystems.getresolution(twomins) == Dates.Minute(2)
-    @test PowerSystems.getresolution(oneday) == Dates.Day(1)
-    @test PowerSystems.getresolution(onesec) == Dates.Second(1)
-    @test PowerSystems.getresolution(onehour) == Dates.Hour(1)
+    @test PowerSystems.get_resolution(twomins) == Dates.Minute(2)
+    @test PowerSystems.get_resolution(oneday) == Dates.Day(1)
+    @test PowerSystems.get_resolution(onesec) == Dates.Second(1)
+    @test PowerSystems.get_resolution(onehour) == Dates.Hour(1)
 end
 
 @testset "Angle limits" begin
