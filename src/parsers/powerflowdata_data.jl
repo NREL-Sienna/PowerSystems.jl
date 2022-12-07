@@ -61,6 +61,7 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_branch!(sys, data.branches, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_branch!(sys, data.transformers, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_switched_shunt!(
         sys,
@@ -71,7 +72,22 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     )
     read_dcline!(
         sys,
+        data.two_terminal_dc,
+        data.caseid.sbase,
+        bus_number_to_bus;
+        kwargs...,
+    )
+    read_dcline!(
+        sys,
         data.multi_terminal_dc,
+        data.caseid.sbase,
+        bus_number_to_bus;
+        kwargs...,
+    )
+
+    read_dcline!(
+        sys,
+        data.vsc_dc,
         data.caseid.sbase,
         bus_number_to_bus;
         kwargs...,
@@ -97,7 +113,7 @@ function read_bus!(
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = _get_name(buses.name[ix])
+        bus_name = buses.name[ix]*"_$(buses.i[ix])"
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
@@ -369,6 +385,90 @@ function read_branch!(
     return nothing
 end
 
+function read_branch!(
+    sys::System,
+    branches::PowerFlowData.Branches33,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    @info "Reading line data"
+
+    if isempty(branches)
+        @error "There are no lines in this file"
+        return
+    end
+
+    for ix in eachindex(branches.i)
+        bus_from = bus_number_to_bus[branches.i[ix]]
+        bus_to = bus_number_to_bus[branches.j[ix]]
+        branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))-$(branches.ckt[ix])"
+        if get_base_voltage(bus_from) != get_base_voltage(bus_to)
+            @error("bad line data $branch_name")
+            # Method needed for NTPS to make this data into a transformer
+            continue
+        end
+
+       
+        max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
+        if max_rate == 0.0
+            max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
+        end
+        branch = Line(;
+            name = branch_name,
+            available = branches.st[ix] > 0 ? true : false,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = Arc(bus_from, bus_to),
+            r = branches.r[ix],
+            x = branches.x[ix],
+            b = (from = branches.bi[ix], to = branches.bj[ix]),
+            angle_limits = (min = -π / 2, max = π / 2),
+            rate = max_rate,
+            ext = Dict("length" => branches.len[ix])
+        )
+
+        add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
+    end
+
+    return nothing
+end
+
+function _make_tap_transformer()
+    return
+end
+
+function read_branch!(
+    sys::System,
+    transformers::PowerFlowData.Transformers,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    @info "Reading transformer data"
+
+    if isempty(transformers)
+        @error "There are no transformers in this file"
+        return
+    end
+
+    for ix in eachindex(transformers.i)
+        bus_i = bus_number_to_bus[transformers.i[ix]]
+        bus_j = bus_number_to_bus[transformers.j[ix]]
+        is_three_winding = transformers.k[ix] > 0
+        if is_three_winding
+            bus_k = bus_number_to_bus[transformers.k[ix]]
+            to_from_name = "$(get_name(bus_i))-$(get_name(bus_j))-$(get_name(bus_k))"
+        else
+            to_from_name = "$(get_name(bus_i))-$(get_name(bus_j))"
+        end
+        branch_name = "transformer-$to_from_name-$(transformers.ckt[ix])"
+        # Create transformer accordingly
+    end
+
+    return nothing
+end
+
 function read_shunt!(
     ::System,
     ::Nothing,
@@ -411,6 +511,26 @@ function read_switched_shunt!(
     return
 end
 
+function read_switched_shunt!(
+    sys::System,
+    data::PowerFlowData.SwitchedShunts33,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+
+    @info "Reading line data"
+    @warn "All switched shunts will be converted to fixed shunts"
+    
+    if isempty(data)
+        @error "There are no lines in this file"
+        return
+    end
+
+    # Method needed for NTPS
+    return
+end
+
 function read_dcline!(
     sys::System,
     ::Nothing,
@@ -444,10 +564,31 @@ end
 
 function read_dcline!(
     sys::System,
+    data::PowerFlowData.VSCDCLines,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    return
+end
+
+function read_dcline!(
+    sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID30},
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
+    return
+end
+
+function read_dcline!(
+    sys::System,
+    data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    # Method needed for NTPS
     return
 end
