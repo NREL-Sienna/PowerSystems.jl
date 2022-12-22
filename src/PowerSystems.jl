@@ -283,7 +283,6 @@ export get_forecast_initial_times
 export get_forecast_total_period
 export get_resolution
 export get_data
-export get_lookup
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost

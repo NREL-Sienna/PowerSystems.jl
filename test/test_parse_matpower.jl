@@ -54,7 +54,7 @@ end
 
 @testset "Parse PowerModel Matpower data files" begin
     files = [
-        x for x in readdir(joinpath(DATA_DIR, "pm_data", "matpower")) if
+        x for x in readdir(MATPOWER_DIR) if
         splitext(x)[2] == ".m"
     ]
     if length(files) == 0
@@ -63,7 +63,7 @@ end
 
     for f in files
         @info "Parsing $f..."
-        path = joinpath(joinpath(DATA_DIR, "pm_data", "matpower"), f)
+        path = joinpath(MATPOWER_DIR, f)
 
         if f in voltage_inconsistent_files
             continue

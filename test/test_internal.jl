@@ -44,6 +44,6 @@ function validate_uuids(obj::T) where {T <: AbstractDict}
 end
 
 @testset "Test internal values" begin
-    sys_rts = create_rts_system()
+    sys_rts = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     @test validate_uuids(sys_rts)
 end

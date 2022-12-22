@@ -61,7 +61,7 @@ end
 end
 
 @testset "Test JSON serialization of matpower data" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
 
     # Add a Probabilistic time_series to get coverage serializing it.
     bus = Bus(nothing)
@@ -79,7 +79,7 @@ end
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_ACTIVSg2000_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_ACTIVSg2000_sys")
     _, result = validate_serialization(sys)
     @test result
 end
@@ -193,7 +193,11 @@ end
 end
 
 @testset "Test JSON serialization of HybridSystem" begin
-    sys = create_rts_system_with_hybrid_system(; add_forecasts = true)
+    sys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys_with_hybrid";
+        add_forecasts = true,
+    )
     h_sys = first(get_components(HybridSystem, sys))
     subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4

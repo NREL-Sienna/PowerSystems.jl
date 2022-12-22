@@ -264,7 +264,7 @@ end
 end
 
 @testset "Test AGC Device and Regulation Services" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     control_area = get_component(Area, sys, "1")
     AGC_service = PSY.AGC(;
         name = "AGC_Area1",
