@@ -44,7 +44,7 @@ end
 end
 
 @testset "Test PM areas and load zones" begin
-    sys = PSB.build_system(MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     test_aggregation_topologies(sys, 3, 21)
 end
 

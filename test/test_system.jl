@@ -97,8 +97,7 @@ end
 end
 
 @testset "Test handling of bus_numbers" begin
-    sys = create_rts_system()
-    # TODO: sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
 
     @test length(sys.bus_numbers) > 0
     buses = get_components(Bus, sys)
@@ -312,6 +311,13 @@ end
     sys2 = deepcopy(sys)
     @test sys2 isa System
     @test !get_runchecks(sys)
+end
+
+@testset "Test deepcopy with custom time_series_directory" begin
+    ts_dir = mktempdir()
+    sys = System(100.0; time_series_directory = ts_dir)
+    sys2 = deepcopy(sys)
+    @test dirname(sys2.data.time_series_storage.file_path) == ts_dir
 end
 
 @testset "Test time series counts" begin
