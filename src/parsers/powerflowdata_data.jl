@@ -124,8 +124,8 @@ function read_bus!(
             area_name = string(buses.area[ix])
             @debug "File doesn't contain area names"
         else
-            area_ix = data.area_interchanges.i .== buses.area[ix]
-            area_name = first(data.area_interchanges.arname[area_ix])
+            area_ix = findfirst(data.area_interchanges.i .== buses.area[ix])
+            area_name = data.area_interchanges.arname[area_ix]
         end
 
         area = get_component(Area, sys, area_name)
@@ -135,6 +135,22 @@ function read_bus!(
         end
 
         # TODO: LoadZones need to be created and populated here
+        # ASKJOSE: Followed the same process as above but it looks like zone names
+        # are not unique
+        # This could be an issue with area names possibly as well?
+        if isempty(data.zones)
+            zone_name = string(buses.zone[ix])
+            @debug "File doesn't contain load zones"
+        else
+            zone_ix = findfirst(data.zones.i .== buses.zone[ix])
+            zone_name = "$(data.zones.zoname[zone_ix])_$(data.zones.i[zone_ix])"
+        end
+
+        zone = get_component(LoadZone, sys, zone_name)
+        if isnothing(zone)
+            zone = LoadZone(zone_name,0.0,0.0)
+            add_component!(sys, zone; skip_validation = SKIP_PM_VALIDATION)
+        end
 
         bus = Bus(
             bus_number,
@@ -151,7 +167,29 @@ function read_bus!(
 
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
+    # ASKJOSE: Should we do this? Do we care about Areas and LoadZones which don't have any buses?
+    # Checking for surplus Areas or LoadZones in the data which don't get populated in the sys above
+    # but are available in the raw file
+    if ~isempty(data.area_interchanges)
+        for area_name in data.area_interchanges.arname
+            area = get_component(Area, sys, area_name)
+            if isnothing(area)
+                area = Area(area_name)
+                add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
+            end
+        end
+    end
 
+    if ~isempty(data.zones)
+        for (i,name) in zip(data.zones.i,data.zones.zoname)
+            zone_name = "$(name)_$(i)"
+            zone = get_component(LoadZone, sys, zone_name)
+            if isnothing(zone)
+                zone = LoadZone(zone_name,0.0,0.0)
+                add_component!(sys, zone; skip_validation = SKIP_PM_VALIDATION)
+            end
+        end
+    end
     return bus_number_to_bus
 end
 
