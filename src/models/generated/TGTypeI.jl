@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         T3::Float64
         T4::Float64
         T5::Float64
-        valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        valve_position_limits::Min_Max
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -29,7 +29,7 @@ Parameters of a Turbine Governor Type I.
 - `T3::Float64`: Transient gain time constant, validation range: `(0, nothing)`
 - `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
-- `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
+- `valve_position_limits::Min_Max`: Valve position limits in MW
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
@@ -53,7 +53,7 @@ mutable struct TGTypeI <: TurbineGov
     "Reheat time constant"
     T5::Float64
     "Valve position limits in MW"
-    valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    valve_position_limits::Min_Max
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}

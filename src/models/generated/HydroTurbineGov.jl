@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         Tf::Float64
         Tg::Float64
         VELM::Float64
-        gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        gate_position_limits::Min_Max
         Tw::Float64
         At::Float64
         D_T::Float64
@@ -34,7 +34,7 @@ Hydro Turbine-Governor.
 - `Tf::Float64`: Filter Time constant, validation range: `(eps(), 0.1)`
 - `Tg::Float64`: Servo time constant, validation range: `(eps(), 1)`, action if invalid: `error`
 - `VELM::Float64`: gate velocity limit, validation range: `(eps(), 0.3)`, action if invalid: `error`
-- `gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Gate position limits
+- `gate_position_limits::Min_Max`: Gate position limits
 - `Tw::Float64`: water time constant, validation range: `(eps(), 3)`, action if invalid: `error`
 - `At::Float64`: Turbine gain, validation range: `(0.8, 1.5)`, action if invalid: `warn`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
@@ -64,7 +64,7 @@ mutable struct HydroTurbineGov <: TurbineGov
     "gate velocity limit"
     VELM::Float64
     "Gate position limits"
-    gate_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    gate_position_limits::Min_Max
     "water time constant"
     Tw::Float64
     "Turbine gain"

@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-IEEE Stabilizing Model PSS.
+IEEE Stabilizing Model PSS. 
 
 # Arguments
 - `input_code::Int`: Code input for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
@@ -55,11 +55,11 @@ IEEE Stabilizing Model PSS.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,
-	x_p2: 2nd filter integration,
-	x_p3: 3rd filter integration,
-	x_p4: 4rd filter integration,
-	x_p5: T1/T2 lead-lag integrator,
-	x_p6: T3/T4 lead-lag integrator,
+	x_p2: 2nd filter integration, 
+	x_p3: 3rd filter integration, 
+	x_p4: 4rd filter integration, 
+	x_p5: T1/T2 lead-lag integrator, 
+	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
 - `states_types::Vector{StateTypes}`: IEEEST has 7 differential states
@@ -105,11 +105,11 @@ mutable struct IEEEST <: PSS
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st filter integration,
-	x_p2: 2nd filter integration,
-	x_p3: 3rd filter integration,
-	x_p4: 4rd filter integration,
-	x_p5: T1/T2 lead-lag integrator,
-	x_p6: T3/T4 lead-lag integrator,
+	x_p2: 2nd filter integration, 
+	x_p3: 3rd filter integration, 
+	x_p4: 4rd filter integration, 
+	x_p5: T1/T2 lead-lag integrator, 
+	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,"
     states::Vector{Symbol}
     "IEEEST has 7 states"

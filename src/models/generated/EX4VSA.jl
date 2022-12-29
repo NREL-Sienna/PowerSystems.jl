@@ -12,12 +12,12 @@ This file is auto-generated. Do not edit.
         Spar::Float64
         K1::Float64
         K2::Float64
-        Oel_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Oel_lim::Min_Max
         G::Float64
         Ta::Float64
         Tb::Float64
         Te::Float64
-        E_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        E_lim::Min_Max
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -34,12 +34,12 @@ IEEE Excitation System for Voltage Security Assesment
 - `Spar::Float64`: OEL parameter Spar, validation range: `(0, nothing)`, action if invalid: `warn`
 - `K1::Float64`: OEL delay time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `K2::Float64`: OEL parameter K2, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Oel_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Oel integrator limits (Oel_min, Oel_max)
+- `Oel_lim::Min_Max`: Oel integrator limits (Oel_min, Oel_max)
 - `G::Float64`: AVR Exciter Gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ta::Float64`: Numerator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tb::Float64`: Denominator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Te::Float64`: Exciter Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `E_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (E_min, E_max)
+- `E_lim::Min_Max`: Voltage regulator limits (regulator output) (E_min, E_max)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
@@ -63,7 +63,7 @@ mutable struct EX4VSA <: AVR
     "OEL parameter K2"
     K2::Float64
     "Oel integrator limits (Oel_min, Oel_max)"
-    Oel_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Oel_lim::Min_Max
     "AVR Exciter Gain"
     G::Float64
     "Numerator lead-lag (lag) time constant in s"
@@ -73,7 +73,7 @@ mutable struct EX4VSA <: AVR
     "Exciter Time Constant in s"
     Te::Float64
     "Voltage regulator limits (regulator output) (E_min, E_max)"
-    E_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    E_lim::Min_Max
     "Reference Voltage Set-point"
     V_ref::Float64
     ext::Dict{String, Any}

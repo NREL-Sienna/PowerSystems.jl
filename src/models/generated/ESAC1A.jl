@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         Tc::Float64
         Ka::Float64
         Ta::Float64
-        Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Va_lim::Min_Max
         Te::Float64
         Kf::Float64
         Tf::Float64
@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         Ke::Float64
         E_sat::Tuple{Float64, Float64}
         Se::Tuple{Float64, Float64}
-        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vr_lim::Min_Max
         V_ref::Float64
         saturation_coeffs::Tuple{Float64, Float64}
         ext::Dict{String, Any}
@@ -40,7 +40,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`, action if invalid: `warn`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`
-- `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for regulator output `(Va_min, Va_max)`
+- `Va_lim::Min_Max`: Limits for regulator output `(Va_min, Va_max)`
 - `Te::Float64`: Exciter field time constant in s, validation range: `(eps(), 2)`, action if invalid: `error`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant, validation range: `(eps(), 1.5)`, action if invalid: `error`
@@ -49,7 +49,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 - `Ke::Float64`: Exciter field proportional constant, validation range: `(0, 1)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for exciter field voltage: `(Vr_min, Vr_max)`
+- `Vr_lim::Min_Max`: Limits for exciter field voltage: `(Vr_min, Vr_max)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
 - `ext::Dict{String, Any}`
@@ -75,7 +75,7 @@ mutable struct ESAC1A <: AVR
     "Regulator output time constant in s"
     Ta::Float64
     "Limits for regulator output `(Va_min, Va_max)`"
-    Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Va_lim::Min_Max
     "Exciter field time constant in s"
     Te::Float64
     "Rate feedback excitation system stabilizer gain"
@@ -93,7 +93,7 @@ mutable struct ESAC1A <: AVR
     "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
     Se::Tuple{Float64, Float64}
     "Limits for exciter field voltage: `(Vr_min, Vr_max)`"
-    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Vr_lim::Min_Max
     "Reference Voltage Set-point"
     V_ref::Float64
     "Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x"

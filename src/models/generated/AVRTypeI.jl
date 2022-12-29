@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         Te::Float64
         Tf::Float64
         Tr::Float64
-        Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Va_lim::Min_Max
         Ae::Float64
         Be::Float64
         V_ref::Float64
@@ -34,7 +34,7 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 - `Te::Float64`: Field Circuit Time Constant in s, validation range: `(0, nothing)`
 - `Tf::Float64`: Stabilizer Time Constant in s, validation range: `(0, nothing)`
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`
-- `Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for pi controler `(Va_min, Va_max)`
+- `Va_lim::Min_Max`: Limits for pi controler `(Va_min, Va_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
@@ -64,7 +64,7 @@ mutable struct AVRTypeI <: AVR
     "Voltage Measurement Time Constant in s"
     Tr::Float64
     "Limits for pi controler `(Va_min, Va_max)`"
-    Va_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Va_lim::Min_Max
     "1st ceiling coefficient"
     Ae::Float64
     "2nd ceiling coefficient"

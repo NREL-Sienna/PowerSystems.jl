@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         Tr::Float64
         Ka::Float64
         Ta::Float64
-        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vr_lim::Min_Max
         Ke::Float64
         Te::Float64
         Kf::Float64
@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, action if invalid: `warn`
 - `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
-- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
+- `Vr_lim::Min_Max`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(-1, 1)`
 - `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(eps(), 1)`, action if invalid: `error`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `warn`
@@ -60,7 +60,7 @@ mutable struct IEEET1 <: AVR
     "Amplifier Time Constant in s"
     Ta::Float64
     "Voltage regulator limits (regulator output) (Vi_min, Vi_max)"
-    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Vr_lim::Min_Max
     "Exciter constant related to self-excited field"
     Ke::Float64
     "Exciter time constant, integration rate associated with exciter control"

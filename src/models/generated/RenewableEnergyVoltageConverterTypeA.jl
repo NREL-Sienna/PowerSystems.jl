@@ -12,11 +12,11 @@ This file is auto-generated. Do not edit.
         Zerox::Float64
         Lvpl1::Float64
         Vo_lim::Float64
-        Lv_pnts::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Lv_pnts::Min_Max
         Io_lim::Float64
         T_fltr::Float64
         K_hv::Float64
-        Iqr_lims::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Iqr_lims::Min_Max
         Accel::Float64
         Lvpl_sw::Int
         Q_ref::Float64
@@ -34,11 +34,11 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Zerox::Float64`: LVPL characteristic voltage 1 (pu), validation range: `(0, nothing)`
 - `Lvpl1::Float64`: LVPL gain (pu), validation range: `(0, nothing)`
 - `Vo_lim::Float64`: Voltage limit for high voltage reactive current management (pu), validation range: `(0, nothing)`
-- `Lv_pnts::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)
+- `Lv_pnts::Min_Max`: Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)
 - `Io_lim::Float64`: Current limit (pu) for high voltage reactive current management (specified as a negative value), validation range: `(nothing, 0)`
 - `T_fltr::Float64`: Voltage filter time constant for low voltage active current management (s), validation range: `(0, nothing)`
 - `K_hv::Float64`: Overvoltage compensation gain used in the high voltage reactive current management, validation range: `(0, nothing)`
-- `Iqr_lims::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)
+- `Iqr_lims::Min_Max`: Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)
 - `Accel::Float64`: Acceleration factor, validation range: `(0, 1)`
 - `Lvpl_sw::Int`: Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present), validation range: `(0, 1)`
 - `Q_ref::Float64`: Initial machine reactive power from power flow, validation range: `(0, nothing)`
@@ -60,7 +60,7 @@ mutable struct RenewableEnergyVoltageConverterTypeA <: Converter
     "Voltage limit for high voltage reactive current management (pu)"
     Vo_lim::Float64
     "Voltage points for low voltage active current management (pu) (Lvpnt0, Lvpnt1)"
-    Lv_pnts::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Lv_pnts::Min_Max
     "Current limit (pu) for high voltage reactive current management (specified as a negative value)"
     Io_lim::Float64
     "Voltage filter time constant for low voltage active current management (s)"
@@ -68,7 +68,7 @@ mutable struct RenewableEnergyVoltageConverterTypeA <: Converter
     "Overvoltage compensation gain used in the high voltage reactive current management"
     K_hv::Float64
     "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)"
-    Iqr_lims::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Iqr_lims::Min_Max
     "Acceleration factor"
     Accel::Float64
     "Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present)"

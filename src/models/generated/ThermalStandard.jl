@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        active_power_limits::Min_Max
         reactive_power_limits::Union{Nothing, Min_Max}
         ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
         operation_cost::OperationalCost
@@ -39,7 +39,7 @@ Data Structure for thermal generation technologies.
 - `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `active_power_limits::Min_Max`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, Min_Max}`
 - `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `operation_cost::OperationalCost`
@@ -63,7 +63,7 @@ mutable struct ThermalStandard <: ThermalGen
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    active_power_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    active_power_limits::Min_Max
     reactive_power_limits::Union{Nothing, Min_Max}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}

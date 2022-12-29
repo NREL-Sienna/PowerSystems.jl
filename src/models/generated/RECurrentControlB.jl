@@ -8,11 +8,11 @@ This file is auto-generated. Do not edit.
     mutable struct RECurrentControlB <: InnerControl
         Q_Flag::Int
         PQ_Flag::Int
-        Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vdip_lim::Min_Max
         T_rv::Float64
         dbd_pnts::Tuple{Float64, Float64}
         K_qv::Float64
-        Iqinj_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Iqinj_lim::Min_Max
         V_ref0::Float64
         K_vp::Float64
         K_vi::Float64
@@ -28,11 +28,11 @@ Parameters of the Inner Control part of the REECB model in PSS/E
 # Arguments
 - `Q_Flag::Int`: Q Flag used for I_qinj, validation range: `(0, 1)`
 - `PQ_Flag::Int`: PQ Flag used for the Current Limit Logic, validation range: `(0, 1)`
-- `Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for Voltage Dip Logic `(Vdip, Vup)`
+- `Vdip_lim::Min_Max`: Limits for Voltage Dip Logic `(Vdip, Vup)`
 - `T_rv::Float64`: Voltage Filter Time Constant, validation range: `(0, nothing)`
 - `dbd_pnts::Tuple{Float64, Float64}`: Voltage error deadband thresholds `(dbd1, dbd2)`
 - `K_qv::Float64`: Reactive current injection gain during over and undervoltage conditions, validation range: `(0, nothing)`
-- `Iqinj_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Limits for Iqinj `(I_qh1, I_ql1)`
+- `Iqinj_lim::Min_Max`: Limits for Iqinj `(I_qh1, I_ql1)`
 - `V_ref0::Float64`: User defined reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
 - `K_vp::Float64`: Voltage regulator proportional gain (used when QFlag = 1), validation range: `(0, nothing)`
 - `K_vi::Float64`: Voltage regulator integral gain (used when QFlag = 1), validation range: `(0, nothing)`
@@ -48,7 +48,7 @@ mutable struct RECurrentControlB <: InnerControl
     "PQ Flag used for the Current Limit Logic"
     PQ_Flag::Int
     "Limits for Voltage Dip Logic `(Vdip, Vup)`"
-    Vdip_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Vdip_lim::Min_Max
     "Voltage Filter Time Constant"
     T_rv::Float64
     "Voltage error deadband thresholds `(dbd1, dbd2)`"
@@ -56,7 +56,7 @@ mutable struct RECurrentControlB <: InnerControl
     "Reactive current injection gain during over and undervoltage conditions"
     K_qv::Float64
     "Limits for Iqinj `(I_qh1, I_ql1)`"
-    Iqinj_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Iqinj_lim::Min_Max
     "User defined reference. If 0, PSID initializes to initial terminal voltage"
     V_ref0::Float64
     "Voltage regulator proportional gain (used when QFlag = 1)"

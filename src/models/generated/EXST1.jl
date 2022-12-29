@@ -7,12 +7,12 @@ This file is auto-generated. Do not edit.
 """
     mutable struct EXST1 <: AVR
         Tr::Float64
-        Vi_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vi_lim::Min_Max
         Tc::Float64
         Tb::Float64
         Ka::Float64
         Ta::Float64
-        Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Vr_lim::Min_Max
         Kc::Float64
         Kf::Float64
         Tf::Float64
@@ -27,12 +27,12 @@ IEEE Type ST1 Excitation System (PTI version)
 
 # Arguments
 - `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Vi_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage input limits (Vi_min, Vi_max)
+- `Vi_lim::Min_Max`: Voltage input limits (Vi_min, Vi_max)
 - `Tc::Float64`: Numerator lead-lag (lead) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tb::Float64`: Denominator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ka::Float64`: Amplifier Gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Voltage regulator limits (regulator output) (Vr_min, Vr_max)
+- `Vr_lim::Min_Max`: Voltage regulator limits (regulator output) (Vr_min, Vr_max)
 - `Kc::Float64`: Current field constant limiter multiplier, validation range: `(0, nothing)`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(eps(), nothing)`, action if invalid: `error`
@@ -50,7 +50,7 @@ mutable struct EXST1 <: AVR
     "Voltage Measurement Time Constant in s"
     Tr::Float64
     "Voltage input limits (Vi_min, Vi_max)"
-    Vi_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Vi_lim::Min_Max
     "Numerator lead-lag (lead) time constant in s"
     Tc::Float64
     "Denominator lead-lag (lag) time constant in s"
@@ -60,7 +60,7 @@ mutable struct EXST1 <: AVR
     "Amplifier Time Constant in s"
     Ta::Float64
     "Voltage regulator limits (regulator output) (Vr_min, Vr_max)"
-    Vr_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Vr_lim::Min_Max
     "Current field constant limiter multiplier"
     Kc::Float64
     "Excitation control system stabilizer gain"

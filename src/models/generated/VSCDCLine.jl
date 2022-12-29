@@ -10,12 +10,12 @@ This file is auto-generated. Do not edit.
         available::Bool
         active_power_flow::Float64
         arc::Arc
-        rectifier_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        rectifier_tap_limits::Min_Max
         rectifier_xrc::Float64
-        rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        inverter_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        rectifier_firing_angle::Min_Max
+        inverter_tap_limits::Min_Max
         inverter_xrc::Float64
-        inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        inverter_firing_angle::Min_Max
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -29,12 +29,12 @@ As implemented in Milano's Book, Page 397.
 - `available::Bool`
 - `active_power_flow::Float64`
 - `arc::Arc`
-- `rectifier_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `rectifier_tap_limits::Min_Max`
 - `rectifier_xrc::Float64`
-- `rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `inverter_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `rectifier_firing_angle::Min_Max`
+- `inverter_tap_limits::Min_Max`
 - `inverter_xrc::Float64`
-- `inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `inverter_firing_angle::Min_Max`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -45,12 +45,12 @@ mutable struct VSCDCLine <: DCBranch
     available::Bool
     active_power_flow::Float64
     arc::Arc
-    rectifier_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    rectifier_tap_limits::Min_Max
     rectifier_xrc::Float64
-    rectifier_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    inverter_tap_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    rectifier_firing_angle::Min_Max
+    inverter_tap_limits::Min_Max
     inverter_xrc::Float64
-    inverter_firing_angle::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    inverter_firing_angle::Min_Max
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
