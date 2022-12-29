@@ -19,7 +19,7 @@ end
     @test_throws ErrorException PowerSystemTableData(DATA_DIR, 100.0, DESCRIPTORS)
 end
 
-@testset "consistency between PowerSystemTableData and standardfiles" begin
+@testset "Consistency between PowerSystemTableData and standardfiles" begin
     # This signature is used to capture expected error logs from parsing matpower
     consistency_test =
         () -> begin
