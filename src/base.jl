@@ -837,7 +837,7 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(Generator, sys, x -> PowerSystems.get_available(x))
+iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
 thermal_gens = get_components(ThermalStandard, sys) do gen
     get_available(gen)
 end
@@ -855,18 +855,6 @@ function get_components(
     filter_func::Function,
     ::Type{T},
     sys::System,
-) where {T <: Component}
-    return IS.get_components(T, sys.data, filter_func)
-end
-
-# These two methods are defined independently instead of  filter_func::Union{Function, Nothing} = nothing
-# because of a documenter error
-# that has no relation with the code https://github.com/JuliaDocs/Documenter.jl/issues/1296
-#
-function get_components(
-    ::Type{T},
-    sys::System,
-    filter_func::Function,
 ) where {T <: Component}
     return IS.get_components(T, sys.data, filter_func)
 end
