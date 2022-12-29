@@ -161,6 +161,7 @@ function read_bus!(
             (min = buses.nvlo[ix], max = buses.nvhi[ix]),
             buses.basekv[ix],
             area,
+            zone,
         )
 
         bus_number_to_bus[bus_number] = bus
@@ -277,15 +278,19 @@ function read_loads!(
             loads.yq[ix]
         if total_load != 0.0
             bus = bus_number_to_bus[loads.i[ix]]
-
-            load_name = "load-$(get_name(bus))-$(loads.i[ix])-$(loads.id[ix])"
+            bus_vm = get_magnitude(bus)
+            load_name = "load-$(get_name(bus))-$(loads.i[ix])~$(loads.id[ix])"
             if has_component(PowerLoad, sys, load_name)
                 throw(DataFormatError("Found duplicate load names of $(load_name)"))
             end
-
+            # ASKJOSE: Calculating the P &  Q by transforming Z and I loads to P to populate peak reactive power 
+            # and active loads of Areas and LoadZones
+            # Do we need to do this?
+            active_power_load = (loads.pl[ix] / sys_mbase) + (bus_vm*(loads.ip[ix] / sys_mbase)) + (bus_vm^2*(loads.yp[ix] / sys_mbase))
+            reactive_power_load = (loads.ql[ix] / sys_mbase) + (bus_vm*(loads.iq[ix] / sys_mbase)) + (bus_vm^2*(loads.yq[ix] / sys_mbase))
             load = StandardLoad(;
                 name = load_name,
-                available = true,
+                available = loads.status[ix],
                 bus = bus,
                 constant_active_power = loads.pl[ix] / sys_mbase,
                 constant_reactive_power = loads.ql[ix] / sys_mbase,
@@ -299,10 +304,37 @@ function read_loads!(
                 max_impedance_reactive_power = loads.yq[ix] / sys_mbase,
                 max_current_active_power = loads.ip[ix] / sys_mbase,
                 max_current_reactive_power = loads.iq[ix] / sys_mbase,
-                base_power = sys_mbase,
+                base_power = sys_mbase,ext = Dict("active_power_load" =>active_power_load, "reactive_power_load" => reactive_power_load),
             )
 
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+        end
+    end
+    # Populate Areas and LoadZones with peak active and reactive power
+    areas = get_components(Area,sys)
+    if ~isnothing(areas)
+        for area in areas
+            area_comps = get_components_in_aggregation_topology(StandardLoad,sys,area)
+            if (isempty(area_comps))
+                set_peak_active_power!(area,0.0)
+                set_peak_reactive_power!(area,0.0)
+            else
+                set_peak_active_power!(area, sum(get.(get_ext.(area_comps),"active_power_load",0.0)))
+                set_peak_reactive_power!(area, sum(get.(get_ext.(area_comps),"reactive_power_load",0.0)))
+            end
+        end
+    end
+    zones = get_components(LoadZone,sys)
+    if ~isnothing(zones)
+        for zone in zones
+            zone_comps = get_components_in_aggregation_topology(StandardLoad,sys,zone)
+            if (isempty(zone_comps))
+                set_peak_active_power!(zone, 0.0)
+                set_peak_reactive_power!(zone, 0.0)
+            else
+                set_peak_active_power!(zone, sum(get.(get_ext.(zone_comps),"active_power_load",0.0)))
+                set_peak_reactive_power!(zone, sum(get.(get_ext.(zone_comps),"reactive_power_load",0.0)))
+            end 
         end
     end
     return nothing
