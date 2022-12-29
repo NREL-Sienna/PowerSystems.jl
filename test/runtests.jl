@@ -24,7 +24,7 @@ Aqua.test_deps_compat(PowerSystems)
 
 include(joinpath(@__DIR__, "../src/utils/data.jl"))
 import .UtilsData: TestData
-download(TestData; branch = "master")
+download(TestData; branch = "old_master")
 
 BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
 DATA_DIR = joinpath(BASE_DIR, "data")
