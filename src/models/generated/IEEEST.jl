@@ -31,10 +31,10 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-IEEE Stabilizing Model PSS. 
+IEEE Stabilizing Model PSS.
 
 # Arguments
-- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`, action if invalid: `error`
+- `input_code::Int`: Code input for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
 - `remote_bus_control::Int`: Remote  Bus number for control.
 - `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -55,18 +55,18 @@ IEEE Stabilizing Model PSS.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,
-	x_p2: 2nd filter integration, 
-	x_p3: 3rd filter integration, 
-	x_p4: 4rd filter integration, 
-	x_p5: T1/T2 lead-lag integrator, 
-	x_p6: T3/T4 lead-lag integrator, 
+	x_p2: 2nd filter integration,
+	x_p3: 3rd filter integration,
+	x_p4: 4rd filter integration,
+	x_p5: T1/T2 lead-lag integrator,
+	x_p6: T3/T4 lead-lag integrator,
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
 - `states_types::Vector{StateTypes}`: IEEEST has 7 differential states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEEST <: PSS
-    "Code input for stabilizar"
+    "Code input for stabilizer"
     input_code::Int
     "Remote  Bus number for control."
     remote_bus_control::Int
@@ -105,11 +105,11 @@ mutable struct IEEEST <: PSS
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st filter integration,
-	x_p2: 2nd filter integration, 
-	x_p3: 3rd filter integration, 
-	x_p4: 4rd filter integration, 
-	x_p5: T1/T2 lead-lag integrator, 
-	x_p6: T3/T4 lead-lag integrator, 
+	x_p2: 2nd filter integration,
+	x_p3: 3rd filter integration,
+	x_p4: 4rd filter integration,
+	x_p5: T1/T2 lead-lag integrator,
+	x_p6: T3/T4 lead-lag integrator,
 	:x_p7 last integer,"
     states::Vector{Symbol}
     "IEEEST has 7 states"

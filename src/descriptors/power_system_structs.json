@@ -9285,7 +9285,7 @@
       "fields": [
         {
           "name": "input_code",
-          "comment": "Code input for stabilizar",
+          "comment": "Code input for stabilizer",
           "null_value": 1,
           "data_type": "Int",
           "valid_range": {
