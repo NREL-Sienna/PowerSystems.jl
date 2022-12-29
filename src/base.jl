@@ -725,7 +725,7 @@ function remove_components!(
     sys::System,
     ::Type{T},
 ) where {T <: Component}
-    components = collect(get_components(T, sys, filter_func))
+    components = collect(get_components(filter_func, T, sys))
     for component in components
         remove_component!(sys, component)
     end

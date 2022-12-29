@@ -278,9 +278,9 @@ end
     )
     contributing_devices = Vector{Device}()
     for g in get_components(
+        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
     )
         if get_area(get_bus(g)) != control_area
             continue
@@ -296,7 +296,7 @@ end
     end
 
     device_without_regulation =
-        first(get_components(HydroGen, sys, x -> get_area(get_bus(x)) == control_area))
+        first(get_components(x -> get_area(get_bus(x)) == control_area), HydroGen, sys)
     @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
         device_without_regulation,
         AGC_service,
