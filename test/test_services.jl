@@ -296,7 +296,7 @@ end
     end
 
     device_without_regulation =
-        first(get_components(x -> get_area(get_bus(x)) == control_area), HydroGen, sys)
+        first(get_components(x -> get_area(get_bus(x)) == control_area, HydroGen, sys))
     @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
         device_without_regulation,
         AGC_service,
