@@ -1335,6 +1335,83 @@
             "supertype": "ElectricLoad"
         },
         {
+            "struct_name": "SwitchedAdmittance",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "bus",
+                    "null_value": "Bus(nothing)",
+                    "data_type": "Bus"
+                },
+                {
+                    "name": "Y",
+                    "comment": "Initial impedance at N = 0",
+                    "null_value": "0.0",
+                    "data_type": "Complex{Float64}"
+                },
+                {
+                    "name": "number_of_steps",
+                    "comment": "Number of steps for adjustable shunt",
+                    "null_value": "0",
+                    "data_type": "Int",
+                    "default": "0"
+                },
+                {
+                    "name": "Y_increase",
+                    "comment": "Admittance increment for each of step increase",
+                    "null_value": "0",
+                    "data_type": "Complex{Float64}",
+                    "default": "0"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection model for admittance",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "time_series_container",
+                    "comment": "internal time_series storage",
+                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
+                    "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ElectricLoad"
+        },
+        {
             "struct_name": "PowerLoad",
             "docstring": "Data structure for a static power load.",
             "fields": [
