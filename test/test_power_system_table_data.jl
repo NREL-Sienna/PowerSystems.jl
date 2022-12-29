@@ -23,11 +23,7 @@ end
     # This signature is used to capture expected error logs from parsing matpower
     consistency_test =
         () -> begin
-            mpsys = PSB.build_system(
-                PSB.MatpowerTestSystems,
-                "matpower_RTS_GMLC_sys";
-                force_build = true,
-            )
+            mpsys = System(joinpath(BAD_DATA, "RTS_GMLC_original.m"))
             cdmsys = PSB.build_system(
                 PSB.PSITestSystems,
                 "test_RTS_GMLC_sys";

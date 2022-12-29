@@ -15,8 +15,7 @@ POWER_MODELS_KEYS = [
 ]
 
 badfiles = Dict("case30.m" => PSY.InvalidValue)
-voltage_inconsistent_files =
-    ["RTS_GMLC.m", "case5_re.m", "case5_re_intid.m", "case5_re_uc.m", "case5_re_uc_pwl.m"]
+voltage_inconsistent_files = ["RTS_GMLC_original.m", "case5_re.m", "case5_re_uc.m"]
 
 @testset "Parse Matpower data files" begin
     files = [x for x in readdir(joinpath(MATPOWER_DIR)) if splitext(x)[2] == ".m"]
@@ -103,7 +102,7 @@ end
     end
     for f in voltage_inconsistent_files
         @info "Parsing $f..."
-        path = joinpath(MATPOWER_DIR, f)
+        path = joinpath(BAD_DATA, f)
         @test_logs (:error,) match_mode = :any test_parse(path)
     end
 end

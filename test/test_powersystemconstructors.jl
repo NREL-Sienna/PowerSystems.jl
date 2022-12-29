@@ -88,11 +88,10 @@ end
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
     kwarg_test =
         () -> begin
-            sys = PSB.build_system(
-                PSB.MatpowerTestSystems,
-                "matpower_case5_re_sys";
+            sys = System(
+                joinpath(BAD_DATA,
+                    "case5_re.m");
                 runchecks = true,
-                force_build = true,
             )
         end
     @test_logs (:error,) min_level = Logging.Error match_mode = :any kwarg_test()
@@ -133,14 +132,9 @@ end
 end
 
 @testset "Test component conversion" begin
-    # This signature is used to capture expected error logs from parsing matpower
     test_conversion =
         () -> begin
-            sys = PSB.build_system(
-                PSB.MatpowerTestSystems,
-                "matpower_case5_re_sys";
-                force_build = true,
-            )
+            sys = System(joinpath(BAD_DATA, "case5_re.m"))
             l = get_component(Line, sys, "bus2-bus3-i_4")
             initial_time = Dates.DateTime("2020-01-01T00:00:00")
             dates = collect(
