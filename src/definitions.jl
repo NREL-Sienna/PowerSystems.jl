@@ -10,7 +10,7 @@ IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 
-IS.@scoped_enum(BusTypes, ISOLATED = 1, PQ = 2, PV = 3, REF = 4, SLACK = 5,)
+IS.@scoped_enum(BusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
