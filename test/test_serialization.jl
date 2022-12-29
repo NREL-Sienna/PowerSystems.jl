@@ -19,9 +19,9 @@
     name = "active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
+        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT])
         ThermalStandard,
         sys,
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
     )
         if get_area(get_bus(g)) != control_area
             continue

@@ -19,7 +19,7 @@
         IS.ArgumentError,
         get_components_by_name(ThermalStandard, sys, "not-a-name")
     )
-    @test isempty(get_components(ThermalStandard, sys, x -> (!get_available(x))))
+    @test isempty(get_components( x -> (!get_available(x)), ThermalStandard, sys))
     @test !isempty(get_available_components(ThermalStandard, sys))
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
@@ -344,7 +344,7 @@ end
     @test sys2.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
-    for component in get_components(Component, sys2, x -> has_time_series(x))
+    for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.time_series_container.time_series_storage ===
               sys2.data.time_series_storage
     end
@@ -360,7 +360,7 @@ end
     @test sys2.data.time_series_storage isa IS.Hdf5TimeSeriesStorage
     @test sys.data.time_series_storage.file_path != sys2.data.time_series_storage.file_path
     @test IS.compare_values(sys, sys2)
-    for component in get_components(Component, sys2, x -> has_time_series(x))
+    for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.time_series_container.time_series_storage ===
               sys2.data.time_series_storage
     end

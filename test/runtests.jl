@@ -23,7 +23,7 @@ Aqua.test_stale_deps(PowerSystems)
 Aqua.test_deps_compat(PowerSystems)
 
 const BASE_DIR = dirname(dirname(Base.find_package("PowerSystems")))
-const DATA_DIR = "/Users/jdlara/cache/PowerSystemsTestData" #PSB.DATA_DIR
+const DATA_DIR = PSB.DATA_DIR
 const TIME_SERIES_DIR = joinpath(DATA_DIR, "forecasts")
 const MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
 const PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
