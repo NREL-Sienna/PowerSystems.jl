@@ -113,7 +113,7 @@ function read_bus!(
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = buses.name[ix]*"_$(buses.i[ix])"
+        bus_name = buses.name[ix] * "_$(buses.i[ix])"
         has_component(Bus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
@@ -148,7 +148,7 @@ function read_bus!(
 
         zone = get_component(LoadZone, sys, zone_name)
         if isnothing(zone)
-            zone = LoadZone(zone_name,0.0,0.0)
+            zone = LoadZone(zone_name, 0.0, 0.0)
             add_component!(sys, zone; skip_validation = SKIP_PM_VALIDATION)
         end
 
@@ -182,11 +182,11 @@ function read_bus!(
     end
 
     if ~isempty(data.zones)
-        for (i,name) in zip(data.zones.i,data.zones.zoname)
+        for (i, name) in zip(data.zones.i, data.zones.zoname)
             zone_name = "$(name)_$(i)"
             zone = get_component(LoadZone, sys, zone_name)
             if isnothing(zone)
-                zone = LoadZone(zone_name,0.0,0.0)
+                zone = LoadZone(zone_name, 0.0, 0.0)
                 add_component!(sys, zone; skip_validation = SKIP_PM_VALIDATION)
             end
         end
@@ -280,8 +280,12 @@ function read_loads!(
         # Calculating the P &  Q by transforming Z and I loads to P to populate peak reactive power 
         # and active loads of Areas and LoadZones
         # Do we need to do this?
-        active_power_load = (loads.pl[ix] / sys_mbase) + (bus_vm*(loads.ip[ix] / sys_mbase)) + (bus_vm^2*(loads.yp[ix] / sys_mbase))
-        reactive_power_load = (loads.ql[ix] / sys_mbase) + (bus_vm*(loads.iq[ix] / sys_mbase)) + (bus_vm^2*(loads.yq[ix] / sys_mbase))
+        active_power_load =
+            (loads.pl[ix] / sys_mbase) + (bus_vm * (loads.ip[ix] / sys_mbase)) +
+            (bus_vm^2 * (loads.yp[ix] / sys_mbase))
+        reactive_power_load =
+            (loads.ql[ix] / sys_mbase) + (bus_vm * (loads.iq[ix] / sys_mbase)) +
+            (bus_vm^2 * (loads.yq[ix] / sys_mbase))
         load = StandardLoad(;
             name = load_name,
             available = loads.status[ix],
@@ -298,36 +302,52 @@ function read_loads!(
             max_impedance_reactive_power = loads.yq[ix] / sys_mbase,
             max_current_active_power = loads.ip[ix] / sys_mbase,
             max_current_reactive_power = loads.iq[ix] / sys_mbase,
-            base_power = sys_mbase,ext = Dict("active_power_load" =>active_power_load, "reactive_power_load" => reactive_power_load),
+            base_power = sys_mbase,
+            ext = Dict(
+                "active_power_load" => active_power_load,
+                "reactive_power_load" => reactive_power_load,
+            ),
         )
 
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
     # Populate Areas and LoadZones with peak active and reactive power
-    areas = get_components(Area,sys)
+    areas = get_components(Area, sys)
     if ~isnothing(areas)
         for area in areas
-            area_comps = get_components_in_aggregation_topology(StandardLoad,sys,area)
+            area_comps = get_components_in_aggregation_topology(StandardLoad, sys, area)
             if (isempty(area_comps))
-                set_peak_active_power!(area,0.0)
-                set_peak_reactive_power!(area,0.0)
+                set_peak_active_power!(area, 0.0)
+                set_peak_reactive_power!(area, 0.0)
             else
-                set_peak_active_power!(area, sum(get.(get_ext.(area_comps),"active_power_load",0.0)))
-                set_peak_reactive_power!(area, sum(get.(get_ext.(area_comps),"reactive_power_load",0.0)))
+                set_peak_active_power!(
+                    area,
+                    sum(get.(get_ext.(area_comps), "active_power_load", 0.0)),
+                )
+                set_peak_reactive_power!(
+                    area,
+                    sum(get.(get_ext.(area_comps), "reactive_power_load", 0.0)),
+                )
             end
         end
     end
-    zones = get_components(LoadZone,sys)
+    zones = get_components(LoadZone, sys)
     if ~isnothing(zones)
         for zone in zones
-            zone_comps = get_components_in_aggregation_topology(StandardLoad,sys,zone)
+            zone_comps = get_components_in_aggregation_topology(StandardLoad, sys, zone)
             if (isempty(zone_comps))
                 set_peak_active_power!(zone, 0.0)
                 set_peak_reactive_power!(zone, 0.0)
             else
-                set_peak_active_power!(zone, sum(get.(get_ext.(zone_comps),"active_power_load",0.0)))
-                set_peak_reactive_power!(zone, sum(get.(get_ext.(zone_comps),"reactive_power_load",0.0)))
-            end 
+                set_peak_active_power!(
+                    zone,
+                    sum(get.(get_ext.(zone_comps), "active_power_load", 0.0)),
+                )
+                set_peak_reactive_power!(
+                    zone,
+                    sum(get.(get_ext.(zone_comps), "reactive_power_load", 0.0)),
+                )
+            end
         end
     end
     return nothing
@@ -472,7 +492,6 @@ function read_branch!(
             continue
         end
 
-       
         max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
         if max_rate == 0.0
             max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
@@ -488,7 +507,7 @@ function read_branch!(
             b = (from = branches.bi[ix], to = branches.bj[ix]),
             angle_limits = (min = -π / 2, max = π / 2),
             rate = max_rate,
-            ext = Dict("length" => branches.len[ix])
+            ext = Dict("length" => branches.len[ix]),
         )
 
         add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
@@ -581,10 +600,9 @@ function read_switched_shunt!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-
     @info "Reading line data"
     @warn "All switched shunts will be converted to fixed shunts"
-    
+
     if isempty(data)
         @error "There are no lines in this file"
         return
