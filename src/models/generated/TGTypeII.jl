@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         R::Float64
         T1::Float64
         T2::Float64
-        τ_limits::Min_Max
+        τ_limits::MinMax
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -23,7 +23,7 @@ Parameters of a Turbine Governor Type II.
 - `R::Float64`: Droop parameter, validation range: `(0, nothing)`
 - `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`
 - `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
-- `τ_limits::Min_Max`: Power into the governor limits
+- `τ_limits::MinMax`: Power into the governor limits
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
@@ -39,7 +39,7 @@ mutable struct TGTypeII <: TurbineGov
     "Power fraction time constant"
     T2::Float64
     "Power into the governor limits"
-    τ_limits::Min_Max
+    τ_limits::MinMax
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}

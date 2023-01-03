@@ -10,12 +10,12 @@ This file is auto-generated. Do not edit.
         fuel_flag::Int
         R::Float64
         Tpelec::Float64
-        speed_error_signal::Min_Max
+        speed_error_signal::MinMax
         Kp_gov::Float64
         Ki_gov::Float64
         Kd_gov::Float64
         Td_gov::Float64
-        valve_position_limits::Min_Max
+        valve_position_limits::MinMax
         T_act::Float64
         K_turb::Float64
         Wf_nl::Float64
@@ -37,7 +37,7 @@ This file is auto-generated. Do not edit.
         db::Float64
         Tsa::Float64
         Tsb::Float64
-        R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+        R_lim::UpDown
         P_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -53,12 +53,12 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `fuel_flag::Int`: Flag Switch for fuel source characteristic, validation range: `(0, 1)`, action if invalid: `error`
 - `R::Float64`: Speed droop parameter, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Tpelec::Float64`: Electrical power transducer time constant, seconds, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `speed_error_signal::Min_Max`: Speed error signal limits
+- `speed_error_signal::MinMax`: Speed error signal limits
 - `Kp_gov::Float64`: Governor proportional gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ki_gov::Float64`: Governor integral gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Kd_gov::Float64`: Governor derivative gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Td_gov::Float64`: Governor derivative time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `valve_position_limits::Min_Max`: Valve position limits
+- `valve_position_limits::MinMax`: Valve position limits
 - `T_act::Float64`: Actuator time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `K_turb::Float64`: Turbine gain, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Wf_nl::Float64`: No load fuel flow, pu, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -80,7 +80,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `db::Float64`: Speed governor deadband, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum rate of load increa
+- `R_lim::UpDown`: Maximum rate of load increa
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the GGOV1 model are:
@@ -108,7 +108,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "Electrical power transducer time constant, seconds"
     Tpelec::Float64
     "Speed error signal limits"
-    speed_error_signal::Min_Max
+    speed_error_signal::MinMax
     "Governor proportional gain"
     Kp_gov::Float64
     "Governor integral gain"
@@ -118,7 +118,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "Governor derivative time constant"
     Td_gov::Float64
     "Valve position limits"
-    valve_position_limits::Min_Max
+    valve_position_limits::MinMax
     "Actuator time constant"
     T_act::Float64
     "Turbine gain"
@@ -162,7 +162,7 @@ mutable struct GeneralGovModel <: TurbineGov
     "Temperature detection lag time constant"
     Tsb::Float64
     "Maximum rate of load increa"
-    R_lim::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    R_lim::UpDown
     "Reference Power Set-point"
     P_ref::Float64
     ext::Dict{String, Any}

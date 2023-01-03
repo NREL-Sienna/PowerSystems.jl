@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
         tap::Float64
         α::Float64
         rate::Union{Nothing, Float64}
-        phase_angle_limits::Min_Max
+        phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -38,7 +38,7 @@ This file is auto-generated. Do not edit.
 - `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
 - `α::Float64`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `phase_angle_limits::Min_Max`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `phase_angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -58,7 +58,7 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
-    phase_angle_limits::Min_Max
+    phase_angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}

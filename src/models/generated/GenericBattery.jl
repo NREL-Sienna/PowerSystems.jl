@@ -11,14 +11,14 @@ This file is auto-generated. Do not edit.
         bus::Bus
         prime_mover::PrimeMovers
         initial_energy::Float64
-        state_of_charge_limits::Min_Max
+        state_of_charge_limits::MinMax
         rating::Float64
         active_power::Float64
-        input_active_power_limits::Min_Max
-        output_active_power_limits::Min_Max
+        input_active_power_limits::MinMax
+        output_active_power_limits::MinMax
         efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
         reactive_power::Float64
-        reactive_power_limits::Union{Nothing, Min_Max}
+        reactive_power_limits::Union{Nothing, MinMax}
         base_power::Float64
         operation_cost::Union{Nothing, OperationalCost}
         services::Vector{Service}
@@ -36,14 +36,14 @@ Data structure for a generic battery
 - `bus::Bus`
 - `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
-- `state_of_charge_limits::Min_Max`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
+- `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `rating::Float64`
 - `active_power::Float64`
-- `input_active_power_limits::Min_Max`, validation range: `(0, nothing)`, action if invalid: `error`
-- `output_active_power_limits::Min_Max`, validation range: `(0, nothing)`, action if invalid: `error`
+- `input_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
+- `output_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: `(0, 1)`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, Min_Max}`
+- `reactive_power_limits::Union{Nothing, MinMax}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `operation_cost::Union{Nothing, OperationalCost}`
 - `services::Vector{Service}`: Services that this device contributes to
@@ -61,14 +61,14 @@ mutable struct GenericBattery <: Storage
     "State of Charge of the Battery p.u.-hr"
     initial_energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
-    state_of_charge_limits::Min_Max
+    state_of_charge_limits::MinMax
     rating::Float64
     active_power::Float64
-    input_active_power_limits::Min_Max
-    output_active_power_limits::Min_Max
+    input_active_power_limits::MinMax
+    output_active_power_limits::MinMax
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
     reactive_power::Float64
-    reactive_power_limits::Union{Nothing, Min_Max}
+    reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit in MVA"
     base_power::Float64
     operation_cost::Union{Nothing, OperationalCost}

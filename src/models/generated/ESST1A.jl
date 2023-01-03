@@ -16,8 +16,8 @@ This file is auto-generated. Do not edit.
         Tb1::Float64
         Ka::Float64
         Ta::Float64
-        Va_lim::Min_Max
-        Vr_lim::Min_Max
+        Va_lim::MinMax
+        Vr_lim::MinMax
         Kc::Float64
         Kf::Float64
         Tf::Float64
@@ -45,8 +45,8 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `Tb1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Voltage regulator gain, validation range: `(50, 1000)`, action if invalid: `warn`
 - `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `Va_lim::Min_Max`: Limits for regulator output `(Va_min, Va_max)`
-- `Vr_lim::Min_Max`: Limits for exciter output `(Vr_min, Vr_max)`
+- `Va_lim::MinMax`: Limits for regulator output `(Va_min, Va_max)`
+- `Vr_lim::MinMax`: Limits for exciter output `(Vr_min, Vr_max)`
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant in s, validation range: `(eps(), 1.5)`, action if invalid: `error`
@@ -86,9 +86,9 @@ mutable struct ESST1A <: AVR
     "Voltage regulator time constant in s"
     Ta::Float64
     "Limits for regulator output `(Va_min, Va_max)`"
-    Va_lim::Min_Max
+    Va_lim::MinMax
     "Limits for exciter output `(Vr_min, Vr_max)`"
-    Vr_lim::Min_Max
+    Vr_lim::MinMax
     "Rectifier loading factor proportional to commutating reactance"
     Kc::Float64
     "Rate feedback gain"

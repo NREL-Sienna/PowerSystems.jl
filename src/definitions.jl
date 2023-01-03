@@ -1,8 +1,8 @@
-const Min_Max = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-const Up_Down = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
-const StartUp_ShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
-const From_To_Float = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+const MinMax = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+const UpDown = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+const StartUpShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
+const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 
 "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
 

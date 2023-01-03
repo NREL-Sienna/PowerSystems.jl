@@ -14,36 +14,36 @@ This file is auto-generated. Do not edit.
         Recon_Flag::Int
         Trv::Float64
         VV_pnts::NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}
-        Q_lim::Min_Max
+        Q_lim::MinMax
         Tp::Float64
-        e_lim::Min_Max
+        e_lim::MinMax
         Kpq::Float64
         Kiq::Float64
-        Iqr_lim::Min_Max
+        Iqr_lim::MinMax
         I_max::Float64
         Tg::Float64
         kWh_Cap::Float64
         SOC_ini::Float64
-        SOC_lim::Min_Max
+        SOC_lim::MinMax
         Trf::Float64
         fdbd_pnts::NamedTuple{(:fdbd1, :fdbd2), Tuple{Float64, Float64}}
         D_dn::Float64
         D_up::Float64
-        fe_lim::Min_Max
+        fe_lim::MinMax
         Kpp::Float64
         Kip::Float64
-        P_lim::Min_Max
-        dP_lim::Min_Max
+        P_lim::MinMax
+        dP_lim::MinMax
         T_pord::Float64
         rrpwr::Float64
         VRT_pnts::NamedTuple{(:vrt1, :vrt2, :vrt3, :vrt4, :vrt5), Tuple{Float64, Float64, Float64, Float64, Float64}}
         TVRT_pnts::NamedTuple{(:tvrt1, :tvrt2, :tvrt3), Tuple{Float64, Float64, Float64}}
         tV_delay::Float64
-        VES_lim::Min_Max
+        VES_lim::MinMax
         FRT_pnts::NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}
         TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}
         tF_delay::Float64
-        FES_lim::Min_Max
+        FES_lim::MinMax
         Pfa_ref::Float64
         Q_ref::Float64
         P_ref::Float64
@@ -65,36 +65,36 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `Recon_Flag::Int`: Defines if DER can reconnect after voltage ride-through disconnection, validation range: `(0, 1)`
 - `Trv::Float64`: Voltage measurement transducer's time constant, in s, validation range: `(0, nothing)`
 - `VV_pnts::NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}`: Y-axis Volt-var curve points (V1,V2,V3,V4)
-- `Q_lim::Min_Max`: Reactive power limits in pu (Q_min, Q_max)
+- `Q_lim::MinMax`: Reactive power limits in pu (Q_min, Q_max)
 - `Tp::Float64`: Power measurement transducer's time constant, in s, validation range: `(0, nothing)`
-- `e_lim::Min_Max`: Error limit in PI controller for q control (e_min, e_max)
+- `e_lim::MinMax`: Error limit in PI controller for q control (e_min, e_max)
 - `Kpq::Float64`: PI controller proportional gain for q control, validation range: `(0, nothing)`
 - `Kiq::Float64`: PI controller integral gain for q control, validation range: `(0, nothing)`
-- `Iqr_lim::Min_Max`: Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)
+- `Iqr_lim::MinMax`: Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)
 - `I_max::Float64`: Max. inverter's current, validation range: `(0, nothing)`
 - `Tg::Float64`: Current control's time constant, in s, validation range: `(0, nothing)`
 - `kWh_Cap::Float64`: BESS capacity in kWh, validation range: `(0, nothing)`
 - `SOC_ini::Float64`: Initial state of charge (SOC) in pu, validation range: `(0, 1)`
-- `SOC_lim::Min_Max`: Battery's SOC limits (SOC_min, SOC_max)
+- `SOC_lim::MinMax`: Battery's SOC limits (SOC_min, SOC_max)
 - `Trf::Float64`: Time constant to estimate system frequency, in s, validation range: `(0, nothing)`
 - `fdbd_pnts::NamedTuple{(:fdbd1, :fdbd2), Tuple{Float64, Float64}}`: Frequency error dead band thresholds `(fdbd1, fdbd2)`
 - `D_dn::Float64`: reciprocal of droop for over-frequency conditions, in pu, validation range: `(0, nothing)`
 - `D_up::Float64`: reciprocal of droop for under-frequency conditions, in pu, validation range: `(0, nothing)`
-- `fe_lim::Min_Max`: Frequency error limits in pu (fe_min, fe_max)
+- `fe_lim::MinMax`: Frequency error limits in pu (fe_min, fe_max)
 - `Kpp::Float64`: PI controller proportional gain for p control, validation range: `(0, nothing)`
 - `Kip::Float64`: PI controller integral gain for p control, validation range: `(0, nothing)`
-- `P_lim::Min_Max`: Active power limits in pu (P_min, P_max)
-- `dP_lim::Min_Max`: Ramp rate limits for active power in pu/s (dP_min, dP_max)
+- `P_lim::MinMax`: Active power limits in pu (P_min, P_max)
+- `dP_lim::MinMax`: Ramp rate limits for active power in pu/s (dP_min, dP_max)
 - `T_pord::Float64`: Power filter time constant in s, validation range: `(0, nothing)`
 - `rrpwr::Float64`: Ramp rate for real power increase following a fault, in pu/s, validation range: `(0, nothing)`
 - `VRT_pnts::NamedTuple{(:vrt1, :vrt2, :vrt3, :vrt4, :vrt5), Tuple{Float64, Float64, Float64, Float64, Float64}}`: Voltage ride through v points (vrt1,vrt2,vrt3,vrt4,vrt5)
 - `TVRT_pnts::NamedTuple{(:tvrt1, :tvrt2, :tvrt3), Tuple{Float64, Float64, Float64}}`: Voltage ride through time points (tvrt1,tvrt2,tvrt3)
 - `tV_delay::Float64`: Time delay for reconnection after voltage ride-through disconnection, validation range: `(0, nothing)`
-- `VES_lim::Min_Max`: Min and max voltage for entering service (VES_min,VES_max)
+- `VES_lim::MinMax`: Min and max voltage for entering service (VES_min,VES_max)
 - `FRT_pnts::NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}`: Frequency ride through v points (frt1,frt2,frt3,frt4)
 - `TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}`: Frequency ride through time points (tfrt1,tfrt2)
 - `tF_delay::Float64`: Time delay for reconnection after frequency ride-through disconnection, validation range: `(0, nothing)`
-- `FES_lim::Min_Max`: Min and max frequency for entering service (FES_min,FES_max)
+- `FES_lim::MinMax`: Min and max frequency for entering service (FES_min,FES_max)
 - `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
@@ -121,17 +121,17 @@ mutable struct GenericDER <: DynamicInjection
     "Y-axis Volt-var curve points (V1,V2,V3,V4)"
     VV_pnts::NamedTuple{(:V1, :V2, :V3, :V4), Tuple{Float64, Float64, Float64, Float64}}
     "Reactive power limits in pu (Q_min, Q_max)"
-    Q_lim::Min_Max
+    Q_lim::MinMax
     "Power measurement transducer's time constant, in s"
     Tp::Float64
     "Error limit in PI controller for q control (e_min, e_max)"
-    e_lim::Min_Max
+    e_lim::MinMax
     "PI controller proportional gain for q control"
     Kpq::Float64
     "PI controller integral gain for q control"
     Kiq::Float64
     "Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)"
-    Iqr_lim::Min_Max
+    Iqr_lim::MinMax
     "Max. inverter's current"
     I_max::Float64
     "Current control's time constant, in s"
@@ -141,7 +141,7 @@ mutable struct GenericDER <: DynamicInjection
     "Initial state of charge (SOC) in pu"
     SOC_ini::Float64
     "Battery's SOC limits (SOC_min, SOC_max)"
-    SOC_lim::Min_Max
+    SOC_lim::MinMax
     "Time constant to estimate system frequency, in s"
     Trf::Float64
     "Frequency error dead band thresholds `(fdbd1, fdbd2)`"
@@ -151,15 +151,15 @@ mutable struct GenericDER <: DynamicInjection
     "reciprocal of droop for under-frequency conditions, in pu"
     D_up::Float64
     "Frequency error limits in pu (fe_min, fe_max)"
-    fe_lim::Min_Max
+    fe_lim::MinMax
     "PI controller proportional gain for p control"
     Kpp::Float64
     "PI controller integral gain for p control"
     Kip::Float64
     "Active power limits in pu (P_min, P_max)"
-    P_lim::Min_Max
+    P_lim::MinMax
     "Ramp rate limits for active power in pu/s (dP_min, dP_max)"
-    dP_lim::Min_Max
+    dP_lim::MinMax
     "Power filter time constant in s"
     T_pord::Float64
     "Ramp rate for real power increase following a fault, in pu/s"
@@ -171,7 +171,7 @@ mutable struct GenericDER <: DynamicInjection
     "Time delay for reconnection after voltage ride-through disconnection"
     tV_delay::Float64
     "Min and max voltage for entering service (VES_min,VES_max)"
-    VES_lim::Min_Max
+    VES_lim::MinMax
     "Frequency ride through v points (frt1,frt2,frt3,frt4)"
     FRT_pnts::NamedTuple{(:frt1, :frt2, :frt3, :frt4), Tuple{Float64, Float64, Float64, Float64}}
     "Frequency ride through time points (tfrt1,tfrt2)"
@@ -179,7 +179,7 @@ mutable struct GenericDER <: DynamicInjection
     "Time delay for reconnection after frequency ride-through disconnection"
     tF_delay::Float64
     "Min and max frequency for entering service (FES_min,FES_max)"
-    FES_lim::Min_Max
+    FES_lim::MinMax
     "Reference power factor"
     Pfa_ref::Float64
     "Reference reactive power, in pu"

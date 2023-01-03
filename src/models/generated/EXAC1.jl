@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         Tc::Float64
         Ka::Float64
         Ta::Float64
-        Vr_lim::Min_Max
+        Vr_lim::MinMax
         Te::Float64
         Kf::Float64
         Tf::Float64
@@ -39,7 +39,7 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 - `Tc::Float64`: Regulator numerator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
 - `Ka::Float64`: Regulator output gain, validation range: `(0, 1000)`
 - `Ta::Float64`: Regulator output time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Vr_lim::Min_Max`: Limits for regulator output `(Vr_min, Vr_max)`
+- `Vr_lim::MinMax`: Limits for regulator output `(Vr_min, Vr_max)`
 - `Te::Float64`: Exciter field time constant in s, validation range: `(eps(), 2)`, action if invalid: `error`
 - `Kf::Float64`: Rate feedback excitation system stabilizer gain, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Rate feedback time constant, validation range: `(eps(), 1.5)`, action if invalid: `error`
@@ -73,7 +73,7 @@ mutable struct EXAC1 <: AVR
     "Regulator output time constant in s"
     Ta::Float64
     "Limits for regulator output `(Vr_min, Vr_max)`"
-    Vr_lim::Min_Max
+    Vr_lim::MinMax
     "Exciter field time constant in s"
     Te::Float64
     "Rate feedback excitation system stabilizer gain"

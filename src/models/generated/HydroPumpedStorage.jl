@@ -14,20 +14,20 @@ This file is auto-generated. Do not edit.
         rating::Float64
         base_power::Float64
         prime_mover::PrimeMovers
-        active_power_limits::Min_Max
-        reactive_power_limits::Union{Nothing, Min_Max}
-        ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+        active_power_limits::MinMax
+        reactive_power_limits::Union{Nothing, MinMax}
+        ramp_limits::Union{Nothing, UpDown}
+        time_limits::Union{Nothing, UpDown}
         rating_pump::Float64
-        active_power_limits_pump::Min_Max
-        reactive_power_limits_pump::Union{Nothing, Min_Max}
-        ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
-        storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+        active_power_limits_pump::MinMax
+        reactive_power_limits_pump::Union{Nothing, MinMax}
+        ramp_limits_pump::Union{Nothing, UpDown}
+        time_limits_pump::Union{Nothing, UpDown}
+        storage_capacity::UpDown
         inflow::Float64
         outflow::Float64
-        initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
-        storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+        initial_storage::UpDown
+        storage_target::UpDown
         operation_cost::OperationalCost
         pump_efficiency::Float64
         conversion_factor::Float64
@@ -50,20 +50,20 @@ This file is auto-generated. Do not edit.
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
-- `active_power_limits::Min_Max`, validation range: `(0, nothing)`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, Min_Max}`, action if invalid: `warn`
-- `ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
+- `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits_pump::Min_Max`
-- `reactive_power_limits_pump::Union{Nothing, Min_Max}`, action if invalid: `warn`
-- `ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power_limits_pump::MinMax`
+- `reactive_power_limits_pump::Union{Nothing, MinMax}`, action if invalid: `warn`
+- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
+- `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
+- `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
+- `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
 - `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
@@ -86,30 +86,30 @@ mutable struct HydroPumpedStorage <: HydroGen
     base_power::Float64
     "Prime mover technology according to EIA 923"
     prime_mover::PrimeMovers
-    active_power_limits::Min_Max
-    reactive_power_limits::Union{Nothing, Min_Max}
+    active_power_limits::MinMax
+    reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
-    ramp_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
-    time_limits::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    time_limits::Union{Nothing, UpDown}
     "Thermal limited MVA Power Withdrawl of the pump. <= Capacity"
     rating_pump::Float64
-    active_power_limits_pump::Min_Max
-    reactive_power_limits_pump::Union{Nothing, Min_Max}
+    active_power_limits_pump::MinMax
+    reactive_power_limits_pump::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute of pump"
-    ramp_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    ramp_limits_pump::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits of pump in hours"
-    time_limits_pump::Union{Nothing, NamedTuple{(:up, :down), Tuple{Float64, Float64}}}
+    time_limits_pump::Union{Nothing, UpDown}
     "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)."
-    storage_capacity::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    storage_capacity::UpDown
     "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
     "Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr)"
     outflow::Float64
     "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
-    initial_storage::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    initial_storage::UpDown
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
-    storage_target::NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+    storage_target::UpDown
     "Operation Cost of Generation [`OperationalCost`](@ref)"
     operation_cost::OperationalCost
     "Efficiency of pump"

@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct SteamTurbineGov1 <: TurbineGov
         R::Float64
         T1::Float64
-        valve_position_limits::Min_Max
+        valve_position_limits::MinMax
         T2::Float64
         T3::Float64
         D_T::Float64
@@ -28,7 +28,7 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, 0.1)`, action if invalid: `warn`
 - `T1::Float64`: Governor time constant, validation range: `(eps(), 0.5)`, action if invalid: `error`
-- `valve_position_limits::Min_Max`: Valve position limits
+- `valve_position_limits::MinMax`: Valve position limits
 - `T2::Float64`: Lead Lag Lead Time constant , validation range: `(0, nothing)`, action if invalid: `warn`
 - `T3::Float64`: Lead Lag Lag Time constant , validation range: `(eps(), 10)`, action if invalid: `error`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
@@ -50,7 +50,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     "Governor time constant"
     T1::Float64
     "Valve position limits"
-    valve_position_limits::Min_Max
+    valve_position_limits::MinMax
     "Lead Lag Lead Time constant "
     T2::Float64
     "Lead Lag Lag Time constant "

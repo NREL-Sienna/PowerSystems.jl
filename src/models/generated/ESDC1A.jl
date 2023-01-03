@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         Ta::Float64
         Tb::Float64
         Tc::Float64
-        Vr_lim::Min_Max
+        Vr_lim::MinMax
         Ke::Float64
         Te::Float64
         Kf::Float64
@@ -37,7 +37,7 @@ Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds
 - `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
 - `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Vr_lim::Min_Max`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
+- `Vr_lim::MinMax`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
 - `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(eps(), 1)`, action if invalid: `error`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `error`
@@ -70,7 +70,7 @@ mutable struct ESDC1A <: AVR
     "Regulator input Time Constant in s"
     Tc::Float64
     "Voltage regulator limits (regulator output) (Vi_min, Vi_max)"
-    Vr_lim::Min_Max
+    Vr_lim::MinMax
     "Exciter constant related to self-excited field"
     Ke::Float64
     "Exciter time constant, integration rate associated with exciter control"

@@ -10,7 +10,7 @@ This file is auto-generated. Do not edit.
         Tb::Float64
         K::Float64
         Te::Float64
-        V_lim::Min_Max
+        V_lim::MinMax
         V_ref::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
@@ -26,7 +26,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `Tb::Float64`: Lag time constant, validation range: `(eps(), nothing)`
 - `K::Float64`: Gain, validation range: `(0, nothing)`
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
-- `V_lim::Min_Max`: Field voltage limits
+- `V_lim::MinMax`: Field voltage limits
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states are:	Vf: Voltage field,	Vr: Lead-lag state
@@ -44,7 +44,7 @@ mutable struct SEXS <: AVR
     "Field circuit time constant in s"
     Te::Float64
     "Field voltage limits"
-    V_lim::Min_Max
+    V_lim::MinMax
     "Reference Voltage Set-point"
     V_ref::Float64
     ext::Dict{String, Any}

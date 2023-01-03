@@ -10,12 +10,12 @@ This file is auto-generated. Do not edit.
         available::Bool
         active_power_flow::Float64
         arc::Arc
-        rectifier_tap_limits::Min_Max
+        rectifier_tap_limits::MinMax
         rectifier_xrc::Float64
-        rectifier_firing_angle::Min_Max
-        inverter_tap_limits::Min_Max
+        rectifier_firing_angle::MinMax
+        inverter_tap_limits::MinMax
         inverter_xrc::Float64
-        inverter_firing_angle::Min_Max
+        inverter_firing_angle::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -29,12 +29,12 @@ As implemented in Milano's Book, Page 397.
 - `available::Bool`
 - `active_power_flow::Float64`
 - `arc::Arc`
-- `rectifier_tap_limits::Min_Max`
+- `rectifier_tap_limits::MinMax`
 - `rectifier_xrc::Float64`
-- `rectifier_firing_angle::Min_Max`
-- `inverter_tap_limits::Min_Max`
+- `rectifier_firing_angle::MinMax`
+- `inverter_tap_limits::MinMax`
 - `inverter_xrc::Float64`
-- `inverter_firing_angle::Min_Max`
+- `inverter_firing_angle::MinMax`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -45,12 +45,12 @@ mutable struct VSCDCLine <: DCBranch
     available::Bool
     active_power_flow::Float64
     arc::Arc
-    rectifier_tap_limits::Min_Max
+    rectifier_tap_limits::MinMax
     rectifier_xrc::Float64
-    rectifier_firing_angle::Min_Max
-    inverter_tap_limits::Min_Max
+    rectifier_firing_angle::MinMax
+    inverter_tap_limits::MinMax
     inverter_xrc::Float64
-    inverter_firing_angle::Min_Max
+    inverter_firing_angle::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
