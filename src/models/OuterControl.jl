@@ -3,8 +3,8 @@
         A <: ActivePowerControl,
         R <: ReactivePowerControl
     } <: DynamicInverterComponent
-        active_power::A
-        reactive_power::R
+        active_power_control::A
+        reactive_power_control::R
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
@@ -20,44 +20,44 @@ Parameters of a Outer-Loop controller using a active power controller and a reac
 """
 mutable struct OuterControl{A <: ActivePowerControl, R <: ReactivePowerControl} <:
                DynamicInverterComponent
-    active_power::A
-    reactive_power::R
+    active_power_control::A
+    reactive_power_control::R
     ext::Dict{String, Any}
     states::Vector{Symbol}
     n_states::Int
 end
 
 function OuterControl(
-    active_power::A,
-    reactive_power::R,
+    active_power_control::A,
+    reactive_power_control::R,
     ext = Dict{String, Any}(),
 ) where {A <: ActivePowerControl, R <: ReactivePowerControl}
     return OuterControl(
-        active_power,
-        reactive_power,
+        active_power_control,
+        reactive_power_control,
         ext,
-        vcat(active_power.states, reactive_power.states),
-        active_power.n_states + reactive_power.n_states,
+        vcat(active_power_control.states, reactive_power_control.states),
+        active_power_control.n_states + reactive_power_control.n_states,
     )
 end
 
 function OuterControl(;
-    active_power,
-    reactive_power,
+    active_power_control,
+    reactive_power_control,
     ext = Dict{String, Any}(),
     states = nothing,
     n_states = nothing,
 )
     if states === nothing
         @assert n_states === nothing
-        return OuterControl(active_power, reactive_power, ext)
+        return OuterControl(active_power_control, reactive_power_control, ext)
     end
     @assert n_states !== nothing
-    return OuterControl(active_power, reactive_power, ext, states, n_states)
+    return OuterControl(active_power_control, reactive_power_control, ext, states, n_states)
 end
 
-get_active_power(value::OuterControl) = value.active_power
-get_reactive_power(value::OuterControl) = value.reactive_power
+get_active_power_control(value::OuterControl) = value.active_power_control
+get_reactive_power_control(value::OuterControl) = value.reactive_power_control
 get_ext(value::OuterControl) = value.ext
 get_states(value::OuterControl) = value.states
 get_n_states(value::OuterControl) = value.n_states

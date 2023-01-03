@@ -62,12 +62,16 @@ struct System <: IS.InfrastructureSystemsType
     bus_numbers::Set{Int}
     runchecks::Base.RefValue{Bool}
     units_settings::SystemUnitsSettings
+    time_series_directory::Union{Nothing, String}
     internal::IS.InfrastructureSystemsInternal
 
     function System(
         data,
         units_settings::SystemUnitsSettings,
         internal::IS.InfrastructureSystemsInternal;
+        runchecks = true,
+        frequency = DEFAULT_SYSTEM_FREQUENCY,
+        time_series_directory = nothing,
         kwargs...,
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
@@ -84,10 +88,15 @@ struct System <: IS.InfrastructureSystemsType
             )
         end
         bus_numbers = Set{Int}()
-        frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
-        runchecks = Base.RefValue{Bool}(get(kwargs, :runchecks, true))
-        sys = new(data, frequency, bus_numbers, runchecks, units_settings, internal)
-        return sys
+        return new(
+            data,
+            frequency,
+            bus_numbers,
+            Base.RefValue{Bool}(runchecks),
+            units_settings,
+            time_series_directory,
+            internal,
+        )
     end
 end
 
@@ -287,7 +296,7 @@ function Base.deepcopy(sys::System)
         return sys2
     end
 
-    IS.copy_to_new_file!(sys2.data.time_series_storage)
+    IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
     return sys2
 end
 
@@ -716,7 +725,7 @@ function remove_components!(
     sys::System,
     ::Type{T},
 ) where {T <: Component}
-    components = collect(get_components(T, sys, filter_func))
+    components = collect(get_components(filter_func, T, sys))
     for component in components
         remove_component!(sys, component)
     end
@@ -828,7 +837,7 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(Generator, sys, x -> PowerSystems.get_available(x))
+iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
 thermal_gens = get_components(ThermalStandard, sys) do gen
     get_available(gen)
 end
@@ -846,18 +855,6 @@ function get_components(
     filter_func::Function,
     ::Type{T},
     sys::System,
-) where {T <: Component}
-    return IS.get_components(T, sys.data, filter_func)
-end
-
-# These two methods are defined independently instead of  filter_func::Union{Function, Nothing} = nothing
-# because of a documenter error
-# that has no relation with the code https://github.com/JuliaDocs/Documenter.jl/issues/1296
-#
-function get_components(
-    ::Type{T},
-    sys::System,
-    filter_func::Function,
 ) where {T <: Component}
     return IS.get_components(T, sys.data, filter_func)
 end
@@ -900,7 +897,7 @@ Gets components availability. Requires type T to have the method get_available i
 """
 
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(T, sys, x -> get_available(x))
+    return get_components(x -> get_available(x), T, sys)
 end
 
 """
@@ -1324,7 +1321,9 @@ function IS.serialize(sys::T) where {T <: System}
     data["data_format_version"] = DATA_FORMAT_VERSION
     for field in fieldnames(T)
         # Exclude bus_numbers because they will get rebuilt during deserialization.
-        if field != :bus_numbers
+        # Exclude time_series_directory because the system may get deserialized on a
+        # different system.
+        if field != :bus_numbers && field != :time_series_directory
             data[string(field)] = serialize(getfield(sys, field))
         end
     end
@@ -1827,20 +1826,20 @@ function IS.compare_values(
     return match
 end
 
-function _create_system_data_from_kwargs(; kwargs...)
-    validation_descriptor_file = nothing
-    time_series_in_memory = get(kwargs, :time_series_in_memory, false)
-    time_series_directory = get(kwargs, :time_series_directory, nothing)
-    compression = get(kwargs, :compression, nothing)
-    if compression === nothing
-        enabled = get(kwargs, :enable_compression, false)
-        compression = IS.CompressionSettings(; enabled = enabled)
+function _create_system_data_from_kwargs(;
+    time_series_in_memory = false,
+    time_series_directory = nothing,
+    compression = nothing,
+    enable_compression = false,
+    config_path = POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE,
+    kwargs...,
+)
+    if isnothing(compression)
+        compression = IS.CompressionSettings(; enabled = enable_compression)
     end
-    validation_descriptor_file =
-        get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
 
     return IS.SystemData(;
-        validation_descriptor_file = validation_descriptor_file,
+        validation_descriptor_file = config_path,
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
         compression = compression,

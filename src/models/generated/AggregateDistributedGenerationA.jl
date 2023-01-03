@@ -22,9 +22,9 @@ This file is auto-generated. Do not edit.
         D_dn::Float64
         D_up::Float64
         fdbd_pnts::Tuple{Float64, Float64}
-        fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        fe_lim::MinMax
+        P_lim::MinMax
+        dP_lim::MinMax
         Tpord::Float64
         Kpg::Float64
         Kig::Float64
@@ -40,7 +40,7 @@ This file is auto-generated. Do not edit.
         rrpwr::Float64
         Tv::Float64
         Vpr::Float64
-        Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Iq_lim::MinMax
         V_ref::Float64
         Pfa_ref::Float64
         ω_ref::Float64
@@ -72,9 +72,9 @@ Parameters of the DERA1 model in PSS/E
 - `D_dn::Float64`: Reciprocal of droop for over-frequency conditions (>0) (pu), validation range: `(0, nothing)`
 - `D_up::Float64`: Reciprocal of droop for under-frequency conditions <=0) (pu), validation range: `(0, nothing)`
 - `fdbd_pnts::Tuple{Float64, Float64}`: Frequency control deadband thresholds `(fdbd1, fdbd2)`
-- `fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Frequency error limits (femin, femax)
-- `P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Power limits (Pmin, Pmax)
-- `dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Power reference ramp rate limits (dPmin, dPmax)
+- `fe_lim::MinMax`: Frequency error limits (femin, femax)
+- `P_lim::MinMax`: Power limits (Pmin, Pmax)
+- `dP_lim::MinMax`: Power reference ramp rate limits (dPmin, dPmax)
 - `Tpord::Float64`: Power filter time constant, validation range: `(0, nothing)`
 - `Kpg::Float64`: PI controller proportional gain (pu), validation range: `(0, nothing)`
 - `Kig::Float64`: PI controller integral gain (pu), validation range: `(0, nothing)`
@@ -90,7 +90,7 @@ Parameters of the DERA1 model in PSS/E
 - `rrpwr::Float64`: Ramp rate for real power increase following a fault (pu/s), validation range: `(0, nothing)`
 - `Tv::Float64`: Time constant on the output of the multiplier (s), validation range: `(0, nothing)`
 - `Vpr::Float64`: Voltage below which frequency tripping is disabled (pu), validation range: `(0, nothing)`
-- `Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Reactive current injection limits (Iqll, Iqhl)
+- `Iq_lim::MinMax`: Reactive current injection limits (Iqll, Iqhl)
 - `V_ref::Float64`: User defined voltage reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
 - `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
 - `ω_ref::Float64`: Reference frequency, validation range: `(0, nothing)`
@@ -135,11 +135,11 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     "Frequency control deadband thresholds `(fdbd1, fdbd2)`"
     fdbd_pnts::Tuple{Float64, Float64}
     "Frequency error limits (femin, femax)"
-    fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    fe_lim::MinMax
     "Power limits (Pmin, Pmax)"
-    P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    P_lim::MinMax
     "Power reference ramp rate limits (dPmin, dPmax)"
-    dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    dP_lim::MinMax
     "Power filter time constant"
     Tpord::Float64
     "PI controller proportional gain (pu)"
@@ -171,7 +171,7 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     "Voltage below which frequency tripping is disabled (pu)"
     Vpr::Float64
     "Reactive current injection limits (Iqll, Iqhl)"
-    Iq_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Iq_lim::MinMax
     "User defined voltage reference. If 0, PSID initializes to initial terminal voltage"
     V_ref::Float64
     "Reference power factor"

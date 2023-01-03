@@ -151,26 +151,6 @@ function make_bus(bus_name, bus_number, d, bus_types, area)
     return bus
 end
 
-# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
-IS.@scoped_enum(
-    MatpowerBusTypes,
-    MATPOWER_PQ = 1,
-    MATPOWER_PV = 2,
-    MATPOWER_REF = 3,
-    MATPOWER_ISOLATED = 4,
-)
-
-const _BUS_TYPE_MAP = Dict(
-    MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
-    MatpowerBusTypes.MATPOWER_PQ => BusTypes.PQ,
-    MatpowerBusTypes.MATPOWER_PV => BusTypes.PV,
-    MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
-)
-
-function Base.convert(::Type{BusTypes}, x::MatpowerBusTypes)
-    return _BUS_TYPE_MAP[x]
-end
-
 # Disabling this because not all matpower files define areas even when bus definitions
 # contain area references.
 #function read_area!(sys::System, data::Dict; kwargs...)
@@ -189,7 +169,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
-    bus_types = instances(MatpowerBusTypes)
+    bus_types = instances(BusTypes)
     bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)

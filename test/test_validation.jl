@@ -2,7 +2,7 @@ import YAML
 
 const WRONG_FORMAT_CONFIG_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "config.yml")
-include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
+include(joinpath(DATA_DIR, "psy_data", "data_5bus_pu.jl"))
 
 @testset "Test reading in config data" begin
     data = IS.read_validation_descriptor(PSY.POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)

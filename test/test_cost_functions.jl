@@ -15,14 +15,13 @@ end
 @testset "Test MarketBidCost with Polynomial Cost Timeseries with Service Forecast " begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
-    other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    service_data = Dict(initial_time => ones(horizon), other_time => ones(horizon))
+    service_data = Dict(initial_time => ones(horizon))
     polynomial_cost = repeat([(999.0, 1.0)], 24)
     data_polynomial =
-        SortedDict(initial_time => polynomial_cost, other_time => polynomial_cost)
-    sys = create_rts_system()
+        SortedDict(initial_time => polynomial_cost)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
     market_bid = MarketBidCost(nothing)
@@ -48,12 +47,11 @@ end
 @testset "Test MarketBidCost with PWL Cost Timeseries" begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
-    other_time = initial_time + resolution
     name = "test"
     horizon = 24
     pwl_cost = repeat([repeat([(999.0, 1.0)], 5)], 24)
-    data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
-    sys = create_rts_system()
+    data_pwl = SortedDict(initial_time => pwl_cost)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
     market_bid = MarketBidCost(nothing)

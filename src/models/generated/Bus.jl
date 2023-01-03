@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         bustype::Union{Nothing, BusTypes}
         angle::Union{Nothing, Float64}
         magnitude::Union{Nothing, Float64}
-        voltage_limits::Union{Nothing, Min_Max}
+        voltage_limits::Union{Nothing, MinMax}
         base_voltage::Union{Nothing, Float64}
         area::Union{Nothing, Area}
         load_zone::Union{Nothing, LoadZone}
@@ -27,7 +27,7 @@ A power-system bus.
 - `bustype::Union{Nothing, BusTypes}`: bus type
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
-- `voltage_limits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
+- `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
@@ -46,7 +46,7 @@ mutable struct Bus <: Topology
     "voltage as a multiple of basevoltage"
     magnitude::Union{Nothing, Float64}
     "limits on the voltage variation as multiples of basevoltage"
-    voltage_limits::Union{Nothing, Min_Max}
+    voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
     "the area containing the bus"

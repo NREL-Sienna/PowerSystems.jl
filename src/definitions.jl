@@ -1,8 +1,9 @@
-const Min_Max = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-const Up_Down = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
-const StartUp_ShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
-const From_To_Float = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-const FromTo_ToFrom_Float = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+const MinMax = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+const UpDown = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
+const StartUpShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
+const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+# Exception to CamelCase convention for aliases due to confusssing reading of FromToToFrom
+const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 
 "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
 
@@ -10,7 +11,8 @@ IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 
-IS.@scoped_enum(BusTypes, ISOLATED = 1, PQ = 2, PV = 3, REF = 4, SLACK = 5,)
+# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
+IS.@scoped_enum(BusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
