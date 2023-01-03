@@ -115,8 +115,8 @@ function get_branch_type(
 end
 
 function calculate_rating(
-    active_power_limits::Union{Min_Max, Nothing},
-    reactive_power_limits::Union{Min_Max, Nothing},
+    active_power_limits::Union{MinMax, Nothing},
+    reactive_power_limits::Union{MinMax, Nothing},
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
     return calculate_rating(active_power_limits.max, reactive_power_max)

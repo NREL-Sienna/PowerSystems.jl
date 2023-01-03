@@ -15,13 +15,13 @@ This file is auto-generated. Do not edit.
         K_ig::Float64
         T_p::Float64
         fdbd_pnts::Tuple{Float64, Float64}
-        fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        fe_lim::MinMax
+        P_lim::MinMax
         T_g::Float64
         D_dn::Float64
         D_up::Float64
-        dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        dP_lim::MinMax
+        P_lim_inner::MinMax
         T_pord::Float64
         P_ref::Float64
         ext::Dict{String, Any}
@@ -41,13 +41,13 @@ Parameters of Active Power Controller including REPCA1 and REECB1
 - `K_ig::Float64`: Active power PI control integral gain, validation range: `(0, nothing)`
 - `T_p::Float64`: Real power measurement filter time constant (s), validation range: `(0, nothing)`
 - `fdbd_pnts::Tuple{Float64, Float64}`: Frequency error dead band thresholds `(fdbd1, fdbd2)`
-- `fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on frequency error `(fe_min, fe_max)`
-- `P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on power reference `(P_min, P_max)`
+- `fe_lim::MinMax`: Upper/Lower limit on frequency error `(fe_min, fe_max)`
+- `P_lim::MinMax`: Upper/Lower limit on power reference `(P_min, P_max)`
 - `T_g::Float64`: Power Controller lag time constant, validation range: `(0, nothing)`
 - `D_dn::Float64`: Droop for over-frequency conditions, validation range: `(nothing, 0)`
 - `D_up::Float64`: Droop for under-frequency conditions, validation range: `(0, nothing)`
-- `dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`
-- `P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`
+- `dP_lim::MinMax`: Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`
+- `P_lim_inner::MinMax`: Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`
 - `T_pord::Float64`: Power filter time constant REECB time constant, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
@@ -74,9 +74,9 @@ mutable struct ActiveRenewableControllerAB <: ActivePowerControl
     "Frequency error dead band thresholds `(fdbd1, fdbd2)`"
     fdbd_pnts::Tuple{Float64, Float64}
     "Upper/Lower limit on frequency error `(fe_min, fe_max)`"
-    fe_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    fe_lim::MinMax
     "Upper/Lower limit on power reference `(P_min, P_max)`"
-    P_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    P_lim::MinMax
     "Power Controller lag time constant"
     T_g::Float64
     "Droop for over-frequency conditions"
@@ -84,9 +84,9 @@ mutable struct ActiveRenewableControllerAB <: ActivePowerControl
     "Droop for under-frequency conditions"
     D_up::Float64
     "Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`"
-    dP_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    dP_lim::MinMax
     "Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`"
-    P_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    P_lim_inner::MinMax
     "Power filter time constant REECB time constant"
     T_pord::Float64
     "Reference Power Set-point"

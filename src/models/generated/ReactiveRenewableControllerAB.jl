@@ -23,12 +23,12 @@ This file is auto-generated. Do not edit.
         R_c::Float64
         X_c::Float64
         K_c::Float64
-        e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        e_lim::MinMax
         dbd_pnts::Tuple{Float64, Float64}
-        Q_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Q_lim::MinMax
         T_p::Float64
-        Q_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        Q_lim_inner::MinMax
+        V_lim::MinMax
         K_qp::Float64
         K_qi::Float64
         Q_ref::Float64
@@ -58,12 +58,12 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `R_c::Float64`: Line drop compensation resistance (used when VC_Flag = 1), validation range: `(0, nothing)`
 - `X_c::Float64`: Line drop compensation reactance (used when VC_Flag = 1), validation range: `(0, nothing)`
 - `K_c::Float64`: Reactive current compensation gain (pu) (used when VC_Flag = 0), validation range: `(0, nothing)`
-- `e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`
+- `e_lim::MinMax`: Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`
 - `dbd_pnts::Tuple{Float64, Float64}`: Voltage or Q-power error dead band thresholds `(dbd1, dbd2)`
-- `Q_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on reactive power V/Q control in REPCA `(Q_min, Q_max)`
+- `Q_lim::MinMax`: Upper/Lower limit on reactive power V/Q control in REPCA `(Q_min, Q_max)`
 - `T_p::Float64`: Active power lag time constant in REECB (s). Used only when PF_Flag = 1, validation range: `(0, nothing)`
-- `Q_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on reactive power input in REECB `(Q_min_inner, Q_max_inner)`. Only used when V_Flag = 1
-- `V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1
+- `Q_lim_inner::MinMax`: Upper/Lower limit on reactive power input in REECB `(Q_min_inner, Q_max_inner)`. Only used when V_Flag = 1
+- `V_lim::MinMax`: Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1
 - `K_qp::Float64`: Reactive power regulator proportional gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `K_qi::Float64`: Reactive power regulator integral gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
@@ -108,17 +108,17 @@ mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     "Reactive current compensation gain (pu) (used when VC_Flag = 0)"
     K_c::Float64
     "Upper/Lower limit on Voltage or Q-power deadband output `(e_min, e_max)`"
-    e_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    e_lim::MinMax
     "Voltage or Q-power error dead band thresholds `(dbd1, dbd2)`"
     dbd_pnts::Tuple{Float64, Float64}
     "Upper/Lower limit on reactive power V/Q control in REPCA `(Q_min, Q_max)`"
-    Q_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Q_lim::MinMax
     "Active power lag time constant in REECB (s). Used only when PF_Flag = 1"
     T_p::Float64
     "Upper/Lower limit on reactive power input in REECB `(Q_min_inner, Q_max_inner)`. Only used when V_Flag = 1"
-    Q_lim_inner::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    Q_lim_inner::MinMax
     "Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1"
-    V_lim::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    V_lim::MinMax
     "Reactive power regulator proportional gain (used when V_Flag = 1)"
     K_qp::Float64
     "Reactive power regulator integral gain (used when V_Flag = 1)"

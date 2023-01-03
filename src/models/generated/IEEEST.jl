@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 IEEE Stabilizing Model PSS. 
 
 # Arguments
-- `input_code::Int`: Code input for stabilizar, validation range: `(1, 6)`, action if invalid: `error`
+- `input_code::Int`: Code input for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
 - `remote_bus_control::Int`: Remote  Bus number for control.
 - `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -66,7 +66,7 @@ IEEE Stabilizing Model PSS.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct IEEEST <: PSS
-    "Code input for stabilizar"
+    "Code input for stabilizer"
     input_code::Int
     "Remote  Bus number for control."
     remote_bus_control::Int
