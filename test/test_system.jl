@@ -19,7 +19,7 @@
         IS.ArgumentError,
         get_components_by_name(ThermalStandard, sys, "not-a-name")
     )
-    @test isempty(get_components( x -> (!get_available(x)), ThermalStandard, sys))
+    @test isempty(get_components(x -> (!get_available(x)), ThermalStandard, sys))
     @test !isempty(get_available_components(ThermalStandard, sys))
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
@@ -439,4 +439,51 @@ end
     @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_sil_values(
         sys,
     ))
+end
+
+@testset "Test system name and description" begin
+    name = "test_system"
+    description = "a system description"
+    sys = System(100.0)
+    @test get_name(sys) === nothing
+    @test get_description(sys) === nothing
+    set_name!(sys, name)
+    set_description!(sys, description)
+
+    sys = System(100.0; name = name, description = description)
+    @test get_name(sys) == name
+    @test get_description(sys) == description
+end
+
+@testset "Test system metadata" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    name = "test_system"
+    description = "a system description"
+    set_name!(sys, name)
+    set_description!(sys, description)
+
+    tempdir = mktempdir()
+    sys_file = joinpath(tempdir, "sys.json")
+    to_json(sys, sys_file; user_data = Dict("author" => "test"))
+    metadata_file = joinpath(tempdir, "sys_metadata.json")
+    metadata = open(metadata_file) do io
+        JSON3.read(io, Dict)
+    end
+
+    @test metadata["name"] == name
+    @test metadata["description"] == description
+    found_component = false
+    for item in metadata["component_counts"]
+        if item["type"] == "ThermalStandard"
+            @test item["count"] == 76
+            found_component = true
+        end
+    end
+    @test found_component
+    @test metadata["time_series_counts"][1]["type"] == "DeterministicSingleTimeSeries"
+    @test metadata["time_series_counts"][1]["count"] == 182
+    @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"
+    @test metadata["time_series_counts"][2]["count"] == 182
+    @test metadata["time_series_resolution_minutes"] == 60
+    @test metadata["user_data"]["author"] == "test"
 end

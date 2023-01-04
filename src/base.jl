@@ -22,10 +22,17 @@ const SYSTEM_KWARGS = Set((
     :import_all,
     :enable_compression,
     :compression,
+    :name,
+    :description,
 ))
 
 # This will be used in the future to handle serialization changes.
 const DATA_FORMAT_VERSION = "2.0.0"
+
+mutable struct SystemMetadata <: IS.InfrastructureSystemsType
+    name::Union{Nothing, String}
+    description::Union{Nothing, String}
+end
 
 """
 System
@@ -63,6 +70,7 @@ struct System <: IS.InfrastructureSystemsType
     runchecks::Base.RefValue{Bool}
     units_settings::SystemUnitsSettings
     time_series_directory::Union{Nothing, String}
+    metadata::SystemMetadata
     internal::IS.InfrastructureSystemsInternal
 
     function System(
@@ -72,6 +80,8 @@ struct System <: IS.InfrastructureSystemsType
         runchecks = true,
         frequency = DEFAULT_SYSTEM_FREQUENCY,
         time_series_directory = nothing,
+        name = nothing,
+        description = nothing,
         kwargs...,
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
@@ -95,6 +105,7 @@ struct System <: IS.InfrastructureSystemsType
             Base.RefValue{Bool}(runchecks),
             units_settings,
             time_series_directory,
+            SystemMetadata(name, description),
             internal,
         )
     end
@@ -270,24 +281,59 @@ Serializes a system to a JSON string.
 - `filename::AbstractString`: filename to write
 
 # Keyword arguments
+- `user_data::Union{Nothing, Dict} = nothing`: optional metadata to record
+- `pretty::Bool = false`: whether to pretty-print the JSON
 - `force::Bool = false`: whether to overwrite existing files
 - `check::Bool = false`: whether to run system validation checks
 
 Refer to [`check_component`](@ref) for exceptions thrown if `check = true`.
 """
-function IS.to_json(sys::System, filename::AbstractString; force = false, runchecks = false)
+function IS.to_json(
+    sys::System,
+    filename::AbstractString;
+    user_data = nothing,
+    pretty = false,
+    force = false,
+    runchecks = false,
+)
     if runchecks
         check(sys)
         check_components(sys)
     end
 
     IS.prepare_for_serialization!(sys.data, filename; force = force)
-    data = to_json(sys)
+    data = to_json(sys; pretty = pretty)
     open(filename, "w") do io
         write(io, data)
     end
+
+    mfile = joinpath(dirname(filename), splitext(basename(filename))[1] * "_metadata.json")
     @info "Serialized System to $filename"
+    _serialize_system_metadata_to_file(sys, mfile, user_data)
     return
+end
+
+function _serialize_system_metadata_to_file(sys::System, filename, user_data)
+    name = get_name(sys)
+    description = get_description(sys)
+    resolution = Dates.Minute(get_time_series_resolution(sys)).value
+    metadata = OrderedDict(
+        "name" => isnothing(name) ? "" : name,
+        "description" => isnothing(description) ? "" : description,
+        "frequency" => sys.frequency,
+        "time_series_resolution_minutes" => resolution,
+        "component_counts" => IS.get_component_counts_by_type(sys.data),
+        "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
+    )
+    if !isnothing(user_data)
+        metadata["user_data"] = user_data
+    end
+
+    open(filename, "w") do io
+        JSON3.pretty(io, metadata)
+    end
+
+    @info "Serialized System metadata to $filename"
 end
 
 function Base.deepcopy(sys::System)
@@ -374,6 +420,27 @@ end
 function has_units_setting(component::T) where {T <: Component}
     return !isnothing(get_units_setting(component))
 end
+
+"""
+Set the name of the system.
+"""
+set_name!(sys::System, name::AbstractString) = sys.metadata.name = name
+
+"""
+Get the name of the system.
+"""
+get_name(sys::System) = sys.metadata.name
+
+"""
+Set the description of the system.
+"""
+set_description!(sys::System, description::AbstractString) =
+    sys.metadata.description = description
+
+"""
+Get the description of the system.
+"""
+get_description(sys::System) = sys.metadata.description
 
 """
 Add a component to the system.

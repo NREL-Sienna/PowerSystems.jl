@@ -303,6 +303,8 @@ export CompressionTypes
 export get_bus_numbers
 export get_name
 export set_name!
+export get_description
+export set_description!
 export get_base_power
 export get_frequency
 export set_units_base_system!
@@ -379,6 +381,7 @@ import Logging
 import Dates
 import TimeSeries
 import DataFrames
+import DataStructures: OrderedDict
 import JSON3
 import CSV
 import YAML

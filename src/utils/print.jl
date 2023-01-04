@@ -77,7 +77,7 @@ function show_components_table(io::IO, sys::System; kwargs...)
     static_data = Array{Any, 2}(undef, length(static_types), length(static_header))
     dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(dynamic_header))
 
-    static_type_names = [(IS.strip_module_name(string(x)), x) for x in static_types]
+    static_type_names = [(nameof(x), x) for x in static_types]
     sort!(static_type_names; by = x -> x[1])
     for (i, (type_name, type)) in enumerate(static_type_names)
         vals = components.data[type]
@@ -112,7 +112,7 @@ function show_components_table(io::IO, sys::System; kwargs...)
         )
     end
 
-    dynamic_type_names = [(IS.strip_module_name(string(x)), x) for x in dynamic_types]
+    dynamic_type_names = [(nameof(x), x) for x in dynamic_types]
     sort!(dynamic_type_names; by = x -> x[1])
     for (i, (type_name, type)) in enumerate(dynamic_type_names)
         vals = components.data[type]

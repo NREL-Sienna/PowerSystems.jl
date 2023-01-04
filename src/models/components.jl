@@ -42,7 +42,7 @@ function get_value(c::Component, value::UpDown)
     return (up = value.up * m, down = value.down * m)
 end
 
-function get_value(c::Component, value::FromTo_ToFrom_Float)
+function get_value(c::Component, value::FromTo_ToFrom)
     m = _get_multiplier(c)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
@@ -79,7 +79,7 @@ function set_value(c::Component, value::UpDown)
     return (up = value.up * m, down = value.down * m)
 end
 
-function set_value(c::Component, value::FromTo_ToFrom_Float)
+function set_value(c::Component, value::FromTo_ToFrom)
     m = 1 / _get_multiplier(c)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
