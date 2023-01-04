@@ -272,8 +272,8 @@ function read_loads!(
         # ASKJOSE: To parse all the loads I removed the filtering step
         bus = bus_number_to_bus[loads.i[ix]]
         bus_vm = get_magnitude(bus)
-        load_name = "load-$(get_name(bus))-$(loads.i[ix])~$(loads.id[ix])"
-        if has_component(PowerLoad, sys, load_name)
+        load_name = "load-$(get_name(bus))~$(loads.id[ix])"
+        if has_component(StandardLoad, sys, load_name)
             throw(DataFormatError("Found duplicate load names of $(load_name)"))
         end
         # ASKJOSE: Followed the same process as above but it looks like zone names
@@ -393,12 +393,15 @@ function read_gen!(
             error("Incorrect bus id for generator $(gens.i[ix])-$(gens.id[ix])")
         end
 
-        gen_name = "gen-$(get_name(bus))-$(gens.i[ix])-$(gens.id[ix])"
+        gen_name = "gen-$(get_name(bus))~$(gens.id[ix])"
         if has_component(ThermalStandard, sys, gen_name)
             throw(DataFormatError("Found duplicate load names of $(gen_name)"))
         end
+        # ASKJOSE: Is this information necessary? The regulation bus (IREG) maybe?
+        # WMOD as well to classify if a generator is WT and reactive power control mode
+        ireg_bus_num = gens.ireg[ix] == 0 ? gens.i[ix] : gens.ireg[ix]
 
-        load = ThermalStandard(;
+        thermal_gen = ThermalStandard(;
             name = gen_name,
             available = gens.stat[ix] > 0 ? true : false,
             status = gens.stat[ix] > 0 ? true : false,
@@ -420,9 +423,10 @@ function read_gen!(
             ramp_limits = nothing,
             time_limits = nothing,
             operation_cost = TwoPartCost(0.0, 0.0),
+            ext = Dict("IREG" =>ireg_bus_num, "WMOD" => gens.wmod[ix], "WPF" => gens.wpf[ix]),
         )
 
-        add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+        add_component!(sys, thermal_gen; skip_validation = SKIP_PM_VALIDATION)
     end
     return nothing
 end
