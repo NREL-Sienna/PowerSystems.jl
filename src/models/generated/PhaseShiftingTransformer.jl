@@ -17,6 +17,7 @@ This file is auto-generated. Do not edit.
         tap::Float64
         α::Float64
         rate::Union{Nothing, Float64}
+        phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -37,6 +38,7 @@ This file is auto-generated. Do not edit.
 - `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
 - `α::Float64`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
+- `phase_angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -56,6 +58,7 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     α::Float64
     rate::Union{Nothing, Float64}
+    phase_angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -65,12 +68,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, services, ext, time_series_container, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -87,6 +90,7 @@ function PhaseShiftingTransformer(::Nothing)
         tap=1.0,
         α=0.0,
         rate=0.0,
+        phase_angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
@@ -115,6 +119,8 @@ get_tap(value::PhaseShiftingTransformer) = value.tap
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get [`PhaseShiftingTransformer`](@ref) `rate`."""
 get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
+"""Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
+get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
@@ -144,6 +150,8 @@ set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set [`PhaseShiftingTransformer`](@ref) `rate`."""
 set_rate!(value::PhaseShiftingTransformer, val) = value.rate = set_value(value, val)
+"""Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
+set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""

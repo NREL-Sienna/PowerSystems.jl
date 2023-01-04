@@ -1,6 +1,6 @@
 
-include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl"))
-include(joinpath(BASE_DIR, "test", "data_14bus_pu.jl"))
+include("data_5bus_pu.jl")
+include("data_14bus_pu.jl")
 
 checksys = false
 
@@ -9,8 +9,8 @@ checksys = false
     nodes_5 = nodes5()
     nodes_14 = nodes14()
 
-    for i in nodes_5
-        nodes_5[i].angle = deg2rad(nodes_5[i].angle)
+    for node in nodes_5
+        node.angle = deg2rad(node.angle)
     end
 
     # Components with time_series cannot be added to multiple systems, so clear them on each
@@ -59,8 +59,8 @@ checksys = false
     #                            100.0, Dict{Symbol,Vector{<:TimeSeriesData}}(),nothing,nothing)
     #sys14 = System(_sys14)
 
-    for i in nodes_14
-        nodes_14[i].angle = deg2rad(nodes_14[i].angle)
+    for node in nodes_14
+        node.angle = deg2rad(node.angle)
     end
 
     sys14b = PowerSystems.System(
@@ -88,11 +88,10 @@ end
     # Include a System kwarg to make sure it doesn't get forwarded to PM functions.
     kwarg_test =
         () -> begin
-            sys = PSB.build_system(
-                PSB.MatPowerTestSystems,
-                "matpower_case5_re_sys";
+            sys = System(
+                joinpath(BAD_DATA,
+                    "case5_re.m");
                 runchecks = true,
-                force_build = true,
             )
         end
     @test_logs (:error,) min_level = Logging.Error match_mode = :any kwarg_test()
@@ -133,14 +132,9 @@ end
 end
 
 @testset "Test component conversion" begin
-    # This signature is used to capture expected error logs from parsing matpower
     test_conversion =
         () -> begin
-            sys = PSB.build_system(
-                PSB.MatPowerTestSystems,
-                "matpower_case5_re_sys";
-                force_build = true,
-            )
+            sys = System(joinpath(BAD_DATA, "case5_re.m"))
             l = get_component(Line, sys, "bus2-bus3-i_4")
             initial_time = Dates.DateTime("2020-01-01T00:00:00")
             dates = collect(

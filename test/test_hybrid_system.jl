@@ -30,7 +30,11 @@
 end
 
 @testset "Hybrid System from parsed files" begin
-    sys = create_rts_system_with_hybrid_system(; add_forecasts = true)
+    sys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys_with_hybrid";
+        add_forecasts = true,
+    )
     hybrids = collect(get_components(HybridSystem, sys))
     @test length(hybrids) == 1
     h_sys = hybrids[1]

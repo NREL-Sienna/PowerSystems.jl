@@ -13,10 +13,10 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-        flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+        b::FromTo
+        flow_limits::FromTo_ToFrom
         rate::Float64
-        angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -33,10 +33,10 @@ This file is auto-generated. Do not edit.
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
 - `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
-- `flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}`: TODO: throw warning above max SIL
-- `rate::Float64`: TODO: compare to SIL (warn) (theoretical limit)
-- `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `b::FromTo`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
+- `flow_limits::FromTo_ToFrom`: throw warning above max SIL
+- `rate::Float64`: compare to SIL (warn) (theoretical limit)
+- `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -53,12 +53,12 @@ mutable struct MonitoredLine <: ACBranch
     "System per-unit value"
     x::Float64
     "System per-unit value"
-    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
-    "TODO: throw warning above max SIL"
-    flow_limits::NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
-    "TODO: compare to SIL (warn) (theoretical limit)"
+    b::FromTo
+    "throw warning above max SIL"
+    flow_limits::FromTo_ToFrom
+    "compare to SIL (warn) (theoretical limit)"
     rate::Float64
-    angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}

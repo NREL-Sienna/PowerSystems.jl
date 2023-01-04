@@ -108,14 +108,21 @@ end
     @test ts isa PowerSystems.TimeSeriesData
 
     #Probabilistic Tests
-    ts = Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
+    data = SortedDict(
+        DateTime("01-01-01") => [1.0 1.0; 2.0 2.0],
+        DateTime("01-01-01") + Hour(1) => [1.0 1.0; 2.0 2.0],
+    )
+    ts = Probabilistic("scalingfactor", data, [0.5, 0.5], Hour(1))
     @test ts isa PowerSystems.TimeSeriesData
-    ts = Probabilistic(; name = "scalingfactor", percentiles = [1.0], data = data)
+    ts = Probabilistic(;
+        name = "scalingfactor",
+        percentiles = [1.0, 1.0],
+        data = data,
+        resolution = Hour(1),
+    )
     @test ts isa PowerSystems.TimeSeriesData
     ##Scenario Tests
-    ts = Scenarios("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    @test ts isa PowerSystems.TimeSeriesData
-    ts = Scenarios("scalingfactor", data)
+    ts = Scenarios("scalingfactor", data, Hour(1))
     @test ts isa PowerSystems.TimeSeriesData
 end
 
