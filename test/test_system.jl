@@ -465,6 +465,11 @@ end
     tempdir = mktempdir()
     sys_file = joinpath(tempdir, "sys.json")
     to_json(sys, sys_file; user_data = Dict("author" => "test"))
+
+    sys2 = System(sys_file)
+    @test get_name(sys2) == name
+    @test get_description(sys2) == description
+
     metadata_file = joinpath(tempdir, "sys_metadata.json")
     metadata = open(metadata_file) do io
         JSON3.read(io, Dict)

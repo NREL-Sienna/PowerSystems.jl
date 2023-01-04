@@ -1429,8 +1429,11 @@ function IS.deserialize(
         time_series_read_only = time_series_read_only,
         time_series_directory = time_series_directory,
     )
+    metadata = get(raw, "metadata", Dict())
+    name = get(metadata, "name", nothing)
+    description = get(metadata, "description", nothing)
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units, internal; kwargs...)
+    sys = System(data, units, internal; name = name, description = description, kwargs...)
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
