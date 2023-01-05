@@ -423,7 +423,11 @@ function read_gen!(
             ramp_limits = nothing,
             time_limits = nothing,
             operation_cost = TwoPartCost(0.0, 0.0),
-            ext = Dict("IREG" =>ireg_bus_num, "WMOD" => gens.wmod[ix], "WPF" => gens.wpf[ix]),
+            ext = Dict(
+                "IREG" => ireg_bus_num,
+                "WMOD" => gens.wmod[ix],
+                "WPF" => gens.wpf[ix],
+            ),
         )
 
         add_component!(sys, thermal_gen; skip_validation = SKIP_PM_VALIDATION)
