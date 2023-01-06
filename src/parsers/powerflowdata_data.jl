@@ -60,7 +60,14 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    read_branch!(sys, data.branches, data.caseid.sbase, data.caseid.nxfrat, bus_number_to_bus; kwargs...)
+    read_branch!(
+        sys,
+        data.branches,
+        data.caseid.sbase,
+        data.caseid.nxfrat,
+        bus_number_to_bus;
+        kwargs...,
+    )
     read_branch!(sys, data.transformers, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_switched_shunt!(
@@ -512,20 +519,23 @@ function read_branch!(
             @error("bad line data $branch_name. Transforming this Line to Transformer2W.")
             # Method needed for NTPS to make this data into a transformer
             xfr_name = "xfr-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
-            xfr =  Transformer2W(;
-            name = xfr_name,
-            available = branches.st[ix] > 0 ? true : false,
-            active_power_flow = 0.0,
-            reactive_power_flow = 0.0,
-            arc = Arc(bus_from, bus_to),
-            r = branches.r[ix],
-            x = branches.x[ix],
-            primary_shunt = branches.bi[ix], # ASKJOSE: I'm using this because this is Primary side.
-            rate = max_rate,
-            ext = Dict("line_to_xfr" => true, "rate_correction" => rate_correction_flag),
+            xfr = Transformer2W(;
+                name = xfr_name,
+                available = branches.st[ix] > 0 ? true : false,
+                active_power_flow = 0.0,
+                reactive_power_flow = 0.0,
+                arc = Arc(bus_from, bus_to),
+                r = branches.r[ix],
+                x = branches.x[ix],
+                primary_shunt = branches.bi[ix], # ASKJOSE: I'm using this because this is Primary side.
+                rate = max_rate,
+                ext = Dict(
+                    "line_to_xfr" => true,
+                    "rate_correction" => rate_correction_flag,
+                ),
             )
             add_component!(sys, xfr; skip_validation = SKIP_PM_VALIDATION)
-            
+
             continue
         end
 
@@ -533,7 +543,7 @@ function read_branch!(
         # raw file info with other info available
         rated_current = 0.0
         if (rating_flag > 0)
-            rated_current = (max_rate/(sqrt(3)*get_base_voltage(bus_from)))*10^3
+            rated_current = (max_rate / (sqrt(3) * get_base_voltage(bus_from))) * 10^3
         end
 
         branch = Line(;
@@ -547,9 +557,13 @@ function read_branch!(
             b = (from = branches.bi[ix], to = branches.bj[ix]),
             angle_limits = (min = -π / 2, max = π / 2),
             rate = max_rate,
-            ext = Dict("length" => branches.len[ix], "rate_correction" => rate_correction_flag, "rated_current(A)" => rated_current),
+            ext = Dict(
+                "length" => branches.len[ix],
+                "rate_correction" => rate_correction_flag,
+                "rated_current(A)" => rated_current,
+            ),
         )
-        
+
         add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
     end
 
