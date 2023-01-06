@@ -60,7 +60,7 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
     bus_number_to_bus = read_bus!(sys, data.buses, data; kwargs...)
     read_loads!(sys, data.loads, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_gen!(sys, data.generators, data.caseid.sbase, bus_number_to_bus; kwargs...)
-    read_branch!(sys, data.branches, data.caseid.sbase, bus_number_to_bus; kwargs...)
+    read_branch!(sys, data.branches, data.caseid.sbase, data.caseid.nxfrat, bus_number_to_bus; kwargs...)
     read_branch!(sys, data.transformers, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data.fixed_shunts, data.caseid.sbase, bus_number_to_bus; kwargs...)
     read_switched_shunt!(
@@ -107,7 +107,7 @@ function read_bus!(
 )
     bus_number_to_bus = Dict{Int, ACBus}()
 
-    bus_types = instances(MatpowerACBusTypes)
+    bus_types = instances(ACBusTypes)
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
@@ -202,7 +202,7 @@ function read_bus!(
 )
     bus_number_to_bus = Dict{Int, ACBus}()
 
-    bus_types = instances(MatpowerBusTypes)
+    bus_types = instances(BusTypes)
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in 1:length(buses)
@@ -480,6 +480,7 @@ function read_branch!(
     sys::System,
     branches::PowerFlowData.Branches33,
     sys_mbase::Float64,
+    rating_flag::Int8,
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
@@ -491,9 +492,10 @@ function read_branch!(
     end
 
     for ix in eachindex(branches.i)
+        rate_correction_flag = false
         bus_from = bus_number_to_bus[branches.i[ix]]
         bus_to = bus_number_to_bus[branches.j[ix]]
-        branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))-$(branches.ckt[ix])"
+        branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
         if get_base_voltage(bus_from) != get_base_voltage(bus_to)
             @error("bad line data $branch_name")
             # Method needed for NTPS to make this data into a transformer
@@ -503,7 +505,16 @@ function read_branch!(
         max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
         if max_rate == 0.0
             max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
+            rate_correction_flag = true
         end
+
+        # ASKJOSE: I think having this information will be useful to compare
+        # raw file info with other info available
+        rated_current = 0.0
+        if (rating_flag > 0)
+            rated_current = (max_rate/(sqrt(3)*get_base_voltage(bus_from)))*10^3
+        end
+
         branch = Line(;
             name = branch_name,
             available = branches.st[ix] > 0 ? true : false,
@@ -515,9 +526,9 @@ function read_branch!(
             b = (from = branches.bi[ix], to = branches.bj[ix]),
             angle_limits = (min = -π / 2, max = π / 2),
             rate = max_rate,
-            ext = Dict("length" => branches.len[ix]),
+            ext = Dict("length" => branches.len[ix], "rate_correction" => rate_correction_flag, "rated_current(A)" => rated_current),
         )
-
+        
         add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
     end
 
