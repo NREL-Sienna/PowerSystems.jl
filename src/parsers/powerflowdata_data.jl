@@ -496,16 +496,37 @@ function read_branch!(
         bus_from = bus_number_to_bus[branches.i[ix]]
         bus_to = bus_number_to_bus[branches.j[ix]]
         branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
-        if get_base_voltage(bus_from) != get_base_voltage(bus_to)
-            @error("bad line data $branch_name")
-            # Method needed for NTPS to make this data into a transformer
-            continue
-        end
 
         max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
         if max_rate == 0.0
             max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
             rate_correction_flag = true
+        end
+
+        # ASKJOSE: I don't think it makes sense to correct XFR ratings
+        # using the above correction? What can we do about this? There's 
+        # not much to work with because this is bad data?
+        # Do the values for r, x and primary_shunt I'm using make sense?
+
+        if get_base_voltage(bus_from) != get_base_voltage(bus_to)
+            @error("bad line data $branch_name. Transforming this Line to Transformer2W.")
+            # Method needed for NTPS to make this data into a transformer
+            xfr_name = "xfr-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
+            xfr =  Transformer2W(;
+            name = xfr_name,
+            available = branches.st[ix] > 0 ? true : false,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = Arc(bus_from, bus_to),
+            r = branches.r[ix],
+            x = branches.x[ix],
+            primary_shunt = branches.bi[ix], # ASKJOSE: I'm using this because this is Primary side.
+            rate = max_rate,
+            ext = Dict("line_to_xfr" => true, "rate_correction" => rate_correction_flag),
+            )
+            add_component!(sys, xfr; skip_validation = SKIP_PM_VALIDATION)
+            
+            continue
         end
 
         # ASKJOSE: I think having this information will be useful to compare
