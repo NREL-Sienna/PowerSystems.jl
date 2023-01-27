@@ -13,7 +13,7 @@ IS.@scoped_enum(
 
 const ENUMS = (
     AngleUnits,
-    BusTypes,
+    ACBusTypes,
     GeneratorCostModels,
     InputCategory,
     PrimeMovers,
@@ -46,7 +46,7 @@ function get_enum_value(enum, value::AbstractString)
 end
 
 Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnits, val)
-Base.convert(::Type{BusTypes}, val::AbstractString) = get_enum_value(BusTypes, val)
+Base.convert(::Type{ACBusTypes}, val::AbstractString) = get_enum_value(ACBusTypes, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)

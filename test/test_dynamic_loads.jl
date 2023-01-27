@@ -29,7 +29,7 @@
     )
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)
@@ -66,7 +66,7 @@
     )
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)
@@ -97,7 +97,7 @@ end
     @test al isa PowerSystems.Component
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)
@@ -120,7 +120,7 @@ end
     @test al isa PowerSystems.Component
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
     add_component!(sys, static_load)

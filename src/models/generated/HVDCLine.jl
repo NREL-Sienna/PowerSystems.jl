@@ -71,7 +71,7 @@ function HVDCLine(::Nothing)
         name="init",
         available=false,
         active_power_flow=0.0,
-        arc=Arc(Bus(nothing), Bus(nothing)),
+        arc=Arc(ACBus(nothing), ACBus(nothing)),
         active_power_limits_from=(min=0.0, max=0.0),
         active_power_limits_to=(min=0.0, max=0.0),
         reactive_power_limits_from=(min=0.0, max=0.0),

@@ -131,7 +131,7 @@
 # - `resolution`:  Resolution of time series in seconds
 # - `module`:  Module that defines the abstract type of the component
 # - `category`:  Type of component. Must map to abstract types defined by the "module"
-#   entry (Bus, ElectricLoad, Generator, LoadZone, Reserve)
+#   entry (ACBus, ElectricLoad, Generator, LoadZone, Reserve)
 # - `component_name`:  Name of component
 # - `name`:  User-defined name for the time series data.
 # - `normalization_factor`:  Controls normalization of the data. Use 1.0 for

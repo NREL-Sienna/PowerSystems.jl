@@ -1,11 +1,11 @@
 @testset "Bus Constructors" begin
-    tBus = Bus(nothing)
+    tBus = ACBus(nothing)
     tLoadZone = LoadZone(nothing)
 
-    bus = Bus(
+    bus = ACBus(
         1,
         "test",
-        BusTypes.SLACK,
+        ACBusTypes.SLACK,
         0.0,
         0.0,
         (min = 0.0, max = 0.0),
@@ -13,14 +13,14 @@
         nothing,
         nothing,
     )
-    @test PowerSystems.get_bustype(bus) == BusTypes.REF
+    @test PowerSystems.get_bustype(bus) == ACBusTypes.REF
 
     @test_throws(
         PowerSystems.DataFormatError,
-        Bus(
+        ACBus(
             1,
             "test",
-            BusTypes.ISOLATED,
+            ACBusTypes.ISOLATED,
             0.0,
             0.0,
             (min = 0.0, max = 0.0),
@@ -65,7 +65,7 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tStandardLoad = StandardLoad(nothing)
     @test tStandardLoad isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
+    tPowerLoad = PowerLoad("init", true, ACBus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
     tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component

@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct FixedAdmittance <: ElectricLoad
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         Y::Complex{Float64}
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `Y::Complex{Float64}`: System per-unit value
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: Services that this device contributes to
@@ -33,7 +33,7 @@ This file is auto-generated. Do not edit.
 mutable struct FixedAdmittance <: ElectricLoad
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     "System per-unit value"
     Y::Complex{Float64}
     "corresponding dynamic injection model for admittance"
@@ -60,7 +60,7 @@ function FixedAdmittance(::Nothing)
     FixedAdmittance(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         Y=0.0,
         dynamic_injector=nothing,
         services=Device[],

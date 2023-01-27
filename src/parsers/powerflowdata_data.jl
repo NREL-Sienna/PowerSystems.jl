@@ -89,16 +89,16 @@ function read_bus!(
     data::PowerFlowData.Network;
     kwargs...,
 )
-    bus_number_to_bus = Dict{Int, Bus}()
+    bus_number_to_bus = Dict{Int, ACBus}()
 
-    bus_types = instances(MatpowerBusTypes)
+    bus_types = instances(MatpowerACBusTypes)
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
         # d_key is bus key
         bus_name = _get_name(buses.name[ix])
-        has_component(Bus, sys, bus_name) && throw(
+        has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
             ),
@@ -120,7 +120,7 @@ function read_bus!(
 
         # TODO: LoadZones need to be created and populated here
 
-        bus = Bus(
+        bus = ACBus(
             bus_number,
             bus_name,
             bus_types[buses.ide[ix]],
@@ -145,7 +145,7 @@ function read_bus!(
     data::PowerFlowData.Network;
     kwargs...,
 )
-    bus_number_to_bus = Dict{Int, Bus}()
+    bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(MatpowerBusTypes)
 
@@ -154,7 +154,7 @@ function read_bus!(
         # d id the data dict for each bus
         # d_key is bus key
         bus_name = _get_name(buses.name[ix])
-        has_component(Bus, sys, bus_name) && throw(
+        has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
             ),
@@ -178,7 +178,7 @@ function read_bus!(
 
         # TODO: LoadZones need to be created and populated here
 
-        bus = Bus(
+        bus = ACBus(
             bus_number,
             bus_name,
             bus_types[buses.ide[ix]],
@@ -206,7 +206,7 @@ function read_loads!(
     sys::System,
     loads::PowerFlowData.Loads,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     if isempty(loads)
@@ -278,7 +278,7 @@ function read_gen!(
     sys::System,
     gens::PowerFlowData.Generators,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading generator data"
@@ -332,7 +332,7 @@ function read_branch!(
     sys::System,
     branches::PowerFlowData.Branches30,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading line data"
@@ -373,7 +373,7 @@ function read_shunt!(
     ::System,
     ::Nothing,
     ::Float64,
-    ::Dict{Int, Bus};
+    ::Dict{Int, ACBus};
     kwargs...,
 )
     @debug "No data for Fixed Shunts"
@@ -384,7 +384,7 @@ function read_shunt!(
     sys::System,
     data::PowerFlowData.FixedShunts,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     return
@@ -394,7 +394,7 @@ function read_switched_shunt!(
     sys::System,
     ::Nothing,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @debug "No data for Switched Shunts"
@@ -405,7 +405,7 @@ function read_switched_shunt!(
     sys::System,
     ::PowerFlowData.SwitchedShunts30,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     return
@@ -415,7 +415,7 @@ function read_dcline!(
     sys::System,
     ::Nothing,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @debug "No data for HVDC Line"
@@ -426,7 +426,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.TwoTerminalDCLines30,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     return
@@ -436,7 +436,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.TwoTerminalDCLines33,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     return
@@ -446,7 +446,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID30},
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     return

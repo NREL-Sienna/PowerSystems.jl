@@ -49,7 +49,7 @@ end
 
 @testset "Test printing of system and components" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    @test are_type_and_fields_in_output(iterate(get_components(Bus, sys))[1])
+    @test are_type_and_fields_in_output(iterate(get_components(ACBus, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(Generator, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])

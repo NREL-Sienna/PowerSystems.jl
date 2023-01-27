@@ -301,7 +301,7 @@
             "supertype": "AggregationTopology"
         },
         {
-            "struct_name": "Bus",
+            "struct_name": "ACBus",
             "docstring": "A power-system bus.",
             "inner_constructor_check": "check_bus_params",
             "fields": [
@@ -322,7 +322,7 @@
                     "name": "bustype",
                     "comment": "bus type",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, BusTypes}"
+                    "data_type": "Union{Nothing, ACBusTypes}"
                 },
                 {
                     "name": "angle",
@@ -393,7 +393,6 @@
         {
             "struct_name": "DCBus",
             "docstring": "A power-system DC bus.",
-            "inner_constructor_check": "check_dc_bus_params",
             "fields": [
               {
                 "name": "number",
@@ -420,7 +419,7 @@
                 "name": "voltage_limits",
                 "comment": "limits on the voltage variation as multiples of basevoltage",
                 "null_value": "(min=0.0, max=0.0)",
-                "data_type": "Union{Nothing, Min_Max}"
+                "data_type": "Union{Nothing, MinMax}"
               },
               {
                 "name": "base_voltage",
@@ -470,14 +469,14 @@
                 {
                     "name": "from",
                     "comment": "The initial bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "to",
                     "comment": "The terminal bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "internal",
@@ -517,7 +516,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -627,7 +626,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -745,7 +744,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -881,7 +880,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -997,7 +996,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1097,7 +1096,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1182,7 +1181,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1262,8 +1261,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -1360,8 +1359,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "Y",
@@ -1423,8 +1422,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "Y",
@@ -1501,8 +1500,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -1594,8 +1593,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "base_power",
@@ -1747,8 +1746,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2503,8 +2502,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2702,8 +2701,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2850,8 +2849,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3123,8 +3122,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3244,8 +3243,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3358,8 +3357,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3532,8 +3531,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3721,8 +3720,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "prime_mover",
@@ -3884,8 +3883,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "prime_mover",
@@ -13949,8 +13948,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",

@@ -10,8 +10,8 @@ dates = collect(
 )
 
 nodes14() = [
-    Bus(1, "Bus 1", "REF", 0.0, 1.06, (min = 0.94, max = 1.06), 69, nothing, nothing),
-    Bus(
+    ACBus(1, "Bus 1", "REF", 0.0, 1.06, (min = 0.94, max = 1.06), 69, nothing, nothing),
+    ACBus(
         2,
         "Bus 2",
         "PV",
@@ -22,7 +22,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         3,
         "Bus 3",
         "PV",
@@ -33,7 +33,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         4,
         "Bus 4",
         "PQ",
@@ -44,7 +44,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         5,
         "Bus 5",
         "PQ",
@@ -55,7 +55,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         6,
         "Bus 6",
         "PV",
@@ -66,7 +66,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         7,
         "Bus 7",
         "PQ",
@@ -77,7 +77,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         8,
         "Bus 8",
         "PV",
@@ -88,7 +88,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         9,
         "Bus 9",
         "PQ",
@@ -99,7 +99,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         10,
         "Bus 10",
         "PQ",
@@ -110,7 +110,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         11,
         "Bus 11",
         "PQ",
@@ -121,7 +121,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         12,
         "Bus 12",
         "PQ",
@@ -132,7 +132,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         13,
         "Bus 13",
         "PQ",
@@ -143,7 +143,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         14,
         "Bus 14",
         "PQ",

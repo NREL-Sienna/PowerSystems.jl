@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct ExponentialLoad <: StaticLoad
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         active_power_coefficient::Float64
@@ -28,7 +28,7 @@ Data structure for a static exponential load.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `active_power_coefficient::Float64`: Coefficient relating voltage dependence for power P = P0 * V^α, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -45,7 +45,7 @@ Data structure for a static exponential load.
 mutable struct ExponentialLoad <: StaticLoad
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Coefficient relating voltage dependence for power P = P0 * V^α"
@@ -80,7 +80,7 @@ function ExponentialLoad(::Nothing)
     ExponentialLoad(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         active_power_coefficient=0.0,

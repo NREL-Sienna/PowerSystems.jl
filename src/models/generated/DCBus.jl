@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         number::Int
         name::String
         magnitude::Union{Nothing, Float64}
-        voltage_limits::Union{Nothing, Min_Max}
+        voltage_limits::Union{Nothing, MinMax}
         base_voltage::Union{Nothing, Float64}
         area::Union{Nothing, Area}
         load_zone::Union{Nothing, LoadZone}
@@ -23,7 +23,7 @@ A power-system DC bus.
 - `number::Int`: number associated with the DC bus
 - `name::String`: the name of the DC bus
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
-- `voltage_limits::Union{Nothing, Min_Max}`: limits on the voltage variation as multiples of basevoltage
+- `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the DC bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
@@ -38,7 +38,7 @@ mutable struct DCBus <: Topology
     "voltage as a multiple of basevoltage"
     magnitude::Union{Nothing, Float64}
     "limits on the voltage variation as multiples of basevoltage"
-    voltage_limits::Union{Nothing, Min_Max}
+    voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
     "the area containing the DC bus"
@@ -48,21 +48,6 @@ mutable struct DCBus <: Topology
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
-
-    function DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
-        (number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = check_dc_bus_params(
-            number,
-            name,
-            magnitude,
-            voltage_limits,
-            base_voltage,
-            area,
-            load_zone,
-            ext,
-            internal,
-        )
-        new(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
-    end
 end
 
 function DCBus(number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )

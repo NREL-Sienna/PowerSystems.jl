@@ -51,7 +51,7 @@ results["bus_results"]
 # Before running the power flow command these are the values of the
 # voltages:
 
-for b in get_components(Bus, system_data)
+for b in get_components(ACBus, system_data)
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
 end
 
@@ -66,6 +66,6 @@ solve_powerflow!(system_data; finite_diff = true, method = :newton)
 # After running the power flow command this are the values of the
 # voltages:
 
-for b in get_components(Bus, system_data)
+for b in get_components(ACBus, system_data)
     println("$(get_name(b)) - Magnitude $(get_magnitude(b)) - Angle (rad) $(get_angle(b))")
 end

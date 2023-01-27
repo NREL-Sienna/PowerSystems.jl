@@ -1,7 +1,7 @@
 
 function get_expected_buses(::Type{T}, sys::System) where {T <: AggregationTopology}
     expected_buses = Dict{String, Vector{String}}()
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         agg = get_aggregation_topology_accessor(T)(bus)
         name = get_name(agg)
         if !haskey(expected_buses, name)

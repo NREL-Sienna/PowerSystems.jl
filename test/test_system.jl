@@ -23,7 +23,7 @@
     @test !isempty(get_available_components(ThermalStandard, sys))
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         push!(bus_numbers, bus.number)
         if length(bus_numbers) >= 2
             break
@@ -100,16 +100,16 @@ end
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
 
     @test length(sys.bus_numbers) > 0
-    buses = get_components(Bus, sys)
+    buses = get_components(ACBus, sys)
     bus_numbers = sort!([get_number(bus) for bus in buses])
     @test bus_numbers == get_bus_numbers(sys)
 
     # Remove some components
-    remove_components!(x -> get_number(x) ∈ [101, 201], sys, Bus)
+    remove_components!(x -> get_number(x) ∈ [101, 201], sys, ACBus)
     @test length(sys.bus_numbers) == length(bus_numbers) - 2
 
     # Remove entire type
-    remove_components!(sys, Bus)
+    remove_components!(sys, ACBus)
     @test length(sys.bus_numbers) == 0
 
     # Remove individually.
@@ -128,7 +128,7 @@ end
     end
     @test length(sys.bus_numbers) > 0
     for bus in buses
-        remove_component!(Bus, sys, get_name(bus))
+        remove_component!(ACBus, sys, get_name(bus))
     end
     @test length(sys.bus_numbers) == 0
 end
@@ -176,7 +176,7 @@ end
 
     remove_components!(sys, Area)
     @test isempty(get_components(Area, sys))
-    @test isnothing(get_area(collect(get_components(Bus, sys))[1]))
+    @test isnothing(get_area(collect(get_components(ACBus, sys))[1]))
 end
 
 @testset "Test missing Arc bus" begin
@@ -219,8 +219,8 @@ end
 
 @testset "Test add_time_series multiple components" begin
     sys = System(100.0)
-    bus = Bus(nothing)
-    bus.bustype = BusTypes.REF
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
     add_component!(sys, bus)
     components = []
     len = 2
@@ -250,11 +250,11 @@ end
 
 @testset "Test set_name! of system component" begin
     sys = System(100.0)
-    bus = Bus(nothing)
-    bus.bustype = BusTypes.REF
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
     add_component!(sys, bus)
     set_name!(sys, bus, "new_name")
-    @test get_component(Bus, sys, "new_name") === bus
+    @test get_component(ACBus, sys, "new_name") === bus
 
     @test_throws ErrorException set_name!(bus, "new_name2")
     remove_component!(sys, bus)
@@ -264,8 +264,8 @@ end
 
 @testset "Test forecast parameters" begin
     sys = System(100.0)
-    bus = Bus(nothing)
-    bus.bustype = BusTypes.REF
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
     add_component!(sys, bus)
     gen = ThermalStandard(nothing)
     gen.name = "gen"
@@ -415,7 +415,7 @@ end
     # Invalid Bus base_voltage values throw errors.
     # Invalid ThermalStandard active_power logs warning messages.
 
-    bus = first(get_components(Bus, sys))
+    bus = first(get_components(ACBus, sys))
     check_component(sys, bus)
     orig = get_base_voltage(bus)
     set_base_voltage!(bus, -1.0)
