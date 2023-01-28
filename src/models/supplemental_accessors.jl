@@ -39,7 +39,10 @@ end
 """
 Return the max reactive power for a device from get_reactive_power_limits.max
 """
-function get_max_reactive_power(d::T) where {T <: Device}
+function get_max_reactive_power(d::T)::Float64 where {T <: Device}
+    if isnothing(get_reactive_power_limits(d))
+        return Inf
+    end
     return get_reactive_power_limits(d).max
 end
 
