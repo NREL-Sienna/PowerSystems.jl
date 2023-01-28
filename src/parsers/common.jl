@@ -14,6 +14,8 @@ merge!(
         "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "DFO" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "SYNC_COND" => ThermalFuels.OTHER,
+        "GEOTHERMAL " => ThermalFuels.GEOTHERMAL,
+        "AG_BIPRODUCT" => ThermalFuels.AG_BIPRODUCT,
     ),
 )
 
@@ -25,16 +27,20 @@ merge!(
         "WIND" => PrimeMovers.WT,
         "PV" => PrimeMovers.PVe,
         "PVe" => PrimeMovers.PVe,
+        "SOLAR" => PrimeMovers.PVe,
         "RTPV" => PrimeMovers.PVe,
         "NB" => PrimeMovers.ST,
         "STEAM" => PrimeMovers.ST,
         "HYDRO" => PrimeMovers.HY,
         "ROR" => PrimeMovers.HY,
+        "PUMP" => PrimeMovers.PS,
+        "PUMPED_HYDRO" => PrimeMovers.PS,
         "NUCLEAR" => PrimeMovers.ST,
         "SYNC_COND" => PrimeMovers.OT,
         "CSP" => PrimeMovers.CP,
         "UN" => PrimeMovers.OT,
         "STORAGE" => PrimeMovers.BA,
+        "ICE" => PrimeMovers.IC,
     ),
 )
 
@@ -109,8 +115,8 @@ function get_branch_type(
 end
 
 function calculate_rating(
-    active_power_limits::Union{Min_Max, Nothing},
-    reactive_power_limits::Union{Min_Max, Nothing},
+    active_power_limits::Union{MinMax, Nothing},
+    reactive_power_limits::Union{MinMax, Nothing},
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
     return calculate_rating(active_power_limits.max, reactive_power_max)
@@ -121,13 +127,13 @@ function calculate_rating(active_power_max::Float64, reactive_power_max::Float64
 end
 
 function string_compare(str1, str2; casefold = true)
-    return normalize(str1, casefold = casefold) === normalize(str2, casefold = casefold)
+    return normalize(str1; casefold = casefold) === normalize(str2; casefold = casefold)
 end
 
 function string_occursin(str1, str2; casefold = true)
     return occursin(
-        normalize(str1, casefold = casefold),
-        normalize(srt2, casefold = casefold),
+        normalize(str1; casefold = casefold),
+        normalize(srt2; casefold = casefold),
     )
 end
 

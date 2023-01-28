@@ -13,7 +13,7 @@ nodes_OMIB = [
     Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
-static_gen = ThermalStandard(
+static_gen = ThermalStandard(;
     name = "TestGen",
     available = true,
     status = true,
@@ -37,7 +37,7 @@ branch_OMIB = [
         true, #available
         0.0, #active power flow initial condition (from-to)
         0.0, #reactive power flow initial condition (from-to)
-        Arc(from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
+        Arc(; from = nodes_OMIB[1], to = nodes_OMIB[2]), #Connection between buses
         0.01, #resistance in pu
         0.05, #reactance in pu
         (from = 0.0, to = 0.0), #susceptance in pu
@@ -47,10 +47,10 @@ branch_OMIB = [
 ]  #angle limits (-min and max)
 
 @testset "Dynamic Machines" begin
-    Basic = BaseMachine(R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
+    Basic = BaseMachine(; R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
     @test Basic isa PowerSystems.DynamicComponent
 
-    GENROU = RoundRotorQuadratic(
+    GENROU = RoundRotorQuadratic(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -66,7 +66,7 @@ branch_OMIB = [
     )
     @test GENROU isa PowerSystems.DynamicComponent
 
-    GENROE = RoundRotorExponential(
+    GENROE = RoundRotorExponential(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -82,7 +82,7 @@ branch_OMIB = [
     )
     @test GENROE isa PowerSystems.DynamicComponent
 
-    GENSAL = SalientPoleQuadratic(
+    GENSAL = SalientPoleQuadratic(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -96,7 +96,7 @@ branch_OMIB = [
     )
     @test GENSAL isa PowerSystems.DynamicComponent
 
-    GENSAE = SalientPoleExponential(
+    GENSAE = SalientPoleExponential(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -110,7 +110,7 @@ branch_OMIB = [
     )
     @test GENSAE isa PowerSystems.DynamicComponent
 
-    oneDoneQ = OneDOneQMachine(
+    oneDoneQ = OneDOneQMachine(;
         R = 0.0,
         Xd = 0.8979,
         Xq = 0.646,
@@ -121,7 +121,23 @@ branch_OMIB = [
     )
     @test oneDoneQ isa PowerSystems.DynamicComponent
 
-    AndersonFouad = AndersonFouadMachine(
+    SauerPai = SauerPaiMachine(;
+        R = 0.0,
+        Xd = 0.920,
+        Xq = 0.130,
+        Xd_p = 0.300,
+        Xq_p = 0.228,
+        Xd_pp = 0.220,
+        Xq_pp = 0.290,
+        Xl = 0.1,
+        Td0_p = 5.2,
+        Tq0_p = 0.85,
+        Td0_pp = 0.029,
+        Tq0_pp = 0.034,
+    )
+    @test SauerPai isa PowerSystems.DynamicComponent
+
+    AndersonFouad = AndersonFouadMachine(;
         R = 0.0,
         Xd = 0.8979,
         Xq = 0.646,
@@ -136,7 +152,7 @@ branch_OMIB = [
     )
     @test AndersonFouad isa PowerSystems.DynamicComponent
 
-    KundurMachine = SimpleFullMachine(
+    KundurMachine = SimpleFullMachine(;
         R = 0.003, #Example 3.1 and 4.1 of Kundur
         R_f = 0.0006,
         R_1d = 0.0284, #RD in Machowski
@@ -152,7 +168,7 @@ branch_OMIB = [
     )
     @test KundurMachine isa PowerSystems.DynamicComponent
 
-    KundurFullMachine = FullMachine(
+    KundurFullMachine = FullMachine(;
         R = 0.003, #Example 3.1 and 4.1 of Kundur
         R_f = 0.0006,
         R_1d = 0.0284, #RD in Machowski
@@ -168,7 +184,7 @@ branch_OMIB = [
     )
     @test KundurFullMachine isa PowerSystems.DynamicComponent
 
-    Mach2_benchmark = OneDOneQMachine(
+    Mach2_benchmark = OneDOneQMachine(;
         R = 0.0,
         Xd = 1.3125,
         Xq = 1.2578,
@@ -182,10 +198,10 @@ end
 
 ################ Shaft Data #####################
 @testset "Dynamic Shaft" begin
-    BaseShaft = SingleMass(H = 5.148, D = 2.0)
+    BaseShaft = SingleMass(; H = 5.148, D = 2.0)
     @test BaseShaft isa PowerSystems.DynamicComponent
 
-    FiveShaft = FiveMassShaft(
+    FiveShaft = FiveMassShaft(;
         H = 5.148,
         H_hp = 0.3348,
         H_ip = 0.7306,
@@ -210,15 +226,15 @@ end
 
 ################# PSS Data #####################
 @testset "Dynamic PSS" begin
-    no_pss = PSSFixed(V_pss = 0.0)
+    no_pss = PSSFixed(; V_pss = 0.0)
     @test no_pss isa PowerSystems.DynamicComponent
 end
 ################ TG Data #####################
 @testset "Dynamic Turbine Governor Constructors" begin
-    fixed_tg = TGFixed(efficiency = 1.0)
+    fixed_tg = TGFixed(; efficiency = 1.0)
     @test fixed_tg isa PowerSystems.DynamicComponent
 
-    typeI_tg = TGTypeI(
+    typeI_tg = TGTypeI(;
         R = 0.02,
         Ts = 0.1,
         Tc = 0.45,
@@ -229,10 +245,10 @@ end
     )
     @test typeI_tg isa PowerSystems.DynamicComponent
 
-    typeII_tg = TGTypeII(R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
+    typeII_tg = TGTypeII(; R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
     @test typeII_tg isa PowerSystems.DynamicComponent
 
-    gast_tg = GasTG(
+    gast_tg = GasTG(;
         R = 0.05,
         T1 = 0.40,
         T2 = 0.10,
@@ -247,13 +263,13 @@ end
 
 ################ AVR Data #####################
 @testset "Dynamic AVR Constructors" begin
-    proportional_avr = AVRSimple(Kv = 5000.0)
+    proportional_avr = AVRSimple(; Kv = 5000.0)
     @test proportional_avr isa PowerSystems.DynamicComponent
 
-    fixed_avr = AVRFixed(Vf = 1.05, V_ref = 1.0)
+    fixed_avr = AVRFixed(; Vf = 1.05, V_ref = 1.0)
     @test fixed_avr isa PowerSystems.DynamicComponent
 
-    typeI_avr = AVRTypeI(
+    typeI_avr = AVRTypeI(;
         Ka = 200.0,
         Ke = 1.0,
         Kf = 0.0012,
@@ -267,7 +283,7 @@ end
     )
     @test typeI_avr isa PowerSystems.DynamicComponent
 
-    ac1a_avr = ESAC1A(
+    ac1a_avr = ESAC1A(;
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -286,7 +302,7 @@ end
     )
     @test ac1a_avr isa PowerSystems.DynamicComponent
 
-    mod_ac1a_avr = EXAC1(
+    mod_ac1a_avr = EXAC1(;
         Tr = 0.0,
         Tb = 0.0,
         Tc = 0.0,
@@ -304,7 +320,7 @@ end
     )
     @test mod_ac1a_avr isa PowerSystems.DynamicComponent
 
-    st1a_avr = ESST1A(
+    st1a_avr = ESST1A(;
         UEL_flags = 1,
         PSS_flags = 1,
         Tr = 0.0,
@@ -325,7 +341,7 @@ end
     )
     @test st1a_avr isa PowerSystems.DynamicComponent
 
-    gen2_avr_benchmark = AVRTypeII(
+    gen2_avr_benchmark = AVRTypeII(;
         K0 = 20.0,
         T1 = 0.2,
         T2 = 0.063,
@@ -342,21 +358,21 @@ end
 ######################### Generators ########################
 @testset "Dynamic Generators" begin
     #Components for the test
-    Basic = BaseMachine(R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
+    Basic = BaseMachine(; R = 0.0, Xd_p = 0.2995, eq_p = 1.05)
 
-    BaseShaft = SingleMass(H = 5.148, D = 2.0)
+    BaseShaft = SingleMass(; H = 5.148, D = 2.0)
 
-    fixed_avr = AVRFixed(Vf = 1.05, V_ref = 1.0)
+    fixed_avr = AVRFixed(; Vf = 1.05, V_ref = 1.0)
 
-    proportional_avr = AVRSimple(Kv = 5000.0)
+    proportional_avr = AVRSimple(; Kv = 5000.0)
 
-    sexs_avr = SEXS(Ta_Tb = 0.1, Tb = 10.0, K = 100.0, Te = 0.1, V_lim = (-4.0, 5.0))
+    sexs_avr = SEXS(; Ta_Tb = 0.1, Tb = 10.0, K = 100.0, Te = 0.1, V_lim = (-4.0, 5.0))
 
-    fixed_tg = TGFixed(efficiency = 1.0)
+    fixed_tg = TGFixed(; efficiency = 1.0)
 
-    no_pss = PSSFixed(V_pss = 0.0)
+    no_pss = PSSFixed(; V_pss = 0.0)
 
-    oneDoneQ = OneDOneQMachine(
+    oneDoneQ = OneDOneQMachine(;
         R = 0.0,
         Xd = 0.8979,
         Xq = 0.646,
@@ -366,7 +382,7 @@ end
         Tq0_p = 0.033,
     )
 
-    Gen1AVR = DynamicGenerator(
+    Gen1AVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
@@ -376,7 +392,7 @@ end
         pss = no_pss,
     )
     @test Gen1AVR isa PowerSystems.Component
-    Gen1AVRnoAVR = DynamicGenerator(
+    Gen1AVRnoAVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
         machine = Basic,
@@ -387,7 +403,7 @@ end
     )
     @test Gen1AVRnoAVR isa PowerSystems.Component
 
-    Gen2AVRnoAVR = DynamicGenerator(
+    Gen2AVRnoAVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
@@ -398,7 +414,7 @@ end
     )
     @test Gen2AVRnoAVR isa PowerSystems.Component
 
-    Gen2AVR = DynamicGenerator(
+    Gen2AVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
@@ -409,7 +425,7 @@ end
     )
     @test Gen2AVR isa PowerSystems.Component
 
-    Gen3AVR = DynamicGenerator(
+    Gen3AVR = DynamicGenerator(;
         name = get_name(static_gen),
         ω_ref = 1.0,
         machine = oneDoneQ,
@@ -420,7 +436,7 @@ end
     )
     @test Gen3AVR isa PowerSystems.Component
 
-    sys = System(100)
+    sys = System(100.0)
     for bus in nodes_OMIB
         add_component!(sys, bus)
     end
@@ -485,7 +501,7 @@ end
 
 @testset "Generic DER (DERD)" begin
     #valid (non-default) Qref_Flag
-    derd = GenericDER(
+    derd = GenericDER(;
         name = "init",
         Qref_Flag = 2,
         PQ_Flag = 0,
@@ -579,7 +595,7 @@ end
         ext = Dict{String, Any}(),
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
@@ -591,7 +607,7 @@ end
 
 @testset "Aggregate Distributed Generation" begin
     #valid (non-default) Freq_Flag
-    dera = AggregateDistributedGenerationA(
+    dera = AggregateDistributedGenerationA(;
         name = "init",
         Pf_Flag = 0,
         Freq_Flag = 1,
@@ -681,7 +697,7 @@ end
         ext = Dict{String, Any}(),
     )
 
-    sys = System(100)
+    sys = System(100.0)
     bus = Bus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
@@ -692,7 +708,7 @@ end
 end
 
 @testset "Forward functions" begin
-    GENROU = RoundRotorQuadratic(
+    GENROU = RoundRotorQuadratic(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -708,7 +724,7 @@ end
     )
     test_accessors(GENROU)
 
-    GENROE = RoundRotorExponential(
+    GENROE = RoundRotorExponential(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -724,7 +740,7 @@ end
     )
     test_accessors(GENROE)
 
-    GENSAL = SalientPoleQuadratic(
+    GENSAL = SalientPoleQuadratic(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,
@@ -738,7 +754,7 @@ end
     )
     test_accessors(GENSAL)
 
-    GENSAE = SalientPoleExponential(
+    GENSAE = SalientPoleExponential(;
         R = 0.0,
         Td0_p = 7.4,
         Td0_pp = 0.03,

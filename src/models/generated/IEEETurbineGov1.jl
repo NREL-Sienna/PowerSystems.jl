@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         T3::Float64
         U0::Float64
         U_c::Float64
-        valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        valve_position_limits::MinMax
         T4::Float64
         K1::Float64
         K2::Float64
@@ -42,7 +42,7 @@ IEEE Type 1 Speed-Governing Model
 - `T3::Float64`: Valve position Time Constant, validation range: `(eps(), 1)`, action if invalid: `error`
 - `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`, action if invalid: `warn`
 - `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0)`, action if invalid: `warn`
-- `valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`: Valve position limits in MW
+- `valve_position_limits::MinMax`: Valve position limits in MW
 - `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1)`, action if invalid: `warn`
 - `K1::Float64`: Fraction of high presure shaft power, validation range: `(-2, 1)`, action if invalid: `warn`
 - `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -82,7 +82,7 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     "Maximum Valve closing rate"
     U_c::Float64
     "Valve position limits in MW"
-    valve_position_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    valve_position_limits::MinMax
     "Time Constant inlet steam"
     T4::Float64
     "Fraction of high presure shaft power"

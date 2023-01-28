@@ -10,7 +10,7 @@ end
 
 function get_AggregateDistributedGenerationA_states(Freq_Flag::Int)
     if Freq_Flag == 0
-        return [:Vmeas, :Pmeas, :Q_V, :Iq, :Mult, :Fmeas, :dPord, :Pord, :Ip], 9
+        return [:Vmeas, :Pmeas, :Q_V, :Iq, :Mult, :Fmeas, :Ip], 7
     elseif Freq_Flag == 1
         return [:Vmeas, :Pmeas, :Q_V, :Iq, :Mult, :Fmeas, :Power_PI, :dPord, :Pord, :Ip], 10
     else

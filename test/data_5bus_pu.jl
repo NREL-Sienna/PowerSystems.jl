@@ -25,7 +25,7 @@ branches5_dc(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[2]),
+        Arc(; from = nodes5[1], to = nodes5[2]),
         0.00281,
         0.0281,
         (from = 0.00356, to = 0.00356),
@@ -36,7 +36,7 @@ branches5_dc(nodes5) = [
         "DCL2",
         true,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[4]),
+        Arc(; from = nodes5[1], to = nodes5[4]),
         (min = -3000.0, max = 3000.0),
         (min = -3000, max = 3000),
         (min = -3000.0, max = 3000.0),
@@ -48,7 +48,7 @@ branches5_dc(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[5]),
+        Arc(; from = nodes5[1], to = nodes5[5]),
         0.00064,
         0.0064,
         (from = 0.01563, to = 0.01563),
@@ -60,7 +60,7 @@ branches5_dc(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[2], to = nodes5[3]),
+        Arc(; from = nodes5[2], to = nodes5[3]),
         0.00108,
         0.0108,
         (from = 0.00926, to = 0.00926),
@@ -72,7 +72,7 @@ branches5_dc(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[3], to = nodes5[4]),
+        Arc(; from = nodes5[3], to = nodes5[4]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 0.00337),
@@ -84,7 +84,7 @@ branches5_dc(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[4], to = nodes5[5]),
+        Arc(; from = nodes5[4], to = nodes5[5]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 00.00337),
@@ -99,7 +99,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[2]),
+        Arc(; from = nodes5[1], to = nodes5[2]),
         0.00281,
         0.0281,
         (from = 0.00356, to = 0.00356),
@@ -111,7 +111,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[4]),
+        Arc(; from = nodes5[1], to = nodes5[4]),
         0.00304,
         0.0304,
         (from = 0.00329, to = 0.00329),
@@ -123,7 +123,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[5]),
+        Arc(; from = nodes5[1], to = nodes5[5]),
         0.00064,
         0.0064,
         (from = 0.01563, to = 0.01563),
@@ -135,7 +135,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[2], to = nodes5[3]),
+        Arc(; from = nodes5[2], to = nodes5[3]),
         0.00108,
         0.0108,
         (from = 0.00926, to = 0.00926),
@@ -147,7 +147,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[3], to = nodes5[4]),
+        Arc(; from = nodes5[3], to = nodes5[4]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 0.00337),
@@ -159,7 +159,7 @@ branches5(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[4], to = nodes5[5]),
+        Arc(; from = nodes5[4], to = nodes5[5]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 00.00337),
@@ -174,7 +174,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[2]),
+        Arc(; from = nodes5[1], to = nodes5[2]),
         0.00281,
         0.0281,
         (from = 0.00356, to = 0.00356),
@@ -187,7 +187,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[4]),
+        Arc(; from = nodes5[1], to = nodes5[4]),
         0.00304,
         0.0304,
         (from = 0.00329, to = 0.00329),
@@ -199,7 +199,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[5]),
+        Arc(; from = nodes5[1], to = nodes5[5]),
         0.00064,
         0.0064,
         (from = 0.01563, to = 0.01563),
@@ -211,7 +211,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[2], to = nodes5[3]),
+        Arc(; from = nodes5[2], to = nodes5[3]),
         0.00108,
         0.0108,
         (from = 0.00926, to = 0.00926),
@@ -223,7 +223,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[3], to = nodes5[4]),
+        Arc(; from = nodes5[3], to = nodes5[4]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 0.00337),
@@ -235,7 +235,7 @@ branches5_ml(nodes5) = [
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[4], to = nodes5[5]),
+        Arc(; from = nodes5[4], to = nodes5[5]),
         0.00297,
         0.0297,
         (from = 0.00337, to = 00.00337),
@@ -316,7 +316,7 @@ thermal_generators5(nodes5) = [
         operation_cost = ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
         base_power = 100.0,
     ),
-    ThermalStandard(
+    ThermalStandard(;
         name = "Park City",
         available = true,
         status = true,
@@ -333,7 +333,7 @@ thermal_generators5(nodes5) = [
         operation_cost = ThreePartCost((0.0, 1500.0), 0.0, 1.5, 0.75),
         base_power = 100.0,
     ),
-    ThermalStandard(
+    ThermalStandard(;
         name = "Solitude",
         available = true,
         status = true,
@@ -350,7 +350,7 @@ thermal_generators5(nodes5) = [
         operation_cost = ThreePartCost((0.0, 3000.0), 0.0, 3.0, 1.5),
         base_power = 100.0,
     ),
-    ThermalStandard(
+    ThermalStandard(;
         name = "Sundance",
         available = true,
         status = true,
@@ -367,7 +367,7 @@ thermal_generators5(nodes5) = [
         operation_cost = ThreePartCost((0.0, 4000.0), 0.0, 4.0, 2.0),
         base_power = 100.0,
     ),
-    ThermalStandard(
+    ThermalStandard(;
         name = "Brighton",
         available = true,
         status = true,
@@ -429,7 +429,7 @@ renewable_generators5(nodes5) = [
 ];
 
 hydro_generators5(nodes5) = [
-    HydroDispatch(
+    HydroDispatch(;
         name = "HydroDispatch",
         available = true,
         bus = nodes5[3],
@@ -443,7 +443,7 @@ hydro_generators5(nodes5) = [
         time_limits = nothing,
         base_power = 100.0,
     ),
-    HydroEnergyReservoir(
+    HydroEnergyReservoir(;
         name = "HydroEnergyReservoir",
         available = true,
         bus = nodes5[3],
@@ -464,7 +464,7 @@ hydro_generators5(nodes5) = [
 ];
 
 battery5(nodes5) = [
-    GenericBattery(
+    GenericBattery(;
         name = "Bat",
         prime_mover = PrimeMovers.BA,
         available = true,
@@ -564,47 +564,16 @@ loadbus4_ts_DA = [
 ]
 
 loads5(nodes5) = [
-    PowerLoad(
-        "Bus2",
-        true,
-        nodes5[2],
-        LoadModels.ConstantPower,
-        3.0,
-        0.9861,
-        100.0,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus3",
-        true,
-        nodes5[3],
-        LoadModels.ConstantPower,
-        3.0,
-        0.9861,
-        100.0,
-        3.0,
-        0.9861,
-    ),
-    PowerLoad(
-        "Bus4",
-        true,
-        nodes5[4],
-        LoadModels.ConstantPower,
-        4.0,
-        1.3147,
-        100.0,
-        4.0,
-        1.3147,
-    ),
+    PowerLoad("Bus2", true, nodes5[2], 3.0, 0.9861, 100.0, 3.0, 0.9861),
+    PowerLoad("Bus3", true, nodes5[3], 3.0, 0.9861, 100.0, 3.0, 0.9861),
+    PowerLoad("Bus4", true, nodes5[4], 4.0, 1.3147, 100.0, 4.0, 1.3147),
 ];
 
 interruptible(nodes5) = [
-    InterruptibleLoad(
+    InterruptiblePowerLoad(
         "IloadBus4",
         true,
         nodes5[4],
-        LoadModels.ConstantPower,
         0.10,
         0.0,
         0.10,

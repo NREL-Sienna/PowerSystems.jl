@@ -13,9 +13,9 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+        b::FromTo
         rate::Float64
-        angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -32,9 +32,9 @@ This file is auto-generated. Do not edit.
 - `arc::Arc`
 - `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
 - `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}`: System per-unit value, validation range: `(0, 100)`, action if invalid: `warn`
+- `b::FromTo`: System per-unit value, validation range: `(0, 100)`, action if invalid: `warn`
 - `rate::Float64`
-- `angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -51,9 +51,9 @@ mutable struct Line <: ACBranch
     "System per-unit value"
     x::Float64
     "System per-unit value"
-    b::NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+    b::FromTo
     rate::Float64
-    angle_limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}

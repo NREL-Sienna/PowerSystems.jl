@@ -84,14 +84,6 @@ to otherwise categorize buses for modeling activities.
 | `DEGREES` |
 | `RADIANS` |
 
-## `LoadModels`
-
-| EnumName | Description |
-|----------|-------------|
-| `ConstantImpedance` | Z |
-| `ConstantCurrent` | I |
-| `ConstantPower` | P |
-
 ## `StateTypes`
 
 | EnumName |

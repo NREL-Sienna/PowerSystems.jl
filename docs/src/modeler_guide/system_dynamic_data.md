@@ -194,8 +194,8 @@ converter_high_power = AverageConverter(rated_voltage = 138.0, rated_current = 1
 
 #Define Outer Control as a composition of Virtual Inertia + Reactive Power Droop
 outer_cont = OuterControl(
-    VirtualInertia(Ta = 2.0, kd = 400.0, kω = 20.0),
-    ReactivePowerDroop(kq = 0.2, ωf = 1000.0),
+    active_power_control = VirtualInertia(Ta = 2.0, kd = 400.0, kω = 20.0),
+    reactive_power_control = ReactivePowerDroop(kq = 0.2, ωf = 1000.0),
 )
 
 #Define an Inner Control as a Voltage+Current Controler with Virtual Impedance:

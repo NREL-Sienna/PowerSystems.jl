@@ -14,12 +14,16 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("HVDCLine.jl")
 include("VSCDCLine.jl")
-include("InterruptibleLoad.jl")
+include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
+include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
+include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
+include("DynamicExponentialLoad.jl")
+include("ActiveConstantPowerLoad.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -61,6 +65,7 @@ include("RoundRotorMachine.jl")
 include("SalientPoleMachine.jl")
 include("AndersonFouadMachine.jl")
 include("FullMachine.jl")
+include("SauerPaiMachine.jl")
 include("MarconatoMachine.jl")
 include("OneDOneQMachine.jl")
 include("SimpleAFMachine.jl")
@@ -82,6 +87,7 @@ include("TGTypeI.jl")
 include("TGTypeII.jl")
 include("AverageConverter.jl")
 include("RenewableEnergyConverterTypeA.jl")
+include("RenewableEnergyVoltageConverterTypeA.jl")
 include("FixedDCSource.jl")
 include("ZeroOrderBESS.jl")
 include("LCLFilter.jl")
@@ -93,10 +99,12 @@ include("FixedFrequency.jl")
 include("VirtualInertia.jl")
 include("ActivePowerDroop.jl")
 include("ActivePowerPI.jl")
+include("ActiveVirtualOscillator.jl")
 include("ActiveRenewableControllerAB.jl")
 include("ReactiveRenewableControllerAB.jl")
 include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
+include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
@@ -261,14 +269,14 @@ export get_R_close
 export get_R_f
 export get_R_lim
 export get_R_open
+export get_R_r
+export get_R_s
 export get_R_source
 export get_R_th
 export get_Recon_Flag
 export get_Ref_Flag
 export get_Rp
-export get_Rr
 export get_Rrpwr
-export get_Rs
 export get_Rselect
 export get_SOC_ini
 export get_SOC_lim
@@ -296,6 +304,7 @@ export get_T_g
 export get_T_iq
 export get_T_p
 export get_T_pord
+export get_T_q
 export get_T_rate
 export get_T_rv
 export get_Ta
@@ -364,21 +373,28 @@ export get_Vr_lim
 export get_Vrfrac
 export get_Vtrip_Flag
 export get_Wf_nl
+export get_X_ad
+export get_X_aq
 export get_X_c
+export get_X_lr
+export get_X_ls
+export get_X_m
+export get_X_p
+export get_X_rr
 export get_X_source
+export get_X_ss
 export get_X_th
 export get_Xd
 export get_Xd_p
 export get_Xd_pp
 export get_Xl
-export get_Xm
 export get_Xq
 export get_Xq_p
 export get_Xq_pp
-export get_Xr
-export get_Xs
 export get_Y
+export get_Y_increase
 export get_Zerox
+export get_a
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
@@ -402,9 +418,14 @@ export get_branch_id_control
 export get_bus
 export get_bus_control
 export get_bustype
+export get_c_dc
 export get_cf
+export get_constant_active_power
+export get_constant_reactive_power
 export get_contributing_services
 export get_conversion_factor
+export get_current_active_power
+export get_current_reactive_power
 export get_d
 export get_dP_lim
 export get_db
@@ -433,6 +454,8 @@ export get_fs
 export get_fuel
 export get_fuel_flag
 export get_gate_position_limits
+export get_impedance_active_power
+export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
 export get_initial_energy
@@ -452,6 +475,9 @@ export get_inv_q_fluxlink
 export get_inverter_firing_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
+export get_is_filter_differential
+export get_k1
+export get_k2
 export get_kWh_Cap
 export get_kad
 export get_kd
@@ -475,18 +501,25 @@ export get_loss
 export get_lv
 export get_magnitude
 export get_max_active_power
+export get_max_constant_active_power
+export get_max_constant_reactive_power
+export get_max_current_active_power
+export get_max_current_reactive_power
+export get_max_impedance_active_power
+export get_max_impedance_reactive_power
 export get_max_reactive_power
-export get_model
 export get_must_run
 export get_n_states
 export get_name
 export get_no_load
 export get_number
+export get_number_of_steps
 export get_operation_cost
 export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
+export get_phase_angle_limits
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
@@ -494,6 +527,7 @@ export get_prime_mover
 export get_pump_efficiency
 export get_q_nl
 export get_r
+export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
 export get_rate
@@ -552,6 +586,7 @@ export get_voltage
 export get_voltage_limits
 export get_x
 export get_α
+export get_β
 export get_γ_d1
 export get_γ_d2
 export get_γ_q1
@@ -563,7 +598,9 @@ export get_θp
 export get_θp_rad
 export get_τ_limits
 export get_τ_ref
+export get_ψ
 export get_ω_lp
+export get_ω_ref
 export get_ωad
 export get_ωf
 export get_ωz
@@ -723,14 +760,14 @@ export set_R_close!
 export set_R_f!
 export set_R_lim!
 export set_R_open!
+export set_R_r!
+export set_R_s!
 export set_R_source!
 export set_R_th!
 export set_Recon_Flag!
 export set_Ref_Flag!
 export set_Rp!
-export set_Rr!
 export set_Rrpwr!
-export set_Rs!
 export set_Rselect!
 export set_SOC_ini!
 export set_SOC_lim!
@@ -758,6 +795,7 @@ export set_T_g!
 export set_T_iq!
 export set_T_p!
 export set_T_pord!
+export set_T_q!
 export set_T_rate!
 export set_T_rv!
 export set_Ta!
@@ -826,21 +864,28 @@ export set_Vr_lim!
 export set_Vrfrac!
 export set_Vtrip_Flag!
 export set_Wf_nl!
+export set_X_ad!
+export set_X_aq!
 export set_X_c!
+export set_X_lr!
+export set_X_ls!
+export set_X_m!
+export set_X_p!
+export set_X_rr!
 export set_X_source!
+export set_X_ss!
 export set_X_th!
 export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
 export set_Xl!
-export set_Xm!
 export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
-export set_Xr!
-export set_Xs!
 export set_Y!
+export set_Y_increase!
 export set_Zerox!
+export set_a!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!
@@ -864,9 +909,14 @@ export set_branch_id_control!
 export set_bus!
 export set_bus_control!
 export set_bustype!
+export set_c_dc!
 export set_cf!
+export set_constant_active_power!
+export set_constant_reactive_power!
 export set_contributing_services!
 export set_conversion_factor!
+export set_current_active_power!
+export set_current_reactive_power!
 export set_d!
 export set_dP_lim!
 export set_db!
@@ -895,6 +945,8 @@ export set_fs!
 export set_fuel!
 export set_fuel_flag!
 export set_gate_position_limits!
+export set_impedance_active_power!
+export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
 export set_initial_energy!
@@ -914,6 +966,9 @@ export set_inv_q_fluxlink!
 export set_inverter_firing_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
+export set_is_filter_differential!
+export set_k1!
+export set_k2!
 export set_kWh_Cap!
 export set_kad!
 export set_kd!
@@ -937,18 +992,25 @@ export set_loss!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
+export set_max_constant_active_power!
+export set_max_constant_reactive_power!
+export set_max_current_active_power!
+export set_max_current_reactive_power!
+export set_max_impedance_active_power!
+export set_max_impedance_reactive_power!
 export set_max_reactive_power!
-export set_model!
 export set_must_run!
 export set_n_states!
 export set_name!
 export set_no_load!
 export set_number!
+export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
+export set_phase_angle_limits!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
@@ -956,6 +1018,7 @@ export set_prime_mover!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!
+export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
 export set_rate!
@@ -1014,6 +1077,7 @@ export set_voltage!
 export set_voltage_limits!
 export set_x!
 export set_α!
+export set_β!
 export set_γ_d1!
 export set_γ_d2!
 export set_γ_q1!
@@ -1025,7 +1089,9 @@ export set_θp!
 export set_θp_rad!
 export set_τ_limits!
 export set_τ_ref!
+export set_ψ!
 export set_ω_lp!
+export set_ω_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!

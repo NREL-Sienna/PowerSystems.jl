@@ -1,7 +1,7 @@
 @testset "Hybrid System tests" begin
     test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
 
-    h_sys = HybridSystem(
+    h_sys = HybridSystem(;
         name = "Test H",
         available = true,
         status = true,
@@ -30,7 +30,11 @@
 end
 
 @testset "Hybrid System from parsed files" begin
-    sys = create_rts_system_with_hybrid_system(add_forecasts = true)
+    sys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys_with_hybrid";
+        add_forecasts = true,
+    )
     hybrids = collect(get_components(HybridSystem, sys))
     @test length(hybrids) == 1
     h_sys = hybrids[1]
@@ -60,7 +64,7 @@ end
     @test electric_load !== nothing
     @test thermal_unit !== nothing
 
-    ts = collect(get_time_series_multiple(h_sys, type = TimeSeriesData))
+    ts = collect(get_time_series_multiple(h_sys; type = TimeSeriesData))
     @test length(ts) == num_time_series
     @test Set((get_name(x) for x in ts)) == expected_time_series_names
 
@@ -92,7 +96,7 @@ end
     end
 
     name = "Test H"
-    h_sys = HybridSystem(
+    h_sys = HybridSystem(;
         name = name,
         available = true,
         status = true,

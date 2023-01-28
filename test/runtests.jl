@@ -22,19 +22,17 @@ Aqua.test_ambiguities(PowerSystems)
 Aqua.test_stale_deps(PowerSystems)
 Aqua.test_deps_compat(PowerSystems)
 
-include(joinpath(@__DIR__, "../src/utils/data.jl"))
-import .UtilsData: TestData
-download(TestData; branch = "master")
-
-BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
-DATA_DIR = joinpath(BASE_DIR, "data")
-TIME_SERIES_DIR = joinpath(DATA_DIR, "forecasts")
-MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
-PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
-PSSE_DYR_DIR = joinpath(DATA_DIR, "psse_dyr")
-PSSE_TEST_DIR = joinpath(DATA_DIR, "PSSE_test")
-RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
-TAMU_DIR = joinpath(DATA_DIR, "ACTIVSg2000")
+const BASE_DIR = dirname(dirname(Base.find_package("PowerSystems")))
+const DATA_DIR = PSB.DATA_DIR
+const TIME_SERIES_DIR = joinpath(DATA_DIR, "forecasts")
+const MATPOWER_DIR = joinpath(DATA_DIR, "matpower")
+const PSSE_RAW_DIR = joinpath(DATA_DIR, "psse_raw")
+const PSSE_DYR_DIR = joinpath(DATA_DIR, "psse_dyr")
+const PSSE_TEST_DIR = joinpath(DATA_DIR, "PSSE_test")
+const RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
+const TAMU_DIR = joinpath(DATA_DIR, "ACTIVSg2000")
+const DESCRIPTORS = joinpath(RTS_GMLC_DIR, "user_descriptors.yaml")
+const BAD_DATA = joinpath(DATA_DIR, "bad_data_for_tests")
 
 LOG_FILE = "power-systems.log"
 LOG_LEVELS = Dict(
@@ -98,7 +96,7 @@ function run_tests()
     if logging_config_filename !== nothing
         config = IS.LoggingConfiguration(logging_config_filename)
     else
-        config = IS.LoggingConfiguration(
+        config = IS.LoggingConfiguration(;
             filename = LOG_FILE,
             file_level = Logging.Info,
             console_level = Logging.Error,

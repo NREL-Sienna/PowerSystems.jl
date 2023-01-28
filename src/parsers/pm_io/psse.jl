@@ -156,6 +156,7 @@ Parses PSS(R)E-style Branch data into a PowerModels-style Dict. "source_id" is
 given by `["I", "J", "CKT"]` in PSS(R)E Branch specification.
 """
 function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Branch data into a PowerModels Dict..."
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for (i, branch) in enumerate(pti_data["BRANCH"])
@@ -167,12 +168,18 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_x"] = pop!(branch, "X")
             sub_data["g_fr"] = pop!(branch, "GI")
             sub_data["b_fr"] =
-                branch["BI"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
-                pop!(branch, "BI")
+                if branch["BI"] == 0.0 && branch["B"] != 0.0
+                    branch["B"] / 2
+                else
+                    pop!(branch, "BI")
+                end
             sub_data["g_to"] = pop!(branch, "GJ")
             sub_data["b_to"] =
-                branch["BJ"] == 0.0 && branch["B"] != 0.0 ? branch["B"] / 2 :
-                pop!(branch, "BJ")
+                if branch["BJ"] == 0.0 && branch["B"] != 0.0
+                    branch["B"] / 2
+                else
+                    pop!(branch, "BJ")
+                end
             sub_data["rate_a"] = pop!(branch, "RATEA")
             sub_data["rate_b"] = pop!(branch, "RATEB")
             sub_data["rate_c"] = pop!(branch, "RATEC")
@@ -213,6 +220,7 @@ Parses PSS(R)E-style Generator data in a PowerModels-style Dict. "source_id" is
 given by `["I", "ID"]` in PSS(R)E Generator specification.
 """
 function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Generator data into a PowerModels Dict..."
     pm_data["gen"] = []
     if haskey(pti_data, "GENERATOR")
         for gen in pti_data["GENERATOR"]
@@ -257,6 +265,7 @@ Parses PSS(R)E-style Bus data into a PowerModels-style Dict. "source_id" is give
 by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
     pm_data["bus"] = []
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
@@ -292,43 +301,21 @@ Parses PSS(R)E-style Load data into a PowerModels-style Dict. "source_id" is giv
 by `["I", "ID"]` in the PSS(R)E Load specification.
 """
 function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Load data into a PowerModels Dict..."
     pm_data["load"] = []
-    bus_lookup = Dict{Int, Any}()
     if haskey(pti_data, "LOAD")
         for load in pti_data["LOAD"]
             sub_data = Dict{String, Any}()
             sub_data["load_bus"] = pop!(load, "I")
             sub_data["pd"] = pop!(load, "PL")
             sub_data["qd"] = pop!(load, "QL")
+            sub_data["pi"] = pop!(load, "IP")
+            sub_data["qi"] = pop!(load, "IQ")
+            sub_data["py"] = pop!(load, "YP")
+            sub_data["qy"] = pop!(load, "YQ")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
             sub_data["status"] = pop!(load, "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
-            # Only build lookup once if necessary
-            if (load["IP"] != 0.0) ||
-               (load["IQ"] != 0.0) ||
-               (load["YP"] != 0.0) ||
-               (load["YQ"] != 0.0)
-                if isempty(bus_lookup)
-                    bus_lookup = Dict(bus["index"] => bus for bus in pm_data["bus"])
-                end
-                bus_vm = bus_lookup[sub_data["load_bus"]]["vm"]
-                if (load["IP"] != 0.0) || (load["IQ"] != 0.0)
-                    # Uses matpower transformation instead of pd = real(V*I) and qd = imag(V*I)
-                    # where I and V are in vector form.
-                    sub_data["pd"] += bus_vm * load["IP"]
-                    sub_data["qd"] += bus_vm * load["IQ"]
-                    @warn "Load id = $(sub_data["index"]) detected as I Load  IP = $(load["IP"]) IQ = $(load["IQ"]). Converting to Power Load Pd = $(bus_vm*load["IP"]) Qd = $(bus_vm*load["IQ"]) using Vm = $(bus_vm)"
-                end
-                if (load["YP"] != 0.0) || (load["YQ"] != 0.0)
-                    # Uses matpower transformation instead of pd = real(V*(V*Y)^*) and qd = imag(V*(V*Y)^*)
-                    # where Y and V are in vector form.
-                    sub_data["pd"] += bus_vm^2 * load["YP"]
-                    # NOTE: In PSSe reactive power in constant admittance loads is negative for inductive loads and positive for capacitive loads
-                    sub_data["qd"] -= bus_vm^2 * load["YQ"]
-                    @warn "Load id = $(sub_data["index"]) detected as Z Load YP = $(load["YP"]) YQ = $(load["YQ"]). Converting to Power Load Pd = $(bus_vm^2*load["YP"]) Qd = $(-1*bus_vm^2*load["YQ"]) using Vm = $(bus_vm)"
-                end
-            end
-
             if import_all
                 _import_remaining_keys!(sub_data, load)
             end
@@ -347,6 +334,7 @@ for Switched Shunts, as given by the PSS(R)E Fixed and Switched Shunts
 specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
     pm_data["shunt"] = []
 
     if haskey(pti_data, "FIXED SHUNT")
@@ -403,6 +391,7 @@ transformer is two-winding, and 1, 2, or 3 for three-winding, and the remaining
 keys are defined in the PSS(R)E Transformer specification.
 """
 function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Transformer data into a PowerModels Dict..."
     if !haskey(pm_data, "branch")
         pm_data["branch"] = []
     end
@@ -805,6 +794,7 @@ converter bus, and "IBUS2" is the "IBUS" of the second converter bus, in the
 PSS(R)E Voltage Source Converter specification.
 """
 function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Two-Terminal and VSC DC line data into a PowerModels Dict..."
     pm_data["dcline"] = []
 
     if haskey(pti_data, "TWO-TERMINAL DC")
@@ -816,8 +806,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             # Unit conversions?
             power_demand =
-                dcline["MDC"] == 1 ? abs(dcline["SETVL"]) :
-                dcline["MDC"] == 2 ? abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000) : 0
+                if dcline["MDC"] == 1
+                    abs(dcline["SETVL"])
+                elseif dcline["MDC"] == 2
+                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                else
+                    0
+                end
 
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
@@ -895,9 +890,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["f_bus"] = pop!(dcside, "IBUS")
             sub_data["t_bus"] = pop!(acside, "IBUS")
             sub_data["br_status"] =
-                pop!(dcline, "MDC") == 0 ||
-                pop!(dcside, "TYPE") == 0 ||
-                pop!(acside, "TYPE") == 0 ? 0 : 1
+                if pop!(dcline, "MDC") == 0 ||
+                   pop!(dcside, "TYPE") == 0 ||
+                   pop!(acside, "TYPE") == 0
+                    0
+                else
+                    1
+                end
 
             sub_data["pf"] = 0.0
             sub_data["pt"] = 0.0
@@ -909,13 +908,17 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["vt"] = pop!(acside, "MODE") == 1 ? pop!(acside, "ACSET") : 1.0
 
             sub_data["pmaxf"] =
-                dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0 ?
-                max(abs(dcside["MAXQ"]), abs(dcside["MINQ"])) :
-                min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
+                if dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0
+                    max(abs(dcside["MAXQ"]), abs(dcside["MINQ"]))
+                else
+                    min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
+                end
             sub_data["pmaxt"] =
-                acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0 ?
-                max(abs(acside["MAXQ"]), abs(acside["MINQ"])) :
-                min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
+                if acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0
+                    max(abs(acside["MAXQ"]), abs(acside["MINQ"]))
+                else
+                    min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
+                end
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
@@ -961,11 +964,13 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
     return
 end
 
 function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "This PSS(R)E parser currently doesn't support Switch data parsing..."
     pm_data["switch"] = []
     return
 end
@@ -977,7 +982,12 @@ Converts PSS(R)E-style data parsed from a PTI raw file, passed by `pti_data`
 into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
-function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = true)::Dict
+function _pti_to_powermodels!(
+    pti_data::Dict;
+    import_all = false,
+    validate = true,
+    correct_branch_rating = true,
+)::Dict
     pm_data = Dict{String, Any}()
 
     rev = pop!(pti_data["CASE IDENTIFICATION"][1], "REV")
@@ -1035,7 +1045,7 @@ function _pti_to_powermodels!(pti_data::Dict; import_all = false, validate = tru
     end
 
     if validate
-        correct_network_data!(pm_data)
+        correct_network_data!(pm_data; correct_branch_rating = correct_branch_rating)
     end
 
     return pm_data

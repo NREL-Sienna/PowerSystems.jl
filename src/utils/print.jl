@@ -5,25 +5,25 @@ function Base.summary(sys::System)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", sys::System)
-    show_system_table(io, sys, backend = :auto)
+    show_system_table(io, sys; backend = Val(:auto))
 
     if IS.get_num_components(sys.data.components) > 0
-        show_components_table(io, sys, backend = :auto)
+        show_components_table(io, sys; backend = Val(:auto))
     end
 
     println(io)
-    IS.show_time_series_data(io, sys.data, backend = :auto)
+    IS.show_time_series_data(io, sys.data; backend = Val(:auto))
     return
 end
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
-    show_system_table(io, sys, backend = :html, standalone = false)
+    show_system_table(io, sys; backend = Val(:html), standalone = false)
 
     if IS.get_num_components(sys.data.components) > 0
         show_components_table(
             io,
-            sys,
-            backend = :html,
+            sys;
+            backend = Val(:html),
             tf = PrettyTables.tf_html_simple,
             standalone = false,
         )
@@ -32,8 +32,8 @@ function Base.show(io::IO, ::MIME"text/html", sys::System)
     println(io)
     IS.show_time_series_data(
         io,
-        sys.data,
-        backend = :html,
+        sys.data;
+        backend = Val(:html),
         tf = PrettyTables.tf_html_simple,
         standalone = false,
     )
@@ -44,6 +44,8 @@ function show_system_table(io::IO, sys::System; kwargs...)
     header = ["Property", "Value"]
     num_components = IS.get_num_components(sys.data.components)
     table = [
+        "Name" isnothing(get_name(sys)) ? "" : get_name(sys)
+        "Description" isnothing(get_description(sys)) ? "" : get_description(sys)
         "System Units Base" string(get_units_base(sys))
         "Base Power" string(get_base_power(sys))
         "Base Frequency" string(get_frequency(sys))
@@ -77,8 +79,8 @@ function show_components_table(io::IO, sys::System; kwargs...)
     static_data = Array{Any, 2}(undef, length(static_types), length(static_header))
     dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(dynamic_header))
 
-    static_type_names = [(IS.strip_module_name(string(x)), x) for x in static_types]
-    sort!(static_type_names, by = x -> x[1])
+    static_type_names = [(nameof(x), x) for x in static_types]
+    sort!(static_type_names; by = x -> x[1])
     for (i, (type_name, type)) in enumerate(static_type_names)
         vals = components.data[type]
         has_sts = false
@@ -112,8 +114,8 @@ function show_components_table(io::IO, sys::System; kwargs...)
         )
     end
 
-    dynamic_type_names = [(IS.strip_module_name(string(x)), x) for x in dynamic_types]
-    sort!(dynamic_type_names, by = x -> x[1])
+    dynamic_type_names = [(nameof(x), x) for x in dynamic_types]
+    sort!(dynamic_type_names; by = x -> x[1])
     for (i, (type_name, type)) in enumerate(dynamic_type_names)
         vals = components.data[type]
         dynamic_data[i, 1] = type_name

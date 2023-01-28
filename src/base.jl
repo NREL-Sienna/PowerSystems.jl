@@ -22,10 +22,17 @@ const SYSTEM_KWARGS = Set((
     :import_all,
     :enable_compression,
     :compression,
+    :name,
+    :description,
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "1.0.1"
+const DATA_FORMAT_VERSION = "2.0.0"
+
+mutable struct SystemMetadata <: IS.InfrastructureSystemsType
+    name::Union{Nothing, String}
+    description::Union{Nothing, String}
+end
 
 """
 System
@@ -62,12 +69,19 @@ struct System <: IS.InfrastructureSystemsType
     bus_numbers::Set{Int}
     runchecks::Base.RefValue{Bool}
     units_settings::SystemUnitsSettings
+    time_series_directory::Union{Nothing, String}
+    metadata::SystemMetadata
     internal::IS.InfrastructureSystemsInternal
 
     function System(
         data,
         units_settings::SystemUnitsSettings,
         internal::IS.InfrastructureSystemsInternal;
+        runchecks = true,
+        frequency = DEFAULT_SYSTEM_FREQUENCY,
+        time_series_directory = nothing,
+        name = nothing,
+        description = nothing,
         kwargs...,
     )
         # Note to devs: if you add parameters to kwargs then consider whether they need
@@ -84,14 +98,20 @@ struct System <: IS.InfrastructureSystemsType
             )
         end
         bus_numbers = Set{Int}()
-        frequency = get(kwargs, :frequency, DEFAULT_SYSTEM_FREQUENCY)
-        runchecks = Base.RefValue{Bool}(get(kwargs, :runchecks, true))
-        sys = new(data, frequency, bus_numbers, runchecks, units_settings, internal)
-        return sys
+        return new(
+            data,
+            frequency,
+            bus_numbers,
+            Base.RefValue{Bool}(runchecks),
+            units_settings,
+            time_series_directory,
+            SystemMetadata(name, description),
+            internal,
+        )
     end
 end
 
-function System(data, base_power, internal; kwargs...)
+function System(data, base_power::Number, internal; kwargs...)
     unit_system_ = get(kwargs, :unit_system, "SYSTEM_BASE")
     unit_system = UNIT_SYSTEM_MAPPING[unit_system_]
     units_settings = SystemUnitsSettings(base_power, unit_system)
@@ -99,12 +119,17 @@ function System(data, base_power, internal; kwargs...)
 end
 
 """Construct an empty `System`. Useful for building a System while parsing raw data."""
-function System(base_power; kwargs...)
+function System(base_power::Number; kwargs...)
     return System(_create_system_data_from_kwargs(; kwargs...), base_power; kwargs...)
 end
 
 """Construct a `System` from `InfrastructureSystems.SystemData`"""
-function System(data, base_power; internal = IS.InfrastructureSystemsInternal(), kwargs...)
+function System(
+    data,
+    base_power::Number;
+    internal = IS.InfrastructureSystemsInternal(),
+    kwargs...,
+)
     return System(data, base_power, internal; kwargs...)
 end
 
@@ -151,7 +176,7 @@ function System(
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
-    base_power = 100.0,
+    base_power::Float64 = 100.0,
     services = nothing,
     kwargs...,
 )
@@ -168,7 +193,8 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
     ext = splitext(file_path)[2]
     if lowercase(ext) in [".m", ".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); kwargs...)
+        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
     elseif lowercase(ext) == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
@@ -255,24 +281,59 @@ Serializes a system to a JSON string.
 - `filename::AbstractString`: filename to write
 
 # Keyword arguments
+- `user_data::Union{Nothing, Dict} = nothing`: optional metadata to record
+- `pretty::Bool = false`: whether to pretty-print the JSON
 - `force::Bool = false`: whether to overwrite existing files
 - `check::Bool = false`: whether to run system validation checks
 
 Refer to [`check_component`](@ref) for exceptions thrown if `check = true`.
 """
-function IS.to_json(sys::System, filename::AbstractString; force = false, runchecks = false)
+function IS.to_json(
+    sys::System,
+    filename::AbstractString;
+    user_data = nothing,
+    pretty = false,
+    force = false,
+    runchecks = false,
+)
     if runchecks
         check(sys)
         check_components(sys)
     end
 
     IS.prepare_for_serialization!(sys.data, filename; force = force)
-    data = to_json(sys)
+    data = to_json(sys; pretty = pretty)
     open(filename, "w") do io
         write(io, data)
     end
+
+    mfile = joinpath(dirname(filename), splitext(basename(filename))[1] * "_metadata.json")
     @info "Serialized System to $filename"
+    _serialize_system_metadata_to_file(sys, mfile, user_data)
     return
+end
+
+function _serialize_system_metadata_to_file(sys::System, filename, user_data)
+    name = get_name(sys)
+    description = get_description(sys)
+    resolution = Dates.Minute(get_time_series_resolution(sys)).value
+    metadata = OrderedDict(
+        "name" => isnothing(name) ? "" : name,
+        "description" => isnothing(description) ? "" : description,
+        "frequency" => sys.frequency,
+        "time_series_resolution_minutes" => resolution,
+        "component_counts" => IS.get_component_counts_by_type(sys.data),
+        "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
+    )
+    if !isnothing(user_data)
+        metadata["user_data"] = user_data
+    end
+
+    open(filename, "w") do io
+        JSON3.pretty(io, metadata)
+    end
+
+    @info "Serialized System metadata to $filename"
 end
 
 function Base.deepcopy(sys::System)
@@ -281,7 +342,7 @@ function Base.deepcopy(sys::System)
         return sys2
     end
 
-    IS.copy_to_new_file!(sys2.data.time_series_storage)
+    IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
     return sys2
 end
 
@@ -359,6 +420,27 @@ end
 function has_units_setting(component::T) where {T <: Component}
     return !isnothing(get_units_setting(component))
 end
+
+"""
+Set the name of the system.
+"""
+set_name!(sys::System, name::AbstractString) = sys.metadata.name = name
+
+"""
+Get the name of the system.
+"""
+get_name(sys::System) = sys.metadata.name
+
+"""
+Set the description of the system.
+"""
+set_description!(sys::System, description::AbstractString) =
+    sys.metadata.description = description
+
+"""
+Get the description of the system.
+"""
+get_description(sys::System) = sys.metadata.description
 
 """
 Add a component to the system.
@@ -710,7 +792,7 @@ function remove_components!(
     sys::System,
     ::Type{T},
 ) where {T <: Component}
-    components = collect(get_components(T, sys, filter_func))
+    components = collect(get_components(filter_func, T, sys))
     for component in components
         remove_component!(sys, component)
     end
@@ -822,7 +904,7 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(Generator, sys, x -> PowerSystems.get_available(x))
+iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
 thermal_gens = get_components(ThermalStandard, sys) do gen
     get_available(gen)
 end
@@ -840,18 +922,6 @@ function get_components(
     filter_func::Function,
     ::Type{T},
     sys::System,
-) where {T <: Component}
-    return IS.get_components(T, sys.data, filter_func)
-end
-
-# These two methods are defined independently instead of  filter_func::Union{Function, Nothing} = nothing
-# because of a documenter error
-# that has no relation with the code https://github.com/JuliaDocs/Documenter.jl/issues/1296
-#
-function get_components(
-    ::Type{T},
-    sys::System,
-    filter_func::Function,
 ) where {T <: Component}
     return IS.get_components(T, sys.data, filter_func)
 end
@@ -894,7 +964,7 @@ Gets components availability. Requires type T to have the method get_available i
 """
 
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(T, sys, x -> get_available(x))
+    return get_components(x -> get_available(x), T, sys)
 end
 
 """
@@ -1318,7 +1388,9 @@ function IS.serialize(sys::T) where {T <: System}
     data["data_format_version"] = DATA_FORMAT_VERSION
     for field in fieldnames(T)
         # Exclude bus_numbers because they will get rebuilt during deserialization.
-        if field != :bus_numbers
+        # Exclude time_series_directory because the system may get deserialized on a
+        # different system.
+        if field != :bus_numbers && field != :time_series_directory
             data[string(field)] = serialize(getfield(sys, field))
         end
     end
@@ -1357,8 +1429,11 @@ function IS.deserialize(
         time_series_read_only = time_series_read_only,
         time_series_directory = time_series_directory,
     )
+    metadata = get(raw, "metadata", Dict())
+    name = get(metadata, "name", nothing)
+    description = get(metadata, "description", nothing)
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units; internal = internal, kwargs...)
+    sys = System(data, units, internal; name = name, description = description, kwargs...)
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
@@ -1489,6 +1564,26 @@ function get_buses(sys::System, bus_numbers::Set{Int})
     end
 
     return buses
+end
+
+"""
+Return all the device types in the system. It does not return component types or masked components.
+"""
+function get_existing_device_types(sys::System)
+    device_types = Vector{DataType}()
+    for component_type in keys(sys.data.components.data)
+        if component_type <: Device
+            push!(device_types, component_type)
+        end
+    end
+    return device_types
+end
+
+"""
+Return all the component types in the system. It does not return masked components.
+"""
+function get_existing_component_types(sys::System)
+    return collect(keys(sys.data.components.data))
 end
 
 function _is_deserialization_in_progress(sys::System)
@@ -1782,12 +1877,12 @@ function IS.compare_values(
                 end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2, compare_uuids = compare_uuids)
+            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
                 match = false
             end
         else
@@ -1801,20 +1896,20 @@ function IS.compare_values(
     return match
 end
 
-function _create_system_data_from_kwargs(; kwargs...)
-    validation_descriptor_file = nothing
-    time_series_in_memory = get(kwargs, :time_series_in_memory, false)
-    time_series_directory = get(kwargs, :time_series_directory, nothing)
-    compression = get(kwargs, :compression, nothing)
-    if compression === nothing
-        enabled = get(kwargs, :enable_compression, false)
-        compression = IS.CompressionSettings(enabled = enabled)
+function _create_system_data_from_kwargs(;
+    time_series_in_memory = false,
+    time_series_directory = nothing,
+    compression = nothing,
+    enable_compression = false,
+    config_path = POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE,
+    kwargs...,
+)
+    if isnothing(compression)
+        compression = IS.CompressionSettings(; enabled = enable_compression)
     end
-    validation_descriptor_file =
-        get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
 
     return IS.SystemData(;
-        validation_descriptor_file = validation_descriptor_file,
+        validation_descriptor_file = config_path,
         time_series_in_memory = time_series_in_memory,
         time_series_directory = time_series_directory,
         compression = compression,

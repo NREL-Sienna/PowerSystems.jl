@@ -27,22 +27,22 @@ function get_value(c::Component, value::Float64)
     return _get_multiplier(c) * value
 end
 
-function get_value(c::Component, value::Min_Max)
+function get_value(c::Component, value::MinMax)
     m = _get_multiplier(c)
     return (min = value.min * m, max = value.max * m)
 end
 
-function get_value(c::Component, value::StartUp_ShutDown)
+function get_value(c::Component, value::StartUpShutDown)
     m = _get_multiplier(c)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function get_value(c::Component, value::Up_Down)
+function get_value(c::Component, value::UpDown)
     m = _get_multiplier(c)
     return (up = value.up * m, down = value.down * m)
 end
 
-function get_value(c::Component, value::FromTo_ToFrom_Float)
+function get_value(c::Component, value::FromTo_ToFrom)
     m = _get_multiplier(c)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
@@ -64,22 +64,22 @@ function set_value(c::Component, value::Float64)
     return (1 / _get_multiplier(c)) * value
 end
 
-function set_value(c::Component, value::Min_Max)
+function set_value(c::Component, value::MinMax)
     m = 1 / _get_multiplier(c)
     return (min = value.min * m, max = value.max * m)
 end
 
-function set_value(c::Component, value::StartUp_ShutDown)
+function set_value(c::Component, value::StartUpShutDown)
     m = 1 / _get_multiplier(c)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function set_value(c::Component, value::Up_Down)
+function set_value(c::Component, value::UpDown)
     m = 1 / _get_multiplier(c)
     return (up = value.up * m, down = value.down * m)
 end
 
-function set_value(c::Component, value::FromTo_ToFrom_Float)
+function set_value(c::Component, value::FromTo_ToFrom)
     m = 1 / _get_multiplier(c)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end

@@ -15,14 +15,13 @@ end
 @testset "Test MarketBidCost with Polynomial Cost Timeseries with Service Forecast " begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
-    other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    service_data = Dict(initial_time => ones(horizon), other_time => ones(horizon))
+    service_data = Dict(initial_time => ones(horizon))
     polynomial_cost = repeat([(999.0, 1.0)], 24)
     data_polynomial =
-        SortedDict(initial_time => polynomial_cost, other_time => polynomial_cost)
-    sys = create_rts_system()
+        SortedDict(initial_time => polynomial_cost)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
     market_bid = MarketBidCost(nothing)
@@ -34,12 +33,12 @@ end
         set_service_bid!(sys, generator, s, forecast)
     end
 
-    cost_forecast = get_variable_cost(generator, market_bid, start_time = initial_time)
+    cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)).cost ==
           first(data_polynomial[initial_time])
 
     for s in generator.services
-        service_cost = get_services_bid(generator, market_bid, s, start_time = initial_time)
+        service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
         @test first(TimeSeries.values(service_cost)).cost ==
               first(service_data[initial_time])
     end
@@ -48,12 +47,11 @@ end
 @testset "Test MarketBidCost with PWL Cost Timeseries" begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
-    other_time = initial_time + resolution
     name = "test"
     horizon = 24
     pwl_cost = repeat([repeat([(999.0, 1.0)], 5)], 24)
-    data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
-    sys = create_rts_system()
+    data_pwl = SortedDict(initial_time => pwl_cost)
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
     market_bid = MarketBidCost(nothing)
@@ -61,7 +59,7 @@ end
     forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
     set_variable_cost!(sys, generator, forecast)
 
-    cost_forecast = get_variable_cost(generator, market_bid, start_time = initial_time)
+    cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)).cost == first(data_pwl[initial_time])
 end
 
@@ -84,12 +82,12 @@ end
     data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
     for d in [data_polynomial, data_pwl]
         @testset "Add deterministic from $(typeof(d)) to ReserveDemandCurve variable cost" begin
-            sys = System(100)
+            sys = System(100.0)
             reserve = ReserveDemandCurve{ReserveUp}(nothing)
             add_component!(sys, reserve)
             forecast = IS.Deterministic("variable_cost", d, resolution)
             set_variable_cost!(sys, reserve, forecast)
-            cost_forecast = get_variable_cost(reserve, start_time = initial_time)
+            cost_forecast = get_variable_cost(reserve; start_time = initial_time)
             @test first(TimeSeries.values(cost_forecast)).cost == first(d[initial_time])
         end
     end

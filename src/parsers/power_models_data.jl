@@ -11,7 +11,13 @@ Currently Supports MATPOWER and PSSE data files parsed by PowerModels.
 function PowerModelsData(file::Union{String, IO}; kwargs...)
     validate = get(kwargs, :pm_data_corrections, true)
     import_all = get(kwargs, :import_all, false)
-    pm_dict = parse_file(file; import_all = import_all, validate = validate)
+    correct_branch_rating = get(kwargs, :correct_branch_rating, true)
+    pm_dict = parse_file(
+        file;
+        import_all = import_all,
+        validate = validate,
+        correct_branch_rating = correct_branch_rating,
+    )
     pm_data = PowerModelsData(pm_dict)
     correct_pm_transformer_status!(pm_data)
     return pm_data
@@ -145,29 +151,9 @@ function make_bus(bus_name, bus_number, d, bus_types, area)
     return bus
 end
 
-# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
-IS.@scoped_enum(
-    MatpowerBusTypes,
-    MATPOWER_PQ = 1,
-    MATPOWER_PV = 2,
-    MATPOWER_REF = 3,
-    MATPOWER_ISOLATED = 4,
-)
-
-const _BUS_TYPE_MAP = Dict(
-    MatpowerBusTypes.MATPOWER_ISOLATED => BusTypes.ISOLATED,
-    MatpowerBusTypes.MATPOWER_PQ => BusTypes.PQ,
-    MatpowerBusTypes.MATPOWER_PV => BusTypes.PV,
-    MatpowerBusTypes.MATPOWER_REF => BusTypes.REF,
-)
-
-function Base.convert(::Type{BusTypes}, x::MatpowerBusTypes)
-    return _BUS_TYPE_MAP[x]
-end
-
 # Disabling this because not all matpower files define areas even when bus definitions
 # contain area references.
-#function read_area!(sys::System, data; kwargs...)
+#function read_area!(sys::System, data::Dict; kwargs...)
 #    if !haskey(data, "areas")
 #        @info "There are no Areas in this file"
 #        return
@@ -179,12 +165,12 @@ end
 #    end
 #end
 
-function read_bus!(sys::System, data; kwargs...)
+function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
     bus_number_to_bus = Dict{Int, Bus}()
 
-    bus_types = instances(MatpowerBusTypes)
-    bus_data = sort!(collect(data["bus"]), by = x -> parse(Int, x[1]))
+    bus_types = instances(BusTypes)
+    bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
@@ -220,12 +206,11 @@ function read_bus!(sys::System, data; kwargs...)
     return bus_number_to_bus
 end
 
-function make_load(d, bus, sys_mbase; kwargs...)
+function make_power_load(d, bus, sys_mbase; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
         available = true,
-        model = LoadModels.ConstantPower,
         bus = bus,
         active_power = d["pd"],
         reactive_power = d["qd"],
@@ -235,7 +220,31 @@ function make_load(d, bus, sys_mbase; kwargs...)
     )
 end
 
+function make_standard_load(d, bus, sys_mbase; kwargs...)
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return StandardLoad(;
+        name = _get_name(d),
+        available = true,
+        bus = bus,
+        constant_active_power = d["pd"],
+        constant_reactive_power = d["qd"],
+        current_active_power = d["pi"],
+        current_reactive_power = d["qi"],
+        impedance_active_power = d["py"],
+        impedance_reactive_power = d["qy"],
+        max_constant_active_power = d["pd"],
+        max_constant_reactive_power = d["qd"],
+        max_current_active_power = d["pi"],
+        max_current_reactive_power = d["qi"],
+        max_impedance_active_power = d["py"],
+        max_impedance_reactive_power = d["qy"],
+        base_power = sys_mbase,
+    )
+end
+
 function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading Load data in PowerModels dict to populate System ..."
+
     if !haskey(data, "load")
         @error "There are no loads in this file"
         return
@@ -246,12 +255,21 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
         d = data["load"][d_key]
         if d["pd"] != 0.0
             bus = bus_number_to_bus[d["load_bus"]]
-            load = make_load(d, bus, sys_mbase; kwargs...)
-            has_component(PowerLoad, sys, get_name(load)) && throw(
-                DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                ),
-            )
+            if data["source_type"] == "pti"
+                load = make_standard_load(d, bus, sys_mbase; kwargs...)
+                has_component(StandardLoad, sys, get_name(load)) && throw(
+                    DataFormatError(
+                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    ),
+                )
+            else
+                load = make_power_load(d, bus, sys_mbase; kwargs...)
+                has_component(PowerLoad, sys, get_name(load)) && throw(
+                    DataFormatError(
+                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    ),
+                )
+            end
             add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
         end
     end
@@ -267,6 +285,8 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+    @info "Reading LoadZones data in PowerModels dict to populate System ..."
+
     zones = Set{Int}()
     for (i, bus) in data["bus"]
         push!(zones, bus["zone"])
@@ -305,7 +325,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     curtailcost = TwoPartCost(0.0, 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
-    return HydroDispatch( # No way to define storage parameters for gens in PM so can only make HydroDispatch
+    return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -462,7 +482,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase
     end
 
     base_conversion = sys_mbase / d["mbase"]
-    thermal_gen = ThermalStandard(
+    thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
         available = true,
@@ -493,7 +513,7 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading generator data"
 
     if !haskey(data, "gen")
@@ -637,7 +657,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -670,7 +690,7 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -685,7 +705,7 @@ function read_dcline!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwar
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t)
-        add_component!(sys, dcline, skip_validation = SKIP_PM_VALIDATION)
+        add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
@@ -698,7 +718,7 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
@@ -717,7 +737,12 @@ function read_shunt!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwarg
     end
 end
 
-function read_storage!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_storage!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
     @info "Reading storage data"
     if !haskey(data, "storage")
         @info "There is no storage data in this file"

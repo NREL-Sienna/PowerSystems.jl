@@ -10,10 +10,10 @@ This file is auto-generated. Do not edit.
         available::Bool
         active_power_flow::Float64
         arc::Arc
-        active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-        reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+        active_power_limits_from::MinMax
+        active_power_limits_to::MinMax
+        reactive_power_limits_from::MinMax
+        reactive_power_limits_to::MinMax
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -28,10 +28,10 @@ a High voltage DC line.
 - `available::Bool`
 - `active_power_flow::Float64`
 - `arc::Arc`
-- `active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
-- `reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}`
+- `active_power_limits_from::MinMax`
+- `active_power_limits_to::MinMax`
+- `reactive_power_limits_from::MinMax`
+- `reactive_power_limits_to::MinMax`
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
@@ -43,10 +43,10 @@ mutable struct HVDCLine <: DCBranch
     available::Bool
     active_power_flow::Float64
     arc::Arc
-    active_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    active_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactive_power_limits_from::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
-    reactive_power_limits_to::NamedTuple{(:min, :max), Tuple{Float64, Float64}}
+    active_power_limits_from::MinMax
+    active_power_limits_to::MinMax
+    reactive_power_limits_from::MinMax
+    reactive_power_limits_to::MinMax
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
     "Services that this device contributes to"
     services::Vector{Service}

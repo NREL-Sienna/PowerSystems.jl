@@ -8,30 +8,22 @@ import PowerSystems: LazyDictFromIterator
     )
 
     for (resolution, len) in resolutions
-        create_func = [create_rts_system, create_rts_multistart_system]
-        for f in create_func
-            sys = f(resolution)
-            for time_series in get_time_series_multiple(sys)
-                @test length(time_series) == len
-            end
+        sys = create_rts_system(resolution)
+        for time_series in get_time_series_multiple(sys)
+            @test length(time_series) == len
         end
     end
 end
 
 @testset "PowerSystemTableData parsing invalid directory" begin
-    baddir = abspath(joinpath(RTS_GMLC_DIR, "../../test"))
-    @test_throws ErrorException PowerSystemTableData(baddir, 100.0, DESCRIPTORS)
+    @test_throws ErrorException PowerSystemTableData(DATA_DIR, 100.0, DESCRIPTORS)
 end
 
-@testset "consistency between PowerSystemTableData and standardfiles" begin
+@testset "Consistency between PowerSystemTableData and standardfiles" begin
     # This signature is used to capture expected error logs from parsing matpower
     consistency_test =
         () -> begin
-            mpsys = PSB.build_system(
-                PSB.MatPowerTestSystems,
-                "matpower_RTS_GMLC_sys";
-                force_build = true,
-            )
+            mpsys = System(joinpath(BAD_DATA, "RTS_GMLC_original.m"))
             cdmsys = PSB.build_system(
                 PSB.PSITestSystems,
                 "test_RTS_GMLC_sys";
@@ -61,8 +53,11 @@ end
                     for field in chk_dat.fields
                         n = get(chk_dat, :structname, nothing)
                         (cdmd, mpd) =
-                            isnothing(n) ? (cdmgen, mpgen) :
-                            (getfield(cdmgen, n), getfield(mpgen, n))
+                            if isnothing(n)
+                                (cdmgen, mpgen)
+                            else
+                                (getfield(cdmgen, n), getfield(mpgen, n))
+                            end
                         cdmgen_val = getfield(cdmd, field)
                         mpgen_val = getfield(mpd, field)
                         if isnothing(cdmgen_val) || isnothing(mpgen_val)
@@ -95,7 +90,7 @@ end
                     @test [
                         isapprox(
                             cdmgen.operation_cost.variable[i][1],
-                            mpgen.operation_cost.variable[i][1],
+                            mpgen.operation_cost.variable[i][1];
                             atol = 0.1,
                         ) for i in 1:4
                     ] == [true, true, true, true]
@@ -148,17 +143,17 @@ end
 end
 
 @testset "Test consistency between variable cost and heat rate parsing" begin
-    fivebus_dir = joinpath(DATA_DIR, "5-bus-hydro")
+    fivebus_dir = joinpath(DATA_DIR, "5-Bus")
     rawsys_hr = PowerSystemTableData(
         fivebus_dir,
         100.0,
-        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml");
         generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
     )
     rawsys = PowerSystemTableData(
         fivebus_dir,
         100.0,
-        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml"),
+        joinpath(fivebus_dir, "user_descriptors_var_cost.yaml");
         generator_mapping_file = joinpath(fivebus_dir, "generator_mapping.yaml"),
     )
     sys_hr = System(rawsys_hr)

@@ -26,9 +26,9 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     interconnection_impedance::ComplexF64
     interconnection_rating::Union{Nothing, Float64}
-    input_active_power_limits::Union{Nothing, Min_Max}
-    output_active_power_limits::Union{Nothing, Min_Max}
-    reactive_power_limits::Union{Nothing, Min_Max}
+    input_active_power_limits::Union{Nothing, MinMax}
+    output_active_power_limits::Union{Nothing, MinMax}
+    reactive_power_limits::Union{Nothing, MinMax}
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
