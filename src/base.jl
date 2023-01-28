@@ -316,12 +316,12 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolution = Dates.Minute(get_time_series_resolution(sys)).value
+    resolution = get_time_series_resolution(sys).value
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
         "frequency" => sys.frequency,
-        "time_series_resolution_minutes" => resolution,
+        "time_series_resolution_milliseconds" => resolution,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
         "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
     )
