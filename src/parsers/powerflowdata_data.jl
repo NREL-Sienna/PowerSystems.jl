@@ -64,7 +64,6 @@ function System(net_data::PowerFlowDataNetwork; kwargs...)
         sys,
         data.branches,
         data.caseid.sbase,
-        data.caseid.nxfrat,
         bus_number_to_bus;
         kwargs...,
     )
@@ -142,9 +141,6 @@ function read_bus!(
         end
 
         # TODO: LoadZones need to be created and populated here
-        # ASKJOSE: Followed the same process as above but it looks like zone names
-        # are not unique
-        # This could be an issue with area names possibly as well?
         if isempty(data.zones)
             zone_name = string(buses.zone[ix])
             @debug "File doesn't contain load zones"
@@ -175,8 +171,7 @@ function read_bus!(
 
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
-    # ASKJOSE: Should we do this? Do we care about Areas and LoadZones which don't have any buses?
-    # Checking for surplus Areas or LoadZones in the data which don't get populated in the sys above
+    # TODO: Checking for surplus Areas or LoadZones in the data which don't get populated in the sys above
     # but are available in the raw file
     if ~isempty(data.area_interchanges)
         for area_name in data.area_interchanges.arname
@@ -276,23 +271,12 @@ function read_loads!(
         return
     end
     for ix in eachindex(loads.i)
-        # ASKJOSE: To parse all the loads I removed the filtering step
         bus = bus_number_to_bus[loads.i[ix]]
-        bus_vm = get_magnitude(bus)
         load_name = "load-$(get_name(bus))~$(loads.id[ix])"
         if has_component(StandardLoad, sys, load_name)
             throw(DataFormatError("Found duplicate load names of $(load_name)"))
         end
-        # ASKJOSE: Followed the same process as above but it looks like zone names
-        # Calculating the P &  Q by transforming Z and I loads to P to populate peak reactive power 
-        # and active loads of Areas and LoadZones
-        # Do we need to do this?
-        active_power_load =
-            (loads.pl[ix] / sys_mbase) + (bus_vm * (loads.ip[ix] / sys_mbase)) +
-            (bus_vm^2 * (loads.yp[ix] / sys_mbase))
-        reactive_power_load =
-            (loads.ql[ix] / sys_mbase) + (bus_vm * (loads.iq[ix] / sys_mbase)) +
-            (bus_vm^2 * (loads.yq[ix] / sys_mbase))
+
         load = StandardLoad(;
             name = load_name,
             available = loads.status[ix],
@@ -310,10 +294,6 @@ function read_loads!(
             max_current_active_power = loads.ip[ix] / sys_mbase,
             max_current_reactive_power = loads.iq[ix] / sys_mbase,
             base_power = sys_mbase,
-            ext = Dict(
-                "active_power_load" => active_power_load,
-                "reactive_power_load" => reactive_power_load,
-            ),
         )
 
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
@@ -404,8 +384,6 @@ function read_gen!(
         if has_component(ThermalStandard, sys, gen_name)
             throw(DataFormatError("Found duplicate load names of $(gen_name)"))
         end
-        # ASKJOSE: Is this information necessary? The regulation bus (IREG) maybe?
-        # WMOD as well to classify if a generator is WT and reactive power control mode
         ireg_bus_num = gens.ireg[ix] == 0 ? gens.i[ix] : gens.ireg[ix]
 
         thermal_gen = ThermalStandard(;
@@ -457,8 +435,18 @@ function read_branch!(
     end
 
     for ix in eachindex(branches.i)
-        bus_from = bus_number_to_bus[branches.i[ix]]
-        bus_to = bus_number_to_bus[branches.j[ix]]
+        if branches.i[ix] < 0
+            i_ix = abs(branches.i[ix])
+            @warn "Branch index $(branches.i[ix]) corrected to $i_ix"
+        end
+
+        if branches.j[ix] < 0
+            j_ix = abs(branches.i[ix])
+            @warn "Branch index $(branches.j[ix]) corrected to $j_ix"
+        end
+
+        bus_from = bus_number_to_bus[abs(branches.i[ix])]
+        bus_to = bus_number_to_bus[abs(branches.j[ix])]
         branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))-$(branches.ckt[ix])"
         max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
         if max_rate == 0.0
@@ -499,48 +487,35 @@ function read_branch!(
     end
 
     for ix in eachindex(branches.i)
-        rate_correction_flag = false
         bus_from = bus_number_to_bus[branches.i[ix]]
         bus_to = bus_number_to_bus[branches.j[ix]]
         branch_name = "line-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
 
         max_rate = max(branches.rate_a[ix], branches.rate_b[ix], branches.rate_c[ix])
-        if max_rate == 0.0
-            max_rate = abs(1 / (branches.r[ix] + 1im * branches.x[ix])) * sys_mbase
-            rate_correction_flag = true
-        end
-
-        # ASKJOSE: I don't think it makes sense to correct XFR ratings
-        # using the above correction? What can we do about this? There's 
-        # not much to work with because this is bad data?
-        # Do the values for r, x and primary_shunt I'm using make sense?
 
         if get_base_voltage(bus_from) != get_base_voltage(bus_to)
-            @error("bad line data $branch_name. Transforming this Line to Transformer2W.")
+            @warn("bad line data $branch_name. Transforming this Line to Transformer2W.")
             # Method needed for NTPS to make this data into a transformer
-            xfr_name = "xfr-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
-            xfr = Transformer2W(;
-                name = xfr_name,
+            transformer_name = "transformer-$(get_name(bus_from))-$(get_name(bus_to))~$(branches.ckt[ix])"
+            transformer = Transformer2W(;
+                name = transformer_name,
                 available = branches.st[ix] > 0 ? true : false,
                 active_power_flow = 0.0,
                 reactive_power_flow = 0.0,
                 arc = Arc(bus_from, bus_to),
                 r = branches.r[ix],
                 x = branches.x[ix],
-                primary_shunt = branches.bi[ix], # ASKJOSE: I'm using this because this is Primary side.
+                primary_shunt = 0.0,
                 rate = max_rate,
                 ext = Dict(
                     "line_to_xfr" => true,
-                    "rate_correction" => rate_correction_flag,
                 ),
             )
-            add_component!(sys, xfr; skip_validation = SKIP_PM_VALIDATION)
+            add_component!(sys, transformer; skip_validation = SKIP_PM_VALIDATION)
 
             continue
         end
 
-        # ASKJOSE: I think having this information will be useful to compare
-        # raw file info with other info available
         rated_current = 0.0
         if (rating_flag > 0)
             rated_current = (max_rate / (sqrt(3) * get_base_voltage(bus_from))) * 10^3
@@ -559,7 +534,6 @@ function read_branch!(
             rate = max_rate,
             ext = Dict(
                 "length" => branches.len[ix],
-                "rate_correction" => rate_correction_flag,
                 "rated_current(A)" => rated_current,
             ),
         )
@@ -568,10 +542,6 @@ function read_branch!(
     end
 
     return nothing
-end
-
-function _make_tap_transformer()
-    return
 end
 
 function read_branch!(
@@ -591,15 +561,125 @@ function read_branch!(
     for ix in eachindex(transformers.i)
         bus_i = bus_number_to_bus[transformers.i[ix]]
         bus_j = bus_number_to_bus[transformers.j[ix]]
-        is_three_winding = transformers.k[ix] > 0
-        if is_three_winding
-            bus_k = bus_number_to_bus[transformers.k[ix]]
-            to_from_name = "$(get_name(bus_i))-$(get_name(bus_j))-$(get_name(bus_k))"
+        if transformers.k[ix] > 0
+            @error "Three-winding transformer from PowerFlowData inputs not implemented. Data will be ignored"
+            continue
         else
             to_from_name = "$(get_name(bus_i))-$(get_name(bus_j))"
         end
-        branch_name = "transformer-$to_from_name-$(transformers.ckt[ix])"
-        # Create transformer accordingly
+
+        if transformers.ang1[ix] != 0
+            @error "Phase Shifting transformer from PowerFlowData inputs not implemented. Data will be ignored"
+            continue
+        end
+
+        transformer_name = "transformer-$to_from_name-$(transformers.ckt[ix])"
+
+        if !(transformers.cz[ix] in [1, 2, 3])
+            @warn(
+                "transformer CZ value outside of valid bounds assuming the default value of 1.  Given $(transformer["CZ"]), should be 1, 2 or 3",
+            )
+            transformers.cz[ix] = 1
+        end
+
+        if !(transformers.cw[ix] in [1, 2, 3])
+            @warn(
+                "transformer CW value outside of valid bounds assuming the default value of 1.  Given $(transformer["CW"]), should be 1, 2 or 3",
+            )
+            transformers.cw[ix] = 1
+        end
+
+        if !(transformers.cm[ix] in [1, 2])
+            @warn(
+                "transformer CM value outside of valid bounds assuming the default value of 1.  Given $(transformer["CM"]), should be 1 or 2",
+            )
+            transformers.cm[ix] = 1
+        end
+
+        # Unit Transformations
+        if transformers.cz[ix] == 1  # "for resistance and reactance in pu on system MVA base and winding voltage base"
+            br_r, br_x = transformers.r1_2[ix], transformers.x1_2[ix]
+        else  # NOT "for resistance and reactance in pu on system MVA base and winding voltage base"
+            if transformers.cz[ix] == 3  # "for transformer load loss in watts and impedance magnitude in pu on a specified MVA base and winding voltage base."
+                br_r = 1e-6 * transformers.r1_2[ix] / transformers.sbase1_2[ix]
+                br_x = sqrt(transformers.x1_2[ix]^2 - br_r^2)
+            else
+                br_r, br_x = transformers.r1_2[ix], transformers.x1_2[ix]
+            end
+            per_unit_factor =
+                (
+                    transformers.nomv1[ix]^2 /
+                    get_base_voltage(bus_i)^2
+                ) * (sys_mbase / transformers.sbase1_2[ix])
+            if per_unit_factor == 0
+                @warn "Per unit conversion for transformer $to_from_name couldn't be done, assuming system base instead. Check field NOMV1 is valid"
+                per_unit_factor = 1
+            end
+            br_r *= per_unit_factor
+            br_x *= per_unit_factor
+        end
+
+        # Zeq scaling for tap2 (see eq (4.21b) in PROGRAM APPLICATION GUIDE 1 in PSSE installation folder)
+        # Unit Transformations
+        if transformers.cw[ix] == 1  # "for off-nominal turns ratio in pu of winding bus base voltage"
+            br_r *= transformers.windv2[ix]^2
+            br_x *= transformers.windv2[ix]^2
+        else  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
+            if transformers.cw[ix] == 2  # "for winding voltage in kV"
+                br_r *=
+                    (
+                        transformers.windv2[ix] /
+                        get_base_voltage(bus_j)
+                    )^2
+                br_x *=
+                    (
+                        transformers.windv2[ix] /
+                        get_base_voltage(bus_j)
+                    )^2
+            else  # "for off-nominal turns ratio in pu of nominal winding voltage, NOMV1, NOMV2 and NOMV3."
+                br_r *=
+                    (
+                        transformers.windv2[ix] * (
+                            transformers.nomv2[ix] /
+                            get_base_voltage(bus_j)
+                        )
+                    )^2
+                br_x *=
+                    (
+                        transformers.windv2[ix] * (
+                            transformers.nomv2[ix] /
+                            get_base_voltage(bus_j)
+                        )
+                    )^2
+            end
+        end
+
+        max_rate =
+            max(transformers.rata1[ix], transformers.ratb1[ix], transformers.ratc1[ix])
+
+        tap_value = transformers.windv1[ix] / transformers.windv2[ix]
+
+        # Unit Transformations
+        if transformers.cw[ix] != 1  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
+            tap_value *= get_base_voltage(bus_j) / get_base_voltage(bus_i)
+            if transformers.cw[ix] == 3  # "for off-nominal turns ratio in pu of nominal winding voltage, NOMV1, NOMV2 and NOMV3."
+                tap_value *= transformers.nomv1[ix] / transformers.nomv2[ix]
+            end
+        end
+
+        transformer = TapTransformer(;
+            name = transformer_name,
+            available = transformers.stat[ix] > 0 ? true : false,
+            active_power_flow = 0.0,
+            reactive_power_flow = 0.0,
+            arc = Arc(bus_i, bus_j),
+            r = br_r,
+            x = br_x,
+            tap = tap_value,
+            primary_shunt = transformers.mag2[ix],
+            rate = max_rate,
+        )
+        add_component!(sys, transformer; skip_validation = SKIP_PM_VALIDATION)
     end
 
     return nothing
@@ -623,6 +703,7 @@ function read_shunt!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "FixedShunts parsing from PowerFlowData inputs not implemented. Data will be ignored"
     return
 end
 
@@ -644,6 +725,7 @@ function read_switched_shunt!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "SwitchedShunts parsing from PSS/e v30 files not implemented. Data will be ignored"
     return
 end
 
@@ -662,7 +744,7 @@ function read_switched_shunt!(
         return
     end
 
-    # Method needed for NTPS
+    @error "SwitchedShunts parsing from PSS/e v33 files not implemented. Data will be ignored"
     return
 end
 
@@ -684,6 +766,7 @@ function read_dcline!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "TwoTerminalDCLines parsing from PSS/e v30 files not implemented. Data will be ignored"
     return
 end
 
@@ -704,6 +787,7 @@ function read_dcline!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
     return
 end
 
@@ -714,6 +798,7 @@ function read_dcline!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
     return
 end
 
@@ -724,6 +809,6 @@ function read_dcline!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-    # Method needed for NTPS
+    @error "MultiTerminalDCLines parsing from PSS/e files v33 not implemented. Data will be ignored"
     return
 end
