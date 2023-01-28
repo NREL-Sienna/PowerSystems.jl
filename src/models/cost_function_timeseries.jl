@@ -16,7 +16,7 @@ function get_variable_cost(
     if start_time === nothing
         start_time = IS.get_initial_timestamp(ts)
     end
-    data = IS.get_time_series_array(component, ts, start_time, len = len)
+    data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
     return TimeSeries.TimeArray(time_stamps, map(VariableCost, TimeSeries.values(data)))
 end

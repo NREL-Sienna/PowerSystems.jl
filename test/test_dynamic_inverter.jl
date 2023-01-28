@@ -58,7 +58,7 @@
 end
 
 @testset "Dynamic Inverter" begin
-    sys = create_system_with_dynamic_inverter()
+    sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
     inverters = collect(get_components(DynamicInverter, sys))
     @test length(inverters) == 1
     test_inverter = inverters[1]
@@ -67,7 +67,7 @@ end
 end
 
 @testset "Generic Renewable Models" begin
-    converter_regca1 = RenewableEnergyConverterTypeA(
+    converter_regca1 = RenewableEnergyConverterTypeA(;
         T_g = 0.02,
         Rrpwr = 10.0,
         Brkpt = 0.9,
@@ -83,9 +83,9 @@ end
         Lvpl_sw = 0,
     )
     @test converter_regca1 isa PowerSystems.DynamicComponent
-    filt_current = RLFilter(rf = 0.0, lf = 0.1)
+    filt_current = RLFilter(; rf = 0.0, lf = 0.1)
     @test filt_current isa PowerSystems.DynamicComponent
-    inner_ctrl_typeB = RECurrentControlB(
+    inner_ctrl_typeB = RECurrentControlB(;
         Q_Flag = 0,
         PQ_Flag = 0,
         Vdip_lim = (-99.0, 99.0),
@@ -103,7 +103,7 @@ end
     # Creates 2^5 = 32 combinations of flags for an outer control
     for (F_flag, VC_flag, R_flag, PF_flag, V_flag) in
         reverse.(Iterators.product(fill(0:1, 5)...))[:]
-        P_control_typeAB = ActiveRenewableControllerAB(
+        P_control_typeAB = ActiveRenewableControllerAB(;
             bus_control = 0,
             from_branch_control = 0,
             to_branch_control = 0,
@@ -122,7 +122,7 @@ end
             P_lim_inner = (0.0, 1.2),
             T_pord = 0.02,
         )
-        Q_control_typeAB = ReactiveRenewableControllerAB(
+        Q_control_typeAB = ReactiveRenewableControllerAB(;
             bus_control = 0,
             from_branch_control = 0,
             to_branch_control = 0,

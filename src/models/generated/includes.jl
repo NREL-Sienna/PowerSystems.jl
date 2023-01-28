@@ -14,8 +14,9 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("HVDCLine.jl")
 include("VSCDCLine.jl")
-include("InterruptibleLoad.jl")
+include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
+include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
 include("StandardLoad.jl")
 include("ExponentialLoad.jl")
@@ -391,6 +392,7 @@ export get_Xq
 export get_Xq_p
 export get_Xq_pp
 export get_Y
+export get_Y_increase
 export get_Zerox
 export get_a
 export get_active_power
@@ -506,17 +508,18 @@ export get_max_current_reactive_power
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
 export get_max_reactive_power
-export get_model
 export get_must_run
 export get_n_states
 export get_name
 export get_no_load
 export get_number
+export get_number_of_steps
 export get_operation_cost
 export get_outflow
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
+export get_phase_angle_limits
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
@@ -880,6 +883,7 @@ export set_Xq!
 export set_Xq_p!
 export set_Xq_pp!
 export set_Y!
+export set_Y_increase!
 export set_Zerox!
 export set_a!
 export set_active_power!
@@ -995,17 +999,18 @@ export set_max_current_reactive_power!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_reactive_power!
-export set_model!
 export set_must_run!
 export set_n_states!
 export set_name!
 export set_no_load!
 export set_number!
+export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
+export set_phase_angle_limits!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!

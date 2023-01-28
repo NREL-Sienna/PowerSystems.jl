@@ -16,7 +16,6 @@ const ENUMS = (
     BusTypes,
     GeneratorCostModels,
     InputCategory,
-    LoadModels,
     PrimeMovers,
     StateTypes,
     ThermalFuels,
@@ -28,7 +27,7 @@ const ENUM_MAPPINGS = Dict()
 for enum in ENUMS
     ENUM_MAPPINGS[enum] = Dict()
     for value in instances(enum)
-        ENUM_MAPPINGS[enum][normalize(string(value), casefold = true)] = value
+        ENUM_MAPPINGS[enum][normalize(string(value); casefold = true)] = value
     end
 end
 
@@ -38,7 +37,7 @@ function get_enum_value(enum, value::AbstractString)
         throw(ArgumentError("enum=$enum is not valid"))
     end
 
-    val = normalize(value, casefold = true)
+    val = normalize(value; casefold = true)
     if !haskey(ENUM_MAPPINGS[enum], val)
         throw(ArgumentError("enum=$enum does not have value=$val"))
     end
@@ -50,7 +49,6 @@ Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnit
 Base.convert(::Type{BusTypes}, val::AbstractString) = get_enum_value(BusTypes, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
-Base.convert(::Type{LoadModels}, val::AbstractString) = get_enum_value(LoadModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
 Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateTypes, val)
 Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)

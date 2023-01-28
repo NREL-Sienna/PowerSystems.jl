@@ -25,37 +25,6 @@ function MarketBidCost(
     return MarketBidCost(no_load, start_up_multi, shut_down, variable, ancillary_services)
 end
 
-# FIXME: This function name implies that will return a struct named `PowerLoadPF`
-# i.e. `PowerLoadPF` is not a constructor
-function PowerLoadPF(
-    name::String,
-    available::Bool,
-    bus::Bus,
-    model::Union{Nothing, LoadModels},
-    active_power::Float64,
-    max_active_power::Float64,
-    power_factor::Float64,
-    base_power::Float64,
-)
-    max_reactive_power = max_active_power * sin(acos(power_factor))
-    reactive_power = active_power * sin(acos(power_factor))
-    return PowerLoad(
-        name,
-        available,
-        bus,
-        model,
-        active_power,
-        reactive_power,
-        base_power,
-        max_active_power,
-        max_reactive_power,
-    )
-end
-
-function PowerLoadPF(::Nothing)
-    return PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
-end
-
 """Accepts angle_limits as a Float64."""
 function Line(
     name,
@@ -126,6 +95,83 @@ function StaticReserve(
         timeframe,
         requirement,
         time_series,
+        internal,
+    )
+end
+
+function InterruptibleLoad(
+    name,
+    available,
+    bus,
+    model,
+    active_power,
+    reactive_power,
+    max_active_power,
+    max_reactive_power,
+    base_power,
+    operation_cost,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+)
+    @warn(
+        "The InterruptibleLoad constructor that accepts a model type has been removed and \\
+  is no longer used. Calling this method will automatically create an InterruptiblePowerLoad"
+    )
+    InterruptiblePowerLoad(
+        name,
+        available,
+        bus,
+        active_power,
+        reactive_power,
+        max_active_power,
+        max_reactive_power,
+        base_power,
+        operation_cost,
+        services,
+        dynamic_injector,
+        ext,
+        time_series_container,
+        InfrastructureSystemsInternal(),
+    )
+end
+
+function InterruptibleLoad(;
+    name,
+    available,
+    bus,
+    model,
+    active_power,
+    reactive_power,
+    max_active_power,
+    max_reactive_power,
+    base_power,
+    operation_cost,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+    internal = InfrastructureSystemsInternal(),
+)
+    @warn(
+        "The InterruptibleLoad constructor that accepts a model type has been removed and \\
+  is no longer used. Calling this method will automatically create an InterruptiblePowerLoad"
+    )
+    InterruptiblePowerLoad(
+        name,
+        available,
+        bus,
+        active_power,
+        reactive_power,
+        max_active_power,
+        max_reactive_power,
+        base_power,
+        operation_cost,
+        services,
+        dynamic_injector,
+        ext,
+        time_series_container,
         internal,
     )
 end

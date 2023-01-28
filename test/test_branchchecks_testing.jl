@@ -6,10 +6,10 @@ import TimeSeries: TimeArray
     onesec = TimeArray([DateTime(today()) + Dates.Second(i) for i in 1:5], ones(5))
     onehour = TimeArray([DateTime(today()) + Dates.Hour(i) for i in 1:5], ones(5))
 
-    @test PowerSystems.getresolution(twomins) == Dates.Minute(2)
-    @test PowerSystems.getresolution(oneday) == Dates.Day(1)
-    @test PowerSystems.getresolution(onesec) == Dates.Second(1)
-    @test PowerSystems.getresolution(onehour) == Dates.Hour(1)
+    @test PowerSystems.get_resolution(twomins) == Dates.Minute(2)
+    @test PowerSystems.get_resolution(oneday) == Dates.Day(1)
+    @test PowerSystems.get_resolution(onesec) == Dates.Second(1)
+    @test PowerSystems.get_resolution(onehour) == Dates.Hour(1)
 end
 
 @testset "Angle limits" begin
@@ -77,7 +77,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[1], to = nodes5[2]),
+            Arc(; from = nodes5[1], to = nodes5[2]),
             0.00281,
             0.0281,
             (from = 0.00356, to = 0.00356),
@@ -89,7 +89,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[1], to = nodes5[4]),
+            Arc(; from = nodes5[1], to = nodes5[4]),
             0.00304,
             0.0304,
             (from = 0.00329, to = 0.00329),
@@ -101,7 +101,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[1], to = nodes5[5]),
+            Arc(; from = nodes5[1], to = nodes5[5]),
             0.00064,
             0.0064,
             (from = 0.01563, to = 0.01563),
@@ -113,7 +113,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[2], to = nodes5[3]),
+            Arc(; from = nodes5[2], to = nodes5[3]),
             0.00108,
             0.0108,
             (from = 0.00926, to = 0.00926),
@@ -125,7 +125,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[3], to = nodes5[4]),
+            Arc(; from = nodes5[3], to = nodes5[4]),
             0.00297,
             0.0297,
             (from = 0.00337, to = 0.00337),
@@ -137,7 +137,7 @@ end
             true,
             0.0,
             0.0,
-            Arc(from = nodes5[4], to = nodes5[5]),
+            Arc(; from = nodes5[4], to = nodes5[5]),
             0.00297,
             0.0297,
             (from = 0.00337, to = 00.00337),
@@ -160,7 +160,7 @@ end
         true,
         0.0,
         0.0,
-        Arc(from = nodes5[1], to = nodes5[2]),
+        Arc(; from = nodes5[1], to = nodes5[2]),
         0.00281,
         0.0281,
         (from = 0.00356, to = 0.00356),

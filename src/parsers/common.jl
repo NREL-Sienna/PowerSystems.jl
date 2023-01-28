@@ -115,8 +115,8 @@ function get_branch_type(
 end
 
 function calculate_rating(
-    active_power_limits::Union{Min_Max, Nothing},
-    reactive_power_limits::Union{Min_Max, Nothing},
+    active_power_limits::Union{MinMax, Nothing},
+    reactive_power_limits::Union{MinMax, Nothing},
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
     return calculate_rating(active_power_limits.max, reactive_power_max)
@@ -127,13 +127,13 @@ function calculate_rating(active_power_max::Float64, reactive_power_max::Float64
 end
 
 function string_compare(str1, str2; casefold = true)
-    return normalize(str1, casefold = casefold) === normalize(str2, casefold = casefold)
+    return normalize(str1; casefold = casefold) === normalize(str2; casefold = casefold)
 end
 
 function string_occursin(str1, str2; casefold = true)
     return occursin(
-        normalize(str1, casefold = casefold),
-        normalize(srt2, casefold = casefold),
+        normalize(str1; casefold = casefold),
+        normalize(srt2; casefold = casefold),
     )
 end
 

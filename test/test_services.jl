@@ -198,8 +198,8 @@ end
     contributing_devices2 = get_contributing_devices(sys, services[2])
 
     # Order of contributing_devices isn't guaranteed, sort them to test.
-    sort!(contributing_devices1, by = x -> get_name(x))
-    sort!(contributing_devices2, by = x -> get_name(x))
+    sort!(contributing_devices1; by = x -> get_name(x))
+    sort!(contributing_devices2; by = x -> get_name(x))
     @test contributing_devices1 == expected_contributing_devices1
     @test contributing_devices2 == expected_contributing_devices2
 
@@ -215,8 +215,8 @@ end
     @test length(mapping[key2].contributing_devices) == 3
     @test length(mapping[key3].contributing_devices) == 0
 
-    sort!(mapping[key1].contributing_devices, by = x -> get_name(x))
-    sort!(mapping[key2].contributing_devices, by = x -> get_name(x))
+    sort!(mapping[key1].contributing_devices; by = x -> get_name(x))
+    sort!(mapping[key2].contributing_devices; by = x -> get_name(x))
     @test mapping[key1].contributing_devices == expected_contributing_devices1
     @test mapping[key2].contributing_devices == expected_contributing_devices2
 end
@@ -264,9 +264,9 @@ end
 end
 
 @testset "Test AGC Device and Regulation Services" begin
-    sys = create_rts_system()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     control_area = get_component(Area, sys, "1")
-    AGC_service = PSY.AGC(
+    AGC_service = PSY.AGC(;
         name = "AGC_Area1",
         available = true,
         bias = 739.0,
@@ -278,14 +278,14 @@ end
     )
     contributing_devices = Vector{Device}()
     for g in get_components(
+        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
     )
         if get_area(get_bus(g)) != control_area
             continue
         end
-        t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
+        t = RegulationDevice(g; participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
         push!(contributing_devices, t)
     end
@@ -296,7 +296,7 @@ end
     end
 
     device_without_regulation =
-        first(get_components(HydroGen, sys, x -> get_area(get_bus(x)) == control_area))
+        first(get_components(x -> get_area(get_bus(x)) == control_area, HydroGen, sys))
     @test_throws IS.ConflictingInputsError PSY.add_service_internal!(
         device_without_regulation,
         AGC_service,
@@ -356,7 +356,7 @@ end
     contributing_services = get_contributing_services(groupservice)
 
     # check if expected contributing services is iqual to contributing services
-    sort!(contributing_services, by = x -> get_name(x))
+    sort!(contributing_services; by = x -> get_name(x))
     @test contributing_services == expected_contributing_services
 end
 

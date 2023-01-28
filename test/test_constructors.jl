@@ -14,21 +14,6 @@
         nothing,
     )
     @test PowerSystems.get_bustype(bus) == BusTypes.REF
-
-    @test_throws(
-        PowerSystems.DataFormatError,
-        Bus(
-            1,
-            "test",
-            BusTypes.ISOLATED,
-            0.0,
-            0.0,
-            (min = 0.0, max = 0.0),
-            nothing,
-            nothing,
-            nothing,
-        )
-    )
 end
 
 @testset "Generation Constructors" begin
@@ -63,13 +48,11 @@ end
 @testset "Load Constructors" begin
     tPowerLoad = PowerLoad(nothing)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF(nothing)
-    @test tPowerLoadPF isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), nothing, 0.0, 0.0, 100.0, 0.0, 0.0)
+    tStandardLoad = StandardLoad(nothing)
+    @test tStandardLoad isa PowerSystems.Component
+    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
-    tPowerLoadPF = PowerLoadPF("init", true, Bus(nothing), nothing, 0.0, 0.0, 1.0, 100.0)
-    @test tPowerLoadPF isa PowerSystems.Component
-    tLoad = InterruptibleLoad(nothing)
+    tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
 end
 
@@ -106,19 +89,26 @@ end
     #SingleTimeSeries Tests
     ts = SingleTimeSeries("scalingfactor", Hour(1), DateTime("01-01-01"), 24)
     @test ts isa PowerSystems.TimeSeriesData
-    ts = SingleTimeSeries(name = "scalingfactor", data = data)
+    ts = SingleTimeSeries(; name = "scalingfactor", data = data)
     @test ts isa PowerSystems.TimeSeriesData
-    # TODO 1.0
+
     #Probabilistic Tests
-    #ts = Probabilistic("scalingfactor", Hour(1), DateTime("01-01-01"), [0.5, 0.5], 24)
-    #@test ts isa PowerSystems.TimeSeriesData
-    #ts = Probabilistic(name = "scalingfactor", percentiles = [1.0], data = data)
-    #@test ts isa PowerSystems.TimeSeriesData
+    data = SortedDict(
+        DateTime("01-01-01") => [1.0 1.0; 2.0 2.0],
+        DateTime("01-01-01") + Hour(1) => [1.0 1.0; 2.0 2.0],
+    )
+    ts = Probabilistic("scalingfactor", data, [0.5, 0.5], Hour(1))
+    @test ts isa PowerSystems.TimeSeriesData
+    ts = Probabilistic(;
+        name = "scalingfactor",
+        percentiles = [1.0, 1.0],
+        data = data,
+        resolution = Hour(1),
+    )
+    @test ts isa PowerSystems.TimeSeriesData
     ##Scenario Tests
-    #ts = Scenarios("scalingfactor", Hour(1), DateTime("01-01-01"), 2, 24)
-    #@test ts isa PowerSystems.TimeSeriesData
-    #ts = Scenarios("scalingfactor", data)
-    #@test ts isa PowerSystems.TimeSeriesData
+    ts = Scenarios("scalingfactor", data, Hour(1))
+    @test ts isa PowerSystems.TimeSeriesData
 end
 
 @testset "Regulation Device" begin
@@ -127,7 +117,7 @@ end
     @test get_rating(regulation) == 0.0
     set_rating!(regulation, 10.0)
     @test get_rating(regulation) == 10.0
-    regulation = RegulationDevice(original_device, droop = 0.5)
+    regulation = RegulationDevice(original_device; droop = 0.5)
     @test get_droop(regulation) == 0.5
     @test get_participation_factor(regulation) == (up = 0.0, dn = 0.0)
     @test get_reserve_limit_up(regulation) == 0.0

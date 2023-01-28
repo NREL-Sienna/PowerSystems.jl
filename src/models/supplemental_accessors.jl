@@ -63,3 +63,11 @@ get_rating(::T) where {T <: Device} =
     throw(ArgumentError("get_rating not implemented for $T"))
 get_power_factor(::T) where {T <: Device} =
     throw(ArgumentError("get_power_factor not implemented for $T"))
+
+function get_max_active_power(d::StandardLoad)
+    total_load = get_max_constant_active_power(d)
+    # TODO: consider voltage
+    total_load += get_max_impedance_active_power(d)
+    total_load += get_max_current_active_power(d)
+    return total_load
+end

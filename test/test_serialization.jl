@@ -2,7 +2,7 @@
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     # Add an AGC service to cover its special serialization.
     control_area = get_component(Area, sys, "1")
-    AGC_service = PSY.AGC(
+    AGC_service = PSY.AGC(;
         name = "AGC_Area1",
         available = true,
         bias = 739.0,
@@ -19,22 +19,22 @@
     name = "active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
+        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
     )
         if get_area(get_bus(g)) != control_area
             continue
         end
         ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
-        time_series = IS.SingleTimeSeries(
+        time_series = IS.SingleTimeSeries(;
             name = name,
             data = ta,
             scaling_factor_multiplier = get_active_power,
         )
         add_time_series!(sys, g, time_series)
 
-        t = RegulationDevice(g, participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
+        t = RegulationDevice(g; participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
         add_component!(sys, t)
         @test isnothing(get_component(ThermalStandard, sys, get_name(g)))
         push!(contributing_devices, t)
@@ -61,7 +61,7 @@ end
 end
 
 @testset "Test JSON serialization of matpower data" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
 
     # Add a Probabilistic time_series to get coverage serializing it.
     bus = Bus(nothing)
@@ -79,7 +79,7 @@ end
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_ACTIVSg2000_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_ACTIVSg2000_sys")
     _, result = validate_serialization(sys)
     @test result
 end
@@ -154,7 +154,7 @@ end
         set_operation_cost!(gen, market_bid)
         add_component!(sys, gen)
         ta = TimeSeries.TimeArray(dates, data)
-        time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
+        time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
     end
     _, result = validate_serialization(sys)
@@ -185,7 +185,7 @@ end
     service = ReserveDemandCurve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
     ta = TimeSeries.TimeArray(dates, data)
-    time_series = IS.SingleTimeSeries(name = "variable_cost", data = ta)
+    time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
     set_variable_cost!(sys, service, time_series)
 
     _, result = validate_serialization(sys)
@@ -193,7 +193,11 @@ end
 end
 
 @testset "Test JSON serialization of HybridSystem" begin
-    sys = create_rts_system_with_hybrid_system(add_forecasts = true)
+    sys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys_with_hybrid";
+        add_forecasts = true,
+    )
     h_sys = first(get_components(HybridSystem, sys))
     subcomponents = collect(get_subcomponents(h_sys))
     @test length(subcomponents) == 4

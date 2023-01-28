@@ -36,8 +36,7 @@ end
 @testset "Test time_series normalization" begin
     component_name = "122_HYDRO_1"
     timeseries_file = joinpath(
-        DATA_DIR,
-        "forecasts",
+        RTS_GMLC_DIR,
         "RTS_GMLC_forecasts",
         "gen",
         "Hydro",
@@ -52,7 +51,7 @@ end
     timeseries = get_data(ts_base)
     max_value = maximum(TimeSeries.values(timeseries))
 
-    file_metadata = IS.TimeSeriesFileMetadata(
+    file_metadata = IS.TimeSeriesFileMetadata(;
         simulation = "DAY_AHEAD",
         category = "Generator",
         component_name = "122_HYDRO_1",
@@ -66,7 +65,7 @@ end
     )
 
     # Test code path where no normalization occurs.
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -74,7 +73,7 @@ end
 
     # Test code path where timeseries is normalized by dividing by the max value.
     file_metadata.normalization_factor = "Max"
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -83,7 +82,7 @@ end
     # Test code path where timeseries is normalized by dividing by a custom value.
     nf = 95.0
     file_metadata.normalization_factor = nf
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     add_time_series!(sys, [file_metadata])
     verify_time_series(sys, 1, 1, 24)
     time_series = collect(get_time_series_multiple(sys))[1]
@@ -94,8 +93,7 @@ end
     component_name = "122_HYDRO_1"
     name = "active_power"
     timeseries_file = joinpath(
-        DATA_DIR,
-        "forecasts",
+        RTS_GMLC_DIR,
         "RTS_GMLC_forecasts",
         "gen",
         "Hydro",
@@ -104,7 +102,7 @@ end
     resolution = Dates.Hour(1)
 
     # Test with a filename.
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(
         name,
@@ -121,7 +119,7 @@ end
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with TimeSeries.TimeArray.
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     ts = SingleTimeSeries(name, ta; normalization_factor = 1.0)
     add_time_series!(sys, component, ts)
@@ -130,7 +128,7 @@ end
     @test TimeSeries.values(get_data(time_series)) == TimeSeries.values(ta)
 
     # Test with DataFrames.DataFrame.
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_RTS_GMLC_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_RTS_GMLC_sys")
     component = get_component(HydroDispatch, sys, component_name)
     df = DataFrames.DataFrame(ta)
     ts = SingleTimeSeries(name, df; normalization_factor = 1.0)
@@ -140,8 +138,8 @@ end
 end
 
 @testset "TimeSeriesData data matpower" begin
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
-    file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_da.json")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
+    file_metadata = joinpath(DATA_DIR, "5-bus", "5bus_ts", "timeseries_pointers_da.json")
     add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 24)
 
@@ -149,7 +147,7 @@ end
     # This will fail because the component-name pairs will be duplicated.
     @test_throws ArgumentError add_time_series!(sys, file_metadata)
 
-    file_metadata = joinpath(TIME_SERIES_DIR, "5bus_ts", "timeseries_pointers_rt.json")
+    file_metadata = joinpath(DATA_DIR, "5-bus", "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
     @test_throws IS.ConflictingInputsError add_time_series!(sys, file_metadata)
@@ -157,7 +155,7 @@ end
     ## TODO: need a dataset with same resolution but different horizon.
 
     # sys = System(PowerSystems.PowerModelsData(joinpath(MATPOWER_DIR, "case5_re.m")))
-    sys = PSB.build_system(PSB.MatPowerTestSystems, "matpower_case5_re_sys")
+    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
     add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 288)
 end

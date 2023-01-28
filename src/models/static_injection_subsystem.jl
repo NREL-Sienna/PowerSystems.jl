@@ -38,7 +38,7 @@ function copy_subcomponent_time_series!(
         end
     end
 
-    copy_time_series!(subsystem, subcomponent, name_mapping = name_mapping)
+    copy_time_series!(subsystem, subcomponent; name_mapping = name_mapping)
     @info "Copied time series from $(summary(subcomponent)) to $(summary(subsystem))"
 end
 

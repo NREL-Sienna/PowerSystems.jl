@@ -19,7 +19,7 @@
         IS.ArgumentError,
         get_components_by_name(ThermalStandard, sys, "not-a-name")
     )
-    @test isempty(get_components(ThermalStandard, sys, x -> (!get_available(x))))
+    @test isempty(get_components(x -> (!get_available(x)), ThermalStandard, sys))
     @test !isempty(get_available_components(ThermalStandard, sys))
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
@@ -35,7 +35,7 @@
 
     buses = PowerSystems.get_buses(sys, Set(bus_numbers))
     sort!(bus_numbers)
-    sort!(buses, by = x -> x.number)
+    sort!(buses; by = x -> x.number)
     @test length(bus_numbers) == length(buses)
     for (bus_number, bus) in zip(bus_numbers, buses)
         @test bus_number == bus.number
@@ -97,8 +97,7 @@ end
 end
 
 @testset "Test handling of bus_numbers" begin
-    sys = create_rts_system()
-    # TODO: sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
 
     @test length(sys.bus_numbers) > 0
     buses = get_components(Bus, sys)
@@ -239,7 +238,7 @@ end
     data = collect(1:24)
     ta = TimeSeries.TimeArray(dates, data, ["1"])
     name = "max_active_power"
-    ts = SingleTimeSeries(name = name, data = ta)
+    ts = SingleTimeSeries(; name = name, data = ta)
     add_time_series!(sys, components, ts)
 
     for i in 1:len
@@ -280,7 +279,7 @@ end
     horizon = 24
     data = SortedDict(initial_time => ones(horizon), second_time => ones(horizon))
 
-    forecast = Deterministic(data = data, name = name, resolution = resolution)
+    forecast = Deterministic(; data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)
 
     @test get_time_series_resolution(sys) == resolution
@@ -307,11 +306,18 @@ end
 end
 
 @testset "Test deepcopy with runchecks disabled" begin
-    sys = System(100.0, runchecks = false)
+    sys = System(100.0; runchecks = false)
     @test !get_runchecks(sys)
     sys2 = deepcopy(sys)
     @test sys2 isa System
     @test !get_runchecks(sys)
+end
+
+@testset "Test deepcopy with custom time_series_directory" begin
+    ts_dir = mktempdir()
+    sys = System(100.0; time_series_directory = ts_dir)
+    sys2 = deepcopy(sys)
+    @test dirname(sys2.data.time_series_storage.file_path) == ts_dir
 end
 
 @testset "Test time series counts" begin
@@ -338,7 +344,7 @@ end
     @test sys2.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
-    for component in get_components(Component, sys2, x -> has_time_series(x))
+    for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.time_series_container.time_series_storage ===
               sys2.data.time_series_storage
     end
@@ -354,19 +360,19 @@ end
     @test sys2.data.time_series_storage isa IS.Hdf5TimeSeriesStorage
     @test sys.data.time_series_storage.file_path != sys2.data.time_series_storage.file_path
     @test IS.compare_values(sys, sys2)
-    for component in get_components(Component, sys2, x -> has_time_series(x))
+    for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.time_series_container.time_series_storage ===
               sys2.data.time_series_storage
     end
 end
 
 @testset "Test with compression enabled" begin
-    @test get_compression_settings(System(100.0)) == CompressionSettings(enabled = false)
+    @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
-    settings = CompressionSettings(enabled = true, type = CompressionTypes.BLOSC)
-    @test get_compression_settings(System(100.0, compression = settings)) == settings
-    @test get_compression_settings(System(100.0, enable_compression = true)) ==
-          CompressionSettings(enabled = true)
+    settings = CompressionSettings(; enabled = true, type = CompressionTypes.BLOSC)
+    @test get_compression_settings(System(100.0; compression = settings)) == settings
+    @test get_compression_settings(System(100.0; enable_compression = true)) ==
+          CompressionSettings(; enabled = true)
 end
 
 @testset "Test compare_values" begin
@@ -433,4 +439,56 @@ end
     @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_sil_values(
         sys,
     ))
+end
+
+@testset "Test system name and description" begin
+    name = "test_system"
+    description = "a system description"
+    sys = System(100.0)
+    @test get_name(sys) === nothing
+    @test get_description(sys) === nothing
+    set_name!(sys, name)
+    set_description!(sys, description)
+
+    sys = System(100.0; name = name, description = description)
+    @test get_name(sys) == name
+    @test get_description(sys) == description
+end
+
+@testset "Test system metadata" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    name = "test_system"
+    description = "a system description"
+    set_name!(sys, name)
+    set_description!(sys, description)
+
+    tempdir = mktempdir()
+    sys_file = joinpath(tempdir, "sys.json")
+    to_json(sys, sys_file; user_data = Dict("author" => "test"))
+
+    sys2 = System(sys_file)
+    @test get_name(sys2) == name
+    @test get_description(sys2) == description
+
+    metadata_file = joinpath(tempdir, "sys_metadata.json")
+    metadata = open(metadata_file) do io
+        JSON3.read(io, Dict)
+    end
+
+    @test metadata["name"] == name
+    @test metadata["description"] == description
+    found_component = false
+    for item in metadata["component_counts"]
+        if item["type"] == "ThermalStandard"
+            @test item["count"] == 76
+            found_component = true
+        end
+    end
+    @test found_component
+    @test metadata["time_series_counts"][1]["type"] == "DeterministicSingleTimeSeries"
+    @test metadata["time_series_counts"][1]["count"] == 182
+    @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"
+    @test metadata["time_series_counts"][2]["count"] == 182
+    @test metadata["time_series_resolution_minutes"] == 60
+    @test metadata["user_data"]["author"] == "test"
 end
