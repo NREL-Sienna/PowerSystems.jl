@@ -7,15 +7,16 @@ intake and extension of the data model. These features are enabled through three
 - Optimized read/write data container (the container is called [`System`](@ref)),
 - Utilities to facilitate modeling, extensions, and integration.
 
-You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData),
-the data can be downloaded with the submodule `UtilsData`
+It is possible to load examples systems directly using [PowerSystemCaseBuilder](https://github.com/NREL-SIIP/PowerSystemCaseBuilder).
 
 ```julia
+using PowerSystemCaseBuilder
 using PowerSystems
-DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
+
+sys = load_from_case_builder()
 ```
 
-## Loading data
+## Loading data from files
 
 Data can be loaded from several file formats and return a summary of the system's components and
 time-series.
