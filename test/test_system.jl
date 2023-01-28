@@ -489,6 +489,6 @@ end
     @test metadata["time_series_counts"][1]["count"] == 182
     @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"
     @test metadata["time_series_counts"][2]["count"] == 182
-    @test metadata["time_series_resolution_milliseconds"] == 3600000000
+    @test metadata["time_series_resolution_milliseconds"] == 3600000
     @test metadata["user_data"]["author"] == "test"
 end
