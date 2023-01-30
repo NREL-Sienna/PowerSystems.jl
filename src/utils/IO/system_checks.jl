@@ -18,7 +18,7 @@ end
 function slack_bus_check(buses)
     slack = -9
     for b in buses
-        if b.bustype == BusTypes.REF
+        if b.bustype == ACBusTypes.REF
             slack = b.number
             break
         end
@@ -52,7 +52,7 @@ function minimumtimestep(time_series::Array{T}) where {T <: TimeSeriesData}
 end
 
 function critical_components_check(sys::System)
-    critical_component_types = [Bus, Generator, ElectricLoad]
+    critical_component_types = [ACBus, Generator, ElectricLoad]
     for component_type in critical_component_types
         components = get_components(component_type, sys)
         if length(components) == 0

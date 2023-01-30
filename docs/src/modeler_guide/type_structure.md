@@ -12,7 +12,7 @@ types and create generic code to support modeling technologies that are not yet
 implemented in the package.
 
 `PowerSystems.jl` has a category [`Topology`](@ref) of topological components
-(e.g., [`Bus`](@ref), [`Arc`](@ref)), separate from the physical components.
+(e.g., [`ACBus`](@ref), [`Arc`](@ref)), separate from the physical components.
 
 The hierarchy also includes components absent in standard data models, such as services.
 The services category includes reserves, transfers and [`AGC`](@ref). The power of `PowerSystems.jl`

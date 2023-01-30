@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct InterruptiblePowerLoad <: ControllableLoad
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         max_active_power::Float64
@@ -27,7 +27,7 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `max_active_power::Float64`
@@ -43,7 +43,7 @@ This file is auto-generated. Do not edit.
 mutable struct InterruptiblePowerLoad <: ControllableLoad
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     max_active_power::Float64
@@ -76,7 +76,7 @@ function InterruptiblePowerLoad(::Nothing)
     InterruptiblePowerLoad(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         max_active_power=0.0,
