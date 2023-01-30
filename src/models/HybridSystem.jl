@@ -13,7 +13,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     name::String
     available::Bool
     status::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     base_power::Float64
@@ -43,7 +43,7 @@ function HybridSystem(;
     name = "init",
     available = false,
     status = false,
-    bus = Bus(nothing),
+    bus = ACBus(nothing),
     active_power = 0.0,
     reactive_power = 0.0,
     base_power = 100.0,
@@ -95,7 +95,7 @@ function HybridSystem(::Nothing)
         name = "init",
         available = false,
         status = false,
-        bus = Bus(nothing),
+        bus = ACBus(nothing),
         active_power = 0.0,
         reactive_power = 0.0,
         base_power = 100.0,

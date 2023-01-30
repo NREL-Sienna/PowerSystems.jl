@@ -78,7 +78,7 @@ function TapTransformer(::Nothing)
         available=false,
         active_power_flow=0.0,
         reactive_power_flow=0.0,
-        arc=Arc(Bus(nothing), Bus(nothing)),
+        arc=Arc(ACBus(nothing), ACBus(nothing)),
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
