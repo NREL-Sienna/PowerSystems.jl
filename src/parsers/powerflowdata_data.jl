@@ -204,7 +204,7 @@ function read_bus!(
 )
     bus_number_to_bus = Dict{Int, ACBus}()
 
-    bus_types = instances(BusTypes)
+    bus_types = instances(ACBusTypes)
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in 1:length(buses)
