@@ -74,7 +74,7 @@ function VSCDCLine(::Nothing)
         name="init",
         available=false,
         active_power_flow=0.0,
-        arc=Arc(Bus(nothing), Bus(nothing)),
+        arc=Arc(ACBus(nothing), ACBus(nothing)),
         rectifier_tap_limits=(min=0.0, max=0.0),
         rectifier_xrc=0.0,
         rectifier_firing_angle=(min=0.0, max=0.0),

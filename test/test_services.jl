@@ -3,7 +3,7 @@
         sys = System(100.0)
         devices = []
         for i in 1:2
-            bus = Bus(nothing)
+            bus = ACBus(nothing)
             bus.name = "bus" * string(i)
             bus.number = i
             add_component!(sys, bus)
@@ -37,7 +37,7 @@
         sys = System(100.0)
         devices = []
         for i in 1:2
-            bus = Bus(nothing)
+            bus = ACBus(nothing)
             bus.name = "bus" * string(i)
             bus.number = i
             add_component!(sys, bus)
@@ -67,7 +67,7 @@ end
 
 @testset "Test add_service errors" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     service = StaticReserve{ReserveDown}(nothing)
     # Bus is not a Device.
     @test_throws ArgumentError add_service!(sys, service, [bus])
@@ -79,7 +79,7 @@ end
 
 @testset "Test remove service from device" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -98,7 +98,7 @@ end
 
 @testset "Test has service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -119,7 +119,7 @@ end
 
 @testset "Test remove device with service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -148,7 +148,7 @@ end
 
 @testset "Test add device with service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -169,7 +169,7 @@ end
     devices = []
     services = []
     for i in 1:5
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -323,7 +323,7 @@ end
     # add buses and generators
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -362,7 +362,7 @@ end
 
 @testset "Test StaticReserveGroup errors" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
 
     # Bus is not a Service.
@@ -377,7 +377,7 @@ end
     # Service in a StaticReserveGroup
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -398,7 +398,7 @@ end
     # add buses and generators
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)

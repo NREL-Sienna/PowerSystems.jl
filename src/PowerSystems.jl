@@ -10,7 +10,7 @@ module PowerSystems
 
 export System
 export Topology
-export Bus
+export ACBus
 export Arc
 export AggregationTopology
 export Area
@@ -213,7 +213,7 @@ export VariableReserveNonSpinning
 export TransmissionInterface
 
 export AngleUnits
-export BusTypes
+export ACBusTypes
 export PrimeMovers
 export ThermalFuels
 export StateTypes

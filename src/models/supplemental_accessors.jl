@@ -2,14 +2,14 @@
 get_aggregation_topology_accessor(::Type{Area}) = get_area
 get_aggregation_topology_accessor(::Type{LoadZone}) = get_load_zone
 
-set_load_zone!(bus::Bus, load_zone::LoadZone) = bus.load_zone = load_zone
-set_area!(bus::Bus, area::Area) = bus.area = area
+set_load_zone!(bus::ACBus, load_zone::LoadZone) = bus.load_zone = load_zone
+set_area!(bus::ACBus, area::Area) = bus.area = area
 
 """
-Remove the aggregation topology in a Bus
+Remove the aggregation topology in a ACBus
 """
-_remove_aggregration_topology!(bus::Bus, ::LoadZone) = bus.load_zone = nothing
-_remove_aggregration_topology!(bus::Bus, ::Area) = bus.area = nothing
+_remove_aggregration_topology!(bus::ACBus, ::LoadZone) = bus.load_zone = nothing
+_remove_aggregration_topology!(bus::ACBus, ::Area) = bus.area = nothing
 
 """
 Calculate the admittance of AC branches

@@ -12,7 +12,7 @@ IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 
 # "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
-IS.@scoped_enum(BusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
+IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
