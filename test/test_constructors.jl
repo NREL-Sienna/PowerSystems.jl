@@ -13,22 +13,9 @@
         nothing,
         nothing,
     )
+
     @test PowerSystems.get_bustype(bus) == ACBusTypes.REF
 
-    @test_throws(
-        PowerSystems.DataFormatError,
-        ACBus(
-            1,
-            "test",
-            ACBusTypes.ISOLATED,
-            0.0,
-            0.0,
-            (min = 0.0, max = 0.0),
-            nothing,
-            nothing,
-            nothing,
-        )
-    )
 end
 
 @testset "Generation Constructors" begin

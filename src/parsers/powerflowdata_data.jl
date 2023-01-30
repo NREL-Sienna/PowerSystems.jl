@@ -112,8 +112,9 @@ function read_bus!(
     kwargs...,
 )
     bus_number_to_bus = Dict{Int, ACBus}()
-
     bus_types = instances(ACBusTypes)
+
+
 
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
@@ -147,6 +148,11 @@ function read_bus!(
         else
             zone_ix = findfirst(data.zones.i .== buses.zone[ix])
             zone_name = "$(data.zones.zoname[zone_ix])_$(data.zones.i[zone_ix])"
+        end
+        zone = get_component(LoadZone, sys, zone_name)
+        if isnothing(zone)
+            zone = LoadZone(zone_name, 0.0, 0.0)
+            add_component!(sys, zone; skip_validation = SKIP_PM_VALIDATION)
         end
 
         zone = get_component(LoadZone, sys, zone_name)
@@ -736,6 +742,17 @@ function read_switched_shunt!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
+    @error "SwitchedShunts parsing from PSS/e v30 files not implemented. Data will be ignored"
+    return
+end
+
+function read_switched_shunt!(
+    sys::System,
+    data::PowerFlowData.SwitchedShunts33,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
     @info "Reading line data"
     @warn "All switched shunts will be converted to fixed shunts"
 
@@ -793,11 +810,34 @@ end
 
 function read_dcline!(
     sys::System,
+    data::PowerFlowData.VSCDCLines,
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+    @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
+    return
+end
+
+function read_dcline!(
+    sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID30},
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
+    @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
+    return
+end
+
+function read_dcline!(
+    sys::System,
+    data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
+    sys_mbase::Float64,
+    bus_number_to_bus::Dict{Int, Bus};
+    kwargs...,
+)
+
     @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
     return
 end
