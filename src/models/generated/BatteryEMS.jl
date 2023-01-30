@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct BatteryEMS <: Storage
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         prime_mover::PrimeMovers
         initial_energy::Float64
         state_of_charge_limits::MinMax
@@ -35,7 +35,7 @@ Data structure for a battery compatible with energy management formulations.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
@@ -59,7 +59,7 @@ Data structure for a battery compatible with energy management formulations.
 mutable struct BatteryEMS <: Storage
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     "Prime mover technology according to EIA 923"
     prime_mover::PrimeMovers
     "State of Charge of the Battery p.u.-hr"
@@ -104,7 +104,7 @@ function BatteryEMS(::Nothing)
     BatteryEMS(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         prime_mover=PrimeMovers.BA,
         initial_energy=0.0,
         state_of_charge_limits=(min=0.0, max=0.0),

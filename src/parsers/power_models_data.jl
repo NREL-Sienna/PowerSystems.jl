@@ -117,10 +117,10 @@ function _get_pm_branch_name(device_dict, bus_f, bus_t)
 end
 
 """
-Creates a PowerSystems.Bus from a PowerSystems bus dictionary
+Creates a PowerSystems.ACBus from a PowerSystems bus dictionary
 """
 function make_bus(bus_dict::Dict{String, Any})
-    bus = Bus(
+    bus = ACBus(
         bus_dict["number"],
         bus_dict["name"],
         bus_dict["bustype"],
@@ -167,9 +167,9 @@ end
 
 function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
-    bus_number_to_bus = Dict{Int, Bus}()
+    bus_number_to_bus = Dict{Int, ACBus}()
 
-    bus_types = instances(BusTypes)
+    bus_types = instances(ACBusTypes)
     bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
 
     if isempty(bus_data)
@@ -192,7 +192,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         end
 
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
-        has_component(Bus, sys, bus_name) && throw(
+        has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg",
             ),
@@ -242,7 +242,7 @@ function make_standard_load(d, bus, sys_mbase; kwargs...)
     )
 end
 
-function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading Load data in PowerModels dict to populate System ..."
 
     if !haskey(data, "load")
@@ -284,7 +284,7 @@ function make_loadzone(name, active_power, reactive_power; kwargs...)
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading LoadZones data in PowerModels dict to populate System ..."
 
     zones = Set{Int}()
@@ -420,7 +420,7 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::Bus, sys_mbase::Number)
+function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Number)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
         if model == GeneratorCostModels.PIECEWISE_LINEAR
@@ -513,7 +513,7 @@ end
 """
 Transfer generators to ps_dict according to their classification
 """
-function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading generator data"
 
     if !haskey(data, "gen")
@@ -657,7 +657,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -690,7 +690,7 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -718,7 +718,7 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, Bus}; kwargs...)
+function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
@@ -740,7 +740,7 @@ end
 function read_storage!(
     sys::System,
     data::Dict,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading storage data"

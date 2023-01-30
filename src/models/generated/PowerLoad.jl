@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct PowerLoad <: StaticLoad
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         base_power::Float64
@@ -26,7 +26,7 @@ Data structure for a static power load.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -41,7 +41,7 @@ Data structure for a static power load.
 mutable struct PowerLoad <: StaticLoad
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Base power of the unit in MVA"
@@ -72,7 +72,7 @@ function PowerLoad(::Nothing)
     PowerLoad(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         base_power=0.0,

@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct SwitchedAdmittance <: ElectricLoad
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         Y::Complex{Float64}
         number_of_steps::Int
         Y_increase::Complex{Float64}
@@ -24,7 +24,7 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `Y::Complex{Float64}`: Initial impedance at N = 0
 - `number_of_steps::Int`: Number of steps for adjustable shunt
 - `Y_increase::Complex{Float64}`: Admittance increment for each of step increase
@@ -37,7 +37,7 @@ This file is auto-generated. Do not edit.
 mutable struct SwitchedAdmittance <: ElectricLoad
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     "Initial impedance at N = 0"
     Y::Complex{Float64}
     "Number of steps for adjustable shunt"
@@ -68,7 +68,7 @@ function SwitchedAdmittance(::Nothing)
     SwitchedAdmittance(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         Y=0.0,
         number_of_steps=0,
         Y_increase=0,

@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct RenewableDispatch <: RenewableGen
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         rating::Float64
@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
@@ -47,7 +47,7 @@ This file is auto-generated. Do not edit.
 mutable struct RenewableDispatch <: RenewableGen
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
@@ -84,7 +84,7 @@ function RenewableDispatch(::Nothing)
     RenewableDispatch(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,

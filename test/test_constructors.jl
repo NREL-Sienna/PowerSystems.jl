@@ -1,11 +1,11 @@
 @testset "Bus Constructors" begin
-    tBus = Bus(nothing)
+    tBus = ACBus(nothing)
     tLoadZone = LoadZone(nothing)
 
-    bus = Bus(
+    bus = ACBus(
         1,
         "test",
-        BusTypes.SLACK,
+        ACBusTypes.SLACK,
         0.0,
         0.0,
         (min = 0.0, max = 0.0),
@@ -13,7 +13,9 @@
         nothing,
         nothing,
     )
-    @test PowerSystems.get_bustype(bus) == BusTypes.REF
+
+    @test PowerSystems.get_bustype(bus) == ACBusTypes.REF
+
 end
 
 @testset "Generation Constructors" begin
@@ -50,7 +52,7 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tStandardLoad = StandardLoad(nothing)
     @test tStandardLoad isa PowerSystems.Component
-    tPowerLoad = PowerLoad("init", true, Bus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
+    tPowerLoad = PowerLoad("init", true, ACBus(nothing), 0.0, 0.0, 100.0, 0.0, 0.0)
     @test tPowerLoad isa PowerSystems.Component
     tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
@@ -99,12 +101,7 @@ end
     )
     ts = Probabilistic("scalingfactor", data, [0.5, 0.5], Hour(1))
     @test ts isa PowerSystems.TimeSeriesData
-    ts = Probabilistic(;
-        name = "scalingfactor",
-        percentiles = [1.0, 1.0],
-        data = data,
-        resolution = Hour(1),
-    )
+    ts = Probabilistic(; name = "scalingfactor", percentiles = [1.0], data = data)
     @test ts isa PowerSystems.TimeSeriesData
     ##Scenario Tests
     ts = Scenarios("scalingfactor", data, Hour(1))

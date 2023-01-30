@@ -1,5 +1,5 @@
 nodes_OMIB = [
-    Bus(
+    ACBus(
         1, #number
         "Bus 1", #Name
         "REF", #BusType (REF, PV, PQ)
@@ -10,7 +10,7 @@ nodes_OMIB = [
         nothing,
         nothing,
     ), #Base voltage in kV
-    Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
+    ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
 static_gen = ThermalStandard(;
@@ -596,7 +596,7 @@ end
     )
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
     add_component!(sys, static_injector)
@@ -698,7 +698,7 @@ end
     )
 
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
     add_component!(sys, static_injector)

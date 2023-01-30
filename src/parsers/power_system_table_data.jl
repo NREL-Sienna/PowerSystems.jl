@@ -299,7 +299,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
         name = bus.name
         bus_type =
-            isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes, bus.bus_type)
+            isnothing(bus.bus_type) ? nothing : get_enum_value(ACBusTypes, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
         area_name = string(get(bus, :area, "area"))
@@ -311,7 +311,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         zone = get(bus, :zone, nothing)
         bus_id = isnothing(bus.bus_id) ? ix : bus.bus_id
 
-        ps_bus = Bus(;
+        ps_bus = ACBus(;
             number = bus_id,
             name = name,
             bustype = bus_type,
@@ -1341,7 +1341,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
 end
 
 const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
-    "Bus" => Bus,
+    "ACBus" => ACBus,
     "Generator" => Generator,
     "Reserve" => Service,
     "LoadZone" => LoadZone,

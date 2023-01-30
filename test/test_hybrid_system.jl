@@ -5,7 +5,7 @@
         name = "Test H",
         available = true,
         status = true,
-        bus = get_component(Bus, test_sys, "Bus 1"),
+        bus = get_component(ACBus, test_sys, "Bus 1"),
         active_power = 1.0,
         reactive_power = 1.0,
         thermal_unit = ThermalStandard(nothing),

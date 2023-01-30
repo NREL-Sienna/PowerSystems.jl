@@ -8,7 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct Source <: StaticInjection
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         R_th::Float64
@@ -26,7 +26,7 @@ This struct acts as an infinity bus.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
@@ -41,7 +41,7 @@ This struct acts as an infinity bus.
 mutable struct Source <: StaticInjection
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Source Thevenin resistance"
@@ -74,7 +74,7 @@ function Source(::Nothing)
     Source(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         R_th=0,
