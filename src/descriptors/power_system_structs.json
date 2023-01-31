@@ -1275,12 +1275,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance system per-unit value",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 10
-                    },
-                    "validation_action": "warn"
+                    "comment": "Resistance system per-unit value"
                 },
                 {
                     "name": "active_power_limits_from",

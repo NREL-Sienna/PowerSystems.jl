@@ -25,7 +25,7 @@ a Standard DC line.
 - `available::Bool`
 - `active_power_flow::Float64`
 - `arc::Arc`
-- `r::Float64`: Resistance system per-unit value, validation range: `(0, 10)`, action if invalid: `warn`
+- `r::Float64`: Resistance system per-unit value
 - `active_power_limits_from::MinMax`
 - `active_power_limits_to::MinMax`
 - `services::Vector{Service}`: Services that this device contributes to
