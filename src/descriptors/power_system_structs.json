@@ -470,13 +470,13 @@
                     "name": "from",
                     "comment": "The initial bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
+                    "data_type": "Union{ACBus, DCBus}"
                 },
                 {
                     "name": "to",
                     "comment": "The terminal bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
+                    "data_type": "Union{ACBus, DCBus}"
                 },
                 {
                     "name": "internal",
