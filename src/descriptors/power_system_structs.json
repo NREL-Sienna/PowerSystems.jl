@@ -1272,8 +1272,8 @@
                     "data_type": "Arc"
                 },
                 {
-                    "null_value": "0.0",
                     "name": "r",
+                    "null_value": "0.0",
                     "data_type": "Float64",
                     "comment": "Resistance system per-unit value"
                 },
@@ -1288,6 +1288,13 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
+                },
+                {
+                    "name": "l",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "comment": "Inductance system per-unit value",
+                    "default": "0.0"
                 },
                 {
                     "name": "services",

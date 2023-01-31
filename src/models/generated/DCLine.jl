@@ -13,6 +13,7 @@ This file is auto-generated. Do not edit.
         r::Float64
         active_power_limits_from::MinMax
         active_power_limits_to::MinMax
+        l::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -28,6 +29,7 @@ a Standard DC line.
 - `r::Float64`: Resistance system per-unit value
 - `active_power_limits_from::MinMax`
 - `active_power_limits_to::MinMax`
+- `l::Float64`: Inductance system per-unit value
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -41,6 +43,8 @@ mutable struct DCLine <: DCBranch
     r::Float64
     active_power_limits_from::MinMax
     active_power_limits_to::MinMax
+    "Inductance system per-unit value"
+    l::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -48,12 +52,12 @@ mutable struct DCLine <: DCBranch
     internal::InfrastructureSystemsInternal
 end
 
-function DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), )
-    DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, services, ext, InfrastructureSystemsInternal(), )
+function DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, l=0.0, services=Device[], ext=Dict{String, Any}(), )
+    DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, l, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function DCLine(; name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, services, ext, internal, )
+function DCLine(; name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, l=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    DCLine(name, available, active_power_flow, arc, r, active_power_limits_from, active_power_limits_to, l, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -66,6 +70,7 @@ function DCLine(::Nothing)
         r=0.0,
         active_power_limits_from=(min=0.0, max=0.0),
         active_power_limits_to=(min=0.0, max=0.0),
+        l=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -85,6 +90,8 @@ get_r(value::DCLine) = value.r
 get_active_power_limits_from(value::DCLine) = get_value(value, value.active_power_limits_from)
 """Get [`DCLine`](@ref) `active_power_limits_to`."""
 get_active_power_limits_to(value::DCLine) = get_value(value, value.active_power_limits_to)
+"""Get [`DCLine`](@ref) `l`."""
+get_l(value::DCLine) = value.l
 """Get [`DCLine`](@ref) `services`."""
 get_services(value::DCLine) = value.services
 """Get [`DCLine`](@ref) `ext`."""
@@ -104,6 +111,8 @@ set_r!(value::DCLine, val) = value.r = val
 set_active_power_limits_from!(value::DCLine, val) = value.active_power_limits_from = set_value(value, val)
 """Set [`DCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::DCLine, val) = value.active_power_limits_to = set_value(value, val)
+"""Set [`DCLine`](@ref) `l`."""
+set_l!(value::DCLine, val) = value.l = val
 """Set [`DCLine`](@ref) `services`."""
 set_services!(value::DCLine, val) = value.services = val
 """Set [`DCLine`](@ref) `ext`."""
