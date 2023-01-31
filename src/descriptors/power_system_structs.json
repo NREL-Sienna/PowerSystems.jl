@@ -2669,12 +2669,6 @@
                     "comment": "Active Power on the DCSide",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
-                },
-                {
-                    "name": "reactive_power",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
                     "needs_conversion": true

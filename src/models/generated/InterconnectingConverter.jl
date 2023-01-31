@@ -11,7 +11,6 @@ This file is auto-generated. Do not edit.
         acbus::ACBus
         dcbus::DCBus
         active_power::Float64
-        reactive_power::Float64
         rating::Float64
         active_power_limits::MinMax
         base_power::Float64
@@ -31,8 +30,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `available::Bool`
 - `acbus::ACBus`
 - `dcbus::DCBus`
-- `active_power::Float64`: Active Power on the DCSide
-- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
+- `active_power::Float64`: Active Power on the DCSide, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the converter. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits::MinMax`
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -51,7 +49,6 @@ mutable struct InterconnectingConverter <: StaticInjection
     dcbus::DCBus
     "Active Power on the DCSide"
     active_power::Float64
-    reactive_power::Float64
     "Thermal limited MVA Power Output of the converter. <= Capacity"
     rating::Float64
     active_power_limits::MinMax
@@ -72,12 +69,12 @@ mutable struct InterconnectingConverter <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, acbus, dcbus, active_power, reactive_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    InterconnectingConverter(name, available, acbus, dcbus, active_power, reactive_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function InterconnectingConverter(name, available, acbus, dcbus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    InterconnectingConverter(name, available, acbus, dcbus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, acbus, dcbus, active_power, reactive_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterconnectingConverter(name, available, acbus, dcbus, active_power, reactive_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, internal, )
+function InterconnectingConverter(; name, available, acbus, dcbus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    InterconnectingConverter(name, available, acbus, dcbus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,7 +85,6 @@ function InterconnectingConverter(::Nothing)
         acbus=ACBus(nothing),
         dcbus=DCBus(nothing),
         active_power=0.0,
-        reactive_power=0.0,
         rating=0.0,
         active_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
@@ -111,8 +107,6 @@ get_acbus(value::InterconnectingConverter) = value.acbus
 get_dcbus(value::InterconnectingConverter) = value.dcbus
 """Get [`InterconnectingConverter`](@ref) `active_power`."""
 get_active_power(value::InterconnectingConverter) = get_value(value, value.active_power)
-"""Get [`InterconnectingConverter`](@ref) `reactive_power`."""
-get_reactive_power(value::InterconnectingConverter) = get_value(value, value.reactive_power)
 """Get [`InterconnectingConverter`](@ref) `rating`."""
 get_rating(value::InterconnectingConverter) = get_value(value, value.rating)
 """Get [`InterconnectingConverter`](@ref) `active_power_limits`."""
@@ -142,8 +136,6 @@ set_acbus!(value::InterconnectingConverter, val) = value.acbus = val
 set_dcbus!(value::InterconnectingConverter, val) = value.dcbus = val
 """Set [`InterconnectingConverter`](@ref) `active_power`."""
 set_active_power!(value::InterconnectingConverter, val) = value.active_power = set_value(value, val)
-"""Set [`InterconnectingConverter`](@ref) `reactive_power`."""
-set_reactive_power!(value::InterconnectingConverter, val) = value.reactive_power = set_value(value, val)
 """Set [`InterconnectingConverter`](@ref) `rating`."""
 set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, val)
 """Set [`InterconnectingConverter`](@ref) `active_power_limits`."""
