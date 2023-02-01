@@ -16,6 +16,8 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("HVDCLine.jl")
 include("VSCDCLine.jl")
+include("DCLine.jl")
+include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
@@ -450,6 +452,7 @@ export get_branch_id_control
 export get_bus
 export get_bus_control
 export get_bustype
+export get_c
 export get_c_dc
 export get_cf
 export get_constant_active_power
@@ -530,6 +533,7 @@ export get_kpi
 export get_kpv
 export get_kq
 export get_kω
+export get_l
 export get_lf
 export get_lg
 export get_load_response
@@ -978,6 +982,7 @@ export set_branch_id_control!
 export set_bus!
 export set_bus_control!
 export set_bustype!
+export set_c!
 export set_c_dc!
 export set_cf!
 export set_constant_active_power!
@@ -1058,6 +1063,7 @@ export set_kpi!
 export set_kpv!
 export set_kq!
 export set_kω!
+export set_l!
 export set_lf!
 export set_lg!
 export set_load_response!
