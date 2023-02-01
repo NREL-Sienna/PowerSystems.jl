@@ -2655,12 +2655,12 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "acbus",
+                    "name": "ac_bus",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
                 {
-                    "name": "dcbus",
+                    "name": "dc_bus",
                     "null_value": "DCBus(nothing)",
                     "data_type": "DCBus"
                 },
