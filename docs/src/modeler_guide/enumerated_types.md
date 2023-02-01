@@ -64,7 +64,7 @@ are intended to reflect the options denoted by
 | `WT` | Wind Turbine, Onshore |
 | `WS` | Wind Turbine, Offshore |
 
-## `BusTypes`
+## `ACBusTypes`
 
 `ACBusTypes` is used to denote which quantities are specified for load flow calculations and
 to otherwise categorize buses for modeling activities.
