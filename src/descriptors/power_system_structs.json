@@ -522,13 +522,13 @@
                     "name": "from",
                     "comment": "The initial bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
+                    "data_type": "Union{ACBus, DCBus}"
                 },
                 {
                     "name": "to",
                     "comment": "The terminal bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
+                    "data_type": "Union{ACBus, DCBus}"
                 },
                 {
                     "name": "internal",
@@ -1286,6 +1286,85 @@
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "DCBranch"
+        },
+        {
+            "struct_name": "TModelHVDCLine",
+            "docstring": "a HVDC T-Model DC line.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Arc(DCBus(nothing), DCBus(nothing))",
+                    "name": "arc",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Series Resistance system per-unit value"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "l",
+                    "data_type": "Float64",
+                    "comment": "Series Inductance system per-unit value"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "c",
+                    "data_type": "Float64",
+                    "comment": "Shunt capacitance system per-unit value"
+                },
+                {
+                    "name": "active_power_limits_from",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits_to",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
