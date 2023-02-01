@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct TwoTerminalHVDCLine <: DCBranch
+    mutable struct TwoTerminalHVDCLine <: ACBranch
         name::String
         available::Bool
         active_power_flow::Float64
@@ -38,7 +38,7 @@ a High voltage DC line.
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct TwoTerminalHVDCLine <: DCBranch
+mutable struct TwoTerminalHVDCLine <: ACBranch
     name::String
     available::Bool
     active_power_flow::Float64

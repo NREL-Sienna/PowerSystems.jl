@@ -1157,7 +1157,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "DCBranch"
+            "supertype": "ACBranch"
         },
         {
             "struct_name": "TwoTerminalVSCDCLine",
@@ -1243,7 +1243,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "DCBranch"
+            "supertype": "ACBranch"
         },
         {
             "struct_name": "TModelHVDCLine",
