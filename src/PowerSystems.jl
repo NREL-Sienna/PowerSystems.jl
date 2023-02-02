@@ -28,8 +28,8 @@ export ACBranch
 export Line
 export MonitoredLine
 export DCBranch
-export HVDCLine
-export VSCDCLine
+export TwoTerminalHVDCLine
+export TwoTerminalVSCDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer

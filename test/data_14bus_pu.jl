@@ -180,7 +180,7 @@ branches14_dc(nodes14) = [
         4.896,
         1.04,
     ),
-    HVDCLine(
+    TwoTerminalHVDCLine(
         "DCLine3",
         true,
         0.0,
@@ -191,7 +191,7 @@ branches14_dc(nodes14) = [
         (min = -600.0, max = 600),
         (l0 = 0.01, l1 = 0.001),
     ),
-    HVDCLine(
+    TwoTerminalHVDCLine(
         "DCLine4",
         true,
         0.0,

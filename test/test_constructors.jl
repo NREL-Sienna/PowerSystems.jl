@@ -15,7 +15,6 @@
     )
 
     @test PowerSystems.get_bustype(bus) == ACBusTypes.REF
-
 end
 
 @testset "Generation Constructors" begin
@@ -63,10 +62,10 @@ end
     @test tLine isa PowerSystems.Component
     tMonitoredLine = MonitoredLine(nothing)
     @test tMonitoredLine isa PowerSystems.Component
-    tHVDCLine = HVDCLine(nothing)
-    @test tHVDCLine isa PowerSystems.Component
-    tVSCDCLine = VSCDCLine(nothing)
-    @test tVSCDCLine isa PowerSystems.Component
+    tTwoTerminalTwoTerminalHVDCLine = TwoTerminalHVDCLine(nothing)
+    @test tTwoTerminalHVDCLine isa PowerSystems.Component
+    tTwoTerminalVSCDCLine = TwoTerminalVSCDCLine(nothing)
+    @test tTwoTerminalVSCDCLine isa PowerSystems.Component
     tTransformer2W = Transformer2W(nothing)
     @test tTransformer2W isa PowerSystems.Component
     tTapTransformer = TapTransformer(nothing)
