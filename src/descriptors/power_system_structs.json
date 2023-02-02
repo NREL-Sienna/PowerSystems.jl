@@ -1075,7 +1075,7 @@
             "supertype": "ACBranch"
         },
         {
-            "struct_name": "HVDCLine",
+            "struct_name": "TwoTerminalHVDCLine",
             "docstring": "a High voltage DC line.",
             "fields": [
                 {
@@ -1157,10 +1157,10 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "DCBranch"
+            "supertype": "ACBranch"
         },
         {
-            "struct_name": "VSCDCLine",
+            "struct_name": "TwoTerminalVSCDCLine",
             "docstring": "As implemented in Milano's Book, Page 397.",
             "fields": [
                 {
@@ -1243,7 +1243,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "DCBranch"
+            "supertype": "ACBranch"
         },
         {
             "struct_name": "TModelHVDCLine",
