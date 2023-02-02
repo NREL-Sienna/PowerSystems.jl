@@ -4,53 +4,21 @@
 
 ## Introduction
 
-An example of how to parse MATPOWER files and create a `System` using [PowerSystems.jl](github.com/NREL-SIIP/PowerSystems.jl)
+An example of how to parse MATPOWER and PSSe raw files and create a `System` using [PowerSystems.jl](github.com/NREL-SIIP/PowerSystems.jl)
 
-### Dependencies
+### Create a `System` from a Matpower File
 
-````@example 02_parse_matpower
-using PowerSystems
-using TimeSeries
-````
-
-### Fetch Data
-
-PowerSystems.jl links to some test data that is suitable for this example.
-Let's download the test data
-
-### Create a `System`
-
-````@example 02_parse_matpower
+````@example parse_power_flow_cases
 sys = System(joinpath(base_dir, "matpower", "case5_re.m"))
 sys
 ````
 
-# Parsing PSS/e `*.RAW` Files
+### Create a `System` a PSS/e File
 
-**Originally Contributed by**: Clayton Barrows
-
-## Introduction
-
-An example of how to parse PSS/e files and create a `System` using [PowerSystems.jl](github.com/NREL-SIIP/PowerSystems.jl)
-
-### Dependencies
-
-````@example 03_parse_psse
-using PowerSystems
-using TimeSeries
-````
-
-### Fetch Data
-
-PowerSystems.jl links to some test data that is suitable for this example.
-Let's download the test data
-
-
-
-### Create a `System`
-
-````@example 03_parse_psse
+````@example parse_power_flow_cases
 sys = System(joinpath(base_dir, "data", "psse_raw", "RTS-GMLC.RAW"));
 
 sys
 ````
+
+This data set does not contain any time series data. For this, check the next tutorial

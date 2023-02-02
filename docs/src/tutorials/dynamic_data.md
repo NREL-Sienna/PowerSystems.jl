@@ -6,8 +6,7 @@ This tutorial briefly introduces how to create a system using `PowerSystems.jl` 
 structures. The tutorial will guide you to create the JSON data file for the tutorial 1.
 Start by calling `PowerSystems.jl`:
 
-````@example 09_loading_dynamic_systems_data
-using SIIPExamples
+````@example dynamic_data
 using PowerSystems
 const PSY = PowerSystems
 ````
@@ -27,7 +26,7 @@ We called static components to those that are used to run a Power Flow problem.
   in the network.
 - Vector of `StaticInjection` elements, that define all the devices connected to buses that
   can inject (or withdraw) power. These static devices, typically generators, in
-  `PowerSimulationsDynamics` are used to solve the Power Flow problem that determines the
+  `PowerSimulationsDynamics` are used to solve the PowerFlow problem that determines the
   active and reactive power provided for each device.
 - Vector of `PowerLoad` elements, that define all the loads connected to buses that can
   withdraw current. These are also used to solve the Power Flow.
@@ -55,18 +54,18 @@ The following describes the system creation for the OMIB case.
 
 ## Static System creation
 
-To create the system you need to pass the location of the RAW file
+To create the system you need to pass the location of the RAW file see tutorial on loading
+power flow cases
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 file_dir =
-    joinpath(pkgdir(SIIPExamples), "script", "4_PowerSimulationsDynamics_examples", "Data")
 omib_sys = System(joinpath(file_dir, "OMIB.raw"))
 ````
 
 This system does not have an injection device in bus 1 (the reference bus).
 We can add a source with small impedance directly as follows:
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 slack_bus = [b for b in get_components(Bus, omib_sys) if b.bustype == BusTypes.REF][1]
 inf_source = Source(
     name = "InfBus", #name
@@ -84,7 +83,7 @@ We just added a infinite source with $X_{th} = 5\cdot 10^{-6}$ pu
 
 The system can be explored directly using functions like:
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 get_components(Source, omib_sys)
 
 get_components(Generator, omib_sys)
@@ -104,7 +103,7 @@ the generator itself:
 
 *Machine*
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 machine_classic() = BaseMachine(
     0.0, #R
     0.2995, #Xd_p
@@ -114,7 +113,7 @@ machine_classic() = BaseMachine(
 
 *Shaft*
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 shaft_damping() = SingleMass(
     3.148, #H
     2.0, #D
@@ -123,19 +122,19 @@ shaft_damping() = SingleMass(
 
 *AVR: No AVR*
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 avr_none() = AVRFixed(0.0)
 ````
 
 *TG: No TG*
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 tg_none() = TGFixed(1.0) #efficiency
 ````
 
 *PSS: No PSS*
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 pss_none() = PSSFixed(0.0)
 ````
 
@@ -143,7 +142,7 @@ The next lines receives a static generator name, and creates a `DynamicGenerator
 that specific static generator, with the specific components defined previously. This is
 a classic machine model without AVR, Turbine Governor and PSS.
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 static_gen = get_component(Generator, omib_sys, "generator-102-1")
 
 dyn_gen = DynamicGenerator(
@@ -159,13 +158,13 @@ dyn_gen = DynamicGenerator(
 
 The dynamic generator is added to the system by specifying the dynamic and static generator
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 add_component!(omib_sys, dyn_gen, static_gen)
 ````
 
 Then we can serialize our system data to a json file that can be later read as:
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 to_json(omib_sys, joinpath(file_dir, "omib_sys.json"), force = true)
 ````
 
@@ -174,7 +173,7 @@ to_json(omib_sys, joinpath(file_dir, "omib_sys.json"), force = true)
 We will now create a three bus system with one inverter and one generator.
 In order to do so, we will parse the following `ThreebusInverter.raw` network:
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 sys_file_dir = joinpath(file_dir, "ThreeBusInverter.raw")
 threebus_sys = System(sys_file_dir)
 slack_bus = [b for b in get_components(Bus, threebus_sys) if b.bustype == BusTypes.REF][1]
@@ -198,7 +197,7 @@ Inverter at bus 103. An inverter is composed by a `converter`, `outer control`,
 
 We will create specific functions to create the components of the inverter as follows:
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 #Define converter as an AverageConverter
 converter_high_power() = AverageConverter(rated_voltage = 138.0, rated_current = 100.0)
 
@@ -243,7 +242,7 @@ We will construct the inverter later by specifying to which static device is ass
 Similarly we will construct a dynamic generator as follows:
 Create the machine
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 machine_oneDoneQ() = OneDOneQMachine(
     0.0, #R
     1.3125, #Xd
@@ -257,7 +256,7 @@ machine_oneDoneQ() = OneDOneQMachine(
 
 Shaft
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 shaft_no_damping() = SingleMass(
     3.01, #H (M = 6.02 -> H = M/2)
     0.0, #D
@@ -266,7 +265,7 @@ shaft_no_damping() = SingleMass(
 
 AVR: Type I: Resembles a DC1 AVR
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 avr_type1() = AVRTypeI(
     20.0, #Ka - Gain
     0.01, #Ke
@@ -288,9 +287,10 @@ pss_none() = PSSFixed(0.0) #Vs
 ````
 
 Now we will construct the dynamic generator and inverter.
+
 ## Add the components to the system
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 for g in get_components(Generator, threebus_sys)
     #Find the generator at bus 102
     if get_number(get_bus(g)) == 102
@@ -327,10 +327,6 @@ end
 
 ### Save the system in a JSON file
 
-````@example 09_loading_dynamic_systems_data
+````@example dynamic_data
 to_json(threebus_sys, joinpath(file_dir, "threebus_sys.json"), force = true)
 ````
-
----
-
-*This page was generated using [Literate.jl](https://github.com/fredrikekre/Literate.jl).*
