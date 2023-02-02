@@ -2,10 +2,6 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 
-include(joinpath(@__DIR__, "../src/utils/data.jl"))
-import .UtilsData: TestData
-download(TestData; branch = "master")
-
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
@@ -14,7 +10,9 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Quick Start Guide" => "quick_start_guide.md",
-        "Tutorials" =>  "tutorials/intro_page.md",
+        "Tutorials" =>  Any["tutorials/basics.md",
+                    "tutorials/parse_powerflow_cases.md"
+        ],
         "Modeler Guide" =>
             Any[
             "modeler_guide/type_structure.md",
@@ -24,7 +22,6 @@ pages = OrderedDict(
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
             "modeler_guide/market_bid_cost.md",
-            #"modeler_guide/parsing.md"
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
@@ -83,9 +80,9 @@ folders = Dict(
     "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
     "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
-
 for (section, folder) in folders
     for file in folder
+        @show file
         section_folder_name = lowercase(replace(section, " " => "_"))
         outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
         inputfile = joinpath("$section_folder_name", "$file")
