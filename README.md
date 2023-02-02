@@ -12,7 +12,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 ## Version Advisory
 
 - PowerSystems will work with Julia v1.6+.
-- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 2.0 ](https://github.com/NREL-SIIP/PowerSystems.jl/projects/2) for upcoming changes 
+- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 3.0](https://github.com/NREL-SIIP/PowerSystems.jl/projects/3) for upcoming changes
 
 ## Device data enabled in PowerSystems
 
@@ -24,15 +24,15 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 - Load (Static, and Curtailable)
 - Services (Reserves, Transfers)
 - TimeSeries (Deterministic, Scenarios, Probabilistic)
-- Dynamic Generators
-- Dynamic Inverter
+- Dynamic Generators Models
+- Dynamic Inverter Models
 
 For a more exhaustive list check the [Documentation](https://nrel-siip.github.io/PowerSystems.jl/stable).
 
 ## Parsing capabilities in PowerSystems
 
 - MATPOWER CaseFormat
-- PSS/e - PTI Format (.raw and .dyr files)
+- PSS/e - PTI Format v30 and v33(.raw and .dyr files)
 - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Development
