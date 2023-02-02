@@ -469,7 +469,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
-            value = HVDCLine(;
+            value = TwoTerminalHVDCLine(;
                 name = dc_branch.name,
                 available = available,
                 active_power_flow = dc_branch.active_power_flow,
@@ -496,7 +496,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 min = dc_branch.inverter_firing_angle_min,
                 max = dc_branch.inverter_firing_angle_max,
             )
-            value = VSCDCLine(;
+            value = TwoTerminalVSCDCLine(;
                 name = dc_branch.name,
                 available = true,
                 active_power_flow = pf,

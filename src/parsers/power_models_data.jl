@@ -657,7 +657,12 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     )
 end
 
-function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
+function read_branch!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
     @info "Reading branch data"
     if !haskey(data, "branch")
         @info "There is no Branch data in this file"
@@ -677,7 +682,7 @@ function read_branch!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBu
 end
 
 function make_dcline(name, d, bus_f, bus_t)
-    return HVDCLine(;
+    return TwoTerminalHVDCLine(;
         name = name,
         available = d["br_status"] == 1,
         active_power_flow = get(d, "pf", 0.0),
@@ -690,7 +695,12 @@ function make_dcline(name, d, bus_f, bus_t)
     )
 end
 
-function read_dcline!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
+function read_dcline!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
     @info "Reading DC Line data"
     if !haskey(data, "dcline")
         @info "There is no DClines data in this file"
@@ -718,7 +728,12 @@ function make_shunt(name, d, bus)
     )
 end
 
-function read_shunt!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
+function read_shunt!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
     @info "Reading branch data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"

@@ -114,8 +114,6 @@ function read_bus!(
     bus_number_to_bus = Dict{Int, ACBus}()
     bus_types = instances(ACBusTypes)
 
-
-
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
@@ -837,7 +835,6 @@ function read_dcline!(
     bus_number_to_bus::Dict{Int, Bus};
     kwargs...,
 )
-
     @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
     return
 end
