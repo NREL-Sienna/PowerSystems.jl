@@ -11,6 +11,7 @@ module PowerSystems
 export System
 export Topology
 export ACBus
+export DCBus
 export Arc
 export AggregationTopology
 export Area
@@ -30,6 +31,7 @@ export MonitoredLine
 export DCBranch
 export TwoTerminalHVDCLine
 export TwoTerminalVSCDCLine
+export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
