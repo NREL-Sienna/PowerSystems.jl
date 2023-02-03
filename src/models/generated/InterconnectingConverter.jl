@@ -30,7 +30,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `available::Bool`
 - `bus::ACBus`
 - `dc_bus::DCBus`
-- `active_power::Float64`: Active Power on the DCSide, validation range: `reactive_power_limits`, action if invalid: `warn`
+- `active_power::Float64`: Active Power on the DCSide, validation range: `active_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the converter. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits::MinMax`
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
