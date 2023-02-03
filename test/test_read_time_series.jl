@@ -139,7 +139,7 @@ end
 
 @testset "TimeSeriesData data matpower" begin
     sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
-    file_metadata = joinpath(DATA_DIR, "5-bus", "5bus_ts", "timeseries_pointers_da.json")
+    file_metadata = joinpath(DATA_DIR, "5-Bus", "5bus_ts", "timeseries_pointers_da.json")
     add_time_series!(sys, file_metadata)
     @test verify_time_series(sys, 1, 5, 24)
 
@@ -147,7 +147,7 @@ end
     # This will fail because the component-name pairs will be duplicated.
     @test_throws ArgumentError add_time_series!(sys, file_metadata)
 
-    file_metadata = joinpath(DATA_DIR, "5-bus", "5bus_ts", "timeseries_pointers_rt.json")
+    file_metadata = joinpath(DATA_DIR, "5-Bus", "5bus_ts", "timeseries_pointers_rt.json")
 
     ## This will fail because the resolutions are different.
     @test_throws IS.ConflictingInputsError add_time_series!(sys, file_metadata)
