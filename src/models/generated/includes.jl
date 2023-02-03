@@ -398,7 +398,6 @@ export get_Y
 export get_Y_increase
 export get_Zerox
 export get_a
-export get_ac_bus
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
@@ -893,7 +892,6 @@ export set_Y!
 export set_Y_increase!
 export set_Zerox!
 export set_a!
-export set_ac_bus!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!

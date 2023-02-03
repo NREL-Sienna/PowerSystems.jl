@@ -2581,7 +2581,7 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "ac_bus",
+                    "name": "bus",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
