@@ -2566,6 +2566,121 @@
             "supertype": "DynamicInjection"
         },
         {
+            "struct_name": "InterconnectingConverter",
+            "docstring": "Interconnecting Power Converter (IPC) for transforming power from an ACBus to a DCBus",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "ac_bus",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "dc_bus",
+                    "null_value": "DCBus(nothing)",
+                    "data_type": "DCBus"
+                },
+                {
+                    "name": "active_power",
+                    "comment": "Active Power on the DCSide",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": "reactive_power_limits",
+                    "validation_action": "warn",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "rating",
+                    "comment": "Thermal limited MVA Power Output of the converter. <= Capacity",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power of the converter in MVA",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "TwoPartCost(nothing)",
+                    "data_type": "OperationalCost",
+                    "default": "TwoPartCost(0.0, 0.0)",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
+                },
+                {
+                    "name": "efficiency",
+                    "comment": "Conversion efficiency from AC Power to DC Power",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "time_series_container",
+                    "comment": "internal time_series storage",
+                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
+                    "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "StaticInjection"
+        },
+        {
             "struct_name": "HydroEnergyReservoir",
             "fields": [
                 {

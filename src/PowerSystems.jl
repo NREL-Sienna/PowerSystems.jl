@@ -50,6 +50,7 @@ export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
 export HydroPumpedStorage
+export InterconnectingConverter
 
 export RenewableGen
 export RenewableFix

@@ -26,6 +26,7 @@ include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
 include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
+include("InterconnectingConverter.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -397,6 +398,7 @@ export get_Y
 export get_Y_increase
 export get_Zerox
 export get_a
+export get_ac_bus
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
@@ -433,6 +435,7 @@ export get_d
 export get_dP_lim
 export get_db
 export get_dbd_pnts
+export get_dc_bus
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
@@ -890,6 +893,7 @@ export set_Y!
 export set_Y_increase!
 export set_Zerox!
 export set_a!
+export set_ac_bus!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!
@@ -926,6 +930,7 @@ export set_d!
 export set_dP_lim!
 export set_db!
 export set_dbd_pnts!
+export set_dc_bus!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
