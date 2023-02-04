@@ -843,7 +843,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
@@ -854,7 +854,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
 
