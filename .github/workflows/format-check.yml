@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install JuliaFormatter and format
         run: |
-          julia  -e 'include(".github/workflows/formatter/formatter_code.jl")'
+          julia  -e 'include("scripts/formatter/formatter_code.jl")'
       - uses: reviewdog/action-suggester@v1
         if: github.event_name == 'pull_request'
         with:
