@@ -1342,15 +1342,9 @@
                     "comment": "Shunt capacitance system per-unit value"
                 },
                 {
-                    "name": "active_power_limits_from",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax",
-                    "needs_conversion": true
-                },
-                {
-                    "name": "active_power_limits_to",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax",
+                    "null_value": "0.0",
+                    "name": "rate",
+                    "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
