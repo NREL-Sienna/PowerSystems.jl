@@ -11,6 +11,11 @@ All subtypes must implement the method `get_aggregation_topology_accessor`.
 abstract type AggregationTopology <: Topology end
 
 """
+Abstract type to represent any type of Bus, AC or DC.
+"""
+abstract type Bus <: Topology end
+
+"""
 Return the method to be called on a ACBus to get its AggregationTopology value for this type.
 """
 function get_aggregation_topology_accessor(::Type{T}) where {T <: AggregationTopology}

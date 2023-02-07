@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct DCBus <: Topology
+    mutable struct DCBus <: Bus
         number::Int
         name::String
         magnitude::Union{Nothing, Float64}
@@ -30,7 +30,7 @@ A power-system DC bus.
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct DCBus <: Topology
+mutable struct DCBus <: Bus
     "number associated with the DC bus"
     number::Int
     "the name of the DC bus"
