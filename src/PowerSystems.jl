@@ -10,6 +10,7 @@ module PowerSystems
 
 export System
 export Topology
+export Bus
 export ACBus
 export DCBus
 export Arc

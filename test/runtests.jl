@@ -22,7 +22,7 @@ Aqua.test_ambiguities(PowerSystems)
 Aqua.test_stale_deps(PowerSystems)
 Aqua.test_deps_compat(PowerSystems)
 
-include(joinpath(@__DIR__, "../src/utils/data.jl"))
+#include(joinpath(@__DIR__, "../src/utils/data.jl"))
 import .UtilsData: TestData
 download(TestData; branch = "old_master")
 

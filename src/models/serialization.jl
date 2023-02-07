@@ -1,13 +1,14 @@
 const _ENCODE_AS_UUID_A = (
     Union{Nothing, Arc},
     Union{Nothing, Area},
-    Union{Nothing, ACBus},
+    Union{Nothing, Bus},
     Union{Nothing, LoadZone},
     Union{Nothing, DynamicInjection},
     Vector{Service},
 )
 
-const _ENCODE_AS_UUID_B = (Arc, Area, ACBus, LoadZone, DynamicInjection, Vector{Service})
+const _ENCODE_AS_UUID_B =
+    (Arc, Area, Bus, LoadZone, DynamicInjection, Vector{Service})
 @assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
 
 should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
