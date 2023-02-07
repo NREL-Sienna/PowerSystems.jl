@@ -13,9 +13,8 @@ include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
-include("HVDCLine.jl")
-include("VSCDCLine.jl")
-include("DCLine.jl")
+include("TwoTerminalHVDCLine.jl")
+include("TwoTerminalVSCDCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
@@ -27,6 +26,7 @@ include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
 include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
+include("InterconnectingConverter.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -434,6 +434,7 @@ export get_d
 export get_dP_lim
 export get_db
 export get_dbd_pnts
+export get_dc_bus
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
@@ -927,6 +928,7 @@ export set_d!
 export set_dP_lim!
 export set_db!
 export set_dbd_pnts!
+export set_dc_bus!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!

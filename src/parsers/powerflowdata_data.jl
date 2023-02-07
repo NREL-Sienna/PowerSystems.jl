@@ -114,8 +114,6 @@ function read_bus!(
     bus_number_to_bus = Dict{Int, ACBus}()
     bus_types = instances(ACBusTypes)
 
-
-
     _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
@@ -482,7 +480,7 @@ function read_branch!(
     branches::PowerFlowData.Branches33,
     sys_mbase::Float64,
     rating_flag::Int8,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading line data"
@@ -554,7 +552,7 @@ function read_branch!(
     sys::System,
     transformers::PowerFlowData.Transformers,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading transformer data"
@@ -739,7 +737,7 @@ function read_switched_shunt!(
     sys::System,
     data::PowerFlowData.SwitchedShunts33,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @error "SwitchedShunts parsing from PSS/e v30 files not implemented. Data will be ignored"
@@ -750,7 +748,7 @@ function read_switched_shunt!(
     sys::System,
     data::PowerFlowData.SwitchedShunts33,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @info "Reading line data"
@@ -801,7 +799,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.VSCDCLines,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
@@ -812,7 +810,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.VSCDCLines,
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
@@ -846,7 +844,7 @@ function read_dcline!(
     sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
     sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, Bus};
+    bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
     @error "MultiTerminalDCLines parsing from PSS/e files v33 not implemented. Data will be ignored"

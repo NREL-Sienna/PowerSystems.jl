@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct ACBus <: Topology
+    mutable struct ACBus <: Bus
         number::Int
         name::String
         bustype::Union{Nothing, ACBusTypes}
@@ -34,7 +34,7 @@ A power-system bus.
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-mutable struct ACBus <: Topology
+mutable struct ACBus <: Bus
     "number associated with the bus"
     number::Int
     "the name of the bus"
