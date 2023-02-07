@@ -662,7 +662,7 @@
                 "exclude_setter": true
               }
             ],
-            "supertype": "Topology"
+            "supertype": "Bus"
         },
         {
             "struct_name": "Arc",
@@ -672,13 +672,13 @@
                     "name": "from",
                     "comment": "The initial bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "Union{ACBus, DCBus}"
+                    "data_type": "Bus"
                 },
                 {
                     "name": "to",
                     "comment": "The terminal bus",
                     "null_value": "ACBus(nothing)",
-                    "data_type": "Union{ACBus, DCBus}"
+                    "data_type": "Bus"
                 },
                 {
                     "name": "internal",

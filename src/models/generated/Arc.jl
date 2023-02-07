@@ -6,23 +6,23 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct Arc <: Topology
-        from::Union{ACBus, DCBus}
-        to::Union{ACBus, DCBus}
+        from::Bus
+        to::Bus
         internal::InfrastructureSystemsInternal
     end
 
 A topological Arc.
 
 # Arguments
-- `from::Union{ACBus, DCBus}`: The initial bus
-- `to::Union{ACBus, DCBus}`: The terminal bus
+- `from::Bus`: The initial bus
+- `to::Bus`: The terminal bus
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Arc <: Topology
     "The initial bus"
-    from::Union{ACBus, DCBus}
+    from::Bus
     "The terminal bus"
-    to::Union{ACBus, DCBus}
+    to::Bus
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
