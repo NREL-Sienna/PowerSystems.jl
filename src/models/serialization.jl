@@ -1,7 +1,7 @@
 const _ENCODE_AS_UUID_A = (
     Union{Nothing, Arc},
     Union{Nothing, Area},
-    Union{Nothing, ACBus},
+    Union{Nothing, Bus},
     Union{Nothing, LoadZone},
     Union{Nothing, DynamicInjection},
     Vector{Service},
