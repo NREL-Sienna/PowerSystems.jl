@@ -240,7 +240,7 @@ end
         match_mode = :any,
         @test_throws(
             ErrorException,
-            to_json(sys, filename, force=true),
+            to_json(sys, filename, force = true),
         ),
     )
 end
