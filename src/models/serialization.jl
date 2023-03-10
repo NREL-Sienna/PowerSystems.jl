@@ -17,7 +17,16 @@ function IS.serialize(component::T) where {T <: Component}
     @debug "serialize" _group = IS.LOG_GROUP_SERIALIZATION component T
     data = Dict{String, Any}()
     for name in fieldnames(T)
-        data[string(name)] = serialize_uuid_handling(getfield(component, name))
+        val = serialize_uuid_handling(getfield(component, name))
+        if name == :ext
+            if !IS.is_ext_valid_for_serialization(val)
+                error(
+                    "component type=$T name=$(get_name(component)) has a value in its " *
+                    "ext field that cannot be serialized.",
+                )
+            end
+        end
+        data[string(name)] = val
     end
 
     IS.add_serialization_metadata!(data, T)
