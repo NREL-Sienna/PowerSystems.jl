@@ -199,8 +199,13 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 print(io, "\n   ")
                 show(io, MIME"text/plain"(), obj.units_info)
                 continue
-            elseif obj isa IS.TimeSeriesContainer ||
-                   obj isa InfrastructureSystemsType ||
+            elseif obj isa IS.TimeSeriesContainer
+                val = ""
+                for (key, metadata) in obj.data
+                    ts_type = IS.time_series_metadata_to_data(metadata)
+                    val *= "\n      $(key.name): $ts_type"
+                end
+            elseif obj isa InfrastructureSystemsType ||
                    obj isa Vector{<:InfrastructureSystemsComponent}
                 val = summary(getproperty(ist, name))
             elseif hasproperty(PowerSystems, getter_name)
@@ -208,10 +213,6 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 val = getter_func(ist)
             else
                 val = getproperty(ist, name)
-            end
-            # Not allowed to print `nothing`
-            if isnothing(val)
-                val = "nothing"
             end
             print(io, "\n   ", name, ": ", val)
         end
