@@ -221,3 +221,26 @@ end
         @test IS.get_uuid(component1) != IS.get_uuid(component2)
     end
 end
+
+@testset "Test verification of invalid ext fields" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    gen = first(get_components(ThermalStandard, sys))
+    ext = get_ext(gen)
+
+    struct MyType
+        func::Function
+    end
+    val = MyType(println)
+    ext["val"] = val
+
+    tmpdir = mktempdir()
+    filename = joinpath(tmpdir, "invalid_sys.json")
+    @test_logs(
+        (:error, r"only basic types are allowed"),
+        match_mode = :any,
+        @test_throws(
+            ErrorException,
+            to_json(sys, filename, force = true),
+        ),
+    )
+end

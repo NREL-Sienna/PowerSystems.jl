@@ -1441,9 +1441,12 @@ function IS.deserialize(
 
     ext = get_ext(sys)
     ext["deserialization_in_progress"] = true
-    deserialize_components!(sys, raw["data"])
-    pop!(ext, "deserialization_in_progress")
-    isempty(ext) && clear_ext!(sys)
+    try
+        deserialize_components!(sys, raw["data"])
+    finally
+        pop!(ext, "deserialization_in_progress")
+        isempty(ext) && clear_ext!(sys)
+    end
 
     if !get_runchecks(sys)
         @warn "The System was deserialized with checks disabled, and so was not validated."
