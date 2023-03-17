@@ -2063,7 +2063,7 @@ function validate_connectivity(
         by = x -> PSY.get_number(x),
     )
     branches = PNM.get_ac_branches(sys)
-    a = PNM.Adjacency(branches, nodes; check_connectivity = false)
+    a = PNM.AdjacencyMatrix(branches, nodes; check_connectivity = false)
 
     return PNM.validate_connectivity(
         a;
