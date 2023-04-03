@@ -1020,6 +1020,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         time_limits = timelimits,
         operation_cost = op_cost,
         base_power = base_power,
+        must_run = gen.must_run,
     )
 end
 
