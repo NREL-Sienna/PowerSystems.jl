@@ -1003,6 +1003,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         calculate_variable_cost(data, gen, cost_colnames, base_power)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
+    gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
 
     return ThermalStandard(;
         name = gen.name,
@@ -1020,7 +1021,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         time_limits = timelimits,
         operation_cost = op_cost,
         base_power = base_power,
-        must_run = gen.must_run,
+        must_run = gen_must_run,
     )
 end
 
