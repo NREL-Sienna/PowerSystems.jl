@@ -1005,10 +1005,8 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
     gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
-    gen_must_run = if isa(gen_must_run, Bool)
-        gen_must_run
-    else
-        parse(Bool, lowercase(String(gen_must_run)))
+    if !isa(gen_must_run, Bool)
+        gen_must_run = parse(Bool, lowercase(String(gen_must_run)))
     end
 
     return ThermalStandard(;
