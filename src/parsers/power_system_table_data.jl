@@ -1082,9 +1082,6 @@ function make_thermal_generator_multistart(
 
     op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
-    gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
-    gen_must_run = isa(gen_must_run,Bool) ? gen_must_run : parse(Bool,lowercase(String(gen_must_run)))
-
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
         available = get_available(thermal_gen),
@@ -1105,7 +1102,7 @@ function make_thermal_generator_multistart(
         operation_cost = op_cost,
         base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
-        must_run = gen_must_run,
+        must_run = get_must_run(thermal_gen),
     )
 end
 
