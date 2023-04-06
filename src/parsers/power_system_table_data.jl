@@ -1004,6 +1004,11 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
     op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
 
+    gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
+    if !isa(gen_must_run, Bool)
+        gen_must_run = parse(Bool, lowercase(String(gen_must_run)))
+    end
+
     return ThermalStandard(;
         name = gen.name,
         available = gen.available,
@@ -1020,6 +1025,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         time_limits = timelimits,
         operation_cost = op_cost,
         base_power = base_power,
+        must_run = gen_must_run,
     )
 end
 
@@ -1098,7 +1104,7 @@ function make_thermal_generator_multistart(
         operation_cost = op_cost,
         base_power = get_base_power(thermal_gen),
         time_at_status = get_time_at_status(thermal_gen),
-        must_run = gen.must_run,
+        must_run = get_must_run(thermal_gen),
     )
 end
 
