@@ -67,7 +67,7 @@ get_available(value::VariableReserveNonSpinning) = value.available
 """Get [`VariableReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::VariableReserveNonSpinning) = value.time_frame
 """Get [`VariableReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::VariableReserveNonSpinning) = value.requirement
+get_requirement(value::VariableReserveNonSpinning) = get_value(value, value.requirement)
 """Get [`VariableReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::VariableReserveNonSpinning) = value.ext
 """Get [`VariableReserveNonSpinning`](@ref) `time_series_container`."""
@@ -80,7 +80,7 @@ set_available!(value::VariableReserveNonSpinning, val) = value.available = val
 """Set [`VariableReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::VariableReserveNonSpinning, val) = value.time_frame = val
 """Set [`VariableReserveNonSpinning`](@ref) `requirement`."""
-set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = val
+set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = set_value(value, val)
 """Set [`VariableReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::VariableReserveNonSpinning, val) = value.ext = val
 """Set [`VariableReserveNonSpinning`](@ref) `time_series_container`."""

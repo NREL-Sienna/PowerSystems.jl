@@ -62,7 +62,7 @@ get_available(value::StaticReserve) = value.available
 """Get [`StaticReserve`](@ref) `time_frame`."""
 get_time_frame(value::StaticReserve) = value.time_frame
 """Get [`StaticReserve`](@ref) `requirement`."""
-get_requirement(value::StaticReserve) = value.requirement
+get_requirement(value::StaticReserve) = get_value(value, value.requirement)
 """Get [`StaticReserve`](@ref) `ext`."""
 get_ext(value::StaticReserve) = value.ext
 """Get [`StaticReserve`](@ref) `internal`."""
@@ -73,6 +73,6 @@ set_available!(value::StaticReserve, val) = value.available = val
 """Set [`StaticReserve`](@ref) `time_frame`."""
 set_time_frame!(value::StaticReserve, val) = value.time_frame = val
 """Set [`StaticReserve`](@ref) `requirement`."""
-set_requirement!(value::StaticReserve, val) = value.requirement = val
+set_requirement!(value::StaticReserve, val) = value.requirement = set_value(value, val)
 """Set [`StaticReserve`](@ref) `ext`."""
 set_ext!(value::StaticReserve, val) = value.ext = val

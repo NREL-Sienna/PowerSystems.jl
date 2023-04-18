@@ -60,7 +60,7 @@ get_name(value::StaticReserveGroup) = value.name
 """Get [`StaticReserveGroup`](@ref) `available`."""
 get_available(value::StaticReserveGroup) = value.available
 """Get [`StaticReserveGroup`](@ref) `requirement`."""
-get_requirement(value::StaticReserveGroup) = value.requirement
+get_requirement(value::StaticReserveGroup) = get_value(value, value.requirement)
 """Get [`StaticReserveGroup`](@ref) `ext`."""
 get_ext(value::StaticReserveGroup) = value.ext
 """Get [`StaticReserveGroup`](@ref) `contributing_services`."""
@@ -71,6 +71,6 @@ get_internal(value::StaticReserveGroup) = value.internal
 """Set [`StaticReserveGroup`](@ref) `available`."""
 set_available!(value::StaticReserveGroup, val) = value.available = val
 """Set [`StaticReserveGroup`](@ref) `requirement`."""
-set_requirement!(value::StaticReserveGroup, val) = value.requirement = val
+set_requirement!(value::StaticReserveGroup, val) = value.requirement = set_value(value, val)
 """Set [`StaticReserveGroup`](@ref) `ext`."""
 set_ext!(value::StaticReserveGroup, val) = value.ext = val
