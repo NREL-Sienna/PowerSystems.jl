@@ -65,7 +65,7 @@ get_name(value::VariableReserve) = value.name
 """Get [`VariableReserve`](@ref) `available`."""
 get_available(value::VariableReserve) = value.available
 """Get [`VariableReserve`](@ref) `time_frame`."""
-get_time_frame(value::VariableReserve) = value.time_frame
+get_time_frame(value::VariableReserve) = get_value(value, value.time_frame)
 """Get [`VariableReserve`](@ref) `requirement`."""
 get_requirement(value::VariableReserve) = value.requirement
 """Get [`VariableReserve`](@ref) `ext`."""
@@ -78,7 +78,7 @@ get_internal(value::VariableReserve) = value.internal
 """Set [`VariableReserve`](@ref) `available`."""
 set_available!(value::VariableReserve, val) = value.available = val
 """Set [`VariableReserve`](@ref) `time_frame`."""
-set_time_frame!(value::VariableReserve, val) = value.time_frame = val
+set_time_frame!(value::VariableReserve, val) = value.time_frame = set_value(value, val)
 """Set [`VariableReserve`](@ref) `requirement`."""
 set_requirement!(value::VariableReserve, val) = value.requirement = val
 """Set [`VariableReserve`](@ref) `ext`."""

@@ -62,7 +62,7 @@ get_available(value::StaticReserveNonSpinning) = value.available
 """Get [`StaticReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::StaticReserveNonSpinning) = value.time_frame
 """Get [`StaticReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::StaticReserveNonSpinning) = value.requirement
+get_requirement(value::StaticReserveNonSpinning) = get_value(value, value.requirement)
 """Get [`StaticReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::StaticReserveNonSpinning) = value.ext
 """Get [`StaticReserveNonSpinning`](@ref) `internal`."""
@@ -73,6 +73,6 @@ set_available!(value::StaticReserveNonSpinning, val) = value.available = val
 """Set [`StaticReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::StaticReserveNonSpinning, val) = value.time_frame = val
 """Set [`StaticReserveNonSpinning`](@ref) `requirement`."""
-set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = val
+set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = set_value(value, val)
 """Set [`StaticReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
