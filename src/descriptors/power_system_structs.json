@@ -4162,7 +4162,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4215,7 +4216,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4258,7 +4260,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4365,7 +4368,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "requirement",
@@ -4426,7 +4430,8 @@
                     "name": "requirement",
                     "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
