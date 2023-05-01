@@ -38,7 +38,7 @@ print_tree(PowerSystems.IS.InfrastructureSystemsType)
 
 ### `TimeSeriesData`
 
-[_Read the Docs!_](https://nrel-siip.github.io/PowerSystems.jl/stable/modeler_guide/time_series/)
+[_Read the Docs!_](https://nrel-sienna.github.io/PowerSystems.jl/stable/modeler_guide/time_series/)
 Every `Component` has a `time_series_container::InfrastructureSystems.TimeSeriesContainer`
 field. `TimeSeriesData` are used to hold time series information that describes the
 temporally dependent data of fields within the same struct. For example, the
@@ -65,7 +65,7 @@ print_struct(Deterministic)
 ````
 
 Examples of how to create and add time series to system can be found in the
-[Add Time Series Example](https://nbviewer.jupyter.org/github/NREL-SIIP/SIIPExamples.jl/blob/main/notebook/2_PowerSystems_examples/05_add_forecasts.ipynb)
+[Add Time Series Example](https://nbviewer.jupyter.org/github/NREL-Sienna/SIIPExamples.jl/blob/main/notebook/2_PowerSystems_examples/05_add_forecasts.ipynb)
 
 ### System
 

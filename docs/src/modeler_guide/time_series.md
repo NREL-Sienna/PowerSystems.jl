@@ -72,17 +72,17 @@ process to obtain the data:
 
 ### Static Time Series Data
 
-PowerSystems defines the Julia struct [`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries) to represent this data.
+PowerSystems defines the Julia struct [`SingleTimeSeries`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries) to represent this data.
 
 ### Forecasts
 
 PowerSystems defines the following Julia structs to represent forecasts:
 
-- [`Deterministic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Deterministic): Point forecast without any uncertainty representation.
-- [`Probabilistic`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Probabilistic): Stores a discretized cumulative distribution functions
+- [`Deterministic`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Deterministic): Point forecast without any uncertainty representation.
+- [`Probabilistic`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Probabilistic): Stores a discretized cumulative distribution functions
   (CDFs) or probability distribution functions (PDFs) at each time step in the
   look-ahead window.
-- [`Scenarios`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Scenarios): Stores a set of probable trajectories for forecasted quantity
+- [`Scenarios`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Scenarios): Stores a set of probable trajectories for forecasted quantity
   with equal probability.
 
 ## Storage
@@ -419,5 +419,5 @@ Static time series instances may have different start times and lengths.
 ## Data Format
 
 Refer to this
-[page](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
+[page](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/time_series/#Data-Format)
 for details on how the time series data is stored in HDF5 files.
