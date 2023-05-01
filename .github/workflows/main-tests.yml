@@ -1,12 +1,12 @@
-name: Master - CI
+name: Main - CI
 
 on:
   schedule:
   - cron: "0 0 * * 1-5"
   push:
     branches:
-      - master
-      
+      - main
+
 jobs:
   test:
     name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
