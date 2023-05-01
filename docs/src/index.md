@@ -52,7 +52,7 @@ The latest stable release of PowerSystems can be installed using the Julia packa
 For the current development version, "checkout" this package with
 
 ```julia
-] add PowerSystems#master
+] add PowerSystems#main
 ```
 
 ## Citing PowerSystems.jl

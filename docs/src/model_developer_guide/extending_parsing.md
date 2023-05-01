@@ -24,7 +24,7 @@ names.
 
 2. PowerSystems has two commonly-used datasets with customized user config
    files:
-   [PowerSystemsTestData](https://github.com/NREL/PowerSystemsTestData/blob/master/RTS_GMLC/user_descriptors.yaml)
+   [PowerSystemsTestData](https://github.com/NREL/PowerSystemsTestData/blob/main/RTS_GMLC/user_descriptors.yaml)
    and
    [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/user_descriptors.yaml).
    Update both of these files and submit pull requests.

@@ -65,7 +65,7 @@ print_struct(Deterministic)
 ````
 
 Examples of how to create and add time series to system can be found in the
-[Add Time Series Example](https://nbviewer.jupyter.org/github/NREL-SIIP/SIIPExamples.jl/blob/master/notebook/2_PowerSystems_examples/05_add_forecasts.ipynb)
+[Add Time Series Example](https://nbviewer.jupyter.org/github/NREL-SIIP/SIIPExamples.jl/blob/main/notebook/2_PowerSystems_examples/05_add_forecasts.ipynb)
 
 ### System
 
