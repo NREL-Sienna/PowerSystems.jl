@@ -3,7 +3,7 @@ name: Format Check
 on:
   push:
     branches:
-      - 'master'
+      - 'main'
       - 'release-'
     tags: '*'
   pull_request:
