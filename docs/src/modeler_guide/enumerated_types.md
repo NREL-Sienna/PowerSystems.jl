@@ -3,7 +3,7 @@
 
 To specify fields representing an option from a pre-defined list, some of the fields of
 `Component` structs are specified with
-[`IS.scoped_enums`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.@scoped_enum-Tuple{Any,%20Vararg{Any,%20N}%20where%20N}) (e.g.
+[`IS.scoped_enums`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.@scoped_enum-Tuple{Any,%20Vararg{Any,%20N}%20where%20N}) (e.g.
 `set_fuel!(gen, ThermalFuels.COAL)`). Below are the enumerated types contained in `PowerSystems`.
 
 ## `ThermalFuels`

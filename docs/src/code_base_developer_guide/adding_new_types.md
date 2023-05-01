@@ -2,7 +2,7 @@
 
 This page describes how developers should add types to `PowerSystems.jl` Refer to
 the
-[managing components guide](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
+[managing components guide](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
 first.
 
 ## [Auto-generating Structs](@id autogen)
@@ -18,7 +18,7 @@ If you will need to write specialized functions for the type then you will
 probably want to write it manually.
 
 Refer to this
-[link](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)
+[link](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)
 for more information.
 
 ### Testing the addition of new struct to the code base

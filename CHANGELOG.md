@@ -2,7 +2,7 @@
 
 ## 1.0.0 Announcement
 
-After 1.0.0 release, the manual Changelog will no longer be maintained. Please refer to the [releases page](https://github.com/NREL-SIIP/PowerSystems.jl/releases) to follow up with the changes. 
+After 1.0.0 release, the manual Changelog will no longer be maintained. Please refer to the [releases page](https://github.com/NREL-Sienna/PowerSystems.jl/releases) to follow up with the changes.
 
 ## 0.28.0
 
@@ -15,7 +15,7 @@ After 1.0.0 release, the manual Changelog will no longer be maintained. Please r
 - Add Support for non-spinning reserve (Thanks @andrewrosemberg)
 - Add costs to reserve products (Thanks @andrewrosemberg)
 - Improvements to documentation
-- Extend parsing of PSS/e dyr files 
+- Extend parsing of PSS/e dyr files
 - Modifications to dynamic structs to support (min, max) tuples
 
 

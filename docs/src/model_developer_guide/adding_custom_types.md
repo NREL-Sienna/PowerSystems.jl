@@ -9,7 +9,7 @@ supertype for your new struct.
 ## Interfaces
 
 Refer to the
-[managing components guide](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
+[managing components guide](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
 for component requirements.
 
 **Note**: `get_internal`, `get_name`, and `get_time_series_container` are
@@ -139,4 +139,4 @@ It is possible to use an advanced future to auto-generate structs in Julia sourc
 It is not mandatory to use these tools, but it can be useful if you need to generate multiple
 custom structs for your model. Please refer to the docstrings for the functions `generate_struct`
 and `generate_structs`. Full details are in the InfrastructureSystems documentation at
-https://nrel-siip.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/
+https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/
