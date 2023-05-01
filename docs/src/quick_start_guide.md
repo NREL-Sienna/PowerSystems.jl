@@ -7,7 +7,7 @@ intake and extension of the data model. These features are enabled through three
 - Optimized read/write data container (the container is called [`System`](@ref)),
 - Utilities to facilitate modeling, extensions, and integration.
 
-It is possible to load examples systems directly using [PowerSystemCaseBuilder](https://github.com/NREL-SIIP/PowerSystemCaseBuilder).
+It is possible to load examples systems directly using [PowerSystemCaseBuilder](https://github.com/NREL-Sienna/PowerSystemCaseBuilder).
 
 ```julia
 using PowerSystemCaseBuilder
@@ -75,7 +75,7 @@ installed_capacity(system_data; technology = RenewableGen)
 `PowerSystems.jl` provides interfaces to augment the data sets already created. You can also
 add time series data to a system from one or more CSV files, more
 details in [`Time Series Data`](@ref ts_data). This example implements
-[`SingleTimeSeries`](https://nrel-siip.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries)
+[`SingleTimeSeries`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries)
 
 ```@example generated_quick_start_guide
 using PowerSystems

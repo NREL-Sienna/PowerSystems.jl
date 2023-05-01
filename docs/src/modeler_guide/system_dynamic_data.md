@@ -1,6 +1,6 @@
 # Creating a System with Dynamic devices
 
-You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-SIIP/PowerSystemsTestData)
+You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-Sienna/PowerSystemsTestData)
 the data can be downloaded with the submodule `UtilsData`
 
 ```julia
