@@ -10,6 +10,7 @@ Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 PowerSystemCaseBuilder = "f00506e0-b84f-492a-93c2-c0a9afc4364e"
 PowerSystems = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
 TimeSeries = "9e3dc215-6440-5c97-bce1-76c03772f85e"
+TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 
 [compat]
 CSV = "~0.10"
