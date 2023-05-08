@@ -10,6 +10,7 @@ An example of how to parse MATPOWER and PSSe raw files and create a `System` usi
 
 ```@repl parse_power_flow_cases
 # Load directory
+using PowerSystems
 file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
 sys = System(joinpath(file_dir, "case5_re.m"))
 ```

@@ -23,10 +23,10 @@ refined search. The container is optimized for iteration over abstract or concre
 types as described by the [Type Structure](@ref type_structure). Given the potential size of the return,
 `PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations.
 
-```@example get_components
-using PowerSystems #hide
-DATA_DIR = "../../../data" #hide
-system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
+```@repl system
+using PowerSystems
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+system = System(joinpath(file_dir, "RTS_GMLC.m"));
 thermal_gens = get_components(ThermalStandard, system)
 ```
 
@@ -34,14 +34,14 @@ It is also possible to execute [`get_components`](@ref) with abstract types from
 [abstract tree](@ref type_structure). For instance, it is possible to retrieve all renewable
 generators
 
-```@example get_components
+```@repl system
 thermal_gens = get_components(RenewableGen, system)
 ```
 
 The most common filtering requirement is by component name and for this case the method
 [`get_component`](@ref) returns a single component taking the device type, system and name as arguments.
 
-```@example get_components
+```@repl system
 my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1")
 ```
 
@@ -59,11 +59,7 @@ _this is actively discouraged_ for two reasons:
 
 For example, the `my_thermal_gen.active_power_limits` parameter of a thermal generator should be accessed as follows:
 
-```@example get_active_power_limits
-using PowerSystems #hide
-DATA_DIR = "../../../data" #hide
-system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
-my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1") #hide
+```@repl system
 get_active_power_limits(my_thermal_gen)
 ```
 
@@ -73,7 +69,7 @@ You can also view data from all instances of a concrete type in one table with t
  2. Pass a dictionary where the keys are column names and the values are functions that accept a component as a single argument.
  3. Pass a vector of symbols that are field names of the type.
 
-```@example show_components
+```@repl system
 show_components(system, ThermalStandard)
 show_components(system, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
 show_components(system, ThermalStandard, [:active_power, :reactive_power])
@@ -99,7 +95,7 @@ get_units_base(system)
 
 To change the unit system setting of a `System`:
 
-```julia
+```@repl system
 set_units_base_system!(system, "DEVICE_BASE")
 ```
 
