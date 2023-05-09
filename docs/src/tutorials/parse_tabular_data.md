@@ -20,9 +20,8 @@ PowerSystems.jl links to some test data that is suitable for this example.
 Let's get the test data using Artifacts. You can find the repository of the data of the GMLC system [here](https://github.com/NREL-Sienna/PowerSystemsTestData/tree/master/RTS_GMLC):
 
 ```@repl parse_tabulardata
-import LazyArtifacts
-docs_dir = joinpath(pkgdir(PowerSystems), "docs")
-DATA_DIR = joinpath(docs_dir, LazyArtifacts.artifact"CaseData", "PowerSystemsTestData-1.0.1");
+using PowerSystemCaseBuilder #hide
+DATA_DIR = PowerSystemCaseBuilder.DATA_DIR #hide
 # include download methods
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
 ```
@@ -53,4 +52,3 @@ interval = Dates.Hour(24);
 transform_single_time_series!(sys, horizon, interval);
 sys
 ```
-
