@@ -29,6 +29,7 @@ PowerSystems is intended to organize data containers by the behavior of the devi
 the data represents. To that end, a type hierarchy has been defined with several levels of
 abstract types starting with `InfrastructureSystemsType`. There are a bunch of subtypes of
 `InfrastructureSystemsType`, but the important ones to know about are:
+
 - `Component`: includes all elements of power system data
   - `Topology`: includes non physical elements describing network connectivity
   - `Service`: includes descriptions of system requirements (other than energy balance)
@@ -43,6 +44,7 @@ time stamp
 - `System`: collects all of the `Component`s
 
 The following code displays the hierarchy, but concrete types are omitted for brevity:
+
 ```@repl basics
 print(join(tt(PowerSystems.IS.InfrastructureSystemsType, concrete = false), ""))
 ```
@@ -175,10 +177,11 @@ end
 ```
 
 If we want to access a specific time series for a specific component, we need to specify:
- - time series type
- - `component`
- - initial_time
- - label
+
+- time series type
+- `component`
+- initial_time
+- label
 
 We can find the initial time of all the time series in the system:
 
