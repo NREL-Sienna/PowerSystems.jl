@@ -86,10 +86,7 @@ It is often useful to express power systems data in relative terms using per-uni
 
 To see the unit system setting of a `System`:
 
-```@example get_units_base
-using PowerSystems #hide
-DATA_DIR = "../../../data" #hide
-system = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m")) #hide
+```@repl system
 get_units_base(system)
 ```
 

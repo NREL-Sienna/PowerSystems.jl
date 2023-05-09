@@ -234,17 +234,13 @@ Note that the user-specific customizations are stored in YAML rather than JSON
 to allow for easier editing. The next few sections describe changes you can
 make to this YAML file.  Do not edit the default JSON file.
 
-A list of `PowerSystemTableData` accepted columns for each CSV is available
-[here](@ref tabledata_input_config).
-
 ##### [Per-unit conversion](@id csv_per_unit)
 
 For more info on the per-unit conventions in `PowerSystems.jl`, refer to the [per-unit
 section of the system documentation](@ref per_unit).
 
 PowerSystems defines whether it expects a column value to be per-unit system base,
-per-unit device base, or natural units in `power_system_inputs.json`
-([see default values](@ref tabledata_input_config)). If it expects a
+per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
 per-unit convention that differs from your values then you can set the `unit_system` in
 `user_descriptors.yaml` and PowerSystems will automatically convert the values. For
 example, if you have a `max_active_power` value stored in natural units (MW), but
