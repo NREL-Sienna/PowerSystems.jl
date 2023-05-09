@@ -25,10 +25,10 @@ sys = System(joinpath(file_dir, "case5_re.m"))
 For example, if we want to add a bunch of time series files, say one for each load and one for each renewable generator, we need to define pointers to each .csv file containing the time series in the following format (PowerSystems.jl also supports a CSV format for this file). We will use Artifacts for the following [data](https://github.com/NREL-Sienna/PowerSystemsTestData/tree/master/5-Bus/5bus_ts)
 
 ```@repl forecasts
-import LazyArtifacts
-DATA_DIR = joinpath(LazyArtifacts.artifact"CaseData", "PowerSystemsTestData-1.0.1");
-FORECASTS_DIR = joinpath(DATA_DIR, "5-Bus", "5bus_ts");
-fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json");
+using PowerSystemCaseBuilder #hide
+DATA_DIR = PowerSystemCaseBuilder.DATA_DIR #hide
+FORECASTS_DIR = joinpath(DATA_DIR, "5-Bus", "5bus_ts"); #hide
+fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json")
 open(fname, "r") do f
     JSON3.@pretty JSON3.read(f)
 end
