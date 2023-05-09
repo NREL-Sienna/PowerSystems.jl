@@ -139,4 +139,4 @@ It is possible to use an advanced future to auto-generate structs in Julia sourc
 It is not mandatory to use these tools, but it can be useful if you need to generate multiple
 custom structs for your model. Please refer to the docstrings for the functions `generate_struct`
 and `generate_structs`. Full details are in the InfrastructureSystems documentation at
-https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/
+[https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)

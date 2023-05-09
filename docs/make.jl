@@ -10,7 +10,15 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Quick Start Guide" => "quick_start_guide.md",
-        "Tutorials" =>  "tutorials/intro_page.md",
+        "Tutorials" =>  Any[
+            "Introduction" => "tutorials/basics.md",
+            "Parsing PowerFlow Data" => "tutorials/parse_powerflow_cases.md",
+            "Parsing Tabular Data" => "tutorials/parse_tabular_data.md",
+            "Add Forecasts" => "tutorials/add_forecasts.md",
+            "Serialize Data" => "tutorials/serialize_data.md",
+            "Use Dynamic Data" => "tutorials/dynamic_data.md",
+            "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
+        ],
         "Modeler Guide" =>
             Any[
             "modeler_guide/type_structure.md",
@@ -20,11 +28,14 @@ pages = OrderedDict(
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
             "modeler_guide/market_bid_cost.md",
-            #"modeler_guide/parsing.md"
+            "modeler_guide/modeling_with_JuMP.md",
+            "modeler_guide/parsing.md",
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
                 "Adding Types" => "model_developer_guide/adding_custom_types.md",
+                "Adding Additional Fields" => "model_developer_guide/adding_additional_fields.md",
+
             ],
             "Code Base Developer Guide" =>
             Any["Developer Guide" => "code_base_developer_guide/developer.md",
@@ -55,7 +66,6 @@ pages["Model Library"] = make_model_library(
         "DynamicInjection" => ["Dynamic Inverter" => "model_library/dynamic_inverter.md",
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
-        "StaticInjection" => ["HybridSystem" => "model_library/hybrid_device.md"],
         "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"]
         )
 )
@@ -79,9 +89,9 @@ folders = Dict(
     "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
     "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
-
 for (section, folder) in folders
     for file in folder
+        @show file
         section_folder_name = lowercase(replace(section, " " => "_"))
         outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
         inputfile = joinpath("$section_folder_name", "$file")

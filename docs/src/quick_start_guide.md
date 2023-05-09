@@ -9,11 +9,8 @@ intake and extension of the data model. These features are enabled through three
 
 It is possible to load examples systems directly using [PowerSystemCaseBuilder](https://github.com/NREL-Sienna/PowerSystemCaseBuilder).
 
-```julia
-using PowerSystemCaseBuilder
+```@repl quick_start_guide
 using PowerSystems
-
-sys = load_from_case_builder()
 ```
 
 ## Loading data from files
@@ -21,10 +18,9 @@ sys = load_from_case_builder()
 Data can be loaded from several file formats and return a summary of the system's components and
 time-series.
 
-```@example generated_quick_start_guide
-using PowerSystems
-DATA_DIR = "../../data" #hide
-system_data = System(joinpath(DATA_DIR, "matpower/RTS_GMLC.m"))
+```@repl quick_start_guide
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+system_data = System(joinpath(file_dir, "RTS_GMLC.m"))
 ```
 
 More details about parsing text files from different formats in [this section](@ref parsing)
@@ -40,7 +36,7 @@ the "dot" access to get a parameter value from a device is actively discouraged,
 Refer to [Modeling with JuMP](@ref modeling_with_jump) for a more detailed use of `PowerSystems.jl` to develop
 a model
 
-```@example generated_quick_start_guide
+```@repl quick_start_guide
 function installed_capacity(system::System; technology::Type{T} = Generator) where T <: Generator
     installed_capacity = 0.0
     for g in get_components(T, system)
@@ -52,19 +48,19 @@ end
 
 - Total installed capacity
 
-```@example generated_quick_start_guide
+```@repl quick_start_guide
 installed_capacity(system_data)
 ```
 
 - Installed capacity of the thermal generation
 
-```@example generated_quick_start_guide
+```@repl quick_start_guide
 installed_capacity(system_data; technology = ThermalStandard)
 ```
 
 - Installed capacity of renewable generation
 
-```@example generated_quick_start_guide
+```@repl quick_start_guide
 installed_capacity(system_data; technology = RenewableGen)
 ```
 
@@ -77,12 +73,10 @@ add time series data to a system from one or more CSV files, more
 details in [`Time Series Data`](@ref ts_data). This example implements
 [`SingleTimeSeries`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries)
 
-```@example generated_quick_start_guide
-using PowerSystems
+```@repl quick_start_guide
 using TimeSeries
 using Dates
-DATA_DIR = "../../data" #hide
-system = System(joinpath(DATA_DIR, "matpower/case5.m"))
+system = System(joinpath(file_dir, "case5.m"))
 
 new_renewable = RenewableDispatch(
         name = "WindPowerNew",
