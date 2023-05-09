@@ -16,6 +16,7 @@ using Dates
 ```
 
 ## Fetch Data
+
 PowerSystems.jl links to some test data that is suitable for this example.
 Let's get the test data using Artifacts. You can find the repository of the data of the GMLC system [here](https://github.com/NREL-Sienna/PowerSystemsTestData/tree/master/RTS_GMLC):
 
@@ -27,6 +28,7 @@ RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
 ```
 
 ## The tabular data format relies on a folder containing `*.csv` files and a `user_descriptors.yaml` file
+
 First, we'll read the tabular data
 
 ```@repl parse_tabulardata
@@ -40,6 +42,7 @@ rawsys = PowerSystems.PowerSystemTableData(
 ```
 
 ## Create a `System`
+
 Next, we'll create a `System` from the `rawsys` data. Since a `System` is predicated on a
 time series resolution and the `rawsys` data includes both 5-minute and 1-hour resolution
 time series, we also need to specify which time series we want to include in the `System`.
