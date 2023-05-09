@@ -1,6 +1,8 @@
+# [PowerSystemCaseBuilder](@id psb)
+
 **Originally Contributed by**: Clayton Barrows
 
-## Introduction(@id psb)
+## Introduction
 
 [PowerSystemCaseBuilder.jl](https://github.com/NREL-Sienna/PowerSystemCaseBuilder.jl) provides a utility to manage a library of `System`s. The package has utilities to list the available system data and to create instances of each system. By keeping track of which systems have been constructed locally, it makes the re-instantiation of systems efficient by utilizing the serialization features and avoiding the parsing process for systems that have been previously constructed.
 
