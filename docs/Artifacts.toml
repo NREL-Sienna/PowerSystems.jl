@@ -1,0 +1,14 @@
+[CaseData]
+git-tree-sha1 = "8ca703c3979927752c9ff77a32bd85f3c97d93b9"
+
+    [[CaseData.download]]
+    url = "https://github.com/NREL-Sienna/PowerSystemsTestData/archive/refs/tags/1.0.1.tar.gz"
+    sha256 = "15d0e7a8c7e40e62ae2a77a4691fc83a2c6a60dc79774411bcf0bfb6ecea5a57"
+
+[rts]
+git-tree-sha1 = "5098f357bad765bfefcff58f080818863ca776bd"
+lazy = true
+
+    [[rts.download]]
+    url = "https://github.com/GridMod/RTS-GMLC/archive/refs/tags/v0.2.2.tar.gz"
+    sha256 = "f7a816f2390b96d44fa931c2790e2ec5ef81d0deb503c4c719b25ec1b585e2c2"
