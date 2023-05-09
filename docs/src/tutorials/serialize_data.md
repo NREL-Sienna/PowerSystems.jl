@@ -12,14 +12,14 @@ Let's use a dataset from the tabular data parsing tutorial:
 
 ```@repl serialize_data
 using PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
 sys = System(joinpath(file_dir, "case5_re.m"))
 ```
 
 ## Write data to a temporary directory
 
 ```@repl serialize_data
-folder = mktempdir()
+folder = mktempdir();
 path = joinpath(folder, "system.json")
 println("Serializing to $path")
 to_json(sys, path)

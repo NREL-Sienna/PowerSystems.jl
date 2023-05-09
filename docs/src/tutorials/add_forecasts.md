@@ -16,7 +16,7 @@ Let's use the 5-bus dataset we parsed in the MATPOWER example
 using PowerSystems
 using JSON3
 
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
 sys = System(joinpath(file_dir, "case5_re.m"))
 ```
 

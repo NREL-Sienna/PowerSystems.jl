@@ -1,12 +1,11 @@
 # Creating a System with Dynamic devices
 
-You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-Sienna/PowerSystemsTestData)
-the data can be downloaded with the submodule `UtilsData`
+You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-Sienna/PowerSystemsTestData). Most of these systems are available to use using [PowerSystemCaseBuilder.jl](@ref psb).
 
 ```@repl dynamic_data
 using PowerSystems
 const PSY = PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
 ```
 
 Although `PowerSystems.jl` is not constrained to only PSS/e files, commonly the data available

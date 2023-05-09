@@ -14,7 +14,7 @@ The following code will create a System from a MATPOWER or PSS/e file:
 
 ```@repl raw_dyr_system
 using PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
 sys = System(joinpath(file_dir, "case5.m"))
 ```
 

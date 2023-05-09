@@ -21,7 +21,8 @@ Let's get the test data using Artifacts. You can find the repository of the data
 
 ```@repl parse_tabulardata
 import LazyArtifacts
-DATA_DIR = joinpath(LazyArtifacts.artifact"CaseData", "PowerSystemsTestData-1.0.1")
+docs_dir = joinpath(pkgdir(PowerSystems), "docs")
+DATA_DIR = joinpath(docs_dir, LazyArtifacts.artifact"CaseData", "PowerSystemsTestData-1.0.1");
 # include download methods
 RTS_GMLC_DIR = joinpath(DATA_DIR, "RTS_GMLC")
 ```

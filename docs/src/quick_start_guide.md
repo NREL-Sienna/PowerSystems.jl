@@ -19,7 +19,7 @@ Data can be loaded from several file formats and return a summary of the system'
 time-series.
 
 ```@repl quick_start_guide
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
 system_data = System(joinpath(file_dir, "RTS_GMLC.m"))
 ```
 

@@ -8,8 +8,8 @@ This tutorial shows some basic operations that you can do in PowerSystems.jl wit
 using PowerSystems
 # For displaying subtypes
 import TypeTree: tt
-docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils")
-include(joinpath(docs_dir, "docs_utils.jl"))
+docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils");
+include(joinpath(docs_dir, "docs_utils.jl")) #hide
 ```
 
 ## Types in PowerSystems

@@ -25,7 +25,7 @@ types as described by the [Type Structure](@ref type_structure). Given the poten
 
 ```@repl system
 using PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
 system = System(joinpath(file_dir, "RTS_GMLC.m"));
 thermal_gens = get_components(ThermalStandard, system)
 ```

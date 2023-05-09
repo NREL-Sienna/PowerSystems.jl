@@ -12,7 +12,7 @@ a particular type but additional fields are required. A simple example is the ad
 using PowerSystems
 const PSY = PowerSystems
 
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "test_data")
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
 system = System(joinpath(file_dir, "case5_re.m"))
 
 for g in get_components(ThermalStandard, system)
