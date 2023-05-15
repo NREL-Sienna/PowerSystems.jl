@@ -91,10 +91,10 @@ print_struct(System)
 
 ## Example Code
 
-PowerSystems contains a few basic data files (mostly for testing and demonstration).
+PowerSystems contains a few basic data files (mostly for testing and demonstration). These can be found [here](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/test/data_5bus_pu.jl):
 
 ```@repl basics
-BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
+BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..")) #hide
 include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl")); #.jl file containing 5-bus system data
 nodes_5 = nodes5() # function to create 5-bus buses
 thermal_generators5(nodes_5) # function to create thermal generators in 5-bus buses

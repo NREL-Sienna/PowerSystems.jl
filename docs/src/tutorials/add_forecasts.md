@@ -16,13 +16,13 @@ Let's use the 5-bus dataset we parsed in the MATPOWER example
 using PowerSystems
 using JSON3
 
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data"); #hide
 sys = System(joinpath(file_dir, "case5_re.m"))
 ```
 
 ## Define pointers to time series files
 
-For example, if we want to add a bunch of time series files, say one for each load and one for each renewable generator, we need to define pointers to each .csv file containing the time series in the following format (PowerSystems.jl also supports a CSV format for this file). We will use Artifacts for the following [data](https://github.com/NREL-Sienna/PowerSystemsTestData/tree/master/5-Bus/5bus_ts)
+For example, if we want to add a bunch of time series files, say one for each load and one for each renewable generator, we need to define pointers to each .csv file containing the time series in the following format (PowerSystems.jl also supports a CSV format for this file). We will use Artifacts for the following [data](https://github.com/NREL-Sienna/PowerSystemsTestData/tree/master/5-Bus/5bus_ts).
 
 ```@repl forecasts
 using PowerSystemCaseBuilder #hide

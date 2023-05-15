@@ -12,7 +12,7 @@ Let's use a dataset from the tabular data parsing tutorial:
 
 ```@repl serialize_data
 using PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data"); #hide 
 sys = System(joinpath(file_dir, "case5_re.m"))
 ```
 

@@ -16,10 +16,10 @@ using PowerSystems
 ## Loading data from files
 
 Data can be loaded from several file formats and return a summary of the system's components and
-time-series.
+time-series. Some example files can be found in the [tutorials data folder](https://github.com/NREL-Sienna/PowerSystems.jl/tree/main/docs/src/tutorials)
 
 ```@repl quick_start_guide
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data");
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data"); #hide
 system_data = System(joinpath(file_dir, "RTS_GMLC.m"))
 ```
 
