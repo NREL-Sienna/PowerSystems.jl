@@ -2,6 +2,16 @@
 
 This tutorial shows some basic operations that you can do in PowerSystems.jl with your data.
 
+## Load Packages
+
+```@repl basics
+using PowerSystems
+# For displaying subtypes
+import TypeTree: tt
+docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils");
+include(joinpath(docs_dir, "docs_utils.jl")) #hide
+```
+
 ## Types in PowerSystems
 
 PowerSystems.jl provides a type hierarchy for specifying power system data. Data that
@@ -9,9 +19,9 @@ describes infrastructure components is held in `struct`s. For example, a `Bus` i
 as follows with fields for the parameters required to describe a bus (along with an
 `internal` field used by InfrastructureSystems to improve the efficiency of handling data).
 
-````@example basics
+```@repl basics
 print_struct(Bus)
-````
+```
 
 ### Type Hierarchy
 
@@ -19,6 +29,7 @@ PowerSystems is intended to organize data containers by the behavior of the devi
 the data represents. To that end, a type hierarchy has been defined with several levels of
 abstract types starting with `InfrastructureSystemsType`. There are a bunch of subtypes of
 `InfrastructureSystemsType`, but the important ones to know about are:
+
 - `Component`: includes all elements of power system data
   - `Topology`: includes non physical elements describing network connectivity
   - `Service`: includes descriptions of system requirements (other than energy balance)
@@ -32,9 +43,11 @@ values can represent each time stamp
 time stamp
 - `System`: collects all of the `Component`s
 
-````@example basics
-print_tree(PowerSystems.IS.InfrastructureSystemsType)
-````
+The following code displays the hierarchy, but concrete types are omitted for brevity:
+
+```@repl basics
+print(join(tt(PowerSystems.IS.InfrastructureSystemsType, concrete = false), ""))
+```
 
 ### `TimeSeriesData`
 
@@ -47,9 +60,9 @@ describe other fields in the struct (`available`, `activepower`, `reactivepower`
 
 `TimeSeriesData`s themselves can take the form of the following:
 
-````@example basics
-print_tree(TimeSeriesData)
-````
+```@repl basics
+print(join(tt(TimeSeriesData), ""))
+```
 
 In each case, the time series contains fields for `scaling_factor_multiplier` and `data`
 to identify the details of  th `Component` field that the time series describes, and the
@@ -60,43 +73,49 @@ maximum active power field in the struct describing the generator. In this way, 
 store a scaling factor time series that will get multiplied by the maximum active power
 rather than the magnitudes of the maximum active power time series.
 
-````@example basics
+```@repl basics
 print_struct(Deterministic)
-````
+```
 
 Examples of how to create and add time series to system can be found in the
-[Add Time Series Example](https://nbviewer.jupyter.org/github/NREL-Sienna/SIIPExamples.jl/blob/main/notebook/2_PowerSystems_examples/05_add_forecasts.ipynb)
+[Add Time Series Example](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/add_forecasts/)
 
 ### System
 
 The `System` object collects all of the individual components into a single struct along
 with some metadata about the system itself (e.g. `base_power`)
 
-````@example basics
+```@repl basics
 print_struct(System)
-````
+```
 
 ## Example Code
 
-PowerSystems contains a few basic data files (mostly for testing and demonstration).
+PowerSystems contains a few basic data files (mostly for testing and demonstration). These can be found [here](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/test/data_5bus_pu.jl):
 
-````@example basics
-BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), ".."))
-include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl")) #.jl file containing 5-Bus system data
-nodes_5 = nodes5() # function to create 5-Bus buses
-````
+```@repl basics
+BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..")) #hide
+include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl")); #.jl file containing 5-bus system data
+nodes_5 = nodes5() # function to create 5-bus buses
+thermal_generators5(nodes_5) # function to create thermal generators in 5-bus buses
+renewable_generators5(nodes_5) # function to create renewable generators in 5-bus buses
+loads5(nodes_5) # function to create the loads
+branches5(nodes_5) # function to create the branches
+```
 
 ### Create a `System`
 
-````@example basics
+```@repl basics
 sys = System(
     100.0,
     nodes_5,
-    vcat(thermal_generators5(nodes_5), renewable_generators5(nodes_5)),
-    loads5(nodes_5),
-    branches5(nodes_5),
+    vcat(
+      thermal_generators5(nodes_5),
+      renewable_generators5(nodes_5)),
+      loads5(nodes_5),
+      branches5(nodes_5),
 )
-````
+```
 
 ### Accessing `System` Data
 
@@ -109,41 +128,41 @@ along with the name and system
 
 #### Accessing components
 
-````@example basics
-@show get_component(Bus, sys, "nodeA")
-@show get_component(Line, sys, "1")
-````
+```@repl basics
+get_component(Bus, sys, "nodeA")
+get_component(Line, sys, "1")
+```
 
 Similarly, you can access all the components of a particular type: *note: the return type
 of get_components is a `FlattenIteratorWrapper`, so call `collect` to get an `Array`
 
-````@example basics
+```@repl basics
 get_components(Bus, sys) |> collect
-````
+```
 
 `get_components` also works on abstract types:
 
-````@example basics
+```@repl basics
 get_components(Branch, sys) |> collect
-````
+```
 
 The fields within a component can be accessed using the `get_*` functions:
 *It's highly recommended that users avoid using the `.` to access fields since we make no
 guarantees on the stability field names and locations. We do however promise to keep the
 accessor functions stable.*
 
-````@example basics
+```@repl basics
 bus1 = get_component(Bus, sys, "nodeA")
 @show get_name(bus1);
 @show get_magnitude(bus1);
 nothing #hide
-````
+```
 
 #### Accessing `TimeSeries`
 
 First we need to add some time series to the `System`
 
-````@example basics
+```@repl basics
 loads = collect(get_components(PowerLoad, sys))
 for (l, ts) in zip(loads, load_timeseries_DA[2])
     add_time_series!(
@@ -155,34 +174,35 @@ for (l, ts) in zip(loads, load_timeseries_DA[2])
         ),
     )
 end
-````
+```
 
 If we want to access a specific time series for a specific component, we need to specify:
- - time series type
- - `component`
- - initial_time
- - label
+
+- time series type
+- `component`
+- initial_time
+- label
 
 We can find the initial time of all the time series in the system:
 
-````@example basics
+```@repl basics
 get_forecast_initial_times(sys)
-````
+```
 
 We can find the names of all time series attached to a component:
 
-````@example basics
+```@repl basics
 ts_names = get_time_series_names(Deterministic, loads[1])
-````
+```
 
 We can access a specific time series for a specific component:
 
-````@example basics
+```@repl basics
 ta = get_time_series_array(Deterministic, loads[1], ts_names[1])
-````
+```
 
 Or, we can just get the values of the time series:
 
-````@example basics
+```@repl basics
 ts = get_time_series_values(Deterministic, loads[1], ts_names[1])
-````
+```

@@ -1,6 +1,6 @@
 # PowerSystems [`MarketBidCost`](@ref)
 
-Is an [`OperationalCost`](@ref) data structure that allows the user to run a production
+Is an `OperationalCost` data structure that allows the user to run a production
 cost model that is very similar to most US electricity market auctions with bids for energy
 and ancillary services jointly. This page showcases how to create data for this cost function.
 
@@ -13,7 +13,7 @@ only certain elements, at this point the actual energy cost bids don't need to b
 
 The code below shows an example how we can create a thermal device with MarketBidCost.
 
-```@example market_bid_cost
+```@repl market_bid_cost
 using PowerSystems, Dates
 bus = Bus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
@@ -50,7 +50,7 @@ data is a Tuple or `Array{Tuple}` then the model expects the tuples to be cost &
 pairs (cost in $/p.u-hr & power-point in p.u-hr), which is modeled same as TwoPartCost or
 ThreePartCost. Code below shows an example of how to build a TimeSeriesData.
 
-```@example market_bid_cost
+```@repl market_bid_cost
 data =
     Dict(Dates.DateTime("2020-01-01") => [
         [(0.0, 0.05), (290.1, 0.0733), (582.72, 0.0967), (894.1, 0.120)],
@@ -86,7 +86,7 @@ is recommended. The arguments for `set_variable_cost!` are:
 - `component::StaticInjection`: Static injection device
 - `time_series_data::TimeSeriesData`: TimeSeriesData
 
-```@example market_bid_cost
+```@repl market_bid_cost
 sys = System(100.0, [bus], [generator])
 set_variable_cost!(sys, generator, time_series_data)
 ```
@@ -96,7 +96,7 @@ set_variable_cost!(sys, generator, time_series_data)
 Similar to adding energy market bids, for adding bids for ancillary services the use of
 `set_service_bid!` is recommended.
 
-```@example market_bid_cost
+```@repl market_bid_cost
 service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
 data =

@@ -1,12 +1,11 @@
 # Creating a System with Dynamic devices
 
-You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-Sienna/PowerSystemsTestData)
-the data can be downloaded with the submodule `UtilsData`
+You can access example data in the [Power Systems Test Data Repository](https://github.com/NREL-Sienna/PowerSystemsTestData). Most of these systems are available to use using [PowerSystemCaseBuilder.jl](@ref psb).
 
-```julia
+```@repl dynamic_data
 using PowerSystems
 const PSY = PowerSystems
-DATA_DIR = download(PowerSystems.UtilsData.TestData, folder = pwd())
+file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
 ```
 
 Although `PowerSystems.jl` is not constrained to only PSS/e files, commonly the data available
@@ -60,10 +59,8 @@ equivalent line connecting buses 1 and 2 with a reactance of ``0.05`` pu.
 
 We can load this data file first
 
-```@repl generated_system_dynamic_data
-using PowerSystems
-DATA_DIR = "../../../data" #hide
-omib_sys = System(joinpath(DATA_DIR, "PSSE_test/OMIB.raw"), runchecks = false)
+```@repl dynamic_data
+omib_sys = System(joinpath(file_dir, "OMIB.raw"), runchecks = false)
 ```
 
 ### Dynamic Generator
@@ -78,7 +75,7 @@ of its components and the generator itself. The example code  creates all the co
 for a [`DynamicGenerator`](@ref) based on specific models for its components. This result
 will be a classic machine model without AVR, Turbine Governor and PSS.
 
-```@example generated_system_dynamic_data
+```@repl dynamic_data
 #Machine
 machine_classic = BaseMachine(
     R = 0.0,
@@ -106,7 +103,7 @@ Then we can collect all the dynamic components and create the dynamic generator 
 to a static generator of choice. In this example we will add it to the generator "generator-102-1"
 as follows:
 
-```@example generated_system_dynamic_data
+```@repl dynamic_data
 #Collect the static gen in the system
 static_gen = get_component(Generator, omib_sys, "generator-102-1")
 #Creates the dynamic generator
@@ -174,10 +171,8 @@ Q
 That describes a three bus connected system, with generators connected at bus 2 and 3, and
 loads in three buses. We can load the system and attach an infinite source on the reference bus:
 
-```@repl generated_inverter_dynamic_data
-using PowerSystems
-DATA_DIR = "../../../data" #hide
-threebus_sys = System(joinpath(DATA_DIR, "PSSE_test/ThreeBusInverter.raw"), runchecks = false)
+```@repl dynamic_data
+threebus_sys = System(joinpath(file_dir, "ThreeBusInverter.raw"), runchecks = false)
 ```
 
 We will connect a [`OneDOneQMachine`](@ref) machine at bus 102, and a Virtual Synchronous Generator Inverter
@@ -188,7 +183,7 @@ at bus 103. An inverter is composed by a `converter`, `outer control`, `inner co
 
 We will create specific components of the inverter as follows:
 
-```@example generated_inverter_dynamic_data
+```@repl dynamic_data
 #Define converter as an AverageConverter
 converter_high_power = AverageConverter(rated_voltage = 138.0, rated_current = 100.0)
 
@@ -228,7 +223,7 @@ filt = LCLFilter(lf = 0.08, rf = 0.003, cf = 0.074, lg = 0.2, rg = 0.01)
 
 Similarly we will construct a dynamic generator as follows:
 
-```@example generated_inverter_dynamic_data
+```@repl dynamic_data
 #Create the machine
 machine_oneDoneQ = OneDOneQMachine(
     R = 0.0,
@@ -269,7 +264,7 @@ pss_none = PSSFixed(V_pss = 0.0);
 
 ### Add the components to the System
 
-```@example generated_inverter_dynamic_data
+```@repl dynamic_data
 for g in get_components(Generator, threebus_sys)
     #Find the generator at bus 102
     if get_number(get_bus(g)) == 102
@@ -302,6 +297,9 @@ for g in get_components(Generator, threebus_sys)
         add_component!(threebus_sys, case_inv, g)
     end
 end
+
+# We can check that the system has the Dynamic Inverter and Generator
+threebus_sys
 ```
 
 Finally we can seraliaze the system data for later reloading
