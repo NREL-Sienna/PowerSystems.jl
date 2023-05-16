@@ -234,6 +234,9 @@ export get_Kpg
 export get_Kpp
 export get_Kpq
 export get_Ks
+export get_Ks1
+export get_Ks2
+export get_Ks3
 export get_Kt
 export get_Kv
 export get_L_1d
@@ -249,6 +252,8 @@ export get_Ls_lim
 export get_Lv_pnts
 export get_Lvpl1
 export get_Lvpl_sw
+export get_M_rtf
+export get_N_rtf
 export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
@@ -296,6 +301,8 @@ export get_T4
 export get_T5
 export get_T6
 export get_T7
+export get_T8
+export get_T9
 export get_TFRT_pnts
 export get_TVRT_pnts
 export get_T_AA
@@ -345,6 +352,10 @@ export get_Tsa
 export get_Tsb
 export get_Tv
 export get_Tw
+export get_Tw1
+export get_Tw2
+export get_Tw3
+export get_Tw4
 export get_U0
 export get_UEL_flags
 export get_U_c
@@ -377,6 +388,7 @@ export get_Vo_lim
 export get_Vpr
 export get_Vr_lim
 export get_Vrfrac
+export get_Vst_lim
 export get_Vtrip_Flag
 export get_Wf_nl
 export get_X_ad
@@ -468,6 +480,8 @@ export get_initial_energy
 export get_initial_storage
 export get_input_active_power_limits
 export get_input_code
+export get_input_code_1
+export get_input_code_2
 export get_internal_angle
 export get_internal_angle_bias
 export get_internal_angle_coefficients
@@ -553,6 +567,8 @@ export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
 export get_remote_bus_control
+export get_remote_bus_control_1
+export get_remote_bus_control_2
 export get_requirement
 export get_rf
 export get_rg
@@ -729,6 +745,9 @@ export set_Kpg!
 export set_Kpp!
 export set_Kpq!
 export set_Ks!
+export set_Ks1!
+export set_Ks2!
+export set_Ks3!
 export set_Kt!
 export set_Kv!
 export set_L_1d!
@@ -744,6 +763,8 @@ export set_Ls_lim!
 export set_Lv_pnts!
 export set_Lvpl1!
 export set_Lvpl_sw!
+export set_M_rtf!
+export set_N_rtf!
 export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
@@ -791,6 +812,8 @@ export set_T4!
 export set_T5!
 export set_T6!
 export set_T7!
+export set_T8!
+export set_T9!
 export set_TFRT_pnts!
 export set_TVRT_pnts!
 export set_T_AA!
@@ -840,6 +863,10 @@ export set_Tsa!
 export set_Tsb!
 export set_Tv!
 export set_Tw!
+export set_Tw1!
+export set_Tw2!
+export set_Tw3!
+export set_Tw4!
 export set_U0!
 export set_UEL_flags!
 export set_U_c!
@@ -872,6 +899,7 @@ export set_Vo_lim!
 export set_Vpr!
 export set_Vr_lim!
 export set_Vrfrac!
+export set_Vst_lim!
 export set_Vtrip_Flag!
 export set_Wf_nl!
 export set_X_ad!
@@ -963,6 +991,8 @@ export set_initial_energy!
 export set_initial_storage!
 export set_input_active_power_limits!
 export set_input_code!
+export set_input_code_1!
+export set_input_code_2!
 export set_internal_angle!
 export set_internal_angle_bias!
 export set_internal_angle_coefficients!
@@ -1048,6 +1078,8 @@ export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!
 export set_remote_bus_control!
+export set_remote_bus_control_1!
+export set_remote_bus_control_2!
 export set_requirement!
 export set_rf!
 export set_rg!
