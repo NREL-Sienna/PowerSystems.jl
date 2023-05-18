@@ -5,6 +5,7 @@ include("MarketBidCost.jl")
 include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
+include("TransmissonInterface.jl")
 include("Bus.jl")
 include("Arc.jl")
 include("Line.jl")
@@ -416,6 +417,7 @@ export get_a
 export get_active_power
 export get_active_power_coefficient
 export get_active_power_flow
+export get_active_power_flow_limits
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
@@ -927,6 +929,7 @@ export set_a!
 export set_active_power!
 export set_active_power_coefficient!
 export set_active_power_flow!
+export set_active_power_flow_limits!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!

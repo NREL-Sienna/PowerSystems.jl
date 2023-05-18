@@ -301,6 +301,39 @@
             "supertype": "AggregationTopology"
         },
         {
+            "struct_name": "TransmissonInterface",
+            "docstring": "A collection of branches that make up an interface or corridor for the transfer of power.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "name": "active_power_flow_limits",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "time_series_container",
+                    "comment": "internal time_series storage",
+                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
+                    "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "Service"
+        },
+        {
             "struct_name": "Bus",
             "docstring": "A power-system bus.",
             "inner_constructor_check": "check_bus_params",
