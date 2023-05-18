@@ -430,3 +430,8 @@ end
         @test length(get_services(device)) == 0
     end
 end
+
+@testset "Test TransmissionInterface" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    lines = get_components(Line, sys)
+end
