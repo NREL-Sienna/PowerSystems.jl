@@ -453,6 +453,7 @@ export get_dbd_pnts
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
+export get_direction_mapping
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
@@ -965,6 +966,7 @@ export set_dbd_pnts!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
+export set_direction_mapping!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!

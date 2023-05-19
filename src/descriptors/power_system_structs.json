@@ -317,6 +317,13 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "direction_mapping",
+                    "comment": "Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface",
+                    "null_value": "Dict{String, Int}()",
+                    "data_type": "Dict{String, Int}",
+                    "default": "Dict{String, Int}()"
+                },
+                {
                     "name": "time_series_container",
                     "comment": "internal time_series storage",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
