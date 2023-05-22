@@ -431,7 +431,7 @@ end
     end
 end
 
-@testset "Test TransmissonInterface" begin
+@testset "Test TransmissionInterface" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     lines = get_components(Line, sys)
     xfr = get_components(TapTransformer, sys)
@@ -440,9 +440,9 @@ end
     other_lines_and_hvdc = vcat(collect(lines)[10:14], hvdc)
     lines_and_transformers = [some_lines; collect(xfr)[1:2]]
 
-    interface1 = TransmissonInterface("foo1", (min = -10.0, max = 10.0))
-    interface2 = TransmissonInterface("foo2", (min = -10.0, max = 10.0))
-    interface3 = TransmissonInterface("foo3", (min = -10.0, max = 10.0))
+    interface1 = TransmissionInterface("foo1", true, (min = -10.0, max = 10.0))
+    interface2 = TransmissionInterface("foo2", true, (min = -10.0, max = 10.0))
+    interface3 = TransmissionInterface("foo3", true, (min = -10.0, max = 10.0))
     add_service!(sys, interface1, some_lines)
     add_service!(sys, interface2, other_lines_and_hvdc)
     add_service!(sys, interface3, lines_and_transformers)
@@ -458,5 +458,5 @@ end
     tmp_path = joinpath(mktempdir(), "sys_with_interfaces.json")
     to_json(sys, tmp_path)
     sys = System(tmp_path)
-    @test length(get_components(TransmissonInterface, sys)) == 3
+    @test length(get_components(TransmissionInterface, sys)) == 3
 end

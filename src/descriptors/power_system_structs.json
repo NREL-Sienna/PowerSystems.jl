@@ -301,7 +301,7 @@
             "supertype": "AggregationTopology"
         },
         {
-            "struct_name": "TransmissonInterface",
+            "struct_name": "TransmissionInterface",
             "docstring": "A collection of branches that make up an interface or corridor for the transfer of power.",
             "fields": [
                 {
@@ -309,6 +309,11 @@
                     "name": "name",
                     "exclude_setter": true,
                     "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
                 },
                 {
                     "name": "active_power_flow_limits",
