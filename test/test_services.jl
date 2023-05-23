@@ -260,7 +260,7 @@ end
         end
     end
 
-    @test 13 == actual_count
+    @test 14 == actual_count
 end
 
 @testset "Test AGC Device and Regulation Services" begin
@@ -429,4 +429,34 @@ end
     for device in devices
         @test length(get_services(device)) == 0
     end
+end
+
+@testset "Test TransmissionInterface" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    lines = get_components(Line, sys)
+    xfr = get_components(TapTransformer, sys)
+    hvdc = collect(get_components(HVDCLine, sys))
+    some_lines = collect(lines)[1:2]
+    other_lines_and_hvdc = vcat(collect(lines)[10:14], hvdc)
+    lines_and_transformers = [some_lines; collect(xfr)[1:2]]
+
+    interface1 = TransmissionInterface("foo1", true, (min = -10.0, max = 10.0))
+    interface2 = TransmissionInterface("foo2", true, (min = -10.0, max = 10.0))
+    interface3 = TransmissionInterface("foo3", true, (min = -10.0, max = 10.0))
+    add_service!(sys, interface1, some_lines)
+    add_service!(sys, interface2, other_lines_and_hvdc)
+    add_service!(sys, interface3, lines_and_transformers)
+    for br in get_contributing_devices(sys, interface1)
+        @test br ∈ some_lines
+    end
+    for br in get_contributing_devices(sys, interface2)
+        @test br ∈ other_lines_and_hvdc
+    end
+    for br in get_contributing_devices(sys, interface3)
+        @test br ∈ lines_and_transformers
+    end
+    tmp_path = joinpath(mktempdir(), "sys_with_interfaces.json")
+    to_json(sys, tmp_path)
+    sys = System(tmp_path)
+    @test length(get_components(TransmissionInterface, sys)) == 3
 end

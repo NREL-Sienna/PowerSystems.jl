@@ -206,6 +206,7 @@ export Transfer
 export StaticReserveGroup
 export StaticReserveNonSpinning
 export VariableReserveNonSpinning
+export TransmissionInterface
 
 export AngleUnits
 export BusTypes
