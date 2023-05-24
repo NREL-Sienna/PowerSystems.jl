@@ -4199,6 +4199,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "requirement",
+                    "comment": "the static value of required reserves in system p.u.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
                     "name": "sustained_time",
                     "comment": "the time in secounds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
@@ -4207,6 +4219,7 @@
                         "min": 0,
                         "max": null
                     },
+                    "default": "3600.0",
                     "validation_action": "error"
                 },
                 {
@@ -4220,18 +4233,6 @@
                     },
                     "default": "1.0",
                     "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the static value of required reserves in system p.u.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4276,6 +4277,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "requirement",
+                    "comment": "the static value of required reserves in system p.u.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
                     "name": "sustained_time",
                     "comment": "the time in secounds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
@@ -4284,6 +4297,7 @@
                         "min": 0,
                         "max": null
                     },
+                    "default": "3600.0",
                     "validation_action": "error"
                 },
                 {
@@ -4297,18 +4311,6 @@
                     },
                     "default": "1.0",
                     "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the static value of required reserves in system p.u.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4485,6 +4487,12 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "requirement",
+                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
                     "name": "sustained_time",
                     "comment": "the time in secounds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
@@ -4493,6 +4501,7 @@
                         "min": 0,
                         "max": null
                     },
+                    "default": "3600.0",
                     "validation_action": "error"
                 },
                 {
@@ -4506,12 +4515,6 @@
                     },
                     "default": "1.0",
                     "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
                 },
                 {
                     "name": "ext",
@@ -4563,6 +4566,13 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "requirement",
+                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
                     "name": "sustained_time",
                     "comment": "the time in secounds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
@@ -4571,6 +4581,7 @@
                         "min": 0,
                         "max": null
                     },
+                    "default": "14400.0",
                     "validation_action": "error"
                 },
                 {
@@ -4584,13 +4595,6 @@
                     },
                     "default": "1.0",
                     "validation_action": "error"
-                },
-                {
-                    "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true
                 },
                 {
                     "name": "ext",

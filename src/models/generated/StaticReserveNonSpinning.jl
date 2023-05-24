@@ -9,9 +9,9 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         time_frame::Float64
+        requirement::Float64
         sustained_time::Float64
         max_participation_factor::Float64
-        requirement::Float64
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -22,9 +22,9 @@ Data Structure for a non-spinning reserve product for system simulations.
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
+- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
 - `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
-- `requirement::Float64`: the static value of required reserves in system p.u., validation range: `(0, nothing)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -33,23 +33,23 @@ mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
+    "the static value of required reserves in system p.u."
+    requirement::Float64
     "the time in secounds reserve contribution must sustained at a specified level"
     sustained_time::Float64
     "the maximum limit of reserve contribution per device"
     max_participation_factor::Float64
-    "the static value of required reserves in system p.u."
-    requirement::Float64
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserveNonSpinning(name, available, time_frame, sustained_time, max_participation_factor=1.0, requirement, ext=Dict{String, Any}(), )
-    StaticReserveNonSpinning(name, available, time_frame, sustained_time, max_participation_factor, requirement, ext, InfrastructureSystemsInternal(), )
+function StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), )
+    StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_participation_factor, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveNonSpinning(; name, available, time_frame, sustained_time, max_participation_factor=1.0, requirement, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    StaticReserveNonSpinning(name, available, time_frame, sustained_time, max_participation_factor, requirement, ext, internal, )
+function StaticReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_participation_factor, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -58,9 +58,9 @@ function StaticReserveNonSpinning(::Nothing)
         name="init",
         available=false,
         time_frame=0.0,
+        requirement=0.0,
         sustained_time=0.0,
         max_participation_factor=1.0,
-        requirement=0.0,
         ext=Dict{String, Any}(),
     )
 end
@@ -71,12 +71,12 @@ get_name(value::StaticReserveNonSpinning) = value.name
 get_available(value::StaticReserveNonSpinning) = value.available
 """Get [`StaticReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::StaticReserveNonSpinning) = value.time_frame
+"""Get [`StaticReserveNonSpinning`](@ref) `requirement`."""
+get_requirement(value::StaticReserveNonSpinning) = get_value(value, value.requirement)
 """Get [`StaticReserveNonSpinning`](@ref) `sustained_time`."""
 get_sustained_time(value::StaticReserveNonSpinning) = value.sustained_time
 """Get [`StaticReserveNonSpinning`](@ref) `max_participation_factor`."""
 get_max_participation_factor(value::StaticReserveNonSpinning) = value.max_participation_factor
-"""Get [`StaticReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::StaticReserveNonSpinning) = get_value(value, value.requirement)
 """Get [`StaticReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::StaticReserveNonSpinning) = value.ext
 """Get [`StaticReserveNonSpinning`](@ref) `internal`."""
@@ -86,11 +86,11 @@ get_internal(value::StaticReserveNonSpinning) = value.internal
 set_available!(value::StaticReserveNonSpinning, val) = value.available = val
 """Set [`StaticReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::StaticReserveNonSpinning, val) = value.time_frame = val
+"""Set [`StaticReserveNonSpinning`](@ref) `requirement`."""
+set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = set_value(value, val)
 """Set [`StaticReserveNonSpinning`](@ref) `sustained_time`."""
 set_sustained_time!(value::StaticReserveNonSpinning, val) = value.sustained_time = val
 """Set [`StaticReserveNonSpinning`](@ref) `max_participation_factor`."""
 set_max_participation_factor!(value::StaticReserveNonSpinning, val) = value.max_participation_factor = val
-"""Set [`StaticReserveNonSpinning`](@ref) `requirement`."""
-set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = set_value(value, val)
 """Set [`StaticReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
