@@ -4189,7 +4189,7 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the relative saturation time_frame",
+                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4209,6 +4209,30 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true
+                },
+                {
+                    "name": "sustained_time",
+                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "3600.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "comment": "the maximum limit of reserve contribution per device",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "1.0",
+                    "validation_action": "error"
                 },
                 {
                     "name": "ext",
@@ -4243,7 +4267,7 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the relative saturation time_frame",
+                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4263,6 +4287,30 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true
+                },
+                {
+                    "name": "sustained_time",
+                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "3600.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "comment": "the maximum limit of reserve contribution per device",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "1.0",
+                    "validation_action": "error"
                 },
                 {
                     "name": "ext",
@@ -4356,13 +4404,37 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the relative saturation time_frame",
+                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "sustained_time",
+                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "3600.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "comment": "the maximum limit of reserve contribution per device",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "1.0",
                     "validation_action": "error"
                 },
                 {
@@ -4406,21 +4478,44 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the relative saturation time_frame",
+                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error",
-                    "needs_conversion": true
+                    "validation_action": "error"
                 },
                 {
                     "name": "requirement",
                     "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
                     "null_value": "0.0",
                     "data_type": "Float64"
+                },
+                {
+                    "name": "sustained_time",
+                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "3600.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "comment": "the maximum limit of reserve contribution per device",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "1.0",
+                    "validation_action": "error"
                 },
                 {
                     "name": "ext",
@@ -4462,7 +4557,7 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the relative saturation time_frame",
+                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4477,6 +4572,30 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "sustained_time",
+                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "14400.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "max_participation_factor",
+                    "comment": "the maximum limit of reserve contribution per device",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "1.0",
+                    "validation_action": "error"
                 },
                 {
                     "name": "ext",

@@ -530,6 +530,7 @@ export get_max_current_active_power
 export get_max_current_reactive_power
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
+export get_max_participation_factor
 export get_max_reactive_power
 export get_must_run
 export get_n_states
@@ -590,6 +591,7 @@ export get_states_types
 export get_status
 export get_storage_capacity
 export get_storage_target
+export get_sustained_time
 export get_switch
 export get_tF_delay
 export get_tV_delay
@@ -1043,6 +1045,7 @@ export set_max_current_active_power!
 export set_max_current_reactive_power!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
+export set_max_participation_factor!
 export set_max_reactive_power!
 export set_must_run!
 export set_n_states!
@@ -1103,6 +1106,7 @@ export set_states_types!
 export set_status!
 export set_storage_capacity!
 export set_storage_target!
+export set_sustained_time!
 export set_switch!
 export set_tF_delay!
 export set_tV_delay!
