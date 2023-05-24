@@ -48,11 +48,11 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
+function ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
     ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ReserveDemandCurve{T}(; variable, name, available, time_frame, sustained_time, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+function ReserveDemandCurve{T}(; variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
     ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, ext, time_series_container, internal, )
 end
 
