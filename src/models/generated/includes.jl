@@ -78,6 +78,7 @@ include("PSSSimple.jl")
 include("IEEEST.jl")
 include("STAB1.jl")
 include("PSS2A.jl")
+include("PSS2C.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -258,6 +259,8 @@ export get_N_rtf
 export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
+export get_PSSOFF
+export get_PSSON
 export get_PSS_flags
 export get_P_lim
 export get_P_lim_inner
@@ -294,6 +297,10 @@ export get_Se
 export get_Spar
 export get_T
 export get_T1
+export get_T10
+export get_T11
+export get_T12
+export get_T13
 export get_T1T3
 export get_T2
 export get_T2T4
@@ -328,6 +335,7 @@ export get_Tb
 export get_Tb1
 export get_Tc
 export get_Tc1
+export get_Tcomp
 export get_Td0_p
 export get_Td0_pp
 export get_Td_gov
@@ -389,6 +397,8 @@ export get_Vo_lim
 export get_Vpr
 export get_Vr_lim
 export get_Vrfrac
+export get_Vs1_lim
+export get_Vs2_lim
 export get_Vst_lim
 export get_Vtrip_Flag
 export get_Wf_nl
@@ -403,6 +413,7 @@ export get_X_rr
 export get_X_source
 export get_X_ss
 export get_X_th
+export get_Xcomp
 export get_Xd
 export get_Xd_p
 export get_Xd_pp
@@ -475,6 +486,7 @@ export get_fs
 export get_fuel
 export get_fuel_flag
 export get_gate_position_limits
+export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
@@ -773,6 +785,8 @@ export set_N_rtf!
 export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
+export set_PSSOFF!
+export set_PSSON!
 export set_PSS_flags!
 export set_P_lim!
 export set_P_lim_inner!
@@ -809,6 +823,10 @@ export set_Se!
 export set_Spar!
 export set_T!
 export set_T1!
+export set_T10!
+export set_T11!
+export set_T12!
+export set_T13!
 export set_T1T3!
 export set_T2!
 export set_T2T4!
@@ -843,6 +861,7 @@ export set_Tb!
 export set_Tb1!
 export set_Tc!
 export set_Tc1!
+export set_Tcomp!
 export set_Td0_p!
 export set_Td0_pp!
 export set_Td_gov!
@@ -904,6 +923,8 @@ export set_Vo_lim!
 export set_Vpr!
 export set_Vr_lim!
 export set_Vrfrac!
+export set_Vs1_lim!
+export set_Vs2_lim!
 export set_Vst_lim!
 export set_Vtrip_Flag!
 export set_Wf_nl!
@@ -918,6 +939,7 @@ export set_X_rr!
 export set_X_source!
 export set_X_ss!
 export set_X_th!
+export set_Xcomp!
 export set_Xd!
 export set_Xd_p!
 export set_Xd_pp!
@@ -990,6 +1012,7 @@ export set_fs!
 export set_fuel!
 export set_fuel_flag!
 export set_gate_position_limits!
+export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
