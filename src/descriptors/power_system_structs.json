@@ -322,6 +322,13 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "violation_penalty",
+                    "null_value": "0.0",
+                    "comment": "Penalty for violating the flow limits in the interface",
+                    "data_type": "Float64",
+                    "default": "INFINITE_COST"
+                },
+                {
                     "name": "direction_mapping",
                     "comment": "Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface",
                     "null_value": "Dict{String, Int}()",
