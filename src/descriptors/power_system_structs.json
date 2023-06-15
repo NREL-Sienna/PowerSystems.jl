@@ -10380,7 +10380,7 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": "eps()",
                         "max": null
                     },
                     "validation_action": "warn"
@@ -10413,7 +10413,7 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": "eps()",
                         "max": null
                     },
                     "validation_action": "warn"
@@ -10479,7 +10479,7 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": "eps()",
                         "max": null
                     },
                     "validation_action": "warn"

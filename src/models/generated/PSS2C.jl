@@ -55,16 +55,16 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `remote_bus_control_2::Int`: Second Input Remote Bus number for control.
 - `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
 - `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
