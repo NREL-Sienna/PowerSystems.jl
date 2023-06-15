@@ -51,7 +51,7 @@ IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 - `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`, action if invalid: `warn`
 - `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
