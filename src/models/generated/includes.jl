@@ -259,8 +259,7 @@ export get_N_rtf
 export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
-export get_PSSOFF
-export get_PSSON
+export get_PSS_Hysteresis_param
 export get_PSS_flags
 export get_P_lim
 export get_P_lim_inner
@@ -785,8 +784,7 @@ export set_N_rtf!
 export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
-export set_PSSOFF!
-export set_PSSON!
+export set_PSS_Hysteresis_param!
 export set_PSS_flags!
 export set_P_lim!
 export set_P_lim_inner!

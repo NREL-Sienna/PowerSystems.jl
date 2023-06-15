@@ -10602,21 +10602,10 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "PSSON",
-                    "comment": "Parameter for PSS output logic",
-                    "null_value": 0,
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "PSSOFF",
-                    "comment": "Parameter for PSS output logic",
-                    "null_value": 0,
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
+                    "name": "PSS_Hysteresis_param",
+                    "comment": "PSS output hysteresis parameters `(PSSOFF, PSSON)`",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
                 },
                 {
                     "name": "Xcomp",

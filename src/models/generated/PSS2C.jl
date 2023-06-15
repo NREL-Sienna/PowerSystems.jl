@@ -34,8 +34,7 @@ This file is auto-generated. Do not edit.
         Vst_lim::Tuple{Float64, Float64}
         T12::Float64
         T13::Float64
-        PSSON::Float64
-        PSSOFF::Float64
+        PSS_Hysteresis_param::Tuple{Float64, Float64}
         Xcomp::Float64
         Tcomp::Float64
         hysteresis_binary_logic::Int
@@ -77,8 +76,7 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
 - `T12::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T13::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `PSSON::Float64`: Parameter for PSS output logic
-- `PSSOFF::Float64`: Parameter for PSS output logic, validation range: `(0, nothing)`, action if invalid: `warn`
+- `PSS_Hysteresis_param::Tuple{Float64, Float64}`: PSS output hysteresis parameters `(PSSOFF, PSSON)`
 - `Xcomp::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
 - `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `hysteresis_binary_logic::Int`: Hysteresis memory variable
@@ -164,10 +162,8 @@ mutable struct PSS2C <: PSS
     T12::Float64
     "Time constant for fourth lead-lag block"
     T13::Float64
-    "Parameter for PSS output logic"
-    PSSON::Float64
-    "Parameter for PSS output logic"
-    PSSOFF::Float64
+    "PSS output hysteresis parameters `(PSSOFF, PSSON)`"
+    PSS_Hysteresis_param::Tuple{Float64, Float64}
     "Stator Leakage Reactance"
     Xcomp::Float64
     "Time measured with compensated frequency"
@@ -204,12 +200,12 @@ mutable struct PSS2C <: PSS
     internal::InfrastructureSystemsInternal
 end
 
-function PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSSON, PSSOFF, Xcomp, Tcomp, hysteresis_binary_logic=1, ext=Dict{String, Any}(), )
-    PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSSON, PSSOFF, Xcomp, Tcomp, hysteresis_binary_logic, ext, [:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19], 19, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
+function PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSS_Hysteresis_param, Xcomp, Tcomp, hysteresis_binary_logic=1, ext=Dict{String, Any}(), )
+    PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSS_Hysteresis_param, Xcomp, Tcomp, hysteresis_binary_logic, ext, [:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19], 19, [StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], InfrastructureSystemsInternal(), )
 end
 
-function PSS2C(; input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSSON, PSSOFF, Xcomp, Tcomp, hysteresis_binary_logic=1, ext=Dict{String, Any}(), states=[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19], n_states=19, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
-    PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSSON, PSSOFF, Xcomp, Tcomp, hysteresis_binary_logic, ext, states, n_states, states_types, internal, )
+function PSS2C(; input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSS_Hysteresis_param, Xcomp, Tcomp, hysteresis_binary_logic=1, ext=Dict{String, Any}(), states=[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19], n_states=19, states_types=[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential], internal=InfrastructureSystemsInternal(), )
+    PSS2C(input_code_1, remote_bus_control_1, input_code_2, remote_bus_control_2, M_rtf, N_rtf, Tw1, Tw2, T6, Tw3, Tw4, T7, Ks2, Ks3, T8, T9, Ks1, T1, T2, T3, T4, T10, T11, Vs1_lim, Vs2_lim, Vst_lim, T12, T13, PSS_Hysteresis_param, Xcomp, Tcomp, hysteresis_binary_logic, ext, states, n_states, states_types, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -243,8 +239,7 @@ function PSS2C(::Nothing)
         Vst_lim=(0.0, 0.0),
         T12=0,
         T13=0,
-        PSSON=0,
-        PSSOFF=0,
+        PSS_Hysteresis_param=(0.0, 0.0),
         Xcomp=0,
         Tcomp=0,
         hysteresis_binary_logic=0,
@@ -308,10 +303,8 @@ get_Vst_lim(value::PSS2C) = value.Vst_lim
 get_T12(value::PSS2C) = value.T12
 """Get [`PSS2C`](@ref) `T13`."""
 get_T13(value::PSS2C) = value.T13
-"""Get [`PSS2C`](@ref) `PSSON`."""
-get_PSSON(value::PSS2C) = value.PSSON
-"""Get [`PSS2C`](@ref) `PSSOFF`."""
-get_PSSOFF(value::PSS2C) = value.PSSOFF
+"""Get [`PSS2C`](@ref) `PSS_Hysteresis_param`."""
+get_PSS_Hysteresis_param(value::PSS2C) = value.PSS_Hysteresis_param
 """Get [`PSS2C`](@ref) `Xcomp`."""
 get_Xcomp(value::PSS2C) = value.Xcomp
 """Get [`PSS2C`](@ref) `Tcomp`."""
@@ -385,10 +378,8 @@ set_Vst_lim!(value::PSS2C, val) = value.Vst_lim = val
 set_T12!(value::PSS2C, val) = value.T12 = val
 """Set [`PSS2C`](@ref) `T13`."""
 set_T13!(value::PSS2C, val) = value.T13 = val
-"""Set [`PSS2C`](@ref) `PSSON`."""
-set_PSSON!(value::PSS2C, val) = value.PSSON = val
-"""Set [`PSS2C`](@ref) `PSSOFF`."""
-set_PSSOFF!(value::PSS2C, val) = value.PSSOFF = val
+"""Set [`PSS2C`](@ref) `PSS_Hysteresis_param`."""
+set_PSS_Hysteresis_param!(value::PSS2C, val) = value.PSS_Hysteresis_param = val
 """Set [`PSS2C`](@ref) `Xcomp`."""
 set_Xcomp!(value::PSS2C, val) = value.Xcomp = val
 """Set [`PSS2C`](@ref) `Tcomp`."""
