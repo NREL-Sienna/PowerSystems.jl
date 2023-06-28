@@ -78,6 +78,7 @@ include("PSSSimple.jl")
 include("IEEEST.jl")
 include("STAB1.jl")
 include("PSS2A.jl")
+include("PSS2B.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -294,6 +295,8 @@ export get_Se
 export get_Spar
 export get_T
 export get_T1
+export get_T10
+export get_T11
 export get_T1T3
 export get_T2
 export get_T2T4
@@ -389,6 +392,8 @@ export get_Vo_lim
 export get_Vpr
 export get_Vr_lim
 export get_Vrfrac
+export get_Vs1_lim
+export get_Vs2_lim
 export get_Vst_lim
 export get_Vtrip_Flag
 export get_Wf_nl
@@ -810,6 +815,8 @@ export set_Se!
 export set_Spar!
 export set_T!
 export set_T1!
+export set_T10!
+export set_T11!
 export set_T1T3!
 export set_T2!
 export set_T2T4!
@@ -905,6 +912,8 @@ export set_Vo_lim!
 export set_Vpr!
 export set_Vr_lim!
 export set_Vrfrac!
+export set_Vs1_lim!
+export set_Vs2_lim!
 export set_Vst_lim!
 export set_Vtrip_Flag!
 export set_Wf_nl!
