@@ -10623,6 +10623,363 @@
             "supertype": "PSS"
         },
         {
+            "struct_name": "PSS2C",
+            "docstring": "IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model",
+            "fields": [
+                {
+                    "name": "input_code_1",
+                    "comment": "First Input Code for stabilizer",
+                    "null_value": 1,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 1,
+                        "max": 7
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "remote_bus_control_1",
+                    "comment": "First Input Remote Bus number for control.",
+                    "null_value": 0,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "input_code_2",
+                    "comment": "Second Input Code for stabilizer",
+                    "null_value": 1,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 1,
+                        "max": 6
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "remote_bus_control_2",
+                    "comment": "Second Input Remote Bus number for control.",
+                    "null_value": 0,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "M_rtf",
+                    "comment": "M parameter for ramp tracking filter",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 8
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "N_rtf",
+                    "comment": "N parameter for ramp tracking filter",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 8
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Tw1",
+                    "comment": "Time constant for first washout filter for first input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tw2",
+                    "comment": "Time constant for second washout filter for first input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T6",
+                    "comment": "Time constant for low-pass filter for first input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tw3",
+                    "comment": "Time constant for first washout filter for second input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tw4",
+                    "comment": "Time constant for second washout filter for second input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T7",
+                    "comment": "Time constant for low-pass filter for second input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ks2",
+                    "comment": "Gain for low-pass filter for second input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ks3",
+                    "comment": "Gain for second input",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T8",
+                    "comment": "Time constant for ramp tracking filter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T9",
+                    "comment": "Time constant for ramp tracking filter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ks1",
+                    "comment": "Gain before lead-lag blocks",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T1",
+                    "comment": "Time constant for first lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T2",
+                    "comment": "Time constant for first lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T3",
+                    "comment": "Time constant for second lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T4",
+                    "comment": "Time constant for second lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T10",
+                    "comment": "Time constant for third lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T11",
+                    "comment": "Time constant for third lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vs1_lim",
+                    "comment": "First input limits `(Vs1_min, Vs1_max)`",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Vs2_lim",
+                    "comment": "Second input limits `(Vs2_min, Vs2_max)`",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Vst_lim",
+                    "comment": "PSS output limits `(Vst_min, Vst_max)`",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "T12",
+                    "comment": "Time constant for fourth lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T13",
+                    "comment": "Time constant for fourth lead-lag block",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "PSS_Hysteresis_param",
+                    "comment": "PSS output hysteresis parameters `(PSSOFF, PSSON)`",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Xcomp",
+                    "comment": "Stator Leakage Reactance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Tcomp",
+                    "comment": "Time measured with compensated frequency",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "hysteresis_binary_logic",
+                    "comment": "Hysteresis memory variable",
+                    "null_value": 0,
+                    "default": "1",
+                    "data_type": "Int"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag, \n\tx_p17: 3rd lead-lag, \n\tx_p18: 4th lead-lag, \n\tx_p19: washout block for compensated frequency,",
+                    "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "IEEEST has 19 states",
+                    "internal_default": 19,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "IEEEST has 19 differential states",
+                    "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "PSS"
+        },
+        {
             "struct_name": "SingleMass",
             "docstring": "Parameters of single mass shaft model. Typically represents the rotor mass.",
             "fields": [
