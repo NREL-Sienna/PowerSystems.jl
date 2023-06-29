@@ -79,6 +79,7 @@ include("IEEEST.jl")
 include("STAB1.jl")
 include("PSS2A.jl")
 include("PSS2C.jl")
+include("PSS2B.jl")
 include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
@@ -619,6 +620,7 @@ export get_to_branch_control
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
+export get_violation_penalty
 export get_vl_pnts
 export get_voltage
 export get_voltage_limits
@@ -1144,6 +1146,7 @@ export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
+export set_violation_penalty!
 export set_vl_pnts!
 export set_voltage!
 export set_voltage_limits!
