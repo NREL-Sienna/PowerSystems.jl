@@ -129,6 +129,10 @@ export PSSFixed
 export PSSSimple
 export IEEEST
 export STAB1
+export PSS2A
+export PSS2B
+export PSS2C
+export CSVGN1
 
 #Shaft Exports
 export Shaft
