@@ -740,17 +740,6 @@ function read_switched_shunt!(
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
-    @error "SwitchedShunts parsing from PSS/e v30 files not implemented. Data will be ignored"
-    return
-end
-
-function read_switched_shunt!(
-    sys::System,
-    data::PowerFlowData.SwitchedShunts33,
-    sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
     @info "Reading line data"
     @warn "All switched shunts will be converted to fixed shunts"
 
@@ -858,16 +847,5 @@ function read_dcline!(
     kwargs...,
 )
     @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
-    return
-end
-
-function read_dcline!(
-    sys::System,
-    data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
-    sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
-    @error "MultiTerminalDCLines parsing from PSS/e files v33 not implemented. Data will be ignored"
     return
 end
