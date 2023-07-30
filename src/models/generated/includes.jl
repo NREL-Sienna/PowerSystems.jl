@@ -24,6 +24,7 @@ include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
 include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
+include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -130,6 +131,7 @@ export get_B_shunt
 export get_Be
 export get_Brkpt
 export get_C
+export get_CBase
 export get_D
 export get_DB_h
 export get_DB_l
@@ -161,6 +163,7 @@ export get_H_hp
 export get_H_ip
 export get_H_lim
 export get_H_lp
+export get_I_lim_type
 export get_I_lr
 export get_I_max
 export get_Iflim
@@ -275,6 +278,7 @@ export get_R_source
 export get_R_th
 export get_Recon_Flag
 export get_Ref_Flag
+export get_Rmin
 export get_Rp
 export get_Rrpwr
 export get_Rselect
@@ -367,6 +371,8 @@ export get_Vdip_lim
 export get_Vf
 export get_Vi_lim
 export get_Vm_lim
+export get_Vmax
+export get_Vmin
 export get_Vo_lim
 export get_Vpr
 export get_Vr_lim
@@ -621,6 +627,7 @@ export set_B_shunt!
 export set_Be!
 export set_Brkpt!
 export set_C!
+export set_CBase!
 export set_D!
 export set_DB_h!
 export set_DB_l!
@@ -652,6 +659,7 @@ export set_H_hp!
 export set_H_ip!
 export set_H_lim!
 export set_H_lp!
+export set_I_lim_type!
 export set_I_lr!
 export set_I_max!
 export set_Iflim!
@@ -766,6 +774,7 @@ export set_R_source!
 export set_R_th!
 export set_Recon_Flag!
 export set_Ref_Flag!
+export set_Rmin!
 export set_Rp!
 export set_Rrpwr!
 export set_Rselect!
@@ -858,6 +867,8 @@ export set_Vdip_lim!
 export set_Vf!
 export set_Vi_lim!
 export set_Vm_lim!
+export set_Vmax!
+export set_Vmin!
 export set_Vo_lim!
 export set_Vpr!
 export set_Vr_lim!

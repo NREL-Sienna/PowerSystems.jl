@@ -2415,6 +2415,168 @@
             "supertype": "DynamicInjection"
         },
         {
+            "struct_name": "CSVGN1",
+            "docstring": "Parameters of static shunt compensator: CSVGN1 in PSSE",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "name": "K",
+                    "comment": "Gain in pu",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T1",
+                    "comment": "Time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T2",
+                    "comment": "Time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T3",
+                    "comment": "Time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T4",
+                    "comment": "Time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T5",
+                    "comment": "Time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Rmin",
+                    "comment": "Reactor minimum Mvar",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Vmax",
+                    "comment": "Maximum voltage in pu",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Vmin",
+                    "comment": "Minimum voltage in pu",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "CBase",
+                    "comment": "Capacitor Mvar",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "R_th",
+                    "comment": "Source Thevenin resistance",
+                    "internal_default": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "X_th",
+                    "comment": "Source Thevenin reactance",
+                    "internal_default": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states are:\n\tthy: thyristor,\n\tvr1: regulator output 1,\n\tvr2: regulator output 2",
+                    "internal_default": "[:thy, :vr1, :vr2]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "CSVGN1 has 3 states",
+                    "internal_default": 3,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "DynamicInjection"
+        },
+        {
             "struct_name": "HydroEnergyReservoir",
             "fields": [
                 {
@@ -4000,7 +4162,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4053,7 +4216,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4096,7 +4260,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -4203,7 +4368,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
                     "name": "requirement",
@@ -4264,7 +4430,8 @@
                     "name": "requirement",
                     "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true
                 },
                 {
                     "name": "ext",
@@ -13235,6 +13402,28 @@
                     }
                 },
                 {
+                    "name": "I_lim_type",
+                    "comment": "Set current limiting method: 0.0 - none, 1.0 - instananeous, 2.0 - magnitude",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default":"0.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "I_max",
+                    "comment": "Allowed current.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default":"10.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -13286,6 +13475,28 @@
                     "comment": "Gain to enable feed-forward gain of voltage.",
                     "null_value": 0,
                     "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "I_lim_type",
+                    "comment": "Set current limiting method: 0.0 - none, 1.0 - instananeous, 2.0 - magnitude",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default":"0.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "I_max",
+                    "comment": "Allowed current.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default":"10.0",
                     "valid_range": {
                         "min": 0,
                         "max": null

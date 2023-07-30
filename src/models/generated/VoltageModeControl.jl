@@ -16,6 +16,8 @@ This file is auto-generated. Do not edit.
         kffi::Float64
         ωad::Float64
         kad::Float64
+        I_lim_type::Float64
+        I_max::Float64
         ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
@@ -36,6 +38,8 @@ Electric Power Systems Research 122 (2015) 180–197.
 - `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
+- `I_lim_type::Float64`: Set current limiting method: 0.0 - none, 1.0 - instananeous, 2.0 - magnitude, validation range: `(0, 2)`
+- `I_max::Float64`: Allowed current., validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
@@ -67,6 +71,10 @@ mutable struct VoltageModeControl <: InnerControl
     ωad::Float64
     "active damping gain"
     kad::Float64
+    "Set current limiting method: 0.0 - none, 1.0 - instananeous, 2.0 - magnitude"
+    I_lim_type::Float64
+    "Allowed current."
+    I_max::Float64
     ext::Dict{String, Any}
     "The states of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
@@ -80,12 +88,12 @@ mutable struct VoltageModeControl <: InnerControl
     n_states::Int
 end
 
-function VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), )
-    VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, )
+function VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, I_lim_type=0.0, I_max=10.0, ext=Dict{String, Any}(), )
+    VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, I_lim_type, I_max, ext, [:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], 6, )
 end
 
-function VoltageModeControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext=Dict{String, Any}(), states=[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], n_states=6, )
-    VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, ext, states, n_states, )
+function VoltageModeControl(; kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, I_lim_type=0.0, I_max=10.0, ext=Dict{String, Any}(), states=[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic], n_states=6, )
+    VoltageModeControl(kpv, kiv, kffv, rv, lv, kpc, kic, kffi, ωad, kad, I_lim_type, I_max, ext, states, n_states, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -101,6 +109,8 @@ function VoltageModeControl(::Nothing)
         kffi=0,
         ωad=0,
         kad=0,
+        I_lim_type=0,
+        I_max=0,
         ext=Dict{String, Any}(),
     )
 end
@@ -125,6 +135,10 @@ get_kffi(value::VoltageModeControl) = value.kffi
 get_ωad(value::VoltageModeControl) = value.ωad
 """Get [`VoltageModeControl`](@ref) `kad`."""
 get_kad(value::VoltageModeControl) = value.kad
+"""Get [`VoltageModeControl`](@ref) `I_lim_type`."""
+get_I_lim_type(value::VoltageModeControl) = value.I_lim_type
+"""Get [`VoltageModeControl`](@ref) `I_max`."""
+get_I_max(value::VoltageModeControl) = value.I_max
 """Get [`VoltageModeControl`](@ref) `ext`."""
 get_ext(value::VoltageModeControl) = value.ext
 """Get [`VoltageModeControl`](@ref) `states`."""
@@ -152,5 +166,9 @@ set_kffi!(value::VoltageModeControl, val) = value.kffi = val
 set_ωad!(value::VoltageModeControl, val) = value.ωad = val
 """Set [`VoltageModeControl`](@ref) `kad`."""
 set_kad!(value::VoltageModeControl, val) = value.kad = val
+"""Set [`VoltageModeControl`](@ref) `I_lim_type`."""
+set_I_lim_type!(value::VoltageModeControl, val) = value.I_lim_type = val
+"""Set [`VoltageModeControl`](@ref) `I_max`."""
+set_I_max!(value::VoltageModeControl, val) = value.I_max = val
 """Set [`VoltageModeControl`](@ref) `ext`."""
 set_ext!(value::VoltageModeControl, val) = value.ext = val
