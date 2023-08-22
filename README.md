@@ -43,20 +43,17 @@ code contribution guidelines.
 
 ## Citing PowerSystems.jl
 
-[Paper describing `PowerSystems.jl`](https://www.sciencedirect.com/science/article/pii/S2352711021000765)
+[Paper describing `PowerSystems.jl`](https://arxiv.org/abs/2308.02921)
 
 ```bibtex
-@article{LARA2021100747,
-title = {PowerSystems.jl — A power system data management package for large scale modeling},
-journal = {SoftwareX},
-volume = {15},
-pages = {100747},
-year = {2021},
-issn = {2352-7110},
-doi = {https://doi.org/10.1016/j.softx.2021.100747},
-url = {https://www.sciencedirect.com/science/article/pii/S2352711021000765},
-author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Krishnamurthy and Duncan Callaway},
-keywords = {Power Systems, Julia, Energy},
+@misc{lara2023powersimulationsdynamicsjl,
+      title={PowerSimulationsDynamics.jl -- An Open Source Modeling Package for Modern Power Systems with Inverter-Based Resources}, 
+      author={Jose Daniel Lara and Rodrigo Henriquez-Auba and Matthew Bossart and Duncan S. Callaway and Clayton Barrows},
+      year={2023},
+      eprint={2308.02921},
+      archivePrefix={arXiv},
+      primaryClass={eess.SY}
+}
 ```
 
 ## License
