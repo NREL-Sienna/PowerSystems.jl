@@ -457,6 +457,7 @@ export get_contributing_services
 export get_conversion_factor
 export get_current_active_power
 export get_current_reactive_power
+export get_cycle_limits
 export get_d
 export get_dP_lim
 export get_db
@@ -984,6 +985,7 @@ export set_contributing_services!
 export set_conversion_factor!
 export set_current_active_power!
 export set_current_reactive_power!
+export set_cycle_limits!
 export set_d!
 export set_dP_lim!
 export set_db!

@@ -73,18 +73,21 @@
                     "name": "variable",
                     "comment": "variable cost",
                     "null_value": "VariableCost((0.0, 0.0))",
+                    "default_value": "VariableCost((0.0, 0.0))",
                     "data_type": "VariableCost"
                 },
                 {
                     "name": "fixed",
                     "comment": "fixed cost",
                     "null_value": "0.0",
+                    "default_value": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "start_up",
                     "comment": "start-up cost",
                     "null_value": "0.0",
+                    "default_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -96,6 +99,7 @@
                     "name": "shut_down",
                     "comment": "shut-down cost",
                     "null_value": "0.0",
+                    "default_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -107,6 +111,7 @@
                     "name": "energy_shortage_cost",
                     "comment": "Cost incurred by the model for being short of the energy target.",
                     "null_value": "0.0",
+                    "default_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -118,6 +123,7 @@
                     "name": "energy_surplus_cost",
                     "comment": "Cost incurred by the model for surplus energy stored.",
                     "null_value": "0.0",
+                    "default_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -3968,7 +3974,7 @@
                     "name": "operation_cost",
                     "null_value": "nothing",
                     "default": "nothing",
-                    "data_type": "Union{Nothing, OperationalCost}"
+                    "data_type": "Union{Nothing, StorageManagementCost}"
                 },
                 {
                     "name": "services",
@@ -4131,7 +4137,7 @@
                     "name": "operation_cost",
                     "null_value": "nothing",
                     "default": "nothing",
-                    "data_type": "Union{Nothing, OperationalCost}"
+                    "data_type": "Union{Nothing, StorageManagementCost}"
                 },
                 {
                     "name": "storage_target",
@@ -4139,6 +4145,13 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
+                },
+                {
+                    "name": "cycle_limits",
+                    "comment": "Storage Maximum number of cycles per year",
+                    "null_value": "0",
+                    "data_type": "Int",
+                    "default": "1e4"
                 },
                 {
                     "name": "services",
