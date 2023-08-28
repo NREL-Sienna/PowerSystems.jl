@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         time_frame::Float64
         requirement::Float64
         sustained_time::Float64
+        max_output_fraction::Float64
         max_participation_factor::Float64
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -25,6 +26,7 @@ Data Structure for the procurement products for system simulations.
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
 - `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
+- `max_output_fraction::Float64`: the maximum fraction of the device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
@@ -39,6 +41,8 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     requirement::Float64
     "the time in secounds reserve contribution must sustained at a specified level"
     sustained_time::Float64
+    "the maximum fraction of the device's output that can be assigned to the service"
+    max_output_fraction::Float64
     "the maximum limit of reserve contribution per device"
     max_participation_factor::Float64
     ext::Dict{String, Any}
@@ -48,12 +52,12 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserve{T}(name, available, time_frame, requirement, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
-    VariableReserve{T}(name, available, time_frame, requirement, sustained_time, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
+function VariableReserve{T}(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserve{T}(; name, available, time_frame, requirement, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    VariableReserve{T}(name, available, time_frame, requirement, sustained_time, max_participation_factor, ext, time_series_container, internal, )
+function VariableReserve{T}(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    VariableReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -64,6 +68,7 @@ function VariableReserve{T}(::Nothing) where T <: ReserveDirection
         time_frame=0.0,
         requirement=0.0,
         sustained_time=0.0,
+        max_output_fraction=1.0,
         max_participation_factor=1.0,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
@@ -80,6 +85,8 @@ get_time_frame(value::VariableReserve) = value.time_frame
 get_requirement(value::VariableReserve) = value.requirement
 """Get [`VariableReserve`](@ref) `sustained_time`."""
 get_sustained_time(value::VariableReserve) = value.sustained_time
+"""Get [`VariableReserve`](@ref) `max_output_fraction`."""
+get_max_output_fraction(value::VariableReserve) = value.max_output_fraction
 """Get [`VariableReserve`](@ref) `max_participation_factor`."""
 get_max_participation_factor(value::VariableReserve) = value.max_participation_factor
 """Get [`VariableReserve`](@ref) `ext`."""
@@ -97,6 +104,8 @@ set_time_frame!(value::VariableReserve, val) = value.time_frame = val
 set_requirement!(value::VariableReserve, val) = value.requirement = val
 """Set [`VariableReserve`](@ref) `sustained_time`."""
 set_sustained_time!(value::VariableReserve, val) = value.sustained_time = val
+"""Set [`VariableReserve`](@ref) `max_output_fraction`."""
+set_max_output_fraction!(value::VariableReserve, val) = value.max_output_fraction = val
 """Set [`VariableReserve`](@ref) `max_participation_factor`."""
 set_max_participation_factor!(value::VariableReserve, val) = value.max_participation_factor = val
 """Set [`VariableReserve`](@ref) `ext`."""
