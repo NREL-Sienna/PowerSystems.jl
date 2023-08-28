@@ -542,6 +542,7 @@ export get_max_current_active_power
 export get_max_current_reactive_power
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
+export get_max_output_fraction
 export get_max_participation_factor
 export get_max_reactive_power
 export get_must_run
@@ -1068,6 +1069,7 @@ export set_max_current_active_power!
 export set_max_current_reactive_power!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
+export set_max_output_fraction!
 export set_max_participation_factor!
 export set_max_reactive_power!
 export set_must_run!
