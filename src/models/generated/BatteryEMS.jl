@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         reactive_power_limits::Union{Nothing, MinMax}
         base_power::Float64
-        operation_cost::Union{Nothing, StorageManagementCost}
+        operation_cost::StorageManagementCost
         storage_target::Float64
         cycle_limits::Int
         services::Vector{Service}
@@ -47,7 +47,7 @@ Data structure for a battery compatible with energy management formulations.
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::Union{Nothing, StorageManagementCost}`
+- `operation_cost::StorageManagementCost`
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `cycle_limits::Int`: Storage Maximum number of cycles per year
 - `services::Vector{Service}`: Services that this device contributes to
@@ -75,7 +75,7 @@ mutable struct BatteryEMS <: Storage
     reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit in MVA"
     base_power::Float64
-    operation_cost::Union{Nothing, StorageManagementCost}
+    operation_cost::StorageManagementCost
     "Storage target at the end of simulation as ratio of storage capacity."
     storage_target::Float64
     "Storage Maximum number of cycles per year"
@@ -91,11 +91,11 @@ mutable struct BatteryEMS <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=nothing, storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+function BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
     BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function BatteryEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=nothing, storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+function BatteryEMS(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
     BatteryEMS(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
@@ -116,7 +116,7 @@ function BatteryEMS(::Nothing)
         reactive_power=0.0,
         reactive_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
-        operation_cost=nothing,
+        operation_cost=StorageManagementCost(),
         storage_target=0.0,
         cycle_limits=0,
         services=Device[],

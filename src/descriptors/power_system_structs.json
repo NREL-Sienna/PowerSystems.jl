@@ -73,33 +73,33 @@
                     "name": "variable",
                     "comment": "variable cost",
                     "null_value": "VariableCost((0.0, 0.0))",
-                    "default_value": "VariableCost((0.0, 0.0))",
-                    "data_type": "VariableCost"
+                    "data_type": "VariableCost",
+                    "default": "VariableCost((0.0, 0.0))"
                 },
                 {
                     "name": "fixed",
                     "comment": "fixed cost",
                     "null_value": "0.0",
-                    "default_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "default": "0.0"
                 },
                 {
                     "name": "start_up",
                     "comment": "start-up cost",
                     "null_value": "0.0",
-                    "default_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "default": "0.0"
                 },
                 {
                     "name": "shut_down",
                     "comment": "shut-down cost",
                     "null_value": "0.0",
-                    "default_value": "0.0",
+                    "default": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -111,7 +111,7 @@
                     "name": "energy_shortage_cost",
                     "comment": "Cost incurred by the model for being short of the energy target.",
                     "null_value": "0.0",
-                    "default_value": "0.0",
+                    "default": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -123,7 +123,7 @@
                     "name": "energy_surplus_cost",
                     "comment": "Cost incurred by the model for surplus energy stored.",
                     "null_value": "0.0",
-                    "default_value": "0.0",
+                    "default": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -4135,9 +4135,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "nothing",
-                    "default": "nothing",
-                    "data_type": "Union{Nothing, StorageManagementCost}"
+                    "null_value": "StorageManagementCost()",
+                    "data_type": "StorageManagementCost",
+                    "default": "StorageManagementCost()"
                 },
                 {
                     "name": "storage_target",
