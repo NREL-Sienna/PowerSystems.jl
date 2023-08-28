@@ -3972,9 +3972,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "nothing",
-                    "default": "nothing",
-                    "data_type": "Union{Nothing, StorageManagementCost}"
+                    "null_value": "StorageManagementCost()",
+                    "default": "StorageManagementCost()",
+                    "data_type": "StorageManagementCost"
                 },
                 {
                     "name": "services",
