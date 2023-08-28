@@ -12,7 +12,6 @@ This file is auto-generated. Do not edit.
         requirement::Float64
         sustained_time::Float64
         max_output_fraction::Float64
-        max_output_fraction::Float64
         max_participation_factor::Float64
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -27,7 +26,6 @@ Data Structure for the procurement products for system simulations.
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
 - `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_output_fraction::Float64`: the maximum fraction of the device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_output_fraction::Float64`: the maximum fraction of the device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
@@ -45,8 +43,6 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     sustained_time::Float64
     "the maximum fraction of the device's output that can be assigned to the service"
     max_output_fraction::Float64
-    "the maximum fraction of the device's output that can be assigned to the service"
-    max_output_fraction::Float64
     "the maximum limit of reserve contribution per device"
     max_participation_factor::Float64
     ext::Dict{String, Any}
@@ -56,12 +52,12 @@ mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_output_fraction, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
+function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_output_fraction, max_participation_factor, ext, time_series_container, internal, )
+function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -72,7 +68,6 @@ function VariableReserveNonSpinning(::Nothing)
         time_frame=0.0,
         requirement=0.0,
         sustained_time=0.0,
-        max_output_fraction=1.0,
         max_output_fraction=1.0,
         max_participation_factor=1.0,
         ext=Dict{String, Any}(),
@@ -92,8 +87,6 @@ get_requirement(value::VariableReserveNonSpinning) = get_value(value, value.requ
 get_sustained_time(value::VariableReserveNonSpinning) = value.sustained_time
 """Get [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""
 get_max_output_fraction(value::VariableReserveNonSpinning) = value.max_output_fraction
-"""Get [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""
-get_max_output_fraction(value::VariableReserveNonSpinning) = value.max_output_fraction
 """Get [`VariableReserveNonSpinning`](@ref) `max_participation_factor`."""
 get_max_participation_factor(value::VariableReserveNonSpinning) = value.max_participation_factor
 """Get [`VariableReserveNonSpinning`](@ref) `ext`."""
@@ -111,8 +104,6 @@ set_time_frame!(value::VariableReserveNonSpinning, val) = value.time_frame = val
 set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = set_value(value, val)
 """Set [`VariableReserveNonSpinning`](@ref) `sustained_time`."""
 set_sustained_time!(value::VariableReserveNonSpinning, val) = value.sustained_time = val
-"""Set [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""
-set_max_output_fraction!(value::VariableReserveNonSpinning, val) = value.max_output_fraction = val
 """Set [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""
 set_max_output_fraction!(value::VariableReserveNonSpinning, val) = value.max_output_fraction = val
 """Set [`VariableReserveNonSpinning`](@ref) `max_participation_factor`."""

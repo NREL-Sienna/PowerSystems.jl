@@ -4641,18 +4641,6 @@
                     "validation_action": "error"
                 },
                 {
-                    "name": "max_output_fraction",
-                    "comment": "the maximum fraction of the device's output that can be assigned to the service",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "default": "1.0",
-                    "validation_action": "error"
-                },
-                {
                     "name": "max_participation_factor",
                     "comment": "the maximum limit of reserve contribution per device",
                     "null_value": "1.0",
