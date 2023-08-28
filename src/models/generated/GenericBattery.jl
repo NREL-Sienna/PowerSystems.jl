@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         reactive_power_limits::Union{Nothing, MinMax}
         base_power::Float64
-        operation_cost::StorageManagementCost
+        operation_cost::Union{StorageManagementCost, MarketBidCost}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -45,7 +45,7 @@ Data structure for a generic battery
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::StorageManagementCost`
+- `operation_cost::Union{StorageManagementCost, MarketBidCost}`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -71,7 +71,7 @@ mutable struct GenericBattery <: Storage
     reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit in MVA"
     base_power::Float64
-    operation_cost::StorageManagementCost
+    operation_cost::Union{StorageManagementCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"

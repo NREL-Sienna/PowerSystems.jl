@@ -3974,7 +3974,7 @@
                     "name": "operation_cost",
                     "null_value": "StorageManagementCost()",
                     "default": "StorageManagementCost()",
-                    "data_type": "StorageManagementCost"
+                    "data_type": "Union{StorageManagementCost, MarketBidCost}"
                 },
                 {
                     "name": "services",
@@ -4137,7 +4137,7 @@
                     "name": "operation_cost",
                     "null_value": "StorageManagementCost()",
                     "data_type": "StorageManagementCost",
-                    "default": "StorageManagementCost()"
+                    "default": "Union{StorageManagementCost, MarketBidCost}"
                 },
                 {
                     "name": "storage_target",
