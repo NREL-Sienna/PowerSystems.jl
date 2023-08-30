@@ -175,3 +175,48 @@ function InterruptibleLoad(;
         internal,
     )
 end
+
+function GenericBattery(
+    name::String,
+    available::Bool,
+    bus,
+    prime_mover,
+    initial_energy,
+    state_of_charge_limits,
+    rating,
+    active_power,
+    input_active_power_limits,
+    output_active_power_limits,
+    efficiency,
+    reactive_power,
+    reactive_power_limits,
+    base_power,
+    operation_cost::Nothing,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+)
+    GenericBattery(
+        name,
+        available,
+        bus,
+        prime_mover,
+        initial_energy,
+        state_of_charge_limits,
+        rating,
+        active_power,
+        input_active_power_limits,
+        output_active_power_limits,
+        efficiency,
+        reactive_power,
+        reactive_power_limits,
+        base_power,
+        StorageManagementCost(),
+        services,
+        dynamic_injector,
+        ext,
+        time_series_container,
+        InfrastructureSystemsInternal(),
+    )
+end
