@@ -176,7 +176,7 @@ function InterruptibleLoad(;
     )
 end
 
-function GenericBattery(;
+function GenericBattery(
     name::AbstractString,
     available::Bool,
     bus,
@@ -191,7 +191,7 @@ function GenericBattery(;
     reactive_power,
     reactive_power_limits,
     base_power,
-    operation_cost::Nothing = nothing,
+    ::Nothing,
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
