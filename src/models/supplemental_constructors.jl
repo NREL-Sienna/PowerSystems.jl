@@ -196,6 +196,7 @@ function GenericBattery(;
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
     time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+    internal = InfrastructureSystemsInternal(),
 )
     GenericBattery(
         name,
@@ -217,6 +218,6 @@ function GenericBattery(;
         dynamic_injector,
         ext,
         time_series_container,
-        InfrastructureSystemsInternal(),
+        internal
     )
 end
