@@ -1334,7 +1334,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        operation_cost = nothing
+        operation_cost = nothing,
     )
 
     return battery

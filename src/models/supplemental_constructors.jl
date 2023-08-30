@@ -218,6 +218,6 @@ function GenericBattery(
         dynamic_injector,
         ext,
         time_series_container,
-        internal
+        internal,
     )
 end
