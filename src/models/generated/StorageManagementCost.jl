@@ -40,7 +40,7 @@ mutable struct StorageManagementCost <: OperationalCost
 end
 
 
-function StorageManagementCost(; variable, fixed, start_up, shut_down, energy_shortage_cost, energy_surplus_cost, )
+function StorageManagementCost(; variable=VariableCost((0.0, 0.0)), fixed=0.0, start_up=0.0, shut_down=0.0, energy_shortage_cost=0.0, energy_surplus_cost=0.0, )
     StorageManagementCost(variable, fixed, start_up, shut_down, energy_shortage_cost, energy_surplus_cost, )
 end
 
