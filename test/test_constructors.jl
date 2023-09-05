@@ -62,7 +62,7 @@ end
     @test tLine isa PowerSystems.Component
     tMonitoredLine = MonitoredLine(nothing)
     @test tMonitoredLine isa PowerSystems.Component
-    tTwoTerminalTwoTerminalHVDCLine = TwoTerminalHVDCLine(nothing)
+    tTwoTerminalHVDCLine = TwoTerminalHVDCLine(nothing)
     @test tTwoTerminalHVDCLine isa PowerSystems.Component
     tTwoTerminalVSCDCLine = TwoTerminalVSCDCLine(nothing)
     @test tTwoTerminalVSCDCLine isa PowerSystems.Component
