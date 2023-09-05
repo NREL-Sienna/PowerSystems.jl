@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         ramp_limits::Union{Nothing, UpDown}
@@ -35,7 +35,7 @@ This file is auto-generated. Do not edit.
 - `active_power::Float64`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
@@ -57,7 +57,7 @@ mutable struct HydroDispatch <: HydroGen
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     active_power_limits::MinMax
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
@@ -79,12 +79,12 @@ mutable struct HydroDispatch <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -96,7 +96,7 @@ function HydroDispatch(::Nothing)
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,
-        prime_mover=PrimeMovers.HY,
+        prime_mover_type=PrimeMovers.HY,
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
@@ -122,8 +122,8 @@ get_active_power(value::HydroDispatch) = get_value(value, value.active_power)
 get_reactive_power(value::HydroDispatch) = get_value(value, value.reactive_power)
 """Get [`HydroDispatch`](@ref) `rating`."""
 get_rating(value::HydroDispatch) = get_value(value, value.rating)
-"""Get [`HydroDispatch`](@ref) `prime_mover`."""
-get_prime_mover(value::HydroDispatch) = value.prime_mover
+"""Get [`HydroDispatch`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::HydroDispatch) = value.prime_mover_type
 """Get [`HydroDispatch`](@ref) `active_power_limits`."""
 get_active_power_limits(value::HydroDispatch) = get_value(value, value.active_power_limits)
 """Get [`HydroDispatch`](@ref) `reactive_power_limits`."""
@@ -157,8 +157,8 @@ set_active_power!(value::HydroDispatch, val) = value.active_power = set_value(va
 set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `rating`."""
 set_rating!(value::HydroDispatch, val) = value.rating = set_value(value, val)
-"""Set [`HydroDispatch`](@ref) `prime_mover`."""
-set_prime_mover!(value::HydroDispatch, val) = value.prime_mover = val
+"""Set [`HydroDispatch`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::HydroDispatch, val) = value.prime_mover_type = val
 """Set [`HydroDispatch`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = set_value(value, val)
 """Set [`HydroDispatch`](@ref) `reactive_power_limits`."""

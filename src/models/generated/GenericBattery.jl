@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::ACBus
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         initial_energy::Float64
         state_of_charge_limits::MinMax
         rating::Float64
@@ -34,7 +34,7 @@ Data structure for a generic battery
 - `name::String`
 - `available::Bool`
 - `bus::ACBus`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `rating::Float64`
@@ -57,7 +57,7 @@ mutable struct GenericBattery <: Storage
     available::Bool
     bus::ACBus
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     "State of Charge of the Battery p.u.-hr"
     initial_energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
@@ -83,12 +83,12 @@ mutable struct GenericBattery <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    GenericBattery(name, available, bus, prime_mover, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
+function GenericBattery(; name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -97,7 +97,7 @@ function GenericBattery(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        prime_mover=PrimeMovers.BA,
+        prime_mover_type=PrimeMovers.BA,
         initial_energy=0.0,
         state_of_charge_limits=(min=0.0, max=0.0),
         rating=0.0,
@@ -122,8 +122,8 @@ get_name(value::GenericBattery) = value.name
 get_available(value::GenericBattery) = value.available
 """Get [`GenericBattery`](@ref) `bus`."""
 get_bus(value::GenericBattery) = value.bus
-"""Get [`GenericBattery`](@ref) `prime_mover`."""
-get_prime_mover(value::GenericBattery) = value.prime_mover
+"""Get [`GenericBattery`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::GenericBattery) = value.prime_mover_type
 """Get [`GenericBattery`](@ref) `initial_energy`."""
 get_initial_energy(value::GenericBattery) = get_value(value, value.initial_energy)
 """Get [`GenericBattery`](@ref) `state_of_charge_limits`."""
@@ -161,8 +161,8 @@ get_internal(value::GenericBattery) = value.internal
 set_available!(value::GenericBattery, val) = value.available = val
 """Set [`GenericBattery`](@ref) `bus`."""
 set_bus!(value::GenericBattery, val) = value.bus = val
-"""Set [`GenericBattery`](@ref) `prime_mover`."""
-set_prime_mover!(value::GenericBattery, val) = value.prime_mover = val
+"""Set [`GenericBattery`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::GenericBattery, val) = value.prime_mover_type = val
 """Set [`GenericBattery`](@ref) `initial_energy`."""
 set_initial_energy!(value::GenericBattery, val) = value.initial_energy = set_value(value, val)
 """Set [`GenericBattery`](@ref) `state_of_charge_limits`."""

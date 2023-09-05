@@ -8,6 +8,8 @@ include("LoadZone.jl")
 include("TransmissionInterface.jl")
 include("ACBus.jl")
 include("DCBus.jl")
+include("DCBus.jl")
+include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
 include("MonitoredLine.jl")
@@ -16,6 +18,8 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("TwoTerminalHVDCLine.jl")
 include("TwoTerminalVSCDCLine.jl")
+include("TModelHVDCLine.jl")
+include("TModelHVDCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
@@ -27,8 +31,8 @@ include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
 include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
-include("CSVGN1.jl")
 include("InterconnectingConverter.jl")
+include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
@@ -567,7 +571,7 @@ export get_phase_angle_limits
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
-export get_prime_mover
+export get_prime_mover_type
 export get_pump_efficiency
 export get_q_nl
 export get_r
@@ -1098,7 +1102,7 @@ export set_phase_angle_limits!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
-export set_prime_mover!
+export set_prime_mover_type!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!

@@ -13,7 +13,8 @@ This file is auto-generated. Do not edit.
         r::Float64
         l::Float64
         c::Float64
-        rate::Float64
+        active_power_limits_from::MinMax
+        active_power_limits_to::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -29,7 +30,8 @@ a HVDC T-Model DC line.
 - `r::Float64`: Series Resistance system per-unit value
 - `l::Float64`: Series Inductance system per-unit value
 - `c::Float64`: Shunt capacitance system per-unit value
-- `rate::Float64`
+- `active_power_limits_from::MinMax`
+- `active_power_limits_to::MinMax`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -45,7 +47,8 @@ mutable struct TModelHVDCLine <: DCBranch
     l::Float64
     "Shunt capacitance system per-unit value"
     c::Float64
-    rate::Float64
+    active_power_limits_from::MinMax
+    active_power_limits_to::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
@@ -53,12 +56,12 @@ mutable struct TModelHVDCLine <: DCBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, rate, services=Device[], ext=Dict{String, Any}(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, rate, services, ext, InfrastructureSystemsInternal(), )
+function TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), )
+    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TModelHVDCLine(; name, available, active_power_flow, arc, r, l, c, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, rate, services, ext, internal, )
+function TModelHVDCLine(; name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TModelHVDCLine(name, available, active_power_flow, arc, r, l, c, active_power_limits_from, active_power_limits_to, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -71,7 +74,8 @@ function TModelHVDCLine(::Nothing)
         r=0.0,
         l=0.0,
         c=0.0,
-        rate=0.0,
+        active_power_limits_from=(min=0.0, max=0.0),
+        active_power_limits_to=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -91,8 +95,10 @@ get_r(value::TModelHVDCLine) = value.r
 get_l(value::TModelHVDCLine) = value.l
 """Get [`TModelHVDCLine`](@ref) `c`."""
 get_c(value::TModelHVDCLine) = value.c
-"""Get [`TModelHVDCLine`](@ref) `rate`."""
-get_rate(value::TModelHVDCLine) = get_value(value, value.rate)
+"""Get [`TModelHVDCLine`](@ref) `active_power_limits_from`."""
+get_active_power_limits_from(value::TModelHVDCLine) = get_value(value, value.active_power_limits_from)
+"""Get [`TModelHVDCLine`](@ref) `active_power_limits_to`."""
+get_active_power_limits_to(value::TModelHVDCLine) = get_value(value, value.active_power_limits_to)
 """Get [`TModelHVDCLine`](@ref) `services`."""
 get_services(value::TModelHVDCLine) = value.services
 """Get [`TModelHVDCLine`](@ref) `ext`."""
@@ -112,8 +118,10 @@ set_r!(value::TModelHVDCLine, val) = value.r = val
 set_l!(value::TModelHVDCLine, val) = value.l = val
 """Set [`TModelHVDCLine`](@ref) `c`."""
 set_c!(value::TModelHVDCLine, val) = value.c = val
-"""Set [`TModelHVDCLine`](@ref) `rate`."""
-set_rate!(value::TModelHVDCLine, val) = value.rate = set_value(value, val)
+"""Set [`TModelHVDCLine`](@ref) `active_power_limits_from`."""
+set_active_power_limits_from!(value::TModelHVDCLine, val) = value.active_power_limits_from = set_value(value, val)
+"""Set [`TModelHVDCLine`](@ref) `active_power_limits_to`."""
+set_active_power_limits_to!(value::TModelHVDCLine, val) = value.active_power_limits_to = set_value(value, val)
 """Set [`TModelHVDCLine`](@ref) `services`."""
 set_services!(value::TModelHVDCLine, val) = value.services = val
 """Set [`TModelHVDCLine`](@ref) `ext`."""

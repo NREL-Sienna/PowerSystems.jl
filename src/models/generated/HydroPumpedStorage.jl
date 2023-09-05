@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         rating::Float64
         base_power::Float64
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         ramp_limits::Union{Nothing, UpDown}
@@ -49,7 +49,7 @@ This file is auto-generated. Do not edit.
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
@@ -85,7 +85,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     "Base power of the unit in MVA"
     base_power::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     active_power_limits::MinMax
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
@@ -128,12 +128,12 @@ mutable struct HydroPumpedStorage <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -146,7 +146,7 @@ function HydroPumpedStorage(::Nothing)
         reactive_power=0.0,
         rating=0.0,
         base_power=0.0,
-        prime_mover=PrimeMovers.HY,
+        prime_mover_type=PrimeMovers.HY,
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
@@ -186,8 +186,8 @@ get_reactive_power(value::HydroPumpedStorage) = get_value(value, value.reactive_
 get_rating(value::HydroPumpedStorage) = get_value(value, value.rating)
 """Get [`HydroPumpedStorage`](@ref) `base_power`."""
 get_base_power(value::HydroPumpedStorage) = value.base_power
-"""Get [`HydroPumpedStorage`](@ref) `prime_mover`."""
-get_prime_mover(value::HydroPumpedStorage) = value.prime_mover
+"""Get [`HydroPumpedStorage`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::HydroPumpedStorage) = value.prime_mover_type
 """Get [`HydroPumpedStorage`](@ref) `active_power_limits`."""
 get_active_power_limits(value::HydroPumpedStorage) = get_value(value, value.active_power_limits)
 """Get [`HydroPumpedStorage`](@ref) `reactive_power_limits`."""
@@ -247,8 +247,8 @@ set_reactive_power!(value::HydroPumpedStorage, val) = value.reactive_power = set
 set_rating!(value::HydroPumpedStorage, val) = value.rating = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `base_power`."""
 set_base_power!(value::HydroPumpedStorage, val) = value.base_power = val
-"""Set [`HydroPumpedStorage`](@ref) `prime_mover`."""
-set_prime_mover!(value::HydroPumpedStorage, val) = value.prime_mover = val
+"""Set [`HydroPumpedStorage`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::HydroPumpedStorage, val) = value.prime_mover_type = val
 """Set [`HydroPumpedStorage`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::HydroPumpedStorage, val) = value.active_power_limits = set_value(value, val)
 """Set [`HydroPumpedStorage`](@ref) `reactive_power_limits`."""

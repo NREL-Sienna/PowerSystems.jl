@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         base_power::Float64
         time_limits::Union{Nothing, UpDown}
         must_run::Bool
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         fuel::ThermalFuels
         services::Vector{Service}
         time_at_status::Float64
@@ -47,7 +47,7 @@ Data Structure for thermal generation technologies.
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `must_run::Bool`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `fuel::ThermalFuels`: Prime mover fuel according to EIA 923
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
@@ -76,7 +76,7 @@ mutable struct ThermalStandard <: ThermalGen
     time_limits::Union{Nothing, UpDown}
     must_run::Bool
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     "Prime mover fuel according to EIA 923"
     fuel::ThermalFuels
     "Services that this device contributes to"
@@ -91,12 +91,12 @@ mutable struct ThermalStandard <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, must_run=false, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, must_run, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, must_run=false, prime_mover_type=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, must_run, prime_mover_type, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, must_run=false, prime_mover=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, must_run, prime_mover, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, internal, )
+function ThermalStandard(; name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits=nothing, must_run=false, prime_mover_type=PrimeMovers.OT, fuel=ThermalFuels.OTHER, services=Device[], time_at_status=INFINITE_TIME, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    ThermalStandard(name, available, status, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, ramp_limits, operation_cost, base_power, time_limits, must_run, prime_mover_type, fuel, services, time_at_status, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -116,7 +116,7 @@ function ThermalStandard(::Nothing)
         base_power=0.0,
         time_limits=nothing,
         must_run=false,
-        prime_mover=PrimeMovers.OT,
+        prime_mover_type=PrimeMovers.OT,
         fuel=ThermalFuels.OTHER,
         services=Device[],
         time_at_status=INFINITE_TIME,
@@ -154,8 +154,8 @@ get_base_power(value::ThermalStandard) = value.base_power
 get_time_limits(value::ThermalStandard) = value.time_limits
 """Get [`ThermalStandard`](@ref) `must_run`."""
 get_must_run(value::ThermalStandard) = value.must_run
-"""Get [`ThermalStandard`](@ref) `prime_mover`."""
-get_prime_mover(value::ThermalStandard) = value.prime_mover
+"""Get [`ThermalStandard`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::ThermalStandard) = value.prime_mover_type
 """Get [`ThermalStandard`](@ref) `fuel`."""
 get_fuel(value::ThermalStandard) = value.fuel
 """Get [`ThermalStandard`](@ref) `services`."""
@@ -197,8 +197,8 @@ set_base_power!(value::ThermalStandard, val) = value.base_power = val
 set_time_limits!(value::ThermalStandard, val) = value.time_limits = val
 """Set [`ThermalStandard`](@ref) `must_run`."""
 set_must_run!(value::ThermalStandard, val) = value.must_run = val
-"""Set [`ThermalStandard`](@ref) `prime_mover`."""
-set_prime_mover!(value::ThermalStandard, val) = value.prime_mover = val
+"""Set [`ThermalStandard`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::ThermalStandard, val) = value.prime_mover_type = val
 """Set [`ThermalStandard`](@ref) `fuel`."""
 set_fuel!(value::ThermalStandard, val) = value.fuel = val
 """Set [`ThermalStandard`](@ref) `services`."""
