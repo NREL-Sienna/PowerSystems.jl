@@ -21,7 +21,7 @@ static_gen = ThermalStandard(;
     active_power = 0.40,
     reactive_power = 0.010,
     rating = 0.5,
-    prime_mover = PrimeMovers.ST,
+    prime_mover_type = PrimeMovers.ST,
     fuel = ThermalFuels.COAL,
     active_power_limits = (min = 0.0, max = 0.40),
     reactive_power_limits = (min = -0.30, max = 0.30),

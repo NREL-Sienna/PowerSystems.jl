@@ -85,7 +85,7 @@ new_renewable = RenewableDispatch(
         active_power = 2.0,
         reactive_power = 1.0,
         rating = 1.2,
-        prime_mover = PrimeMovers.WT,
+        prime_mover_type = PrimeMovers.WT,
         reactive_power_limits = (min = 0.0, max = 0.0),
         base_power = 100.0,
         operation_cost = TwoPartCost(22.0, 0.0),

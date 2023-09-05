@@ -25,7 +25,7 @@ generator = ThermalStandard(
         active_power = 6.0,
         reactive_power = 1.50,
         rating = 0.75,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 6.0),
         reactive_power_limits = (min = -4.50, max = 4.50),

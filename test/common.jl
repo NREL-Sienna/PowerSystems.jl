@@ -54,7 +54,7 @@ function create_system_with_dynamic_inverter()
 
     battery = GenericBattery(;
         name = "Battery",
-        prime_mover = PrimeMovers.BA,
+        prime_mover_type = PrimeMovers.BA,
         available = true,
         bus = nodes_OMIB[2],
         initial_energy = 5.0,
