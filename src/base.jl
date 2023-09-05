@@ -1513,7 +1513,7 @@ function deserialize_components!(sys::System, raw)
     # Run in order based on type composition.
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
-    deserialize_and_add!(; include_types = [Bus])
+    deserialize_and_add!(; include_types = [ACBus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
         skip_types = [StaticReserveGroup],
