@@ -3242,7 +3242,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -3441,7 +3441,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -3598,7 +3598,7 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -3860,7 +3860,7 @@
                     "validation_action": "error"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -3981,7 +3981,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -4162,7 +4162,7 @@
                     "default": "false"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
@@ -4273,7 +4273,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -4434,7 +4434,7 @@
                     "data_type": "ACBus"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
@@ -4597,7 +4597,7 @@
                     "data_type": "ACBus"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
