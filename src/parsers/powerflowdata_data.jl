@@ -797,40 +797,7 @@ end
 
 function read_dcline!(
     sys::System,
-    data::PowerFlowData.VSCDCLines,
-    sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
-    @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
-    return
-end
-
-function read_dcline!(
-    sys::System,
-    data::PowerFlowData.VSCDCLines,
-    sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
-    @error "VSCDCLines parsing from PSS/e files not implemented. Data will be ignored"
-    return
-end
-
-function read_dcline!(
-    sys::System,
     data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID30},
-    sys_mbase::Float64,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
-    @error "MultiTerminalDCLines parsing from PSS/e files v30 not implemented. Data will be ignored"
-    return
-end
-
-function read_dcline!(
-    sys::System,
-    data::PowerFlowData.MultiTerminalDCLines{PowerFlowData.DCLineID33},
     sys_mbase::Float64,
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
