@@ -278,7 +278,7 @@ end
     )
     contributing_devices = Vector{Device}()
     for g in get_components(
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
+        x -> (get_prime_mover_type(x) ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
     )

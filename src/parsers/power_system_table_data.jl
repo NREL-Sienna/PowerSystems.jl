@@ -1092,7 +1092,7 @@ function make_thermal_generator_multistart(
         active_power = get_active_power(thermal_gen),
         reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        prime_mover_type = get_prime_mover(thermal_gen),
+        prime_mover_type = get_prime_mover_type(thermal_gen),
         fuel = get_fuel(thermal_gen),
         active_power_limits = get_active_power_limits(thermal_gen),
         reactive_power_limits = get_reactive_power_limits(thermal_gen),
