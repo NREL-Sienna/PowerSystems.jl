@@ -84,30 +84,6 @@ function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <
     return type(; vals...)
 end
 
-# Required for backwards compatibility with PSY 1.0/2.0
-function IS.deserialize(::Type{Bus}, data::Dict, component_cache::Dict)
-    @warn "Deseralizing a system stored in a Pre-3.0 format. Bus types will be converted to ACBuses"
-    vals = Dict{Symbol, Any}()
-    for (name, type) in zip(fieldnames(ACBus), fieldtypes(ACBus))
-        field_name = string(name)
-        if haskey(data, field_name)
-            val = data[field_name]
-        else
-            continue
-        end
-        if val isa Dict && haskey(val, IS.METADATA_KEY)
-            vals[name] = deserialize_uuid_handling(
-                IS.get_type_from_serialization_metadata(IS.get_serialization_metadata(val)),
-                val,
-                component_cache,
-            )
-        else
-            vals[name] = deserialize_uuid_handling(type, val, component_cache)
-        end
-    end
-    return ACBus(; vals...)
-end
-
 function IS.deserialize(::Type{Device}, data::Dict)
     error("This form of IS.deserialize is not supported for Devices")
     return
