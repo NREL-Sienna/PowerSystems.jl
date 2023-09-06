@@ -24,10 +24,10 @@ function pre_deserialize_conversion!(raw, sys::System)
                 end
             end
         end
-    elseif old == "1.0.1"
-        # Version 1.0.1 can be converted
+    elseif old == "1.0.1" || old == "2.0.0"
         @warn(
-            "System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving"
+            "System is saved in the data format version 2.0.0. Deseralizing HVDC related data might fail. \
+            If there are no errors during deserialization, the data be automatically upgraded to 3.0.0 upon saving"
         )
         return
     else
@@ -54,11 +54,11 @@ function post_deserialize_conversion!(sys::System, raw)
                 end
             end
         end
-    elseif old == "1.0.1"
+    elseif old == "1.0.1" || old == "2.0.0"
         # Version 1.0.1 can be converted
         raw["data_format_version"] = DATA_FORMAT_VERSION
         @warn(
-            "System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving"
+            "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
         )
         return
     else
