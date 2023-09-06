@@ -108,7 +108,6 @@ function IS.deserialize(::Type{Bus}, data::Dict, component_cache::Dict)
     return ACBus(; vals...)
 end
 
-
 function IS.deserialize(::Type{Device}, data::Dict)
     error("This form of IS.deserialize is not supported for Devices")
     return
