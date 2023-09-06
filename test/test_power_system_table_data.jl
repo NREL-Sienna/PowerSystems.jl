@@ -126,7 +126,7 @@ end
             @test get_rate(cdm_ac_branches[120]) ==
                   get_rate(get_branch(mpsys, cdm_ac_branches[120]))
 
-            cdm_dc_branches = collect(get_components(DCBranch, cdmsys))
+            cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
                   get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
