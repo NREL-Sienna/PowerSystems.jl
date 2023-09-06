@@ -29,6 +29,15 @@ function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("2.0.0")}, ::Val{Sy
     for component in raw["data"]["components"]
         if component["__metadata__"]["type"] == "Bus"
             component["__metadata__"]["type"] = "ACBus"
+            continue
+        end
+        if component["__metadata__"]["type"] == "HVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalHVDCLine"
+            continue
+        end
+        if component["__metadata__"]["type"] == "VSCDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalVSCDCLine"
+            continue
         end
         if haskey(component, "prime_mover") && haskey(component, "dynamic_injector")
             component["prime_mover_type"] = pop!(component, "prime_mover")
@@ -38,19 +47,19 @@ function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("2.0.0")}, ::Val{Sy
 end
 
 function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.0")}, ::Val{Symbol("3.0.0")})
-    _convert_data!(raw, ::Val{Symbol("1.0.0")}(), ::Val{Symbol("2.0.0")}())
-    _convert_data!(raw, ::Val{Symbol("2.0.0")}(), ::Val{Symbol("3.0.0")}())
+    _convert_data!(raw, Val{Symbol("1.0.0")}(), Val{Symbol("2.0.0")}())
+    _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
     return
 end
 
 function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.1")}, ::Val{Symbol("3.0.0")})
-    _convert_data!(raw, ::Val{Symbol("2.0.0")}(), ::Val{Symbol("3.0.0")}())
+    _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
     return
 end
 
 function pre_deserialize_conversion!(raw, sys::System)
     old = raw["data_format_version"]
-    if old == "3.0.0"
+    if old == DATA_FORMAT_VERSION
         return
     else
         try
