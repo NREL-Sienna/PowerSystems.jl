@@ -199,41 +199,29 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         runchecks = get(kwargs, :runchecks, true)
-        # File paths in the JSON are relative. Temporarily change to this directory in order
-        # to find all dependent files.
-        orig_dir = pwd()
-        new_dir = dirname(file_path)
-        if isempty(new_dir)
-            new_dir = "."
-        end
-        cd(new_dir)
-        try
-            time_series_read_only = get(kwargs, :time_series_read_only, false)
-            time_series_directory = get(kwargs, :time_series_directory, nothing)
-            sys = deserialize(
-                System,
-                basename(file_path);
-                time_series_read_only = time_series_read_only,
-                runchecks = runchecks,
-                time_series_directory = time_series_directory,
-            )
-            runchecks && check(sys)
-            if assign_new_uuids
-                IS.assign_new_uuid!(sys)
-                for component in get_components(Component, sys)
-                    IS.assign_new_uuid!(component)
-                end
-                for component in
-                    IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-                    IS.assign_new_uuid!(component)
-                end
-                # Note: this does not change UUIDs for time series data because they are
-                # shared with components.
+        time_series_read_only = get(kwargs, :time_series_read_only, false)
+        time_series_directory = get(kwargs, :time_series_directory, nothing)
+        sys = deserialize(
+            System,
+            file_path;
+            time_series_read_only = time_series_read_only,
+            runchecks = runchecks,
+            time_series_directory = time_series_directory,
+        )
+        runchecks && check(sys)
+        if assign_new_uuids
+            IS.assign_new_uuid!(sys)
+            for component in get_components(Component, sys)
+                IS.assign_new_uuid!(component)
             end
-            return sys
-        finally
-            cd(orig_dir)
+            for component in
+                IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+                IS.assign_new_uuid!(component)
+            end
+            # Note: this does not change UUIDs for time series data because they are
+            # shared with components.
         end
+        return sys
     else
         throw(DataFormatError("$file_path is not a supported file type"))
     end
@@ -1407,6 +1395,14 @@ function IS.deserialize(
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
+    end
+
+    # These file paths are relative to the system file.
+    directory = dirname(filename)
+    for file_key in ("time_series_storage_file", "validation_descriptor_file")
+        if haskey(raw["data"], file_key) && !isabspath(raw["data"][file_key])
+            raw["data"][file_key] = joinpath(directory, raw["data"][file_key])
+        end
     end
 
     # Read any field that is defined in System but optional for the constructors and not
