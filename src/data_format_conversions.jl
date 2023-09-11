@@ -64,8 +64,9 @@ function pre_deserialize_conversion!(raw, sys::System)
     else
         try
             _convert_data!(raw, Val{Symbol(old)}(), Val{Symbol(DATA_FORMAT_VERSION)}())
-        catch
-            error("conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
+        catch err
+            @error $err
+            error("conversion of data from $old to $DATA_FORMAT_VERSION was not possible check error log entry.")
         end
         @warn(
             "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
