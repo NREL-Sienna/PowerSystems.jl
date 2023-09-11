@@ -17,6 +17,7 @@ abstract type InverterComponent <: DynamicComponent end
         dc_source::DC
         freq_estimator::P
         filter::F
+        limiter::Union{nothing, InverterLimiter}
         base_power::Float64
         n_states::Int
         states::Vector{Symbol}
@@ -36,6 +37,7 @@ a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection 
 - `dc_source <: DCSource`: DC Source model.
 - `freq_estimator <: FrequencyEstimator`: Frequency Estimator (typically a PLL) model.
 - `filter <: Filter`: Filter model.
+- `limiter <: Union{nothing, InverterLimiter}`: Inverter Inner Control Limiter model
 - `base_power::Float64`: Base power
 - `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
@@ -58,6 +60,7 @@ mutable struct DynamicInverter{
     dc_source::DC
     freq_estimator::P
     filter::F
+    limiter::Union{Nothing, InverterLimiter}
     base_power::Float64
     n_states::Int
     states::Vector{Symbol}
@@ -74,6 +77,7 @@ function DynamicInverter(
     dc_source::DC,
     freq_estimator::P,
     filter::F,
+    limiter::Union{Nothing, L} = nothing,
     base_power::Float64 = 100.0,
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {
@@ -83,6 +87,7 @@ function DynamicInverter(
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
+    L <: InverterLimiter,
 }
     n_states = _calc_n_states(
         converter,
@@ -110,6 +115,7 @@ function DynamicInverter(
         dc_source,
         freq_estimator,
         filter,
+        limiter,
         base_power,
         n_states,
         states,
@@ -127,6 +133,7 @@ function DynamicInverter(;
     dc_source::DC,
     freq_estimator::P,
     filter::F,
+    limiter::Union{Nothing, L} = nothing,
     base_power::Float64 = 100.0,
     n_states = _calc_n_states(
         converter,
@@ -153,6 +160,7 @@ function DynamicInverter(;
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
+    L <: InverterLimiter,
 }
     return DynamicInverter(
         name,
@@ -163,6 +171,7 @@ function DynamicInverter(;
         dc_source,
         freq_estimator,
         filter,
+        limiter,
         base_power,
         n_states,
         states,
