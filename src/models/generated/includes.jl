@@ -116,6 +116,9 @@ include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
+include("MagnitudeCurrentLimiter.jl")
+include("InstantaneousCurrentLimiter.jl")
+include("PriorityCurrentLimiter.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
@@ -172,9 +175,11 @@ export get_H_lim
 export get_H_lp
 export get_I_lr
 export get_I_max
+export get_Id_max
 export get_Iflim
 export get_Io_lim
 export get_Iq_lim
+export get_Iq_max
 export get_Iqinj_lim
 export get_Iqr_lim
 export get_Iqr_lims
@@ -652,6 +657,7 @@ export get_ω_ref
 export get_ωad
 export get_ωf
 export get_ωz
+export get_ϕ_I
 export set_A!
 export set_A1!
 export set_A2!
@@ -703,9 +709,11 @@ export set_H_lim!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
+export set_Id_max!
 export set_Iflim!
 export set_Io_lim!
 export set_Iq_lim!
+export set_Iq_max!
 export set_Iqinj_lim!
 export set_Iqr_lim!
 export set_Iqr_lims!
@@ -1183,3 +1191,4 @@ export set_ω_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!
+export set_ϕ_I!

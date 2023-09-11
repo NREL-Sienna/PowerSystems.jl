@@ -195,6 +195,11 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
+# InverterLimiters Export
+export MagnitudeCurrentLimiter
+export InstantaneousCurrentLimiter
+export PriorityCurrentLimiter
+
 export Source
 export PeriodicVariableSource
 
