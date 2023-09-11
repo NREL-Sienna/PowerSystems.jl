@@ -6,7 +6,11 @@
 # Deserialization needs to add this field and value.
 #
 
-function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.0")}, ::Val{Symbol("2.0.0")})
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.0")},
+    ::Val{Symbol("2.0.0")},
+)
     for component in raw["data"]["components"]
         for ts_metadata in get(component, "time_series_container", [])
             if ts_metadata["__metadata__"]["type"] == "DeterministicMetadata" &&
@@ -25,7 +29,11 @@ function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.0")}, ::Val{Sy
     return
 end
 
-function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("2.0.0")}, ::Val{Symbol("3.0.0")})
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("2.0.0")},
+    ::Val{Symbol("3.0.0")},
+)
     for component in raw["data"]["components"]
         if component["__metadata__"]["type"] == "Bus"
             component["__metadata__"]["type"] = "ACBus"
@@ -46,13 +54,21 @@ function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("2.0.0")}, ::Val{Sy
     return
 end
 
-function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.0")}, ::Val{Symbol("3.0.0")})
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.0")},
+    ::Val{Symbol("3.0.0")},
+)
     _convert_data!(raw, Val{Symbol("1.0.0")}(), Val{Symbol("2.0.0")}())
     _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
     return
 end
 
-function _convert_data!(raw::Dict{String, Any}, ::Val{Symbol("1.0.1")}, ::Val{Symbol("3.0.0")})
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.1")},
+    ::Val{Symbol("3.0.0")},
+)
     _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
     return
 end
@@ -66,7 +82,9 @@ function pre_deserialize_conversion!(raw, sys::System)
             _convert_data!(raw, Val{Symbol(old)}(), Val{Symbol(DATA_FORMAT_VERSION)}())
         catch err
             @error $err
-            error("conversion of data from $old to $DATA_FORMAT_VERSION was not possible check error log entry.")
+            error(
+                "conversion of data from $old to $DATA_FORMAT_VERSION was not possible check error log entry.",
+            )
         end
         @warn(
             "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
