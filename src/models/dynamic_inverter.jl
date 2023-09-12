@@ -51,6 +51,7 @@ mutable struct DynamicInverter{
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
+    L <: Union{Nothing, InverterLimiter},
 } <: DynamicInjection
     name::String
     ω_ref::Float64
@@ -60,7 +61,7 @@ mutable struct DynamicInverter{
     dc_source::DC
     freq_estimator::P
     filter::F
-    limiter::Union{Nothing, InverterLimiter}
+    limiter::L
     base_power::Float64
     n_states::Int
     states::Vector{Symbol}
@@ -77,7 +78,7 @@ function DynamicInverter(
     dc_source::DC,
     freq_estimator::P,
     filter::F,
-    limiter::Union{Nothing, L} = nothing,
+    limiter::L = nothing,
     base_power::Float64 = 100.0,
     ext::Dict{String, Any} = Dict{String, Any}(),
 ) where {
@@ -87,7 +88,7 @@ function DynamicInverter(
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
-    L <: InverterLimiter,
+    L <: Union{Nothing, InverterLimiter},
 }
     n_states = _calc_n_states(
         converter,
@@ -133,7 +134,7 @@ function DynamicInverter(;
     dc_source::DC,
     freq_estimator::P,
     filter::F,
-    limiter::Union{Nothing, L} = nothing,
+    limiter::L = nothing,
     base_power::Float64 = 100.0,
     n_states = _calc_n_states(
         converter,
@@ -160,7 +161,7 @@ function DynamicInverter(;
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
-    L <: InverterLimiter,
+    L <: Union{Nothing, InverterLimiter},
 }
     return DynamicInverter(
         name,
