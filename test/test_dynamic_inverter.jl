@@ -66,6 +66,71 @@ end
     test_accessors(test_inverter)
 end
 
+@testset "Dynamic Inverter Limiters" begin
+    converter = AverageConverter(690.0, 2750000.0) #S_rated goes in Watts
+    dc_source = FixedDCSource(600.0) #Not in the original data, guessed.
+    filt = LCLFilter(0.08, 0.003, 0.074, 0.2, 0.01)
+    pll = KauraPLL(500.0, 0.084, 4.69)
+    virtual_H = VirtualInertia(2.0, 400.0, 20.0, 2 * pi * 50.0)
+    Q_control = ReactivePowerDroop(0.2, 1000.0)
+    outer_control = OuterControl(virtual_H, Q_control)
+    vsc = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
+    inverter = DynamicInverter(
+        "TestInverter",
+        1.0,
+        converter,
+        outer_control,
+        vsc,
+        dc_source,
+        pll,
+        filt,
+    )
+    @test inverter isa PowerSystems.Component
+    test_accessors(inverter)
+    inv_magnitude = DynamicInverter(;
+        name = "TestInverter",
+        ω_ref = 1.0,
+        converter = converter,
+        outer_control = outer_control,
+        inner_control = vsc,
+        dc_source = dc_source,
+        freq_estimator = pll,
+        filter = filt,
+        limiter = MagnitudeCurrentLimiter(; I_max = 1.0),
+    )
+    @test inv_magnitude isa PowerSystems.Component
+    test_accessors(inv_magnitude)
+    inv_inst = DynamicInverter(;
+        name = "TestInverter",
+        ω_ref = 1.0,
+        converter = converter,
+        outer_control = outer_control,
+        inner_control = vsc,
+        dc_source = dc_source,
+        freq_estimator = pll,
+        filter = filt,
+        limiter = InstantaneousCurrentLimiter(;
+            Id_max = 1.0 / sqrt(2),
+            Iq_max = 1.0 / sqrt(2),
+        ),
+    )
+    @test inv_inst isa PowerSystems.Component
+    test_accessors(inv_inst)
+    inv_priority = DynamicInverter(;
+        name = "TestInverter",
+        ω_ref = 1.0,
+        converter = converter,
+        outer_control = outer_control,
+        inner_control = vsc,
+        dc_source = dc_source,
+        freq_estimator = pll,
+        filter = filt,
+        limiter = PriorityCurrentLimiter(; I_max = 1.0, ϕ_I = 0.1),
+    )
+    @test inv_priority isa PowerSystems.Component
+    test_accessors(inv_priority)
+end
+
 @testset "Generic Renewable Models" begin
     converter_regca1 = RenewableEnergyConverterTypeA(;
         T_g = 0.02,
