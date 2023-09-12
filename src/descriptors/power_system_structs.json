@@ -4533,6 +4533,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4620,6 +4632,18 @@
                         "max": 1
                     },
                     "default": "1.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
                     "validation_action": "error"
                 },
                 {
@@ -4748,6 +4772,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4840,6 +4876,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4929,6 +4977,18 @@
                         "max": 1
                     },
                     "default": "1.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
                     "validation_action": "error"
                 },
                 {
