@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         time_frame::Float64
         sustained_time::Float64
         max_participation_factor::Float64
+        deployed_fraction::Float64
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
@@ -26,6 +27,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
 - `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -41,6 +43,8 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     sustained_time::Float64
     "the maximum limit of reserve contribution per device"
     max_participation_factor::Float64
+    "Fraction of ancillary services participation deployed from the assignment"
+    deployed_fraction::Float64
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -48,12 +52,12 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, deployed_fraction, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ReserveDemandCurve{T}(; variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, ext, time_series_container, internal, )
+function ReserveDemandCurve{T}(; variable, name, available, time_frame, sustained_time=3600.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    ReserveDemandCurve{T}(variable, name, available, time_frame, sustained_time, max_participation_factor, deployed_fraction, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -65,6 +69,7 @@ function ReserveDemandCurve{T}(::Nothing) where T <: ReserveDirection
         time_frame=0.0,
         sustained_time=0.0,
         max_participation_factor=1.0,
+        deployed_fraction=0.0,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
@@ -82,6 +87,8 @@ get_time_frame(value::ReserveDemandCurve) = value.time_frame
 get_sustained_time(value::ReserveDemandCurve) = value.sustained_time
 """Get [`ReserveDemandCurve`](@ref) `max_participation_factor`."""
 get_max_participation_factor(value::ReserveDemandCurve) = value.max_participation_factor
+"""Get [`ReserveDemandCurve`](@ref) `deployed_fraction`."""
+get_deployed_fraction(value::ReserveDemandCurve) = value.deployed_fraction
 """Get [`ReserveDemandCurve`](@ref) `ext`."""
 get_ext(value::ReserveDemandCurve) = value.ext
 """Get [`ReserveDemandCurve`](@ref) `time_series_container`."""
@@ -99,6 +106,8 @@ set_time_frame!(value::ReserveDemandCurve, val) = value.time_frame = val
 set_sustained_time!(value::ReserveDemandCurve, val) = value.sustained_time = val
 """Set [`ReserveDemandCurve`](@ref) `max_participation_factor`."""
 set_max_participation_factor!(value::ReserveDemandCurve, val) = value.max_participation_factor = val
+"""Set [`ReserveDemandCurve`](@ref) `deployed_fraction`."""
+set_deployed_fraction!(value::ReserveDemandCurve, val) = value.deployed_fraction = val
 """Set [`ReserveDemandCurve`](@ref) `ext`."""
 set_ext!(value::ReserveDemandCurve, val) = value.ext = val
 """Set [`ReserveDemandCurve`](@ref) `time_series_container`."""
