@@ -75,17 +75,17 @@ end
     Q_control = ReactivePowerDroop(0.2, 1000.0)
     outer_control = OuterControl(virtual_H, Q_control)
     vsc = VoltageModeControl(0.59, 736.0, 0.0, 0.0, 0.2, 1.27, 14.3, 0.0, 50.0, 0.2)
-    inverter = DynamicInverter(;
-        name = "TestInverter",
-        ω_ref = 1.0,
-        converter = converter,
-        outer_control = outer_control,
-        inner_control = vsc,
-        dc_source = dc_source,
-        freq_estimator = pll,
-        filter = filt,
+    inverter = DynamicInverter(
+        "TestInverter",
+        1.0,
+        converter,
+        outer_control,
+        vsc,
+        dc_source,
+        pll,
+        filt,
     )
-    @test test_inverter isa PowerSystems.Component
+    @test inverter isa PowerSystems.Component
     test_accessors(inverter)
     inv_magnitude = DynamicInverter(;
         name = "TestInverter",
@@ -98,7 +98,7 @@ end
         filter = filt,
         limiter = MagnitudeCurrentLimiter(; I_max = 1.0),
     )
-    @test inv_magnitude isa PowerSystems.Components
+    @test inv_magnitude isa PowerSystems.Component
     test_accessors(inv_magnitude)
     inv_inst = DynamicInverter(;
         name = "TestInverter",
@@ -114,7 +114,7 @@ end
             Iq_max = 1.0 / sqrt(2),
         ),
     )
-    @test inv_inst isa PowerSystems.Components
+    @test inv_inst isa PowerSystems.Component
     test_accessors(inv_inst)
     inv_priority = DynamicInverter(;
         name = "TestInverter",
@@ -127,7 +127,7 @@ end
         filter = filt,
         limiter = PriorityCurrentLimiter(; I_max = 1.0, ϕ_I = 0.1),
     )
-    @test inv_priority isa PowerSystems.Components
+    @test inv_priority isa PowerSystems.Component
     test_accessors(inv_priority)
 end
 

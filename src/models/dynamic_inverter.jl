@@ -107,7 +107,7 @@ function DynamicInverter(
         filter,
     )
 
-    return DynamicInverter{C, O, IC, DC, P, F}(
+    return DynamicInverter{C, O, IC, DC, P, F, L}(
         name,
         ω_ref,
         converter,
