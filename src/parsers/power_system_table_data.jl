@@ -299,7 +299,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
         name = bus.name
         bus_type =
-            isnothing(bus.bus_type) ? nothing : get_enum_value(BusTypes, bus.bus_type)
+            isnothing(bus.bus_type) ? nothing : get_enum_value(ACBusTypes, bus.bus_type)
         voltage_limits = make_minmaxlimits(bus.voltage_limits_min, bus.voltage_limits_max)
 
         area_name = string(get(bus, :area, "area"))
@@ -311,7 +311,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         zone = get(bus, :zone, nothing)
         bus_id = isnothing(bus.bus_id) ? ix : bus.bus_id
 
-        ps_bus = Bus(;
+        ps_bus = ACBus(;
             number = bus_id,
             name = name,
             bustype = bus_type,
@@ -469,7 +469,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
             loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
-            value = HVDCLine(;
+            value = TwoTerminalHVDCLine(;
                 name = dc_branch.name,
                 available = available,
                 active_power_flow = dc_branch.active_power_flow,
@@ -496,7 +496,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 min = dc_branch.inverter_firing_angle_min,
                 max = dc_branch.inverter_firing_angle_max,
             )
-            value = VSCDCLine(;
+            value = TwoTerminalVSCDCLine(;
                 name = dc_branch.name,
                 available = true,
                 active_power_flow = pf,
@@ -1017,7 +1017,7 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
         active_power = gen.active_power,
         reactive_power = reactive_power,
         rating = rating,
-        prime_mover = primemover,
+        prime_mover_type = primemover,
         fuel = fuel,
         active_power_limits = active_power_limits,
         reactive_power_limits = reactive_power_limits,
@@ -1092,7 +1092,7 @@ function make_thermal_generator_multistart(
         active_power = get_active_power(thermal_gen),
         reactive_power = get_reactive_power(thermal_gen),
         rating = get_rating(thermal_gen),
-        prime_mover = get_prime_mover(thermal_gen),
+        prime_mover_type = get_prime_mover_type(thermal_gen),
         fuel = get_fuel(thermal_gen),
         active_power_limits = get_active_power_limits(thermal_gen),
         reactive_power_limits = get_reactive_power_limits(thermal_gen),
@@ -1154,7 +1154,7 @@ function make_hydro_generator(
                 bus = bus,
                 active_power = gen.active_power,
                 reactive_power = reactive_power,
-                prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+                prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
                 rating = rating,
                 active_power_limits = active_power_limits,
                 reactive_power_limits = reactive_power_limits,
@@ -1198,7 +1198,7 @@ function make_hydro_generator(
                 reactive_power = reactive_power,
                 rating = rating,
                 base_power = base_power,
-                prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+                prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
                 active_power_limits = active_power_limits,
                 reactive_power_limits = reactive_power_limits,
                 ramp_limits = ramp_limits,
@@ -1235,7 +1235,7 @@ function make_hydro_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+            prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
             active_power_limits = active_power_limits,
             reactive_power_limits = reactive_power_limits,
             ramp_limits = ramp_limits,
@@ -1275,7 +1275,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+            prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
             reactive_power_limits = reactive_power_limits,
             power_factor = gen.power_factor,
             operation_cost = operation_cost,
@@ -1290,7 +1290,7 @@ function make_renewable_generator(
             active_power = gen.active_power,
             reactive_power = reactive_power,
             rating = rating,
-            prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+            prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
             power_factor = gen.power_factor,
             base_power = base_power,
         )
@@ -1323,7 +1323,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         name = gen.name,
         available = storage.available,
         bus = bus,
-        prime_mover = parse_enum_mapping(PrimeMovers, gen.unit_type),
+        prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
         initial_energy = storage.energy_level,
         state_of_charge_limits = state_of_charge_limits,
         rating = storage.rating,
@@ -1341,7 +1341,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
 end
 
 const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
-    "Bus" => Bus,
+    "ACBus" => ACBus,
     "Generator" => Generator,
     "Reserve" => Service,
     "LoadZone" => LoadZone,

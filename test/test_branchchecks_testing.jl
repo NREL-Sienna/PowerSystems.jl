@@ -14,10 +14,10 @@ end
 
 @testset "Angle limits" begin
     nodes5 = [
-        Bus(
+        ACBus(
             1,
             "nodeA",
-            PowerSystems.BusTypes.PV,
+            PowerSystems.ACBusTypes.PV,
             0,
             1.0,
             (min = 0.9, max = 1.05),
@@ -25,10 +25,10 @@ end
             nothing,
             nothing,
         ),
-        Bus(
+        ACBus(
             2,
             "nodeB",
-            PowerSystems.BusTypes.PQ,
+            PowerSystems.ACBusTypes.PQ,
             0,
             1.0,
             (min = 0.9, max = 1.05),
@@ -36,10 +36,10 @@ end
             nothing,
             nothing,
         ),
-        Bus(
+        ACBus(
             3,
             "nodeC",
-            PowerSystems.BusTypes.PV,
+            PowerSystems.ACBusTypes.PV,
             0,
             1.0,
             (min = 0.9, max = 1.05),
@@ -47,10 +47,10 @@ end
             nothing,
             nothing,
         ),
-        Bus(
+        ACBus(
             4,
             "nodeD",
-            PowerSystems.BusTypes.REF,
+            PowerSystems.ACBusTypes.REF,
             0,
             1.0,
             (min = 0.9, max = 1.05),
@@ -58,10 +58,10 @@ end
             nothing,
             nothing,
         ),
-        Bus(
+        ACBus(
             5,
             "nodeE",
-            PowerSystems.BusTypes.PV,
+            PowerSystems.ACBusTypes.PV,
             0,
             1.0,
             (min = 0.9, max = 1.05),

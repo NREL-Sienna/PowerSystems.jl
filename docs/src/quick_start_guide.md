@@ -81,11 +81,11 @@ system = System(joinpath(file_dir, "case5.m"))
 new_renewable = RenewableDispatch(
         name = "WindPowerNew",
         available = true,
-        bus = get_component(Bus, system, "3"),
+        bus = get_component(ACBus, system, "3"),
         active_power = 2.0,
         reactive_power = 1.0,
         rating = 1.2,
-        prime_mover = PrimeMovers.WT,
+        prime_mover_type = PrimeMovers.WT,
         reactive_power_limits = (min = 0.0, max = 0.0),
         base_power = 100.0,
         operation_cost = TwoPartCost(22.0, 0.0),

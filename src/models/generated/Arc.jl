@@ -38,8 +38,8 @@ end
 # Constructor for demo purposes; non-functional.
 function Arc(::Nothing)
     Arc(;
-        from=Bus(nothing),
-        to=Bus(nothing),
+        from=ACBus(nothing),
+        to=ACBus(nothing),
     )
 end
 

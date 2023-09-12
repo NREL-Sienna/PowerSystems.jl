@@ -8,11 +8,11 @@ This file is auto-generated. Do not edit.
     mutable struct HydroEnergyReservoir <: HydroGen
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         ramp_limits::Union{Nothing, UpDown}
@@ -37,11 +37,11 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `active_power_limits::MinMax`
 - `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
@@ -63,13 +63,13 @@ This file is auto-generated. Do not edit.
 mutable struct HydroEnergyReservoir <: HydroGen
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     active_power_limits::MinMax
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
@@ -102,12 +102,12 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=TwoPartCost(0.0, 0.0), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -115,11 +115,11 @@ function HydroEnergyReservoir(::Nothing)
     HydroEnergyReservoir(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,
-        prime_mover=PrimeMovers.HY,
+        prime_mover_type=PrimeMovers.HY,
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
@@ -151,8 +151,8 @@ get_active_power(value::HydroEnergyReservoir) = get_value(value, value.active_po
 get_reactive_power(value::HydroEnergyReservoir) = get_value(value, value.reactive_power)
 """Get [`HydroEnergyReservoir`](@ref) `rating`."""
 get_rating(value::HydroEnergyReservoir) = get_value(value, value.rating)
-"""Get [`HydroEnergyReservoir`](@ref) `prime_mover`."""
-get_prime_mover(value::HydroEnergyReservoir) = value.prime_mover
+"""Get [`HydroEnergyReservoir`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::HydroEnergyReservoir) = value.prime_mover_type
 """Get [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
 get_active_power_limits(value::HydroEnergyReservoir) = get_value(value, value.active_power_limits)
 """Get [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""
@@ -198,8 +198,8 @@ set_active_power!(value::HydroEnergyReservoir, val) = value.active_power = set_v
 set_reactive_power!(value::HydroEnergyReservoir, val) = value.reactive_power = set_value(value, val)
 """Set [`HydroEnergyReservoir`](@ref) `rating`."""
 set_rating!(value::HydroEnergyReservoir, val) = value.rating = set_value(value, val)
-"""Set [`HydroEnergyReservoir`](@ref) `prime_mover`."""
-set_prime_mover!(value::HydroEnergyReservoir, val) = value.prime_mover = val
+"""Set [`HydroEnergyReservoir`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::HydroEnergyReservoir, val) = value.prime_mover_type = val
 """Set [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::HydroEnergyReservoir, val) = value.active_power_limits = set_value(value, val)
 """Set [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""

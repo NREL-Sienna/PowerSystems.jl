@@ -3,7 +3,7 @@
         sys = System(100.0)
         devices = []
         for i in 1:2
-            bus = Bus(nothing)
+            bus = ACBus(nothing)
             bus.name = "bus" * string(i)
             bus.number = i
             add_component!(sys, bus)
@@ -37,7 +37,7 @@
         sys = System(100.0)
         devices = []
         for i in 1:2
-            bus = Bus(nothing)
+            bus = ACBus(nothing)
             bus.name = "bus" * string(i)
             bus.number = i
             add_component!(sys, bus)
@@ -67,7 +67,7 @@ end
 
 @testset "Test add_service errors" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     service = StaticReserve{ReserveDown}(nothing)
     # Bus is not a Device.
     @test_throws ArgumentError add_service!(sys, service, [bus])
@@ -79,7 +79,7 @@ end
 
 @testset "Test remove service from device" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -98,7 +98,7 @@ end
 
 @testset "Test has service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -119,7 +119,7 @@ end
 
 @testset "Test remove device with service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -148,7 +148,7 @@ end
 
 @testset "Test add device with service" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -169,7 +169,7 @@ end
     devices = []
     services = []
     for i in 1:5
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -278,7 +278,7 @@ end
     )
     contributing_devices = Vector{Device}()
     for g in get_components(
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
+        x -> (get_prime_mover_type(x) ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
     )
@@ -323,7 +323,7 @@ end
     # add buses and generators
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -362,7 +362,7 @@ end
 
 @testset "Test StaticReserveGroup errors" begin
     sys = System(100.0)
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     groupservice = StaticReserveGroup{ReserveDown}(nothing)
 
     # Bus is not a Service.
@@ -377,7 +377,7 @@ end
     # Service in a StaticReserveGroup
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -398,7 +398,7 @@ end
     # add buses and generators
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         add_component!(sys, bus)
@@ -435,7 +435,7 @@ end
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     lines = get_components(Line, sys)
     xfr = get_components(TapTransformer, sys)
-    hvdc = collect(get_components(HVDCLine, sys))
+    hvdc = collect(get_components(TwoTerminalHVDCLine, sys))
     some_lines = collect(lines)[1:2]
     other_lines_and_hvdc = vcat(collect(lines)[10:14], hvdc)
     lines_and_transformers = [some_lines; collect(xfr)[1:2]]

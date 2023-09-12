@@ -6,32 +6,82 @@
 # Deserialization needs to add this field and value.
 #
 
-function pre_deserialize_conversion!(raw, sys::System)
-    old = raw["data_format_version"]
-    if old == "1.0.0"
-        for component in raw["data"]["components"]
-            for ts_metadata in get(component, "time_series_container", [])
-                if ts_metadata["__metadata__"]["type"] == "DeterministicMetadata" &&
-                   !haskey(ts_metadata, "time_series_type")
-                    # This will allow deserialization to work.
-                    # post_deserialize_conversion will fix the type.
-                    ts_metadata["time_series_type"] = Dict(
-                        "__metadata__" => Dict(
-                            "module" => "InfrastructureSystems",
-                            "type" => "AbstractDeterministic",
-                        ),
-                    )
-                end
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.0")},
+    ::Val{Symbol("2.0.0")},
+)
+    for component in raw["data"]["components"]
+        for ts_metadata in get(component, "time_series_container", [])
+            if ts_metadata["__metadata__"]["type"] == "DeterministicMetadata" &&
+               !haskey(ts_metadata, "time_series_type")
+                # This will allow deserialization to work.
+                # post_deserialize_conversion will fix the type.
+                ts_metadata["time_series_type"] = Dict(
+                    "__metadata__" => Dict(
+                        "module" => "InfrastructureSystems",
+                        "type" => "AbstractDeterministic",
+                    ),
+                )
             end
         end
-    elseif old == "1.0.1"
-        # Version 1.0.1 can be converted
-        @warn(
-            "System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving"
-        )
+    end
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("2.0.0")},
+    ::Val{Symbol("3.0.0")},
+)
+    for component in raw["data"]["components"]
+        if component["__metadata__"]["type"] == "Bus"
+            component["__metadata__"]["type"] = "ACBus"
+            continue
+        end
+        if component["__metadata__"]["type"] == "HVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalHVDCLine"
+            continue
+        end
+        if component["__metadata__"]["type"] == "VSCDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalVSCDCLine"
+            continue
+        end
+        if haskey(component, "prime_mover") && haskey(component, "dynamic_injector")
+            component["prime_mover_type"] = pop!(component, "prime_mover")
+        end
+    end
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.0")},
+    ::Val{Symbol("3.0.0")},
+)
+    _convert_data!(raw, Val{Symbol("1.0.0")}(), Val{Symbol("2.0.0")}())
+    _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("1.0.1")},
+    ::Val{Symbol("3.0.0")},
+)
+    _convert_data!(raw, Val{Symbol("2.0.0")}(), Val{Symbol("3.0.0")}())
+    return
+end
+
+function pre_deserialize_conversion!(raw, sys::System)
+    old = raw["data_format_version"]
+    if old == DATA_FORMAT_VERSION
         return
     else
-        error("conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
+        _convert_data!(raw, Val{Symbol(old)}(), Val{Symbol(DATA_FORMAT_VERSION)}())
+        @warn(
+            "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
+        )
     end
 end
 
@@ -54,11 +104,11 @@ function post_deserialize_conversion!(sys::System, raw)
                 end
             end
         end
-    elseif old == "1.0.1"
+    elseif old == "1.0.1" || old == "2.0.0"
         # Version 1.0.1 can be converted
         raw["data_format_version"] = DATA_FORMAT_VERSION
         @warn(
-            "System is saved in the data format version 1.0.1 will be automatically upgraded to 2.0.0 upon saving"
+            "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
         )
         return
     else

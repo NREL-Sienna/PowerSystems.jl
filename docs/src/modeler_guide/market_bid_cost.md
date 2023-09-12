@@ -15,7 +15,7 @@ The code below shows an example how we can create a thermal device with MarketBi
 
 ```@repl market_bid_cost
 using PowerSystems, Dates
-bus = Bus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = ACBus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
 generator = ThermalStandard(
         name = "Brighton",
@@ -25,7 +25,7 @@ generator = ThermalStandard(
         active_power = 6.0,
         reactive_power = 1.50,
         rating = 0.75,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 6.0),
         reactive_power_limits = (min = -4.50, max = 4.50),
