@@ -132,51 +132,26 @@ end
 end
 
 @testset "Test component conversion" begin
-    # Reusable resources for this testset
-    load_test_system = () -> System(joinpath(BAD_DATA, "case5_re.m"))
-    function setup_time_series!(sys::System, component::Component, ts_name::String)
-        dates = collect(
-            Dates.DateTime("2020-01-01T00:00:00"):Dates.Hour(1):Dates.DateTime(
-                "2020-01-01T23:00:00",
-            ),
-        )
-        data = collect(1:24)
-        ta = TimeSeries.TimeArray(dates, data, [get_name(component)])
-        time_series = SingleTimeSeries(; name = ts_name, data = ta)
-        add_time_series!(sys, component, time_series)
-        @test get_time_series(SingleTimeSeries, component, ts_name) isa SingleTimeSeries
-    end
-
-    function test_forward_conversion(
-        new_type::Type{<:Component},
-        old_component::Component,
-        sys,
-        component_name,
-        ts_name,
-    )
-        convert_component!(new_type, old_component, sys)
-        println(typeof(old_component))
-        @test isnothing(get_component(typeof(old_component), sys, component_name))
-        new_component = get_component(new_type, sys, component_name)
-        @test !isnothing(new_component)
-        @test get_name(new_component) == component_name
-        @test get_time_series(SingleTimeSeries, new_component, ts_name) isa SingleTimeSeries
-        return new_component
-    end
-
-    """Tests Line <-> MonitoredLine conversion"""
     test_line_conversion =
         () -> begin
-            sys = load_test_system()
+            sys = System(joinpath(BAD_DATA, "case5_re.m"))
             l = get_component(Line, sys, "bus2-bus3-i_4")
-            ts_name = "active_power_flow"
-            setup_time_series!(sys, l, ts_name)
-
-            # Conversion to MonitoredLine
-            mline =
-                test_forward_conversion(MonitoredLine, l, sys, "bus2-bus3-i_4", ts_name)
-
-            # Conversion back (must be forced)
+            initial_time = Dates.DateTime("2020-01-01T00:00:00")
+            dates = collect(
+                initial_time:Dates.Hour(1):Dates.DateTime("2020-01-01T23:00:00"),
+            )
+            data = collect(1:24)
+            ta = TimeSeries.TimeArray(dates, data, [get_name(l)])
+            name = "active_power_flow"
+            time_series = SingleTimeSeries(; name = name, data = ta)
+            add_time_series!(sys, l, time_series)
+            @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
+            PSY.convert_component!(MonitoredLine, l, sys)
+            @test isnothing(get_component(Line, sys, "bus2-bus3-i_4"))
+            mline = get_component(MonitoredLine, sys, "bus2-bus3-i_4")
+            @test !isnothing(mline)
+            @test get_name(mline) == "bus2-bus3-i_4"
+            @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
             @test_throws ErrorException convert_component!(
                 Line,
                 get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
@@ -190,23 +165,35 @@ end
             )
             line = get_component(Line, sys, "bus2-bus3-i_4")
             @test !isnothing(mline)
-            @test get_time_series(SingleTimeSeries, line, ts_name) isa SingleTimeSeries
+            @test get_time_series(SingleTimeSeries, line, name) isa SingleTimeSeries
         end
 
-    """Tests PowerLoad --> StandardLoad conversion"""
     test_load_conversion =
         () -> begin
-            sys = load_test_system()
-            l = get_component(PowerLoad, sys, "bus2")
+            sys = PSB.build_system(PSB.PSITestSystems, "c_sys5")
+            component_name = "Bus2"
             ts_name = "max_active_power"
-            setup_time_series!(sys, l, ts_name)
+            old_component = get_component(PowerLoad, sys, component_name)
+            dates = collect(
+                Dates.DateTime("2020-01-01T00:00:00"):Dates.Hour(1):Dates.DateTime(
+                    "2020-01-01T23:00:00",
+                ),
+            )
+            data = collect(1:24)
+            ta = TimeSeries.TimeArray(dates, data, [component_name])
+            time_series = SingleTimeSeries(; name = ts_name, data = ta)
+            add_time_series!(sys, old_component, time_series)
+            @test get_time_series(SingleTimeSeries, old_component, ts_name) isa SingleTimeSeries
 
-            # Conversion to StandardLoad
-            sload = test_forward_conversion(StandardLoad, l, sys, "bus2", ts_name)
-
+            convert_component!(StandardLoad, old_component, sys)
+            @test isnothing(get_component(typeof(old_component), sys, component_name))
+            new_component = get_component(StandardLoad, sys, component_name)
+            @test !isnothing(new_component)
+            @test get_name(new_component) == component_name
+            @test get_time_series(SingleTimeSeries, new_component, ts_name) isa SingleTimeSeries
             # Conversion back is not implemented
         end
-
+    
     @test_logs (:error,) min_level = Logging.Error match_mode = :any test_line_conversion()
-    @test_logs (:error,) min_level = Logging.Error match_mode = :any test_load_conversion()
+    test_load_conversion()
 end
