@@ -1920,9 +1920,9 @@ Converts a Line component to a MonitoredLine component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{MonitoredLine},
+    sys::System,
     line::Line,
-    sys::System;
+    linetype::Type{MonitoredLine};
     kwargs...,
 )
     new_line = linetype(
@@ -1954,9 +1954,9 @@ Converts a MonitoredLine component to a Line component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{Line},
+    sys::System,
     line::MonitoredLine,
-    sys::System;
+    linetype::Type{Line};
     kwargs...,
 )
     force = get(kwargs, :force, false)
@@ -1996,9 +1996,9 @@ Converts a PowerLoad component to a StandardLoad component and replaces the orig
 system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent
 """
 function convert_component!(
-    new_type::Type{StandardLoad},
+    sys::System,
     old_load::PowerLoad,
-    sys::System;
+    new_type::Type{StandardLoad};
     kwargs...,
 )
     new_load = new_type(;

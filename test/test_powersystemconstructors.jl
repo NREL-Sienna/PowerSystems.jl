@@ -146,21 +146,21 @@ end
             time_series = SingleTimeSeries(; name = name, data = ta)
             add_time_series!(sys, l, time_series)
             @test get_time_series(SingleTimeSeries, l, name) isa SingleTimeSeries
-            PSY.convert_component!(MonitoredLine, l, sys)
+            PSY.convert_component!(sys, l, MonitoredLine)
             @test isnothing(get_component(Line, sys, "bus2-bus3-i_4"))
             mline = get_component(MonitoredLine, sys, "bus2-bus3-i_4")
             @test !isnothing(mline)
             @test get_name(mline) == "bus2-bus3-i_4"
             @test get_time_series(SingleTimeSeries, mline, name) isa SingleTimeSeries
             @test_throws ErrorException convert_component!(
-                Line,
-                get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
                 sys,
+                get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
+                Line,
             )
             convert_component!(
-                Line,
+                sys,
                 get_component(MonitoredLine, sys, "bus2-bus3-i_4"),
-                sys;
+                Line;
                 force = true,
             )
             line = get_component(Line, sys, "bus2-bus3-i_4")
@@ -183,17 +183,19 @@ end
             ta = TimeSeries.TimeArray(dates, data, [component_name])
             time_series = SingleTimeSeries(; name = ts_name, data = ta)
             add_time_series!(sys, old_component, time_series)
-            @test get_time_series(SingleTimeSeries, old_component, ts_name) isa SingleTimeSeries
+            @test get_time_series(SingleTimeSeries, old_component, ts_name) isa
+                  SingleTimeSeries
 
-            convert_component!(StandardLoad, old_component, sys)
+            convert_component!(sys, old_component, StandardLoad)
             @test isnothing(get_component(typeof(old_component), sys, component_name))
             new_component = get_component(StandardLoad, sys, component_name)
             @test !isnothing(new_component)
             @test get_name(new_component) == component_name
-            @test get_time_series(SingleTimeSeries, new_component, ts_name) isa SingleTimeSeries
+            @test get_time_series(SingleTimeSeries, new_component, ts_name) isa
+                  SingleTimeSeries
             # Conversion back is not implemented
         end
-    
+
     @test_logs (:error,) min_level = Logging.Error match_mode = :any test_line_conversion()
     test_load_conversion()
 end
