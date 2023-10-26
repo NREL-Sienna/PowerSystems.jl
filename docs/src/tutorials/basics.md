@@ -20,7 +20,7 @@ as follows with fields for the parameters required to describe a bus (along with
 `internal` field used by InfrastructureSystems to improve the efficiency of handling data).
 
 ```@repl basics
-print_struct(Bus)
+print_struct(ACBus)
 ```
 
 ### Type Hierarchy
@@ -129,7 +129,7 @@ along with the name and system
 #### Accessing components
 
 ```@repl basics
-get_component(Bus, sys, "nodeA")
+get_component(ACBus, sys, "nodeA")
 get_component(Line, sys, "1")
 ```
 
@@ -137,7 +137,7 @@ Similarly, you can access all the components of a particular type: *note: the re
 of get_components is a `FlattenIteratorWrapper`, so call `collect` to get an `Array`
 
 ```@repl basics
-get_components(Bus, sys) |> collect
+get_components(ACBus, sys) |> collect
 ```
 
 `get_components` also works on abstract types:
@@ -152,7 +152,7 @@ guarantees on the stability field names and locations. We do however promise to 
 accessor functions stable.*
 
 ```@repl basics
-bus1 = get_component(Bus, sys, "nodeA")
+bus1 = get_component(ACBus, sys, "nodeA")
 @show get_name(bus1);
 @show get_magnitude(bus1);
 nothing #hide
