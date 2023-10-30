@@ -74,3 +74,5 @@ function get_max_active_power(d::StandardLoad)
     total_load += get_max_current_active_power(d)
     return total_load
 end
+
+get_reactive_power_limits(::Source) = (min = -Inf, max = Inf)
