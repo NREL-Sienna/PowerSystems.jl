@@ -11491,6 +11491,137 @@
             "supertype": "TurbineGov"
         },
         {
+            "struct_name": "DEGOV",
+            "docstring": "Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.",
+            "fields": [
+                {
+                    "name": "T1",
+                    "comment": "Governor mechanism time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T2",
+                    "comment": "Turbine power time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T3",
+                    "comment": "Turbine exhaust temperature time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "K",
+                    "comment": "Governor gain (reciprocal of droop)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T4",
+                    "comment": "Governor lead time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T5",
+                    "comment": "Governor lag time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T6",
+                    "comment": "Actuator time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Td",
+                    "comment": "Engine time delay",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Load Set-point",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states of the DEGOV model are:\n\tx_ecb1: Electric control box 1,\n\tx_ecb2: Electric control box 2,\n\tx_a1: Actuator 1,\n\tx_a2: Actuator 2,\n\tx_a3: Actuator 3,",
+                    "internal_default": "[:x_ecb1, :x_ecb2, :x_a1, :x_a2, :x_a3]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "DEGOV has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "DEGOV has 5 differential states",
+                    "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
             "struct_name": "GeneralGovModel",
             "docstring": "GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines.",
             "fields": [

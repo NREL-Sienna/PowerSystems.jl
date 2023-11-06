@@ -84,6 +84,7 @@ include("SingleMass.jl")
 include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("GasTG.jl")
+include("DEGOV.jl")
 include("GeneralGovModel.jl")
 include("SteamTurbineGov1.jl")
 include("HydroTurbineGov.jl")
@@ -336,6 +337,7 @@ export get_Tb1
 export get_Tc
 export get_Tc1
 export get_Tcomp
+export get_Td
 export get_Td0_p
 export get_Td0_pp
 export get_Td_gov
@@ -864,6 +866,7 @@ export set_Tb1!
 export set_Tc!
 export set_Tc1!
 export set_Tcomp!
+export set_Td!
 export set_Td0_p!
 export set_Td0_pp!
 export set_Td_gov!
