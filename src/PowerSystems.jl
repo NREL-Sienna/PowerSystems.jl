@@ -160,6 +160,7 @@ export RenewableEnergyVoltageConverterTypeA
 export DCSource
 export FixedDCSource
 export ZeroOrderBESS
+export DCtoDCBuckBoostBESS
 
 # Filter Exports
 export Filter
@@ -184,12 +185,15 @@ export ActiveVirtualOscillator
 export ReactiveVirtualOscillator
 export ActiveRenewableControllerAB
 export ReactiveRenewableControllerAB
+export ActiveOuterBESSController
+export ReactiveOuterBESSController
 
 # InnerControl Export
 export InnerControl
 export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
+export InnerControlBESS
 
 export Source
 export PeriodicVariableSource

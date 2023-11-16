@@ -95,6 +95,7 @@ include("RenewableEnergyConverterTypeA.jl")
 include("RenewableEnergyVoltageConverterTypeA.jl")
 include("FixedDCSource.jl")
 include("ZeroOrderBESS.jl")
+include("DCtoDCBuckBoostBESS.jl")
 include("LCLFilter.jl")
 include("LCFilter.jl")
 include("RLFilter.jl")
@@ -106,12 +107,15 @@ include("ActivePowerDroop.jl")
 include("ActivePowerPI.jl")
 include("ActiveVirtualOscillator.jl")
 include("ActiveRenewableControllerAB.jl")
+include("ActiveOuterBESSController.jl")
+include("ReactiveOuterBESSController.jl")
 include("ReactiveRenewableControllerAB.jl")
 include("ReactivePowerDroop.jl")
 include("ReactivePowerPI.jl")
 include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
+include("InnerControlBESS.jl")
 include("RECurrentControlB.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
@@ -136,6 +140,8 @@ export get_Be
 export get_Brkpt
 export get_C
 export get_CBase
+export get_C_1
+export get_C_2
 export get_D
 export get_DB_h
 export get_DB_l
@@ -170,6 +176,7 @@ export get_H_lp
 export get_I_lr
 export get_I_max
 export get_Iflim
+export get_Il_lim
 export get_Io_lim
 export get_Iq_lim
 export get_Iqinj_lim
@@ -192,13 +199,17 @@ export get_K_ex
 export get_K_hp
 export get_K_hv
 export get_K_i
+export get_K_if
 export get_K_ig
 export get_K_im
 export get_K_ip
 export get_K_ir
 export get_K_lp
 export get_K_lr
+export get_K_m
+export get_K_osc
 export get_K_p
+export get_K_pf
 export get_K_pg
 export get_K_pm
 export get_K_pr
@@ -208,6 +219,8 @@ export get_K_qv
 export get_K_turb
 export get_K_vi
 export get_K_vp
+export get_K_w
+export get_K_wd
 export get_K_ω
 export get_Ka
 export get_Kb
@@ -224,6 +237,7 @@ export get_Ki_load
 export get_Ki_mw
 export get_Ki_p
 export get_Ki_q
+export get_Ki_vr
 export get_Kig
 export get_Kip
 export get_Kiq
@@ -233,6 +247,7 @@ export get_Kp_gov
 export get_Kp_load
 export get_Kp_p
 export get_Kp_q
+export get_Kp_vr
 export get_Kpg
 export get_Kpp
 export get_Kpq
@@ -249,6 +264,7 @@ export get_L_aq
 export get_L_d
 export get_L_f1d
 export get_L_ff
+export get_L_ind
 export get_L_q
 export get_Ld_ref
 export get_Ls_lim
@@ -268,6 +284,7 @@ export get_P_ref
 export get_PerOp_Flag
 export get_Pf_Flag
 export get_Pfa_ref
+export get_Power_Flag
 export get_Q_Flag
 export get_Q_lim
 export get_Q_lim_inner
@@ -276,6 +293,7 @@ export get_Qref_Flag
 export get_R
 export get_R_1d
 export get_R_1q
+export get_R_bat
 export get_R_c
 export get_R_close
 export get_R_f
@@ -321,11 +339,18 @@ export get_T_ft
 export get_T_fv
 export get_T_g
 export get_T_iq
+export get_T_l1
+export get_T_l2
+export get_T_lg1
+export get_T_lg2
+export get_T_lpf
 export get_T_p
 export get_T_pord
 export get_T_q
 export get_T_rate
+export get_T_rf
 export get_T_rv
+export get_T_w
 export get_Ta
 export get_Ta_2
 export get_Ta_3
@@ -377,6 +402,7 @@ export get_VH_max
 export get_VRT_pnts
 export get_VV_pnts
 export get_V_Flag
+export get_V_bat
 export get_V_frz
 export get_V_lim
 export get_V_lr
@@ -461,6 +487,8 @@ export get_cycle_limits
 export get_d
 export get_dP_lim
 export get_db
+export get_db_p
+export get_db_q
 export get_dbd_pnts
 export get_dc_dc_inductor
 export get_dc_link_capacitance
@@ -515,19 +543,28 @@ export get_is_filter_differential
 export get_k1
 export get_k2
 export get_kWh_Cap
+export get_k_soc
 export get_kad
 export get_kd
+export get_kd_ic
+export get_kd_pc
 export get_kffi
 export get_kffv
+export get_ki1
+export get_ki2
 export get_ki_pll
 export get_kic
 export get_kii
 export get_kiv
+export get_kp1
+export get_kp2
 export get_kp_pll
 export get_kpc
 export get_kpi
 export get_kpv
 export get_kq
+export get_kq_ic
+export get_kq_pc
 export get_kω
 export get_lf
 export get_lg
@@ -664,6 +701,8 @@ export set_Be!
 export set_Brkpt!
 export set_C!
 export set_CBase!
+export set_C_1!
+export set_C_2!
 export set_D!
 export set_DB_h!
 export set_DB_l!
@@ -698,6 +737,7 @@ export set_H_lp!
 export set_I_lr!
 export set_I_max!
 export set_Iflim!
+export set_Il_lim!
 export set_Io_lim!
 export set_Iq_lim!
 export set_Iqinj_lim!
@@ -720,13 +760,17 @@ export set_K_ex!
 export set_K_hp!
 export set_K_hv!
 export set_K_i!
+export set_K_if!
 export set_K_ig!
 export set_K_im!
 export set_K_ip!
 export set_K_ir!
 export set_K_lp!
 export set_K_lr!
+export set_K_m!
+export set_K_osc!
 export set_K_p!
+export set_K_pf!
 export set_K_pg!
 export set_K_pm!
 export set_K_pr!
@@ -736,6 +780,8 @@ export set_K_qv!
 export set_K_turb!
 export set_K_vi!
 export set_K_vp!
+export set_K_w!
+export set_K_wd!
 export set_K_ω!
 export set_Ka!
 export set_Kb!
@@ -752,6 +798,7 @@ export set_Ki_load!
 export set_Ki_mw!
 export set_Ki_p!
 export set_Ki_q!
+export set_Ki_vr!
 export set_Kig!
 export set_Kip!
 export set_Kiq!
@@ -761,6 +808,7 @@ export set_Kp_gov!
 export set_Kp_load!
 export set_Kp_p!
 export set_Kp_q!
+export set_Kp_vr!
 export set_Kpg!
 export set_Kpp!
 export set_Kpq!
@@ -777,6 +825,7 @@ export set_L_aq!
 export set_L_d!
 export set_L_f1d!
 export set_L_ff!
+export set_L_ind!
 export set_L_q!
 export set_Ld_ref!
 export set_Ls_lim!
@@ -796,6 +845,7 @@ export set_P_ref!
 export set_PerOp_Flag!
 export set_Pf_Flag!
 export set_Pfa_ref!
+export set_Power_Flag!
 export set_Q_Flag!
 export set_Q_lim!
 export set_Q_lim_inner!
@@ -804,6 +854,7 @@ export set_Qref_Flag!
 export set_R!
 export set_R_1d!
 export set_R_1q!
+export set_R_bat!
 export set_R_c!
 export set_R_close!
 export set_R_f!
@@ -849,11 +900,18 @@ export set_T_ft!
 export set_T_fv!
 export set_T_g!
 export set_T_iq!
+export set_T_l1!
+export set_T_l2!
+export set_T_lg1!
+export set_T_lg2!
+export set_T_lpf!
 export set_T_p!
 export set_T_pord!
 export set_T_q!
 export set_T_rate!
+export set_T_rf!
 export set_T_rv!
+export set_T_w!
 export set_Ta!
 export set_Ta_2!
 export set_Ta_3!
@@ -905,6 +963,7 @@ export set_VH_max!
 export set_VRT_pnts!
 export set_VV_pnts!
 export set_V_Flag!
+export set_V_bat!
 export set_V_frz!
 export set_V_lim!
 export set_V_lr!
@@ -989,6 +1048,8 @@ export set_cycle_limits!
 export set_d!
 export set_dP_lim!
 export set_db!
+export set_db_p!
+export set_db_q!
 export set_dbd_pnts!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
@@ -1043,19 +1104,28 @@ export set_is_filter_differential!
 export set_k1!
 export set_k2!
 export set_kWh_Cap!
+export set_k_soc!
 export set_kad!
 export set_kd!
+export set_kd_ic!
+export set_kd_pc!
 export set_kffi!
 export set_kffv!
+export set_ki1!
+export set_ki2!
 export set_ki_pll!
 export set_kic!
 export set_kii!
 export set_kiv!
+export set_kp1!
+export set_kp2!
 export set_kp_pll!
 export set_kpc!
 export set_kpi!
 export set_kpv!
 export set_kq!
+export set_kq_ic!
+export set_kq_pc!
 export set_kω!
 export set_lf!
 export set_lg!

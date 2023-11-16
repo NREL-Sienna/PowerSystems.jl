@@ -298,3 +298,29 @@ function get_reactiveRETypeAB_states(Ref_Flag::Int, PF_Flag::Int, V_Flag::Int)
         error("Unsupported value of Ref_Flag, PF_Flag or V_Flag")
     end
 end
+
+function get_ActiveOuterBESSController_states(Power_Flag::Int)
+    if Power_Flag == 0
+        return [], 0
+    elseif Power_Flag == 1
+        return [:Δf_m, :x_w, :x_l, :x_lg], 4
+    elseif Power_Flag == 2
+        return [:Δf_m, :x_i], 2
+    elseif Power_Flag == 3
+        return [:Δf_m, :x_w, :x_l, :x_lg, :x_i], 5
+    else
+        error("Unsupported value of Power_Flag")
+    end
+end
+
+function get_ReactiveOuterBESSController_states(Power_Flag::Int)
+    if Power_Flag == 0
+        return [], 0
+    elseif Power_Flag == 1
+        return [:P_m], 1
+    elseif Power_Flag == 2
+        return [:V_m, :x_vr], 2
+    else
+        error("Unsupported value of Power_Flag")
+    end
+end

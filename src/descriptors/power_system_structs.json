@@ -13219,6 +13219,160 @@
             "supertype": "DCSource"
         },
         {
+            "struct_name": "DCtoDCBuckBoostBESS",
+            "docstring": "Parameters for the DC-side with a Battery Energy Storage System from paper at https://ieeexplore.ieee.org/document/91665756",
+            "fields": [
+                {
+                    "name": "rated_voltage",
+                    "comment": "rated voltage",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "rated_current",
+                    "comment": "rated current",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "V_bat",
+                    "comment": "battery voltage",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "R_bat",
+                    "comment": "battery resistance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "L_ind",
+                    "comment": "DC/DC inductance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "C_1",
+                    "comment": "DC-link side capacitor",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "C_2",
+                    "comment": "Battery side capacitor",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kp1",
+                    "comment": "DC-DC current controller proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ki1",
+                    "comment": "DC-DC current controller first integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kp2",
+                    "comment": "DC-DC duty-cycle controller proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ki2",
+                    "comment": "DC-DC duty-cycle controller integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Il_lim",
+                    "comment": "Limit on inductor current for DC-DC controller",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Vdc_ref",
+                    "comment": "Reference DC-Voltage Set-point",
+                    "null_value": 0,
+                    "default": "1.1",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states of the ZeroOrderBESS model are:\n\tv_in: Voltage at battery bank terminals,\n\tv_dc: DC-link voltage,\n\tI_l: DC-side inductor current,\n\tν: DC-DC first integrator state,\n\tζ: DC-DC second integrator controller",
+                    "internal_default": "[:v_in, :v_dc, :I_l, :ν, :ζ]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "DCtoDCBuckBoostBESS has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                }
+            ],
+            "supertype": "DCSource"
+        },
+        {
             "struct_name": "LCLFilter",
             "docstring": "Parameters of a LCL filter outside the converter, the states are in the grid's reference frame",
             "fields": [
@@ -13984,6 +14138,311 @@
             "supertype": "ActivePowerControl"
         },
         {
+            "struct_name": "ActiveOuterBESSController",
+            "docstring": "Parameters of Active Power Controller from https://ieeexplore.ieee.org/document/9166575",
+            "fields": [
+                {
+                    "name": "Power_Flag",
+                    "comment": "Power Flag for OuterControl: 0: constant P, 1: oscillation damping, 2: frequency reg., 3: oscillation damping + freq reg",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 3
+                    }
+                },
+                {
+                    "name": "T_rf",
+                    "comment": "Frequency error filter time constant (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_osc",
+                    "comment": "Oscillation damping gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_w",
+                    "comment": "Washout filter damping gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_w",
+                    "comment": "Washout filter damping time constant (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_l1",
+                    "comment": "Numerator Time constant for Power Oscillation damping lead block (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_l2",
+                    "comment": "Denominator Time constant for Power Oscillation damping lead block (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_lg1",
+                    "comment": "Numerator Time constant for Power Oscillation damping lag block (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_lg2",
+                    "comment": "Denominator Time constant for Power Oscillation damping lag block (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_d",
+                    "comment": "Steady-state frequency droop constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_wd",
+                    "comment": "Integrator anti-windup gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_pf",
+                    "comment": "Proportional gain for frequency control",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_if",
+                    "comment": "Integral gain for frequency control",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "db_p",
+                    "comment": "dead-band for frequency controller",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "P_lim",
+                    "comment": "Upper/Lower limit on power reference `(P_min, P_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "dP_lim",
+                    "comment": "Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states of the ActiveOuterBESSController model depends on the Flag",
+                    "internal_default": "PowerSystems.get_ActiveOuterBESSController_states(Power_Flag)[1]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "The states of the ActiveRenewableControllerAB model depends on the Flag",
+                    "internal_default": "PowerSystems.get_ActiveOuterBESSController_states(Power_Flag)[2]",
+                    "data_type": "Int"
+                }
+            ],
+            "supertype": "ActivePowerControl"
+        },
+        {
+            "struct_name": "ReactiveOuterBESSController",
+            "docstring": "Parameters of Reactive Power Controller from https://ieeexplore.ieee.org/document/9166575",
+            "fields": [
+                {
+                    "name": "Power_Flag",
+                    "comment": "Power Flag for OuterControl: 0: constant Q, 1: constant power factor, 2: voltage regulation",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "T_p",
+                    "comment": "Active Power measurement filter time constant (s)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_rv",
+                    "comment": "Voltage measurement filter time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Kp_vr",
+                    "comment": "Proportional Gain for voltage regulation",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Ki_vr",
+                    "comment": "Integral Gain for voltage regulation",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "db_q",
+                    "comment": "dead-band for voltage controller",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Q_lim",
+                    "comment": "Upper/Lower limit on power reference `(Q_min, Q_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Q_ref",
+                    "comment": "Reference Power Set-point",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states of the ReactiveOuterBESSController model depends on the Flag",
+                    "internal_default": "PowerSystems.get_ReactiveOuterBESSController_states(Power_Flag)[1]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "The states of the ReactiveRenewableControllerAB model depends on the Flag",
+                    "internal_default": "PowerSystems.get_ReactiveOuterBESSController_states(Power_Flag)[2]",
+                    "data_type": "Int"
+                }
+            ],
+            "supertype": "ReactivePowerControl"
+        },
+        {
             "struct_name": "ReactiveRenewableControllerAB",
             "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
             "fields": [
@@ -14633,6 +15092,103 @@
                     "exclude_setter": true,
                     "comment": "CurrentControl has 2 states",
                     "internal_default": 2,
+                    "data_type": "Int"
+                }
+            ],
+            "supertype": "InnerControl"
+        },
+        {
+            "struct_name": "InnerControlBESS",
+            "docstring": "Parameters of an inner loop from https://ieeexplore.ieee.org/document/9166575.",
+            "fields": [
+                {
+                    "name": "k_soc",
+                    "comment": "SoC compensation gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kd_pc",
+                    "comment": "Current controller d-axis proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kd_ic",
+                    "comment": "Current controller d-axis integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kq_pc",
+                    "comment": "Current controller q-axis proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kq_ic",
+                    "comment": "Current controller q-axis integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "T_lpf",
+                    "comment": "DC voltage low pass filter time constant (s).",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "K_m",
+                    "comment": "Modulation Gain.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "The states of the InnerControlBESS model are:\n\tvdc_m: measured dc-voltage,\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller,\n\tsoc: state of charge internal state",
+                    "internal_default": "[:vdc_m, :γd_ic, :γq_ic, :soc]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "InnerControlBESS has 4 states",
+                    "internal_default": 4,
                     "data_type": "Int"
                 }
             ],
