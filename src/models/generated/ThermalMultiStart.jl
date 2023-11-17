@@ -9,11 +9,11 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         status::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         fuel::ThermalFuels
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
@@ -39,11 +39,11 @@ Data Structure for thermal generation technologies.
 - `name::String`
 - `available::Bool`
 - `status::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `fuel::ThermalFuels`: Prime mover fuel according to EIA 923
 - `active_power_limits::MinMax`
 - `reactive_power_limits::Union{Nothing, MinMax}`
@@ -66,13 +66,13 @@ mutable struct ThermalMultiStart <: ThermalGen
     name::String
     available::Bool
     status::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     "Prime mover fuel according to EIA 923"
     fuel::ThermalFuels
     active_power_limits::MinMax
@@ -102,12 +102,12 @@ mutable struct ThermalMultiStart <: ThermalGen
     internal::InfrastructureSystemsInternal
 end
 
-function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, internal, )
+function ThermalMultiStart(; name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services=Device[], time_at_status=INFINITE_TIME, must_run=false, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    ThermalMultiStart(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, fuel, active_power_limits, reactive_power_limits, ramp_limits, power_trajectory, time_limits, start_time_limits, start_types, operation_cost, base_power, services, time_at_status, must_run, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -116,11 +116,11 @@ function ThermalMultiStart(::Nothing)
         name="init",
         available=false,
         status=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,
-        prime_mover=PrimeMovers.OT,
+        prime_mover_type=PrimeMovers.OT,
         fuel=ThermalFuels.OTHER,
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
@@ -154,8 +154,8 @@ get_active_power(value::ThermalMultiStart) = get_value(value, value.active_power
 get_reactive_power(value::ThermalMultiStart) = get_value(value, value.reactive_power)
 """Get [`ThermalMultiStart`](@ref) `rating`."""
 get_rating(value::ThermalMultiStart) = get_value(value, value.rating)
-"""Get [`ThermalMultiStart`](@ref) `prime_mover`."""
-get_prime_mover(value::ThermalMultiStart) = value.prime_mover
+"""Get [`ThermalMultiStart`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::ThermalMultiStart) = value.prime_mover_type
 """Get [`ThermalMultiStart`](@ref) `fuel`."""
 get_fuel(value::ThermalMultiStart) = value.fuel
 """Get [`ThermalMultiStart`](@ref) `active_power_limits`."""
@@ -203,8 +203,8 @@ set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_valu
 set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, val)
 """Set [`ThermalMultiStart`](@ref) `rating`."""
 set_rating!(value::ThermalMultiStart, val) = value.rating = set_value(value, val)
-"""Set [`ThermalMultiStart`](@ref) `prime_mover`."""
-set_prime_mover!(value::ThermalMultiStart, val) = value.prime_mover = val
+"""Set [`ThermalMultiStart`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::ThermalMultiStart, val) = value.prime_mover_type = val
 """Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
 """Set [`ThermalMultiStart`](@ref) `active_power_limits`."""

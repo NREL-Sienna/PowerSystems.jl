@@ -359,7 +359,7 @@
             "supertype": "Service"
         },
         {
-            "struct_name": "Bus",
+            "struct_name": "ACBus",
             "docstring": "A power-system bus.",
             "inner_constructor_check": "check_bus_params",
             "fields": [
@@ -380,7 +380,7 @@
                     "name": "bustype",
                     "comment": "bus type",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, BusTypes}"
+                    "data_type": "Union{Nothing, ACBusTypes}"
                 },
                 {
                     "name": "angle",
@@ -446,7 +446,79 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "Topology"
+            "supertype": "Bus"
+        },
+        {
+            "struct_name": "DCBus",
+            "docstring": "A power-system DC bus.",
+            "fields": [
+              {
+                "name": "number",
+                "comment": "number associated with the DC bus",
+                "null_value": "0",
+                "data_type": "Int"
+              },
+              {
+                "null_value": "init",
+                "name": "name",
+                "exclude_setter": true,
+                "comment": "the name of the DC bus",
+                "data_type": "String"
+              },
+              {
+                "name": "magnitude",
+                "comment": "voltage as a multiple of basevoltage",
+                "null_value": "0.0",
+                "data_type": "Union{Nothing, Float64}",
+                "valid_range": "voltage_limits",
+                "validation_action": "warn"
+              },
+              {
+                "name": "voltage_limits",
+                "comment": "limits on the voltage variation as multiples of basevoltage",
+                "null_value": "(min=0.0, max=0.0)",
+                "data_type": "Union{Nothing, MinMax}"
+              },
+              {
+                "name": "base_voltage",
+                "comment": "the base voltage in kV",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Float64}",
+                "valid_range": {
+                  "min": 0,
+                  "max": null
+                },
+                "validation_action": "error"
+              },
+              {
+                "name": "area",
+                "comment": "the area containing the DC bus",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, Area}",
+                "default": "nothing"
+              },
+              {
+                "name": "load_zone",
+                "comment": "the load zone containing the DC bus",
+                "null_value": "nothing",
+                "data_type": "Union{Nothing, LoadZone}",
+                "default": "nothing"
+              },
+              {
+                "name": "ext",
+                "data_type": "Dict{String, Any}",
+                "null_value": "Dict{String, Any}()",
+                "default": "Dict{String, Any}()"
+              },
+              {
+                "name": "internal",
+                "comment": "power system internal reference, do not modify",
+                "data_type": "InfrastructureSystemsInternal",
+                "internal_default": "InfrastructureSystemsInternal()",
+                "exclude_setter": true
+              }
+            ],
+            "supertype": "Bus"
         },
         {
             "struct_name": "Arc",
@@ -455,13 +527,13 @@
                 {
                     "name": "from",
                     "comment": "The initial bus",
-                    "null_value": "Bus(nothing)",
+                    "null_value": "ACBus(nothing)",
                     "data_type": "Bus"
                 },
                 {
                     "name": "to",
                     "comment": "The terminal bus",
-                    "null_value": "Bus(nothing)",
+                    "null_value": "ACBus(nothing)",
                     "data_type": "Bus"
                 },
                 {
@@ -502,7 +574,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -612,7 +684,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -730,7 +802,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -866,7 +938,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -982,7 +1054,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1061,7 +1133,7 @@
             "supertype": "ACBranch"
         },
         {
-            "struct_name": "HVDCLine",
+            "struct_name": "TwoTerminalHVDCLine",
             "docstring": "a High voltage DC line.",
             "fields": [
                 {
@@ -1082,7 +1154,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1143,10 +1215,10 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "DCBranch"
+            "supertype": "ACBranch"
         },
         {
-            "struct_name": "VSCDCLine",
+            "struct_name": "TwoTerminalVSCDCLine",
             "docstring": "As implemented in Milano's Book, Page 397.",
             "fields": [
                 {
@@ -1167,7 +1239,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "null_value": "Arc(Bus(nothing), Bus(nothing))",
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "data_type": "Arc"
                 },
@@ -1229,6 +1301,85 @@
                     "exclude_setter": true
                 }
             ],
+            "supertype": "ACBranch"
+        },
+        {
+            "struct_name": "TModelHVDCLine",
+            "docstring": "a HVDC T-Model DC line.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Arc(DCBus(nothing), DCBus(nothing))",
+                    "name": "arc",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Series Resistance system per-unit value"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "l",
+                    "data_type": "Float64",
+                    "comment": "Series Inductance system per-unit value"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "c",
+                    "data_type": "Float64",
+                    "comment": "Shunt capacitance system per-unit value"
+                },
+                {
+                    "name": "active_power_limits_from",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits_to",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
             "supertype": "DCBranch"
         },
         {
@@ -1247,8 +1398,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -1345,8 +1496,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "Y",
@@ -1408,8 +1559,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "Y",
@@ -1486,8 +1637,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -1579,8 +1730,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "base_power",
@@ -1732,8 +1883,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2473,6 +2624,121 @@
             "supertype": "DynamicInjection"
         },
         {
+            "struct_name": "InterconnectingConverter",
+            "docstring": "Interconnecting Power Converter (IPC) for transforming power from an ACBus to a DCBus",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "bus",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "dc_bus",
+                    "null_value": "DCBus(nothing)",
+                    "data_type": "DCBus"
+                },
+                {
+                    "name": "active_power",
+                    "comment": "Active Power on the DCSide",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": "active_power_limits",
+                    "validation_action": "warn",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "rating",
+                    "comment": "Thermal limited MVA Power Output of the converter. <= Capacity",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power of the converter in MVA",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "TwoPartCost(nothing)",
+                    "data_type": "OperationalCost",
+                    "default": "TwoPartCost(0.0, 0.0)",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
+                },
+                {
+                    "name": "efficiency",
+                    "comment": "Conversion efficiency from AC Power to DC Power",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "time_series_container",
+                    "comment": "internal time_series storage",
+                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
+                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
+                    "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "power system internal reference, do not modify",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "StaticInjection"
+        },
+        {
             "struct_name": "CSVGN1",
             "docstring": "Parameters of static shunt compensator: CSVGN1 in PSSE",
             "fields": [
@@ -2650,8 +2916,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2680,7 +2946,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -2849,8 +3115,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -2879,7 +3145,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -2997,8 +3263,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3036,7 +3302,7 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
@@ -3270,8 +3536,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3298,7 +3564,7 @@
                     "validation_action": "error"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -3391,8 +3657,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3419,7 +3685,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -3505,8 +3771,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3600,7 +3866,7 @@
                     "default": "false"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
@@ -3679,8 +3945,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",
@@ -3711,7 +3977,7 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
@@ -3868,11 +4134,11 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
@@ -4031,11 +4297,11 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
-                    "name": "prime_mover",
+                    "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
@@ -4267,6 +4533,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4354,6 +4632,18 @@
                         "max": 1
                     },
                     "default": "1.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
                     "validation_action": "error"
                 },
                 {
@@ -4482,6 +4772,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4574,6 +4876,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
                     "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
@@ -4663,6 +4977,18 @@
                         "max": 1
                     },
                     "default": "1.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "deployed_fraction",
+                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "default": "0.0",
                     "validation_action": "error"
                 },
                 {
@@ -14905,6 +15231,95 @@
             "supertype": "InnerControl"
         },
         {
+            "struct_name": "MagnitudeCurrentLimiter",
+            "docstring": "Parameters of Magnitude (Circular) Current Controller Limiter",
+            "fields": [
+                {
+                    "name": "I_max",
+                    "comment": "Maximum limit on current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "InverterLimiter"
+        },
+        {
+            "struct_name": "InstantaneousCurrentLimiter",
+            "docstring": "Parameters of Instantaneous (Square) Current Controller Limiter",
+            "fields": [
+                {
+                    "name": "Id_max",
+                    "comment": "Maximum limit on d-axis current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Iq_max",
+                    "comment": "Maximum limit on d-axis current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "InverterLimiter"
+        },
+        {
+            "struct_name": "PriorityCurrentLimiter",
+            "docstring": "Parameters of Priority-Based Current Controller Limiter",
+            "fields": [
+                {
+                    "name": "I_max",
+                    "comment": "Maximum limit on current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ϕ_I",
+                    "comment": "Pre-defined angle (measured against the d-axis) for Iref once limit is hit",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": -1.571,
+                        "max": 1.571
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "InverterLimiter"
+        },
+        {
             "struct_name": "AggregateDistributedGenerationA",
             "docstring": "Parameters of the DERA1 model in PSS/E",
             "fields": [
@@ -15331,8 +15746,8 @@
                 },
                 {
                     "name": "bus",
-                    "null_value": "Bus(nothing)",
-                    "data_type": "Bus"
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
                 },
                 {
                     "name": "active_power",

@@ -11,6 +11,8 @@ module PowerSystems
 export System
 export Topology
 export Bus
+export ACBus
+export DCBus
 export Arc
 export AggregationTopology
 export Area
@@ -28,8 +30,9 @@ export ACBranch
 export Line
 export MonitoredLine
 export DCBranch
-export HVDCLine
-export VSCDCLine
+export TwoTerminalHVDCLine
+export TwoTerminalVSCDCLine
+export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
@@ -48,6 +51,7 @@ export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
 export HydroPumpedStorage
+export InterconnectingConverter
 
 export RenewableGen
 export RenewableFix
@@ -191,6 +195,11 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
+# InverterLimiters Export
+export MagnitudeCurrentLimiter
+export InstantaneousCurrentLimiter
+export PriorityCurrentLimiter
+
 export Source
 export PeriodicVariableSource
 
@@ -213,7 +222,7 @@ export VariableReserveNonSpinning
 export TransmissionInterface
 
 export AngleUnits
-export BusTypes
+export ACBusTypes
 export PrimeMovers
 export ThermalFuels
 export StateTypes

@@ -60,13 +60,13 @@ are intended to reflect the options denoted by
 | `PS` | Energy Storage, Reversible Hydraulic Turbine (Pumped Storage) |
 | `OT` | Other |
 | `ST` | Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine) |
-| `PV` | Photovoltaic *renaming from EIA PV to PVe to avoid conflict with BusType.PV |
+| `PV` | Photovoltaic *renaming from EIA PV to PVe to avoid conflict with ACBusType.PV |
 | `WT` | Wind Turbine, Onshore |
 | `WS` | Wind Turbine, Offshore |
 
-## `BusTypes`
+## `ACBusTypes`
 
-`BusTypes` is used to denote which quantities are specified for load flow calculations and
+`ACBusTypes` is used to denote which quantities are specified for load flow calculations and
 to otherwise categorize buses for modeling activities.
 
 | EnumName | Description |

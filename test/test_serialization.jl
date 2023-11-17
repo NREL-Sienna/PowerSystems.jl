@@ -19,7 +19,7 @@
     name = "active_power"
     contributing_devices = Vector{Device}()
     for g in get_components(
-        x -> (x.prime_mover ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
+        x -> (get_prime_mover_type(x) ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
         ThermalStandard,
         sys,
     )
@@ -64,7 +64,7 @@ end
     sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
 
     # Add a Probabilistic time_series to get coverage serializing it.
-    bus = Bus(nothing)
+    bus = ACBus(nothing)
     bus.name = "Bus1234"
     add_component!(sys, bus)
     tg = RenewableFix(nothing)
@@ -101,11 +101,11 @@ end
     sys = System(100.0)
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         # This prevents an error log message.
-        bus.bustype = BusTypes.REF
+        bus.bustype = ACBusTypes.REF
         add_component!(sys, bus)
         gen = ThermalStandard(nothing)
         gen.bus = bus
@@ -137,11 +137,11 @@ end
     sys = System(100.0)
     generators = [ThermalStandard(nothing), ThermalMultiStart(nothing)]
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         # This prevents an error log message.
-        bus.bustype = BusTypes.REF
+        bus.bustype = ACBusTypes.REF
         add_component!(sys, bus)
         gen = generators[i]
         gen.bus = bus
@@ -165,11 +165,11 @@ end
     sys = System(100.0)
     devices = []
     for i in 1:2
-        bus = Bus(nothing)
+        bus = ACBus(nothing)
         bus.name = "bus" * string(i)
         bus.number = i
         # This prevents an error log message.
-        bus.bustype = BusTypes.REF
+        bus.bustype = ACBusTypes.REF
         add_component!(sys, bus)
         gen = ThermalStandard(nothing)
         gen.bus = bus

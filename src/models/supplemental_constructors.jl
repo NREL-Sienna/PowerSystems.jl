@@ -53,7 +53,7 @@ function Line(
 end
 
 """Allows construction with bus type specified as a string for legacy code."""
-function Bus(
+function ACBus(
     number,
     name,
     bustype::String,
@@ -65,10 +65,10 @@ function Bus(
     load_zone;
     ext = Dict{String, Any}(),
 )
-    return Bus(
+    return ACBus(
         number,
         name,
-        get_enum_value(BusTypes, bustype),
+        get_enum_value(ACBusTypes, bustype),
         angle,
         voltage,
         voltage_limits,
@@ -180,7 +180,7 @@ function GenericBattery(
     name::AbstractString,
     available::Bool,
     bus,
-    prime_mover,
+    prime_mover_type,
     initial_energy,
     state_of_charge_limits,
     rating,
@@ -202,7 +202,7 @@ function GenericBattery(
         name,
         available,
         bus,
-        prime_mover,
+        prime_mover_type,
         initial_energy,
         state_of_charge_limits,
         rating,

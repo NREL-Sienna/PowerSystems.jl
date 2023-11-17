@@ -76,7 +76,7 @@ end
         "fields" => Dict{Any, Any}[
             Dict("name" => "name", "data_type" => "String"),
             Dict("name" => "available", "data_type" => "Bool"),
-            Dict("name" => "bus", "data_type" => "Bus"),
+            Dict("name" => "bus", "data_type" => "ACBus"),
             Dict("name" => "tech", "data_type" => "Union{Nothing, TechThermal}"),
             Dict("name" => "econ", "data_type" => "Union{Nothing, EconThermal}"),
             Dict("name" => "internal", "data_type" => "IS.InfrastructureSystemsInternal"),
@@ -156,9 +156,9 @@ end
 
     add_component!(
         sys,
-        Bus(11, "11", BusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
+        ACBus(11, "11", ACBusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
     )
-    B = collect(get_components(Bus, sys))
+    B = collect(get_components(ACBus, sys))
     a = Arc(B[1], B[6])
     badline = Line(
         "badline",
@@ -186,7 +186,7 @@ end
 
     add_component!(
         sys,
-        Bus(11, "11", BusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
+        ACBus(11, "11", ACBusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
     )
     path = joinpath(mktempdir(), "test_validation.json")
     try
@@ -199,7 +199,7 @@ end
     try
         sys2 = PSY.System(path)
 
-        B = collect(get_components(Bus, sys2))
+        B = collect(get_components(ACBus, sys2))
         a = Arc(B[1], B[6])
         badline = Line(
             "badline",
@@ -224,10 +224,10 @@ end
 end
 
 function _make_bus()
-    return Bus(;
+    return ACBus(;
         number = 1,
         name = "bus1",
-        bustype = BusTypes.REF,
+        bustype = ACBusTypes.REF,
         angle = 0.0,
         magnitude = 0.0,
         voltage_limits = (min = 0.0, max = 0.0),
@@ -286,7 +286,7 @@ end
     sys = System(100.0; runchecks = false)
     @test !get_runchecks(sys)
     bus = _make_bus()
-    set_bustype!(bus, BusTypes.PQ)
+    set_bustype!(bus, ACBusTypes.PQ)
     add_component!(sys, bus)
 
     @test_logs(

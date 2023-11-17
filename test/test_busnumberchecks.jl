@@ -6,7 +6,7 @@ base_dir = dirname(dirname(pathof(PowerSystems)))
     test_bus_index =
         () -> begin
             sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
-            @test sort([b.number for b in collect(get_components(Bus, sys))]) ==
+            @test sort([b.number for b in collect(get_components(ACBus, sys))]) ==
                   [1, 2, 3, 4, 10]
             @test sort(
                 collect(
@@ -30,19 +30,19 @@ end
         () -> begin
             sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
             number = 100
-            bus1 = Bus(;
+            bus1 = ACBus(;
                 number = number,
                 name = "bus100",
-                bustype = BusTypes.PV,
+                bustype = ACBusTypes.PV,
                 angle = 1.0,
                 magnitude = 1.0,
                 voltage_limits = (min = -1.0, max = 1.0),
                 base_voltage = 1.0,
             )
-            bus2 = Bus(;
+            bus2 = ACBus(;
                 number = number,
                 name = "bus101",
-                bustype = BusTypes.PV,
+                bustype = ACBusTypes.PV,
                 angle = 1.0,
                 magnitude = 1.0,
                 voltage_limits = (min = -1.0, max = 1.0),

@@ -38,10 +38,10 @@ end
 
 function create_system_with_dynamic_inverter()
     nodes_OMIB = [
-        Bus(
+        ACBus(
             1, #number
             "Bus 1", #Name
-            "REF", #BusType (REF, PV, PQ)
+            "REF", #ACBusType (REF, PV, PQ)
             0, #Angle in radians
             1.06, #Voltage in pu
             (min = 0.94, max = 1.06), #Voltage limits in pu
@@ -49,12 +49,12 @@ function create_system_with_dynamic_inverter()
             nothing,
             nothing,
         ), #Base voltage in kV
-        Bus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
+        ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
     battery = GenericBattery(;
         name = "Battery",
-        prime_mover = PrimeMovers.BA,
+        prime_mover_type = PrimeMovers.BA,
         available = true,
         bus = nodes_OMIB[2],
         initial_energy = 5.0,
@@ -234,7 +234,7 @@ function validate_serialization(
         sys_ext["data"] = 5
         ext_test_bus_name = ""
         IS.prepare_for_serialization!(sys.data, path; force = true)
-        bus = collect(get_components(PSY.Bus, sys))[1]
+        bus = collect(get_components(PSY.ACBus, sys))[1]
         ext_test_bus_name = PSY.get_name(bus)
         ext = PSY.get_ext(bus)
         ext["test_field"] = 1
@@ -254,7 +254,7 @@ function validate_serialization(
         isempty(get_bus_numbers(sys2)) && return false
         sys_ext2 = get_ext(sys2)
         sys_ext2["data"] != 5 && return false
-        bus = PSY.get_component(PSY.Bus, sys2, ext_test_bus_name)
+        bus = PSY.get_component(PSY.ACBus, sys2, ext_test_bus_name)
         ext = PSY.get_ext(bus)
         ext["test_field"] != 1 && return false
         return sys2, PSY.compare_values(sys, sys2; compare_uuids = !assign_new_uuids)

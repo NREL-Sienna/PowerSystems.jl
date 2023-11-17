@@ -12,13 +12,14 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 ## Version Advisory
 
 - PowerSystems will work with Julia v1.6+.
-- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 3.0](https://github.com/NREL-Sienna/PowerSystems.jl/projects/3) for upcoming changes
+- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 4.0](https://github.com/NREL-Sienna/PowerSystems.jl/projects/4) for upcoming changes
 
 ## Device data enabled in PowerSystems
 
 - Generators (Thermal, Renewable and Hydro)
 - Transmission (Lines, and Transformers)
 - Active Flow control devices (DC Lines and Phase Shifting Transformers)
+- TwoTerminal and Multiterminal HVDC
 - Topological elements (Buses, Arcs, Areas)
 - Storage (Batteries)
 - Load (Static, and Curtailable)
@@ -27,17 +28,17 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 - Dynamic Generators Models
 - Dynamic Inverter Models
 
-For a more exhaustive list check the [Documentation](https://nrel-sienna.github.io/PowerSystems.jl/stable).
+For a more exhaustive list, check the [Documentation](https://nrel-sienna.github.io/PowerSystems.jl/stable).
 
 ## Parsing capabilities in PowerSystems
 
 - MATPOWER CaseFormat
-- PSS/e - PTI Format v30 and v33(.raw and .dyr files)
+- PSS/e - PTI Format v30 and v33(.raw and .dyr files) 
 - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/main/RTS_Data/SourceData) table data format
 
 ## Development
 
-Contributions to the development and enhancement of PowerSystems is welcome. Please see
+Contributions to the development and enhancement of PowerSystems are welcome. Please see
 [CONTRIBUTING.md](https://github.com/NREL/PowerSystems.jl/blob/main/CONTRIBUTING.md) for
 code contribution guidelines.
 

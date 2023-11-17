@@ -27,7 +27,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "2.0.0"
+const DATA_FORMAT_VERSION = "3.0.0"
 
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
@@ -51,7 +51,7 @@ System(; kwargs...)
 
 # Arguments
 - `base_power::Float64`: the base power value for the system
-- `buses::Vector{Bus}`: an array of buses
+- `buses::Vector{ACBus}`: an array of buses
 - `components...`: Each element must be an iterable containing subtypes of Component.
 
 # Keyword arguments
@@ -136,7 +136,7 @@ end
 """
 System constructor when components are constructed externally.
 """
-function System(base_power::Float64, buses::Vector{Bus}, components...; kwargs...)
+function System(base_power::Float64, buses::Vector{ACBus}, components...; kwargs...)
     data = _create_system_data_from_kwargs(; kwargs...)
     sys = System(data, base_power; kwargs...)
 
@@ -159,10 +159,10 @@ end
 function System(
     ::Nothing;
     buses = [
-        Bus(;
+        ACBus(;
             number = 0,
             name = "init",
-            bustype = BusTypes.REF,
+            bustype = ACBusTypes.REF,
             angle = 0.0,
             magnitude = 0.0,
             voltage_limits = (min = 0.0, max = 0.0),
@@ -486,7 +486,7 @@ function add_component!(
         # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component; kwargs...)
         # Special condition required to populate the bus numbers in the system after
-    elseif component isa Bus
+    elseif component isa ACBus
         handle_component_addition!(sys, component; kwargs...)
     end
 
@@ -1050,14 +1050,14 @@ function get_aggregation_topology_mapping(
     ::Type{T},
     sys::System,
 ) where {T <: AggregationTopology}
-    mapping = Dict{String, Vector{Bus}}()
+    mapping = Dict{String, Vector{ACBus}}()
     accessor_func = get_aggregation_topology_accessor(T)
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         aggregator = accessor_func(bus)
         name = get_name(aggregator)
         buses = get(mapping, name, nothing)
         if isnothing(buses)
-            mapping[name] = Vector{Bus}([bus])
+            mapping[name] = Vector{ACBus}([bus])
         else
             push!(buses, bus)
         end
@@ -1075,8 +1075,8 @@ end
 
 function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationTopology}
     accessor_func = get_aggregation_topology_accessor(T)
-    buses = Vector{Bus}()
-    for bus in IS.get_components(Bus, data)
+    buses = Vector{ACBus}()
+    for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
         if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
             push!(buses, bus)
@@ -1292,7 +1292,7 @@ IS.validate_struct(component::Component) = validate_component(component)
 Check system consistency and validity.
 """
 function check(sys::System)
-    buses = get_components(Bus, sys)
+    buses = get_components(ACBus, sys)
     slack_bus_check(buses)
     buscheck(buses)
     critical_components_check(sys)
@@ -1535,14 +1535,14 @@ end
 Return bus with name.
 """
 function get_bus(sys::System, name::AbstractString)
-    return get_component(Bus, sys, name)
+    return get_component(ACBus, sys, name)
 end
 
 """
 Return bus with bus_number.
 """
 function get_bus(sys::System, bus_number::Int)
-    for bus in get_components(Bus, sys)
+    for bus in get_components(ACBus, sys)
         if bus.number == bus_number
             return bus
         end
@@ -1555,8 +1555,8 @@ end
 Return all buses values with bus_numbers.
 """
 function get_buses(sys::System, bus_numbers::Set{Int})
-    buses = Vector{Bus}()
-    for bus in get_components(Bus, sys)
+    buses = Vector{ACBus}()
+    for bus in get_components(ACBus, sys)
         if bus.number in bus_numbers
             push!(buses, bus)
         end
@@ -1703,7 +1703,7 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
     return
 end
 
-function check_component_addition(sys::System, bus::Bus; kwargs...)
+function check_component_addition(sys::System, bus::ACBus; kwargs...)
     number = get_number(bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
@@ -1720,7 +1720,7 @@ function check_component_addition(sys::System, bus::Bus; kwargs...)
     end
 end
 
-function handle_component_addition!(sys::System, bus::Bus; kwargs...)
+function handle_component_addition!(sys::System, bus::ACBus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
@@ -1787,7 +1787,7 @@ end
 """
 Throws ArgumentError if the bus number is not stored in the system.
 """
-function handle_component_removal!(sys::System, bus::Bus)
+function handle_component_removal!(sys::System, bus::ACBus)
     _handle_component_removal_common!(bus)
     number = get_number(bus)
     @assert number in sys.bus_numbers "bus number $number is not stored"
@@ -1812,7 +1812,7 @@ end
 
 function handle_component_removal!(sys::System, value::T) where {T <: AggregationTopology}
     _handle_component_removal_common!(value)
-    for device in get_components(Bus, sys)
+    for device in get_components(ACBus, sys)
         if get_aggregation_topology_accessor(T)(device) == value
             _remove_aggregration_topology!(device, value)
         end
@@ -1920,9 +1920,9 @@ Converts a Line component to a MonitoredLine component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{MonitoredLine},
+    sys::System,
     line::Line,
-    sys::System;
+    linetype::Type{MonitoredLine};
     kwargs...,
 )
     new_line = linetype(
@@ -1954,9 +1954,9 @@ Converts a MonitoredLine component to a Line component and replaces the original
 system
 """
 function convert_component!(
-    linetype::Type{Line},
+    sys::System,
     line::MonitoredLine,
-    sys::System;
+    linetype::Type{Line};
     kwargs...,
 )
     force = get(kwargs, :force, false)
@@ -1989,6 +1989,39 @@ function convert_component!(
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
     return
+end
+
+"""
+Converts a PowerLoad component to a StandardLoad component and replaces the original in the
+system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent
+"""
+function convert_component!(
+    sys::System,
+    old_load::PowerLoad,
+    new_type::Type{StandardLoad};
+    kwargs...,
+)
+    new_load = new_type(;
+        name = get_name(old_load),
+        available = get_available(old_load),
+        bus = get_bus(old_load),
+        base_power = get_base_power(old_load),
+        constant_active_power = get_active_power(old_load),
+        constant_reactive_power = get_reactive_power(old_load),
+        max_constant_active_power = get_max_active_power(old_load),
+        max_constant_reactive_power = get_max_active_power(old_load),
+        dynamic_injector = get_dynamic_injector(old_load),
+        internal = deepcopy(get_internal(old_load)),
+        services = Device[],
+        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
+    )
+    IS.assign_new_uuid!(new_load)
+    add_component!(sys, new_load)
+    copy_time_series!(new_load, old_load)
+    for service in get_services(old_load)
+        add_service!(new_load, service, sys)
+    end
+    remove_component!(sys, old_load)
 end
 
 function _validate_or_skip!(sys, component, skip_validation)

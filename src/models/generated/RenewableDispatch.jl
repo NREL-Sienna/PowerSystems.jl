@@ -8,11 +8,11 @@ This file is auto-generated. Do not edit.
     mutable struct RenewableDispatch <: RenewableGen
         name::String
         available::Bool
-        bus::Bus
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         rating::Float64
-        prime_mover::PrimeMovers
+        prime_mover_type::PrimeMovers
         reactive_power_limits::Union{Nothing, MinMax}
         power_factor::Float64
         operation_cost::TwoPartCost
@@ -29,11 +29,11 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`
 - `available::Bool`
-- `bus::Bus`
+- `bus::ACBus`
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover::PrimeMovers`: Prime mover technology according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
 - `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
@@ -47,13 +47,13 @@ This file is auto-generated. Do not edit.
 mutable struct RenewableDispatch <: RenewableGen
     name::String
     available::Bool
-    bus::Bus
+    bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
     "Prime mover technology according to EIA 923"
-    prime_mover::PrimeMovers
+    prime_mover_type::PrimeMovers
     reactive_power_limits::Union{Nothing, MinMax}
     power_factor::Float64
     "Operation Cost of Generation [`TwoPartCost`](@ref)"
@@ -71,12 +71,12 @@ mutable struct RenewableDispatch <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, internal, )
+function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,11 +84,11 @@ function RenewableDispatch(::Nothing)
     RenewableDispatch(;
         name="init",
         available=false,
-        bus=Bus(nothing),
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,
-        prime_mover=PrimeMovers.OT,
+        prime_mover_type=PrimeMovers.OT,
         reactive_power_limits=nothing,
         power_factor=1.0,
         operation_cost=TwoPartCost(nothing),
@@ -112,8 +112,8 @@ get_active_power(value::RenewableDispatch) = get_value(value, value.active_power
 get_reactive_power(value::RenewableDispatch) = get_value(value, value.reactive_power)
 """Get [`RenewableDispatch`](@ref) `rating`."""
 get_rating(value::RenewableDispatch) = get_value(value, value.rating)
-"""Get [`RenewableDispatch`](@ref) `prime_mover`."""
-get_prime_mover(value::RenewableDispatch) = value.prime_mover
+"""Get [`RenewableDispatch`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::RenewableDispatch) = value.prime_mover_type
 """Get [`RenewableDispatch`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::RenewableDispatch) = get_value(value, value.reactive_power_limits)
 """Get [`RenewableDispatch`](@ref) `power_factor`."""
@@ -143,8 +143,8 @@ set_active_power!(value::RenewableDispatch, val) = value.active_power = set_valu
 set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, val)
 """Set [`RenewableDispatch`](@ref) `rating`."""
 set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, val)
-"""Set [`RenewableDispatch`](@ref) `prime_mover`."""
-set_prime_mover!(value::RenewableDispatch, val) = value.prime_mover = val
+"""Set [`RenewableDispatch`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::RenewableDispatch, val) = value.prime_mover_type = val
 """Set [`RenewableDispatch`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`RenewableDispatch`](@ref) `power_factor`."""

@@ -6,15 +6,17 @@ include("MultiStartCost.jl")
 include("Area.jl")
 include("LoadZone.jl")
 include("TransmissionInterface.jl")
-include("Bus.jl")
+include("ACBus.jl")
+include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
-include("HVDCLine.jl")
-include("VSCDCLine.jl")
+include("TwoTerminalHVDCLine.jl")
+include("TwoTerminalVSCDCLine.jl")
+include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
@@ -25,6 +27,7 @@ include("SingleCageInductionMachine.jl")
 include("SimplifiedSingleCageInductionMachine.jl")
 include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
+include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
@@ -114,6 +117,9 @@ include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
+include("MagnitudeCurrentLimiter.jl")
+include("InstantaneousCurrentLimiter.jl")
+include("PriorityCurrentLimiter.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
@@ -170,9 +176,11 @@ export get_H_lim
 export get_H_lp
 export get_I_lr
 export get_I_max
+export get_Id_max
 export get_Iflim
 export get_Io_lim
 export get_Iq_lim
+export get_Iq_max
 export get_Iqinj_lim
 export get_Iqr_lim
 export get_Iqr_lims
@@ -451,6 +459,7 @@ export get_branch_id_control
 export get_bus
 export get_bus_control
 export get_bustype
+export get_c
 export get_c_dc
 export get_cf
 export get_constant_active_power
@@ -464,9 +473,11 @@ export get_d
 export get_dP_lim
 export get_db
 export get_dbd_pnts
+export get_dc_bus
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
+export get_deployed_fraction
 export get_direction_mapping
 export get_dynamic_injector
 export get_e_lim
@@ -531,6 +542,7 @@ export get_kpi
 export get_kpv
 export get_kq
 export get_kω
+export get_l
 export get_lf
 export get_lg
 export get_load_response
@@ -563,7 +575,7 @@ export get_phase_angle_limits
 export get_power_factor
 export get_power_trajectory
 export get_primary_shunt
-export get_prime_mover
+export get_prime_mover_type
 export get_pump_efficiency
 export get_q_nl
 export get_r
@@ -648,6 +660,7 @@ export get_ω_ref
 export get_ωad
 export get_ωf
 export get_ωz
+export get_ϕ_I
 export set_A!
 export set_A1!
 export set_A2!
@@ -699,9 +712,11 @@ export set_H_lim!
 export set_H_lp!
 export set_I_lr!
 export set_I_max!
+export set_Id_max!
 export set_Iflim!
 export set_Io_lim!
 export set_Iq_lim!
+export set_Iq_max!
 export set_Iqinj_lim!
 export set_Iqr_lim!
 export set_Iqr_lims!
@@ -980,6 +995,7 @@ export set_branch_id_control!
 export set_bus!
 export set_bus_control!
 export set_bustype!
+export set_c!
 export set_c_dc!
 export set_cf!
 export set_constant_active_power!
@@ -993,9 +1009,11 @@ export set_d!
 export set_dP_lim!
 export set_db!
 export set_dbd_pnts!
+export set_dc_bus!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
+export set_deployed_fraction!
 export set_direction_mapping!
 export set_dynamic_injector!
 export set_e_lim!
@@ -1060,6 +1078,7 @@ export set_kpi!
 export set_kpv!
 export set_kq!
 export set_kω!
+export set_l!
 export set_lf!
 export set_lg!
 export set_load_response!
@@ -1092,7 +1111,7 @@ export set_phase_angle_limits!
 export set_power_factor!
 export set_power_trajectory!
 export set_primary_shunt!
-export set_prime_mover!
+export set_prime_mover_type!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!
@@ -1177,3 +1196,4 @@ export set_ω_ref!
 export set_ωad!
 export set_ωf!
 export set_ωz!
+export set_ϕ_I!

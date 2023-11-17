@@ -10,8 +10,8 @@ dates = collect(
 )
 
 nodes14() = [
-    Bus(1, "Bus 1", "REF", 0.0, 1.06, (min = 0.94, max = 1.06), 69, nothing, nothing),
-    Bus(
+    ACBus(1, "Bus 1", "REF", 0.0, 1.06, (min = 0.94, max = 1.06), 69, nothing, nothing),
+    ACBus(
         2,
         "Bus 2",
         "PV",
@@ -22,7 +22,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         3,
         "Bus 3",
         "PV",
@@ -33,7 +33,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         4,
         "Bus 4",
         "PQ",
@@ -44,7 +44,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         5,
         "Bus 5",
         "PQ",
@@ -55,7 +55,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         6,
         "Bus 6",
         "PV",
@@ -66,7 +66,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         7,
         "Bus 7",
         "PQ",
@@ -77,7 +77,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         8,
         "Bus 8",
         "PV",
@@ -88,7 +88,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         9,
         "Bus 9",
         "PQ",
@@ -99,7 +99,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         10,
         "Bus 10",
         "PQ",
@@ -110,7 +110,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         11,
         "Bus 11",
         "PQ",
@@ -121,7 +121,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         12,
         "Bus 12",
         "PQ",
@@ -132,7 +132,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         13,
         "Bus 13",
         "PQ",
@@ -143,7 +143,7 @@ nodes14() = [
         nothing,
         nothing,
     ),
-    Bus(
+    ACBus(
         14,
         "Bus 14",
         "PQ",
@@ -180,7 +180,7 @@ branches14_dc(nodes14) = [
         4.896,
         1.04,
     ),
-    HVDCLine(
+    TwoTerminalHVDCLine(
         "DCLine3",
         true,
         0.0,
@@ -191,7 +191,7 @@ branches14_dc(nodes14) = [
         (min = -600.0, max = 600),
         (l0 = 0.01, l1 = 0.001),
     ),
-    HVDCLine(
+    TwoTerminalHVDCLine(
         "DCLine4",
         true,
         0.0,
@@ -648,7 +648,7 @@ thermal_generators14(nodes14) = [
         active_power = 2.0,
         reactive_power = -0.169,
         rating = 2.324,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 3.332),
         reactive_power_limits = (min = 0.0, max = 0.1),
@@ -665,7 +665,7 @@ thermal_generators14(nodes14) = [
         active_power = 0.40,
         reactive_power = 0.42,
         rating = 1.4,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 1.40),
         reactive_power_limits = (min = -0.4, max = 0.5),
@@ -682,7 +682,7 @@ thermal_generators14(nodes14) = [
         active_power = 0.0,
         reactive_power = 0.23,
         rating = 1.0,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 1.0),
         reactive_power_limits = (min = 0.0, max = 0.4),
@@ -699,7 +699,7 @@ thermal_generators14(nodes14) = [
         active_power = 0.0,
         reactive_power = 0.12,
         rating = 1.0,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 1.0),
         reactive_power_limits = (min = -0.06, max = 0.24),
@@ -716,7 +716,7 @@ thermal_generators14(nodes14) = [
         active_power = 0.0,
         reactive_power = 0.174,
         rating = 1.0,
-        prime_mover = PrimeMovers.ST,
+        prime_mover_type = PrimeMovers.ST,
         fuel = ThermalFuels.COAL,
         active_power_limits = (min = 0.0, max = 1.0),
         reactive_power_limits = (min = -0.06, max = 0.24),
@@ -839,7 +839,7 @@ timeseries_DA14 = [
 battery14(nodes14) = [
     GenericBattery(;
         name = "Bat",
-        prime_mover = PrimeMovers.BA,
+        prime_mover_type = PrimeMovers.BA,
         available = true,
         bus = nodes14[1],
         initial_energy = 5.0,
