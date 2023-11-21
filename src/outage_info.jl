@@ -3,8 +3,8 @@ abstract type OutageInfo <: IS.InfrastructureSystemsInfo end
 struct ForcerdOutage <: OutageInfo
     forced_outage_rate::Float64
     mean_time_to_recovery::Int
-    outage_probability::Float64,
-    recovery_probability::Float64,
+    outage_probability::Float64
+    recovery_probability::Float64
     ext::Dict{String, Any}
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     internal::InfrastructureSystemsInternal
