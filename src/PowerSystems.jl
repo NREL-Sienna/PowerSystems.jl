@@ -421,6 +421,8 @@ import InfrastructureSystems:
     ForecastCache,
     StaticTimeSeriesCache,
     InfrastructureSystemsComponent,
+    InfrastructureSystemsGeo,
+    InfrastructureSystemsInfo,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
     DeviceParameter,
