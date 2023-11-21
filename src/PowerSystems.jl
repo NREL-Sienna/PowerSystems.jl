@@ -550,6 +550,10 @@ include("models/dynamic_branch.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
 
+# Infos
+include("outage_info.jl")
+include("geographic_info.jl")
+
 # Definitions of PowerSystem
 include("base.jl")
 include("data_format_conversions.jl")
