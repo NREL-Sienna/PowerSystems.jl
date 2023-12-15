@@ -259,6 +259,19 @@ end
         D_turb = 0.0,
     )
     @test gast_tg isa PowerSystems.DynamicComponent
+
+    degov_tg = PSY.DEGOV(;
+        T1 = 0.0,
+        T2 = 0.0,
+        T3 = 0.0,
+        K = 18.0,
+        T4 = 12.0,
+        T5 = 5.0,
+        T6 = 0.2,
+        Td = 0.0,
+        P_ref = 0.0,
+    )
+    @test degov_tg isa PowerSystems.DynamicComponent
 end
 
 ################ AVR Data #####################
