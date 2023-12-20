@@ -1,5 +1,5 @@
 function add_geographic_info!(sys::System, component::Component, ginfo::InfrastructureSystemsGeo)
-    IS.add_info!(sys.data.infos, outage, ginfo)
+    IS.add_info!(sys.data.infos, component, ginfo)
     return
 end
 
