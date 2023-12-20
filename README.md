@@ -64,4 +64,4 @@ keywords = {Power Systems, Julia, Energy},
 
 PowerSystems is released under a BSD [license](https://github.com/NREL/PowerSystems.jl/blob/main/LICENSE).
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP)
-initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/)).
+initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/)) Software Record SWR-23-105.
