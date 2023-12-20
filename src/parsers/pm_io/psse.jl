@@ -449,7 +449,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     br_r *= per_unit_factor
                     br_x *= per_unit_factor
                 end
-                @info br_x
+
                 # Zeq scaling for tap2 (see eq (4.21b) in PROGRAM APPLICATION GUIDE 1 in PSSE installation folder)
                 # Unit Transformations
                 if transformer["CW"] == 1  # "for off-nominal turns ratio in pu of winding bus base voltage"
