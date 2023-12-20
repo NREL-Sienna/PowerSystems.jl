@@ -591,10 +591,14 @@ end
 function make_line(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
-
+    available_value = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available_value = false
+    end
     return Line(;
         name = name,
-        available = d["br_status"] == 1,
+        available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -609,9 +613,14 @@ end
 function make_transformer_2w(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
+    available_value = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available_value = false
+    end
     return Transformer2W(;
         name = name,
-        available = d["br_status"] == 1,
+        available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -625,9 +634,14 @@ end
 function make_tap_transformer(name, d, bus_f, bus_t)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
+    available_value = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available_value = false
+    end
     return TapTransformer(;
         name = name,
-        available = d["br_status"] == 1,
+        available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
@@ -642,9 +656,14 @@ end
 function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
+    available_value = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available_value = false
+    end
     return PhaseShiftingTransformer(;
         name = name,
-        available = d["br_status"] == 1,
+        available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
