@@ -487,7 +487,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     error("invalid transformer $(transformer["CW"])")
                 end
 
-                @info br_x
                 @assert transformer["X1-2"] > 0.0 && br_x > 0.0
                 sub_data["br_r"] = br_r
                 sub_data["br_x"] = br_x
