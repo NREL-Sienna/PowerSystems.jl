@@ -244,3 +244,26 @@ end
         ),
     )
 end
+
+@testset "Test serialization of System fields" begin
+    frequency = 50.0
+    name = "my_system"
+    description = "test"
+    sys = System(100; frequency = frequency, name = name, description = description)
+    bus = ACBus(nothing)
+    bus.name = "bus1"
+    bus.number = 1
+    # This prevents an error log message.
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    gen = ThermalStandard(nothing)
+    gen.bus = bus
+    gen.name = "gen1"
+    add_component!(sys, gen)
+
+    sys2, result = validate_serialization(sys)
+    @test result
+    @test sys2.frequency == frequency
+    @test sys2.metadata.name == name
+    @test sys2.metadata.description == description
+end
