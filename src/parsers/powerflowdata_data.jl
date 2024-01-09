@@ -114,11 +114,10 @@ function read_bus!(
     bus_number_to_bus = Dict{Int, ACBus}()
     bus_types = instances(ACBusTypes)
 
-    _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in eachindex(buses.i)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = buses.name[ix] * "_$(buses.i[ix])"
+        bus_name = strip(buses.name[ix]) * "_$(buses.i[ix])" * "_$(buses.ide[ix])"
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
@@ -210,11 +209,10 @@ function read_bus!(
 
     bus_types = instances(ACBusTypes)
 
-    _get_name = get(kwargs, :bus_name_formatter, strip)
     for ix in 1:length(buses)
         # d id the data dict for each bus
         # d_key is bus key
-        bus_name = _get_name(buses.name[ix])
+        bus_name = strip(buses.name[ix]) * "_$(buses.i[ix])" * "_$(buses.ide[ix])"
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
                 "Found duplicate bus names of $bus_name, consider formatting names with `bus_name_formatter` kwarg",
