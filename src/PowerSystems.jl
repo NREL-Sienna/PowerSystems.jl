@@ -18,6 +18,8 @@ export AggregationTopology
 export Area
 export LoadZone
 export get_aggregation_topology_accessor
+export SupplementalAttribute
+export GeographicInfo
 
 export Component
 export Device
@@ -204,6 +206,11 @@ export PriorityCurrentLimiter
 export Source
 export PeriodicVariableSource
 
+# Outages
+export Outage
+export ForcedOutage
+export PlannedOutage
+
 export Service
 export AbstractReserve
 export Reserve
@@ -241,6 +248,7 @@ export ForecastCache
 export StaticTimeSeriesCache
 export NormalizationFactor
 export NormalizationTypes
+export TimeSeriesCounts
 
 export get_dynamic_components
 
@@ -282,6 +290,13 @@ export get_forecast_horizon
 export get_forecast_initial_timestamp
 export get_forecast_interval
 export get_forecast_window_count
+export add_supplemental_attribute!
+export remove_supplemental_attribute!
+export remove_supplemental_attributes!
+export get_supplemental_attribute
+export get_supplemental_attributes
+export has_supplemental_attributes
+export iterate_supplemental_attributes
 export get_time_series
 export get_time_series_array
 export get_time_series_resolution
@@ -318,6 +333,8 @@ export CompressionTypes
 export get_bus_numbers
 export get_name
 export set_name!
+export get_component_uuids
+export get_supplemental_attributes_container
 export get_description
 export set_description!
 export get_base_power
@@ -420,17 +437,18 @@ import InfrastructureSystems:
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
+    TimeSeriesCounts,
     InfrastructureSystemsComponent,
-    InfrastructureSystemsGeo,
-    InfrastructureSystemsInfo,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
+    SupplementalAttribute,
     DeviceParameter,
     FlattenIteratorWrapper,
     LazyDictFromIterator,
     DataFormatError,
     InvalidRange,
     InvalidValue,
+    GeographicInfo,
     copy_time_series!,
     get_count,
     get_data,
@@ -438,6 +456,10 @@ import InfrastructureSystems:
     get_resolution,
     get_window,
     get_name,
+    get_component_uuids,
+    get_supplemental_attribute,
+    get_supplemental_attributes,
+    get_supplemental_attributes_container,
     set_name!,
     get_internal,
     set_internal!,
@@ -453,6 +475,7 @@ import InfrastructureSystems:
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
     get_next_time,
+    has_supplemental_attributes,
     get_units_info,
     set_units_info!,
     to_json,
@@ -550,9 +573,8 @@ include("models/dynamic_branch.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
 
-# Infos
-include("outage_info.jl")
-include("geographic_info.jl")
+# Supplemental attributes
+include("outages.jl")
 
 # Definitions of PowerSystem
 include("base.jl")

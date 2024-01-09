@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         area::Union{Nothing, Area}
         load_zone::Union{Nothing, LoadZone}
         ext::Dict{String, Any}
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -28,6 +29,7 @@ A power-system DC bus.
 - `area::Union{Nothing, Area}`: the area containing the DC bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
 - `ext::Dict{String, Any}`
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct DCBus <: Bus
@@ -46,16 +48,18 @@ mutable struct DCBus <: Bus
     "the load zone containing the DC bus"
     load_zone::Union{Nothing, LoadZone}
     ext::Dict{String, Any}
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function DCBus(number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
-    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
+function DCBus(number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function DCBus(; number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+function DCBus(; number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -69,6 +73,7 @@ function DCBus(::Nothing)
         area=nothing,
         load_zone=nothing,
         ext=Dict{String, Any}(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -88,6 +93,8 @@ get_area(value::DCBus) = value.area
 get_load_zone(value::DCBus) = value.load_zone
 """Get [`DCBus`](@ref) `ext`."""
 get_ext(value::DCBus) = value.ext
+"""Get [`DCBus`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::DCBus) = value.supplemental_attributes_container
 """Get [`DCBus`](@ref) `internal`."""
 get_internal(value::DCBus) = value.internal
 
@@ -105,3 +112,5 @@ set_area!(value::DCBus, val) = value.area = val
 set_load_zone!(value::DCBus, val) = value.load_zone = val
 """Set [`DCBus`](@ref) `ext`."""
 set_ext!(value::DCBus, val) = value.ext = val
+"""Set [`DCBus`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::DCBus, val) = value.supplemental_attributes_container = val
