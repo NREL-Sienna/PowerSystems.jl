@@ -1407,7 +1407,16 @@ function IS.deserialize(
 
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
-    handled = ("data", "units_settings", "bus_numbers", "internal", "data_format_version")
+    handled = (
+        "data",
+        "units_settings",
+        "bus_numbers",
+        "internal",
+        "data_format_version",
+        "metadata",
+        "name",
+        "description",
+    )
     parsed_kwargs = Dict{Symbol, Any}()
     for field in setdiff(keys(raw), handled)
         parsed_kwargs[Symbol(field)] = raw[field]
@@ -1429,7 +1438,14 @@ function IS.deserialize(
     name = get(metadata, "name", nothing)
     description = get(metadata, "description", nothing)
     internal = IS.deserialize(InfrastructureSystemsInternal, raw["internal"])
-    sys = System(data, units, internal; name = name, description = description, kwargs...)
+    sys = System(
+        data,
+        units,
+        internal;
+        name = name,
+        description = description,
+        parsed_kwargs...,
+    )
 
     if raw["data_format_version"] != DATA_FORMAT_VERSION
         pre_deserialize_conversion!(raw, sys)
