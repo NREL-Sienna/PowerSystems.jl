@@ -34,6 +34,7 @@ function check_bus_params(
     area,
     load_zone,
     ext,
+    attributes,
     internal,
 )
     if !isnothing(bustype)
@@ -55,5 +56,6 @@ function check_bus_params(
     area,
     load_zone,
     ext,
+    attributes,
     internal
 end

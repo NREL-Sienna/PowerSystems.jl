@@ -1,4 +1,4 @@
-@testset "Test JSON serialization of RTS data with mutable time series" begin
+@testset "Test JSON serialization of RTS data with RegulationDevice" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     # Add an AGC service to cover its special serialization.
     control_area = get_component(Area, sys, "1")
@@ -220,6 +220,12 @@ end
         component2 = get_component(typeof(component1), sys2, get_name(component1))
         @test IS.get_uuid(component1) != IS.get_uuid(component2)
     end
+end
+
+@testset "Test serialization of supplemental attributes" begin
+    sys = create_system_with_outages()
+    sys2, result = validate_serialization(sys; assign_new_uuids = true)
+    @test result
 end
 
 @testset "Test verification of invalid ext fields" begin
