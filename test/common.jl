@@ -156,6 +156,50 @@ function create_system_with_dynamic_inverter()
     return sys
 end
 
+"""
+Create a system with supplemental attributes with the criteria below.
+
+- Two GeographicInfo instances each assigned to multiple components.
+- Two ThermalStandards each with two ForcedOutage instances and two PlannedOutage instances.
+- Each outage has time series.
+"""
+function create_system_with_outages()
+    sys = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_forecasts = true,
+    )
+    gens = collect(get_components(ThermalStandard, sys))
+    gen1 = gens[1]
+    gen2 = gens[2]
+    geo1 = GeographicInfo(; geo_json = Dict("x" => 1.0, "y" => 2.0))
+    geo2 = GeographicInfo(; geo_json = Dict("x" => 3.0, "y" => 4.0))
+    add_supplemental_attribute!(sys, gen1, geo1)
+    add_supplemental_attribute!(sys, gen1.bus, geo1)
+    add_supplemental_attribute!(sys, gen2, geo2)
+    add_supplemental_attribute!(sys, gen2.bus, geo2)
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    fo1 = ForcedOutage(; forced_outage_rate = 1.0)
+    fo2 = ForcedOutage(; forced_outage_rate = 2.0)
+    po1 = PlannedOutage(; outage_schedule = 3.0)
+    po2 = PlannedOutage(; outage_schedule = 4.0)
+    add_supplemental_attribute!(sys, gen1, fo1)
+    add_supplemental_attribute!(sys, gen1, po1)
+    add_supplemental_attribute!(sys, gen2, fo2)
+    add_supplemental_attribute!(sys, gen2, po2)
+    for (i, outage) in enumerate((fo1, fo2, po1, po2))
+        data = collect(i:(i + 23))
+        ta = TimeSeries.TimeArray(dates, data, ["1"])
+        name = "ts_$(i)"
+        ts = SingleTimeSeries(; name = name, data = ta)
+        add_time_series!(sys, outage, ts)
+    end
+
+    return sys
+end
+
 function test_accessors(component)
     ps_type = typeof(component)
 

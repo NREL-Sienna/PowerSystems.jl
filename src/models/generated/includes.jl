@@ -619,6 +619,7 @@ export get_states_types
 export get_status
 export get_storage_capacity
 export get_storage_target
+export get_supplemental_attributes_container
 export get_sustained_time
 export get_switch
 export get_tF_delay
@@ -1155,6 +1156,7 @@ export set_states_types!
 export set_status!
 export set_storage_capacity!
 export set_storage_target!
+export set_supplemental_attributes_container!
 export set_sustained_time!
 export set_switch!
 export set_tF_delay!

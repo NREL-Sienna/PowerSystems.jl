@@ -325,11 +325,10 @@ end
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = true,
-        force_build = true,
     )
-    _, ts_count, forecast_count = get_time_series_counts(c_sys5)
-    @test ts_count == 0
-    @test forecast_count == 3
+    counts = get_time_series_counts(c_sys5)
+    @test counts.static_time_series_count == 0
+    @test counts.forecast_count == 3
 end
 
 @testset "Test deepcopy with time series options" begin

@@ -210,13 +210,13 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         )
         runchecks && check(sys)
         if assign_new_uuids
-            IS.assign_new_uuid!(sys)
+            IS.assign_new_uuid_internal!(sys)
             for component in get_components(Component, sys)
-                IS.assign_new_uuid!(component)
+                assign_new_uuid!(sys, component)
             end
             for component in
                 IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-                IS.assign_new_uuid!(component)
+                assign_new_uuid!(sys, component)
             end
             # Note: this does not change UUIDs for time series data because they are
             # shared with components.
@@ -914,10 +914,23 @@ function get_components(
     return IS.get_components(T, sys.data, filter_func)
 end
 
-# These are helper functions for debugging problems.
-# Searches components linearly, and so is slow compared to the other get_component functions
+"""
+Return a vector of components that are attached to the supplemental attribute.
+"""
+function get_components(sys::System, attribute::SupplementalAttribute)
+    return IS.get_components(sys.data, attribute)
+end
+
+"""
+Get the component by UUID.
+"""
 get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
 get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+
+"""
+Change the UUID of a component.
+"""
+assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -1259,6 +1272,104 @@ function transform_single_time_series!(sys::System, horizon::Int, interval::Date
 end
 
 """
+Add a supplemental attribute to the component. The attribute may already be attached to a
+different component.
+"""
+function add_supplemental_attribute!(
+    sys::System,
+    component::Component,
+    attribute::IS.SupplementalAttribute,
+)
+    return IS.add_supplemental_attribute!(sys.data, component, attribute)
+end
+
+"""
+Remove the supplemental attribute from the component. The attribute will be removed from the
+system if it is not attached to any other component.
+"""
+function remove_supplemental_attribute!(
+    sys::System,
+    component::Component,
+    attribute::IS.SupplementalAttribute,
+)
+    return IS.remove_supplemental_attribute!(sys.data, component, attribute)
+end
+
+"""
+Remove the supplemental attribute from the system and all attached components.
+"""
+function remove_supplemental_attribute!(sys::System, attribute::IS.SupplementalAttribute)
+    return IS.remove_supplemental_attribute!(sys.data, attribute)
+end
+
+"""
+Remove all supplemental attributes with the given type from the system.
+"""
+function remove_supplemental_attributes!(
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.remove_supplemental_attributes!(T, sys.data)
+end
+
+"""
+Returns an iterator of supplemental attributes. T can be concrete or abstract.
+Call collect on the result if an array is desired.
+
+# Examples
+```julia
+iter = get_supplemental_attributes(ForcedOutage, sys)
+iter = get_supplemental_attributes(Outage, sys)
+iter = get_supplemental_attributes(x -> x.forced_outage_rate >= 0.5, ForcedOutage, sys)
+outages = get_supplemental_attributes(ForcedOutage, sys) do outage
+    x.forced_outage_rate >= 0.5
+end
+outages = collect(get_supplemental_attributes(ForcedOutage, sys))
+```
+
+See also: [`iterate_supplemental_attributes`](@ref)
+"""
+function get_supplemental_attributes(
+    filter_func::Function,
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.get_supplemental_attributes(filter_func, T, sys.data)
+end
+
+function get_supplemental_attributes(
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.get_supplemental_attributes(T, sys.data)
+end
+
+"""
+Return the supplemental attribute with the given uuid.
+
+Throws ArgumentError if the attribute is not stored.
+"""
+function get_supplemental_attribute(sys::System, uuid::Base.UUID)
+    return IS.get_supplemental_attribute(sys.data, uuid)
+end
+
+"""
+Iterates over all supplemental_attributes.
+
+# Examples
+```julia
+for supplemental_attribute in iterate_supplemental_attributes(sys)
+    @show supplemental_attribute
+end
+```
+
+See also: [`get_supplemental_attributes`](@ref)
+"""
+function iterate_supplemental_attributes(sys::System)
+    return IS.iterate_supplemental_attributes(sys.data)
+end
+
+"""
 Sanitize component values.
 """
 sanitize_component!(component::Component, sys::System) = true
@@ -1523,6 +1634,11 @@ function deserialize_components!(sys::System, raw)
     end
 
     # Run in order based on type composition.
+    # Bus and AGC instances can have areas and LoadZones.
+    # Most components have buses.
+    # Static injection devices can contain dynamic injection devices.
+    # StaticInjectionSubsystem instances have StaticInjection subcomponents.
+    # RegulationDevice instances have one StaticInjection subcomponent.
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
@@ -1530,12 +1646,10 @@ function deserialize_components!(sys::System, raw)
         include_types = [Arc, Service],
         skip_types = [StaticReserveGroup],
     )
-    deserialize_and_add!(; include_types = [Branch], skip_types = [DynamicBranch])
+    deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
-    # Static injection devices can contain dynamic injection devices.
     deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
-    # StaticInjectionSubsystem instances have StaticInjection subcomponents.
-    deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
+    deserialize_and_add!(; skip_types = [StaticInjectionSubsystem, RegulationDevice])
     deserialize_and_add!()
 
     for subsystem in get_components(StaticInjectionSubsystem, sys)
@@ -1544,6 +1658,10 @@ function deserialize_components!(sys::System, raw)
         for subcomponent in get_subcomponents(subsystem)
             IS.mask_component!(sys.data, subcomponent)
         end
+    end
+
+    for component in get_components(RegulationDevice, sys)
+        IS.mask_component!(sys.data, component.device)
     end
 end
 
@@ -1747,9 +1865,7 @@ function handle_component_addition!(sys::System, component::RegulationDevice; kw
     copy_time_series!(component, component.device)
     if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
         # This will not be true during deserialization, and so won't run then.
-        remove_component!(sys, component.device)
-        # The line above removed the component setting so needs to be added back
-        set_units_setting!(component.device, component.internal.units_info)
+        IS.mask_component!(sys.data, component.device; remove_time_series = true)
     end
     return
 end
@@ -1958,7 +2074,7 @@ function convert_component!(
         InfrastructureSystems.TimeSeriesContainer(),
         deepcopy(line.internal),
     )
-    IS.assign_new_uuid!(line)
+    assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
@@ -1967,7 +2083,7 @@ end
 
 """
 Converts a MonitoredLine component to a Line component and replaces the original in the
-system
+system.
 """
 function convert_component!(
     sys::System,
@@ -2000,7 +2116,7 @@ function convert_component!(
         InfrastructureSystems.TimeSeriesContainer(),
         deepcopy(line.internal),
     )
-    IS.assign_new_uuid!(line)
+    assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     remove_component!(sys, line)
@@ -2009,7 +2125,7 @@ end
 
 """
 Converts a PowerLoad component to a StandardLoad component and replaces the original in the
-system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent
+system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent.
 """
 function convert_component!(
     sys::System,
@@ -2031,7 +2147,7 @@ function convert_component!(
         services = Device[],
         time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
-    IS.assign_new_uuid!(new_load)
+    assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     for service in get_services(old_load)
@@ -2064,7 +2180,9 @@ function _validate_or_skip!(sys, component, skip_validation)
 end
 
 """
-Return a tuple of counts of components with time series and total time series and forecasts.
+Return an instance of TimeSeriesCounts.
+
+See also: [`TimeSeriesCounts`](@ref)
 """
 get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 

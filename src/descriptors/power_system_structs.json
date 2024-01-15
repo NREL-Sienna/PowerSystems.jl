@@ -439,6 +439,13 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
+                    "name": "supplemental_attributes_container",
+                    "comment": "container for supplemental attributes",
+                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
+                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
+                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
+                },
+                {
                     "name": "internal",
                     "comment": "power system internal reference, do not modify",
                     "data_type": "InfrastructureSystemsInternal",
@@ -509,6 +516,13 @@
                 "data_type": "Dict{String, Any}",
                 "null_value": "Dict{String, Any}()",
                 "default": "Dict{String, Any}()"
+              },
+              {
+                  "name": "supplemental_attributes_container",
+                  "comment": "container for supplemental attributes",
+                  "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
+                  "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
+                  "default": "InfrastructureSystems.SupplementalAttributesContainer()"
               },
               {
                 "name": "internal",
@@ -3912,6 +3926,13 @@
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
+                },
+                {
+                    "name": "supplemental_attributes_container",
+                    "comment": "container for supplemental attributes",
+                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
+                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
+                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",

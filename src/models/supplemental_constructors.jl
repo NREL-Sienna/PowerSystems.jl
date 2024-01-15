@@ -76,6 +76,7 @@ function ACBus(
         area,
         load_zone,
         ext,
+        IS.SupplementalAttributesContainer(),
         InfrastructureSystemsInternal(),
     )
 end
