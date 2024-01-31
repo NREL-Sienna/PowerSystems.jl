@@ -202,7 +202,7 @@ function convert_units!(
 end
 
 function parse_enum_mapping(::Type{ThermalFuels}, fuel::AbstractString)
-    return STRING2FUEL[normalize(fuel, casefold = true)]
+    return STRING2FUEL[normalize(fuel; casefold = true)]
 end
 
 function parse_enum_mapping(::Type{ThermalFuels}, fuel::Symbol)
