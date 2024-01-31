@@ -19,28 +19,28 @@ merge!(
     ),
 )
 
-const STRING2PRIMEMOVER = Dict((string(x) => x) for x in instances(PrimeMovers))
+const STRING2PRIMEMOVER =
+    Dict((normalize(string(x); casefold = true) => x) for x in instances(PrimeMovers))
 merge!(
     STRING2PRIMEMOVER,
     Dict(
-        "W2" => PrimeMovers.WT,
-        "WIND" => PrimeMovers.WT,
-        "PV" => PrimeMovers.PVe,
-        "PVe" => PrimeMovers.PVe,
-        "SOLAR" => PrimeMovers.PVe,
-        "RTPV" => PrimeMovers.PVe,
-        "NB" => PrimeMovers.ST,
-        "STEAM" => PrimeMovers.ST,
-        "HYDRO" => PrimeMovers.HY,
-        "ROR" => PrimeMovers.HY,
-        "PUMP" => PrimeMovers.PS,
-        "PUMPED_HYDRO" => PrimeMovers.PS,
-        "NUCLEAR" => PrimeMovers.ST,
-        "SYNC_COND" => PrimeMovers.OT,
-        "CSP" => PrimeMovers.CP,
-        "UN" => PrimeMovers.OT,
-        "STORAGE" => PrimeMovers.BA,
-        "ICE" => PrimeMovers.IC,
+        "w2" => PrimeMovers.WT,
+        "wind" => PrimeMovers.WT,
+        "pv" => PrimeMovers.PVe,
+        "solar" => PrimeMovers.PVe,
+        "rtpv" => PrimeMovers.PVe,
+        "nb" => PrimeMovers.ST,
+        "steam" => PrimeMovers.ST,
+        "hydro" => PrimeMovers.HY,
+        "ror" => PrimeMovers.HY,
+        "pump" => PrimeMovers.PS,
+        "pumped_hydro" => PrimeMovers.PS,
+        "nuclear" => PrimeMovers.ST,
+        "sync_cond" => PrimeMovers.OT,
+        "csp" => PrimeMovers.CP,
+        "un" => PrimeMovers.OT,
+        "storage" => PrimeMovers.BA,
+        "ice" => PrimeMovers.IC,
     ),
 )
 
@@ -209,7 +209,7 @@ function parse_enum_mapping(::Type{ThermalFuels}, fuel::Symbol)
 end
 
 function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::AbstractString)
-    return STRING2PRIMEMOVER[uppercase(prime_mover)]
+    return STRING2PRIMEMOVER[normalize(prime_mover, casefold = true)]
 end
 
 function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::Symbol)
