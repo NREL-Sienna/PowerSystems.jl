@@ -209,7 +209,7 @@ function parse_enum_mapping(::Type{ThermalFuels}, fuel::Symbol)
 end
 
 function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::AbstractString)
-    return STRING2PRIMEMOVER[normalize(prime_mover, casefold = true)]
+    return STRING2PRIMEMOVER[normalize(prime_mover; casefold = true)]
 end
 
 function parse_enum_mapping(::Type{PrimeMovers}, prime_mover::Symbol)
