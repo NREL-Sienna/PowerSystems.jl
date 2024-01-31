@@ -4,18 +4,19 @@ const GENERATOR_MAPPING_FILE =
 const PSSE_DYR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "psse_dynamic_mapping.yaml")
 
-const STRING2FUEL = Dict((string(x) => x) for x in instances(ThermalFuels))
+const STRING2FUEL =
+    Dict((normalize(string(x); casefold = true) => x) for x in instances(ThermalFuels))
 merge!(
     STRING2FUEL,
     Dict(
-        "NG" => ThermalFuels.NATURAL_GAS,
-        "NUC" => ThermalFuels.NUCLEAR,
-        "GAS" => ThermalFuels.NATURAL_GAS,
-        "OIL" => ThermalFuels.DISTILLATE_FUEL_OIL,
-        "DFO" => ThermalFuels.DISTILLATE_FUEL_OIL,
-        "SYNC_COND" => ThermalFuels.OTHER,
-        "GEOTHERMAL " => ThermalFuels.GEOTHERMAL,
-        "AG_BIPRODUCT" => ThermalFuels.AG_BIPRODUCT,
+        "ng" => ThermalFuels.NATURAL_GAS,
+        "nuc" => ThermalFuels.NUCLEAR,
+        "gas" => ThermalFuels.NATURAL_GAS,
+        "oil" => ThermalFuels.DISTILLATE_FUEL_OIL,
+        "dfo" => ThermalFuels.DISTILLATE_FUEL_OIL,
+        "sync_cond" => ThermalFuels.OTHER,
+        "geothermal " => ThermalFuels.GEOTHERMAL,
+        "ag_biproduct" => ThermalFuels.AG_BIPRODUCT,
     ),
 )
 
@@ -201,7 +202,7 @@ function convert_units!(
 end
 
 function parse_enum_mapping(::Type{ThermalFuels}, fuel::AbstractString)
-    return STRING2FUEL[uppercase(fuel)]
+    return STRING2FUEL[normalize(fuel, casefold = true)]
 end
 
 function parse_enum_mapping(::Type{ThermalFuels}, fuel::Symbol)
