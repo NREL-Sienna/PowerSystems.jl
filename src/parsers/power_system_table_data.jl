@@ -1043,11 +1043,13 @@ function make_thermal_generator_multistart(
         calculate_variable_cost(data, gen, cost_colnames, base_power)
     if var_cost isa Float64
         no_load_cost = 0.0
-        var_cost = VariableCost(var_cost)
+        var_cost = LinearFunctionData(var_cost)
     else
         no_load_cost = var_cost[1][1]
         var_cost =
-            VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+            PieceWiseLinearPointData([
+                (c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost
+            ])
     end
     lag_hot =
         if isnothing(gen.hot_start_time)

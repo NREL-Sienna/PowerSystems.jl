@@ -56,7 +56,6 @@ export MultiStartCost
 export MarketBidCost
 export StorageManagementCost
 
-
 export Generator
 export HydroGen
 export HydroDispatch

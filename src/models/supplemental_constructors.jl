@@ -1,3 +1,4 @@
+#=
 """Accepts rating as a Float64 and then creates a TwoPartCost."""
 function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return TwoPartCost(VariableCost(variable_cost), args...)
@@ -7,6 +8,7 @@ end
 function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
     return ThreePartCost(VariableCost(variable_cost), args...)
 end
+=#
 
 """
 Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to

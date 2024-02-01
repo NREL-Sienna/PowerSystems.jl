@@ -18,7 +18,10 @@ function get_variable_cost(
     end
     data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
-    return TimeSeries.TimeArray(time_stamps, map(VariableCost, TimeSeries.values(data)))
+    return TimeSeries.TimeArray(
+        time_stamps,
+        map(PieceWiseLinearSlopeData, TimeSeries.values(data)),
+    )
 end
 
 """
