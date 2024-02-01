@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct MultiStartCost <: OperationalCost
-        variable::VariableCost
+        variable::FunctionData
         no_load::Float64
         fixed::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
 Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.
 
 # Arguments
-- `variable::VariableCost`: variable cost
+- `variable::FunctionData`: variable cost
 - `no_load::Float64`: no load cost
 - `fixed::Float64`: fixed cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost
@@ -24,7 +24,7 @@ Data Structure Operational Cost Data which includes fixed, variable cost, multip
 """
 mutable struct MultiStartCost <: OperationalCost
     "variable cost"
-    variable::VariableCost
+    variable::FunctionData
     "no load cost"
     no_load::Float64
     "fixed cost"
@@ -43,7 +43,7 @@ end
 # Constructor for demo purposes; non-functional.
 function MultiStartCost(::Nothing)
     MultiStartCost(;
-        variable=VariableCost((0.0, 0.0)),
+        variable=LinearFunctionData(0.0),
         no_load=0.0,
         fixed=0.0,
         start_up=(hot = START_COST, warm = START_COST, cold = START_COST),
