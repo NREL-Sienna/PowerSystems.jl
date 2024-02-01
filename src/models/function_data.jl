@@ -70,6 +70,8 @@ struct PieceWiseLinearSlopeData <: FunctionData
     points::Vector{Tuple{Float64, Float64}}
 end
 
+get_points(data::PieceWiseLinearPointData) = data.points
+
 """
 Calculates the upper bounds of a variable cost function represented as a collection of piece-wise linear segments.
 """
