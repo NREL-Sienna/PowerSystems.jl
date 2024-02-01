@@ -85,20 +85,20 @@ struct PieceWiseLinearSlopeData <: FunctionData
     points::Vector{Tuple{Float64, Float64}}
 end
 
-get_points(data::PieceWiseLinearPointData) = data.points
+get_points(data::PieceWiseLinearSlopeData) = data.points
 
 """
 Calculates the upper bounds of a variable cost function represented as a collection of piece-wise linear segments.
 """
 function get_breakpoint_upperbounds(
-    pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData},
+    pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData},
 )
     return _get_breakpoint_upperbounds(get_points(pwl))
 end
 
-Base.length(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
+Base.length(pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData}) =
     length(get_points(pwl))
-Base.getindex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}, ix::Int) =
+Base.getindex(pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData}, ix::Int) =
     getindex(get_points(pwl), ix)
 
 function _slope_convexity_check(slopes::Vector{Float64})
@@ -115,11 +115,11 @@ end
 """
 Returns True/False depending on the convexity of the underlying data
 """
-function is_convex(pwl::PiecewiseLinearSlopeData)
+function is_convex(pwl::PieceWiseLinearSlopeData)
     return _convexity_check([p[2] for p in pwl])
 end
 
-function is_convex(pwl::PiecewiseLinearPointData)
+function is_convex(pwl::PieceWiseLinearPointData)
     return _convexity_check(get_slopes(pwl))
 end
 
