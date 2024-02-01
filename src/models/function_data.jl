@@ -19,6 +19,16 @@ struct QuadraticPolynomialFunctionData <: FunctionData
 end
 
 """
+Structure to represent the underlying data of higher order polynomials. Principally used for
+the representation of cost functions where f(x) = sum_i (proportional_terms[i]*x^exponents[i] + constant_term).
+"""
+struct HighOrderPolynomialFunctionData <: FunctionData
+    exponents::Vector{Float64}
+    proportial_terms::Vector{Float64}
+    constant_term::Float64
+end
+
+"""
 Structure to represent the underlying data of point wise piecewise linear data. Principally used for
 the representation of cost functions where the points store quantities (x, y).
 """
@@ -56,7 +66,12 @@ function _get_breakpoint_upperbounds(vc::Vector{NTuple{2, Float64}})
 end
 
 """
-Calculates the slopes for the variable cost represented as a piece wise linear cost function. This function returns n - slopes for n - piecewise linear elements in the function. The first element of the return array corresponds to the average cost at the minimum operating point. If your formulation uses n -1 slopes, you can disregard the first component of the array. If the first point in the variable cost has a quantity of 0.0, the first slope returned will be 0.0, otherwise, the first slope represents the trajectory to get from the origin to the first point in the variable cost.
+Calculates the slopes for the variable cost represented as a piece wise linear cost function.
+This function returns n - slopes for n - piecewise linear elements in the function.
+The first element of the return array corresponds to the average cost at the minimum operating point.
+If your formulation uses n -1 slopes, you can disregard the first component of the array.
+If the first point in the variable cost has a quantity of 0.0, the first slope returned will be 0.0.
+Otherwise, the first slope represents the trajectory to get from the origin to the first point in the variable cost.
 """
 function get_slopes(pwl::PieceWiseLinearPointData)
     return _get_slopes(get_points(pwl))
@@ -90,7 +105,7 @@ function _slope_convexity_check(slopes::Vector{Float64})
     flag = true
     for ix in 1:(length(slopes) - 1)
         if slopes[ix] > slopes[ix + 1]
-            @debug slopes _group = LOG_GROUP_COST_FUNCTIONS
+            @debug slopes
             return flag = false
         end
     end
@@ -106,16 +121,6 @@ end
 
 function is_convex(pwl::PiecewiseLinearPointData)
     return _convexity_check(get_slopes(pwl))
-end
-
-"""
-Structure to represent the underlying data of higher order polynomials. Principally used for
-the representation of cost functions where f(x) = sum_i (proportional_terms[i]*x^exponents[i] + constant_term).
-"""
-struct HighOrderPolynomialFunctionData <: FunctionData
-    exponents::Vector{Float64}
-    proportial_terms::Vector{Float64}
-    constant_term::Float64
 end
 
 # TODO: Serialize methods need to be implemented

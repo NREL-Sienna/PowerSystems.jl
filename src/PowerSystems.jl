@@ -39,14 +39,23 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
+export LinearFunctionData
+export QuadraticPolynomialFunctionData
+export HighOrderPolynomialFunctionData
+
+export PieceWiseLinearPointData
+export PieceWiseLinearSlopeData
+export get_slopes
+export get_breakpoint_upperbounds
+export is_convex
+export get_points
+
 export ThreePartCost
 export TwoPartCost
-export VariableCost
 export MultiStartCost
 export MarketBidCost
 export StorageManagementCost
-export get_slopes
-export get_breakpoint_upperbounds
+
 
 export Generator
 export HydroGen
