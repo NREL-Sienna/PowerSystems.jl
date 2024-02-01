@@ -551,6 +551,7 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
+include("models/function_data.jl")
 include("models/operational_cost.jl")
 #include("models/network.jl")
 
