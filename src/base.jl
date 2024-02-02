@@ -210,7 +210,7 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         )
         runchecks && check(sys)
         if assign_new_uuids
-            IS.assign_new_uuid_internal!(sys)
+            IS.assign_new_uuid!(sys)
             for component in get_components(Component, sys)
                 assign_new_uuid!(sys, component)
             end
@@ -333,6 +333,8 @@ function Base.deepcopy(sys::System)
     IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
     return sys2
 end
+
+IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -902,16 +904,21 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 
 See also: [`iterate_components`](@ref)
 """
-function get_components(::Type{T}, sys::System) where {T <: Component}
-    return IS.get_components(T, sys.data, nothing)
+function get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}
+    return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
 function get_components(
     filter_func::Function,
     ::Type{T},
-    sys::System,
+    sys::System;
+    subsystem_name = nothing,
 ) where {T <: Component}
-    return IS.get_components(T, sys.data, filter_func)
+    return IS.get_components(filter_func, T, sys.data; subsystem_name = subsystem_name)
 end
 
 """
@@ -1408,6 +1415,7 @@ function check(sys::System)
     buscheck(buses)
     critical_components_check(sys)
     adequacy_check(sys)
+    check_components(sys)
     return
 end
 
@@ -1415,8 +1423,21 @@ end
 Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
 """
 function check_components(sys::System; check_masked_components = true)
-    for component in iterate_components(sys)
+    must_be_assigned_to_subsystem = false
+    for (i, component) in enumerate(iterate_components(sys))
+        is_assigned = is_assigned_to_subsystem(sys, component)
+        if i == 1
+            must_be_assigned_to_subsystem = is_assigned
+        elseif is_assigned != must_be_assigned_to_subsystem
+            throw(
+                IS.InvalidValue(
+                    "If any component is assigned to a subsystem then all " *
+                    "components must be assigned to a subsystem.",
+                ),
+            )
+        end
         check_component(sys, component)
+        check_subsystems(sys, component)
     end
 
     if check_masked_components
