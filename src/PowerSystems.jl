@@ -45,6 +45,7 @@ export PolynomialFunctionData
 
 export PiecewiseLinearPointData
 export PiecewiseLinearSlopeData
+export get_proportional_term, get_quadratic_term, get_constant_term, get_coefficients
 export get_slopes
 export get_breakpoint_upperbounds
 export is_convex

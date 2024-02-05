@@ -27,7 +27,7 @@ get_constant_term(fd::QuadraticFunctionData) = fd.constant_term
 """
 Structure to represent the underlying data of higher order polynomials. Principally used for
 the representation of cost functions where
-f(x) = sum_{i \in keys(coefficients)} coefficients[i]*x^i.
+f(x) = sum_{i in keys(coefficients)} coefficients[i]*x^i.
 """
 struct PolynomialFunctionData <: FunctionData
     coefficients::Dict{Int, Float64}
