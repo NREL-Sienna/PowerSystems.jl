@@ -12,7 +12,7 @@ end
 Structure to represent the underlying data of quadratic polynomial functions. Principally used for
 the representation of cost functions f(x) = quadratic_term*x^2 + proportional_term*x + constant_term
 """
-struct QuadraticPolynomialFunctionData <: FunctionData
+struct QuadraticFunctionData <: FunctionData
     quadratic_term::Float64
     proportional_term::Float64
     constant_term::Float64
@@ -22,7 +22,7 @@ end
 Structure to represent the underlying data of higher order polynomials. Principally used for
 the representation of cost functions where f(x) = sum_i (proportional_terms[i]*x^exponents[i] + constant_term).
 """
-struct HighOrderPolynomialFunctionData <: FunctionData
+struct PolynomialFunctionData <: FunctionData
     exponents::Vector{Float64}
     proportional_terms::Vector{Float64}
     constant_term::Float64

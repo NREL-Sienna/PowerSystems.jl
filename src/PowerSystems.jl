@@ -40,8 +40,8 @@ export TapTransformer
 export PhaseShiftingTransformer
 
 export LinearFunctionData
-export QuadraticPolynomialFunctionData
-export HighOrderPolynomialFunctionData
+export QuadraticFunctionData
+export PolynomialFunctionData
 
 export PiecewiseLinearPointData
 export PiecewiseLinearSlopeData
