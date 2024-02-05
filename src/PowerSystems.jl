@@ -50,6 +50,7 @@ export get_slopes
 export get_breakpoint_upperbounds
 export is_convex
 export get_points
+export get_segments
 
 export ThreePartCost
 export TwoPartCost

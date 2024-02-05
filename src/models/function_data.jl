@@ -36,71 +36,68 @@ end
 get_coefficients(fd::PolynomialFunctionData) = fd.coefficients
 
 """
-Structure to represent the underlying data of point wise piecewise linear data. Principally used for
-the representation of cost functions where the points store quantities (x, y).
+Structure to represent the underlying data of pointwise piecewise linear data. Principally
+used for the representation of cost functions where the points store quantities (x, y), such
+as (MW, \$).
 """
 struct PiecewiseLinearPointData <: FunctionData
-    points::Vector{Tuple{Float64, Float64}}
+    segments::Vector{Tuple{Float64, Float64}}
 end
 
-get_points(data::PiecewiseLinearPointData) = data.points
+get_segments(data::PiecewiseLinearPointData) = data.segments
+
+get_points(data::PiecewiseLinearPointData) = get_segments(data)
 
 function _get_slopes(vc::Vector{NTuple{2, Float64}})
     slopes = Vector{Float64}(undef, length(vc))
-    previous = (0.0, 0.0)
-    for (ix, component) in enumerate(vc)
-        if ix == 1
-            slopes[ix] = component[2] == 0.0 ? 0.0 : component[1] / component[2] # if the cost component starts at the y-origin make the first slope 0.0
-            previous = component
-            continue
+    (prev_x, prev_y) = (0.0, 0.0)
+    for (i, (comp_x, comp_y)) in enumerate(vc)
+        # Special case: if first point is on the y-axis, define the degenerate first segment to have slope 0
+        if i == 1 && comp_x == 0
+            slopes[i] = 0
+        else
+            slopes[i] = (comp_y - prev_y) / (comp_x - prev_x)
         end
-        slopes[ix] = (component[1] - previous[1]) / (component[2] - previous[2])
-        previous = component
+        (prev_x, prev_y) = (comp_x, comp_y)
     end
     return slopes
 end
 
 function _get_breakpoint_upperbounds(vc::Vector{NTuple{2, Float64}})
-    bp_ubs = Vector{Float64}(undef, length(vc))
-    for (ix, component) in enumerate(vc)
-        if ix == 1
-            bp_ubs[ix] = component[2]
-            continue
-        end
-        bp_ubs[ix] = component[2] - sum(bp_ubs[1:(ix - 1)])
-    end
-    return bp_ubs
+    x_coords = first.(vc)
+    return x_coords .- vcat(0, x_coords[1:(end - 1)])
 end
 
 """
-Calculates the slopes for the variable cost represented as a piecewise linear cost function.
-This function returns n - slopes for n - piecewise linear elements in the function.
-The first element of the return array corresponds to the average cost at the minimum operating point.
-If your formulation uses n - 1 slopes, you can disregard the first component of the array.
-If the first point in the variable cost has a quantity of 0.0, the first slope returned will be 0.0.
-Otherwise, the first slope represents the trajectory to get from the origin to the first point in the variable cost.
+Calculates the slopes of the line segments defined by the PiecewiseLinearPointData, assuming
+the first segment starts at the origin. If the first point in the data has an x-coordinate
+of 0, reports 0 for the slope of the degenerate first segment. Returns as many slopes as
+there are points in the data. If your formulation uses n-1 slopes, discard the first slope.
 """
 function get_slopes(pwl::PiecewiseLinearPointData)
     return _get_slopes(get_points(pwl))
 end
 
 """
-Structure to represent the underlying data of slope piecewise linear data. Principally used for
-the representation of cost functions where the points store quantities (dx/dy, y).
+Structure to represent the underlying data of slope piecewise linear data. Principally used
+for the representation of cost functions where the points store quantities (x, dy/dx), such
+as (MW, \$/MW).
 """
 struct PiecewiseLinearSlopeData <: FunctionData
-    points::Vector{Tuple{Float64, Float64}}
+    segments::Vector{Tuple{Float64, Float64}}
 end
 
-get_points(data::PiecewiseLinearSlopeData) = data.points
+get_segments(data::PiecewiseLinearSlopeData) = data.segments
+
+get_slopes(data::PiecewiseLinearSlopeData) = last.(get_segments(data))
 
 """
-Calculates the upper bounds of a variable cost function represented as a collection of piece-wise linear segments.
+Calculates the x-length of each segment of a piecewise curve.
 """
 function get_breakpoint_upperbounds(
     pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData},
 )
-    return _get_breakpoint_upperbounds(get_points(pwl))
+    return _get_breakpoint_upperbounds(get_segments(pwl))
 end
 
 Base.length(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
@@ -109,26 +106,20 @@ Base.getindex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}, ix
     getindex(get_points(pwl), ix)
 
 function _slope_convexity_check(slopes::Vector{Float64})
-    flag = true
     for ix in 1:(length(slopes) - 1)
         if slopes[ix] > slopes[ix + 1]
             @debug slopes
-            return flag = false
+            return false
         end
     end
-    return flag
+    return true
 end
 
 """
 Returns True/False depending on the convexity of the underlying data
 """
-function is_convex(pwl::PiecewiseLinearSlopeData)
-    return _convexity_check([p[2] for p in pwl])
-end
-
-function is_convex(pwl::PiecewiseLinearPointData)
-    return _convexity_check(get_slopes(pwl))
-end
+is_convex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
+    _slope_convexity_check(get_slopes(pwl))
 
 # TODO: Serialize methods need to be implemented
 #=
