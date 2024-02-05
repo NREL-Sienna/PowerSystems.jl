@@ -8,6 +8,8 @@ struct LinearFunctionData <: FunctionData
     proportional_term::Float64
 end
 
+get_proportional_term(fd::LinearFunctionData) = fd.proportional_term
+
 """
 Structure to represent the underlying data of quadratic polynomial functions. Principally used for
 the representation of cost functions f(x) = quadratic_term*x^2 + proportional_term*x + constant_term
@@ -18,15 +20,20 @@ struct QuadraticFunctionData <: FunctionData
     constant_term::Float64
 end
 
+get_quadratic_term(fd::QuadraticFunctionData) = fd.quadratic_term
+get_proportional_term(fd::QuadraticFunctionData) = fd.proportional_term
+get_constant_term(fd::QuadraticFunctionData) = fd.constant_term
+
 """
 Structure to represent the underlying data of higher order polynomials. Principally used for
-the representation of cost functions where f(x) = sum_i (proportional_terms[i]*x^exponents[i] + constant_term).
+the representation of cost functions where
+f(x) = sum_{i \in keys(coefficients)} coefficients[i]*x^i.
 """
 struct PolynomialFunctionData <: FunctionData
-    exponents::Vector{Float64}
-    proportional_terms::Vector{Float64}
-    constant_term::Float64
+    coefficients::Dict{Int, Float64}
 end
+
+get_coefficients(fd::PolynomialFunctionData) = fd.coefficients
 
 """
 Structure to represent the underlying data of point wise piecewise linear data. Principally used for
@@ -66,10 +73,10 @@ function _get_breakpoint_upperbounds(vc::Vector{NTuple{2, Float64}})
 end
 
 """
-Calculates the slopes for the variable cost represented as a piece wise linear cost function.
+Calculates the slopes for the variable cost represented as a piecewise linear cost function.
 This function returns n - slopes for n - piecewise linear elements in the function.
 The first element of the return array corresponds to the average cost at the minimum operating point.
-If your formulation uses n -1 slopes, you can disregard the first component of the array.
+If your formulation uses n - 1 slopes, you can disregard the first component of the array.
 If the first point in the variable cost has a quantity of 0.0, the first slope returned will be 0.0.
 Otherwise, the first slope represents the trajectory to get from the origin to the first point in the variable cost.
 """
