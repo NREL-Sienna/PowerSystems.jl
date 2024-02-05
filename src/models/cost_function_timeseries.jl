@@ -20,7 +20,7 @@ function get_variable_cost(
     time_stamps = TimeSeries.timestamp(data)
     return TimeSeries.TimeArray(
         time_stamps,
-        map(PieceWiseLinearSlopeData, TimeSeries.values(data)),
+        map(PiecewiseLinearSlopeData, TimeSeries.values(data)),
     )
 end
 

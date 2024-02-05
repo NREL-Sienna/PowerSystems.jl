@@ -2,19 +2,19 @@ abstract type FunctionData end
 
 """
 Structure to represent the underlying data of linear functions. Principally used for
-the representation of cost functions f(x) = proportial_term*x
+the representation of cost functions f(x) = proportional_term*x
 """
 struct LinearFunctionData <: FunctionData
-    proportial_term::Float64
+    proportional_term::Float64
 end
 
 """
 Structure to represent the underlying data of quadratic polynomial functions. Principally used for
-the representation of cost functions f(x) = quadratic_term*x^2 + proportial_term*x + constant_term
+the representation of cost functions f(x) = quadratic_term*x^2 + proportional_term*x + constant_term
 """
 struct QuadraticPolynomialFunctionData <: FunctionData
     quadratic_term::Float64
-    proportial_term::Float64
+    proportional_term::Float64
     constant_term::Float64
 end
 
@@ -24,7 +24,7 @@ the representation of cost functions where f(x) = sum_i (proportional_terms[i]*x
 """
 struct HighOrderPolynomialFunctionData <: FunctionData
     exponents::Vector{Float64}
-    proportial_terms::Vector{Float64}
+    proportional_terms::Vector{Float64}
     constant_term::Float64
 end
 
@@ -32,11 +32,11 @@ end
 Structure to represent the underlying data of point wise piecewise linear data. Principally used for
 the representation of cost functions where the points store quantities (x, y).
 """
-struct PieceWiseLinearPointData <: FunctionData
+struct PiecewiseLinearPointData <: FunctionData
     points::Vector{Tuple{Float64, Float64}}
 end
 
-get_points(data::PieceWiseLinearPointData) = data.points
+get_points(data::PiecewiseLinearPointData) = data.points
 
 function _get_slopes(vc::Vector{NTuple{2, Float64}})
     slopes = Vector{Float64}(undef, length(vc))
@@ -73,7 +73,7 @@ If your formulation uses n -1 slopes, you can disregard the first component of t
 If the first point in the variable cost has a quantity of 0.0, the first slope returned will be 0.0.
 Otherwise, the first slope represents the trajectory to get from the origin to the first point in the variable cost.
 """
-function get_slopes(pwl::PieceWiseLinearPointData)
+function get_slopes(pwl::PiecewiseLinearPointData)
     return _get_slopes(get_points(pwl))
 end
 
@@ -81,24 +81,24 @@ end
 Structure to represent the underlying data of slope piecewise linear data. Principally used for
 the representation of cost functions where the points store quantities (dx/dy, y).
 """
-struct PieceWiseLinearSlopeData <: FunctionData
+struct PiecewiseLinearSlopeData <: FunctionData
     points::Vector{Tuple{Float64, Float64}}
 end
 
-get_points(data::PieceWiseLinearSlopeData) = data.points
+get_points(data::PiecewiseLinearSlopeData) = data.points
 
 """
 Calculates the upper bounds of a variable cost function represented as a collection of piece-wise linear segments.
 """
 function get_breakpoint_upperbounds(
-    pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData},
+    pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData},
 )
     return _get_breakpoint_upperbounds(get_points(pwl))
 end
 
-Base.length(pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData}) =
+Base.length(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
     length(get_points(pwl))
-Base.getindex(pwl::Union{PieceWiseLinearPointData, PieceWiseLinearSlopeData}, ix::Int) =
+Base.getindex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}, ix::Int) =
     getindex(get_points(pwl), ix)
 
 function _slope_convexity_check(slopes::Vector{Float64})
@@ -115,11 +115,11 @@ end
 """
 Returns True/False depending on the convexity of the underlying data
 """
-function is_convex(pwl::PieceWiseLinearSlopeData)
+function is_convex(pwl::PiecewiseLinearSlopeData)
     return _convexity_check([p[2] for p in pwl])
 end
 
-function is_convex(pwl::PieceWiseLinearPointData)
+function is_convex(pwl::PiecewiseLinearPointData)
     return _convexity_check(get_slopes(pwl))
 end
 

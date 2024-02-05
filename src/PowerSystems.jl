@@ -43,8 +43,8 @@ export LinearFunctionData
 export QuadraticPolynomialFunctionData
 export HighOrderPolynomialFunctionData
 
-export PieceWiseLinearPointData
-export PieceWiseLinearSlopeData
+export PiecewiseLinearPointData
+export PiecewiseLinearSlopeData
 export get_slopes
 export get_breakpoint_upperbounds
 export is_convex

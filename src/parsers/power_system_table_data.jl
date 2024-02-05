@@ -1047,7 +1047,7 @@ function make_thermal_generator_multistart(
     else
         no_load_cost = var_cost[1][1]
         var_cost =
-            PieceWiseLinearPointData([
+            PiecewiseLinearPointData([
                 (c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost
             ])
     end
