@@ -185,7 +185,7 @@ end
 
 function _check_num_subsystems(sys::System)
     num_buses = length(sys.bus_numbers)
-    if num_buses == get_num_subsystems(sys)
+    if get_num_subsystems(sys) >= num_buses
         throw(
             IS.InvalidValue(
                 "The number of subsystems cannot exceed the number of buses: $num_buses",
