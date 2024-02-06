@@ -387,6 +387,20 @@ export get_renewable_unit
 export get_interconnection_rating
 export get_interconnection_impedance
 
+# Subsystems
+export add_subsystem!
+export get_subsystems
+export get_num_subsystems
+export remove_subsystem!
+export add_component_to_subsystem!
+export get_subsystem_components
+export remove_component_from_subsystem!
+export remove_component_from_subsystems!
+export has_component
+export get_assigned_subsystems
+export has_subsystems
+export is_assigned_to_subsystem
+
 export set_runchecks!
 export check
 export check_component
@@ -578,6 +592,7 @@ include("outages.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+include("subsystems.jl")
 include("data_format_conversions.jl")
 
 #Data Checks
