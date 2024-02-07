@@ -35,6 +35,11 @@ end
 
 get_coefficients(fd::PolynomialFunctionData) = fd.coefficients
 
+function _validate_piecewise_x(x_coords)
+    issorted(x_coords) || throw(ArgumentError("Piecewise x-coordinates must be ascending"))
+    (x_coords[1] >= 0) || throw(ArgumentError("Piecewise x-coordinates cannot be negative"))
+end
+
 """
 Structure to represent the underlying data of pointwise piecewise linear data. Principally
 used for the representation of cost functions where the points store quantities (x, y), such
@@ -42,6 +47,11 @@ as (MW, \$).
 """
 struct PiecewiseLinearPointData <: FunctionData
     segments::Vector{Tuple{Float64, Float64}}
+
+    function PiecewiseLinearPointData(segments)
+        _validate_piecewise_x(first.(segments))
+        return new(segments)
+    end
 end
 
 get_segments(data::PiecewiseLinearPointData) = data.segments
@@ -85,6 +95,11 @@ as (MW, \$/MW).
 """
 struct PiecewiseLinearSlopeData <: FunctionData
     segments::Vector{Tuple{Float64, Float64}}
+
+    function PiecewiseLinearSlopeData(segments)
+        _validate_piecewise_x(first.(segments))
+        return new(segments)
+    end
 end
 
 get_segments(data::PiecewiseLinearSlopeData) = data.segments
@@ -101,9 +116,16 @@ function get_breakpoint_upperbounds(
 end
 
 Base.length(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
-    length(get_points(pwl))
+    length(get_segments(pwl))
+
 Base.getindex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}, ix::Int) =
-    getindex(get_points(pwl), ix)
+    getindex(get_segments(pwl), ix)
+
+Base.:(==)(a::T, b::T) where T<:Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData} =
+    get_segments(a) == get_segments(b)
+
+Base.:(==)(a::PolynomialFunctionData, b::PolynomialFunctionData) =
+    get_coefficients(a) == get_coefficients(b)
 
 function _slope_convexity_check(slopes::Vector{Float64})
     for ix in 1:(length(slopes) - 1)
@@ -121,27 +143,19 @@ Returns True/False depending on the convexity of the underlying data
 is_convex(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
     _slope_convexity_check(get_slopes(pwl))
 
-# TODO: Serialize methods need to be implemented
-#=
-function IS.serialize(val::FunctionData)
-    return Dict{String, Any}("cost" => serialize(val.cost))
-end
+# kwargs-only constructors for deserialization
+LinearFunctionData(; proportional_term) = LinearFunctionData(proportional_term)
 
-# The default implementation can't figure out the variable Union.
+QuadraticFunctionData(; quadratic_term, proportional_term, constant_term) =
+    QuadraticFunctionData(quadratic_term, proportional_term, constant_term)
 
-function IS.deserialize(::Type{FunctionData}, data::Dict)
-    if data["cost"] isa Real
-        return VariableCost(Float64(data["cost"]))
-    elseif data["cost"][1] isa Array
-        variable = Vector{Tuple{Float64, Float64}}()
-        for array in data["cost"]
-            push!(variable, Tuple{Float64, Float64}(array))
-        end
-    else
-        @assert data["cost"] isa Tuple || data["cost"] isa Array
-        variable = Tuple{Float64, Float64}(data["cost"])
-    end
+PolynomialFunctionData(; coefficients) = PolynomialFunctionData(coefficients)
 
-    return VariableCost(variable)
-end
-=#
+PiecewiseLinearPointData(; segments) = PiecewiseLinearPointData(segments)
+
+PiecewiseLinearSlopeData(; segments) = PiecewiseLinearSlopeData(segments)
+
+IS.serialize(val::FunctionData) = IS.serialize_struct(val)
+
+IS.deserialize(x::Type{<:FunctionData}, val::Dict) =
+    IS.deserialize_struct(x, val)

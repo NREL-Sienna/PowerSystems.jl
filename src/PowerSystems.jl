@@ -39,10 +39,10 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
+export FunctionData
 export LinearFunctionData
 export QuadraticFunctionData
 export PolynomialFunctionData
-
 export PiecewiseLinearPointData
 export PiecewiseLinearSlopeData
 export get_proportional_term, get_quadratic_term, get_constant_term, get_coefficients
