@@ -81,7 +81,7 @@ get_points(data::PiecewiseLinearPointData) = data.points
 get_x_coords(data::PiecewiseLinearPointData) = first.(get_points(data))
 
 function _get_slopes(vc::Vector{NTuple{2, Float64}})
-    slopes = Vector{Float64}(undef, length(vc)-1)
+    slopes = Vector{Float64}(undef, length(vc) - 1)
     (prev_x, prev_y) = vc[1]
     for (i, (comp_x, comp_y)) in enumerate(vc[2:end])
         slopes[i] = (comp_y - prev_y) / (comp_x - prev_x)
@@ -90,7 +90,7 @@ function _get_slopes(vc::Vector{NTuple{2, Float64}})
     return slopes
 end
 
-_get_x_lengths(x_coords) = x_coords[2:end] .- x_coords[1:end-1]
+_get_x_lengths(x_coords) = x_coords[2:end] .- x_coords[1:(end - 1)]
 
 """
 Calculates the slopes of the line segments defined by the PiecewiseLinearPointData,
@@ -140,9 +140,10 @@ function get_points(data::PiecewiseLinearSlopeData)
     points = Vector{Tuple{Float64, Float64}}(undef, length(x_coords))
     running_y = get_y0(data)
     points[1] = (x_coords[1], running_y)
-    for (i, (prev_slope, this_x, dx)) in enumerate(zip(slopes, x_coords[2:end], get_x_lengths(data)))
+    for (i, (prev_slope, this_x, dx)) in
+        enumerate(zip(slopes, x_coords[2:end], get_x_lengths(data)))
         running_y += prev_slope * dx
-        points[i+1] = (this_x, running_y)
+        points[i + 1] = (this_x, running_y)
     end
     return points
 end
@@ -157,7 +158,7 @@ function get_x_lengths(
 end
 
 Base.length(pwl::Union{PiecewiseLinearPointData, PiecewiseLinearSlopeData}) =
-    length(get_x_coords(pwl))-1
+    length(get_x_coords(pwl)) - 1
 
 Base.getindex(pwl::PiecewiseLinearPointData, ix::Int) =
     getindex(get_points(pwl), ix)
@@ -204,5 +205,14 @@ PiecewiseLinearSlopeData(; x_coords, y0, slopes) =
 
 IS.serialize(val::FunctionData) = IS.serialize_struct(val)
 
-IS.deserialize(x::Type{<:FunctionData}, val::Dict) =
-    IS.deserialize_struct(x, val)
+function IS.deserialize_struct(T::Type{PolynomialFunctionData}, val::Dict)
+    data = IS.deserialize_to_dict(T, val)
+    data[Symbol("coefficients")] =
+        Dict(
+            (k isa String ? parse(Int, k) : k, v)
+            for (k, v) in data[Symbol("coefficients")]
+        )
+    return T(; data...)
+end
+
+IS.deserialize(T::Type{<:FunctionData}, val::Dict) = IS.deserialize_struct(T, val)

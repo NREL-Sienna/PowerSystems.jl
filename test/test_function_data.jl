@@ -1,10 +1,10 @@
 get_test_function_data() = [
-        LinearFunctionData(5),
-        QuadraticFunctionData(2, 3, 4),
-        PolynomialFunctionData(Dict(0 => 3.0, 1 => 1.0, 3 => 4.0)),
-        PiecewiseLinearPointData([(1, 1), (3, 5), (5, 10)]),
-        PiecewiseLinearSlopeData([1, 3, 5], 1, [2, 2.5]),
-    ]
+    LinearFunctionData(5),
+    QuadraticFunctionData(2, 3, 4),
+    PolynomialFunctionData(Dict(0 => 3.0, 1 => 1.0, 3 => 4.0)),
+    PiecewiseLinearPointData([(1, 1), (3, 5), (5, 10)]),
+    PiecewiseLinearSlopeData([1, 3, 5], 1, [2, 2.5]),
+]
 
 @testset "Test FunctionData validation" begin
     # @test_throws ArgumentError PiecewiseLinearPointData([(-1, 1), (1, 1)])
@@ -45,7 +45,7 @@ end
 
     # Tests our overridden Base.:(==)
     @test all(get_test_function_data() .== get_test_function_data())
-    
+
     @test all(isapprox.(get_slopes(PiecewiseLinearPointData([(0, 0), (10, 31.4)])), [3.14]))
     @test isapprox(
         get_slopes(PiecewiseLinearPointData([(0, 0), (1, 1), (1.1, 2), (1.2, 3)])),
@@ -53,10 +53,10 @@ end
     @test isapprox(
         get_slopes(PiecewiseLinearPointData([(0, 0), (1, 1), (1.1, 2)])),
         [1, 10])
-    
+
     @test isapprox(
         collect.(get_points(PiecewiseLinearSlopeData([1, 3, 5], 1, [2.5, 10]))),
-        collect.([(1, 1), (3, 6), (5, 26)])
+        collect.([(1, 1), (3, 6), (5, 26)]),
     )
 
     @test isapprox(
@@ -91,9 +91,12 @@ end
 
 @testset "Test FunctionData serialization round trip" begin
     for fd in get_test_function_data()
-        serialized = IS.serialize(fd)
-        @test typeof(serialized) <: AbstractDict
-        deserialized = IS.deserialize(typeof(fd), serialized)
-        @test deserialized == fd
+        for do_jsonify in (false, true)
+            serialized = IS.serialize(fd)
+            do_jsonify && (serialized = JSON3.read(JSON3.write(serialized), Dict))
+            @test typeof(serialized) <: AbstractDict
+            deserialized = IS.deserialize(typeof(fd), serialized)
+            @test deserialized == fd
+        end
     end
 end
