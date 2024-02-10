@@ -1,16 +1,9 @@
-using PowerSystems
-cost = VariableCost([(1.0, 1.0), (2.0, 1.1), (3.0, 1.2)])
-slopes = get_slopes(cost)
-res = [1.0, 10.0, 10.0]
-for (ix, v) in enumerate(slopes)
-    @test isapprox(v, res[ix])
-end
-
-bps = get_breakpoint_upperbounds(cost)
-res = [1.0, 0.1, 0.1]
-for (ix, v) in enumerate(bps)
-    @test isapprox(v, res[ix])
-end
+test_costs = Dict(
+    PolynomialFunctionData =>
+        repeat([PolynomialFunctionData(Dict(2 => 999.0, 1 => 1.0))], 24),
+    PiecewiseLinearPointData =>
+        repeat([PiecewiseLinearPointData(repeat([(999.0, 1.0)], 5))], 24),
+)
 
 @testset "Test MarketBidCost with Polynomial Cost Timeseries with Service Forecast " begin
     initial_time = Dates.DateTime("2020-01-01")
@@ -18,9 +11,8 @@ end
     name = "test"
     horizon = 24
     service_data = Dict(initial_time => ones(horizon))
-    polynomial_cost = repeat([(999.0, 1.0)], 24)
     data_polynomial =
-        SortedDict(initial_time => polynomial_cost)
+        SortedDict(initial_time => test_costs[PolynomialFunctionData])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -49,8 +41,7 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    pwl_cost = repeat([repeat([(999.0, 1.0)], 5)], 24)
-    data_pwl = SortedDict(initial_time => pwl_cost)
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearPointData])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -75,11 +66,13 @@ end
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    polynomial_cost = repeat([(999.0, 1.0)], 24)
     data_polynomial =
-        SortedDict(initial_time => polynomial_cost, other_time => polynomial_cost)
-    pwl_cost = repeat([repeat([(999.0, 1.0)], 5)], 24)
-    data_pwl = SortedDict(initial_time => pwl_cost, other_time => pwl_cost)
+        SortedDict(
+            initial_time => test_costs[PolynomialFunctionData],
+            other_time => test_costs[PolynomialFunctionData],
+        )
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearPointData],
+        other_time => test_costs[PiecewiseLinearPointData])
     for d in [data_polynomial, data_pwl]
         @testset "Add deterministic from $(typeof(d)) to ReserveDemandCurve variable cost" begin
             sys = System(100.0)
