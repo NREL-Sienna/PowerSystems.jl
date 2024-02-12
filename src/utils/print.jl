@@ -139,6 +139,14 @@ function Base.summary(tech::DeviceParameter)
     return "$(typeof(tech))"
 end
 
+function Base.show(io::IO, ::MIME"text/plain", data::OperationalCost)
+    println(io, "$(typeof(data)): ")
+    for field_name in fieldnames(typeof(data))
+        val = getproperty(data, field_name)
+        print(io, "    $(field_name): $val\n")
+    end
+end
+
 function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
     println(io, "$(typeof(data)):")
     println(io, "  directory:  $(data.directory)")
