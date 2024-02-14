@@ -9,6 +9,7 @@ import InteractiveUtils
 import JSON3
 import PowerSystemCaseBuilder: PSYTestSystems
 import InfrastructureSystems
+import Random
 const IS = InfrastructureSystems
 using PowerSystems
 import PowerSystems: PowerSystemTableData

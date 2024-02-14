@@ -73,7 +73,7 @@ end
 end
 
 @testset "Test FunctionData piecewise point/slope conversion" begin
-    rng = Xoshiro(0)  # Set random seed for determinism
+    rng = Random.Xoshiro(0)  # Set random seed for determinism
     n_tests = 100
     n_points = 10
     for _ in 1:n_tests

@@ -654,7 +654,7 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = 0.0, max = 0.1),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((430.292599, 2000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThreePartCost(QuadraticFunctionData(430.292599, 2000.0, 0.0), 0.0, 0.0, 0.0),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -671,7 +671,7 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.4, max = 0.5),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((2500.0, 2000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThreePartCost(QuadraticFunctionData(2500.0, 2000.0, 0.0), 0.0, 0.0, 0.0),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -688,7 +688,7 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = 0.0, max = 0.4),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThreePartCost(QuadraticFunctionData(100.0, 4000.0, 0.0), 0.0, 0.0, 0.0),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -705,7 +705,7 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.06, max = 0.24),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThreePartCost(QuadraticFunctionData(100.0, 4000.0, 0.0), 0.0, 0.0, 0.0),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -722,7 +722,7 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.06, max = 0.24),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThreePartCost(QuadraticFunctionData(100.0, 4000.0, 0.0), 0.0, 0.0, 0.0),
         base_power = 100.0,
     ),
 ]

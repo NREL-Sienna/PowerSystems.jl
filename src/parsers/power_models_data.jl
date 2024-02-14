@@ -322,7 +322,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = TwoPartCost(0.0, 0.0)
+    curtailcost = TwoPartCost(LinearFunctionData(0.0), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
@@ -438,7 +438,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
             fixed = max(0.0,
                 first_y - first(get_slopes(PiecewiseLinearPointData(points))) * first_x,
             )
-            cost = PiecewiseLinearPointData((x, y - fixed) for (x, y) in points)
+            cost = PiecewiseLinearPointData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
             # For now, we make the variable cost a PolynomialFunctionData with all but the
             # constant term and make the fixed cost the constant term; in a future update,
@@ -447,7 +447,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
             # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
             coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
             cost = PolynomialFunctionData(Dict((i, c / sys_mbase^i) for (i, c) in coeffs))
-            fixed = d["cost"][end]
+            fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
         startup = d["startup"]
         shutdn = d["shutdown"]

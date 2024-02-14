@@ -69,11 +69,11 @@ mutable struct InterconnectingConverter <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
+function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
     InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(0.0, 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
+function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
     InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, internal, )
 end
 

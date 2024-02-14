@@ -98,7 +98,7 @@ function _convert_data!(
     ::Val{Symbol("3.0.0")},
     ::Val{Symbol("4.0.0")},
 )
-    for component in raw["data"]["components"]
+    for component in vcat(raw["data"]["components"], raw["data"]["masked_components"])
         if haskey(component, "operation_cost")
             op_cost = component["operation_cost"]
             if op_cost["__metadata__"]["type"] in COST_CONTAINERS &&

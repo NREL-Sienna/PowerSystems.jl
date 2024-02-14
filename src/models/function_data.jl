@@ -50,8 +50,11 @@ end
 get_coefficients(fd::PolynomialFunctionData) = fd.coefficients
 
 function _validate_piecewise_x(x_coords)
-    (length(x_coords) >= 2) ||
-        throw(ArgumentError("Must specify at least two x-coordinates"))
+    # TODO currently there exist cases where we are constructing a PiecewiseLinearPointData
+    # with only one point (e.g., `calculate_variable_cost` within
+    # `power_system_table_data.jl`) -- what does this represent?
+    # (length(x_coords) >= 2) ||
+    #     throw(ArgumentError("Must specify at least two x-coordinates"))
     issorted(x_coords) || throw(ArgumentError("Piecewise x-coordinates must be ascending"))
     # TODO are there legitimate cases where we'd want negative x-coordinates?
     # (x_coords[1] >= 0) || throw(ArgumentError("Piecewise x-coordinates cannot be negative"))
