@@ -216,3 +216,6 @@ function IS.deserialize_struct(T::Type{PolynomialFunctionData}, val::Dict)
 end
 
 IS.deserialize(T::Type{<:FunctionData}, val::Dict) = IS.deserialize_struct(T, val)
+
+IS.deserialize(::Type{FunctionData}, val::Dict) =
+    throw(ArgumentError("FunctionData is abstract, must specify a concrete subtype"))

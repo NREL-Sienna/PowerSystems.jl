@@ -6,6 +6,10 @@
 # Deserialization needs to add this field and value.
 #
 
+# List of structs that have a "variable" field that requires 3.0.0 VariableCost -> 4.0.0 FunctionData conversion
+const COST_CONTAINERS =
+    ["MultiStartCost", "StorageManagementCost", "ThreePartCost", "TwoPartCost"]
+
 function _convert_data!(
     raw::Dict{String, Any},
     ::Val{Symbol("1.0.0")},
@@ -73,6 +77,50 @@ function _convert_data!(
     return
 end
 
+_convert_cost(old_cost::Real) = LinearFunctionData(old_cost)
+
+_convert_cost((squared_term, proportional_term)::Tuple{<:Real, <:Real}) =
+    QuadraticFunctionData(squared_term, proportional_term, 0)
+
+function _convert_cost(points::Vector)
+    # We can't rely on the typing to be nice after deserialization, so "dispatch" on the structure
+    ((length(points) == 2) && all(typeof.(points) .<: Real)) &&
+        return _convert_cost(Tuple(points))
+
+    @assert all(length.(points) .== 2)
+    @assert all([all(typeof.(point) .<: Real) for point in points])
+    # NOTE: old representation stored points as (y, x); new representation is (x, y)
+    return PiecewiseLinearPointData([(x, y) for (y, x) in points])
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("3.0.0")},
+    ::Val{Symbol("4.0.0")},
+)
+    for component in raw["data"]["components"]
+        if haskey(component, "operation_cost")
+            op_cost = component["operation_cost"]
+            if op_cost["__metadata__"]["type"] in COST_CONTAINERS &&
+               haskey(op_cost["variable"], "cost")
+                old_cost = op_cost["variable"]["cost"]
+                new_cost = IS.serialize(_convert_cost(old_cost))
+                op_cost["variable"] = new_cost
+            end
+        end
+    end
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    from::Val,
+    ::Val{Symbol("4.0.0")},
+)
+    _convert_data!(raw, from, Val{Symbol("3.0.0")}())
+    _convert_data!(raw, Val{Symbol("3.0.0")}(), Val{Symbol("4.0.0")}())
+    return
+end
+
 # Conversions to occur immediately after the data is loaded from disk
 function pre_read_conversion!(raw)
     if VersionNumber(raw["data_format_version"]) < v"4.0.0"
@@ -90,7 +138,7 @@ function pre_deserialize_conversion!(raw, sys::System)
     else
         _convert_data!(raw, Val{Symbol(old)}(), Val{Symbol(DATA_FORMAT_VERSION)}())
         @warn(
-            "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
+            "System loaded in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
         )
     end
 end
@@ -115,14 +163,14 @@ function post_deserialize_conversion!(sys::System, raw)
                 end
             end
         end
-    elseif old == "1.0.1" || old == "2.0.0"
+    elseif old == "1.0.1" || old == "2.0.0" || old == "3.0.0"
         # Version 1.0.1 can be converted
         raw["data_format_version"] = DATA_FORMAT_VERSION
         @warn(
-            "System is saved in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
+            "System loaded in the data format version $old will be automatically upgraded to $DATA_FORMAT_VERSION upon saving"
         )
         return
     else
-        error("conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
+        error("Conversion of data from $old to $DATA_FORMAT_VERSION is not supported")
     end
 end
