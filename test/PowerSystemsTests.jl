@@ -47,6 +47,12 @@ LOG_LEVELS = Dict(
 
 include("common.jl")
 
+for filename in readdir(joinpath(BASE_DIR, "test"))
+    if startswith(filename, "test_") && endswith(filename, ".jl")
+        include(filename)
+    end
+end
+
 function get_logging_level_from_env(env_name::String, default)
     level = get(ENV, env_name, default)
     return IS.get_logging_level(level)
@@ -95,7 +101,7 @@ end
 
 
 export run_tests
-@show "hello0"
+
 end
 
 using .PowerSystemsTests
