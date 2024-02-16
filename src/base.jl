@@ -1415,8 +1415,29 @@ function check(sys::System)
     buscheck(buses)
     critical_components_check(sys)
     adequacy_check(sys)
-    check_components(sys)
+    check_subsystems(sys)
     return
+end
+
+"""
+Check the the consistency of subsystems.
+"""
+function check_subsystems(sys::System)
+    must_be_assigned_to_subsystem = false
+    for (i, component) in enumerate(iterate_components(sys))
+        is_assigned = is_assigned_to_subsystem(sys, component)
+        if i == 1
+            must_be_assigned_to_subsystem = is_assigned
+        elseif is_assigned != must_be_assigned_to_subsystem
+            throw(
+                IS.InvalidValue(
+                    "If any component is assigned to a subsystem then all " *
+                    "components must be assigned to a subsystem.",
+                ),
+            )
+        end
+        check_subsystems(sys, component)
+    end
 end
 
 """
@@ -1437,7 +1458,6 @@ function check_components(sys::System; check_masked_components = true)
             )
         end
         check_component(sys, component)
-        check_subsystems(sys, component)
     end
 
     if check_masked_components

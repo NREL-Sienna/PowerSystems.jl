@@ -128,6 +128,7 @@ end
     bad_therm_gen_act_power = thermal_generators5(nodes)
     bad_therm_gen_act_power[1].active_power = 10
     nodes = nodes5()
+    # This is an explicit check for one error message.
     @test_logs (:warn, r"Invalid range") System(
         100.0,
         nodes,
