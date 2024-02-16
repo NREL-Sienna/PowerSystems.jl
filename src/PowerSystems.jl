@@ -45,7 +45,10 @@ export QuadraticFunctionData
 export PolynomialFunctionData
 export PiecewiseLinearPointData
 export PiecewiseLinearSlopeData
-export get_proportional_term, get_quadratic_term, get_constant_term, get_coefficients
+export get_proportional_term
+export get_quadratic_term
+export get_constant_term
+export get_coefficients
 export get_slopes
 export get_x_lengths
 export is_convex

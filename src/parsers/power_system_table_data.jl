@@ -855,7 +855,7 @@ function calculate_variable_cost(
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
-    var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
+        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
 
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost

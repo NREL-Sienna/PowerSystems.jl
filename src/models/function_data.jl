@@ -56,8 +56,6 @@ function _validate_piecewise_x(x_coords)
     # (length(x_coords) >= 2) ||
     #     throw(ArgumentError("Must specify at least two x-coordinates"))
     issorted(x_coords) || throw(ArgumentError("Piecewise x-coordinates must be ascending"))
-    # TODO are there legitimate cases where we'd want negative x-coordinates?
-    # (x_coords[1] >= 0) || throw(ArgumentError("Piecewise x-coordinates cannot be negative"))
 end
 
 """
