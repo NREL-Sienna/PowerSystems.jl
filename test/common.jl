@@ -338,12 +338,11 @@ function validate_serialization(
         sys_ext = get_ext(sys)
         sys_ext["data"] = 5
         ext_test_bus_name = ""
-        IS.prepare_for_serialization!(sys.data, path; force = true)
         bus = collect(get_components(PSY.ACBus, sys))[1]
         ext_test_bus_name = PSY.get_name(bus)
         ext = PSY.get_ext(bus)
         ext["test_field"] = 1
-        to_json(sys, path)
+        to_json(sys, path; force = true)
 
         data = open(path, "r") do io
             JSON3.read(io)

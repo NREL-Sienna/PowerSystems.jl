@@ -239,3 +239,15 @@ end
     @test result
     @test sort!(collect(get_subsystems(sys))) == ["subsystem_1"]
 end
+
+@testset "Test serialization to JSON string" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    set_name!(sys, "test_RTS_GMLC_sys")
+    set_description!(sys, "test description")
+    @test !isempty(collect(IS.iterate_components_with_time_series(sys.data.components)))
+    text = to_json(sys)
+    sys2 = from_json(text, System)
+    exclude = Set([:time_series_container, :time_series_storage])
+    @test PSY.compare_values(sys2, sys, exclude = exclude)
+    @test isempty(collect(IS.iterate_components_with_time_series(sys2.data.components)))
+end
