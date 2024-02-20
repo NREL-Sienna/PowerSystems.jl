@@ -560,9 +560,9 @@ end
     @test collect(
         get_components(
             x -> x.name == name,
-            ThermalStandard,
+            PowerLoad,
             c_sys5;
-            subsystem_name = "subsystem_1",
+            subsystem_name = "subsystem_2",
         ),
     )[1].name == name
 end
