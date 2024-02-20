@@ -73,6 +73,16 @@ function _convert_data!(
     return
 end
 
+# Conversions to occur immediately after the data is loaded from disk
+function pre_read_conversion!(raw)
+    if VersionNumber(raw["data_format_version"]) < v"4.0.0"
+        haskey(raw["data"], "subsystems") ||
+            (raw["data"]["subsystems"] = Dict{String, Any}())
+        haskey(raw["data"], "attributes") || (raw["data"]["attributes"] = Any[])
+    end
+end
+
+# Conversions to occur before deserialize_components!
 function pre_deserialize_conversion!(raw, sys::System)
     old = raw["data_format_version"]
     if old == DATA_FORMAT_VERSION
@@ -85,6 +95,7 @@ function pre_deserialize_conversion!(raw, sys::System)
     end
 end
 
+# Conversions to occur at the end of deserialization
 function post_deserialize_conversion!(sys::System, raw)
     old = raw["data_format_version"]
     if old == "1.0.0"
