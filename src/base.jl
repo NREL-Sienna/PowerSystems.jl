@@ -1549,6 +1549,10 @@ function IS.deserialize(
         JSON3.read(io, Dict)
     end
 
+    if raw["data_format_version"] != DATA_FORMAT_VERSION
+        pre_read_conversion!(raw)
+    end
+
     # These file paths are relative to the system file.
     directory = dirname(filename)
     for file_key in ("time_series_storage_file", "validation_descriptor_file")
