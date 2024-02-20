@@ -524,7 +524,23 @@ import InfrastructureSystems:
     MultiLogger,
     LogEventTracker,
     StructField,
-    StructDefinition
+    StructDefinition,
+    FunctionData,
+    LinearFunctionData,
+    QuadraticFunctionData,
+    PolynomialFunctionData,
+    PiecewiseLinearPointData,
+    PiecewiseLinearSlopeData,
+    get_proportional_term,
+    get_quadratic_term,
+    get_constant_term,
+    get_coefficients,
+    get_slopes,
+    get_x_lengths,
+    is_convex,
+    get_points,
+    get_x_coords,
+    get_y0
 
 const IS = InfrastructureSystems
 
@@ -565,7 +581,6 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
-include("models/function_data.jl")
 include("models/operational_cost.jl")
 #include("models/network.jl")
 
