@@ -556,13 +556,13 @@ end
     @test length(
         get_components(ThermalStandard, c_sys5; subsystem_name = "subsystem_1"),
     ) == 5
-    name = get_name(components[14])
+    name = get_name(get_component(PowerLoad, c_sys5, "Load-nodeB2"))
     @test collect(
         get_components(
             x -> x.name == name,
-            ThermalStandard,
+            PowerLoad,
             c_sys5;
-            subsystem_name = "subsystem_1",
+            subsystem_name = "subsystem_2",
         ),
     )[1].name == name
 end
