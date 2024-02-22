@@ -7,8 +7,8 @@
                 {
                     "name": "variable",
                     "comment": "variable cost",
-                    "null_value": "VariableCost((0.0, 0.0))",
-                    "data_type": "VariableCost"
+                    "null_value": "LinearFunctionData(0.0)",
+                    "data_type": "FunctionData"
                 },
                 {
                     "name": "fixed",
@@ -31,8 +31,8 @@
                 {
                     "name": "variable",
                     "comment": "variable cost",
-                    "null_value": "VariableCost((0.0, 0.0))",
-                    "data_type": "VariableCost"
+                    "null_value": "LinearFunctionData(0.0)",
+                    "data_type": "FunctionData"
                 },
                 {
                     "name": "fixed",
@@ -72,9 +72,9 @@
                 {
                     "name": "variable",
                     "comment": "variable cost",
-                    "null_value": "VariableCost((0.0, 0.0))",
-                    "data_type": "VariableCost",
-                    "default": "VariableCost((0.0, 0.0))"
+                    "null_value": "LinearFunctionData(0.0)",
+                    "data_type": "FunctionData",
+                    "default": "LinearFunctionData(0.0)"
                 },
                 {
                     "name": "fixed",
@@ -185,8 +185,8 @@
                 {
                     "name": "variable",
                     "comment": "variable cost",
-                    "null_value": "VariableCost((0.0, 0.0))",
-                    "data_type": "VariableCost"
+                    "null_value": "LinearFunctionData(0.0)",
+                    "data_type": "FunctionData"
                 },
                 {
                     "name": "no_load",
@@ -2704,7 +2704,7 @@
                     "name": "operation_cost",
                     "null_value": "TwoPartCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(0.0, 0.0)",
+                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3052,7 +3052,7 @@
                     "name": "operation_cost",
                     "null_value": "TwoPartCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(0.0, 0.0)",
+                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3220,7 +3220,7 @@
                     "name": "operation_cost",
                     "null_value": "TwoPartCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(0.0, 0.0)",
+                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3468,7 +3468,7 @@
                     "name": "operation_cost",
                     "null_value": "TwoPartCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(0.0, 0.0)",
+                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {

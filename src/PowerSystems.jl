@@ -39,14 +39,28 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
+export FunctionData
+export LinearFunctionData
+export QuadraticFunctionData
+export PolynomialFunctionData
+export PiecewiseLinearPointData
+export PiecewiseLinearSlopeData
+export get_proportional_term
+export get_quadratic_term
+export get_constant_term
+export get_coefficients
+export get_slopes
+export get_x_lengths
+export is_convex
+export get_points
+export get_x_coords
+export get_y0
+
 export ThreePartCost
 export TwoPartCost
-export VariableCost
 export MultiStartCost
 export MarketBidCost
 export StorageManagementCost
-export get_slopes
-export get_breakpoint_upperbounds
 
 export Generator
 export HydroGen
@@ -510,7 +524,23 @@ import InfrastructureSystems:
     MultiLogger,
     LogEventTracker,
     StructField,
-    StructDefinition
+    StructDefinition,
+    FunctionData,
+    LinearFunctionData,
+    QuadraticFunctionData,
+    PolynomialFunctionData,
+    PiecewiseLinearPointData,
+    PiecewiseLinearSlopeData,
+    get_proportional_term,
+    get_quadratic_term,
+    get_constant_term,
+    get_coefficients,
+    get_slopes,
+    get_x_lengths,
+    is_convex,
+    get_points,
+    get_x_coords,
+    get_y0
 
 const IS = InfrastructureSystems
 

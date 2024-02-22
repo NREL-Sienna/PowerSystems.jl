@@ -855,10 +855,11 @@ function calculate_variable_cost(
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
+        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
 
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * fuel_cost + vom
+        var_cost = LinearFunctionData(var_cost[1][1] * fuel_cost + vom)
         fixed = 0.0
     end
     return var_cost, fixed, fuel_cost
@@ -892,8 +893,9 @@ function calculate_variable_cost(
             (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
+        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
     elseif length(var_cost) == 1
-        var_cost = var_cost[1][1]
+        var_cost = LinearFunctionData(var_cost[1][1])
         fixed = 0.0
     end
 
@@ -1041,13 +1043,14 @@ function make_thermal_generator_multistart(
     base_power = get_base_power(thermal_gen)
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
-    if var_cost isa Float64
+    if var_cost isa LinearFunctionData
         no_load_cost = 0.0
-        var_cost = VariableCost(var_cost)
     else
-        no_load_cost = var_cost[1][1]
+        (no_load_x, no_load_cost) = first(var_cost)
         var_cost =
-            VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+            PiecewiseLinearPointData([
+                (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
+            ])
     end
     lag_hot =
         if isnothing(gen.hot_start_time)

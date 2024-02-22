@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct StorageManagementCost <: OperationalCost
-        variable::VariableCost
+        variable::FunctionData
         fixed::Float64
         start_up::Float64
         shut_down::Float64
@@ -17,7 +17,7 @@ This file is auto-generated. Do not edit.
 Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.
 
 # Arguments
-- `variable::VariableCost`: variable cost
+- `variable::FunctionData`: variable cost
 - `fixed::Float64`: fixed cost
 - `start_up::Float64`: start-up cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -26,7 +26,7 @@ Data Structure for Operational Cost Data like variable cost and start - stop cos
 """
 mutable struct StorageManagementCost <: OperationalCost
     "variable cost"
-    variable::VariableCost
+    variable::FunctionData
     "fixed cost"
     fixed::Float64
     "start-up cost"
@@ -40,14 +40,14 @@ mutable struct StorageManagementCost <: OperationalCost
 end
 
 
-function StorageManagementCost(; variable=VariableCost((0.0, 0.0)), fixed=0.0, start_up=0.0, shut_down=0.0, energy_shortage_cost=0.0, energy_surplus_cost=0.0, )
+function StorageManagementCost(; variable=LinearFunctionData(0.0), fixed=0.0, start_up=0.0, shut_down=0.0, energy_shortage_cost=0.0, energy_surplus_cost=0.0, )
     StorageManagementCost(variable, fixed, start_up, shut_down, energy_shortage_cost, energy_surplus_cost, )
 end
 
 # Constructor for demo purposes; non-functional.
 function StorageManagementCost(::Nothing)
     StorageManagementCost(;
-        variable=VariableCost((0.0, 0.0)),
+        variable=LinearFunctionData(0.0),
         fixed=0.0,
         start_up=0.0,
         shut_down=0.0,

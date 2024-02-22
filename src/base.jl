@@ -27,7 +27,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "3.0.0"
+const DATA_FORMAT_VERSION = "4.0.0"
 
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
@@ -1547,6 +1547,10 @@ function IS.deserialize(
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
+    end
+
+    if raw["data_format_version"] != DATA_FORMAT_VERSION
+        pre_read_conversion!(raw)
     end
 
     # These file paths are relative to the system file.

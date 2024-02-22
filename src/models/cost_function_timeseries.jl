@@ -18,7 +18,13 @@ function get_variable_cost(
     end
     data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
-    return TimeSeries.TimeArray(time_stamps, map(VariableCost, TimeSeries.values(data)))
+    # TODO initially this was mapping PiecewiseLinearSlopeData over the raw data. Now the
+    # data is PiecewiseLinearPointData. Has something been lost in translation?
+    return data
+    # return TimeSeries.TimeArray(
+    #     time_stamps,
+    #     map(PiecewiseLinearSlopeData, TimeSeries.values(data)),
+    # )
 end
 
 """

@@ -322,7 +322,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = TwoPartCost(0.0, 0.0)
+    curtailcost = TwoPartCost(LinearFunctionData(0.0), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
@@ -349,7 +349,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = TwoPartCost(0.0, 0.0)
+    cost = TwoPartCost(LinearFunctionData(0.0), 0.0)
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])
@@ -415,6 +415,7 @@ function make_generic_battery(storage_name, d, bus)
     return storage
 end
 
+# TODO test this more directly?
 """
 The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
     c(p) = c_n*p^n+...+c_1p+c_0
@@ -423,37 +424,30 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
 function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Number)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
+        # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
         if model == GeneratorCostModels.PIECEWISE_LINEAR
+            # For now, we make the fixed cost the y-intercept of the first segment of the
+            # piecewise curve and the variable cost a PiecewiseLinearPointData representing
+            # the data minus this fixed cost; in a future update, there will be no
+            # separation between the PiecewiseLinearPointData and the fixed cost.
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
             cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
-            cost = [(p, c) for (p, c) in zip(cost_p, power_p)]
-            fixed = max(
-                0.0,
-                cost[1][1] -
-                (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
+            points = collect(zip(power_p, cost_p))
+            (first_x, first_y) = first(points)
+            fixed = max(0.0,
+                first_y - first(get_slopes(PiecewiseLinearPointData(points))) * first_x,
             )
-            cost = [(c[1] - fixed, c[2]) for c in cost]
+            cost = PiecewiseLinearPointData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
-            if d["ncost"] == 0
-                cost = (0.0, 0.0)
-                fixed = 0.0
-            elseif d["ncost"] == 1
-                cost = (0.0, 0.0)
-                fixed = d["cost"][1]
-            elseif d["ncost"] == 2
-                cost = (0.0, d["cost"][1]) ./ sys_mbase
-                fixed = d["cost"][2]
-            elseif d["ncost"] == 3
-                cost = (d["cost"][1] / sys_mbase, d["cost"][2]) ./ sys_mbase
-                fixed = d["cost"][3]
-            else
-                throw(
-                    DataFormatError(
-                        "invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree",
-                    ),
-                )
-            end
+            # For now, we make the variable cost a PolynomialFunctionData with all but the
+            # constant term and make the fixed cost the constant term; in a future update,
+            # there will be no separation between the PolynomialFunctionData and the fixed
+            # cost.
+            # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
+            coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
+            cost = PolynomialFunctionData(Dict((i, c / sys_mbase^i) for (i, c) in coeffs))
+            fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
         startup = d["startup"]
         shutdn = d["shutdown"]
