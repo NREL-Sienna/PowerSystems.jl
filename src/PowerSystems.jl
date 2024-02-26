@@ -540,7 +540,9 @@ import InfrastructureSystems:
     is_convex,
     get_points,
     get_x_coords,
-    get_y0
+    get_y0,
+    get_raw_data,
+    get_raw_data_type
 
 const IS = InfrastructureSystems
 
