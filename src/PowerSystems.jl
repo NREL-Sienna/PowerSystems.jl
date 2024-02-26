@@ -538,9 +538,9 @@ import InfrastructureSystems:
     get_slopes,
     get_x_lengths,
     is_convex,
-    get_points,
+    get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
-    get_y0,
+    get_y0,  # TODO reevaluate whether this should be exported
     get_raw_data,
     get_raw_data_type
 
