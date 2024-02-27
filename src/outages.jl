@@ -1,4 +1,4 @@
-abstract type Outage <: Contigency end
+abstract type Outage <: Contingency end
 
 """Get `components_uuid`."""
 get_component_uuids(x::Outage) = x.component_uuids
