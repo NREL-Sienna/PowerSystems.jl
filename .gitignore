@@ -35,7 +35,7 @@ docs/site/
 *.pdf
 *.ipynb
 
-Manifest.toml
+#Manifest.toml
 .vscode
 *.h5
 
