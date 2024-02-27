@@ -8,34 +8,34 @@ get_internal(x::Outage) = x.internal
 get_time_series_container(x::Outage) = x.time_series_container
 
 """
-Attribute that contains information regarding forced outages modeled with a
-geometric distribution. The outage probabilities and recovery times can be modeled as time
+Attribute that contains information regarding forced outages where the transition probabilities
+are modeled with geometric distributions. The outage probabilities and recovery probabilities can be modeled as time
 series.
 
 # Arguments
 - `time_to_recovery::Int`: Time elapsed to recovery after a failure in Milliseconds.
-- `outage_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
+- `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 struct GeometricDistributionForcedOutage <: Outage
-    time_to_recovery::Int
-    outage_probability::Float64
+    mean_time_to_recovery::Float64
+    outage_transition_probability::Float64
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     component_uuids::InfrastructureSystems.ComponentUUIDs
     internal::InfrastructureSystemsInternal
 end
 
 function GeometricDistributionForcedOutage(;
-    time_to_recovery = 0.0,
-    outage_probability = 0.0,
+    mean_time_to_recovery = 0.0,
+    outage_transition_probability = 0.0,
     time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     component_uuids = InfrastructureSystems.ComponentUUIDs(),
     internal = InfrastructureSystemsInternal(),
 )
     return GeometricDistributionForcedOutage(
-        time_to_recovery,
-        outage_probability,
+        mean_time_to_recovery,
+        outage_transition_probability,
         time_series_container,
         component_uuids,
         internal,
@@ -43,9 +43,11 @@ function GeometricDistributionForcedOutage(;
 end
 
 """Get [`GeometricDistributionForcedOutage`](@ref) `time_to_recovery`."""
-get_time_to_recovery(value::GeometricDistributionForcedOutage) = value.time_to_recovery
+get_mean_time_to_recovery(value::GeometricDistributionForcedOutage) =
+    value.mean_time_to_recovery
 """Get [`GeometricDistributionForcedOutage`](@ref) `outage_probability`."""
-get_outage_probability(value::GeometricDistributionForcedOutage) = value.outage_probability
+get_outage_transition_probability(value::GeometricDistributionForcedOutage) =
+    value.outage_transition_probability
 
 """
 Attribute that contains information regarding planned outages.
@@ -80,38 +82,34 @@ end
 get_outage_schedule(value::PlannedOutage) = value.outage_schedule
 
 """
-Attribute that contains information for time series representation for the start of forced outages.
-The data can be obtained from a simulation or historical information.
+Attribute that contains the representation of the status of the component forced outage.
+The data can be obtained from the simulation of an stochastic process or historical information.
 
 # Arguments
-- `time_to_recovery::Int`: Time elapsed to recovery after a failure in Milliseconds.
-- `outage_scenario::String`: String name of the time series used for the forced outage in the model
+- `outage_status_scenario::String`: String name of the time series used for the forced outage status in the model. 1 is used represent outaged and 0 for available.
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 struct TimeSeriesForcedOutage <: Outage
-    outage_scenario::String
-    time_to_recovery::Int
+    outage_status_scenario::String
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     component_uuids::InfrastructureSystems.ComponentUUIDs
     internal::InfrastructureSystemsInternal
 end
 
 function TimeSeriesForcedOutage(;
-    outage_scenario,
+    outage_status_scenario,
     time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     component_uuids = InfrastructureSystems.ComponentUUIDs(),
     internal = InfrastructureSystemsInternal(),
 )
     return TimeSeriesForcedOutage(
-        outage_scenario,
+        outage_status_scenario,
         time_series_container,
         component_uuids,
         internal,
     )
 end
 
-"""Get [`GeometricDistributionForcedOutage`](@ref) `time_to_recovery`."""
-get_time_to_recovery(value::GeometricDistributionForcedOutage) = value.time_to_recovery
-"""Get [`TimeSeriesForcedOutage`](@ref) `outage_scenario`."""
-get_outage_scenario(value::TimeSeriesForcedOutage) = value.outage_scenario
+"""Get [`TimeSeriesForcedOutage`](@ref) `outage_status_scenario`."""
+get_outage_status_scenario(value::TimeSeriesForcedOutage) = value.outage_status_scenario
