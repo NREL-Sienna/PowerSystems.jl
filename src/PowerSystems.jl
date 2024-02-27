@@ -220,10 +220,13 @@ export PriorityCurrentLimiter
 export Source
 export PeriodicVariableSource
 
+export Contingency
+
 # Outages
 export Outage
-export ForcedOutage
+export GeometricDistributionForcedOutage
 export PlannedOutage
+export TimeSeriesForcedOutage
 
 export Service
 export AbstractReserve
@@ -620,6 +623,7 @@ include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
 
 # Supplemental attributes
+include("contingencies.jl")
 include("outages.jl")
 
 # Definitions of PowerSystem
