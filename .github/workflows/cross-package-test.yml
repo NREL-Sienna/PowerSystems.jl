@@ -17,14 +17,14 @@ jobs:
         package_name: [PowerSimulations, PowerSystemCaseBuilder, PowerNetworkMatrices]
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
           arch: x64
       - uses: julia-actions/julia-buildpkg@latest
       - name: Clone ${{matrix.package_name}}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: NREL-Sienna/${{matrix.package_name}}.jl
           path: downstream
