@@ -1,0 +1,20 @@
+name: Test-CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - 'main'
+
+jobs:
+  test:
+    steps:
+      - uses: actions/checkout@v3
+      - name: Fail if Manifest is present
+        uses: andstor/file-existence-action@v3
+        with:
+          files: "Manifest.toml"
+
+      - name: Manifest exists
+        if: steps.check_files.outputs.files_exists == 'true'
+        run: exit 1
