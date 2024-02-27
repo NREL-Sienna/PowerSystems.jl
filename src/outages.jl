@@ -80,16 +80,18 @@ end
 get_outage_schedule(value::PlannedOutage) = value.outage_schedule
 
 """
-Attribute that contains information for time series representation of forced outages. The
-data can be obtained from a simulation or historical information.
+Attribute that contains information for time series representation for the start of forced outages.
+The data can be obtained from a simulation or historical information.
 
 # Arguments
+- `time_to_recovery::Int`: Time elapsed to recovery after a failure in Milliseconds.
 - `outage_scenario::String`: String name of the time series used for the forced outage in the model
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 struct TimeSeriesForcedOutage <: Outage
     outage_scenario::String
+    time_to_recovery::Int
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     component_uuids::InfrastructureSystems.ComponentUUIDs
     internal::InfrastructureSystemsInternal
@@ -109,5 +111,7 @@ function TimeSeriesForcedOutage(;
     )
 end
 
+"""Get [`GeometricDistributionForcedOutage`](@ref) `time_to_recovery`."""
+get_time_to_recovery(value::GeometricDistributionForcedOutage) = value.time_to_recovery
 """Get [`TimeSeriesForcedOutage`](@ref) `outage_scenario`."""
 get_outage_scenario(value::TimeSeriesForcedOutage) = value.outage_scenario
