@@ -201,29 +201,71 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         runchecks = get(kwargs, :runchecks, true)
         time_series_read_only = get(kwargs, :time_series_read_only, false)
         time_series_directory = get(kwargs, :time_series_directory, nothing)
+        config_path = get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
         sys = deserialize(
             System,
             file_path;
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
             time_series_directory = time_series_directory,
+            config_path = config_path,
         )
-        runchecks && check(sys)
-        if assign_new_uuids
-            IS.assign_new_uuid!(sys)
-            for component in get_components(Component, sys)
-                assign_new_uuid!(sys, component)
-            end
-            for component in
-                IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-                assign_new_uuid!(sys, component)
-            end
-            # Note: this does not change UUIDs for time series data because they are
-            # shared with components.
-        end
+        _post_deserialize_handling(
+            sys;
+            runchecks = runchecks,
+            assign_new_uuids = assign_new_uuids,
+        )
         return sys
     else
         throw(DataFormatError("$file_path is not a supported file type"))
+    end
+end
+
+"""
+If assign_new_uuids = true, generate new UUIDs for the system and all components.
+
+Warning: time series data is not restored by this method. If that is needed, use the normal
+process to construct the system from a serialized JSON file instead, such as with
+`System("sys.json")`.
+"""
+function IS.from_json(
+    io::Union{IO, String},
+    ::Type{System};
+    runchecks = true,
+    assign_new_uuids = false,
+    kwargs...,
+)
+    data = JSON3.read(io, Dict)
+    # These objects could be removed in to_json(sys). Doing it here will allow us to
+    # keep that JSON string fully consistent with time series and potentially use it in the
+    # future.
+    for component in data["data"]["components"]
+        if haskey(component, "time_series_container")
+            empty!(component["time_series_container"])
+        end
+    end
+    sys = from_dict(System, data; kwargs...)
+    _post_deserialize_handling(
+        sys;
+        runchecks = runchecks,
+        assign_new_uuids = assign_new_uuids,
+    )
+    return sys
+end
+
+function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uuids = false)
+    runchecks && check(sys)
+    if assign_new_uuids
+        IS.assign_new_uuid!(sys)
+        for component in get_components(Component, sys)
+            assign_new_uuid!(sys, component)
+        end
+        for component in
+            IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+            assign_new_uuid!(sys, component)
+        end
+        # Note: this does not change UUIDs for time series data because they are
+        # shared with components.
     end
 end
 
@@ -262,7 +304,7 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
 end
 
 """
-Serializes a system to a JSON string.
+Serializes a system to a JSON file and saves time series to an HDF5 file.
 
 # Arguments
 - `sys::System`: system
@@ -289,7 +331,7 @@ function IS.to_json(
         check_components(sys)
     end
 
-    IS.prepare_for_serialization!(sys.data, filename; force = force)
+    IS.prepare_for_serialization_to_file!(sys.data, filename; force = force)
     data = to_json(sys; pretty = pretty)
     open(filename, "w") do io
         write(io, data)
@@ -1541,8 +1583,6 @@ end
 function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
-    time_series_read_only = false,
-    time_series_directory = nothing,
     kwargs...,
 )
     raw = open(filename) do io
@@ -1555,12 +1595,23 @@ function IS.deserialize(
 
     # These file paths are relative to the system file.
     directory = dirname(filename)
-    for file_key in ("time_series_storage_file", "validation_descriptor_file")
+    for file_key in ("time_series_storage_file",)
         if haskey(raw["data"], file_key) && !isabspath(raw["data"][file_key])
             raw["data"][file_key] = joinpath(directory, raw["data"][file_key])
         end
     end
 
+    return from_dict(System, raw; kwargs...)
+end
+
+function from_dict(
+    ::Type{System},
+    raw::Dict{String, Any};
+    time_series_read_only = false,
+    time_series_directory = nothing,
+    config_path = POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE,
+    kwargs...,
+)
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
     handled = (
@@ -1589,6 +1640,7 @@ function IS.deserialize(
         raw["data"];
         time_series_read_only = time_series_read_only,
         time_series_directory = time_series_directory,
+        validation_descriptor_file = config_path,
     )
     metadata = get(raw, "metadata", Dict())
     name = get(metadata, "name", nothing)
@@ -2028,12 +2080,14 @@ function IS.compare_values(
     x::T,
     y::T;
     compare_uuids = false,
+    exclude = Set{Symbol}(),
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
     # reference to its counterpart, and vice versa, and so infinite recursion will occur
     # in the default function.
     match = true
     for name in fieldnames(T)
+        name in exclude && continue
         val1 = getfield(x, name)
         val2 = getfield(y, name)
         if val1 isa StaticInjection || val2 isa DynamicInjection
@@ -2053,12 +2107,22 @@ function IS.compare_values(
                 end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
+            if !IS.compare_values(
+                val1,
+                val2;
+                compare_uuids = compare_uuids,
+                exclude = exclude,
+            )
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
+            if !IS.compare_values(
+                val1,
+                val2;
+                compare_uuids = compare_uuids,
+                exclude = exclude,
+            )
                 match = false
             end
         else
