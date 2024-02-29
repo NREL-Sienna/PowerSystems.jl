@@ -236,6 +236,9 @@ function IS.from_json(
     kwargs...,
 )
     data = JSON3.read(io, Dict)
+    # These objects could be removed in to_json(sys). Doing it here will allow us to
+    # keep that JSON string fully consistent with time series and potentially use it in the
+    # future.
     for component in data["data"]["components"]
         if haskey(component, "time_series_container")
             empty!(component["time_series_container"])
