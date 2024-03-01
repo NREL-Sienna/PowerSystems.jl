@@ -253,9 +253,9 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     sys_mbase = data["baseMVA"]
     for d_key in keys(data["load"])
         d = data["load"][d_key]
-        if d["pd"] != 0.0
-            bus = bus_number_to_bus[d["load_bus"]]
+        bus = bus_number_to_bus[d["load_bus"]]
             if data["source_type"] == "pti"
+                println("HEEEEERE")
                 load = make_standard_load(d, bus, sys_mbase; kwargs...)
                 has_component(StandardLoad, sys, get_name(load)) && throw(
                     DataFormatError(
@@ -270,8 +270,7 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
                     ),
                 )
             end
-            add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
-        end
+        add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
