@@ -11,6 +11,7 @@ This file is auto-generated. Do not edit.
         requirement::Float64
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -22,6 +23,7 @@ This file is auto-generated. Do not edit.
 - `requirement::Float64`
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transfer <: Service
@@ -31,16 +33,18 @@ mutable struct Transfer <: Service
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Transfer(name, available, requirement, ext, time_series_container, InfrastructureSystemsInternal(), )
+function Transfer(name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    Transfer(name, available, requirement, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Transfer(name, available, requirement, ext, time_series_container, internal, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    Transfer(name, available, requirement, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -51,6 +55,7 @@ function Transfer(::Nothing)
         requirement=0.0,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -64,6 +69,8 @@ get_requirement(value::Transfer) = value.requirement
 get_ext(value::Transfer) = value.ext
 """Get [`Transfer`](@ref) `time_series_container`."""
 get_time_series_container(value::Transfer) = value.time_series_container
+"""Get [`Transfer`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::Transfer) = value.supplemental_attributes_container
 """Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
@@ -75,3 +82,5 @@ set_requirement!(value::Transfer, val) = value.requirement = val
 set_ext!(value::Transfer, val) = value.ext = val
 """Set [`Transfer`](@ref) `time_series_container`."""
 set_time_series_container!(value::Transfer, val) = value.time_series_container = val
+"""Set [`Transfer`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::Transfer, val) = value.supplemental_attributes_container = val

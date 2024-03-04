@@ -20,6 +20,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -40,6 +41,7 @@ This file is auto-generated. Do not edit.
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct MonitoredLine <: ACBranch
@@ -64,16 +66,18 @@ mutable struct MonitoredLine <: ACBranch
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -93,6 +97,7 @@ function MonitoredLine(::Nothing)
         services=Device[],
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -124,6 +129,8 @@ get_services(value::MonitoredLine) = value.services
 get_ext(value::MonitoredLine) = value.ext
 """Get [`MonitoredLine`](@ref) `time_series_container`."""
 get_time_series_container(value::MonitoredLine) = value.time_series_container
+"""Get [`MonitoredLine`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::MonitoredLine) = value.supplemental_attributes_container
 """Get [`MonitoredLine`](@ref) `internal`."""
 get_internal(value::MonitoredLine) = value.internal
 
@@ -153,3 +160,5 @@ set_services!(value::MonitoredLine, val) = value.services = val
 set_ext!(value::MonitoredLine, val) = value.ext = val
 """Set [`MonitoredLine`](@ref) `time_series_container`."""
 set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val
+"""Set [`MonitoredLine`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::MonitoredLine, val) = value.supplemental_attributes_container = val

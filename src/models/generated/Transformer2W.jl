@@ -18,6 +18,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -36,6 +37,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Transformer2W <: ACBranch
@@ -56,16 +58,18 @@ mutable struct Transformer2W <: ACBranch
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -83,6 +87,7 @@ function Transformer2W(::Nothing)
         services=Device[],
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -110,6 +115,8 @@ get_services(value::Transformer2W) = value.services
 get_ext(value::Transformer2W) = value.ext
 """Get [`Transformer2W`](@ref) `time_series_container`."""
 get_time_series_container(value::Transformer2W) = value.time_series_container
+"""Get [`Transformer2W`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::Transformer2W) = value.supplemental_attributes_container
 """Get [`Transformer2W`](@ref) `internal`."""
 get_internal(value::Transformer2W) = value.internal
 
@@ -135,3 +142,5 @@ set_services!(value::Transformer2W, val) = value.services = val
 set_ext!(value::Transformer2W, val) = value.ext = val
 """Set [`Transformer2W`](@ref) `time_series_container`."""
 set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
+"""Set [`Transformer2W`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::Transformer2W, val) = value.supplemental_attributes_container = val

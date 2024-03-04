@@ -25,6 +25,7 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -50,6 +51,7 @@ Data structure for a generic battery
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericBattery <: Storage
@@ -79,16 +81,18 @@ mutable struct GenericBattery <: Storage
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function GenericBattery(; name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
+function GenericBattery(; name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageManagementCost(), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    GenericBattery(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -113,6 +117,7 @@ function GenericBattery(::Nothing)
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -154,6 +159,8 @@ get_dynamic_injector(value::GenericBattery) = value.dynamic_injector
 get_ext(value::GenericBattery) = value.ext
 """Get [`GenericBattery`](@ref) `time_series_container`."""
 get_time_series_container(value::GenericBattery) = value.time_series_container
+"""Get [`GenericBattery`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::GenericBattery) = value.supplemental_attributes_container
 """Get [`GenericBattery`](@ref) `internal`."""
 get_internal(value::GenericBattery) = value.internal
 
@@ -191,3 +198,5 @@ set_services!(value::GenericBattery, val) = value.services = val
 set_ext!(value::GenericBattery, val) = value.ext = val
 """Set [`GenericBattery`](@ref) `time_series_container`."""
 set_time_series_container!(value::GenericBattery, val) = value.time_series_container = val
+"""Set [`GenericBattery`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::GenericBattery, val) = value.supplemental_attributes_container = val

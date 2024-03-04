@@ -19,6 +19,7 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,6 +39,7 @@ As implemented in Milano's Book, Page 397.
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TwoTerminalVSCDCLine <: ACBranch
@@ -56,16 +58,18 @@ mutable struct TwoTerminalVSCDCLine <: ACBranch
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalVSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, internal, )
+function TwoTerminalVSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,6 +88,7 @@ function TwoTerminalVSCDCLine(::Nothing)
         services=Device[],
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -113,6 +118,8 @@ get_services(value::TwoTerminalVSCDCLine) = value.services
 get_ext(value::TwoTerminalVSCDCLine) = value.ext
 """Get [`TwoTerminalVSCDCLine`](@ref) `time_series_container`."""
 get_time_series_container(value::TwoTerminalVSCDCLine) = value.time_series_container
+"""Get [`TwoTerminalVSCDCLine`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::TwoTerminalVSCDCLine) = value.supplemental_attributes_container
 """Get [`TwoTerminalVSCDCLine`](@ref) `internal`."""
 get_internal(value::TwoTerminalVSCDCLine) = value.internal
 
@@ -140,3 +147,5 @@ set_services!(value::TwoTerminalVSCDCLine, val) = value.services = val
 set_ext!(value::TwoTerminalVSCDCLine, val) = value.ext = val
 """Set [`TwoTerminalVSCDCLine`](@ref) `time_series_container`."""
 set_time_series_container!(value::TwoTerminalVSCDCLine, val) = value.time_series_container = val
+"""Set [`TwoTerminalVSCDCLine`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::TwoTerminalVSCDCLine, val) = value.supplemental_attributes_container = val

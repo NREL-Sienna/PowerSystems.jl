@@ -20,6 +20,7 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -40,6 +41,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterconnectingConverter <: StaticInjection
@@ -65,16 +67,18 @@ mutable struct InterconnectingConverter <: StaticInjection
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, internal, )
+function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,6 +98,7 @@ function InterconnectingConverter(::Nothing)
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -125,6 +130,8 @@ get_dynamic_injector(value::InterconnectingConverter) = value.dynamic_injector
 get_ext(value::InterconnectingConverter) = value.ext
 """Get [`InterconnectingConverter`](@ref) `time_series_container`."""
 get_time_series_container(value::InterconnectingConverter) = value.time_series_container
+"""Get [`InterconnectingConverter`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::InterconnectingConverter) = value.supplemental_attributes_container
 """Get [`InterconnectingConverter`](@ref) `internal`."""
 get_internal(value::InterconnectingConverter) = value.internal
 
@@ -152,3 +159,5 @@ set_services!(value::InterconnectingConverter, val) = value.services = val
 set_ext!(value::InterconnectingConverter, val) = value.ext = val
 """Set [`InterconnectingConverter`](@ref) `time_series_container`."""
 set_time_series_container!(value::InterconnectingConverter, val) = value.time_series_container = val
+"""Set [`InterconnectingConverter`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::InterconnectingConverter, val) = value.supplemental_attributes_container = val
