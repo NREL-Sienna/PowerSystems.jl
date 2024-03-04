@@ -20,6 +20,7 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -40,6 +41,7 @@ Data structure for a static exponential load.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ExponentialLoad <: StaticLoad
@@ -63,16 +65,18 @@ mutable struct ExponentialLoad <: StaticLoad
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function ExponentialLoad(; name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
+function ExponentialLoad(; name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,6 +96,7 @@ function ExponentialLoad(::Nothing)
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -123,6 +128,8 @@ get_dynamic_injector(value::ExponentialLoad) = value.dynamic_injector
 get_ext(value::ExponentialLoad) = value.ext
 """Get [`ExponentialLoad`](@ref) `time_series_container`."""
 get_time_series_container(value::ExponentialLoad) = value.time_series_container
+"""Get [`ExponentialLoad`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::ExponentialLoad) = value.supplemental_attributes_container
 """Get [`ExponentialLoad`](@ref) `internal`."""
 get_internal(value::ExponentialLoad) = value.internal
 
@@ -150,3 +157,5 @@ set_services!(value::ExponentialLoad, val) = value.services = val
 set_ext!(value::ExponentialLoad, val) = value.ext = val
 """Set [`ExponentialLoad`](@ref) `time_series_container`."""
 set_time_series_container!(value::ExponentialLoad, val) = value.time_series_container = val
+"""Set [`ExponentialLoad`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::ExponentialLoad, val) = value.supplemental_attributes_container = val

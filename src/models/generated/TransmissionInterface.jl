@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         violation_penalty::Float64
         direction_mapping::Dict{String, Int}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
+        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -24,6 +25,7 @@ A collection of branches that make up an interface or corridor for the transfer 
 - `violation_penalty::Float64`: Penalty for violating the flow limits in the interface
 - `direction_mapping::Dict{String, Int}`: Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TransmissionInterface <: Service
@@ -36,16 +38,18 @@ mutable struct TransmissionInterface <: Service
     direction_mapping::Dict{String, Int}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
+    "container for supplemental attributes"
+    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TransmissionInterface(name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, time_series_container, InfrastructureSystemsInternal(), )
+function TransmissionInterface(name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function TransmissionInterface(; name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, time_series_container, internal, )
+function TransmissionInterface(; name, available, active_power_flow_limits, violation_penalty=INFINITE_COST, direction_mapping=Dict{String, Int}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    TransmissionInterface(name, available, active_power_flow_limits, violation_penalty, direction_mapping, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -57,6 +61,7 @@ function TransmissionInterface(::Nothing)
         violation_penalty=0.0,
         direction_mapping=Dict{String, Int}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -72,6 +77,8 @@ get_violation_penalty(value::TransmissionInterface) = value.violation_penalty
 get_direction_mapping(value::TransmissionInterface) = value.direction_mapping
 """Get [`TransmissionInterface`](@ref) `time_series_container`."""
 get_time_series_container(value::TransmissionInterface) = value.time_series_container
+"""Get [`TransmissionInterface`](@ref) `supplemental_attributes_container`."""
+get_supplemental_attributes_container(value::TransmissionInterface) = value.supplemental_attributes_container
 """Get [`TransmissionInterface`](@ref) `internal`."""
 get_internal(value::TransmissionInterface) = value.internal
 
@@ -85,3 +92,5 @@ set_violation_penalty!(value::TransmissionInterface, val) = value.violation_pena
 set_direction_mapping!(value::TransmissionInterface, val) = value.direction_mapping = val
 """Set [`TransmissionInterface`](@ref) `time_series_container`."""
 set_time_series_container!(value::TransmissionInterface, val) = value.time_series_container = val
+"""Set [`TransmissionInterface`](@ref) `supplemental_attributes_container`."""
+set_supplemental_attributes_container!(value::TransmissionInterface, val) = value.supplemental_attributes_container = val
