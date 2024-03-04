@@ -15455,8 +15455,8 @@
             "supertype": "InnerControl"
         },
         {
-            "struct_name": "MagnitudeCurrentLimiter",
-            "docstring": "Parameters of Magnitude (Circular) Current Controller Limiter",
+            "struct_name": "MagnitudeOutputCurrentLimiter",
+            "docstring": "Parameters of Magnitude (Circular) Current Controller Limiter. Regulates only the magnitude of the inverter output current.",
             "fields": [
                 {
                     "name": "I_max",
@@ -15475,11 +15475,11 @@
                     "default": "Dict{String, Any}()"
                 }
             ],
-            "supertype": "InverterLimiter"
+            "supertype": "OutputCurrentLimiter"
         },
         {
-            "struct_name": "InstantaneousCurrentLimiter",
-            "docstring": "Parameters of Instantaneous (Square) Current Controller Limiter",
+            "struct_name": "InstantaneousOutputCurrentLimiter",
+            "docstring": "Parameters of Instantaneous (Square) Current Controller Limiter. Regulates inverter output current on the d and q axis separately.",
             "fields": [
                 {
                     "name": "Id_max",
@@ -15508,11 +15508,11 @@
                     "default": "Dict{String, Any}()"
                 }
             ],
-            "supertype": "InverterLimiter"
+            "supertype": "OutputCurrentLimiter"
         },
         {
-            "struct_name": "PriorityCurrentLimiter",
-            "docstring": "Parameters of Priority-Based Current Controller Limiter",
+            "struct_name": "PriorityOutputCurrentLimiter",
+            "docstring": "Parameters of Priority-Based Current Controller Limiter. Regulates the magnitude of the inverter output current and prioritizes a specific angle for the resultant current signal",
             "fields": [
                 {
                     "name": "I_max",
@@ -15526,7 +15526,7 @@
                 },
                 {
                     "name": "ϕ_I",
-                    "comment": "Pre-defined angle (measured against the d-axis) for Iref once limit is hit",
+                    "comment": "Pre-defined angle (measured against the d-axis) for I_ref once limit I_max is hit",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15541,7 +15541,7 @@
                     "default": "Dict{String, Any}()"
                 }
             ],
-            "supertype": "InverterLimiter"
+            "supertype": "OutputCurrentLimiter"
         },
         {
             "struct_name": "AggregateDistributedGenerationA",
