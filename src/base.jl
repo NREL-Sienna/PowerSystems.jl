@@ -1367,13 +1367,13 @@ Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = get_supplemental_attributes(ForcedOutage, sys)
+iter = get_supplemental_attributes(GeometricDistributionForcedOutage, sys)
 iter = get_supplemental_attributes(Outage, sys)
-iter = get_supplemental_attributes(x -> x.forced_outage_rate >= 0.5, ForcedOutage, sys)
-outages = get_supplemental_attributes(ForcedOutage, sys) do outage
-    x.forced_outage_rate >= 0.5
+iter = get_supplemental_attributes(x -> get_mean_time_to_recovery(x) ==  >= 0.5, GeometricDistributionForcedOutage, sys)
+outages = get_supplemental_attributes(GeometricDistributionForcedOutage, sys) do outage
+    get_mean_time_to_recovery(x) ==  >= 0.5
 end
-outages = collect(get_supplemental_attributes(ForcedOutage, sys))
+outages = collect(get_supplemental_attributes(GeometricDistributionForcedOutage, sys))
 ```
 
 See also: [`iterate_supplemental_attributes`](@ref)

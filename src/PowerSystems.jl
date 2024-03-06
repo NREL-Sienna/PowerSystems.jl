@@ -228,6 +228,10 @@ export GeometricDistributionForcedOutage
 export PlannedOutage
 export TimeSeriesForcedOutage
 
+export get_mean_time_to_recovery
+export get_outage_transition_probability
+export get_outage_schedule
+
 export Service
 export AbstractReserve
 export Reserve
