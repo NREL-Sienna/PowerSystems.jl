@@ -1719,6 +1719,7 @@ function deserialize_components!(sys::System, raw)
                 continue
             end
             for component in components
+                handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
@@ -1760,6 +1761,29 @@ function deserialize_components!(sys::System, raw)
     for component in get_components(RegulationDevice, sys)
         IS.mask_component!(sys.data, component.device)
     end
+end
+
+"""
+Allow types to implement handling of special cases during deserialization.
+
+# Arguments
+- `component::Dict`: The component serialized as a dictionary.
+- `::Type`: The type of the component.
+"""
+handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = nothing
+
+function handle_deserialization_special_cases!(component::Dict, ::Type{DynamicBranch})
+    # IS handles deserialization of supplemental attribues in each component.
+    # In this case the DynamicBranch's composed branch is not part of the system and so
+    # IS will not handle it. It can never attributes.
+    if !isempty(component["branch"]["supplemental_attributes_container"])
+        error(
+            "Bug: serialized DynamicBranch.branch has supplemental attributes: $component",
+        )
+    end
+    component["branch"]["supplemental_attributes_container"] =
+        IS.SupplementalAttributesContainer()
+    return
 end
 
 """
