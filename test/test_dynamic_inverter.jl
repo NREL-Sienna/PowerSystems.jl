@@ -109,7 +109,7 @@ end
         dc_source = dc_source,
         freq_estimator = pll,
         filter = filt,
-        limiter = InstantaneousCurrentLimiter(;
+        limiter = InstantaneousOutputCurrentLimiter(;
             Id_max = 1.0 / sqrt(2),
             Iq_max = 1.0 / sqrt(2),
         ),

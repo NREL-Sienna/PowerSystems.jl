@@ -17,7 +17,7 @@ abstract type InverterComponent <: DynamicComponent end
         dc_source::DC
         freq_estimator::P
         filter::F
-        limiter::Union{nothing, InverterLimiter}
+        limiter::Union{nothing, OutputCurrentLimiter}
         base_power::Float64
         n_states::Int
         states::Vector{Symbol}
@@ -37,7 +37,7 @@ a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection 
 - `dc_source <: DCSource`: DC Source model.
 - `freq_estimator <: FrequencyEstimator`: Frequency Estimator (typically a PLL) model.
 - `filter <: Filter`: Filter model.
-- `limiter <: Union{nothing, InverterLimiter}`: Inverter Inner Control Limiter model
+- `limiter <: Union{nothing, OutputCurrentLimiter}`: Inverter Inner Control Limiter model
 - `base_power::Float64`: Base power
 - `n_states::Int`: Number of states (will depend on the components).
 - `states::Vector{Symbol}`: Vector of states (will depend on the components).
@@ -51,7 +51,7 @@ mutable struct DynamicInverter{
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
-    L <: Union{Nothing, InverterLimiter},
+    L <: Union{Nothing, OutputCurrentLimiter},
 } <: DynamicInjection
     name::String
     ω_ref::Float64
@@ -88,7 +88,7 @@ function DynamicInverter(
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
-    L <: Union{Nothing, InverterLimiter},
+    L <: Union{Nothing, OutputCurrentLimiter},
 }
     n_states = _calc_n_states(
         converter,
@@ -161,7 +161,7 @@ function DynamicInverter(;
     DC <: DCSource,
     P <: FrequencyEstimator,
     F <: Filter,
-    L <: Union{Nothing, InverterLimiter},
+    L <: Union{Nothing, OutputCurrentLimiter},
 }
     return DynamicInverter(
         name,

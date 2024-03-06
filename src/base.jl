@@ -2181,11 +2181,14 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.TimeSeriesContainer(),
+        InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
     assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     remove_component!(sys, line)
     return
 end
@@ -2223,11 +2226,14 @@ function convert_component!(
         line.services,
         line.ext,
         InfrastructureSystems.TimeSeriesContainer(),
+        InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
     assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     remove_component!(sys, line)
     return
 end
@@ -2254,11 +2260,14 @@ function convert_component!(
         dynamic_injector = get_dynamic_injector(old_load),
         internal = deepcopy(get_internal(old_load)),
         services = Device[],
+        supplemental_attributes_container = InfrastructureSystems.SupplementalAttributesContainer(),
         time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
     assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     for service in get_services(old_load)
         add_service!(new_load, service, sys)
     end
