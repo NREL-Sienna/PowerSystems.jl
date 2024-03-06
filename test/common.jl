@@ -226,10 +226,16 @@ function create_system_with_outages()
     initial_time = Dates.DateTime("2020-01-01T00:00:00")
     end_time = Dates.DateTime("2020-01-01T23:00:00")
     dates = collect(initial_time:Dates.Hour(1):end_time)
-    fo1 = GeometricDistributionForcedOutage(; outage_probability = 0.5)
-    fo2 = GeometricDistributionForcedOutage(; outage_probability = 0.5)
+    fo1 = GeometricDistributionForcedOutage(;
+        mean_time_to_recovery = 1.0,
+        outage_transition_probability = 0.5,
+    )
+    fo2 = GeometricDistributionForcedOutage(;
+        mean_time_to_recovery = 2.0,
+        outage_transition_probability = 0.5,
+    )
     po1 = PlannedOutage(; outage_schedule = "1")
-    po2 = PlannedOutage(; outage_schedule = "1")
+    po2 = PlannedOutage(; outage_schedule = "2")
     add_supplemental_attribute!(sys, gen1, fo1)
     add_supplemental_attribute!(sys, gen1, po1)
     add_supplemental_attribute!(sys, gen2, fo2)

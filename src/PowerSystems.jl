@@ -212,10 +212,10 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
-# InverterLimiters Export
-export MagnitudeCurrentLimiter
-export InstantaneousCurrentLimiter
-export PriorityCurrentLimiter
+# OutputOutputOutputCurrentLimiters Export
+export MagnitudeOutputCurrentLimiter
+export InstantaneousOutputCurrentLimiter
+export PriorityOutputCurrentLimiter
 
 export Source
 export PeriodicVariableSource
@@ -227,6 +227,10 @@ export Outage
 export GeometricDistributionForcedOutage
 export PlannedOutage
 export TimeSeriesForcedOutage
+
+export get_mean_time_to_recovery
+export get_outage_transition_probability
+export get_outage_schedule
 
 export Service
 export AbstractReserve

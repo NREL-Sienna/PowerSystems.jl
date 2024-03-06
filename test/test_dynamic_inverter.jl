@@ -96,7 +96,7 @@ end
         dc_source = dc_source,
         freq_estimator = pll,
         filter = filt,
-        limiter = MagnitudeCurrentLimiter(; I_max = 1.0),
+        limiter = MagnitudeOutputCurrentLimiter(; I_max = 1.0),
     )
     @test inv_magnitude isa PowerSystems.Component
     test_accessors(inv_magnitude)
@@ -109,7 +109,7 @@ end
         dc_source = dc_source,
         freq_estimator = pll,
         filter = filt,
-        limiter = InstantaneousCurrentLimiter(;
+        limiter = InstantaneousOutputCurrentLimiter(;
             Id_max = 1.0 / sqrt(2),
             Iq_max = 1.0 / sqrt(2),
         ),
@@ -125,7 +125,7 @@ end
         dc_source = dc_source,
         freq_estimator = pll,
         filter = filt,
-        limiter = PriorityCurrentLimiter(; I_max = 1.0, ϕ_I = 0.1),
+        limiter = PriorityOutputCurrentLimiter(; I_max = 1.0, ϕ_I = 0.1),
     )
     @test inv_priority isa PowerSystems.Component
     test_accessors(inv_priority)

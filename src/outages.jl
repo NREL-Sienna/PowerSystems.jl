@@ -45,7 +45,7 @@ end
 """Get [`GeometricDistributionForcedOutage`](@ref) `time_to_recovery`."""
 get_mean_time_to_recovery(value::GeometricDistributionForcedOutage) =
     value.mean_time_to_recovery
-"""Get [`GeometricDistributionForcedOutage`](@ref) `outage_probability`."""
+"""Get [`GeometricDistributionForcedOutage`](@ref) `outage_transition_probability`."""
 get_outage_transition_probability(value::GeometricDistributionForcedOutage) =
     value.outage_transition_probability
 

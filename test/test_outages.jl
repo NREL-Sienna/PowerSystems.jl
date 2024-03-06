@@ -4,7 +4,8 @@
     gen1 = gens[1]
     gen2 = gens[2]
     @test length(get_supplemental_attributes(Outage, sys)) == 4
-    forced_outages = collect(get_supplemental_attributes(ForcedOutage, sys))
+    forced_outages =
+        collect(get_supplemental_attributes(GeometricDistributionForcedOutage, sys))
     @test length(forced_outages) == 2
     @test get_supplemental_attribute(sys, IS.get_uuid(forced_outages[1])) ==
           forced_outages[1]
@@ -19,7 +20,7 @@
     end
 
     for gen in (gen1, gen2)
-        for type in (ForcedOutage, PlannedOutage, GeographicInfo)
+        for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
             attributes = collect(get_supplemental_attributes(type, gen))
             @test length(attributes) == 1
             uuid = IS.get_uuid(attributes[1])
@@ -31,21 +32,41 @@
     end
 
     @test length(
-        get_supplemental_attributes(x -> x.forced_outage_rate == 2.0, ForcedOutage, sys),
+        get_supplemental_attributes(
+            x -> get_mean_time_to_recovery(x) == 2.0,
+            GeometricDistributionForcedOutage,
+            sys,
+        ),
     ) == 1
     @test length(
-        get_supplemental_attributes(x -> x.forced_outage_rate == 2.0, ForcedOutage, gen1),
+        get_supplemental_attributes(
+            x -> get_mean_time_to_recovery(x) == 2.0,
+            GeometricDistributionForcedOutage,
+            gen1,
+        ),
     ) == 0
     @test length(
-        get_supplemental_attributes(x -> x.forced_outage_rate == 2.0, ForcedOutage, gen2),
+        get_supplemental_attributes(
+            x -> get_mean_time_to_recovery(x) == 2.0,
+            GeometricDistributionForcedOutage,
+            gen2,
+        ),
     ) == 1
     @test length(
-        get_supplemental_attributes(x -> x.outage_schedule == 4.0, PlannedOutage, sys),
+        get_supplemental_attributes(x -> get_outage_schedule(x) == "1", PlannedOutage, sys),
     ) == 1
     @test length(
-        get_supplemental_attributes(x -> x.outage_schedule == 4.0, PlannedOutage, gen1),
+        get_supplemental_attributes(
+            x -> get_outage_schedule(x) == "1",
+            PlannedOutage,
+            gen1,
+        ),
+    ) == 1
+    @test length(
+        get_supplemental_attributes(
+            x -> get_outage_schedule(x) == "1",
+            PlannedOutage,
+            gen2,
+        ),
     ) == 0
-    @test length(
-        get_supplemental_attributes(x -> x.outage_schedule == 4.0, PlannedOutage, gen2),
-    ) == 1
 end
