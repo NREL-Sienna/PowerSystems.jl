@@ -52,8 +52,6 @@ get_shut_down(value::ThermalGenerationCost) = value.shut_down
 
 """Set [`ThermalGenerationCost`](@ref) `variable`."""
 set_variable!(value::ThermalGenerationCost, val) = value.variable = val
-"""Set [`ThermalGenerationCost`](@ref) `no_load`."""
-set_no_load!(value::ThermalGenerationCost, val) = value.no_load = val
 """Set [`ThermalGenerationCost`](@ref) `fixed`."""
 set_fixed!(value::ThermalGenerationCost, val) = value.fixed = val
 """Set [`ThermalGenerationCost`](@ref) `start_up`."""
