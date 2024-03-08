@@ -8,7 +8,7 @@ Representation of the variable operation cost of a power plant in $/time at a pa
 # Arguments
 - `function_data::FunctionData`: Functional representation of the cost curve
 """
-struct InputOutputCostCurve <: FuelCurve
+struct InputOutputCostCurve <: CostCurve
     function_data::FunctionData
 end
 
@@ -19,7 +19,7 @@ First derivative of the Input/Output cost curve.
 - `function_data::FunctionData`: Functional representation of the incremental cost.
 - `no_load_cost::Float64`: The estimated cost needed to theoretically operate a unit at zero power. This is not the cost of operating at mininum stable levels
 """
-struct IncrementalCostCurve <: FuelCurve
+struct IncrementalCostCurve <: CostCurve
     function_data::FunctionData
     no_load_cost::Float64
 end

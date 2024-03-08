@@ -2,7 +2,6 @@ const HEAT_STAGES = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 """
     mutable struct ThermalGenerationCost <: OperationalCost
         variable::ProductionVariableCost
-        no_load::Float64
         fixed::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
