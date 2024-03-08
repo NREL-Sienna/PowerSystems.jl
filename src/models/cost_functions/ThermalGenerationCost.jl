@@ -1,4 +1,5 @@
 const HEAT_STAGES = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
+
 """
     mutable struct ThermalGenerationCost <: OperationalCost
         variable::ProductionVariableCost
