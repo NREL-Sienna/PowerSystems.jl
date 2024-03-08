@@ -19,7 +19,7 @@ mutable struct HydroGenerationCost <: OperationalCost
     fixed::Float64
 end
 
-function HydroGenerationCost(; variable,  fixed)
+function HydroGenerationCost(; variable, fixed)
     HydroGenerationCost(variable, fixed)
 end
 

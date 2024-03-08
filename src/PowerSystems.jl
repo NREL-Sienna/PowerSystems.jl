@@ -58,7 +58,7 @@ export get_y0
 
 export ThermalGenerationCost
 export MarketBidCost
-export StorageManagementCost
+export StorageCost
 
 export Generator
 export HydroGen

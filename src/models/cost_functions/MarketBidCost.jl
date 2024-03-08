@@ -40,7 +40,13 @@ function MarketBidCost(;
     incremental_offer_curves = nothing,
     ancillary_services = Vector{Service}(),
 )
-    MarketBidCost(no_load_cost, start_up, shut_down, incremental_offer_curves, ancillary_services)
+    MarketBidCost(
+        no_load_cost,
+        start_up,
+        shut_down,
+        incremental_offer_curves,
+        ancillary_services,
+    )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,8 +81,10 @@ set_start_up!(value::MarketBidCost, val) = value.start_up = val
 """Set [`MarketBidCost`](@ref) `shut_down`."""
 set_shut_down!(value::MarketBidCost, val) = value.shut_down = val
 """Set [`MarketBidCost`](@ref) `incremental_offer_curves`."""
-set_incremental_offer_curves!(value::MarketBidCost, val) = value.incremental_offer_curves = val
+set_incremental_offer_curves!(value::MarketBidCost, val) =
+    value.incremental_offer_curves = val
 """Set [`MarketBidCost`](@ref) `incremental_offer_curves`."""
-set_decremental_offer_curves!(value::MarketBidCost, val) = value.decremental_offer_curves = val
+set_decremental_offer_curves!(value::MarketBidCost, val) =
+    value.decremental_offer_curves = val
 """Set [`MarketBidCost`](@ref) `ancillary_services`."""
 set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = val

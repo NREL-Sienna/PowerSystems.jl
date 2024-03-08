@@ -26,7 +26,7 @@ mutable struct ThermalGenerationCost <: OperationalCost
     shut_down::Float64
 end
 
-function ThermalGenerationCost(; variable,  fixed, start_up, shut_down)
+function ThermalGenerationCost(; variable, fixed, start_up, shut_down)
     ThermalGenerationCost(variable, fixed, start_up, shut_down)
 end
 

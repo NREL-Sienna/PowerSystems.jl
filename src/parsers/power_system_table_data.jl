@@ -1085,7 +1085,8 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    op_cost = ThermalGenerationCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    op_cost =
+        ThermalGenerationCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1337,7 +1338,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        operation_cost = StorageManagementCost(),
+        operation_cost = StorageCost(),
     )
 
     return battery

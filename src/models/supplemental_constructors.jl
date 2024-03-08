@@ -204,7 +204,7 @@ function GenericBattery(
         reactive_power,
         reactive_power_limits,
         base_power,
-        StorageManagementCost(),
+        StorageCost(),
         services,
         dynamic_injector,
         ext,
