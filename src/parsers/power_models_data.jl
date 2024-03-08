@@ -453,7 +453,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
         shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = ThreePartCost(nothing)
+        tmpcost = ThermalGenerationCost(nothing)
         cost = tmpcost.variable
         fixed = tmpcost.fixed
         startup = tmpcost.start_up
@@ -463,7 +463,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    operation_cost = ThreePartCost(;
+    operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
         start_up = startup,

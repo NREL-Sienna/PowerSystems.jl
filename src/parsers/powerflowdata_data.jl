@@ -409,7 +409,7 @@ function read_gen!(
             rating = gens.mbase[ix],
             ramp_limits = nothing,
             time_limits = nothing,
-            operation_cost = TwoPartCost(LinearFunctionData(0.0), 0.0),
+            operation_cost = ThermalGenerationCost(LinearFunctionData(0.0), 0.0),
             ext = Dict(
                 "IREG" => ireg_bus_num,
                 "WMOD" => gens.wmod[ix],

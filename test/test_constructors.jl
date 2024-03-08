@@ -18,8 +18,8 @@
 end
 
 @testset "Generation Constructors" begin
-    tThreePartCost = ThreePartCost(nothing)
-    @test tThreePartCost isa IS.InfrastructureSystemsType
+    tThermalGenerationCost = ThermalGenerationCost(nothing)
+    @test tThermalGenerationCost isa IS.InfrastructureSystemsType
     tTwoPartCost = TwoPartCost(nothing)
     @test tTwoPartCost isa IS.InfrastructureSystemsType
     tThermalGen = ThermalStandard(nothing)

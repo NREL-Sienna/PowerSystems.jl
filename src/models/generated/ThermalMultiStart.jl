@@ -133,7 +133,7 @@ function ThermalMultiStart(::Nothing)
         time_limits=nothing,
         start_time_limits=nothing,
         start_types=1,
-        operation_cost=MultiStartCost(nothing),
+        operation_cost=ThermalGenerationCost(nothing),
         base_power=0.0,
         services=Device[],
         time_at_status=INFINITE_TIME,
