@@ -56,9 +56,7 @@ export get_points
 export get_x_coords
 export get_y0
 
-export ThreePartCost
-export TwoPartCost
-export MultiStartCost
+export ThermalGenerationCost
 export MarketBidCost
 export StorageManagementCost
 
