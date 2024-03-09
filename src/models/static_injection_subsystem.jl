@@ -16,8 +16,8 @@ function copy_subcomponent_time_series!(
     subsystem::StaticInjectionSubsystem,
     subcomponent::Component,
 )
-    # the existing_ts can remove entries from the set if the Subsystem has two device of 
-    # the same type with the same time series type and label. Currently in the HybridSystem 
+    # the existing_ts can remove entries from the set if the Subsystem has two device of
+    # the same type with the same time series type and label. Currently in the HybridSystem
     # use case there can only be one devoe of each type.
     existing_ts = Set(
         (typeof(ts), get_name(ts_m)) for
@@ -51,5 +51,5 @@ function make_subsystem_time_series_name(subcomponent::Component, label::String)
 end
 
 function make_subsystem_time_series_name(subcomponent::Type{<:Component}, label::String)
-    return IS.strip_module_name(subcomponent) * "__" * label
+    return string(nameof(subcomponent)) * "__" * label
 end
