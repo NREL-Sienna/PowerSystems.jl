@@ -51,5 +51,5 @@ function make_subsystem_time_series_name(subcomponent::Component, label::String)
 end
 
 function make_subsystem_time_series_name(subcomponent::Type{<:Component}, label::String)
-    return string(nameof(subcomponent)) * "__" * label
+    return IS.strip_module_name(subcomponent) * "__" * label
 end
