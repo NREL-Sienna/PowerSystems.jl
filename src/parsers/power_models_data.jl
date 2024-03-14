@@ -483,7 +483,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
-        available = true,
+        available = Bool(d["gen_status"]),
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
