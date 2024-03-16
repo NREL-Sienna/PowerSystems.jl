@@ -274,6 +274,7 @@ export TimeSeriesCounts
 export get_dynamic_components
 
 export parse_file
+export open_time_series_store!
 export add_time_series!
 export remove_time_series!
 export check_time_series_consistency
