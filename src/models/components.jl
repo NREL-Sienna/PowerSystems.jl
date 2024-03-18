@@ -7,7 +7,6 @@ end
 """
 get_base_power(c::Component) = get_system_base_power(c)
 
-
 function _get_multiplier(c::T) where {T <: Component}
     setting = get_internal(c).units_info
     if isnothing(setting)
