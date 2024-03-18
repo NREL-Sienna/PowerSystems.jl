@@ -225,6 +225,27 @@ components that share the time series data.
 This function stores a single copy of the data. Each component will store a
 reference to that data.
 
+### Adding time series in bulk
+
+By default, the call to `add_time_series!` will open the HDF5 file, write the data to the file,
+and close the file. Opening and closing the file has overhead. If you will add thousands of time
+series arrays, consider using `open_time_series_store!`as shown in the example below. All arrays
+will be written with one file handle.
+
+This example assumes that there are arrays of components and time series stored in the variables
+`components` and `single_time_series`, respectively.
+
+```julia
+    open_time_series_store!(sys, "r+") do
+        for (component, ts) in zip(components, single_time_series)
+            add_time_series!(sys, component, ts)
+        end
+    end
+```
+
+You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
+the file read-only.
+
 ## Removing time series data
 
 Time series instances can be removed from a system like this:

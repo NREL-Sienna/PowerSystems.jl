@@ -705,6 +705,34 @@ function add_service!(
 end
 
 """
+Open the time series store for bulk additions or reads. This is recommended before calling
+add_time_series! many times because of the overhead associated with opening and closing an
+HDF5 file.
+
+This is not necessary for an in-memory time series store.
+
+# Examples
+```julia
+# Assume there is a system with an array of components and SingleTimeSeries
+open_time_series_store!(sys, "r+") do
+    for (component, ts) in zip(components, single_time_series)
+        add_time_series!(sys, component, ts)
+    end
+end
+```
+julia>
+"""
+function open_time_series_store!(
+    func::Function,
+    sys::System,
+    mode = "r",
+    args...;
+    kwargs...,
+)
+    IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
+end
+
+"""
 Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
