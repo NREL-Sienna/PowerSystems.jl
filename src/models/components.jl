@@ -1,9 +1,12 @@
+function get_system_base_power(c::Component)
+    return get_internal(c).units_info.base_value
+end
+
 """
     Default behavior of a component. If there is no base_power field, assume is in the system's base power.
 """
-function get_base_power(c::Component)
-    return get_internal(c).units_info.base_value
-end
+get_base_power(c::Component) = get_system_base_power(c)
+
 
 function _get_multiplier(c::T) where {T <: Component}
     setting = get_internal(c).units_info
