@@ -439,6 +439,8 @@ export StructDefinition
 export generate_struct_file
 export generate_struct_files
 
+# TODO export ComponentSelector stuff
+
 #################################################################################
 # Imports
 
@@ -633,6 +635,7 @@ include("outages.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("subsystems.jl")
+include("component_selector.jl")
 include("data_format_conversions.jl")
 
 #Data Checks
