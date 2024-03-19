@@ -24,11 +24,12 @@ end
 @testset "PSSE Component Parsing" begin
     @info "Testing Load Parsing"
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
-    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) ==  223.71
-    @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==  583.546
+    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 223.71
+    @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
+          583.546
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
-    @test get_constant_active_power(get_component(StandardLoad, sys2,  "load71")) ==  9.67
-    @test get_constant_reactive_power(get_component(StandardLoad, sys2,  "load71")) ==  1.0
+    @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
+    @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0

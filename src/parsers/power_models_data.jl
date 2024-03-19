@@ -254,21 +254,21 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     for d_key in keys(data["load"])
         d = data["load"][d_key]
         bus = bus_number_to_bus[d["load_bus"]]
-            if data["source_type"] == "pti" 
-                load = make_standard_load(d, bus, sys_mbase; kwargs...)
-                has_component(StandardLoad, sys, get_name(load)) && throw(
-                    DataFormatError(
-                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                    ),
-                )
-            else
-                load = make_power_load(d, bus, sys_mbase; kwargs...)
-                has_component(PowerLoad, sys, get_name(load)) && throw(
-                    DataFormatError(
-                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                    ),
-                )
-            end
+        if data["source_type"] == "pti"
+            load = make_standard_load(d, bus, sys_mbase; kwargs...)
+            has_component(StandardLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+        else
+            load = make_power_load(d, bus, sys_mbase; kwargs...)
+            has_component(PowerLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+        end
         add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
 end
