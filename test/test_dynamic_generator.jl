@@ -612,6 +612,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, derd, static_injector)
     DERDs = collect(get_components(GenericDER, sys))
@@ -714,6 +715,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, dera, static_injector)
     DERAs = collect(get_components(AggregateDistributedGenerationA, sys))

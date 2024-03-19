@@ -524,3 +524,11 @@ end
     @test metadata["time_series_resolution_milliseconds"] == 3600000
     @test metadata["user_data"]["author"] == "test"
 end
+
+@testset "Test addition of service to the wrong system" begin
+    sys1 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys2 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    service1 = first(get_components(VariableReserve{ReserveDown}, sys1))
+    device2 = first(get_components(ThermalStandard, sys2))
+    @test_throws ArgumentError add_service!(device2, service1, sys2)
+end

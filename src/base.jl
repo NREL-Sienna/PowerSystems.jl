@@ -180,8 +180,24 @@ function System(
     services = nothing,
     kwargs...,
 )
+    for component in Iterators.flatten((generators, loads))
+        if get_name(component) == "init"
+            set_bus!(component, first(buses))
+        end
+    end
     _services = isnothing(services) ? [] : services
-    return System(base_power, buses, generators, loads, _services; kwargs...)
+    _branches = isnothing(branches) ? [] : branches
+    _storage = isnothing(storage) ? [] : storage
+    return System(
+        base_power,
+        buses,
+        generators,
+        loads,
+        _branches,
+        _storage,
+        _services;
+        kwargs...,
+    )
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json
@@ -1049,11 +1065,9 @@ end
 Return true if the component is attached to the system.
 """
 function is_attached(component::T, sys::System) where {T <: Component}
-    return is_attached(T, get_name(component), sys)
-end
-
-function is_attached(::Type{T}, name, sys::System) where {T <: Component}
-    return !isnothing(get_component(T, sys, name))
+    existing_component = get_component(T, sys, get_name(component))
+    isnothing(existing_component) && return false
+    return component === existing_component
 end
 
 """
