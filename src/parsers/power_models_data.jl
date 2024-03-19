@@ -253,25 +253,23 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     sys_mbase = data["baseMVA"]
     for d_key in keys(data["load"])
         d = data["load"][d_key]
-        if d["pd"] != 0.0
-            bus = bus_number_to_bus[d["load_bus"]]
-            if data["source_type"] == "pti"
-                load = make_standard_load(d, bus, sys_mbase; kwargs...)
-                has_component(StandardLoad, sys, get_name(load)) && throw(
-                    DataFormatError(
-                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                    ),
-                )
-            else
-                load = make_power_load(d, bus, sys_mbase; kwargs...)
-                has_component(PowerLoad, sys, get_name(load)) && throw(
-                    DataFormatError(
-                        "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
-                    ),
-                )
-            end
-            add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
+        bus = bus_number_to_bus[d["load_bus"]]
+        if data["source_type"] == "pti"
+            load = make_standard_load(d, bus, sys_mbase; kwargs...)
+            has_component(StandardLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+        else
+            load = make_power_load(d, bus, sys_mbase; kwargs...)
+            has_component(PowerLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
         end
+        add_component!(sys, load; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
@@ -485,7 +483,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
-        available = true,
+        available = Bool(d["gen_status"]),
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
