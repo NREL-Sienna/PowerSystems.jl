@@ -3993,7 +3993,7 @@
                     "name": "start_time_limits",
                     "comment": " Time limits for start-up based on turbine temperature in hours",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+                    "data_type": "Union{Nothing, StartUpStages}"
                 },
                 {
                     "name": "start_types",

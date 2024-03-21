@@ -4,8 +4,9 @@
         variable::ProductionVariableCost
     end
 
-Data Structure for the Operational Cost of Renewable Power Plants which includes the variable cost of energy (like a PPA) and the cost of curtailing power.
-For exampl, curtailment Costs can be used to represent the loss of tax incentives.
+Data Structure for the Operational Cost of Renewable Power Plants which includes the
+variable cost of energy (like a PPA) and the cost of curtailing power. For example,
+curtailment Costs can be used to represent the loss of tax incentives.
 
 # Arguments
 - `variable::InputOutputCostCurve`: Production Variable Cost represented as input/output.

@@ -1,5 +1,3 @@
-const HEAT_STAGES = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
-
 """
     mutable struct ThermalGenerationCost <: OperationalCost
         variable::ProductionVariableCost
@@ -22,7 +20,7 @@ mutable struct ThermalGenerationCost <: OperationalCost
     "fixed cost"
     fixed::Float64
     "start-up cost"
-    start_up::Union{HEAT_STAGES, Float64}
+    start_up::Union{StartUpStages, Float64}
     "shut-down cost"
     shut_down::Float64
 end

@@ -22,7 +22,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 mutable struct MarketBidCost <: OperationalCost
     no_load_cost::Float64
     "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets"
-    start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
+    start_up::StartUpStages
     "shut-down cost"
     shut_down::Float64
     "Variable Cost TimeSeriesKey"

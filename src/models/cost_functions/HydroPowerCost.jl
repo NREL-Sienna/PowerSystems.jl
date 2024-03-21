@@ -4,9 +4,10 @@
         fixed::Float64
     end
 
-Data Structure for the Operational Cost of Hydro Power Plants which includes fixed and variable cost.
-Variable Costs can be used to represent the cost of curtailment if negative values are used or the opportunity cost
-of water if water if the costs are positive. It also supports fuel curves to model specific water intake.
+Data Structure for the Operational Cost of Hydro Power Plants which includes fixed and
+variable cost. Variable Costs can be used to represent the cost of curtailment if negative
+values are used or the opportunity cost of water if the costs are positive. It also supports
+fuel curves to model specific water intake.
 
 # Arguments
 - `variable::ProductionVariableCost`: Production Variable Cost. Can take fuel curves or cost curve represenations

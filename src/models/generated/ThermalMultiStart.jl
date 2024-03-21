@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         ramp_limits::Union{Nothing, UpDown}
         power_trajectory::Union{Nothing, StartUpShutDown}
         time_limits::Union{Nothing, UpDown}
-        start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
+        start_time_limits::Union{Nothing, StartUpStages}
         start_types::Int
         operation_cost::OperationalCost
         base_power::Float64
@@ -51,7 +51,7 @@ Data Structure for thermal generation technologies.
 - `ramp_limits::Union{Nothing, UpDown}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `power_trajectory::Union{Nothing, StartUpShutDown}`: Power trajectory the unit will take during the start-up and shut-down ramp process, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for start-up based on turbine temperature in hours
+- `start_time_limits::Union{Nothing, StartUpStages}`:  Time limits for start-up based on turbine temperature in hours
 - `start_types::Int`:  Number of start-up based on turbine temperature, validation range: `(1, 3)`, action if invalid: `error`
 - `operation_cost::OperationalCost`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
@@ -85,7 +85,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
     " Time limits for start-up based on turbine temperature in hours"
-    start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}
+    start_time_limits::Union{Nothing, StartUpStages}
     " Number of start-up based on turbine temperature"
     start_types::Int
     operation_cost::OperationalCost

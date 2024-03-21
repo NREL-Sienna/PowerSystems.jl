@@ -1,4 +1,4 @@
-abstract type FuelCurve <: VariableProductionCost end
+abstract type FuelCurve <: ProductionVariableCost end
 
 get_function_data(curve::FuelCurve) = curve.function_data
 get_fixed_fuel_cost(curve::FuelCurve) = curve.fixed_fuel_cost
