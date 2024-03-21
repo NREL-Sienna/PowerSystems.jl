@@ -588,7 +588,6 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
-include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
@@ -600,6 +599,18 @@ include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
+
+# Costs
+include("models/operational_cost.jl")
+include("models/cost_functions/variable_cost.jl")
+include("models/cost_functions/CostCurves.jl")
+include("models/cost_functions/FuelCurves.jl")
+include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/HydroPowerCost.jl")
+include("models/cost_functions/LoadCost.jl")
+include("models/cost_functions/RenewablePowerCost.jl")
+include("models/cost_functions/StorageCost.jl")
+include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

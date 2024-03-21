@@ -3,7 +3,7 @@ abstract type CostCurve <: ProductionVariableCost end
 get_function_data(curve::CostCurve) = curve.function_data
 
 """
-Representation of the variable operation cost of a power plant in $/time at a particular power output level.
+Representation of the variable operation cost of a power plant in \$/time at a particular power output level.
 
 # Arguments
 - `function_data::FunctionData`: Functional representation of the cost curve
