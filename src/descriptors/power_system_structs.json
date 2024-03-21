@@ -1302,9 +1302,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "LoadCost(nothing)",
+                    "data_type": "OperationalCost",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "services",
@@ -2594,9 +2594,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
+                    "null_value": "LoadCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "default": "LoadCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -2949,9 +2949,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
+                    "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3124,9 +3124,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
+                    "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3379,9 +3379,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
+                    "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3521,9 +3521,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "RenewablePowerCost(nothing)",
+                    "data_type": "OperationalCost",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "base_power",
