@@ -190,10 +190,10 @@ Example:
         DateTime("2020-01-01T01:00:00") => ones(24),
     )
     forecast = Deterministic(
-	"max_active_power",
-	data,
-	resolution,
-	scaling_factor_multiplier = get_max_active_power,
+        "max_active_power",
+        data,
+        resolution,
+        scaling_factor_multiplier = get_max_active_power,
     )
 ```
 
@@ -224,6 +224,31 @@ components that share the time series data.
 
 This function stores a single copy of the data. Each component will store a
 reference to that data.
+
+Time series data can also be shared on a component level. Suppose a time series array applies to
+both the `max_active_power` and `max_reactive_power` attributes of a generator. You can share the
+data as shown in this example.
+
+```julia
+    resolution = Dates.Hour(1)
+    data = Dict(
+        DateTime("2020-01-01T00:00:00") => ones(24),
+        DateTime("2020-01-01T01:00:00") => ones(24),
+    )
+    forecast_max_active_power = Deterministic(
+        "max_active_power",
+        data,
+        resolution,
+        scaling_factor_multiplier = get_max_active_power,
+    )
+    add_time_series!(sys, generator, forecast_max_active_power)
+    forecast_max_reactive_power = Deterministic(
+        forecast_max_active_power,
+        "max_reactive_power",
+        scaling_factor_multiplier = get_max_reactive_power,
+    )
+    add_time_series!(sys, generator, forecast_max_reactive_power)
+```
 
 ### Adding time series in bulk
 
