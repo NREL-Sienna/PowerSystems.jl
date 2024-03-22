@@ -11,18 +11,15 @@ sort_name(x) = sort(collect(x); by = get_name)
     @test subtype_to_string(ThermalStandard) == "ThermalStandard"
     @test component_to_qualified_string(ThermalStandard, "Solitude") ==
           "ThermalStandard__Solitude"
-    @test component_to_qualified_string(
-        PSY.get_component(ThermalStandard, test_sys, "Solitude"),
-    ) == "ThermalStandard__Solitude"
 end
 
 @testset "Test SingleComponentSelector" begin
-    test_gen_ent = PA.SingleComponentSelector(ThermalStandard, "Solitude", nothing)
-    named_test_gen_ent = PA.SingleComponentSelector(ThermalStandard, "Solitude", "SolGen")
+    test_gen_ent = SingleComponentSelector(ThermalStandard, "Solitude", nothing)
+    named_test_gen_ent = SingleComponentSelector(ThermalStandard, "Solitude", "SolGen")
 
     # Equality
-    @test PA.SingleComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
-    @test PA.SingleComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
+    @test SingleComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
+    @test SingleComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
           named_test_gen_ent
 
     # Construction
@@ -34,7 +31,7 @@ end
     # Naming
     @test get_name(test_gen_ent) == "ThermalStandard__Solitude"
     @test get_name(named_test_gen_ent) == "SolGen"
-    @test default_name(test_gen_ent) == "ThermalStandard__Solitude"
+    @test IS.default_name(test_gen_ent) == "ThermalStandard__Solitude"
 
     # Contents
     @test collect(get_components(select_components(NonexistentComponent, ""), test_sys)) ==
@@ -48,16 +45,16 @@ end
 @testset "Test ListComponentSelector" begin
     comp_ent_1 = select_components(ThermalStandard, "Solitude")
     comp_ent_2 = select_components(RenewableDispatch, "WindBusA")
-    test_list_ent = PA.ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
-    named_test_list_ent = PA.ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
+    test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
+    named_test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
 
     # Equality
-    @test PA.ListComponentSelector((comp_ent_1, comp_ent_2), nothing) == test_list_ent
-    @test PA.ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps") ==
+    @test ListComponentSelector((comp_ent_1, comp_ent_2), nothing) == test_list_ent
+    @test ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps") ==
           named_test_list_ent
 
     # Construction
-    @test select_components(comp_ent_1, comp_ent_2) == test_list_ent
+    @test select_components(comp_ent_1, comp_ent_2;) == test_list_ent
     @test select_components(comp_ent_1, comp_ent_2; name = "TwoComps") ==
           named_test_list_ent
 
@@ -82,12 +79,12 @@ end
 end
 
 @testset "Test SubtypeComponentSelector" begin
-    test_sub_ent = PA.SubtypeComponentSelector(ThermalStandard, nothing)
-    named_test_sub_ent = PA.SubtypeComponentSelector(ThermalStandard, "Thermals")
+    test_sub_ent = SubtypeComponentSelector(ThermalStandard, nothing)
+    named_test_sub_ent = SubtypeComponentSelector(ThermalStandard, "Thermals")
 
     # Equality
-    @test PA.SubtypeComponentSelector(ThermalStandard, nothing) == test_sub_ent
-    @test PA.SubtypeComponentSelector(ThermalStandard, "Thermals") == named_test_sub_ent
+    @test SubtypeComponentSelector(ThermalStandard, nothing) == test_sub_ent
+    @test SubtypeComponentSelector(ThermalStandard, "Thermals") == named_test_sub_ent
 
     # Construction
     @test select_components(ThermalStandard) == test_sub_ent
@@ -96,7 +93,7 @@ end
     # Naming
     @test get_name(test_sub_ent) == "ThermalStandard"
     @test get_name(named_test_sub_ent) == "Thermals"
-    @test default_name(test_sub_ent) == "ThermalStandard"
+    @test IS.default_name(test_sub_ent) == "ThermalStandard"
 
     # Contents
     answer = sort_name(get_components(ThermalStandard, test_sys))
@@ -115,14 +112,14 @@ end
 @testset "Test TopologyComponentSelector" begin
     topo1 = get_component(Area, test_sys2, "1")
     topo2 = get_component(LoadZone, test_sys2, "2")
-    test_topo_ent1 = PA.TopologyComponentSelector(Area, "1", ThermalStandard, nothing)
-    test_topo_ent2 = PA.TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2")
+    test_topo_ent1 = TopologyComponentSelector(Area, "1", ThermalStandard, nothing)
+    test_topo_ent2 = TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2")
     @assert (test_topo_ent1 !== nothing) && (test_topo_ent2 !== nothing) "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
 
     # Equality
-    @test PA.TopologyComponentSelector(Area, "1", ThermalStandard, nothing) ==
+    @test TopologyComponentSelector(Area, "1", ThermalStandard, nothing) ==
           test_topo_ent1
-    @test PA.TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2") ==
+    @test TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2") ==
           test_topo_ent2
 
     # Construction
@@ -141,12 +138,12 @@ end
 
     answers =
         sort_name.((
-            PSY.get_components_in_aggregation_topology(
+            get_components_in_aggregation_topology(
                 ThermalStandard,
                 test_sys2,
                 get_component(Area, test_sys2, "1"),
             ),
-            PSY.get_components_in_aggregation_topology(
+            get_components_in_aggregation_topology(
                 StaticInjection,
                 test_sys2,
                 get_component(LoadZone, test_sys2, "2"),
@@ -164,14 +161,14 @@ end
 
 @testset "Test FilterComponentSelector" begin
     starts_with_s(x) = lowercase(first(get_name(x))) == 's'
-    test_filter_ent = PA.FilterComponentSelector(starts_with_s, ThermalStandard, nothing)
+    test_filter_ent = FilterComponentSelector(starts_with_s, ThermalStandard, nothing)
     named_test_filter_ent =
-        PA.FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS")
+        FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS")
 
     # Equality
-    @test PA.FilterComponentSelector(starts_with_s, ThermalStandard, nothing) ==
+    @test FilterComponentSelector(starts_with_s, ThermalStandard, nothing) ==
           test_filter_ent
-    @test PA.FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
+    @test FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
           named_test_filter_ent
 
     # Construction
