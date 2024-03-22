@@ -14,7 +14,6 @@ This file is auto-generated. Do not edit.
         rating::Float64
         active_power_limits::MinMax
         base_power::Float64
-        operation_cost::OperationalCost
         efficiency::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -35,7 +34,6 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `rating::Float64`: Thermal limited MVA Power Output of the converter. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits::MinMax`
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `efficiency::Float64`: Conversion efficiency from AC Power to DC Power
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -56,8 +54,6 @@ mutable struct InterconnectingConverter <: StaticInjection
     active_power_limits::MinMax
     "Base power of the converter in MVA"
     base_power::Float64
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
     "Conversion efficiency from AC Power to DC Power"
     efficiency::Float64
     "Services that this device contributes to"
@@ -73,12 +69,12 @@ mutable struct InterconnectingConverter <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=LoadCost(nothing), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost=LoadCost(nothing), efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, operation_cost, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, efficiency=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, efficiency, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,7 +88,6 @@ function InterconnectingConverter(::Nothing)
         rating=0.0,
         active_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
-        operation_cost=LoadCost(nothing),
         efficiency=0.0,
         services=Device[],
         dynamic_injector=nothing,
@@ -118,8 +113,6 @@ get_rating(value::InterconnectingConverter) = get_value(value, value.rating)
 get_active_power_limits(value::InterconnectingConverter) = get_value(value, value.active_power_limits)
 """Get [`InterconnectingConverter`](@ref) `base_power`."""
 get_base_power(value::InterconnectingConverter) = value.base_power
-"""Get [`InterconnectingConverter`](@ref) `operation_cost`."""
-get_operation_cost(value::InterconnectingConverter) = value.operation_cost
 """Get [`InterconnectingConverter`](@ref) `efficiency`."""
 get_efficiency(value::InterconnectingConverter) = value.efficiency
 """Get [`InterconnectingConverter`](@ref) `services`."""
@@ -149,8 +142,6 @@ set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(val
 set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, val)
 """Set [`InterconnectingConverter`](@ref) `base_power`."""
 set_base_power!(value::InterconnectingConverter, val) = value.base_power = val
-"""Set [`InterconnectingConverter`](@ref) `operation_cost`."""
-set_operation_cost!(value::InterconnectingConverter, val) = value.operation_cost = val
 """Set [`InterconnectingConverter`](@ref) `efficiency`."""
 set_efficiency!(value::InterconnectingConverter, val) = value.efficiency = val
 """Set [`InterconnectingConverter`](@ref) `services`."""

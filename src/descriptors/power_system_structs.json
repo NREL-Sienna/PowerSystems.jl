@@ -2593,13 +2593,6 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "operation_cost",
-                    "null_value": "LoadCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "LoadCost(nothing)",
-                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-                },
-                {
                     "name": "efficiency",
                     "comment": "Conversion efficiency from AC Power to DC Power",
                     "null_value": "0.0",

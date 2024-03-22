@@ -7,11 +7,14 @@
     end
 
 
-Data structure for the operational cost of loads, including fixed and variable cost components.
+Data structure for the operational cost of loads (e.g., InterruptiblePowerLoad), including
+fixed and variable cost components.
 
 # Arguments
-- `variable::ProductionVariableCost`: Variable cost. Can take fuel curves or cost curve represenations.
-- `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost represenations this field can be duplicative.
+- `variable::ProductionVariableCost`: Variable cost. Can take fuel curves or cost curve
+  represenations.
+- `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost
+  represenations this field can be duplicative.
 """
 mutable struct LoadCost <: OperationalCost
     "variable cost"
