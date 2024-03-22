@@ -11,7 +11,7 @@ const STORAGE_OPERATION_MODES = NamedTuple{(:charge, :discharge), NTuple{2, Floa
     end
 
 Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.
-This data structure is not intented to represent market storage systems market operations like the submission of
+This data structure is not intended to represent market storage systems market operations like the submission of
 buy/sell bids.
 
 # Arguments

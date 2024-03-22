@@ -30,7 +30,7 @@ end
 # Constructor for demo purposes; non-functional.
 function LoadCost(::Nothing)
     LoadCost(;
-        variable = InputOutputCostCurve(LinearProductionVariableCost(0.0)),
+        variable = InputOutputCostCurve(LinearFunctionData(0.0)),
         fixed = 0.0,
     )
 end

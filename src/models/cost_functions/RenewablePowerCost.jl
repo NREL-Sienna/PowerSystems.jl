@@ -10,21 +10,28 @@ curtailment Costs can be used to represent the loss of tax incentives.
 
 # Arguments
 - `variable::InputOutputCostCurve`: Production Variable Cost represented as input/output.
+- `curtailment_cost::InputOutputCostCurve`: Input/output cost of curtailing power.
 """
 mutable struct RenewablePowerCost <: OperationalCost
     "variable cost"
+    variable::InputOutputCostCurve
+    "curtailment cost"
     curtailment_cost::InputOutputCostCurve
-    variable_cost::InputOutputCostCurve
 end
 
-function RenewablePowerCost(; variable)
-    RenewablePowerCost(variable)
+RenewablePowerCost(variable) =
+    RenewablePowerCost(variable, InputOutputCostCurve(LinearFunctionData(0.0)))
+
+function RenewablePowerCost(; variable, curtailment_cost)
+    println(variable)
+    println(curtailment_cost)
+    RenewablePowerCost(variable, curtailment_cost)
 end
 
 # Constructor for demo purposes; non-functional.
 function RenewablePowerCost(::Nothing)
     RenewablePowerCost(;
-        variable = InputOutputCostCurve(LinearProductionVariableCost(0.0)),
+        variable = InputOutputCostCurve(LinearFunctionData(0.0)),
     )
 end
 

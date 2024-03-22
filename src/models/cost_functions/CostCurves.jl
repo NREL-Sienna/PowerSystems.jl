@@ -12,6 +12,8 @@ struct InputOutputCostCurve <: CostCurve
     function_data::FunctionData
 end
 
+InputOutputCostCurve(; function_data) = InputOutputCostCurve(function_data)
+
 """
 First derivative of the Input/Output cost curve.
 
@@ -23,3 +25,6 @@ struct IncrementalCostCurve <: CostCurve
     function_data::FunctionData
     no_load_cost::Float64
 end
+
+IncrementalCostCurve(; function_data, no_load_cost) =
+    InputOutputCostCurve(function_data, no_load_cost)
