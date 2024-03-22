@@ -19,12 +19,10 @@ mutable struct RenewablePowerCost <: OperationalCost
     curtailment_cost::InputOutputCostCurve
 end
 
-RenewablePowerCost(variable) =
-    RenewablePowerCost(variable, InputOutputCostCurve(LinearFunctionData(0.0)))
-
-function RenewablePowerCost(; variable, curtailment_cost)
-    println(variable)
-    println(curtailment_cost)
+function RenewablePowerCost(;
+    variable,
+    curtailment_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
+)
     RenewablePowerCost(variable, curtailment_cost)
 end
 

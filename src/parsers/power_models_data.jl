@@ -349,7 +349,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = RenewablePowerCost(InputOutputCostCurve(LinearFunctionData(0.0)))
+    cost = RenewablePowerCost(; variable = InputOutputCostCurve(LinearFunctionData(0.0)))
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])

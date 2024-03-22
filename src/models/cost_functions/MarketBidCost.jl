@@ -38,6 +38,7 @@ function MarketBidCost(;
     start_up,
     shut_down,
     incremental_offer_curves = nothing,
+    decremental_offer_curves = nothing,
     ancillary_services = Vector{Service}(),
 )
     MarketBidCost(
@@ -45,6 +46,7 @@ function MarketBidCost(;
         start_up,
         shut_down,
         incremental_offer_curves,
+        decremental_offer_curves,
         ancillary_services,
     )
 end

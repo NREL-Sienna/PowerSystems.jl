@@ -41,7 +41,8 @@ mutable struct StorageCost <: OperationalCost
 end
 
 function StorageCost(;
-    variable = InputOutputCostCurve(LinearFunctionData(0.0)),
+    charge_variable_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
+    discharge_variable_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
     fixed = 0.0,
     start_up = 0.0,
     shut_down = 0.0,
@@ -49,7 +50,8 @@ function StorageCost(;
     energy_surplus_cost = 0.0,
 )
     StorageCost(
-        variable,
+        charge_variable_cost,
+        discharge_variable_cost,
         fixed,
         start_up,
         shut_down,
@@ -60,14 +62,7 @@ end
 
 # Constructor for demo purposes; non-functional.
 function StorageCost(::Nothing)
-    StorageCost(;
-        variable = LinearFunctionData(0.0),
-        fixed = 0.0,
-        start_up = 0.0,
-        shut_down = 0.0,
-        energy_shortage_cost = 0.0,
-        energy_surplus_cost = 0.0,
-    )
+    StorageCost()
 end
 
 """Get [`StorageCost`](@ref) `variable`."""
