@@ -493,7 +493,19 @@ export generate_struct_files
 export UnitSystem # internal.jl
 
 # TODO export ComponentSelector stuff
-
+export ComponentSelector
+export ComponentSelectorElement
+export ComponentSelectorSet
+export SingleComponentSelector
+export ListComponentSelector
+export SubtypeComponentSelector
+export FilterComponentSelector
+export TopologyComponentSelector
+export subtype_to_string
+export component_to_qualified_string
+export select_components
+export get_components
+export get_subselectors
 #################################################################################
 # Imports
 
@@ -611,7 +623,17 @@ import InfrastructureSystems:
     get_raw_data_type,
     supports_time_series,
     supports_supplemental_attributes,
-    fast_deepcopy_system
+    fast_deepcopy_system,
+    ComponentSelector,
+    ComponentSelectorElement,
+    ComponentSelectorSet,
+    SingleComponentSelector,
+    ListComponentSelector,
+    SubtypeComponentSelector,
+    FilterComponentSelector,
+    component_to_qualified_string,
+    subtype_to_string,
+    NAME_DELIMETER
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
