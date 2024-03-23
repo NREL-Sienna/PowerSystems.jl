@@ -251,3 +251,64 @@ end
     @test PSY.compare_values(sys2, sys, exclude = exclude)
     @test isempty(collect(IS.iterate_components_with_time_series(sys2.data.components)))
 end
+
+@testset "Test serialization of component with shared time series" begin
+    for use_scaling_factor in (true, false)
+        for in_memory in (true, false)
+            sys = System(100.0)
+            bus = ACBus(nothing)
+            bus.bustype = ACBusTypes.REF
+            add_component!(sys, bus)
+            gen = ThermalStandard(nothing)
+            gen.name = "gen1"
+            gen.bus = bus
+            gen.base_power = 1.0
+            gen.active_power = 1.2
+            gen.reactive_power = 2.3
+            gen.active_power_limits = (0.0, 5.0)
+            add_component!(sys, gen)
+
+            initial_time = Dates.DateTime("2020-01-01T00:00:00")
+            end_time = Dates.DateTime("2020-01-01T23:00:00")
+            dates = collect(initial_time:Dates.Hour(1):end_time)
+            data = rand(length(dates))
+            ta = TimeSeries.TimeArray(dates, data, ["1"])
+            sfm1 = use_scaling_factor ? get_max_active_power : nothing
+            sfm2 = use_scaling_factor ? get_max_reactive_power : nothing
+            ts1a = SingleTimeSeries(;
+                name = "max_active_power",
+                data = ta,
+                scaling_factor_multiplier = sfm1,
+            )
+            add_time_series!(sys, gen, ts1a)
+            ts2a = SingleTimeSeries(
+                ts1a,
+                "max_reactive_power";
+                scaling_factor_multiplier = sfm2,
+            )
+            add_time_series!(sys, gen, ts2a)
+
+            sys2, result = validate_serialization(sys)
+            @test result
+
+            @test IS.get_num_time_series(sys2.data.time_series_storage) == 1
+            gen2 = get_component(ThermalStandard, sys2, "gen1")
+            ts1b = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+            ts2b = get_time_series(SingleTimeSeries, gen2, "max_reactive_power")
+            @test ts1b.data == ts2b.data
+            ta_vals = TimeSeries.values(ta)
+            expected1 = use_scaling_factor ? ta_vals * get_max_active_power(gen) : ta_vals
+            expected2 = use_scaling_factor ? ta_vals * get_max_reactive_power(gen) : ta_vals
+            @test get_time_series_values(
+                gen2,
+                ts1b,
+                initial_time;
+            ) == expected1
+            @test get_time_series_values(
+                gen2,
+                ts2b,
+                initial_time;
+            ) == expected2
+        end
+    end
+end
