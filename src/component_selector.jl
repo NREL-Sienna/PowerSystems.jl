@@ -24,6 +24,10 @@ function get_components(e::SingleComponentSelector, sys::System)
 end
 
 # ListComponentSelector
+#Construction
+select_components(content::ComponentSelector...; name::Union{String, Nothing} = nothing) =
+    IS.select_components(content...; name)
+
 #Contents
 function get_components(e::ListComponentSelector, sys::System)
     sub_components = Iterators.map(x -> get_components(x, sys), e.content)
@@ -31,6 +35,10 @@ function get_components(e::ListComponentSelector, sys::System)
         get_available,
         Iterators.flatten(sub_components),
     )
+end
+
+function get_subselectors(e::ListComponentSelector)
+    return IS.get_subselectors(e)
 end
 
 # SubtypeComponentSelector
@@ -43,15 +51,15 @@ ComponentSelectorSet.
 select_components(
     component_subtype::Type{<:Component};
     name::Union{String, Nothing} = nothing,
-) = IS.select_components(component_subtype, name)
+) = IS.select_components(component_subtype; name)
 
 # Contents
 function get_subselectors(e::SubtypeComponentSelector, sys::System)
-    return IS.get_subselectors(e, sys.data)
+    return Iterators.map(select_components, get_components(e, sys))
 end
 
 function get_components(e::SubtypeComponentSelector, sys::System)
-    return Iterators.filter(get_available, get_components(e.component_subtype, sys.data))
+    return Iterators.filter(get_available, IS.get_components(e.component_subtype, sys.data))
 end
 
 # FilterComponentSelector
@@ -71,7 +79,7 @@ end
 
 # Contents
 function get_subselectors(e::FilterComponentSelector, sys::System)
-    return IS.get_subselectors(e, sys.data)
+    return Iterators.map(select_components, get_components(e, sys))
 end
 
 function get_components(e::FilterComponentSelector, sys::System)
