@@ -37,8 +37,8 @@ function get_components(e::ListComponentSelector, sys::System)
     )
 end
 
-function get_subselectors(e::ListComponentSelector)
-    return IS.get_subselectors(e)
+function get_subselectors(e::ListComponentSelector, sys::System)
+    return e.content
 end
 
 # SubtypeComponentSelector
