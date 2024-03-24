@@ -70,9 +70,9 @@ end
     @test get_component(ThermalStandard, test_sys, "Solitude") in the_components
     @test get_component(RenewableDispatch, test_sys, "WindBusA") in the_components
 
-    @test collect(get_subselectors(select_components(), test_sys)) ==
+    @test collect(get_subselectors(select_components())) ==
           Vector{ComponentSelector}()
-    the_subselectors = collect(get_subselectors(test_list_ent, test_sys))
+    the_subselectors = collect(get_subselectors(test_list_ent))
     @test length(the_subselectors) == 2
     @test comp_ent_1 in the_subselectors
     @test comp_ent_2 in the_subselectors
