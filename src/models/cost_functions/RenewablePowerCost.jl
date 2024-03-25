@@ -1,7 +1,7 @@
 """
     mutable struct RenewablePowerCost <: OperationalCost
-        curtailment_cost::InputOutputCostCurve
-        variable::ProductionVariableCost
+        variable::CostCurve
+        curtailment_cost::CostCurve
     end
 
 Data Structure for the Operational Cost of Renewable Power Plants which includes the
@@ -9,14 +9,14 @@ variable cost of energy (like a PPA) and the cost of curtailing power. For examp
 curtailment Costs can be used to represent the loss of tax incentives.
 
 # Arguments
-- `variable::InputOutputCostCurve`: Production Variable Cost represented as input/output.
-- `curtailment_cost::InputOutputCostCurve`: Input/output cost of curtailing power.
+- `variable::CostCurve`: Variable cost.
+- `curtailment_cost::CostCurve`: Input/output cost of curtailing power.
 """
 mutable struct RenewablePowerCost <: OperationalCost
     "variable cost"
-    variable::InputOutputCostCurve
+    variable::CostCurve
     "curtailment cost"
-    curtailment_cost::InputOutputCostCurve
+    curtailment_cost::CostCurve
 end
 
 function RenewablePowerCost(;

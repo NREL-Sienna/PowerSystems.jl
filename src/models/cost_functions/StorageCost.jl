@@ -2,9 +2,10 @@ const STORAGE_OPERATION_MODES = NamedTuple{(:charge, :discharge), NTuple{2, Floa
 
 """
     mutable struct StorageCost <: OperationalCost
-        variable::FunctionData
+        charge_variable_cost::CostCurve
+        discharge_variable_cost::CostCurve
         fixed::Float64
-        start_up::Float64
+        start_up::Union{STORAGE_OPERATION_MODES, Float64}
         shut_down::Float64
         energy_shortage_cost::Float64
         energy_surplus_cost::Float64
@@ -15,8 +16,8 @@ This data structure is not intended to represent market storage systems market o
 buy/sell bids.
 
 # Arguments
-- `charge_variable_cost::FunctionData`: variable cost represented as a InputOutputCostCurve
-- `discharge_variable_cost::FunctionData`: variable cost represented as a InputOutputCostCurve
+- `charge_variable_cost::CostCurve`: variable cost represented as a CostCurve
+- `discharge_variable_cost::CostCurve`: variable cost represented as a CostCurve
 - `fixed::Float64`: fixed cost of operating the storage system
 - `start_up::Union{STORAGE_OPERATION_MODES, Float64}`: start-up cost, validation range:, action if invalid
 - `shut_down::Float64`: shut-down cost, validation range: action if invalid
@@ -25,9 +26,9 @@ buy/sell bids.
 """
 mutable struct StorageCost <: OperationalCost
     "charge variable cost"
-    charge_variable_cost::InputOutputCostCurve
+    charge_variable_cost::CostCurve
     "discharge variable cost"
-    discharge_variable_cost::InputOutputCostCurve
+    discharge_variable_cost::CostCurve
     "fixed cost"
     fixed::Float64
     "start-up cost"
