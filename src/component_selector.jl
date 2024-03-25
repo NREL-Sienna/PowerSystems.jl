@@ -16,7 +16,7 @@ System with the given Component's subtype and name.
 """
 select_components(component_ref::Component, name::Union{String, Nothing} = nothing) =
     IS.select_components(component_ref, name)
- 
+
 # Contents
 function get_components(e::SingleComponentSelector, sys::System)
     com = get_component(e.component_subtype, sys, e.component_name)

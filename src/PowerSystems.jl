@@ -465,7 +465,6 @@ export component_to_qualified_string
 export select_components
 export get_components
 export get_subselectors
-export NAME_DELIMETER
 #################################################################################
 # Imports
 
