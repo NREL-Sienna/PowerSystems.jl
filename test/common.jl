@@ -7,6 +7,8 @@ mutable struct TestRenDevice <: RenewableGen
     name::String
 end
 
+struct NonexistentComponent <: StaticInjection end
+
 """Return the first component of type component_type that matches the name of other."""
 function get_component_by_name(sys::System, component_type, other::Component)
     for component in get_components(component_type, sys)

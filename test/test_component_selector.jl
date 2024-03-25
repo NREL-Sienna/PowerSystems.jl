@@ -3,8 +3,6 @@
 test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys5_all_components")
 test_sys2 = PSB.build_system(PSB.PSISystems, "5_bus_hydro_uc_sys")
 
-struct NonexistentComponent <: StaticInjection end  # <: Component
-
 sort_name(x) = sort(collect(x); by = get_name)
 
 @testset "Test helper functions" begin
