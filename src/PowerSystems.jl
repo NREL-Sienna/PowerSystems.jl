@@ -439,6 +439,20 @@ export StructDefinition
 export generate_struct_file
 export generate_struct_files
 
+#ComponentSelector
+export ComponentSelector
+export ComponentSelectorElement
+export ComponentSelectorSet
+export SingleComponentSelector
+export ListComponentSelector
+export SubtypeComponentSelector
+export FilterComponentSelector
+export TopologyComponentSelector
+export subtype_to_string
+export component_to_qualified_string
+export select_components
+export get_components
+export get_subselectors
 #################################################################################
 # Imports
 
@@ -549,7 +563,17 @@ import InfrastructureSystems:
     get_x_coords,
     get_y0,  # TODO reevaluate whether this should be exported
     get_raw_data,
-    get_raw_data_type
+    get_raw_data_type,
+    ComponentSelector,
+    ComponentSelectorElement,
+    ComponentSelectorSet,
+    SingleComponentSelector,
+    ListComponentSelector,
+    SubtypeComponentSelector,
+    FilterComponentSelector,
+    component_to_qualified_string,
+    subtype_to_string,
+    NAME_DELIMETER
 
 const IS = InfrastructureSystems
 
@@ -633,6 +657,7 @@ include("outages.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("subsystems.jl")
+include("component_selector.jl")
 include("data_format_conversions.jl")
 
 #Data Checks
