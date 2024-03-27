@@ -440,13 +440,20 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
             )
             cost = PiecewiseLinearPointData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
-            # For now, we make the variable cost a PolynomialFunctionData with all but the
+            # For now, we make the variable cost a QuadraticFunctionData with all but the
             # constant term and make the fixed cost the constant term; in a future update,
-            # there will be no separation between the PolynomialFunctionData and the fixed
+            # there will be no separation between the QuadraticFunctionData and the fixed
             # cost.
             # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
             coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
-            cost = PolynomialFunctionData(Dict((i, c / sys_mbase^i) for (i, c) in coeffs))
+            coeffs = Dict((i, c / sys_mbase^i) for (i, c) in coeffs)
+            quadratic_degrees = [2, 1, 0]
+            (keys(coeffs) <= Set(quadratic_degrees)) || throw(
+                ArgumentError(
+                    "Can only handle polynomials up to degree two; given coefficients $coeffs",
+                ),
+            )
+            cost = QuadraticFunctionData(get.(Ref(coeffs), quadratic_degrees, 0)...)
             fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
         cost = InputOutputCostCurve(cost)
