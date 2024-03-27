@@ -97,6 +97,14 @@ RAW_dir = joinpath(file_dir, "ThreeBusNetwork.raw")
 DYR_dir = joinpath(file_dir, "TestGENCLS.dyr")
 dyn_system = System(RAW_dir, DYR_dir, runchecks = false)
 ```
+### Common Issues
+
+Please note that while PSS/e does not enforce unique bus names, `PowerSystems.jl` does. To reparse bus names to comply with this requirement the `bus_name_formatter` *kwarg  can be used in `System()` as shown in the example below:
+
+```@repl raw_dyr_system
+dyn_system = System(RAW_dir, DYR_dir; bus_name_formatter = x -> strip(string(x["name"])) * "-" * string(x["index"]))
+```
+In this example the anonymous function `x -> strip(string(x["name"])) * "-" * string(x["index"])` takes the bus name and index from PSSe and concatenates them to produce the name. 
 
 ## [PowerSystems Table Data](@id table_data)
 
