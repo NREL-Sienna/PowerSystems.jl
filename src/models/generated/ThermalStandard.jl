@@ -116,7 +116,7 @@ function ThermalStandard(::Nothing)
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
-        operation_cost=ThreePartCost(nothing),
+        operation_cost=ThermalGenerationCost(nothing),
         base_power=0.0,
         time_limits=nothing,
         must_run=false,

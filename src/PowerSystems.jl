@@ -42,13 +42,11 @@ export PhaseShiftingTransformer
 export FunctionData
 export LinearFunctionData
 export QuadraticFunctionData
-export PolynomialFunctionData
 export PiecewiseLinearPointData
 export PiecewiseLinearSlopeData
 export get_proportional_term
 export get_quadratic_term
 export get_constant_term
-export get_coefficients
 export get_slopes
 export get_x_lengths
 export is_convex
@@ -56,11 +54,9 @@ export get_points
 export get_x_coords
 export get_y0
 
-export ThreePartCost
-export TwoPartCost
-export MultiStartCost
+export ThermalGenerationCost
 export MarketBidCost
-export StorageManagementCost
+export StorageCost
 
 export Generator
 export HydroGen
@@ -536,13 +532,11 @@ import InfrastructureSystems:
     FunctionData,
     LinearFunctionData,
     QuadraticFunctionData,
-    PolynomialFunctionData,
     PiecewiseLinearPointData,
     PiecewiseLinearSlopeData,
     get_proportional_term,
     get_quadratic_term,
     get_constant_term,
-    get_coefficients,
     get_slopes,
     get_x_lengths,
     is_convex,
@@ -591,7 +585,6 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
-include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
@@ -603,6 +596,18 @@ include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
+
+# Costs
+include("models/operational_cost.jl")
+include("models/cost_functions/variable_cost.jl")
+include("models/cost_functions/CostCurves.jl")
+include("models/cost_functions/FuelCurves.jl")
+include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/HydroPowerCost.jl")
+include("models/cost_functions/LoadCost.jl")
+include("models/cost_functions/RenewablePowerCost.jl")
+include("models/cost_functions/StorageCost.jl")
+include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

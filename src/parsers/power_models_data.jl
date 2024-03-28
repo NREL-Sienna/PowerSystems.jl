@@ -347,7 +347,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = TwoPartCost(LinearFunctionData(0.0), 0.0)
+    cost = RenewablePowerCost(; variable = InputOutputCostCurve(LinearFunctionData(0.0)))
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])
@@ -438,20 +438,28 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
             )
             cost = PiecewiseLinearPointData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
-            # For now, we make the variable cost a PolynomialFunctionData with all but the
+            # For now, we make the variable cost a QuadraticFunctionData with all but the
             # constant term and make the fixed cost the constant term; in a future update,
-            # there will be no separation between the PolynomialFunctionData and the fixed
+            # there will be no separation between the QuadraticFunctionData and the fixed
             # cost.
             # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
             coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
-            cost = PolynomialFunctionData(Dict((i, c / sys_mbase^i) for (i, c) in coeffs))
+            coeffs = Dict((i, c / sys_mbase^i) for (i, c) in coeffs)
+            quadratic_degrees = [2, 1, 0]
+            (keys(coeffs) <= Set(quadratic_degrees)) || throw(
+                ArgumentError(
+                    "Can only handle polynomials up to degree two; given coefficients $coeffs",
+                ),
+            )
+            cost = QuadraticFunctionData(get.(Ref(coeffs), quadratic_degrees, 0)...)
             fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
+        cost = InputOutputCostCurve(cost)
         startup = d["startup"]
         shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = ThreePartCost(nothing)
+        tmpcost = ThermalGenerationCost(nothing)
         cost = tmpcost.variable
         fixed = tmpcost.fixed
         startup = tmpcost.start_up
@@ -461,7 +469,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    operation_cost = ThreePartCost(;
+    operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
         start_up = startup,
