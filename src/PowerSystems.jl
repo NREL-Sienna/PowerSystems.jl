@@ -42,8 +42,8 @@ export PhaseShiftingTransformer
 export FunctionData
 export LinearFunctionData
 export QuadraticFunctionData
-export PiecewiseLinearPointData
-export PiecewiseLinearSlopeData
+export PiecewiseLinearData
+export PiecewiseStepData
 export get_proportional_term
 export get_quadratic_term
 export get_constant_term
@@ -52,7 +52,8 @@ export get_x_lengths
 export is_convex
 export get_points
 export get_x_coords
-export get_y0
+export get_y_coords
+export get_c
 
 export ThermalGenerationCost
 export MarketBidCost
@@ -531,17 +532,18 @@ import InfrastructureSystems:
     FunctionData,
     LinearFunctionData,
     QuadraticFunctionData,
-    PiecewiseLinearPointData,
-    PiecewiseLinearSlopeData,
+    PiecewiseLinearData,
+    PiecewiseStepData,
     get_proportional_term,
     get_quadratic_term,
     get_constant_term,
     get_slopes,
+    running_sum,
     get_x_lengths,
     is_convex,
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
-    get_y0,  # TODO reevaluate whether this should be exported
+    get_y_coords,
     get_raw_data,
     get_raw_data_type
 

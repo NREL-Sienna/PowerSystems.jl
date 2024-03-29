@@ -855,7 +855,7 @@ function calculate_variable_cost(
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
-        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
 
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
@@ -893,7 +893,7 @@ function calculate_variable_cost(
             (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
-        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
     elseif length(var_cost) == 1
         var_cost = LinearFunctionData(var_cost[1][1])
         fixed = 0.0
@@ -1048,7 +1048,7 @@ function make_thermal_generator_multistart(
     else
         (no_load_x, no_load_cost) = first(var_cost)
         var_cost =
-            PiecewiseLinearPointData([
+            PiecewiseLinearData([
                 (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
             ])
     end

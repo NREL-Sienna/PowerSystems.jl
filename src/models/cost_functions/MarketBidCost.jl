@@ -3,8 +3,8 @@
         no_load::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
-        incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}
-        decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}
+        incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
+        decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
         ancillary_services::Vector{Service}
     end
 
@@ -15,8 +15,8 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 - `no_load::Float64`: no load cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
-- `incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}`: Sell Offer Curves data, can be a time series or a fixed PiecewiseLinearPointData
-- `decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}`: Buy Offer Curves data, can be a time series or a fixed PiecewiseLinearPointData
+- `incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Sell Offer Curves data, can be a time series or a fixed PiecewiseLinearData
+- `decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Buy Offer Curves data, can be a time series or a fixed PiecewiseLinearData
 - `ancillary_services::Vector{Service}`: Bids for the ancillary services
 """
 mutable struct MarketBidCost <: OperationalCost
@@ -26,9 +26,9 @@ mutable struct MarketBidCost <: OperationalCost
     "shut-down cost"
     shut_down::Float64
     "Variable Cost TimeSeriesKey"
-    incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}
+    incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
     "Variable Cost TimeSeriesKey"
-    decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearPointData}
+    decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
     "Bids for the ancillary services"
     ancillary_services::Vector{Service}
 end

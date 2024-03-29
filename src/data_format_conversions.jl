@@ -90,7 +90,7 @@ function _convert_cost(points::Vector)
     @assert all(length.(points) .== 2)
     @assert all([all(typeof.(point) .<: Real) for point in points])
     # NOTE: old representation stored points as (y, x); new representation is (x, y)
-    return PiecewiseLinearPointData([(x, y) for (y, x) in points])
+    return PiecewiseLinearData([(x, y) for (y, x) in points])
 end
 
 function _convert_data!(

@@ -427,18 +427,18 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
         # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
         if model == GeneratorCostModels.PIECEWISE_LINEAR
             # For now, we make the fixed cost the y-intercept of the first segment of the
-            # piecewise curve and the variable cost a PiecewiseLinearPointData representing
+            # piecewise curve and the variable cost a PiecewiseLinearData representing
             # the data minus this fixed cost; in a future update, there will be no
-            # separation between the PiecewiseLinearPointData and the fixed cost.
+            # separation between the PiecewiseLinearData and the fixed cost.
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
             cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
             points = collect(zip(power_p, cost_p))
             (first_x, first_y) = first(points)
             fixed = max(0.0,
-                first_y - first(get_slopes(PiecewiseLinearPointData(points))) * first_x,
+                first_y - first(get_slopes(PiecewiseLinearData(points))) * first_x,
             )
-            cost = PiecewiseLinearPointData([(x, y - fixed) for (x, y) in points])
+            cost = PiecewiseLinearData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
             # For now, we make the variable cost a QuadraticFunctionData with all but the
             # constant term and make the fixed cost the constant term; in a future update,
