@@ -67,6 +67,21 @@
           PSY.InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test PSY.IncrementalCurve(ar_piecewise) ==
           PSY.IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
+
+    # Serialization round trip
+    curves_by_type = [
+        (io_quadratic, PSY.InputOutputCurve),
+        (io_linear, PSY.InputOutputCurve),
+        (io_piecewise, PSY.InputOutputCurve),
+        (inc_linear, PSY.IncrementalCurve),
+        (inc_piecewise, PSY.IncrementalCurve),
+        (ar_linear, PSY.AverageRateCurve),
+        (ar_piecewise, PSY.AverageRateCurve),
+    ]
+    for (curve, curve_type) in curves_by_type
+        @test IS.serialize(curve) isa AbstractDict
+        @test IS.deserialize(curve_type, IS.serialize(curve)) == curve
+    end
 end
 
 test_costs = Dict(

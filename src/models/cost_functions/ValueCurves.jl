@@ -1,17 +1,33 @@
 "Type that represents an abstract cost curve without units on the cost"
 abstract type ValueCurve end
 
+IS.serialize(val::ValueCurve) = IS.serialize_struct(val)
+IS.deserialize(T::Type{<:ValueCurve}, val::Dict) = IS.deserialize_struct(T, val)
+
 "Get the underlying `FunctionData` representation of this `ValueCurve`"
 get_function_data(curve::ValueCurve) = curve.function_data
 
-"An input-output curve, directly relating the production quantity to the cost: `y = f(x)`"
+"""
+An input-output curve, directly relating the production quantity to the cost: `y = f(x)`.
+Can be used, for instance, in the representation of a [`CostCurve`][@ref] where `x` is MW
+and `y` is \$/hr, or in the representation of a [`FuelCurve`][@ref] where `x` is MW and `y`
+is fuel/hr.
+"""
 struct InputOutputCurve{T} <: ValueCurve where {
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
 end
 
-"An incremental (or 'marginal') curve, relating the production quantity to the derivative of cost: `y = f'(x)`"
+InputOutputCurve(; function_data) = InputOutputCurve(function_data)
+
+"""
+An incremental (or 'marginal') curve, relating the production quantity to the derivative of
+cost: `y = f'(x)`. Can be used, for instance, in the representation of a [`CostCurve`][@ref]
+where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`][@ref] where
+`x` is MW and `y` is fuel/MWh.
+"""
+
 struct IncrementalCurve{T} <: ValueCurve where {
     T <: Union{LinearFunctionData, PiecewiseStepData}}
     "The underlying `FunctionData` representation of this `ValueCurve`"
@@ -20,7 +36,16 @@ struct IncrementalCurve{T} <: ValueCurve where {
     initial_input::Float64
 end
 
-"An average rate curve, relating the production quantity to the average cost rate from the origin: `y = f(x)/x`"
+IncrementalCurve(; function_data, initial_input) =
+    IncrementalCurve(function_data, initial_input)
+
+"""
+An average rate curve, relating the production quantity to the average cost rate from the
+origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
+[`CostCurve`][@ref] where `x` is MW and `y` is \$/MWh, or in the representation of a
+[`FuelCurve`][@ref] where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
+absolute values of cost rate or fuel input rate by absolute values of electric power.
+"""
 struct AverageRateCurve{T} <: ValueCurve where {
     T <: Union{LinearFunctionData, PiecewiseStepData}}
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
@@ -29,7 +54,10 @@ struct AverageRateCurve{T} <: ValueCurve where {
     initial_input::Float64
 end
 
-"Get the `initial_input` field of this `ValueCurve`"
+AverageRateCurve(; function_data, initial_input) =
+    AverageRateCurve(function_data, initial_input)
+
+"Get the `initial_input` field of this `ValueCurve` (not defined for `InputOutputCurve`)"
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
 
 # EQUALITY
