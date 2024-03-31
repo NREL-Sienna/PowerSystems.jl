@@ -1,5 +1,5 @@
 """
-    mutable struct RenewablePowerCost <: OperationalCost
+    mutable struct RenewableGenerationCost <: OperationalCost
         variable::CostCurve
         curtailment_cost::CostCurve
     end
@@ -12,29 +12,29 @@ curtailment Costs can be used to represent the loss of tax incentives.
 - `variable::CostCurve`: Variable cost.
 - `curtailment_cost::CostCurve`: Input/output cost of curtailing power.
 """
-mutable struct RenewablePowerCost <: OperationalCost
+mutable struct RenewableGenerationCost <: OperationalCost
     "variable cost"
     variable::CostCurve
     "curtailment cost"
     curtailment_cost::CostCurve
 end
 
-function RenewablePowerCost(;
+function RenewableGenerationCost(;
     variable,
     curtailment_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
 )
-    RenewablePowerCost(variable, curtailment_cost)
+    RenewableGenerationCost(variable, curtailment_cost)
 end
 
 # Constructor for demo purposes; non-functional.
-function RenewablePowerCost(::Nothing)
-    RenewablePowerCost(;
+function RenewableGenerationCost(::Nothing)
+    RenewableGenerationCost(;
         variable = InputOutputCostCurve(LinearFunctionData(0.0)),
     )
 end
 
-"""Get [`RenewablePowerCost`](@ref) `variable`."""
-get_variable(value::RenewablePowerCost) = value.variable
+"""Get [`RenewableGenerationCost`](@ref) `variable`."""
+get_variable(value::RenewableGenerationCost) = value.variable
 
-"""Set [`RenewablePowerCost`](@ref) `variable`."""
-set_variable!(value::RenewablePowerCost, val) = value.variable = val
+"""Set [`RenewableGenerationCost`](@ref) `variable`."""
+set_variable!(value::RenewableGenerationCost, val) = value.variable = val

@@ -95,7 +95,7 @@ function RenewableDispatch(::Nothing)
         prime_mover_type=PrimeMovers.OT,
         reactive_power_limits=nothing,
         power_factor=1.0,
-        operation_cost=RenewablePowerCost(nothing),
+        operation_cost=RenewableGenerationCost(nothing),
         base_power=0.0,
         services=Device[],
         dynamic_injector=nothing,

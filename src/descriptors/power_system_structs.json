@@ -3514,7 +3514,7 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "RenewablePowerCost(nothing)",
+                    "null_value": "RenewableGenerationCost(nothing)",
                     "data_type": "OperationalCost",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
