@@ -35,7 +35,7 @@ end
 # Constructor for demo purposes; non-functional.
 function ThermalGenerationCost(::Nothing)
     ThermalGenerationCost(;
-        variable = InputOutputCostCurve(LinearFunctionData(0.0)),
+        variable = zero(CostCurve),
         fixed = 0.0,
         start_up = 0.0,
         shut_down = 0.0,

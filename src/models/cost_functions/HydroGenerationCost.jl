@@ -27,7 +27,7 @@ end
 # Constructor for demo purposes; non-functional.
 function HydroGenerationCost(::Nothing)
     HydroGenerationCost(;
-        variable = InputOutputFuelCurve(LinearFunctionData(0.0), 0.0, nothing),
+        variable = zero(FuelCurve),
         fixed = 0.0,
     )
 end

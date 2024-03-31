@@ -349,7 +349,9 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = RenewableGenerationCost(; variable = InputOutputCostCurve(LinearFunctionData(0.0)))
+    cost = RenewableGenerationCost(;
+        variable = CostCurve(InputOutputCurve(LinearFunctionData(0.0))),
+    )
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])
@@ -456,7 +458,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
             cost = QuadraticFunctionData(get.(Ref(coeffs), quadratic_degrees, 0)...)
             fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
-        cost = InputOutputCostCurve(cost)
+        cost = CostCurve(InputOutputCurve((cost)))
         startup = d["startup"]
         shutdn = d["shutdown"]
     else

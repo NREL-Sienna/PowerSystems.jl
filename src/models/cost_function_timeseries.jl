@@ -1,3 +1,10 @@
+# MarketBidCost has two variable costs, here we mean the incremental one
+get_generation_variable_cost(cost::MarketBidCost) = get_incremental_offer_curves(cost)
+set_generation_variable_cost!(cost::MarketBidCost, val) =
+    set_incremental_offer_curves!(cost, val)
+get_generation_variable_cost(cost::OperationalCost) = get_variable_cost(cost)
+set_generation_variable_cost!(cost::OperationalCost, val) = set_variable_cost(cost, val)
+
 """
 Returns variable cost bids time-series data.
 
@@ -28,7 +35,7 @@ function get_variable_cost(
 end
 
 """
-Returns variable cost bids time-series data for  MarketBidCost.
+Returns variable cost bids time-series data for MarketBidCost.
 
 # Arguments
 - `device::StaticInjection`: Static injection device
@@ -42,10 +49,10 @@ function get_variable_cost(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    time_series_key = get_variable(cost)
+    time_series_key = get_generation_variable_cost(cost)
     if isnothing(time_series_key)
         error(
-            "Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.",
+            "Cost component is empty, please use `set_variable_cost!` to add variable cost forecast.",
         )
     end
     raw_data = IS.get_time_series_by_key(
@@ -106,7 +113,7 @@ function get_services_bid(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    variable_ts_key = get_variable(cost)
+    variable_ts_key = get_generation_variable_cost(cost)
     service_ts_key = IS.TimeSeriesKey(variable_ts_key.time_series_type, get_name(service))
     raw_data = IS.get_time_series_by_key(
         service_ts_key,
@@ -135,7 +142,7 @@ function set_variable_cost!(
     add_time_series!(sys, component, time_series_data)
     key = IS.TimeSeriesKey(time_series_data)
     market_bid_cost = get_operation_cost(component)
-    set_variable!(market_bid_cost, key)
+    set_generation_variable_cost!(market_bid_cost, key)
     return
 end
 

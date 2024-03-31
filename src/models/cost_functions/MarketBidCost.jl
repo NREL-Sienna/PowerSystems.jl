@@ -26,9 +26,17 @@ mutable struct MarketBidCost <: OperationalCost
     "shut-down cost"
     shut_down::Float64
     "Variable Cost TimeSeriesKey"
-    incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
+    incremental_offer_curves::Union{
+        Nothing,
+        IS.TimeSeriesKey,
+        CostCurve{InputOutputCurve{PiecewiseLinearData}},
+    }
     "Variable Cost TimeSeriesKey"
-    decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
+    decremental_offer_curves::Union{
+        Nothing,
+        IS.TimeSeriesKey,
+        CostCurve{InputOutputCurve{PiecewiseLinearData}},
+    }
     "Bids for the ancillary services"
     ancillary_services::Vector{Service}
 end
@@ -60,6 +68,31 @@ function MarketBidCost(::Nothing)
         incremental_offer_curves = nothing,
         decremental_offer_curves = nothing,
         ancillary_services = Vector{Service}(),
+    )
+end
+
+"""
+Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to
+`0.0`.
+"""
+function MarketBidCost(
+    no_load_cost,
+    start_up::Real,
+    shut_down,
+    incremental_offer_curves = nothing,
+    decremental_offer_curves = nothing,
+    ancillary_services = Vector{Service}(),
+)
+    # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
+    # Operators use `hot` when they don’t have multiple stages.
+    start_up_multi = (hot = Float64(start_up), warm = 0.0, cold = 0.0)
+    return MarketBidCost(
+        no_load_cost,
+        start_up_multi,
+        shut_down,
+        incremental_offer_curves,
+        decremental_offer_curves,
+        ancillary_services,
     )
 end
 

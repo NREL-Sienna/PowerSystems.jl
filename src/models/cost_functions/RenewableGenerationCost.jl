@@ -19,9 +19,9 @@ mutable struct RenewableGenerationCost <: OperationalCost
     curtailment_cost::CostCurve
 end
 
-function RenewableGenerationCost(;
-    variable,
-    curtailment_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
+function RenewableGenerationCost(
+    variable;
+    curtailment_cost = zero(CostCurve),
 )
     RenewableGenerationCost(variable, curtailment_cost)
 end
@@ -29,7 +29,7 @@ end
 # Constructor for demo purposes; non-functional.
 function RenewableGenerationCost(::Nothing)
     RenewableGenerationCost(;
-        variable = InputOutputCostCurve(LinearFunctionData(0.0)),
+        variable = zero(CostCurve),
     )
 end
 

@@ -41,9 +41,28 @@ mutable struct StorageCost <: OperationalCost
     energy_surplus_cost::Float64
 end
 
+StorageCost(
+    charge_variable_cost::CostCurve,
+    discharge_variable_cost::CostCurve,
+    fixed::Float64,
+    start_up::Real,
+    shut_down::Float64,
+    energy_shortage_cost::Float64,
+    energy_surplus_cost::Float64,
+) =
+    StorageCost(
+        charge_variable_cost,
+        discharge_variable_cost,
+        fixed,
+        Float64(start_up),
+        shut_down,
+        energy_shortage_cost,
+        energy_surplus_cost,
+    )
+
 function StorageCost(;
-    charge_variable_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
-    discharge_variable_cost = InputOutputCostCurve(LinearFunctionData(0.0)),
+    charge_variable_cost = zero(CostCurve),
+    discharge_variable_cost = zero(CostCurve),
     fixed = 0.0,
     start_up = 0.0,
     shut_down = 0.0,
