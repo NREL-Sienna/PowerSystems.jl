@@ -23,6 +23,9 @@ end
 Base.:(==)(a::CostCurve, b::CostCurve) =
     (get_value_curve(a) == get_value_curve(b))
 
+"Get a `CostCurve` representing zero variable cost"
+Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
+
 """
 Representation of the variable operation cost of a power plant in terms of fuel (MBTU,
 liters, m^3, etc.), coupled with a conversion factor between fuel and currency. Composed of
@@ -38,6 +41,9 @@ end
 Base.:(==)(a::FuelCurve, b::FuelCurve) =
     (get_value_curve(a) == get_value_curve(b)) &&
     (get_fuel_cost(a) == get_fuel_cost(b))
+
+"Get a `FuelCurve` representing zero fuel usage and zero fuel cost"
+Base.zero(::Union{FuelCurve, Type{FuelCurve}}) = FuelCurve(zero(ValueCurve), 0.0)
 
 "Get the fuel cost or the name of the fuel cost time series"
 get_fuel_cost(cost::FuelCurve) = cost.fuel_cost

@@ -7,6 +7,8 @@
           PSY.IncrementalCurve(LinearFunctionData(6, 2), 1.0)
     @test PSY.AverageRateCurve(io_quadratic) ==
           PSY.AverageRateCurve(LinearFunctionData(3, 2), 1.0)
+    @test zero(io_quadratic) == PSY.InputOutputCurve(LinearFunctionData(0, 0))
+    @test zero(PSY.InputOutputCurve) == PSY.InputOutputCurve(LinearFunctionData(0, 0))
 
     io_linear = PSY.InputOutputCurve(LinearFunctionData(2, 1))
     @test io_linear isa PSY.InputOutputCurve{LinearFunctionData}
@@ -38,6 +40,8 @@
           PSY.InputOutputCurve(LinearFunctionData(2, 1))
     @test PSY.AverageRateCurve(inc_linear) ==
           PSY.AverageRateCurve(LinearFunctionData(3, 2), 1.0)
+    @test zero(inc_linear) == PSY.IncrementalCurve(LinearFunctionData(0, 0), 0.0)
+    @test zero(PSY.IncrementalCurve) == PSY.IncrementalCurve(LinearFunctionData(0, 0), 0.0)
 
     inc_piecewise = PSY.IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test inc_piecewise isa PSY.IncrementalCurve{PiecewiseStepData}
@@ -59,6 +63,8 @@
           PSY.InputOutputCurve(LinearFunctionData(2, 1))
     @test PSY.IncrementalCurve(ar_linear) ==
           PSY.IncrementalCurve(LinearFunctionData(6, 2), 1.0)
+    @test zero(ar_linear) == PSY.AverageRateCurve(LinearFunctionData(0, 0), 0.0)
+    @test zero(PSY.AverageRateCurve) == PSY.AverageRateCurve(LinearFunctionData(0, 0), 0.0)
 
     ar_piecewise = PSY.AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
     @test PSY.get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
@@ -82,21 +88,33 @@
         @test IS.serialize(curve) isa AbstractDict
         @test IS.deserialize(curve_type, IS.serialize(curve)) == curve
     end
+
+    @test zero(PSY.ValueCurve) == PSY.InputOutputCurve(LinearFunctionData(0, 0))
 end
 
 @testset "Test CostCurve and FuelCurve" begin
-      cc = PSY.CostCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)))
-      fc = PSY.FuelCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
-      # TODO also test fuel curves with time series
+    cc = PSY.CostCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)))
+    fc = PSY.FuelCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
+    # TODO also test fuel curves with time series
 
-      @test PSY.get_value_curve(cc) == PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
-      @test PSY.get_value_curve(fc) == PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
-      @test PSY.get_fuel_cost(fc) == 4
+    @test PSY.get_value_curve(cc) ==
+          PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+    @test PSY.get_value_curve(fc) ==
+          PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+    @test PSY.get_fuel_cost(fc) == 4
 
-      @test IS.serialize(cc) isa AbstractDict
-      @test IS.serialize(fc) isa AbstractDict
-      @test IS.deserialize(PSY.CostCurve, IS.serialize(cc)) == cc
-      @test IS.deserialize(PSY.FuelCurve, IS.serialize(fc)) == fc
+    @test IS.serialize(cc) isa AbstractDict
+    @test IS.serialize(fc) isa AbstractDict
+    @test IS.deserialize(PSY.CostCurve, IS.serialize(cc)) == cc
+    @test IS.deserialize(PSY.FuelCurve, IS.serialize(fc)) == fc
+
+    @test zero(cc) == PSY.CostCurve(PSY.InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)))
+    @test zero(PSY.CostCurve) ==
+          PSY.CostCurve(PSY.InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)))
+    @test zero(fc) ==
+          PSY.FuelCurve(PSY.InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
+    @test zero(PSY.FuelCurve) ==
+          PSY.FuelCurve(PSY.InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
 end
 
 test_costs = Dict(

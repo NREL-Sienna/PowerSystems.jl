@@ -52,13 +52,29 @@ end
 "Get the `initial_input` field of this `ValueCurve` (not defined for `InputOutputCurve`)"
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
 
-# EQUALITY
+# BASE METHODS
 Base.:(==)(a::InputOutputCurve, b::InputOutputCurve) =
     (get_function_data(a) == get_function_data(b))
 
 Base.:(==)(a::T, b::T) where {T <: Union{IncrementalCurve, AverageRateCurve}} =
     (get_function_data(a) == get_function_data(b)) &&
     (get_initial_input(a) == get_initial_input(b))
+
+"Get an `InputOutputCurve` representing `f(x) = 0`"
+Base.zero(::Union{InputOutputCurve, Type{InputOutputCurve}}) =
+    InputOutputCurve(zero(FunctionData))
+
+"Get an `IncrementalCurve` representing `f'(x) = 0` with zero `initial_input`"
+Base.zero(::Union{IncrementalCurve, Type{IncrementalCurve}}) =
+    IncrementalCurve(zero(FunctionData), 0.0)
+
+"Get an `AverageRateCurve` representing `f(x)/x = 0` with zero `initial_input`"
+Base.zero(::Union{AverageRateCurve, Type{AverageRateCurve}}) =
+    AverageRateCurve(zero(FunctionData), 0.0)
+
+"Get a `ValueCurve` representing zero variable cost"
+Base.zero(::Union{ValueCurve, Type{ValueCurve}}) =
+    Base.zero(InputOutputCurve)
 
 # CONVERSIONS: InputOutputCurve{LinearFunctionData} to InputOutputCurve{QuadraticFunctionData}
 InputOutputCurve{QuadraticFunctionData}(data::InputOutputCurve{LinearFunctionData}) =
