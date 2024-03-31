@@ -13,13 +13,11 @@ Can be used, for instance, in the representation of a [`CostCurve`][@ref] where 
 and `y` is \$/hr, or in the representation of a [`FuelCurve`][@ref] where `x` is MW and `y`
 is fuel/hr.
 """
-struct InputOutputCurve{T} <: ValueCurve where {
+@kwdef struct InputOutputCurve{T} <: ValueCurve where {
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
 end
-
-InputOutputCurve(; function_data) = InputOutputCurve(function_data)
 
 """
 An incremental (or 'marginal') curve, relating the production quantity to the derivative of
@@ -28,16 +26,13 @@ where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`][@
 `x` is MW and `y` is fuel/MWh.
 """
 
-struct IncrementalCurve{T} <: ValueCurve where {
+@kwdef struct IncrementalCurve{T} <: ValueCurve where {
     T <: Union{LinearFunctionData, PiecewiseStepData}}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
     initial_input::Float64
 end
-
-IncrementalCurve(; function_data, initial_input) =
-    IncrementalCurve(function_data, initial_input)
 
 """
 An average rate curve, relating the production quantity to the average cost rate from the
@@ -46,16 +41,13 @@ origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
 [`FuelCurve`][@ref] where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
-struct AverageRateCurve{T} <: ValueCurve where {
+@kwdef struct AverageRateCurve{T} <: ValueCurve where {
     T <: Union{LinearFunctionData, PiecewiseStepData}}
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
     initial_input::Float64
 end
-
-AverageRateCurve(; function_data, initial_input) =
-    AverageRateCurve(function_data, initial_input)
 
 "Get the `initial_input` field of this `ValueCurve` (not defined for `InputOutputCurve`)"
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input

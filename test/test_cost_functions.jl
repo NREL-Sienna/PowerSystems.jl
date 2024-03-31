@@ -84,6 +84,21 @@
     end
 end
 
+@testset "Test CostCurve and FuelCurve" begin
+      cc = PSY.CostCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)))
+      fc = PSY.FuelCurve(PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
+      # TODO also test fuel curves with time series
+
+      @test PSY.get_value_curve(cc) == PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+      @test PSY.get_value_curve(fc) == PSY.InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+      @test PSY.get_fuel_cost(fc) == 4
+
+      @test IS.serialize(cc) isa AbstractDict
+      @test IS.serialize(fc) isa AbstractDict
+      @test IS.deserialize(PSY.CostCurve, IS.serialize(cc)) == cc
+      @test IS.deserialize(PSY.FuelCurve, IS.serialize(fc)) == fc
+end
+
 test_costs = Dict(
     QuadraticFunctionData =>
         repeat([QuadraticFunctionData(999.0, 1.0, 0.0)], 24),

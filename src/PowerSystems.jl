@@ -600,10 +600,8 @@ include("models/OuterControl.jl")
 
 # Costs
 include("models/operational_cost.jl")
-include("models/cost_functions/variable_cost.jl")
 include("models/cost_functions/ValueCurves.jl")
-include("models/cost_functions/CostCurves.jl")
-include("models/cost_functions/FuelCurves.jl")
+include("models/cost_functions/variable_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/HydroPowerCost.jl")
 include("models/cost_functions/LoadCost.jl")
