@@ -24,21 +24,21 @@ buy/sell bids.
 - `energy_shortage_cost::Float64`: Cost incurred by the model for being short of the energy target.
 - `energy_surplus_cost::Float64`: Cost incurred by the model for surplus energy stored.
 """
-mutable struct StorageCost <: OperationalCost
+@kwdef mutable struct StorageCost <: OperationalCost
     "charge variable cost"
-    charge_variable_cost::CostCurve
+    charge_variable_cost::CostCurve = zero(CostCurve)
     "discharge variable cost"
-    discharge_variable_cost::CostCurve
+    discharge_variable_cost::CostCurve = zero(CostCurve)
     "fixed cost"
-    fixed::Float64
+    fixed::Float64 = 0.0
     "start-up cost"
-    start_up::Union{STORAGE_OPERATION_MODES, Float64}
+    start_up::Union{STORAGE_OPERATION_MODES, Float64} = 0.0
     "shut-down cost"
-    shut_down::Float64
+    shut_down::Float64 = 0.0
     "Cost incurred by the model for being short of the energy target."
-    energy_shortage_cost::Float64
+    energy_shortage_cost::Float64 = 0.0
     "Cost incurred by the model for surplus energy stored."
-    energy_surplus_cost::Float64
+    energy_surplus_cost::Float64 = 0.0
 end
 
 StorageCost(
@@ -59,26 +59,6 @@ StorageCost(
         energy_shortage_cost,
         energy_surplus_cost,
     )
-
-function StorageCost(;
-    charge_variable_cost = zero(CostCurve),
-    discharge_variable_cost = zero(CostCurve),
-    fixed = 0.0,
-    start_up = 0.0,
-    shut_down = 0.0,
-    energy_shortage_cost = 0.0,
-    energy_surplus_cost = 0.0,
-)
-    StorageCost(
-        charge_variable_cost,
-        discharge_variable_cost,
-        fixed,
-        start_up,
-        shut_down,
-        energy_shortage_cost,
-        energy_surplus_cost,
-    )
-end
 
 # Constructor for demo purposes; non-functional.
 function StorageCost(::Nothing)

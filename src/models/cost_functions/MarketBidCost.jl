@@ -19,7 +19,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 - `decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Buy Offer Curves data, can be a time series or a fixed PiecewiseLinearData
 - `ancillary_services::Vector{Service}`: Bids for the ancillary services
 """
-mutable struct MarketBidCost <: OperationalCost
+@kwdef mutable struct MarketBidCost <: OperationalCost
     no_load_cost::Float64
     "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets"
     start_up::StartUpStages
@@ -30,33 +30,15 @@ mutable struct MarketBidCost <: OperationalCost
         Nothing,
         IS.TimeSeriesKey,
         CostCurve{InputOutputCurve{PiecewiseLinearData}},
-    }
+    } = nothing
     "Variable Cost TimeSeriesKey"
     decremental_offer_curves::Union{
         Nothing,
         IS.TimeSeriesKey,
         CostCurve{InputOutputCurve{PiecewiseLinearData}},
-    }
+    } = nothing
     "Bids for the ancillary services"
-    ancillary_services::Vector{Service}
-end
-
-function MarketBidCost(;
-    no_load_cost,
-    start_up,
-    shut_down,
-    incremental_offer_curves = nothing,
-    decremental_offer_curves = nothing,
-    ancillary_services = Vector{Service}(),
-)
-    MarketBidCost(
-        no_load_cost,
-        start_up,
-        shut_down,
-        incremental_offer_curves,
-        decremental_offer_curves,
-        ancillary_services,
-    )
+    ancillary_services::Vector{Service} = Vector{Service}()
 end
 
 # Constructor for demo purposes; non-functional.
@@ -65,9 +47,6 @@ function MarketBidCost(::Nothing)
         no_load_cost = 0.0,
         start_up = (hot = START_COST, warm = START_COST, cold = START_COST),
         shut_down = 0.0,
-        incremental_offer_curves = nothing,
-        decremental_offer_curves = nothing,
-        ancillary_services = Vector{Service}(),
     )
 end
 

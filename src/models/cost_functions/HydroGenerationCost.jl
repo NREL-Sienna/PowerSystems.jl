@@ -13,24 +13,15 @@ fuel curves to model specific water intake.
 - `variable::FuelCurve`: Production variable cost represented by a fuel curve, where the fuel is water.
 - `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost represenations this field can be duplicative.
 """
-mutable struct HydroGenerationCost <: OperationalCost
+@kwdef mutable struct HydroGenerationCost <: OperationalCost
     "variable cost"
-    variable::FuelCurve
+    variable::ProductionVariableCost
     "fixed cost"
     fixed::Float64
 end
 
-function HydroGenerationCost(; variable, fixed)
-    HydroGenerationCost(variable, fixed)
-end
-
 # Constructor for demo purposes; non-functional.
-function HydroGenerationCost(::Nothing)
-    HydroGenerationCost(;
-        variable = zero(FuelCurve),
-        fixed = 0.0,
-    )
-end
+HydroGenerationCost(::Nothing) = HydroGenerationCost(zero(FuelCurve), 0.0)
 
 """Get [`HydroGenerationCost`](@ref) `variable`."""
 get_variable(value::HydroGenerationCost) = value.variable

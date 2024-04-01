@@ -15,24 +15,15 @@ fixed and variable cost components.
 - `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost
   represenations this field can be duplicative.
 """
-mutable struct LoadCost <: OperationalCost
+@kwdef mutable struct LoadCost <: OperationalCost
     "variable cost"
     variable::CostCurve
     "fixed cost"
     fixed::Float64
 end
 
-function LoadCost(; variable, fixed)
-    LoadCost(variable, fixed)
-end
-
 # Constructor for demo purposes; non-functional.
-function LoadCost(::Nothing)
-    LoadCost(;
-        variable = zero(CostCurve),
-        fixed = 0.0,
-    )
-end
+LoadCost(::Nothing) = LoadCost(zero(CostCurve), 0.0)
 
 """Get [`ThermalGenerationCost`](@ref) `variable`."""
 get_variable(value::LoadCost) = value.variable

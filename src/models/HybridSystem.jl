@@ -47,7 +47,7 @@ function HybridSystem(;
     active_power = 0.0,
     reactive_power = 0.0,
     base_power = 100.0,
-    operation_cost = TwoPartCost(nothing),
+    operation_cost = StorageCost(nothing),  # TODO what is the best type for this?
     thermal_unit = nothing,
     electric_load = nothing,
     storage = nothing,
@@ -99,7 +99,7 @@ function HybridSystem(::Nothing)
         active_power = 0.0,
         reactive_power = 0.0,
         base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
+        operation_cost = StorageCost(nothing),
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
         storage = GenericBattery(nothing),

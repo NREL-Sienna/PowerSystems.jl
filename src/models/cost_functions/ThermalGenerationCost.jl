@@ -14,7 +14,7 @@ Data Structure Operational Cost Data which includes fixed, variable cost, multip
 - `start_up::Union{NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}, Float64}`: start-up cost can take linear of multi-stage costs
 - `shut_down::Float64`: cost of turning the unit offline.
 """
-mutable struct ThermalGenerationCost <: OperationalCost
+@kwdef mutable struct ThermalGenerationCost <: OperationalCost
     "variable cost"
     variable::ProductionVariableCost
     "fixed cost"
@@ -27,10 +27,6 @@ end
 
 ThermalGenerationCost(variable, fixed, start_up::Integer, shut_down) =
     ThermalGenerationCost(variable, fixed, convert(Float64, start_up), shut_down)
-
-function ThermalGenerationCost(; variable, fixed, start_up, shut_down)
-    ThermalGenerationCost(variable, fixed, start_up, shut_down)
-end
 
 # Constructor for demo purposes; non-functional.
 function ThermalGenerationCost(::Nothing)

@@ -12,26 +12,17 @@ curtailment Costs can be used to represent the loss of tax incentives.
 - `variable::CostCurve`: Variable cost.
 - `curtailment_cost::CostCurve`: Input/output cost of curtailing power.
 """
-mutable struct RenewableGenerationCost <: OperationalCost
+@kwdef mutable struct RenewableGenerationCost <: OperationalCost
     "variable cost"
     variable::CostCurve
     "curtailment cost"
-    curtailment_cost::CostCurve
+    curtailment_cost::CostCurve = zero(CostCurve)
 end
 
-function RenewableGenerationCost(
-    variable;
-    curtailment_cost = zero(CostCurve),
-)
-    RenewableGenerationCost(variable, curtailment_cost)
-end
+RenewableGenerationCost(variable) = RenewableGenerationCost(; variable)
 
 # Constructor for demo purposes; non-functional.
-function RenewableGenerationCost(::Nothing)
-    RenewableGenerationCost(;
-        variable = zero(CostCurve),
-    )
-end
+RenewableGenerationCost(::Nothing) = RenewableGenerationCost(zero(CostCurve))
 
 """Get [`RenewableGenerationCost`](@ref) `variable`."""
 get_variable(value::RenewableGenerationCost) = value.variable
