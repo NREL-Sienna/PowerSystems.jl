@@ -55,9 +55,10 @@ export get_x_coords
 export get_y_coords
 export get_c
 
-export ThermalGenerationCost
-export MarketBidCost
-export StorageCost
+export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export ProductionVariableCost, CostCurve, FuelCurve
+export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 
 export Generator
 export HydroGen
