@@ -322,7 +322,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = TwoPartCost(LinearFunctionData(0.0), 0.0)
+    curtailcost = HydroGenerationCost(zero(FuelCurve), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
@@ -349,9 +349,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = RenewableGenerationCost(;
-        variable = CostCurve(InputOutputCurve(LinearFunctionData(0.0))),
-    )
+    cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])

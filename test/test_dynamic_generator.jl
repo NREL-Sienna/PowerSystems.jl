@@ -27,7 +27,12 @@ static_gen = ThermalStandard(;
     reactive_power_limits = (min = -0.30, max = 0.30),
     time_limits = nothing,
     ramp_limits = nothing,
-    operation_cost = ThermalGenerationCost(LinearFunctionData(1400.0), 0.0, 4.0, 2.0),
+    operation_cost = ThermalGenerationCost(
+        CostCurve(InputOutputCurve(LinearFunctionData(1400.0))),
+        0.0,
+        4.0,
+        2.0,
+    ),
     base_power = 1.0,
 )
 
