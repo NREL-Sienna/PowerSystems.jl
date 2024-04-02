@@ -90,13 +90,13 @@ end
                 @assert get_variable(mpgen_cost) isa
                         CostCurve{InputOutputCurve{PiecewiseLinearData}}
                 mp_points = get_points(
-                    PSY.get_function_data(PSY.get_value_curve(
-                            get_variable(mpgen_cost))),
+                    get_function_data(get_value_curve(
+                        get_variable(mpgen_cost))),
                 )
                 if length(mp_points) == 4
                     cdm_points = get_points(
-                        PSY.get_function_data(
-                            PSY.get_value_curve(
+                        get_function_data(
+                            get_value_curve(
                                 get_variable(get_operation_cost(cdmgen))),
                         ),
                     )

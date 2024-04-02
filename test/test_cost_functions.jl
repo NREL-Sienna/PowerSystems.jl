@@ -2,7 +2,7 @@
     # InputOutputCurve
     io_quadratic = InputOutputCurve(QuadraticFunctionData(3, 2, 1))
     @test io_quadratic isa InputOutputCurve{QuadraticFunctionData}
-    @test PSY.get_function_data(io_quadratic) == QuadraticFunctionData(3, 2, 1)
+    @test get_function_data(io_quadratic) == QuadraticFunctionData(3, 2, 1)
     @test IncrementalCurve(io_quadratic) ==
           IncrementalCurve(LinearFunctionData(6, 2), 1.0)
     @test AverageRateCurve(io_quadratic) ==
@@ -12,7 +12,7 @@
 
     io_linear = InputOutputCurve(LinearFunctionData(2, 1))
     @test io_linear isa InputOutputCurve{LinearFunctionData}
-    @test PSY.get_function_data(io_linear) == LinearFunctionData(2, 1)
+    @test get_function_data(io_linear) == LinearFunctionData(2, 1)
     @test InputOutputCurve{QuadraticFunctionData}(io_linear) ==
           InputOutputCurve(QuadraticFunctionData(0, 2, 1))
     @test IncrementalCurve(io_linear) ==
@@ -22,7 +22,7 @@
 
     io_piecewise = InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test io_piecewise isa InputOutputCurve{PiecewiseLinearData}
-    @test PSY.get_function_data(io_piecewise) ==
+    @test get_function_data(io_piecewise) ==
           PiecewiseLinearData([(1, 6), (3, 9), (5, 13)])
     @test IncrementalCurve(io_piecewise) ==
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
@@ -32,8 +32,8 @@
     # IncrementalCurve
     inc_linear = IncrementalCurve(LinearFunctionData(6, 2), 1.0)
     @test inc_linear isa IncrementalCurve{LinearFunctionData}
-    @test PSY.get_function_data(inc_linear) == LinearFunctionData(6, 2)
-    @test PSY.get_initial_input(inc_linear) == 1
+    @test get_function_data(inc_linear) == LinearFunctionData(6, 2)
+    @test get_initial_input(inc_linear) == 1
     @test InputOutputCurve(inc_linear) ==
           InputOutputCurve(QuadraticFunctionData(3, 2, 1))
     @test InputOutputCurve(IncrementalCurve(LinearFunctionData(0, 2), 1.0)) ==
@@ -45,8 +45,8 @@
 
     inc_piecewise = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test inc_piecewise isa IncrementalCurve{PiecewiseStepData}
-    @test PSY.get_function_data(inc_piecewise) == PiecewiseStepData([1, 3, 5], [1.5, 2])
-    @test PSY.get_initial_input(inc_piecewise) == 6
+    @test get_function_data(inc_piecewise) == PiecewiseStepData([1, 3, 5], [1.5, 2])
+    @test get_initial_input(inc_piecewise) == 6
     @test InputOutputCurve(inc_piecewise) ==
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test AverageRateCurve(inc_piecewise) ==
@@ -55,8 +55,8 @@
     # AverageRateCurve
     ar_linear = AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test ar_linear isa AverageRateCurve{LinearFunctionData}
-    @test PSY.get_function_data(ar_linear) == LinearFunctionData(3, 2)
-    @test PSY.get_initial_input(ar_linear) == 1
+    @test get_function_data(ar_linear) == LinearFunctionData(3, 2)
+    @test get_initial_input(ar_linear) == 1
     @test InputOutputCurve(ar_linear) ==
           InputOutputCurve(QuadraticFunctionData(3, 2, 1))
     @test InputOutputCurve(AverageRateCurve(LinearFunctionData(0, 2), 1.0)) ==
@@ -67,8 +67,8 @@
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
 
     ar_piecewise = AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
-    @test PSY.get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
-    @test PSY.get_initial_input(ar_piecewise) == 6
+    @test get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
+    @test get_initial_input(ar_piecewise) == 6
     @test InputOutputCurve(ar_piecewise) ==
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test IncrementalCurve(ar_piecewise) ==
@@ -97,9 +97,9 @@ end
     fc = FuelCurve(InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
     # TODO also test fuel curves with time series
 
-    @test PSY.get_value_curve(cc) == InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
-    @test PSY.get_value_curve(fc) == InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
-    @test PSY.get_fuel_cost(fc) == 4
+    @test get_value_curve(cc) == InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+    @test get_value_curve(fc) == InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3))
+    @test get_fuel_cost(fc) == 4
 
     @test IS.serialize(cc) isa AbstractDict
     @test IS.serialize(fc) isa AbstractDict
