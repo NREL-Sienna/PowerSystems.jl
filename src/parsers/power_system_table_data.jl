@@ -1158,7 +1158,7 @@ function make_hydro_generator(
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
         operation_cost =
-            ThermalGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed, 0.0, 0.0)
+            HydroGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed)
 
         if gen_type == HydroEnergyReservoir
             @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
@@ -1280,8 +1280,8 @@ function make_renewable_generator(
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
-    operation_cost =
-        ThermalGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed, 0.0, 0.0)
+    @assert fixed == 0 "RenewableGenerationCost cannot have a fixed cost, got $fixed with variable cost $varcost"
+    operation_cost = RenewableGenerationCost(CostCurve(InputOutputCurve(var_cost)))
 
     if gen_type == RenewableDispatch
         @debug "Creating $(gen.name) as RenewableDispatch" _group = IS.LOG_GROUP_PARSING

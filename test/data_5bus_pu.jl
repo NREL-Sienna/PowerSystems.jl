@@ -484,8 +484,8 @@ hydro_generators5(nodes5) = [
         storage_capacity = 1.0,
         inflow = 0.2,
         initial_storage = 0.5,
-        operation_cost = RenewableGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(15.0))),
+        operation_cost = HydroGenerationCost(
+            CostCurve(InputOutputCurve(LinearFunctionData(15.0))), 0.0,
         ),
     ),
 ];

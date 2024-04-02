@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         prime_mover_type::PrimeMovers
         reactive_power_limits::Union{Nothing, MinMax}
         power_factor::Float64
-        operation_cost::OperationalCost
+        operation_cost::Union{RenewableGenerationCost, MarketBidCost}
         base_power::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -37,7 +37,7 @@ This file is auto-generated. Do not edit.
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{RenewableGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
@@ -59,7 +59,7 @@ mutable struct RenewableDispatch <: RenewableGen
     reactive_power_limits::Union{Nothing, MinMax}
     power_factor::Float64
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    operation_cost::Union{RenewableGenerationCost, MarketBidCost}
     "Base power of the unit in MVA"
     base_power::Float64
     "Services that this device contributes to"

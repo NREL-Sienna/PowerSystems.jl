@@ -17,7 +17,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     active_power::Float64
     reactive_power::Float64
     base_power::Float64
-    operation_cost::OperationalCost
+    operation_cost::MarketBidCost
     thermal_unit::Union{Nothing, ThermalGen}
     electric_load::Union{Nothing, ElectricLoad}
     storage::Union{Nothing, Storage}
@@ -47,7 +47,7 @@ function HybridSystem(;
     active_power = 0.0,
     reactive_power = 0.0,
     base_power = 100.0,
-    operation_cost = StorageCost(nothing),  # TODO what is the best type for this?
+    operation_cost = MarketBidCost(nothing),
     thermal_unit = nothing,
     electric_load = nothing,
     storage = nothing,
@@ -99,7 +99,7 @@ function HybridSystem(::Nothing)
         active_power = 0.0,
         reactive_power = 0.0,
         base_power = 100.0,
-        operation_cost = StorageCost(nothing),
+        operation_cost = MarketBidCost(nothing),
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
         storage = GenericBattery(nothing),
