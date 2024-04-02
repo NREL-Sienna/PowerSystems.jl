@@ -606,9 +606,9 @@ include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
 
 # Costs
-include("models/operational_cost.jl")
 include("models/cost_functions/ValueCurves.jl")
 include("models/cost_functions/variable_cost.jl")
+include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
 include("models/cost_functions/LoadCost.jl")
