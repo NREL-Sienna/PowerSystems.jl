@@ -815,38 +815,54 @@ function calculate_variable_cost(
 )
     fuel_cost = gen.fuel_price / 1000.0
 
-    isnothing(gen.variable_cost) ||
-        error(
-            "Cannot combine non-fuel-based `variable_cost` with fuel-based cost currently being parsed",
-        )
+    vom = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost
 
-    var_cost =
-        [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames.columns]
-    var_cost = unique([
-        (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
-        c in var_cost if !in(nothing, c)
-    ])
-    var_cost = [
-        (
-            (var_cost[i][1]),
-            (var_cost[i][2] .* gen.active_power_limits_max .* base_power),
-        ) for i in 1:length(var_cost)
-    ]
-    isempty(var_cost) &&
-        @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
+    if fuel_cost > 0.0
+        var_cost =
+            [(getfield(gen, hr), getfield(gen, mw)) for (hr, mw) in cost_colnames.columns]
+        var_cost = unique([
+            (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
+            c in var_cost if !in(nothing, c)
+        ])
+        if isempty(var_cost)
+            @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
+        end
+    else
+        var_cost = [(0.0, 0.0)]
+    end
 
     if length(var_cost) > 1
-        initial_rate, initial_output = var_cost[1]
-        var_cost = IncrementalCurve(
-            PiecewiseLinearData([(x, y) for (y, x) in var_cost[2:end]]),
-            initial_rate * initial_output,
+        var_cost[2:end] = [
+            (
+                (
+                    var_cost[i][1] * fuel_cost * (var_cost[i][2] - var_cost[i - 1][2]) +
+                    var_cost[i][2] * vom
+                ),
+                var_cost[i][2],
+            ) .* gen.active_power_limits_max .* base_power for i in 2:length(var_cost)
+        ]
+        var_cost[1] =
+            ((var_cost[1][1] * fuel_cost + vom) * var_cost[1][2], var_cost[1][2]) .*
+            gen.active_power_limits_max .* base_power
+
+        fixed = max(
+            0.0,
+            var_cost[1][1] -
+            (var_cost[2][1] / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
+        var_cost[1] = (var_cost[1][1] - fixed, var_cost[1][2])
+
+        for i in 2:length(var_cost)
+            var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
+        end
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
+
     elseif length(var_cost) == 1
-        # if there is only one point, use it to determine the constant fuel/MW cost
-        var_cost = AverageRateCurve(LinearFunctionData(0, var_cost[1][1]), 0.0)
+        # if there is only one point, use it to determine the constant $/MW cost
+        var_cost = LinearFunctionData(var_cost[1][1] * fuel_cost + vom)
+        fixed = 0.0
     end
-    # @show FuelCurve(var_cost, fuel_cost)  # TODO test correctness of this conversion
-    return FuelCurve(var_cost, fuel_cost)
+    return var_cost, fixed, fuel_cost
 end
 
 function calculate_variable_cost(
@@ -862,28 +878,28 @@ function calculate_variable_cost(
         (tryparse(Float64, string(c[1])), tryparse(Float64, string(c[2]))) for
         c in var_cost if !in(nothing, c)
     ])
+
     var_cost = [
         (
             (var_cost[i][1] + vom),
             (var_cost[i][2] .* gen.active_power_limits_max .* base_power),
         ) for i in 1:length(var_cost)
     ]
-    isempty(var_cost) &&
-        @warn "Unable to calculate variable cost for $(gen.name)" var_cost maxlog = 5
 
     if length(var_cost) > 1
-        @warn "# TODO verify that this is the correct treatment"
-        initial_rate, initial_output = var_cost[1]
-        var_cost = IncrementalCurve(
-            PiecewiseLinearData([(x, y) for (y, x) in var_cost[2:end]]),
-            initial_rate * initial_output,
+        fixed = max(
+            0.0,
+            var_cost[1][1] -
+            (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
+        var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
     elseif length(var_cost) == 1
-        # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = AverageRateCurve(LinearFunctionData(0, var_cost[1][1]), 0.0)
+        var_cost = LinearFunctionData(var_cost[1][1])
+        fixed = 0.0
     end
 
-    return CostCurve(var_cost)
+    return var_cost, fixed, 0.0
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
@@ -985,10 +1001,15 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     fuel = parse_enum_mapping(ThermalFuels, gen.fuel)
 
     base_power = gen.base_mva
-    var_cost = calculate_variable_cost(data, gen, cost_colnames, base_power)
-    # HEERE
-    startup_cost, shutdown_cost = calculate_uc_cost(data, gen, get_fuel_cost(var_cost))
-    op_cost = ThermalGenerationCost(var_cost, 0.0, startup_cost, shutdown_cost)  # No separate fixed cost, it is included in var_cost
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
+    startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
+    op_cost = ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed,
+        startup_cost,
+        shutdown_cost,
+    )
 
     gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
     if !isa(gen_must_run, Bool)
@@ -1025,7 +1046,18 @@ function make_thermal_generator_multistart(
 
     @debug "Making ThermalMultiStart" _group = IS.LOG_GROUP_PARSING gen.name
     base_power = get_base_power(thermal_gen)
-    var_cost = calculate_variable_cost(data, gen, cost_colnames, base_power)
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
+    if var_cost isa LinearFunctionData
+        no_load_cost = 0.0
+    else
+        (no_load_x, no_load_cost) = first(var_cost)
+        @warn "Strange math occurring here (part 1)"
+        var_cost =
+            PiecewiseLinearData([
+                (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
+            ])
+    end
     lag_hot =
         if isnothing(gen.hot_start_time)
             get_time_limits(thermal_gen).down
@@ -1042,7 +1074,7 @@ function make_thermal_generator_multistart(
     hot_start_cost = isnothing(gen.hot_start_cost) ? gen.startup_cost : gen.hot_start_cost
     if isnothing(hot_start_cost)
         if hasfield(typeof(gen), :startup_heat_cold_cost)
-            hot_start_cost = gen.startup_heat_cold_cost * get_fuel_cost(var_cost) * 1000
+            hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
         else
             hot_start_cost = 0.0
             @warn "No hot_start_cost or startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
@@ -1059,8 +1091,13 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    op_cost =
-        ThermalGenerationCost(var_cost, 0.0, startup_cost, shutdown_cost)  # No separate fixed cost, it is included in var_cost
+    @warn "Strange math occurring here (part 2)"
+    ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed + no_load_cost,
+        startup_cost,
+        shutdown_cost,
+    )
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1118,8 +1155,10 @@ function make_hydro_generator(
         end
         storage = (head = head_dict[gen.name], tail = get(tail_dict, gen.name, nothing))
 
-        var_cost = calculate_variable_cost(data, gen, cost_colnames, base_power)
-        op_cost = ThermalGenerationCost(var_cost, 0.0, 0.0, 0.0)
+        var_cost, fixed, fuel_cost =
+            calculate_variable_cost(data, gen, cost_colnames, base_power)
+        operation_cost =
+            ThermalGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed, 0.0, 0.0)
 
         if gen_type == HydroEnergyReservoir
             @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
@@ -1137,7 +1176,7 @@ function make_hydro_generator(
                 reactive_power_limits = reactive_power_limits,
                 ramp_limits = ramp_limits,
                 time_limits = time_limits,
-                operation_cost = op_cost,
+                operation_cost = operation_cost,
                 base_power = base_power,
                 storage_capacity = storage.head.storage_capacity,
                 inflow = storage.head.input_active_power_limit_max,
@@ -1239,8 +1278,10 @@ function make_renewable_generator(
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
-    var_cost = calculate_variable_cost(data, gen, cost_colnames, base_power)
-    op_cost = ThermalGenerationCost(var_cost, 0.0, 0.0, 0.0)
+    var_cost, fixed, fuel_cost =
+        calculate_variable_cost(data, gen, cost_colnames, base_power)
+    operation_cost =
+        ThermalGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed, 0.0, 0.0)
 
     if gen_type == RenewableDispatch
         @debug "Creating $(gen.name) as RenewableDispatch" _group = IS.LOG_GROUP_PARSING
@@ -1254,7 +1295,7 @@ function make_renewable_generator(
             prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
             reactive_power_limits = reactive_power_limits,
             power_factor = gen.power_factor,
-            operation_cost = op_cost,
+            operation_cost = operation_cost,
             base_power = base_power,
         )
     elseif gen_type == RenewableFix

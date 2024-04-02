@@ -1,4 +1,3 @@
-
 import PowerSystems: LazyDictFromIterator
 
 @testset "PowerSystemTableData parsing" begin
@@ -86,14 +85,26 @@ end
                     @test cdmgen_val == mpgen_val
                 end
 
-                if length(mpgen.operation_cost.variable) == 4
-                    @test [
-                        isapprox(
-                            cdmgen.operation_cost.variable[i][1],
-                            mpgen.operation_cost.variable[i][1];
-                            atol = 0.1,
-                        ) for i in 1:4
-                    ] == [true, true, true, true]
+                mpgen_cost = get_operation_cost(mpgen)
+                # Currently true; this is likely to change in the future and then we'd have to change the test
+                @assert get_variable(mpgen_cost) isa
+                        CostCurve{InputOutputCurve{PiecewiseLinearData}}
+                mp_points = get_points(
+                    PSY.get_function_data(PSY.get_value_curve(
+                            get_variable(mpgen_cost))),
+                )
+                if length(mp_points) == 4
+                    cdm_points = get_points(
+                        PSY.get_function_data(
+                            PSY.get_value_curve(
+                                get_variable(get_operation_cost(cdmgen))),
+                        ),
+                    )
+                    @test all(
+                        isapprox.(
+                            [p.y for p in cdm_points], [p.y for p in mp_points],
+                            atol = 0.1),
+                    )
                     #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
                 end
             end
