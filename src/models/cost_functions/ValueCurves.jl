@@ -13,8 +13,9 @@ Can be used, for instance, in the representation of a [`CostCurve`][@ref] where 
 and `y` is \$/hr, or in the representation of a [`FuelCurve`][@ref] where `x` is MW and `y`
 is fuel/hr.
 """
-@kwdef struct InputOutputCurve{T} <: ValueCurve where {
-    T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}}
+@kwdef struct InputOutputCurve{
+    T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData},
+} <: ValueCurve
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
 end
@@ -26,8 +27,8 @@ where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`][@
 `x` is MW and `y` is fuel/MWh.
 """
 
-@kwdef struct IncrementalCurve{T} <: ValueCurve where {
-    T <: Union{LinearFunctionData, PiecewiseStepData}}
+@kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
+              ValueCurve
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
@@ -41,8 +42,8 @@ origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
 [`FuelCurve`][@ref] where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
-@kwdef struct AverageRateCurve{T} <: ValueCurve where {
-    T <: Union{LinearFunctionData, PiecewiseStepData}}
+@kwdef struct AverageRateCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
+              ValueCurve
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"

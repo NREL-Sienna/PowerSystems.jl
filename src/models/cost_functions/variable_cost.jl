@@ -15,7 +15,7 @@ Direct representation of the variable operation cost of a power plant in currenc
 of a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate
 data.
 """
-@kwdef struct CostCurve{T} <: ProductionVariableCost where {T <: ValueCurve}
+@kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCost
     "The underlying `ValueCurve` representation of this `ProductionVariableCost`"
     value_curve::T
 end
@@ -31,7 +31,7 @@ Representation of the variable operation cost of a power plant in terms of fuel 
 liters, m^3, etc.), coupled with a conversion factor between fuel and currency. Composed of
 a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate data.
 """
-@kwdef struct FuelCurve{T} <: ProductionVariableCost where {T <: ValueCurve}
+@kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCost
     "The underlying `ValueCurve` representation of this `ProductionVariableCost`"
     value_curve::T
     "Either a fixed value for fuel cost or the name of a fuel cost time series name"
