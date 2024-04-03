@@ -112,6 +112,13 @@ end
           FuelCurve(InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
     @test zero(FuelCurve) ==
           FuelCurve(InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
+
+    @test get_power_units(cc) == UnitSystem.NATURAL_UNITS
+    @test get_power_units(fc) == UnitSystem.NATURAL_UNITS
+    @test get_power_units(CostCurve(zero(InputOutputCurve), UnitSystem.SYSTEM_BASE)) ==
+          UnitSystem.SYSTEM_BASE
+    @test get_power_units(FuelCurve(zero(InputOutputCurve), UnitSystem.DEVICE_BASE, 1.0)) ==
+          UnitSystem.DEVICE_BASE
 end
 
 test_costs = Dict(
