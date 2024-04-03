@@ -619,18 +619,6 @@ reserve5(thermal_generators5) = [
     ),
 ]
 
-ordc5() = [
-    ReserveDemandCurve{ReserveUp}(
-        "test_ordc",
-        true,
-        0.6,
-        TwoPartCost(
-            [(0.0, 9000.0), (0.2, 6000.0), (0.4, 500.0), (0.6, 10.0), (0.8, 0.0)],  # TODO
-            0.0,
-        ),
-    ),
-]
-
 Iload_timeseries_DA = [
     [TimeArray(DayAhead, loadbus4_ts_DA)],
     [TimeArray(DayAhead + Day(1), loadbus4_ts_DA + 0.1 * rand(24))],
