@@ -274,11 +274,11 @@ function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uu
     if assign_new_uuids
         IS.assign_new_uuid!(sys)
         for component in get_components(Component, sys)
-            assign_new_uuid!(sys, component)
+            IS.assign_new_uuid!(sys, component)
         end
         for component in
             IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            assign_new_uuid!(sys, component)
+            IS.assign_new_uuid!(sys, component)
         end
         # Note: this does not change UUIDs for time series data because they are
         # shared with components.
@@ -317,6 +317,60 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
     bus_dict_gen = _parse_dyr_components(dyr_file)
     add_dyn_injectors!(sys, bus_dict_gen)
     return sys
+end
+
+"""
+Construct a System from a subsystem of an existing system.
+"""
+function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
+    if !in(subsystem, get_subsystems(sys))
+        error("subsystem = $subsystem is not stored")
+    end
+
+    # It would be faster to create an empty system and then populate it with
+    # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
+    # file (the result here will have deleted entries that need to repacked through
+    # serialization/de-serialization). That is not implemented because
+    # 1. The performance loss should not be too large.
+    # 2. We haven't yet implemented deepcopy(Component).
+    # 3. There is extra code complexity in adding copied components in the correct order
+    #    as well as copying time series data.
+    new_sys = deepcopy(sys)
+    filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
+
+    IS.assign_new_uuid!(new_sys)
+    for component in get_components(Component, new_sys)
+        IS.assign_new_uuid!(new_sys, component)
+    end
+
+    return new_sys
+end
+
+"""
+Filter out all components that are not part of the subsystem.
+"""
+function filter_components_by_subsystem!(
+    sys::System,
+    subsystem::AbstractString;
+    runchecks = true,
+)
+    component_uuids = get_component_uuids(sys, subsystem)
+    for component in get_components(Component, sys)
+        if !in(IS.get_uuid(component), component_uuids)
+            remove_component!(sys, component)
+        end
+    end
+
+    for component in IS.get_masked_components(Component, sys.data)
+        if !in(IS.get_uuid(component), component_uuids)
+            IS.remove_masked_component!(sys.data, component)
+        end
+    end
+
+    if runchecks
+        check(sys)
+        check_components(sys)
+    end
 end
 
 """
@@ -1023,7 +1077,7 @@ get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(
 """
 Change the UUID of a component.
 """
-assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
+IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -2098,10 +2152,24 @@ function handle_component_removal!(sys::System, device::Device)
     return
 end
 
+function handle_component_removal!(sys::System, component::RegulationDevice)
+    _handle_component_removal_common!(component)
+    IS.remove_masked_component!(sys.data, component.device)
+    return
+end
+
 function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
         _remove_service!(device, service)
+    end
+end
+
+function handle_component_removal!(sys::System, component::StaticInjectionSubsystem)
+    _handle_component_removal_common!(component)
+    subcomponents = collect(get_subcomponents(component))
+    for subcomponent in subcomponents
+        IS.remove_masked_component!(sys.data, subcomponent)
     end
 end
 
@@ -2250,7 +2318,7 @@ function convert_component!(
         InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
-    assign_new_uuid!(sys, line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -2295,7 +2363,7 @@ function convert_component!(
         InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
-    assign_new_uuid!(sys, line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -2329,7 +2397,7 @@ function convert_component!(
         supplemental_attributes_container = InfrastructureSystems.SupplementalAttributesContainer(),
         time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
-    assign_new_uuid!(sys, old_load)
+    IS.assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     # TODO: PSY4

@@ -422,6 +422,8 @@ export has_component
 export get_assigned_subsystems
 export has_subsystems
 export is_assigned_to_subsystem
+export from_subsystem
+export filter_components_by_subsystem!
 
 export set_runchecks!
 export check
