@@ -240,8 +240,8 @@ function _check_topological_consistency(sys::System, component::Component)
                 sys,
                 component,
                 val,
-                "A component must be assigned to the same subsystems as its topological component(s).";
-                symmetric_diff = true,
+                "A component must be assigned to at least one subsystem as its topological component(s).";
+                symmetric_diff = false,
             )
         end
     end
