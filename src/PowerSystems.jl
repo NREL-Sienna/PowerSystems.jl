@@ -55,6 +55,8 @@ export get_x_coords
 export get_y_coords
 
 export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export LinearCurve, QuadraticCurve
+export PiecewisePointCurve, PiecewiseSlopeCurve, PiecewiseAverageCurve
 export ProductionVariableCost, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
@@ -607,6 +609,7 @@ include("models/OuterControl.jl")
 
 # Costs
 include("models/cost_functions/ValueCurves.jl")
+include("models/cost_functions/cost_aliases.jl")
 include("models/cost_functions/variable_cost.jl")
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
