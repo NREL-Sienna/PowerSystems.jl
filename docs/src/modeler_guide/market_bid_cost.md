@@ -32,7 +32,7 @@ generator = ThermalStandard(
         time_limits = (up = 0.015, down = 0.015),
         ramp_limits = (up = 5.0, down = 3.0),
         operation_cost = MarketBidCost(
-            no_load = 0.0,
+            no_load_cost = 0.0,
             start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
             shut_down = 0.0,
         ),

@@ -13,5 +13,5 @@ For more details, see the documentation page for each type.
 | `QuadraticCurve` | Quadratic input-output curve, may have nonzero no-load cost | Quadratic, proportional, and constant terms of input-output curve | `QuadraticCurve(1.0, 1.0, 18.0)` |
 | `PiecewisePointCurve` | Piecewise linear curve specified by cost values at production points | Vector of (production, cost) pairs | `PiecewisePointCurve([(1.0, 20.), (2.0, 24.0), (3.0, 30.0)])` |
 | `PiecewiseSlopeCurve` | Piecewise linear curve specified by marginal rates (slopes) between production points, may have nonzero initial value | Cost at minimum production point, vector of $n$ production points, vector of $n-1$ marginal rates/slopes of the curve segments between the points | `PiecewiseSlopeCurve(20., [1.0, 2.0, 3.0], [4.0, 6.0])` |
-| `PiecewiseAverageCurve` | Piecewise linear curve specified by average rates between production points, may have nonzero initial value | Cost at minimum production point, vector of $n$ production points, vector of average rates at the $n-1$ latter points | `PiecewiseAverageCurve(20., [1.0, 2.0, 3.0], [12.0, 10.0])` |
+| `PiecewiseAverageCurve` | Piecewise linear curve specified by average rates between production points, may have nonzero initial value | Vector of (production, average rate) pairs | `PiecewiseAverageCurve([(1., 20.), (2., 12.), (3., 10.)])` |
 

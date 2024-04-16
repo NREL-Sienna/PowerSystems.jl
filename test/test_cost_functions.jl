@@ -92,6 +92,20 @@
     @test zero(PSY.ValueCurve) == InputOutputCurve(LinearFunctionData(0, 0))
 end
 
+@testset "Test cost aliases" begin
+      @test LinearCurve(3.0) == InputOutputCurve(LinearFunctionData(3.0, 0.0))
+      @test LinearCurve(3.0, 5.0) == InputOutputCurve(LinearFunctionData(3.0, 5.0))
+      @test QuadraticCurve(1.0, 1.0, 18.0) ==
+            InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
+      @test PiecewisePointCurve([(1.0, 20.), (2.0, 24.0), (3.0, 30.0)]) ==
+            InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
+      @test PiecewiseSlopeCurve(20., [1.0, 2.0, 3.0], [4.0, 6.0]) ==
+            IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
+      @test PiecewiseAverageCurve([(1., 20.), (2., 12.), (3., 10.)]) ==
+            AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
+
+end
+
 @testset "Test CostCurve and FuelCurve" begin
     cc = CostCurve(InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)))
     fc = FuelCurve(InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
