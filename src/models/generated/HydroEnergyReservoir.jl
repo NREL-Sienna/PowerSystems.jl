@@ -21,7 +21,7 @@ This file is auto-generated. Do not edit.
         storage_capacity::Float64
         inflow::Float64
         initial_storage::Float64
-        operation_cost::Union{HydroGenerationCost, MarketBidCost}
+        operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         storage_target::Float64
         conversion_factor::Float64
         time_at_status::Float64
@@ -51,7 +51,7 @@ This file is auto-generated. Do not edit.
 - `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `time_at_status::Float64`
@@ -87,7 +87,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     "Initial storage capacity in the reservoir (units can be p.u-hr or m^3)."
     initial_storage::Float64
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::Union{HydroGenerationCost, MarketBidCost}
+    operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Storage target at the end of simulation as ratio of storage capacity."
     storage_target::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."

@@ -2943,7 +2943,7 @@
                 {
                     "name": "operation_cost",
                     "null_value": "HydroGenerationCost(nothing)",
-                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
@@ -3373,7 +3373,7 @@
                 {
                     "name": "operation_cost",
                     "null_value": "HydroGenerationCost(nothing)",
-                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },

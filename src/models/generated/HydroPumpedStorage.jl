@@ -28,7 +28,7 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         initial_storage::UpDown
         storage_target::UpDown
-        operation_cost::Union{HydroGenerationCost, MarketBidCost}
+        operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         pump_efficiency::Float64
         conversion_factor::Float64
         time_at_status::Float64
@@ -65,7 +65,7 @@ This file is auto-generated. Do not edit.
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `time_at_status::Float64`
@@ -113,7 +113,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
     storage_target::UpDown
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::Union{HydroGenerationCost, MarketBidCost}
+    operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Efficiency of pump"
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."

@@ -11,6 +11,8 @@ get_power_units(cost::ProductionVariableCost) = cost.power_units
 get_function_data(cost::ProductionVariableCost) = get_function_data(get_value_curve(cost))
 "Get the `initial_input` field of this `ProductionVariableCost`'s `ValueCurve` (not defined for input-output data)"
 get_initial_input(cost::ProductionVariableCost) = get_initial_input(get_value_curve(cost))
+"Calculate the convexity of the underlying data"
+is_convex(cost::ProductionVariableCost) = is_convex(get_value_curve(cost))
 
 """
 Direct representation of the variable operation cost of a power plant in currency. Composed

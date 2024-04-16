@@ -26,7 +26,6 @@ cost: `y = f'(x)`. Can be used, for instance, in the representation of a [`CostC
 where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`][@ref] where
 `x` is MW and `y` is fuel/MWh.
 """
-
 @kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
               ValueCurve
     "The underlying `FunctionData` representation of this `ValueCurve`"
@@ -165,3 +164,9 @@ function InputOutputCurve(data::AverageRateCurve{PiecewiseStepData})
 end
 
 IncrementalCurve(data::AverageRateCurve) = IncrementalCurve(InputOutputCurve(data))
+
+
+# CALCULATIONS
+is_convex(curve::InputOutputCurve) = is_convex(get_function_data(curve))
+"Calculate the convexity of the underlying data"
+is_convex(curve::ValueCurve) = is_convex(InputOutputCurve(curve))

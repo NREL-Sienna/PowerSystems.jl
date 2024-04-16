@@ -1,9 +1,9 @@
 """
     mutable struct MarketBidCost <: OperationalCost
-        no_load::Float64
+        no_load_cost::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
-        incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
+        incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}  # TODO update docs given struct
         decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
         ancillary_services::Vector{Service}
     end
@@ -12,7 +12,7 @@ Data Structure Operational Cost to reflect market bids of energy and ancilliary 
 Compatible with most US Market bidding mechanisms that support demand and generation side.
 
 # Arguments
-- `no_load::Float64`: no load cost
+- `no_load_cost::Float64`: no load cost
 - `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Sell Offer Curves data, can be a time series or a fixed PiecewiseLinearData
@@ -89,7 +89,7 @@ get_decremental_offer_curves(value::MarketBidCost) = value.incremental_offer_cur
 get_ancillary_services(value::MarketBidCost) = value.ancillary_services
 
 """Set [`MarketBidCost`](@ref) `no_load_cost`."""
-set_no_load_cost!(value::MarketBidCost, val) = value.no_load = val
+set_no_load_cost!(value::MarketBidCost, val) = value.no_load_cost = val
 """Set [`MarketBidCost`](@ref) `start_up`."""
 set_start_up!(value::MarketBidCost, val) = value.start_up = val
 """Set [`MarketBidCost`](@ref) `shut_down`."""
