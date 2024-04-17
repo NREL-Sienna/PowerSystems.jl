@@ -61,12 +61,12 @@ have nonzero initial value.
 - `slopes::Float64`: vector of `n-1` marginal rates/slopes of the curve segments between
   the points
 """
-const PiecewiseSlopeCurve = IncrementalCurve{PiecewiseStepData}
+const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
 
 IncrementalCurve{PiecewiseStepData}(initial_input, x_coords, slopes) =
     IncrementalCurve(PiecewiseStepData(x_coords, slopes), initial_input)
 
-get_slopes(curve::PiecewiseSlopeCurve) = get_y_coords(get_function_data(curve))
+get_slopes(curve::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(curve))
 
 """
 A piecewise linear curve specified by average rates between production points. May have
@@ -78,9 +78,7 @@ nonzero initial value.
 """
 const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
 
-function AverageRateCurve{PiecewiseStepData}(pairs)
-    x_coords, y_coords = zip(pairs...) .|> collect
-    return AverageRateCurve(PiecewiseStepData(x_coords, y_coords[2:end]), first(y_coords))
-end
+AverageRateCurve{PiecewiseStepData}(initial_input, x_coords, y_coords) =
+    AverageRateCurve(PiecewiseStepData(x_coords, y_coords), initial_input)
 
 # TODO documentation, more getters, custom printing so it always shows the type alias (like Vector does)

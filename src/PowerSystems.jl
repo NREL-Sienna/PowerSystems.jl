@@ -56,7 +56,7 @@ export get_y_coords
 
 export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
-export PiecewisePointCurve, PiecewiseSlopeCurve, PiecewiseAverageCurve
+export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCost, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost

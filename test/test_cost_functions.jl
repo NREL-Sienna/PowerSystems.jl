@@ -99,9 +99,9 @@ end
             InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
       @test PiecewisePointCurve([(1.0, 20.), (2.0, 24.0), (3.0, 30.0)]) ==
             InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
-      @test PiecewiseSlopeCurve(20., [1.0, 2.0, 3.0], [4.0, 6.0]) ==
+      @test PiecewiseIncrementalCurve(20., [1.0, 2.0, 3.0], [4.0, 6.0]) ==
             IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
-      @test PiecewiseAverageCurve([(1., 20.), (2., 12.), (3., 10.)]) ==
+      @test PiecewiseAverageCurve(20., [1.0, 2.0, 3.0], [12.0, 10.0]) ==
             AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
 
 end
