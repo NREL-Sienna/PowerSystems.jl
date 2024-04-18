@@ -1091,7 +1091,7 @@
         },
         {
             "struct_name": "Transformer2W",
-            "docstring": "The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
+            "docstring": "A 2-winding transformer that uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
             "fields": [
                 {
                     "null_value": "init",
@@ -3676,6 +3676,7 @@
         },
         {
             "struct_name": "RenewableDispatch",
+            "docstring": "A *downward-dispatchable* renewable (wind or solar) generator whose output is limited the value or profile in the rating argument, but can curtailed downwards to satisfy power system constraints. These generators can also participate reserves markets by holding  Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -3803,7 +3804,7 @@
         },
         {
             "struct_name": "RenewableFix",
-            "docstring": "Data Structure for fixed renewable generation technologies.",
+            "docstring": "A must-take renewable generator whose output is *fixed* the value or profile in the rating argument. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -3871,13 +3872,6 @@
                         "max": null
                     },
                     "validation_action": "warn"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
                 },
                 {
                     "name": "dynamic_injector",
