@@ -1,6 +1,6 @@
 @testset "Test JSON serialization of RTS data with RegulationDevice" begin
     sys = create_system_with_regulation_device()
-    sys2, result = validate_serialization(sys; time_series_read_only = false)
+    sys2, result = validate_serialization(sys)
     @test result
 
     # Ensure the time_series attached to the ThermalStandard got deserialized.
@@ -12,10 +12,11 @@
 end
 
 @testset "Test JSON serialization of RTS data with immutable time series" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys =
+        PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
-    @test_throws ErrorException clear_time_series!(sys2)
+    @test_throws ArgumentError clear_time_series!(sys2)
     # Full error checking is done in IS.
 end
 
@@ -244,12 +245,12 @@ end
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     set_name!(sys, "test_RTS_GMLC_sys")
     set_description!(sys, "test description")
-    @test !isempty(collect(IS.iterate_components_with_time_series(sys.data.components)))
+    @test !isempty(collect(IS.iterate_components_with_time_series(sys.data)))
     text = to_json(sys)
     sys2 = from_json(text, System)
-    exclude = Set([:time_series_container, :time_series_storage])
+    exclude = Set([:time_series_container, :time_series_manager])
     @test PSY.compare_values(sys2, sys, exclude = exclude)
-    @test isempty(collect(IS.iterate_components_with_time_series(sys2.data.components)))
+    @test isempty(collect(IS.iterate_components_with_time_series(sys2.data)))
 end
 
 @testset "Test serialization of component with shared time series" begin
@@ -291,7 +292,7 @@ end
             sys2, result = validate_serialization(sys)
             @test result
 
-            @test IS.get_num_time_series(sys2.data.time_series_storage) == 1
+            @test IS.get_num_time_series(sys2.data) == 1
             gen2 = get_component(ThermalStandard, sys2, "gen1")
             ts1b = get_time_series(SingleTimeSeries, gen2, "max_active_power")
             ts2b = get_time_series(SingleTimeSeries, gen2, "max_reactive_power")

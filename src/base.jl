@@ -416,12 +416,12 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolution = get_time_series_resolution(sys).value
+    resolutions = [x.value for x in list_time_series_resolutions(sys)]
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
         "frequency" => sys.frequency,
-        "time_series_resolution_milliseconds" => resolution,
+        "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
         "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
     )
@@ -434,16 +434,6 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     end
 
     @info "Serialized System metadata to $filename"
-end
-
-function Base.deepcopy(sys::System)
-    sys2 = Base.deepcopy_internal(sys, IdDict())
-    if sys.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
-        return sys2
-    end
-
-    IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
-    return sys2
 end
 
 IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
@@ -1318,7 +1308,7 @@ get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data
 """
 Return the total period covered by all forecasts.
 """
-get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
+#get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
 
 """
 Return the window count for all forecasts.
@@ -1341,9 +1331,13 @@ Return the interval for all forecasts.
 get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 
 """
-Return the resolution for all time series.
+Return a sorted Vector of distinct resolutions for all time series of the given type
+(or all types).
 """
-get_time_series_resolution(sys::System) = IS.get_time_series_resolution(sys.data)
+list_time_series_resolutions(
+    sys::System;
+    time_series_type::Union{Type{<:TimeSeriesData}, Nothing} = nothing,
+) = IS.list_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
 Return an iterator of time series in order of initial time.

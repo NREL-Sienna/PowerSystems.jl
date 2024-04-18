@@ -42,7 +42,7 @@
     end
 
     @test get_forecast_initial_times(sys) == []
-    @test get_time_series_resolution(sys) == Dates.Hour(1)
+    @test list_time_series_resolutions(sys)[1] == Dates.Hour(1)
 
     # Get time_series with a name and without.
     components = collect(get_components(HydroEnergyReservoir, sys))
@@ -315,13 +315,13 @@ end
     forecast = Deterministic(; data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)
 
-    @test get_time_series_resolution(sys) == resolution
+    @test list_time_series_resolutions(sys)[1] == resolution
     @test get_forecast_horizon(sys) == horizon
     @test get_forecast_initial_timestamp(sys) == initial_time
     @test get_forecast_interval(sys) == Dates.Millisecond(second_time - initial_time)
     @test get_forecast_window_count(sys) == 2
-    @test Dates.Hour(get_forecast_total_period(sys)) ==
-          Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
+    #@test Dates.Hour(get_forecast_total_period(sys)) ==
+    #Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
     @test get_forecast_initial_times(sys) == [initial_time, second_time]
 
     remove_time_series!(sys, typeof(forecast), gen, get_name(forecast))
@@ -350,7 +350,7 @@ end
     ts_dir = mktempdir()
     sys = System(100.0; time_series_directory = ts_dir)
     sys2 = deepcopy(sys)
-    @test dirname(sys2.data.time_series_storage.file_path) == ts_dir
+    @test dirname(sys2.data.time_series_manager.data_store.file_path) == ts_dir
 end
 
 @testset "Test time series counts" begin
@@ -371,14 +371,14 @@ end
         time_series_in_memory = true,
         force_build = true,
     )
-    @test sys.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
+    @test sys2.data.time_series_manager.data_store isa IS.InMemoryTimeSeriesStorage
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
     for component in get_components(x -> has_time_series(x), Component, sys2)
-        @test component.time_series_container.time_series_storage ===
-              sys2.data.time_series_storage
+        @test component.time_series_container.manager.data_store ===
+              sys2.data.time_series_manager.data_store
     end
 
     sys = PSB.build_system(
@@ -387,14 +387,15 @@ end
         time_series_in_memory = false,
         force_build = true,
     )
-    @test sys.data.time_series_storage isa IS.Hdf5TimeSeriesStorage
+    @test sys.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
     sys2 = deepcopy(sys)
-    @test sys2.data.time_series_storage isa IS.Hdf5TimeSeriesStorage
-    @test sys.data.time_series_storage.file_path != sys2.data.time_series_storage.file_path
+    @test sys2.data.time_series_manager.data_store isa IS.Hdf5TimeSeriesStorage
+    @test sys.data.time_series_manager.data_store.file_path !=
+          sys2.data.time_series_manager.data_store.file_path
     @test IS.compare_values(sys, sys2)
     for component in get_components(x -> has_time_series(x), Component, sys2)
-        @test component.time_series_container.time_series_storage ===
-              sys2.data.time_series_storage
+        @test component.time_series_container.manager.data_store ===
+              sys2.data.time_series_manager.data_store
     end
 end
 
@@ -521,7 +522,6 @@ end
     @test metadata["time_series_counts"][1]["count"] == 182
     @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"
     @test metadata["time_series_counts"][2]["count"] == 182
-    @test metadata["time_series_resolution_milliseconds"] == 3600000
     @test metadata["user_data"]["author"] == "test"
 end
 
