@@ -37,7 +37,7 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
@@ -71,6 +71,7 @@ mutable struct AndersonFouadMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	ψq: q-axis stator flux,

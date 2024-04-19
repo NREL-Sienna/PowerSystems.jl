@@ -29,7 +29,7 @@ Data Structure for a proportional reserve product for system simulations.
 - `max_output_fraction::Float64`: the maximum fraction of the device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
 - `deployed_fraction::Float64`: Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
@@ -47,6 +47,7 @@ mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
     max_participation_factor::Float64
     "Fraction of ancillary services participation deployed from the assignment"
     deployed_fraction::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

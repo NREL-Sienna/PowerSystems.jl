@@ -50,7 +50,7 @@ Parameters of 12-states active power load based on the paper Dynamic Stability o
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `P_ref::Float64`: Reference active power parameter
 - `Q_ref::Float64`: Reference reactive power parameter
 - `V_ref::Float64`: Reference voltage parameter
@@ -102,6 +102,7 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     kic::Float64
     "Base power"
     base_power::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "Reference active power parameter"
     P_ref::Float64

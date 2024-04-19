@@ -36,7 +36,7 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 - `DB_l::Float64`: Deadband for underspeed, validation range: `(nothing, 0)`, action if invalid: `warn`
 - `T_rate::Float64`: Turbine Rate (MW). If zero, generator base is used., validation range: `(0, nothing)`, action if invalid: `warn`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
 	x_g2: Lead-lag state
@@ -65,6 +65,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     T_rate::Float64
     "Reference Power Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,

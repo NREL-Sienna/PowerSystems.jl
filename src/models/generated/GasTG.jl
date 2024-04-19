@@ -34,7 +34,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 - `V_lim::Tuple{Float64, Float64}`: Operational control limits on fuel valve opening (V_min, V_max)
 - `D_turb::Float64`: Speed damping coefficient of gas turbine rotor, validation range: `(0, 0.5)`
 - `P_ref::Float64`: Reference Load Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the GAST model are:
 	x_g1: Fuel valve opening,
 	x_g2: Fuel flow,
@@ -62,6 +62,7 @@ mutable struct GasTG <: TurbineGov
     D_turb::Float64
     "Reference Load Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the GAST model are:
 	x_g1: Fuel valve opening,

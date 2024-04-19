@@ -99,7 +99,7 @@ Parameters of the DERA1 model in PSS/E
 - `base_power::Float64`: Base power
 - `states::Vector{Symbol}`: The states of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: The states of AggregateDistributedGenerationA depends on the Flags
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AggregateDistributedGenerationA <: DynamicInjection
@@ -188,6 +188,7 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     states::Vector{Symbol}
     "The states of AggregateDistributedGenerationA depends on the Flags"
     n_states::Int
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

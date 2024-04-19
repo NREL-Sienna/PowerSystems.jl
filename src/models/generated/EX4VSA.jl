@@ -41,7 +41,7 @@ IEEE Excitation System for Voltage Security Assesment
 - `Te::Float64`: Exciter Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `E_lim::MinMax`: Voltage regulator limits (regulator output) (E_min, E_max)
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vll: Lead-lag internal state,
 	Vex: Exciter Output, 
@@ -76,6 +76,7 @@ mutable struct EX4VSA <: AVR
     E_lim::MinMax
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vll: Lead-lag internal state,

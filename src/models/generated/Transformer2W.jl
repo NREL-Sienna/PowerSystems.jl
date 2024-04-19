@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
+A 2-winding transformer that uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
 
 # Arguments
 - `name::String`
@@ -35,7 +35,7 @@ The 2-W transformer model uses an equivalent circuit assuming the impedance is o
 - `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -55,6 +55,7 @@ mutable struct Transformer2W <: ACBranch
     rate::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer

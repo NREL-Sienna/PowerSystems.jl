@@ -33,7 +33,7 @@ a HVDC T-Model DC line.
 - `active_power_limits_from::MinMax`
 - `active_power_limits_to::MinMax`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TModelHVDCLine <: DCBranch
@@ -51,6 +51,7 @@ mutable struct TModelHVDCLine <: DCBranch
     active_power_limits_to::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

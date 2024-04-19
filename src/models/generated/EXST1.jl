@@ -37,7 +37,7 @@ IEEE Type ST1 Excitation System (PTI version)
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vm: Sensed Terminal Voltage,
 	Vrll: Lead-Lag state,
@@ -69,6 +69,7 @@ mutable struct EXST1 <: AVR
     Tf::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vm: Sensed Terminal Voltage,

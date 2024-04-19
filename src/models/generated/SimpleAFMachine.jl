@@ -41,7 +41,7 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
@@ -73,6 +73,7 @@ mutable struct SimpleAFMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	eq_p: q-axis transient voltage,

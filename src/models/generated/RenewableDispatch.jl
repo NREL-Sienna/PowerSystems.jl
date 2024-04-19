@@ -25,7 +25,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-
+A *downward-dispatchable* renewable (wind or solar) generator whose output is limited the value or profile in the rating argument, but can curtailed downwards to satisfy power system constraints. These generators can also participate reserves markets by holding  Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref)
 
 # Arguments
 - `name::String`
@@ -41,7 +41,7 @@ This file is auto-generated. Do not edit.
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -66,6 +66,7 @@ mutable struct RenewableDispatch <: RenewableGen
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer

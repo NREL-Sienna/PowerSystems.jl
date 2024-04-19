@@ -51,7 +51,7 @@ Data structure for a standard load.
 - `max_current_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -78,6 +78,7 @@ mutable struct StandardLoad <: StaticLoad
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer

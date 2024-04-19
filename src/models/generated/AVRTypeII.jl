@@ -38,7 +38,7 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
@@ -71,6 +71,7 @@ mutable struct AVRTypeII <: AVR
     Be::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vf: Voltage field,

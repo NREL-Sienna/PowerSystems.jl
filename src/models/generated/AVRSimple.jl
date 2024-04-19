@@ -21,7 +21,7 @@ i.e. an integrator controller on EMF
 # Arguments
 - `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage
 - `n_states::Int`: Fixed AVR has 1 states
@@ -33,6 +33,7 @@ mutable struct AVRSimple <: AVR
     Kv::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vf: field voltage"

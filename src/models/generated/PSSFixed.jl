@@ -17,7 +17,7 @@ Parameters of a PSS that returns a fixed voltage to add to the reference for the
 
 # Arguments
 - `V_pss::Float64`: Fixed voltage stabilization signal, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`
 - `n_states::Int`: PSSFixed has no states
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -25,6 +25,7 @@ Parameters of a PSS that returns a fixed voltage to add to the reference for the
 mutable struct PSSFixed <: PSS
     "Fixed voltage stabilization signal"
     V_pss::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     states::Vector{Symbol}
     "PSSFixed has no states"

@@ -16,13 +16,14 @@ Parameters of Instantaneous (Square) Current Controller Limiter. Regulates inver
 # Arguments
 - `Id_max::Float64`: Maximum limit on d-axis current controller input current (device base), validation range: `(0, nothing)`
 - `Iq_max::Float64`: Maximum limit on d-axis current controller input current (device base), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 """
 mutable struct InstantaneousOutputCurrentLimiter <: OutputCurrentLimiter
     "Maximum limit on d-axis current controller input current (device base)"
     Id_max::Float64
     "Maximum limit on d-axis current controller input current (device base)"
     Iq_max::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
 end
 

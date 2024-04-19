@@ -28,7 +28,7 @@ A power-system DC bus.
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the DC bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -47,6 +47,7 @@ mutable struct DCBus <: Bus
     area::Union{Nothing, Area}
     "the load zone containing the DC bus"
     load_zone::Union{Nothing, LoadZone}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "container for supplemental attributes"
     supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer

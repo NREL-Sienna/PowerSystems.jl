@@ -37,7 +37,7 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 - `base_power::Float64`: Base power
 - `states::Vector{Symbol}`: State for time, voltage and angle
 - `n_states::Int`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PeriodicVariableSource <: DynamicInjection
@@ -63,6 +63,7 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     "State for time, voltage and angle"
     states::Vector{Symbol}
     n_states::Int
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

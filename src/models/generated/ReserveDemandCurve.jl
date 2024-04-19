@@ -29,7 +29,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 - `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
 - `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
 - `deployed_fraction::Float64`: Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -47,6 +47,7 @@ mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     max_participation_factor::Float64
     "Fraction of ancillary services participation deployed from the assignment"
     deployed_fraction::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer

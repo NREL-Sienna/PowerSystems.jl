@@ -21,7 +21,7 @@ This file is auto-generated. Do not edit.
 - `name::String`
 - `available::Bool`
 - `requirement::Float64`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -30,6 +30,7 @@ mutable struct Transfer <: Service
     name::String
     available::Bool
     requirement::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer

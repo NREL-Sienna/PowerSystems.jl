@@ -101,7 +101,7 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `base_power::Float64`: Base power
 - `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
 - `n_states::Int`: The states of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct GenericDER <: DynamicInjection
@@ -192,6 +192,7 @@ mutable struct GenericDER <: DynamicInjection
     states::Vector{Symbol}
     "The states of GenericDER depend on the Flags"
     n_states::Int
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

@@ -53,7 +53,7 @@ Parameters of 5 mass-spring shaft model.
 - `K_ip::Float64`: Intermediate pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_lp::Float64`: Low pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_ex::Float64`: Exciter angle coefficient, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	δ: rotor angle,
 	ω: rotor speed,
@@ -105,6 +105,7 @@ mutable struct FiveMassShaft <: Shaft
     K_lp::Float64
     "Exciter angle coefficient"
     K_ex::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	δ: rotor angle,

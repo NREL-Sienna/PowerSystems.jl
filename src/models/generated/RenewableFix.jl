@@ -15,7 +15,6 @@ This file is auto-generated. Do not edit.
         prime_mover_type::PrimeMovers
         power_factor::Float64
         base_power::Float64
-        services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -23,7 +22,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for fixed renewable generation technologies.
+A must-take renewable generator whose output is *fixed* the value or profile in the rating argument. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)
 
 # Arguments
 - `name::String`
@@ -35,9 +34,8 @@ Data Structure for fixed renewable generation technologies.
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
@@ -55,10 +53,9 @@ mutable struct RenewableFix <: RenewableGen
     power_factor::Float64
     "Base power of the unit in MVA"
     base_power::Float64
-    "Services that this device contributes to"
-    services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "internal time_series storage"
     time_series_container::InfrastructureSystems.TimeSeriesContainer
@@ -68,12 +65,12 @@ mutable struct RenewableFix <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,7 +85,6 @@ function RenewableFix(::Nothing)
         prime_mover_type=PrimeMovers.OT,
         power_factor=1.0,
         base_power=0.0,
-        services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
         time_series_container=InfrastructureSystems.TimeSeriesContainer(),
@@ -114,8 +110,6 @@ get_prime_mover_type(value::RenewableFix) = value.prime_mover_type
 get_power_factor(value::RenewableFix) = value.power_factor
 """Get [`RenewableFix`](@ref) `base_power`."""
 get_base_power(value::RenewableFix) = value.base_power
-"""Get [`RenewableFix`](@ref) `services`."""
-get_services(value::RenewableFix) = value.services
 """Get [`RenewableFix`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
 """Get [`RenewableFix`](@ref) `ext`."""
@@ -143,8 +137,6 @@ set_prime_mover_type!(value::RenewableFix, val) = value.prime_mover_type = val
 set_power_factor!(value::RenewableFix, val) = value.power_factor = val
 """Set [`RenewableFix`](@ref) `base_power`."""
 set_base_power!(value::RenewableFix, val) = value.base_power = val
-"""Set [`RenewableFix`](@ref) `services`."""
-set_services!(value::RenewableFix, val) = value.services = val
 """Set [`RenewableFix`](@ref) `ext`."""
 set_ext!(value::RenewableFix, val) = value.ext = val
 """Set [`RenewableFix`](@ref) `time_series_container`."""

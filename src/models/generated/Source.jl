@@ -35,7 +35,7 @@ This struct acts as an infinity bus.
 - `internal_angle::Float64`: Internal Angle
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Source <: StaticInjection
@@ -56,6 +56,7 @@ mutable struct Source <: StaticInjection
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

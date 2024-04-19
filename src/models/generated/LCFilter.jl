@@ -20,7 +20,7 @@ Parameters of a LCL filter outside the converter
 - `lf::Float64`: filter inductance, validation range: `(0, nothing)`
 - `rf::Float64`: filter resistance, validation range: `(0, nothing)`
 - `cf::Float64`: filter capacitance, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the LCFilter model are:
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
@@ -33,6 +33,7 @@ mutable struct LCFilter <: Filter
     rf::Float64
     "filter capacitance"
     cf::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the LCFilter model are:
 	ir_filter: Real current out of the filter,

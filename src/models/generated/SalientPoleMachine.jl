@@ -39,7 +39,7 @@ IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 - `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`
 - `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `γ_d1::Float64`: γ_d1 parameter
 - `γ_q1::Float64`: γ_q1 parameter
 - `γ_d2::Float64`: γ_d2 parameter
@@ -71,6 +71,7 @@ mutable struct SalientPoleMachine <: Machine
     Xl::Float64
     "Saturation factor at 1 and 1.2 pu flux: Se(eq_p) = B(eq_p-A)^2"
     Se::Tuple{Float64, Float64}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "γ_d1 parameter"
     γ_d1::Float64

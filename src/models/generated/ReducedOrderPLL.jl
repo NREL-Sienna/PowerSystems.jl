@@ -22,7 +22,7 @@ Parameters of a Phase-Locked Loop (PLL) based on Purba, Dhople, Jafarpour, Bullo
 - `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`
 - `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`
 - `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ReducedOrderPLL model are:
 	vq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),
 	ε_pll: Integrator state of the PI controller,
@@ -36,6 +36,7 @@ mutable struct ReducedOrderPLL <: FrequencyEstimator
     kp_pll::Float64
     "PLL integral gain"
     ki_pll::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ReducedOrderPLL model are:
 	vq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),

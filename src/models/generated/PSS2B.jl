@@ -68,7 +68,7 @@ IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 - `Vs1_lim::Tuple{Float64, Float64}`: First input limits `(Vs1_min, Vs1_max)`
 - `Vs2_lim::Tuple{Float64, Float64}`: Second input limits `(Vs2_min, Vs2_max)`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
@@ -144,6 +144,7 @@ mutable struct PSS2B <: PSS
     Vs2_lim::Tuple{Float64, Float64}
     "PSS output limits `(Vst_min, Vst_max)`"
     Vst_lim::Tuple{Float64, Float64}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st washout 1st input, 

@@ -80,7 +80,7 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `Xcomp::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
 - `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `hysteresis_binary_logic::Int`: Hysteresis memory variable
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
@@ -170,6 +170,7 @@ mutable struct PSS2C <: PSS
     Tcomp::Float64
     "Hysteresis memory variable"
     hysteresis_binary_logic::Int
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st washout 1st input, 

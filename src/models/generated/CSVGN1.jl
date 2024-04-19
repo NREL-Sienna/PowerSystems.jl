@@ -41,7 +41,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `Vmin::Float64`: Minimum voltage in pu, validation range: `(0, nothing)`
 - `CBase::Float64`: Capacitor Mvar, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `R_th::Float64`: Source Thevenin resistance
 - `X_th::Float64`: Source Thevenin reactance
 - `states::Vector{Symbol}`: The states are:
@@ -75,6 +75,7 @@ mutable struct CSVGN1 <: DynamicInjection
     CBase::Float64
     "Base power"
     base_power::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "Source Thevenin resistance"
     R_th::Float64

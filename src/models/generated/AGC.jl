@@ -31,7 +31,7 @@ This file is auto-generated. Do not edit.
 - `delta_t::Float64`: PID Discretization period [Seconds]
 - `area::Union{Nothing, Area}`: the area controlled by the AGC
 - `initial_ace::Float64`: PID Discretization period [Seconds]
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct AGC <: Service
@@ -50,6 +50,7 @@ mutable struct AGC <: Service
     area::Union{Nothing, Area}
     "PID Discretization period [Seconds]"
     initial_ace::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal

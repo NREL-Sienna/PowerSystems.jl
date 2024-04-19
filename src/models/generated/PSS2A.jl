@@ -60,7 +60,7 @@ IEEE Dual-Input Stabilizer Model
 - `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
@@ -127,6 +127,7 @@ mutable struct PSS2A <: PSS
     T4::Float64
     "PSS output limits `(Vst_min, Vst_max)`"
     Vst_lim::Tuple{Float64, Float64}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st washout 1st input, 
