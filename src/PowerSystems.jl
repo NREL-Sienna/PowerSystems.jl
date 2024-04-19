@@ -454,7 +454,7 @@ import Logging
 import Dates
 import TimeSeries
 import DataFrames
-import DataStructures: OrderedDict
+import DataStructures: OrderedDict, SortedDict
 import JSON3
 import CSV
 import YAML

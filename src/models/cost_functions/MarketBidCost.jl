@@ -21,7 +21,8 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 """
 @kwdef mutable struct MarketBidCost <: OperationalCost
     no_load_cost::Float64
-    "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets"
+    """start-up cost at different stages of the thermal cycle.
+    Warm is also referred to as intermediate in some markets"""
     start_up::StartUpStages
     "shut-down cost"
     shut_down::Float64
@@ -29,13 +30,13 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     incremental_offer_curves::Union{
         Nothing,
         IS.TimeSeriesKey,
-        CostCurve{InputOutputCurve{PiecewiseLinearData}},
+        CostCurve{PiecewiseIncrementalCurve},
     } = nothing
     "Variable Cost TimeSeriesKey"
     decremental_offer_curves::Union{
         Nothing,
         IS.TimeSeriesKey,
-        CostCurve{InputOutputCurve{PiecewiseLinearData}},
+        CostCurve{PiecewiseIncrementalCurve},
     } = nothing
     "Bids for the ancillary services"
     ancillary_services::Vector{Service} = Vector{Service}()

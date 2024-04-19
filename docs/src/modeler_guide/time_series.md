@@ -2,9 +2,9 @@
 
 ## Introduction
 
-The bulk of the data in many power system models is time series data, in order to
-organize the data the potential inherent complexity, `PowerSystems.jl` has a set of definitions
-to enable consistent modeling.
+The bulk of the data in many power system models is time series data. Given the potential
+inherent complexity, `PowerSystems.jl` has a set of definitions to organize this data and
+enable consistent modeling.
 
 - **Resolution**: The period of time between each discrete value in the data, all resolutions
   are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually

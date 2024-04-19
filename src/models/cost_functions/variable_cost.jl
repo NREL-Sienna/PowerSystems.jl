@@ -1,7 +1,20 @@
-abstract type ProductionVariableCost end
+abstract type ProductionVariableCost{T <: ValueCurve} end
 
 IS.serialize(val::ProductionVariableCost) = IS.serialize_struct(val)
 IS.deserialize(T::Type{<:ProductionVariableCost}, val::Dict) = IS.deserialize_struct(T, val)
+
+# PERF are these loops/allocations costly?
+IS.transform_array_for_hdf(
+    data::SortedDict{Dates.DateTime, <:Vector{<:ProductionVariableCost{T}}},
+) where {T <: ValueCurve} =
+    IS.transform_array_for_hdf(
+        SortedDict{Dates.DateTime, Vector{T}}(
+            k => map(e -> e.value_curve, v) for (k, v) in pairs(data)),
+    )
+IS.transform_array_for_hdf(
+    data::Vector{<:ProductionVariableCost{T}},
+) where {T <: ValueCurve} =
+    IS.transform_array_for_hdf(Vector{T}(map(e -> e.value_curve, data)))
 
 "Get the underlying `ValueCurve` representation of this `ProductionVariableCost`"
 get_value_curve(cost::ProductionVariableCost) = cost.value_curve
@@ -20,7 +33,7 @@ of a [`ValueCurve`][@ref] that may represent input-output, incremental, or avera
 data. The default units for the x-axis are megawatts and can be specified with
 `power_units`.
 """
-@kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCost
+@kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCost{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCost`"
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"
@@ -42,7 +55,7 @@ liters, m^3, etc.), coupled with a conversion factor between fuel and currency. 
 a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate data.
 The default units for the x-axis are megawatts and can be specified with `power_units`.
 """
-@kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCost
+@kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCost{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCost`"
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"

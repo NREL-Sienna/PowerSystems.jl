@@ -1,8 +1,20 @@
 "Type that represents an abstract cost curve without units on the cost"
-abstract type ValueCurve end
+abstract type ValueCurve{T <: FunctionData} end
 
+# SERIALIZATION
 IS.serialize(val::ValueCurve) = IS.serialize_struct(val)
 IS.deserialize(T::Type{<:ValueCurve}, val::Dict) = IS.deserialize_struct(T, val)
+
+# PERF are these loops/allocations costly?
+IS.transform_array_for_hdf(
+    data::SortedDict{Dates.DateTime, <:Vector{<:ValueCurve{T}}},
+) where {T <: FunctionData} =
+    IS.transform_array_for_hdf(
+        SortedDict{Dates.DateTime, Vector{T}}(
+            k => map(e -> e.function_data, v) for (k, v) in pairs(data)),
+    )
+IS.transform_array_for_hdf(data::Vector{<:ValueCurve{T}}) where {T <: FunctionData} =
+    IS.transform_array_for_hdf(Vector{T}(map(e -> e.function_data, data)))
 
 "Get the underlying `FunctionData` representation of this `ValueCurve`"
 get_function_data(curve::ValueCurve) = curve.function_data
@@ -15,7 +27,7 @@ is fuel/hr.
 """
 @kwdef struct InputOutputCurve{
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData},
-} <: ValueCurve
+} <: ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
 end
@@ -27,7 +39,7 @@ where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`][@
 `x` is MW and `y` is fuel/MWh.
 """
 @kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
-              ValueCurve
+              ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
@@ -42,7 +54,7 @@ origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
 @kwdef struct AverageRateCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
-              ValueCurve
+              ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
@@ -164,7 +176,6 @@ function InputOutputCurve(data::AverageRateCurve{PiecewiseStepData})
 end
 
 IncrementalCurve(data::AverageRateCurve) = IncrementalCurve(InputOutputCurve(data))
-
 
 # CALCULATIONS
 is_convex(curve::InputOutputCurve) = is_convex(get_function_data(curve))

@@ -93,17 +93,16 @@
 end
 
 @testset "Test cost aliases" begin
-      @test LinearCurve(3.0) == InputOutputCurve(LinearFunctionData(3.0, 0.0))
-      @test LinearCurve(3.0, 5.0) == InputOutputCurve(LinearFunctionData(3.0, 5.0))
-      @test QuadraticCurve(1.0, 1.0, 18.0) ==
-            InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
-      @test PiecewisePointCurve([(1.0, 20.), (2.0, 24.0), (3.0, 30.0)]) ==
-            InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
-      @test PiecewiseIncrementalCurve(20., [1.0, 2.0, 3.0], [4.0, 6.0]) ==
-            IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
-      @test PiecewiseAverageCurve(20., [1.0, 2.0, 3.0], [12.0, 10.0]) ==
-            AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
-
+    @test LinearCurve(3.0) == InputOutputCurve(LinearFunctionData(3.0, 0.0))
+    @test LinearCurve(3.0, 5.0) == InputOutputCurve(LinearFunctionData(3.0, 5.0))
+    @test QuadraticCurve(1.0, 1.0, 18.0) ==
+          InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
+    @test PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]) ==
+          InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
+    @test PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]) ==
+          IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
+    @test PiecewiseAverageCurve(20.0, [1.0, 2.0, 3.0], [12.0, 10.0]) ==
+          AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
 end
 
 @testset "Test CostCurve and FuelCurve" begin
@@ -137,12 +136,13 @@ end
 
 test_costs = Dict(
     QuadraticFunctionData =>
-        repeat([QuadraticFunctionData(999.0, 1.0, 0.0)], 24),
+        repeat([CostCurve(QuadraticCurve(999.0, 1.0, 0.0))], 24),
     PiecewiseLinearData =>
-        repeat([PiecewiseLinearData(repeat([(999.0, 1.0)], 5))], 24),
+        repeat([CostCurve(IncrementalCurve(PiecewisePointCurve(repeat([(999.0, 1.0)], 5))))], 24),
 )
 
 @testset "Test MarketBidCost with Quadratic Cost Timeseries with Service Forecast" begin
+    # Will throw TypeErrors because market bids must be piecewise, not quadratic
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     name = "test"
@@ -156,18 +156,10 @@ test_costs = Dict(
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
     forecast = IS.Deterministic("variable_cost", data_quadratic, resolution)
-    set_variable_cost!(sys, generator, forecast)
+    @test_throws TypeError set_variable_cost!(sys, generator, forecast)
     for s in generator.services
         forecast = IS.Deterministic(get_name(s), service_data, resolution)
-        set_service_bid!(sys, generator, s, forecast)
-    end
-
-    cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
-    @test first(TimeSeries.values(cost_forecast)) == first(data_quadratic[initial_time])
-
-    for s in generator.services
-        service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
-        @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
+        @test_throws TypeError set_service_bid!(sys, generator, s, forecast)
     end
 end
 

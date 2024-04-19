@@ -79,8 +79,8 @@ the `Dict` with the data as follows:
 
 ### Step 3a: Adding Energy Bid TimeSeriesData to the device
 
-To add energy market bids time-series to the `MarketBidCost`, the use of `set_variable_cost!`
-is recommended. The arguments for `set_variable_cost!` are:
+To add energy market bids time-series to the `MarketBidCost`, use `set_variable_cost!`. The
+arguments for `set_variable_cost!` are:
 
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
@@ -93,8 +93,8 @@ set_variable_cost!(sys, generator, time_series_data)
 
 ### Step 3b: Adding Service Bid TimeSeriesData to the device
 
-Similar to adding energy market bids, for adding bids for ancillary services the use of
-`set_service_bid!` is recommended.
+Similar to adding energy market bids, for adding bids for ancillary services, use
+`set_service_bid!`.
 
 ```@repl market_bid_cost
 service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)

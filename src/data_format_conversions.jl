@@ -97,7 +97,12 @@ end
 # cost data; and create the proper new operational cost struct. Some of these cost structs
 # no longer exist, so we dispatch instead on symbols.
 _convert_op_cost(::Val{:ThermalStandard}, ::Val{:ThreePartCost}, op_cost::Dict) =
-    ThermalGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"], op_cost["start_up"], op_cost["shut_down"])
+    ThermalGenerationCost(
+        CostCurve(InputOutputCurve(op_cost["variable"])),
+        op_cost["fixed"],
+        op_cost["start_up"],
+        op_cost["shut_down"],
+    )
 
 # TODO implement remaining _convert_op_cost methods 
 
