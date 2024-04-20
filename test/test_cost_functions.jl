@@ -150,7 +150,7 @@ test_inner_round_trip(data::Vector) = test_inner_round_trip_common(data, data)
 test_inner_round_trip(data::SortedDict{Dates.DateTime, <:Vector}) =
     test_inner_round_trip_common(data, hcat(values(data)...))
 
-@testset "Test HDF transformations on PSY structs" begin
+@testset "Test HDF transformations on PSY cost structs" begin
     test_date = DateTime("2023-01-01")
     test_datas = [
         [IS.LinearFunctionData(1.0)],  # positive control
@@ -159,31 +159,35 @@ test_inner_round_trip(data::SortedDict{Dates.DateTime, <:Vector}) =
         [InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
         [IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)],
         [AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)],
+        [CostCurve(PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
+        [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))]
     ]
-    for test_data in test_datas
+    test_datas_dated = [SortedDict{Dates.DateTime, typeof(test_data)}(test_date => test_data) for test_data in test_datas]
+    for test_data in vcat(test_datas, test_datas_dated)
         test_inner_round_trip(test_data)
     end
 end
 
 test_costs = Dict(
-    QuadraticFunctionData =>
-        repeat([CostCurve(QuadraticCurve(999.0, 1.0, 0.0))], 24),
-    PiecewiseLinearData =>
+      QuadraticCurve =>
+        repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
+      PiecewiseIncrementalCurve =>
         repeat(
-            [CostCurve(IncrementalCurve(PiecewisePointCurve(repeat([(999.0, 1.0)], 5))))],
+            [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))],
             24,
         ),
 )
 
 @testset "Test MarketBidCost with Quadratic Cost Timeseries with Service Forecast" begin
-    # Will throw TypeErrors because market bids must be piecewise, not quadratic
+    # Will throw TypeErrors because market bids must be piecewise, not quadratic and service
+    # bids must be piecewise, not scalar
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
     service_data = Dict(initial_time => ones(horizon))
     data_quadratic =
-        SortedDict(initial_time => test_costs[QuadraticFunctionData])
+        SortedDict(initial_time => test_costs[QuadraticCurve])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -202,7 +206,8 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData])
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve])
+    service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -210,9 +215,18 @@ end
     set_operation_cost!(generator, market_bid)
     forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
     set_variable_cost!(sys, generator, forecast)
+    for s in generator.services
+      forecast = IS.Deterministic(get_name(s), service_data, resolution)
+      set_service_bid!(sys, generator, s, forecast)
+    end
 
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
+
+    for s in generator.services
+      service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
+      @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
+    end
 end
 
 @testset "Test MarketBidCost with single `start_up::Number` value" begin
@@ -227,22 +241,13 @@ end
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    data_quadratic =
-        SortedDict(
-            initial_time => test_costs[QuadraticFunctionData],
-            other_time => test_costs[QuadraticFunctionData],
-        )
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData],
-        other_time => test_costs[PiecewiseLinearData])
-    for d in [data_quadratic, data_pwl]
-        @testset "Add deterministic from $(typeof(d)) to ReserveDemandCurve variable cost" begin
-            sys = System(100.0)
-            reserve = ReserveDemandCurve{ReserveUp}(nothing)
-            add_component!(sys, reserve)
-            forecast = IS.Deterministic("variable_cost", d, resolution)
-            set_variable_cost!(sys, reserve, forecast)
-            cost_forecast = get_variable_cost(reserve; start_time = initial_time)
-            @test first(TimeSeries.values(cost_forecast)) == first(d[initial_time])
-        end
-    end
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve],
+        other_time => test_costs[PiecewiseIncrementalCurve])
+    sys = System(100.0)
+    reserve = ReserveDemandCurve{ReserveUp}(nothing)
+    add_component!(sys, reserve)
+    forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
+    set_variable_cost!(sys, reserve, forecast)
+    cost_forecast = get_variable_cost(reserve; start_time = initial_time)
+    @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
 end

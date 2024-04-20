@@ -176,9 +176,8 @@ IS.transform_array_for_hdf(data::Vector{<:InputOutputCurve}) =
     IS.transform_array_for_hdf(IS.get_raw_data.(get_function_data.(data)))
 
 IS.transform_array_for_hdf(
-    data::SortedDict{Dates.DateTime, Vector{InputOutputCurve{T}}},
-) where {T <: Union{LinearFunctionData, QuadraticFunctionData}} =
-    transform_array_for_hdf(
+    data::SortedDict{Dates.DateTime, Vector{InputOutputCurve{T}}}) where {T} =
+    IS.transform_array_for_hdf(
         SortedDict{Dates.DateTime, Vector{get_raw_data_type(T)}}(
             k => IS.get_raw_data.(get_function_data.(v)) for (k, v) in data
         ),
@@ -208,8 +207,8 @@ IS.transform_array_for_hdf(
     data::SortedDict{Dates.DateTime, Vector{T}},
 ) where {T <: _derived_piecewise_step_data} =
     IS.transform_array_for_hdf(
-        SortedDict{Dates.DateTime, Vector{Tuple}}(
-            k => _initial_step_to_pairs(v) for (k, v) in data
+        SortedDict{Dates.DateTime, Vector{Vector{Tuple{Float64, Float64}}}}(
+            k => _initial_step_to_pairs.(v) for (k, v) in data
         ),
     )
 

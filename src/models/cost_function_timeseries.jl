@@ -7,8 +7,11 @@ function _validate_time_series_variable_cost(
     desired_type::Type = CostCurve{PiecewiseIncrementalCurve},
 )
     data_type = IS.eltype_data(time_series_data)
-    (data_type <: desired_type) || throw(TypeError(
-        StackTraces.stacktrace()[2].func, "time series data", desired_type, data_type))
+    (data_type <: desired_type) || throw(
+        TypeError(
+            StackTraces.stacktrace()[2].func, "time series data", desired_type,
+            data_type),
+    )
 end
 
 function _validate_market_bid_cost(cost, context)
