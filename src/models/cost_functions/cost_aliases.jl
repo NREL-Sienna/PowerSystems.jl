@@ -46,7 +46,7 @@ A piecewise linear curve specified by cost values at production points.
 """
 const PiecewisePointCurve = InputOutputCurve{PiecewiseLinearData}
 
-InputOutputCurve{PiecewiseLinearData}(points) =
+InputOutputCurve{PiecewiseLinearData}(points::Vector) =
     InputOutputCurve(PiecewiseLinearData(points))
 
 get_points(curve::PiecewisePointCurve) = get_points(get_function_data(curve))
@@ -63,7 +63,7 @@ have nonzero initial value.
 """
 const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
 
-IncrementalCurve{PiecewiseStepData}(initial_input, x_coords, slopes) =
+IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vector) =
     IncrementalCurve(PiecewiseStepData(x_coords, slopes), initial_input)
 
 get_slopes(curve::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(curve))
@@ -78,7 +78,7 @@ nonzero initial value.
 """
 const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
 
-AverageRateCurve{PiecewiseStepData}(initial_input, x_coords, y_coords) =
+AverageRateCurve{PiecewiseStepData}(initial_input, x_coords::Vector, y_coords::Vector) =
     AverageRateCurve(PiecewiseStepData(x_coords, y_coords), initial_input)
 
 # TODO documentation, more getters, custom printing so it always shows the type alias (like Vector does)

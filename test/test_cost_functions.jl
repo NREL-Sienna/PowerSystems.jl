@@ -134,11 +134,45 @@ end
           UnitSystem.DEVICE_BASE
 end
 
+# Copied from IS test/test_time_series_transformations.jl
+function test_inner_round_trip_common(
+    data::Union{Vector{T}, SortedDict{Dates.DateTime, <:Vector{T}}},
+    compare_to,
+) where {T}
+    transformed = IS.transform_array_for_hdf(data)
+    retransformed = IS.retransform_hdf_array(transformed, T)
+    @test size(retransformed) == size(compare_to)  # redundant but a more informative failure
+    @test retransformed == compare_to
+end
+
+test_inner_round_trip(data::Vector) = test_inner_round_trip_common(data, data)
+
+test_inner_round_trip(data::SortedDict{Dates.DateTime, <:Vector}) =
+    test_inner_round_trip_common(data, hcat(values(data)...))
+
+@testset "Test HDF transformations on PSY structs" begin
+    test_date = DateTime("2023-01-01")
+    test_datas = [
+        [IS.LinearFunctionData(1.0)],  # positive control
+        [InputOutputCurve(LinearFunctionData(3.0, 5.0))],
+        [InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))],
+        [InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
+        [IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)],
+        [AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)],
+    ]
+    for test_data in test_datas
+        test_inner_round_trip(test_data)
+    end
+end
+
 test_costs = Dict(
     QuadraticFunctionData =>
         repeat([CostCurve(QuadraticCurve(999.0, 1.0, 0.0))], 24),
     PiecewiseLinearData =>
-        repeat([CostCurve(IncrementalCurve(PiecewisePointCurve(repeat([(999.0, 1.0)], 5))))], 24),
+        repeat(
+            [CostCurve(IncrementalCurve(PiecewisePointCurve(repeat([(999.0, 1.0)], 5))))],
+            24,
+        ),
 )
 
 @testset "Test MarketBidCost with Quadratic Cost Timeseries with Service Forecast" begin
