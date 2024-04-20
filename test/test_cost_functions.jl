@@ -160,18 +160,21 @@ test_inner_round_trip(data::SortedDict{Dates.DateTime, <:Vector}) =
         [IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)],
         [AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)],
         [CostCurve(PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
-        [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))]
+        [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))],
     ]
-    test_datas_dated = [SortedDict{Dates.DateTime, typeof(test_data)}(test_date => test_data) for test_data in test_datas]
+    test_datas_dated = [
+        SortedDict{Dates.DateTime, typeof(test_data)}(test_date => test_data) for
+        test_data in test_datas
+    ]
     for test_data in vcat(test_datas, test_datas_dated)
         test_inner_round_trip(test_data)
     end
 end
 
 test_costs = Dict(
-      QuadraticCurve =>
+    QuadraticCurve =>
         repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
-      PiecewiseIncrementalCurve =>
+    PiecewiseIncrementalCurve =>
         repeat(
             [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))],
             24,
@@ -216,16 +219,16 @@ end
     forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
     set_variable_cost!(sys, generator, forecast)
     for s in generator.services
-      forecast = IS.Deterministic(get_name(s), service_data, resolution)
-      set_service_bid!(sys, generator, s, forecast)
+        forecast = IS.Deterministic(get_name(s), service_data, resolution)
+        set_service_bid!(sys, generator, s, forecast)
     end
 
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
 
     for s in generator.services
-      service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
-      @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
+        service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
+        @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
     end
 end
 

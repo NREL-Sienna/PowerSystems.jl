@@ -71,11 +71,13 @@ get_fuel_cost(cost::FuelCurve) = cost.fuel_cost
 IS.transform_array_for_hdf(data::Vector{<:CostCurve}) =
     IS.transform_array_for_hdf(get_value_curve.(data))
 
-IS.transform_array_for_hdf(data::SortedDict{Dates.DateTime, <:Vector{<:CostCurve{T}}}) where {T} =
+IS.transform_array_for_hdf(
+    data::SortedDict{Dates.DateTime, <:Vector{<:CostCurve{T}}},
+) where {T} =
     IS.transform_array_for_hdf(
         SortedDict{Dates.DateTime, Vector{T}}(
             k => get_value_curve.(v) for (k, v) in data
-        )
+        ),
     )
 
 IS.retransform_hdf_array(data::Array, T::Type{CostCurve{U}}) where {U} =
