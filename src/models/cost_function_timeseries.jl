@@ -203,8 +203,8 @@ function set_service_bid!(
     end
     verify_device_eligibility(sys, component, service)
     add_time_series!(sys, component, time_series_data)
-    ancillary_services = get_ancillary_services(get_operation_cost(component))
-    push!(ancillary_services, service)
+    ancillary_service_offers = get_ancillary_service_offers(get_operation_cost(component))
+    push!(ancillary_service_offers, service)
     return
 end
 

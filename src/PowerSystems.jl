@@ -342,7 +342,7 @@ export get_start_up
 export get_shut_down
 export get_incremental_offer_curves
 export get_decremental_offer_curves
-export get_ancillary_services
+export get_ancillary_service_offers
 export get_services_bid
 export set_variable_cost!
 export set_service_bid!

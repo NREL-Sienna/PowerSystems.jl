@@ -5,7 +5,7 @@
         shut_down::Float64
         incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}  # TODO update docs given struct
         decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}
-        ancillary_services::Vector{Service}
+        ancillary_service_offers::Vector{Service}
     end
 
 Data Structure Operational Cost to reflect market bids of energy and ancilliary services for any asset.
@@ -17,7 +17,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 - `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
 - `incremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Sell Offer Curves data, can be a time series or a fixed PiecewiseLinearData
 - `decremental_offer_curves::Union{Nothing, IS.TimeSeriesKey, PiecewiseLinearData}`: Buy Offer Curves data, can be a time series or a fixed PiecewiseLinearData
-- `ancillary_services::Vector{Service}`: Bids for the ancillary services
+- `ancillary_service_offers::Vector{Service}`: Bids for the ancillary services
 """
 @kwdef mutable struct MarketBidCost <: OperationalCost
     no_load_cost::Float64
@@ -39,7 +39,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
         CostCurve{PiecewiseIncrementalCurve},
     } = nothing
     "Bids for the ancillary services"
-    ancillary_services::Vector{Service} = Vector{Service}()
+    ancillary_service_offers::Vector{Service} = Vector{Service}()
 end
 
 # Constructor for demo purposes; non-functional.
@@ -61,7 +61,7 @@ function MarketBidCost(
     shut_down,
     incremental_offer_curves = nothing,
     decremental_offer_curves = nothing,
-    ancillary_services = Vector{Service}(),
+    ancillary_service_offers = Vector{Service}(),
 )
     # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
     # Operators use `hot` when they don’t have multiple stages.
@@ -72,7 +72,7 @@ function MarketBidCost(
         shut_down,
         incremental_offer_curves,
         decremental_offer_curves,
-        ancillary_services,
+        ancillary_service_offer,
     )
 end
 
@@ -86,8 +86,8 @@ get_shut_down(value::MarketBidCost) = value.shut_down
 get_incremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
 """Get [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 get_decremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
-"""Get [`MarketBidCost`](@ref) `ancillary_services`."""
-get_ancillary_services(value::MarketBidCost) = value.ancillary_services
+"""Get [`MarketBidCost`](@ref) `ancillary_service_offers`."""
+get_ancillary_service_offers(value::MarketBidCost) = value.ancillary_service_offers
 
 """Set [`MarketBidCost`](@ref) `no_load_cost`."""
 set_no_load_cost!(value::MarketBidCost, val) = value.no_load_cost = val
@@ -101,5 +101,6 @@ set_incremental_offer_curves!(value::MarketBidCost, val) =
 """Set [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 set_decremental_offer_curves!(value::MarketBidCost, val) =
     value.decremental_offer_curves = val
-"""Set [`MarketBidCost`](@ref) `ancillary_services`."""
-set_ancillary_services!(value::MarketBidCost, val) = value.ancillary_services = val
+"""Set [`MarketBidCost`](@ref) `ancillary_service_offers`."""
+set_ancillary_service_offers!(value::MarketBidCost, val) =
+    value.ancillary_service_offers = val
