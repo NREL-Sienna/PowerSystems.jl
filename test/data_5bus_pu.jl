@@ -314,7 +314,7 @@ thermal_generators5(nodes5) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(1400.0))),
+            CostCurve(LinearCurve(1400.0)),
             0.0,
             4.0,
             2.0,
@@ -336,7 +336,7 @@ thermal_generators5(nodes5) = [
         time_limits = (up = 0.02, down = 0.02),
         ramp_limits = (up = 2.0, down = 1.0),
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(1500.0))),
+            CostCurve(LinearCurve(1500.0)),
             0.0,
             1.5,
             0.75,
@@ -358,7 +358,7 @@ thermal_generators5(nodes5) = [
         time_limits = (up = 0.012, down = 0.012),
         ramp_limits = (up = 3.0, down = 2.0),
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(3000.0))),
+            CostCurve(LinearCurve(3000.0)),
             0.0,
             3.0,
             1.5,
@@ -380,7 +380,7 @@ thermal_generators5(nodes5) = [
         time_limits = (up = 0.015, down = 0.015),
         ramp_limits = (up = 2.0, down = 1.0),
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(4000.0))),
+            CostCurve(LinearCurve(4000.0)),
             0.0,
             4.0,
             2.0,
@@ -402,7 +402,7 @@ thermal_generators5(nodes5) = [
         time_limits = (up = 0.015, down = 0.015),
         ramp_limits = (up = 5.0, down = 3.0),
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(1000.0))),
+            CostCurve(LinearCurve(1000.0)),
             0.0,
             1.5,
             0.75,
@@ -422,7 +422,7 @@ renewable_generators5(nodes5) = [
         PrimeMovers.WT,
         (min = 0.0, max = 0.0),
         1.0,
-        RenewableGenerationCost(CostCurve(InputOutputCurve(LinearFunctionData(22.0)))),
+        RenewableGenerationCost(CostCurve(LinearCurve(22.0))),
         100.0,
     ),
     RenewableDispatch(
@@ -435,7 +435,7 @@ renewable_generators5(nodes5) = [
         PrimeMovers.WT,
         (min = 0.0, max = 0.0),
         1.0,
-        RenewableGenerationCost(CostCurve(InputOutputCurve(LinearFunctionData(22.0)))),
+        RenewableGenerationCost(CostCurve(LinearCurve(22.0))),
         100.0,
     ),
     RenewableDispatch(
@@ -448,7 +448,7 @@ renewable_generators5(nodes5) = [
         PrimeMovers.WT,
         (min = -0.800, max = 0.800),
         1.0,
-        RenewableGenerationCost(CostCurve(InputOutputCurve(LinearFunctionData(22.0)))),
+        RenewableGenerationCost(CostCurve(LinearCurve(22.0))),
         100.0,
     ),
 ];
@@ -485,7 +485,7 @@ hydro_generators5(nodes5) = [
         inflow = 0.2,
         initial_storage = 0.5,
         operation_cost = HydroGenerationCost(
-            CostCurve(InputOutputCurve(LinearFunctionData(15.0))), 0.0,
+            CostCurve(LinearCurve(15.0)), 0.0,
         ),
     ),
 ];
@@ -606,7 +606,7 @@ interruptible(nodes5) = [
         0.10,
         0.0,
         100.0,
-        LoadCost(CostCurve(InputOutputCurve(LinearFunctionData(150.0))), 2400.0),
+        LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
     ),
 ]
 

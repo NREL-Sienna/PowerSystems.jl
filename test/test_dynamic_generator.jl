@@ -28,7 +28,7 @@ static_gen = ThermalStandard(;
     time_limits = nothing,
     ramp_limits = nothing,
     operation_cost = ThermalGenerationCost(
-        CostCurve(InputOutputCurve(LinearFunctionData(1400.0))),
+        CostCurve(LinearCurve(1400.0)),
         0.0,
         4.0,
         2.0,

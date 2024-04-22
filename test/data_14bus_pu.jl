@@ -655,8 +655,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(
-                QuadraticFunctionData(430.292599, 2000.0, 0.0))),
+            CostCurve(QuadraticCurve(430.292599, 2000.0, 0.0)),
             0.0,
             0.0,
             0.0,
@@ -678,8 +677,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(
-                QuadraticFunctionData(2500.0, 2000.0, 0.0))),
+            CostCurve(QuadraticCurve(2500.0, 2000.0, 0.0)),
             0.0,
             0.0,
             0.0,
@@ -701,8 +699,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(
-                QuadraticFunctionData(100.0, 4000.0, 0.0))),
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
             0.0,
             0.0,
             0.0,
@@ -724,8 +721,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(
-                QuadraticFunctionData(100.0, 4000.0, 0.0))),
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
             0.0,
             0.0,
             0.0,
@@ -747,8 +743,7 @@ thermal_generators14(nodes14) = [
         time_limits = nothing,
         ramp_limits = nothing,
         operation_cost = ThermalGenerationCost(
-            CostCurve(InputOutputCurve(
-                QuadraticFunctionData(100.0, 4000.0, 0.0))),
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
             0.0,
             0.0,
             0.0,
