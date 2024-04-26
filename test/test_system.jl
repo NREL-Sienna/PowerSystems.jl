@@ -320,8 +320,6 @@ end
     @test get_forecast_initial_timestamp(sys) == initial_time
     @test get_forecast_interval(sys) == Dates.Millisecond(second_time - initial_time)
     @test get_forecast_window_count(sys) == 2
-    #@test Dates.Hour(get_forecast_total_period(sys)) ==
-    #Dates.Hour(second_time - initial_time) + Dates.Hour(resolution * horizon)
     @test get_forecast_initial_times(sys) == [initial_time, second_time]
 
     remove_time_series!(sys, typeof(forecast), gen, get_name(forecast))

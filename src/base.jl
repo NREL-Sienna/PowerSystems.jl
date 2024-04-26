@@ -1306,11 +1306,6 @@ Return the initial times for all forecasts.
 get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
 
 """
-Return the total period covered by all forecasts.
-"""
-#get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
-
-"""
 Return the window count for all forecasts.
 """
 get_forecast_window_count(sys::System) = IS.get_forecast_window_count(sys.data)

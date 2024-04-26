@@ -335,7 +335,6 @@ export get_horizon
 export get_forecast_initial_times
 export list_time_series_info
 export show_time_series
-#export get_forecast_total_period
 export get_resolution
 export get_data
 export iterate_components
