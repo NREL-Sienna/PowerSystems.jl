@@ -268,7 +268,7 @@ function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
 end
 
 function _raise_if_attached_to_system(hybrid::HybridSystem)
-    if hybrid.time_series_container.time_series_storage !== nothing
+    if !isnothing(IS.get_time_series_manager(hybrid))
         throw(
             ArgumentError(
                 "Operation not allowed because the HybridSystem is attached to a system",

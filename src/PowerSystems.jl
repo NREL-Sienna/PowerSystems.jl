@@ -264,6 +264,8 @@ export Deterministic
 export Probabilistic
 export SingleTimeSeries
 export DeterministicSingleTimeSeries
+export StaticTimeSeriesInfo
+export ForecastInfo
 export Scenarios
 export ForecastCache
 export StaticTimeSeriesCache
@@ -274,6 +276,7 @@ export TimeSeriesCounts
 export get_dynamic_components
 
 export parse_file
+export open_time_series_store!
 export add_time_series!
 export remove_time_series!
 export check_time_series_consistency
@@ -320,10 +323,9 @@ export has_supplemental_attributes
 export iterate_supplemental_attributes
 export get_time_series
 export get_time_series_array
-export get_time_series_resolution
+export list_time_series_resolutions
 export get_time_series_timestamps
 export get_time_series_values
-export get_time_series_names
 export get_time_series_counts
 export get_scenario_count
 export get_percentiles
@@ -331,7 +333,8 @@ export get_next_time_series_array!
 export get_next_time
 export get_horizon
 export get_forecast_initial_times
-export get_forecast_total_period
+export list_time_series_info
+export show_time_series
 export get_resolution
 export get_data
 export iterate_components
@@ -427,6 +430,8 @@ export has_component
 export get_assigned_subsystems
 export has_subsystems
 export is_assigned_to_subsystem
+export from_subsystem
+export filter_components_by_subsystem!
 
 export set_runchecks!
 export check
@@ -474,7 +479,9 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
+    StaticTimeSeriesInfo,
     DeterministicSingleTimeSeries,
+    ForecastInfo,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
@@ -511,7 +518,8 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    get_time_series_names,
+    list_time_series_info,
+    show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,

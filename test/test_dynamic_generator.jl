@@ -489,6 +489,10 @@ end
     @test get_dynamic_injector(static_gen) === Gen2AVR
     @test get_base_power(static_gen) == get_base_power(Gen2AVR)
 
+    set_base_power!(static_gen, 1234.5)
+    @test get_base_power(static_gen) == 1234.5
+    @test PSY.get_system_base_power(static_gen) == get_base_power(sys)
+
     # Rule: Can't set the pair injector if the current injector is already set.
     @test_throws ArgumentError set_dynamic_injector!(static_gen, Gen1AVR)
 
@@ -617,6 +621,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, derd, static_injector)
     DERDs = collect(get_components(GenericDER, sys))
@@ -719,6 +724,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, dera, static_injector)
     DERAs = collect(get_components(AggregateDistributedGenerationA, sys))

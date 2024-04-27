@@ -3,7 +3,7 @@ function create_system_with_test_subsystems()
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = false,
-        time_series_read_only = true,
+        time_series_read_only = false,
     )
 
     components = collect(get_components(ThermalStandard, sys))
@@ -26,7 +26,7 @@ function create_system_with_test_subsystems()
 end
 
 function create_system_with_2_test_subsystems()
-    c_sys5 = PSB.build_system(PSISystems, "2Area 5 Bus System"; force_build = true)
+    c_sys5 = PSB.build_system(PSISystems, "2Area 5 Bus System")
 
     components = collect(get_components(Component, c_sys5))
     #@test length(components) == 52
@@ -70,7 +70,8 @@ function create_system_with_2_test_subsystems()
         subsystems[2],
         get_component(ACBus, c_sys5, "nodeC"),
     )
-
+    PSY.check(c_sys5)
+    PSY.check_components(c_sys5)
     return (c_sys5, components)
 end
 
@@ -689,4 +690,37 @@ end
     add_component_to_subsystem!(c_sys5, "incomplete_subsystem", device)
 
     @test_throws IS.InvalidValue PSY._check_device_service_consistency(c_sys5, device)
+end
+
+@testset "Test construct system from subsystem" begin
+    base_sys = create_system_with_2_test_subsystems()[1]
+    ts_counts = get_time_series_counts(base_sys)
+    @test ts_counts.components_with_time_series == 6
+    @test ts_counts.forecast_count == 6
+    subsystem1_uuids = get_component_uuids(base_sys, "subsystem_1")
+    subsystem2_uuids = get_component_uuids(base_sys, "subsystem_2")
+
+    sys1 = from_subsystem(base_sys, "subsystem_1")
+    sys2 = from_subsystem(base_sys, "subsystem_2")
+
+    base_sys_components = get_components(Component, base_sys)
+
+    sys1_components = get_components(Component, sys1)
+    sys2_components = get_components(Component, sys2)
+    @test length(sys1_components) < length(base_sys_components)
+    @test length(sys2_components) < length(base_sys_components)
+
+    for (components, uuids) in
+        ((sys1_components, subsystem1_uuids), (sys2_components, subsystem2_uuids))
+        for component in components
+            base_component = get_component(typeof(component), base_sys, get_name(component))
+            @test IS.get_uuid(base_component) in uuids
+        end
+    end
+
+    for sys in (sys1, sys2)
+        ts_counts = get_time_series_counts(sys)
+        @test ts_counts.components_with_time_series == 3
+        @test ts_counts.forecast_count == 3
+    end
 end

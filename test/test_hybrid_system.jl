@@ -64,18 +64,22 @@ end
     @test electric_load !== nothing
     @test thermal_unit !== nothing
 
-    ts = collect(get_time_series_multiple(h_sys; type = TimeSeriesData))
-    @test length(ts) == num_time_series
-    @test Set((get_name(x) for x in ts)) == expected_time_series_names
+    sts = collect(get_time_series_multiple(h_sys; type = SingleTimeSeries))
+    forecasts =
+        collect(get_time_series_multiple(h_sys; type = DeterministicSingleTimeSeries))
+    @test length(sts) == 2
+    @test length(forecasts) == 2
+    @test issubset((get_name(x) for x in sts), expected_time_series_names)
+    @test issubset((get_name(x) for x in forecasts), expected_time_series_names)
 
     @test get_time_series(SingleTimeSeries, electric_load, "max_active_power") isa
           SingleTimeSeries
-    @test get_time_series(AbstractDeterministic, electric_load, "max_active_power") isa
+    @test get_time_series(Deterministic, electric_load, "max_active_power") isa
           DeterministicSingleTimeSeries
 
     @test !has_time_series(thermal_unit)
     @test has_time_series(electric_load)
-    remove_time_series!(sys, AbstractDeterministic, electric_load, "max_active_power")
+    remove_time_series!(sys, Deterministic, electric_load, "max_active_power")
     remove_time_series!(sys, SingleTimeSeries, electric_load, "max_active_power")
     @test !has_time_series(electric_load)
 

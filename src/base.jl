@@ -180,8 +180,24 @@ function System(
     services = nothing,
     kwargs...,
 )
+    for component in Iterators.flatten((generators, loads))
+        if get_name(component) == "init"
+            set_bus!(component, first(buses))
+        end
+    end
     _services = isnothing(services) ? [] : services
-    return System(base_power, buses, generators, loads, _services; kwargs...)
+    _branches = isnothing(branches) ? [] : branches
+    _storage = isnothing(storage) ? [] : storage
+    return System(
+        base_power,
+        buses,
+        generators,
+        loads,
+        _branches,
+        _storage,
+        _services;
+        kwargs...,
+    )
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json
@@ -258,11 +274,11 @@ function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uu
     if assign_new_uuids
         IS.assign_new_uuid!(sys)
         for component in get_components(Component, sys)
-            assign_new_uuid!(sys, component)
+            IS.assign_new_uuid!(sys, component)
         end
         for component in
             IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-            assign_new_uuid!(sys, component)
+            IS.assign_new_uuid!(sys, component)
         end
         # Note: this does not change UUIDs for time series data because they are
         # shared with components.
@@ -301,6 +317,60 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
     bus_dict_gen = _parse_dyr_components(dyr_file)
     add_dyn_injectors!(sys, bus_dict_gen)
     return sys
+end
+
+"""
+Construct a System from a subsystem of an existing system.
+"""
+function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
+    if !in(subsystem, get_subsystems(sys))
+        error("subsystem = $subsystem is not stored")
+    end
+
+    # It would be faster to create an empty system and then populate it with
+    # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
+    # file (the result here will have deleted entries that need to repacked through
+    # serialization/de-serialization). That is not implemented because
+    # 1. The performance loss should not be too large.
+    # 2. We haven't yet implemented deepcopy(Component).
+    # 3. There is extra code complexity in adding copied components in the correct order
+    #    as well as copying time series data.
+    new_sys = deepcopy(sys)
+    filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
+
+    IS.assign_new_uuid!(new_sys)
+    for component in get_components(Component, new_sys)
+        IS.assign_new_uuid!(new_sys, component)
+    end
+
+    return new_sys
+end
+
+"""
+Filter out all components that are not part of the subsystem.
+"""
+function filter_components_by_subsystem!(
+    sys::System,
+    subsystem::AbstractString;
+    runchecks = true,
+)
+    component_uuids = get_component_uuids(sys, subsystem)
+    for component in get_components(Component, sys)
+        if !in(IS.get_uuid(component), component_uuids)
+            remove_component!(sys, component)
+        end
+    end
+
+    for component in IS.get_masked_components(Component, sys.data)
+        if !in(IS.get_uuid(component), component_uuids)
+            IS.remove_masked_component!(sys.data, component)
+        end
+    end
+
+    if runchecks
+        check(sys)
+        check_components(sys)
+    end
 end
 
 """
@@ -346,12 +416,12 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolution = get_time_series_resolution(sys).value
+    resolutions = [x.value for x in list_time_series_resolutions(sys)]
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
         "frequency" => sys.frequency,
-        "time_series_resolution_milliseconds" => resolution,
+        "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
         "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
     )
@@ -364,16 +434,6 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     end
 
     @info "Serialized System metadata to $filename"
-end
-
-function Base.deepcopy(sys::System)
-    sys2 = Base.deepcopy_internal(sys, IdDict())
-    if sys.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
-        return sys2
-    end
-
-    IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
-    return sys2
 end
 
 IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
@@ -705,6 +765,34 @@ function add_service!(
 end
 
 """
+Open the time series store for bulk additions or reads. This is recommended before calling
+add_time_series! many times because of the overhead associated with opening and closing an
+HDF5 file.
+
+This is not necessary for an in-memory time series store.
+
+# Examples
+```julia
+# Assume there is a system with an array of components and SingleTimeSeries
+open_time_series_store!(sys, "r+") do
+    for (component, ts) in zip(components, single_time_series)
+        add_time_series!(sys, component, ts)
+    end
+end
+```
+julia>
+"""
+function open_time_series_store!(
+    func::Function,
+    sys::System,
+    mode = "r",
+    args...;
+    kwargs...,
+)
+    IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
+end
+
+"""
 Add time series data from a metadata file or metadata descriptors.
 
 # Arguments
@@ -979,7 +1067,7 @@ get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(
 """
 Change the UUID of a component.
 """
-assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
+IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -1021,11 +1109,9 @@ end
 Return true if the component is attached to the system.
 """
 function is_attached(component::T, sys::System) where {T <: Component}
-    return is_attached(T, get_name(component), sys)
-end
-
-function is_attached(::Type{T}, name, sys::System) where {T <: Component}
-    return !isnothing(get_component(T, sys, name))
+    existing_component = get_component(T, sys, get_name(component))
+    isnothing(existing_component) && return false
+    return component === existing_component
 end
 
 """
@@ -1220,11 +1306,6 @@ Return the initial times for all forecasts.
 get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
 
 """
-Return the total period covered by all forecasts.
-"""
-get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
-
-"""
 Return the window count for all forecasts.
 """
 get_forecast_window_count(sys::System) = IS.get_forecast_window_count(sys.data)
@@ -1245,9 +1326,13 @@ Return the interval for all forecasts.
 get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 
 """
-Return the resolution for all time series.
+Return a sorted Vector of distinct resolutions for all time series of the given type
+(or all types).
 """
-get_time_series_resolution(sys::System) = IS.get_time_series_resolution(sys.data)
+list_time_series_resolutions(
+    sys::System;
+    time_series_type::Union{Type{<:TimeSeriesData}, Nothing} = nothing,
+) = IS.list_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
 Return an iterator of time series in order of initial time.
@@ -2056,10 +2141,24 @@ function handle_component_removal!(sys::System, device::Device)
     return
 end
 
+function handle_component_removal!(sys::System, component::RegulationDevice)
+    _handle_component_removal_common!(component)
+    IS.remove_masked_component!(sys.data, component.device)
+    return
+end
+
 function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
         _remove_service!(device, service)
+    end
+end
+
+function handle_component_removal!(sys::System, component::StaticInjectionSubsystem)
+    _handle_component_removal_common!(component)
+    subcomponents = collect(get_subcomponents(component))
+    for subcomponent in subcomponents
+        IS.remove_masked_component!(sys.data, subcomponent)
     end
 end
 
@@ -2208,7 +2307,7 @@ function convert_component!(
         InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
-    assign_new_uuid!(sys, line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -2253,7 +2352,7 @@ function convert_component!(
         InfrastructureSystems.SupplementalAttributesContainer(),
         deepcopy(line.internal),
     )
-    assign_new_uuid!(sys, line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
     # TODO: PSY4
@@ -2287,7 +2386,7 @@ function convert_component!(
         supplemental_attributes_container = InfrastructureSystems.SupplementalAttributesContainer(),
         time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
-    assign_new_uuid!(sys, old_load)
+    IS.assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
     # TODO: PSY4

@@ -192,7 +192,7 @@ get_forecast_initial_times(sys)
 We can find the names of all time series attached to a component:
 
 ```@repl basics
-ts_names = get_time_series_names(Deterministic, loads[1])
+show_time_series(loads[1])
 ```
 
 We can access a specific time series for a specific component:
