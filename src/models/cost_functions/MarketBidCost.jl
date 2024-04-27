@@ -72,7 +72,7 @@ function MarketBidCost(
         shut_down,
         incremental_offer_curves,
         decremental_offer_curves,
-        ancillary_service_offer,
+        ancillary_service_offers,
     )
 end
 
