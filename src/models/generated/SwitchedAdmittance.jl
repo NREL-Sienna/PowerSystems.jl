@@ -15,8 +15,6 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -32,8 +30,6 @@ This file is auto-generated. Do not edit.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct SwitchedAdmittance <: ElectricLoad
@@ -51,20 +47,16 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,8 +71,6 @@ function SwitchedAdmittance(::Nothing)
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -102,10 +92,6 @@ get_dynamic_injector(value::SwitchedAdmittance) = value.dynamic_injector
 get_services(value::SwitchedAdmittance) = value.services
 """Get [`SwitchedAdmittance`](@ref) `ext`."""
 get_ext(value::SwitchedAdmittance) = value.ext
-"""Get [`SwitchedAdmittance`](@ref) `time_series_container`."""
-get_time_series_container(value::SwitchedAdmittance) = value.time_series_container
-"""Get [`SwitchedAdmittance`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::SwitchedAdmittance) = value.supplemental_attributes_container
 """Get [`SwitchedAdmittance`](@ref) `internal`."""
 get_internal(value::SwitchedAdmittance) = value.internal
 
@@ -123,7 +109,3 @@ set_Y_increase!(value::SwitchedAdmittance, val) = value.Y_increase = val
 set_services!(value::SwitchedAdmittance, val) = value.services = val
 """Set [`SwitchedAdmittance`](@ref) `ext`."""
 set_ext!(value::SwitchedAdmittance, val) = value.ext = val
-"""Set [`SwitchedAdmittance`](@ref) `time_series_container`."""
-set_time_series_container!(value::SwitchedAdmittance, val) = value.time_series_container = val
-"""Set [`SwitchedAdmittance`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::SwitchedAdmittance, val) = value.supplemental_attributes_container = val

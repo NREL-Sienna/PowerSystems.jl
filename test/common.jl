@@ -271,7 +271,7 @@ function test_accessors(component)
     ps_type = typeof(component)
 
     for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-        if field_name === :name || field_name === :time_series_container
+        if field_name === :name
             func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
             _func! =
                 getfield(InfrastructureSystems, Symbol("set_" * string(field_name) * "!"))

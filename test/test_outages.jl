@@ -21,7 +21,7 @@
 
     for gen in (gen1, gen2)
         for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
-            attributes = collect(get_supplemental_attributes(type, gen))
+            attributes = list_supplemental_attributes(type, gen)
             @test length(attributes) == 1
             uuid = IS.get_uuid(attributes[1])
             get_supplemental_attribute(sys, uuid)
@@ -39,14 +39,14 @@
         ),
     ) == 1
     @test length(
-        get_supplemental_attributes(
+        list_supplemental_attributes(
             x -> get_mean_time_to_recovery(x) == 2.0,
             GeometricDistributionForcedOutage,
             gen1,
         ),
     ) == 0
     @test length(
-        get_supplemental_attributes(
+        list_supplemental_attributes(
             x -> get_mean_time_to_recovery(x) == 2.0,
             GeometricDistributionForcedOutage,
             gen2,
@@ -56,14 +56,14 @@
         get_supplemental_attributes(x -> get_outage_schedule(x) == "1", PlannedOutage, sys),
     ) == 1
     @test length(
-        get_supplemental_attributes(
+        list_supplemental_attributes(
             x -> get_outage_schedule(x) == "1",
             PlannedOutage,
             gen1,
         ),
     ) == 1
     @test length(
-        get_supplemental_attributes(
+        list_supplemental_attributes(
             x -> get_outage_schedule(x) == "1",
             PlannedOutage,
             gen2,

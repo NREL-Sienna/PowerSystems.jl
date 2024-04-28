@@ -18,8 +18,6 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,8 +36,6 @@ This file is auto-generated. Do not edit.
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TapTransformer <: ACBranch
@@ -59,20 +55,16 @@ mutable struct TapTransformer <: ACBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,8 +82,6 @@ function TapTransformer(::Nothing)
         rate=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -119,10 +109,6 @@ get_rate(value::TapTransformer) = get_value(value, value.rate)
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
 get_ext(value::TapTransformer) = value.ext
-"""Get [`TapTransformer`](@ref) `time_series_container`."""
-get_time_series_container(value::TapTransformer) = value.time_series_container
-"""Get [`TapTransformer`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::TapTransformer) = value.supplemental_attributes_container
 """Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
@@ -148,7 +134,3 @@ set_rate!(value::TapTransformer, val) = value.rate = set_value(value, val)
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
 set_ext!(value::TapTransformer, val) = value.ext = val
-"""Set [`TapTransformer`](@ref) `time_series_container`."""
-set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
-"""Set [`TapTransformer`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::TapTransformer, val) = value.supplemental_attributes_container = val

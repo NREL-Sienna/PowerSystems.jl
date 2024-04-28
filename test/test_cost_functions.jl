@@ -151,7 +151,7 @@ test_costs = Dict(
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    service_data = Dict(initial_time => ones(horizon))
+    service_data = Dict(initial_time => rand(horizon))
     data_quadratic =
         SortedDict(initial_time => test_costs[QuadraticFunctionData])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")

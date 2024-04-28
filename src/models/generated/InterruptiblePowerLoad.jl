@@ -18,8 +18,6 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,8 +36,6 @@ This file is auto-generated. Do not edit.
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad
@@ -59,20 +55,16 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,8 +82,6 @@ function InterruptiblePowerLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -119,10 +109,6 @@ get_services(value::InterruptiblePowerLoad) = value.services
 get_dynamic_injector(value::InterruptiblePowerLoad) = value.dynamic_injector
 """Get [`InterruptiblePowerLoad`](@ref) `ext`."""
 get_ext(value::InterruptiblePowerLoad) = value.ext
-"""Get [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::InterruptiblePowerLoad) = value.time_series_container
-"""Get [`InterruptiblePowerLoad`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::InterruptiblePowerLoad) = value.supplemental_attributes_container
 """Get [`InterruptiblePowerLoad`](@ref) `internal`."""
 get_internal(value::InterruptiblePowerLoad) = value.internal
 
@@ -146,7 +132,3 @@ set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost =
 set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 """Set [`InterruptiblePowerLoad`](@ref) `ext`."""
 set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
-"""Set [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::InterruptiblePowerLoad, val) = value.time_series_container = val
-"""Set [`InterruptiblePowerLoad`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::InterruptiblePowerLoad, val) = value.supplemental_attributes_container = val

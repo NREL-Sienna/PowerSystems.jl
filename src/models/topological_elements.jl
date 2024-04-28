@@ -10,6 +10,8 @@ All subtypes must implement the method `get_aggregation_topology_accessor`.
 """
 abstract type AggregationTopology <: Topology end
 
+supports_time_series(::AggregationTopology) = true
+
 """
 Abstract type to represent any type of Bus, AC or DC.
 """
@@ -34,7 +36,6 @@ function check_bus_params(
     area,
     load_zone,
     ext,
-    attributes,
     internal,
 )
     if !isnothing(bustype)
@@ -56,6 +57,5 @@ function check_bus_params(
     area,
     load_zone,
     ext,
-    attributes,
     internal
 end
