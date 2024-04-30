@@ -28,7 +28,7 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         initial_storage::UpDown
         storage_target::UpDown
-        operation_cost::OperationalCost
+        operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         pump_efficiency::Float64
         conversion_factor::Float64
         time_at_status::Float64
@@ -65,7 +65,7 @@ This file is auto-generated. Do not edit.
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `time_at_status::Float64`
@@ -113,7 +113,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
     storage_target::UpDown
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Efficiency of pump"
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
@@ -132,11 +132,11 @@ mutable struct HydroPumpedStorage <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
     HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
     HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
@@ -165,7 +165,7 @@ function HydroPumpedStorage(::Nothing)
         outflow=0.0,
         initial_storage=(up=0.0, down=0.0),
         storage_target=(up=0.0, down=0.0),
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=HydroGenerationCost(nothing),
         pump_efficiency=0.0,
         conversion_factor=0.0,
         time_at_status=INFINITE_TIME,

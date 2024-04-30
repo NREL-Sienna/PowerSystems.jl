@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         ramp_limits::Union{Nothing, UpDown}
-        operation_cost::OperationalCost
+        operation_cost::Union{ThermalGenerationCost, MarketBidCost}
         base_power::Float64
         time_limits::Union{Nothing, UpDown}
         must_run::Bool
@@ -44,7 +44,7 @@ Data Structure for thermal generation technologies.
 - `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::OperationalCost`
+- `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `must_run::Bool`
@@ -71,7 +71,7 @@ mutable struct ThermalStandard <: ThermalGen
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW (in component base per unit) per minute"
     ramp_limits::Union{Nothing, UpDown}
-    operation_cost::OperationalCost
+    operation_cost::Union{ThermalGenerationCost, MarketBidCost}
     "Base power of the unit in MVA"
     base_power::Float64
     "Minimum up and Minimum down time limits in hours"
@@ -116,7 +116,7 @@ function ThermalStandard(::Nothing)
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         ramp_limits=nothing,
-        operation_cost=ThreePartCost(nothing),
+        operation_cost=ThermalGenerationCost(nothing),
         base_power=0.0,
         time_limits=nothing,
         must_run=false,

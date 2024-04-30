@@ -42,25 +42,25 @@ export PhaseShiftingTransformer
 export FunctionData
 export LinearFunctionData
 export QuadraticFunctionData
-export PolynomialFunctionData
-export PiecewiseLinearPointData
-export PiecewiseLinearSlopeData
+export PiecewiseLinearData
+export PiecewiseStepData
 export get_proportional_term
 export get_quadratic_term
 export get_constant_term
-export get_coefficients
 export get_slopes
 export get_x_lengths
 export is_convex
 export get_points
 export get_x_coords
-export get_y0
+export get_y_coords
 
-export ThreePartCost
-export TwoPartCost
-export MultiStartCost
-export MarketBidCost
-export StorageManagementCost
+export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export LinearCurve, QuadraticCurve
+export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
+export ProductionVariableCost, CostCurve, FuelCurve
+export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
+export get_function_data, get_initial_input, get_value_curve, get_power_units, get_fuel_cost
 
 export Generator
 export HydroGen
@@ -340,6 +340,12 @@ export get_data
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost
+export get_no_load_cost
+export get_start_up
+export get_shut_down
+export get_incremental_offer_curves
+export get_decremental_offer_curves
+export get_ancillary_service_offers
 export get_services_bid
 export set_variable_cost!
 export set_service_bid!
@@ -453,7 +459,7 @@ import Logging
 import Dates
 import TimeSeries
 import DataFrames
-import DataStructures: OrderedDict
+import DataStructures: OrderedDict, SortedDict
 import JSON3
 import CSV
 import YAML
@@ -543,19 +549,18 @@ import InfrastructureSystems:
     FunctionData,
     LinearFunctionData,
     QuadraticFunctionData,
-    PolynomialFunctionData,
-    PiecewiseLinearPointData,
-    PiecewiseLinearSlopeData,
+    PiecewiseLinearData,
+    PiecewiseStepData,
     get_proportional_term,
     get_quadratic_term,
     get_constant_term,
-    get_coefficients,
     get_slopes,
+    running_sum,
     get_x_lengths,
     is_convex,
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
-    get_y0,  # TODO reevaluate whether this should be exported
+    get_y_coords,
     get_raw_data,
     get_raw_data_type
 
@@ -598,7 +603,6 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
-include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
@@ -610,6 +614,18 @@ include("models/loads.jl")
 include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
+
+# Costs
+include("models/cost_functions/ValueCurves.jl")
+include("models/cost_functions/cost_aliases.jl")
+include("models/cost_functions/variable_cost.jl")
+include("models/cost_functions/operational_cost.jl")
+include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/HydroGenerationCost.jl")
+include("models/cost_functions/LoadCost.jl")
+include("models/cost_functions/RenewableGenerationCost.jl")
+include("models/cost_functions/StorageCost.jl")
+include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")

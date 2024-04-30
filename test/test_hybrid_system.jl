@@ -13,7 +13,7 @@
         storage = GenericBattery(nothing),
         renewable_unit = RenewableDispatch(nothing),
         base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
+        operation_cost = MarketBidCost(nothing),
     )
     add_component!(test_sys, h_sys)
 
@@ -112,7 +112,7 @@ end
         storage = storage,
         renewable_unit = renewable_unit,
         base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
+        operation_cost = MarketBidCost(nothing),
     )
     add_component!(sys, h_sys)
 

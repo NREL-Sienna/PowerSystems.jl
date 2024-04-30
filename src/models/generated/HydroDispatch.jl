@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
         ramp_limits::Union{Nothing, UpDown}
         time_limits::Union{Nothing, UpDown}
         base_power::Float64
-        operation_cost::OperationalCost
+        operation_cost::Union{HydroGenerationCost, MarketBidCost}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -42,7 +42,7 @@ This file is auto-generated. Do not edit.
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`
@@ -69,7 +69,7 @@ mutable struct HydroDispatch <: HydroGen
     "Base power of the unit in MVA"
     base_power::Float64
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    operation_cost::Union{HydroGenerationCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -83,11 +83,11 @@ mutable struct HydroDispatch <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
+function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
     HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
+function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
     HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
 end
 
@@ -106,7 +106,7 @@ function HydroDispatch(::Nothing)
         ramp_limits=nothing,
         time_limits=nothing,
         base_power=0.0,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=HydroGenerationCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),

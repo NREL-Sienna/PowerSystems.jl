@@ -1,3 +1,24 @@
+# MarketBidCost has two variable costs, here we mean the incremental one
+get_generation_variable_cost(cost::MarketBidCost) = get_incremental_offer_curves(cost)
+# get_generation_variable_cost(cost::OperationalCost) = get_variable_cost(cost)
+
+function _validate_time_series_variable_cost(
+    time_series_data::IS.TimeSeriesData;
+    desired_type::Type = CostCurve{PiecewiseIncrementalCurve},
+)
+    data_type = IS.eltype_data(time_series_data)
+    (data_type <: desired_type) || throw(
+        TypeError(
+            StackTraces.stacktrace()[2].func, "time series data", desired_type,
+            data_type),
+    )
+end
+
+function _validate_market_bid_cost(cost, context)
+    (cost isa MarketBidCost) || throw(TypeError(
+        StackTraces.stacktrace()[2].func, context, MarketBidCost, cost))
+end
+
 """
 Returns variable cost bids time-series data.
 
@@ -18,17 +39,11 @@ function get_variable_cost(
     end
     data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
-    # TODO initially this was mapping PiecewiseLinearSlopeData over the raw data. Now the
-    # data is PiecewiseLinearPointData. Has something been lost in translation?
     return data
-    # return TimeSeries.TimeArray(
-    #     time_stamps,
-    #     map(PiecewiseLinearSlopeData, TimeSeries.values(data)),
-    # )
 end
 
 """
-Returns variable cost bids time-series data for  MarketBidCost.
+Returns variable cost bids time-series data for MarketBidCost.
 
 # Arguments
 - `device::StaticInjection`: Static injection device
@@ -42,10 +57,10 @@ function get_variable_cost(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    time_series_key = get_variable(cost)
+    time_series_key = get_generation_variable_cost(cost)
     if isnothing(time_series_key)
         error(
-            "Cost component has a `nothing` stored in field `variable`, Please use `set_variable_cost!` to add variable cost forecast.",
+            "Cost component is empty, please use `set_variable_cost!` to add variable cost forecast.",
         )
     end
     raw_data = get_time_series(
@@ -108,7 +123,7 @@ function get_services_bid(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    variable_ts_key = get_variable(cost)
+    variable_ts_key = get_generation_variable_cost(cost)
     raw_data = get_time_series(
         variable_ts_key.time_series_type,
         device,
@@ -122,7 +137,7 @@ function get_services_bid(
 end
 
 """
-Adds energy market bids time-series to the MarketBidCost.
+Adds energy market bid time series to the component's operation cost, which must be a MarketBidCost.
 
 # Arguments
 - `sys::System`: PowerSystem System
@@ -134,10 +149,13 @@ function set_variable_cost!(
     component::StaticInjection,
     time_series_data::IS.TimeSeriesData,
 )
+    _validate_time_series_variable_cost(time_series_data)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+
     add_time_series!(sys, component, time_series_data)
     key = IS.TimeSeriesKey(time_series_data)
-    market_bid_cost = get_operation_cost(component)
-    set_variable!(market_bid_cost, key)
+    set_incremental_offer_curves!(market_bid_cost, key)
     return
 end
 
@@ -175,6 +193,11 @@ function set_service_bid!(
     service::Service,
     time_series_data::IS.TimeSeriesData,
 )
+    _validate_time_series_variable_cost(time_series_data)
+    _validate_market_bid_cost(
+        get_operation_cost(component),
+        "get_operation_cost(component)",
+    )
     if get_name(time_series_data) != get_name(service)
         error(
             "Name provided in the TimeSeries Data $(get_name(time_series_data)), doesn't match the Service $(get_name(service)).",
@@ -182,8 +205,8 @@ function set_service_bid!(
     end
     verify_device_eligibility(sys, component, service)
     add_time_series!(sys, component, time_series_data)
-    ancillary_services = get_ancillary_services(get_operation_cost(component))
-    push!(ancillary_services, service)
+    ancillary_service_offers = get_ancillary_service_offers(get_operation_cost(component))
+    push!(ancillary_service_offers, service)
     return
 end
 

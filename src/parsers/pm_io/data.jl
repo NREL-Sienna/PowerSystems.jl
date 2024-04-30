@@ -1895,7 +1895,7 @@ function _correct_cost_function!(id, comp, type_name)
     return modified
 end
 
-"checks that each point in the a pwl function is unqiue, simplifies the function if duplicates appear"
+"checks that each point in the a pwl function is unique, simplifies the function if duplicates appear"
 function _remove_pwl_cost_duplicates!(id, comp, type_name, tolerance = 1e-2)
     @assert comp["model"] == 1
 

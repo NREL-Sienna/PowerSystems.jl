@@ -1,226 +1,6 @@
 {
     "auto_generated_structs": [
         {
-            "struct_name": "TwoPartCost",
-            "docstring": "Data Structure Operational Cost Data in two parts: fixed and variable cost.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "ThreePartCost",
-            "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "StorageManagementCost",
-            "docstring": "Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData",
-                    "default": "LinearFunctionData(0.0)"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "0.0"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn",
-                    "default": "0.0"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "energy_shortage_cost",
-                    "comment": "Cost incurred by the model for being short of the energy target.",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "energy_surplus_cost",
-                    "comment": "Cost incurred by the model for surplus energy stored.",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "MarketBidCost",
-            "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
-            "fields": [
-                {
-                    "name": "no_load",
-                    "comment": "no load cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets",
-                    "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
-                    "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "variable",
-                    "comment": "Variable Cost TimeSeriesKey",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, IS.TimeSeriesKey}",
-                    "default": "nothing"
-                },
-                {
-                    "name": "ancillary_services",
-                    "comment": "Bids for the ancillary services",
-                    "null_value": "Vector{Service}()",
-                    "data_type": "Vector{Service}",
-                    "default": "Vector{Service}()"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "MultiStartCost",
-            "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "no_load",
-                    "comment": "no load cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
-                    "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
             "struct_name": "Area",
             "docstring": "A collection of buses for control purposes.",
             "fields": [
@@ -1522,9 +1302,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "LoadCost(nothing)",
+                    "data_type": "Union{LoadCost, MarketBidCost}",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "services",
@@ -2813,13 +2593,6 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
-                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-                },
-                {
                     "name": "efficiency",
                     "comment": "Conversion efficiency from AC Power to DC Power",
                     "null_value": "0.0",
@@ -3169,9 +2942,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3344,9 +3117,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3599,9 +3372,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3741,9 +3514,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "RenewableGenerationCost(nothing)",
+                    "data_type": "Union{RenewableGenerationCost, MarketBidCost}",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "base_power",
@@ -4001,8 +3774,8 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "ThreePartCost(nothing)",
-                    "data_type": "OperationalCost"
+                    "null_value": "ThermalGenerationCost(nothing)",
+                    "data_type": "Union{ThermalGenerationCost, MarketBidCost}"
                 },
                 {
                     "name": "base_power",
@@ -4213,7 +3986,7 @@
                     "name": "start_time_limits",
                     "comment": " Time limits for start-up based on turbine temperature in hours",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+                    "data_type": "Union{Nothing, StartUpStages}"
                 },
                 {
                     "name": "start_types",
@@ -4228,8 +4001,8 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "MultiStartCost(nothing)",
-                    "data_type": "OperationalCost"
+                    "null_value": "ThermalGenerationCost(nothing)",
+                    "data_type": "Union{ThermalGenerationCost, MarketBidCost}"
                 },
                 {
                     "name": "base_power",
@@ -4420,9 +4193,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "StorageManagementCost()",
-                    "default": "StorageManagementCost()",
-                    "data_type": "Union{StorageManagementCost, MarketBidCost}"
+                    "null_value": "StorageCost(nothing)",
+                    "default": "StorageCost(nothing)",
+                    "data_type": "Union{StorageCost, MarketBidCost}"
                 },
                 {
                     "name": "services",
@@ -4590,9 +4363,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "StorageManagementCost()",
-                    "data_type": "StorageManagementCost",
-                    "default": "Union{StorageManagementCost, MarketBidCost}"
+                    "null_value": "StorageCost(nothing)",
+                    "data_type": "StorageCost",
+                    "default": "StorageCost(nothing)"
                 },
                 {
                     "name": "storage_target",

@@ -855,7 +855,7 @@ function calculate_variable_cost(
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
-        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
 
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
@@ -893,7 +893,7 @@ function calculate_variable_cost(
             (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
-        var_cost = PiecewiseLinearPointData([(x, y) for (y, x) in var_cost])
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
     elseif length(var_cost) == 1
         var_cost = LinearFunctionData(var_cost[1][1])
         fixed = 0.0
@@ -1004,7 +1004,12 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
-    op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
+    op_cost = ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed,
+        startup_cost,
+        shutdown_cost,
+    )
 
     gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
     if !isa(gen_must_run, Bool)
@@ -1047,8 +1052,9 @@ function make_thermal_generator_multistart(
         no_load_cost = 0.0
     else
         (no_load_x, no_load_cost) = first(var_cost)
+        @warn "Strange math occurring here (part 1)"
         var_cost =
-            PiecewiseLinearPointData([
+            PiecewiseLinearData([
                 (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
             ])
     end
@@ -1085,7 +1091,13 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    @warn "Strange math occurring here (part 2)"
+    ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed + no_load_cost,
+        startup_cost,
+        shutdown_cost,
+    )
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1145,7 +1157,8 @@ function make_hydro_generator(
 
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
-        operation_cost = TwoPartCost(var_cost, fixed)
+        operation_cost =
+            HydroGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed)
 
         if gen_type == HydroEnergyReservoir
             @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
@@ -1267,7 +1280,8 @@ function make_renewable_generator(
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
-    operation_cost = TwoPartCost(var_cost, fixed)
+    @assert fixed == 0 "RenewableGenerationCost cannot have a fixed cost, got $fixed with variable cost $varcost"
+    operation_cost = RenewableGenerationCost(CostCurve(InputOutputCurve(var_cost)))
 
     if gen_type == RenewableDispatch
         @debug "Creating $(gen.name) as RenewableDispatch" _group = IS.LOG_GROUP_PARSING
@@ -1337,7 +1351,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        operation_cost = StorageManagementCost(),
+        operation_cost = StorageCost(),
     )
 
     return battery
