@@ -319,7 +319,6 @@ export remove_supplemental_attribute!
 export remove_supplemental_attributes!
 export get_supplemental_attribute
 export get_supplemental_attributes
-export list_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export get_time_series
@@ -509,7 +508,6 @@ import InfrastructureSystems:
     get_component_uuids,
     get_supplemental_attribute,
     get_supplemental_attributes,
-    list_supplemental_attributes,
     set_name!,
     get_internal,
     set_internal!,
