@@ -15697,6 +15697,12 @@
                     "default": "100.0"
                 },
                 {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
                     "name": "states",
                     "exclude_setter": true,
                     "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
@@ -15709,12 +15715,6 @@
                     "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
                     "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
                     "data_type": "Int"
-                },
-                {
-                    "name": "ext",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
