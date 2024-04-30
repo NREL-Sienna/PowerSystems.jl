@@ -4,7 +4,7 @@ get_generation_variable_cost(cost::MarketBidCost) = get_incremental_offer_curves
 
 function _validate_time_series_variable_cost(
     time_series_data::IS.TimeSeriesData;
-    desired_type::Type = CostCurve{PiecewiseIncrementalCurve},
+    desired_type::Type = PiecewiseStepData,
 )
     data_type = IS.eltype_data(time_series_data)
     (data_type <: desired_type) || throw(

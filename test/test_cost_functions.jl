@@ -134,49 +134,12 @@ end
           UnitSystem.DEVICE_BASE
 end
 
-# Copied from IS test/test_time_series_transformations.jl
-function test_inner_round_trip_common(
-    data::Union{Vector{T}, SortedDict{Dates.DateTime, <:Vector{T}}},
-    compare_to,
-) where {T}
-    transformed = IS.transform_array_for_hdf(data)
-    retransformed = IS.retransform_hdf_array(transformed, T)
-    @test size(retransformed) == size(compare_to)  # redundant but a more informative failure
-    @test retransformed == compare_to
-end
-
-test_inner_round_trip(data::Vector) = test_inner_round_trip_common(data, data)
-
-test_inner_round_trip(data::SortedDict{Dates.DateTime, <:Vector}) =
-    test_inner_round_trip_common(data, hcat(values(data)...))
-
-@testset "Test HDF transformations on PSY cost structs" begin
-    test_date = DateTime("2023-01-01")
-    test_datas = [
-        [IS.LinearFunctionData(1.0)],  # positive control
-        [InputOutputCurve(LinearFunctionData(3.0, 5.0))],
-        [InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))],
-        [InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
-        [IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)],
-        [AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)],
-        [CostCurve(PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))],
-        [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))],
-    ]
-    test_datas_dated = [
-        SortedDict{Dates.DateTime, typeof(test_data)}(test_date => test_data) for
-        test_data in test_datas
-    ]
-    for test_data in vcat(test_datas, test_datas_dated)
-        test_inner_round_trip(test_data)
-    end
-end
-
 test_costs = Dict(
-    QuadraticCurve =>
-        repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
-    PiecewiseIncrementalCurve =>
+    QuadraticFunctionData =>
+        repeat([QuadraticFunctionData(999.0, 2.0, 1.0)], 24),
+    PiecewiseLinearData =>
         repeat(
-            [CostCurve(PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]))],
+            [PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0])],
             24,
         ),
 )
@@ -190,7 +153,7 @@ test_costs = Dict(
     horizon = 24
     service_data = Dict(initial_time => ones(horizon))
     data_quadratic =
-        SortedDict(initial_time => test_costs[QuadraticCurve])
+        SortedDict(initial_time => test_costs[QuadraticFunctionData])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
@@ -209,7 +172,7 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve])
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData])
     service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
@@ -244,8 +207,8 @@ end
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve],
-        other_time => test_costs[PiecewiseIncrementalCurve])
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData],
+        other_time => test_costs[PiecewiseLinearData])
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(nothing)
     add_component!(sys, reserve)

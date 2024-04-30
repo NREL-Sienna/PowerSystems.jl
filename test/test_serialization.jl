@@ -110,12 +110,9 @@ end
         end_time = Dates.DateTime("2020-01-01T23:00:00")
         dates = collect(initial_time:Dates.Hour(1):end_time)
         data =
-            CostCurve.(
-                PiecewiseIncrementalCurve.(
-                    collect(1.0:24.0),
-                    [[i, i + 1, i + 2] for i in 1.0:24.0],
-                    [[i, i + 1] for i in 1.0:24.0],
-                )
+            PiecewiseStepData.(
+                [[i, i + 1, i + 2] for i in 1.0:24.0],
+                [[i, i + 1] for i in 1.0:24.0],
             )
         market_bid = MarketBidCost(nothing)
         set_operation_cost!(gen, market_bid)
