@@ -2440,3 +2440,5 @@ Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
 function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.check_time_series_consistency(sys.data, T)
 end
+
+stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
