@@ -991,9 +991,12 @@ end
 """
 Check to see if the component of type T with name exists.
 """
-function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
-    return IS.has_component(T, sys.data.components, name)
+function has_component(sys::System, T::Type{<:Component}, name::AbstractString)
+    return IS.has_component(sys.data, T, name)
 end
+
+has_component(T::Type{<:Component}, sys::System, name::AbstractString) =
+    has_component(sys, T, name)
 
 """
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract

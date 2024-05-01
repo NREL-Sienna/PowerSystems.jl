@@ -255,3 +255,21 @@ function show_components(
     )
     return
 end
+
+# The placement of the type in the argument list has been confusing for people. Support
+# it both before and after the system.
+
+show_components(
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(sys, component_type, additional_columns; kwargs...)
+
+show_components(
+    io::IO,
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(io, sys, component_type, additional_columns; kwargs...)
