@@ -1,6 +1,6 @@
 """
     mutable struct HydroGenerationCost <: OperationalCost
-        variable::FuelCurve
+        variable::ProductionVariableCost
         fixed::Float64
     end
 
@@ -10,8 +10,10 @@ values are used or the opportunity cost of water if the costs are positive. It a
 fuel curves to model specific water intake.
 
 # Arguments
-- `variable::FuelCurve`: Production variable cost represented by a fuel curve, where the fuel is water.
-- `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost represenations this field can be duplicative.
+- `variable::ProductionVariableCost`: Production variable cost represented by a `FuelCurve`,
+  where the fuel is water, or a `CostCurve` in currency.
+- `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost
+  represenations this field can be duplicative.
 """
 @kwdef mutable struct HydroGenerationCost <: OperationalCost
     "variable cost"
@@ -21,7 +23,7 @@ fuel curves to model specific water intake.
 end
 
 # Constructor for demo purposes; non-functional.
-HydroGenerationCost(::Nothing) = HydroGenerationCost(zero(FuelCurve), 0.0)
+HydroGenerationCost(::Nothing) = HydroGenerationCost(zero(CostCurve), 0.0)
 
 """Get [`HydroGenerationCost`](@ref) `variable`."""
 get_variable(value::HydroGenerationCost) = value.variable
