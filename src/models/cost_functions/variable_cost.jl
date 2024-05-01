@@ -66,19 +66,3 @@ Base.zero(::Union{FuelCurve, Type{FuelCurve}}) = FuelCurve(zero(ValueCurve), 0.0
 
 "Get the fuel cost or the name of the fuel cost time series"
 get_fuel_cost(cost::FuelCurve) = cost.fuel_cost
-
-# HDF5 SERIALIZATION
-IS.transform_array_for_hdf(data::Vector{<:CostCurve}) =
-    IS.transform_array_for_hdf(get_value_curve.(data))
-
-IS.transform_array_for_hdf(
-    data::SortedDict{Dates.DateTime, <:Vector{<:CostCurve{T}}},
-) where {T} =
-    IS.transform_array_for_hdf(
-        SortedDict{Dates.DateTime, Vector{T}}(
-            k => get_value_curve.(v) for (k, v) in data
-        ),
-    )
-
-IS.retransform_hdf_array(data::Array, T::Type{CostCurve{U}}) where {U} =
-    CostCurve.(IS.retransform_hdf_array(data, U))
