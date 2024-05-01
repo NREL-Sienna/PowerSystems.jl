@@ -561,7 +561,6 @@ import InfrastructureSystems:
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
     get_y_coords,
-    get_raw_data,
     get_raw_data_type
 
 const IS = InfrastructureSystems
