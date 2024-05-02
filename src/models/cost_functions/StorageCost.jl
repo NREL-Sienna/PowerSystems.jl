@@ -65,8 +65,10 @@ function StorageCost(::Nothing)
     StorageCost()
 end
 
-"""Get [`StorageCost`](@ref) `variable`."""
-get_variable(value::StorageCost) = value.variable
+"""Get [`StorageCost`](@ref) `charge_variable_cost`."""
+get_charge_variable_cost(value::StorageCost) = value.charge_variable_cost
+"""Get [`StorageCost`](@ref) `charge_variable_cost`."""
+get_discharge_variable_cost(value::StorageCost) = value.charge_variable_cost
 """Get [`StorageCost`](@ref) `fixed`."""
 get_fixed(value::StorageCost) = value.fixed
 """Get [`StorageCost`](@ref) `start_up`."""
