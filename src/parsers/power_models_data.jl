@@ -320,7 +320,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = HydroGenerationCost(zero(FuelCurve), 0.0)
+    curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
