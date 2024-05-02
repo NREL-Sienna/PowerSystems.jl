@@ -32,7 +32,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `states::Vector{Symbol}`: The states are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: SEXS has 2 states
 - `states_types::Vector{StateTypes}`: SEXS has 2 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SEXS <: AVR
     "Ratio of lead and lag time constants"
@@ -55,7 +55,7 @@ mutable struct SEXS <: AVR
     n_states::Int
     "SEXS has 2 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

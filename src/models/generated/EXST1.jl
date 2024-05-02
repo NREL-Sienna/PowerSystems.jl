@@ -44,7 +44,7 @@ IEEE Type ST1 Excitation System (PTI version)
 	Vr: Regulator Output, 
 	Vfb: Feedback state
 - `n_states::Int`: The EXST1 has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EXST1 <: AVR
     "Voltage Measurement Time Constant in s"
@@ -79,7 +79,7 @@ mutable struct EXST1 <: AVR
     states::Vector{Symbol}
     "The EXST1 has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -6,7 +6,7 @@ To specify fields representing an option from a pre-defined list, some of the fi
 [`IS.scoped_enums`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.@scoped_enum-Tuple{Any,%20Vararg{Any,%20N}%20where%20N}) (e.g.
 `set_fuel!(gen, ThermalFuels.COAL)`). Below are the enumerated types contained in `PowerSystems`.
 
-## `ThermalFuels`
+## [`ThermalFuels`](@id tf_list)
 
 Each `ThermalGen` generator struct contains a field for `fuel::ThermalFuels` where `ThermalFuels`
 are intended to reflect the options denoted by the
@@ -31,7 +31,7 @@ following options:
 | `GEOTHERMAL` | GEO | Geothermal |
 | `OTHER` | OTH | Other |
 
-## `PrimeMovers`
+## [`PrimeMovers`](@id pm_list)
 
 Each generator struct contains a field for `prime_mover::PrimeMovers` where `PrimeMovers`
 are intended to reflect the options denoted by
@@ -64,7 +64,7 @@ are intended to reflect the options denoted by
 | `WT` | Wind Turbine, Onshore |
 | `WS` | Wind Turbine, Offshore |
 
-## `ACBusTypes`
+## [`ACBusTypes`](@id acbustypes_list)
 
 `ACBusTypes` is used to denote which quantities are specified for load flow calculations and
 to otherwise categorize buses for modeling activities.
@@ -77,14 +77,14 @@ to otherwise categorize buses for modeling activities.
 | `REF` | Reference bus (θ = 0)|
 | `SLACK` | Slack bus |
 
-## `AngleUnits`
+## [`AngleUnits`](@id angleunits_list)
 
 | EnumName |
 |----------|
 | `DEGREES` |
 | `RADIANS` |
 
-## `StateTypes`
+## [`StateTypes`](@id states_list)
 
 | EnumName |
 |----------|

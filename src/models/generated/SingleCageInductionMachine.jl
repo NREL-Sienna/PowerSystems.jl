@@ -30,7 +30,7 @@ This file is auto-generated. Do not edit.
 Parameters of 5-states three-phase single cage induction machine with quadratic torque-speed relationship.
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `R_s::Float64`: Armature stator resistance, validation range: `(0, nothing)`
 - `R_r::Float64`: Rotor resistance, validation range: `(0, nothing)`
 - `X_ls::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
@@ -39,7 +39,7 @@ Parameters of 5-states three-phase single cage induction machine with quadratic 
 - `H::Float64`: Motor Inertia Constant [s], validation range: `(0, nothing)`
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
 - `B::Float64`: Torque-Speed Linear Term, validation range: `(0, 1)`
-- `base_power::Float64`: Base power, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `C::Float64`: Torque-Speed Constant Term
 - `τ_ref::Float64`: Reference torque parameter
@@ -53,9 +53,10 @@ Parameters of 5-states three-phase single cage induction machine with quadratic 
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],
 - `n_states::Int`: SingleCageInductionMachine has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SingleCageInductionMachine <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Armature stator resistance"
     R_s::Float64
@@ -73,7 +74,7 @@ mutable struct SingleCageInductionMachine <: DynamicInjection
     A::Float64
     "Torque-Speed Linear Term"
     B::Float64
-    "Base power"
+    "Base power of the unit (MVA)"
     base_power::Float64
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
@@ -96,7 +97,7 @@ mutable struct SingleCageInductionMachine <: DynamicInjection
     states::Vector{Symbol}
     "SingleCageInductionMachine has 5 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

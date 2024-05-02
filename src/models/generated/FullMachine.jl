@@ -54,7 +54,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux
 - `n_states::Int`: FullMachine has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct FullMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -96,7 +96,7 @@ mutable struct FullMachine <: Machine
     states::Vector{Symbol}
     "FullMachine has 5 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

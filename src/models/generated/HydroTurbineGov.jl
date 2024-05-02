@@ -48,7 +48,7 @@ Hydro Turbine-Governor.
 	x_g4: turbine flow
 - `n_states::Int`: HYGOV has 4 states
 - `states_types::Vector{StateTypes}`: HYGOV has 4 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct HydroTurbineGov <: TurbineGov
     "Permanent droop parameter"
@@ -87,7 +87,7 @@ mutable struct HydroTurbineGov <: TurbineGov
     n_states::Int
     "HYGOV has 4 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

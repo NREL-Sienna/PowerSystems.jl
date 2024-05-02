@@ -19,28 +19,30 @@ This file is auto-generated. Do not edit.
 A collection of branches that make up an interface or corridor for the transfer of power.
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
 - `active_power_flow_limits::MinMax`
 - `violation_penalty::Float64`: Penalty for violating the flow limits in the interface
 - `direction_mapping::Dict{String, Int}`: Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct TransmissionInterface <: Service
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
     available::Bool
     active_power_flow_limits::MinMax
     "Penalty for violating the flow limits in the interface"
     violation_penalty::Float64
     "Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface"
     direction_mapping::Dict{String, Int}
-    "internal time_series storage"
+    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     "container for supplemental attributes"
     supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -29,7 +29,7 @@ Parameters of a Turbine Governor Type II.
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: lead-lag state
 - `n_states::Int`: TGTypeII has 1 state
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct TGTypeII <: TurbineGov
     "Droop parameter"
@@ -49,7 +49,7 @@ mutable struct TGTypeII <: TurbineGov
     states::Vector{Symbol}
     "TGTypeII has 1 state"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

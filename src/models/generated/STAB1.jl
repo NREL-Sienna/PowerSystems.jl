@@ -37,7 +37,7 @@ Speed-Sensitive Stabilizing Model
 	x_p3: T2/T4 lead-lag block,
 - `n_states::Int`: STAB1 has 3 states
 - `states_types::Vector{StateTypes}`: STAB1 has 3 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct STAB1 <: PSS
     "K/T for washout filter"
@@ -65,7 +65,7 @@ mutable struct STAB1 <: PSS
     n_states::Int
     "STAB1 has 3 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

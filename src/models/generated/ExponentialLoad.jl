@@ -27,26 +27,29 @@ This file is auto-generated. Do not edit.
 Data structure for a static exponential load.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `active_power_coefficient::Float64`: Coefficient relating voltage dependence for power P = P0 * V^α, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_coefficient::Float64`: Coefficient relating voltage dependence for power Q = Q0 * V^β, validation range: `(0, nothing)`, action if invalid: `warn`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ExponentialLoad <: StaticLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
     active_power::Float64
     reactive_power::Float64
@@ -54,7 +57,7 @@ mutable struct ExponentialLoad <: StaticLoad
     active_power_coefficient::Float64
     "Coefficient relating voltage dependence for power Q = Q0 * V^β"
     reactive_power_coefficient::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA)"
     base_power::Float64
     max_active_power::Float64
     max_reactive_power::Float64
@@ -64,11 +67,11 @@ mutable struct ExponentialLoad <: StaticLoad
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
+    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     "container for supplemental attributes"
     supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

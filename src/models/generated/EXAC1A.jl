@@ -61,7 +61,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSL
 	Vr3: Feedback output state
 - `n_states::Int`: EXAC1A has 5 states
 - `states_types::Vector{StateTypes}`: EXAC1A has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EXAC1A <: AVR
     "Regulator input filter time constant in s"
@@ -111,7 +111,7 @@ mutable struct EXAC1A <: AVR
     n_states::Int
     "EXAC1A has 5 states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

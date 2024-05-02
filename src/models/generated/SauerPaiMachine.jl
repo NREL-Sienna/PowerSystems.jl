@@ -56,7 +56,7 @@ Parameters of synchronous machine: Sauer Pai model
 	ψd_pp: subtransient flux linkage in the d-axis
 	ψq_pp: subtransient flux linkage in the q-axis
 - `n_states::Int`: SauerPaiMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SauerPaiMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -99,7 +99,7 @@ mutable struct SauerPaiMachine <: Machine
     states::Vector{Symbol}
     "SauerPaiMachine has 6 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

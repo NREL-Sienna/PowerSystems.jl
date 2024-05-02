@@ -46,7 +46,7 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
 - `n_states::Int`: AndersonFouadMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AndersonFouadMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -83,7 +83,7 @@ mutable struct AndersonFouadMachine <: Machine
     states::Vector{Symbol}
     "AndersonFouadMachine has 6 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

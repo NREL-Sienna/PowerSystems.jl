@@ -57,7 +57,7 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis
 - `n_states::Int`: RoundRotorMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct RoundRotorMachine <: Machine
     "Armature resistance"
@@ -104,7 +104,7 @@ mutable struct RoundRotorMachine <: Machine
     states::Vector{Symbol}
     "RoundRotorMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

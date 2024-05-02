@@ -47,7 +47,7 @@ IEEE Excitation System for Voltage Security Assesment
 	Vex: Exciter Output, 
 	oel: OEL integrator state
 - `n_states::Int`: The EX4VSA has 3 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EX4VSA <: AVR
     "OEL Field current limit"
@@ -85,7 +85,7 @@ mutable struct EX4VSA <: AVR
     states::Vector{Symbol}
     "The EX4VSA has 3 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

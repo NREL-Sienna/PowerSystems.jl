@@ -66,7 +66,7 @@ Parameters of 5 mass-spring shaft model.
 	δ_ex: rotor angle of exciter,
 	ω_lp: rotor speed of exciter
 - `n_states::Int`: FiveMassShaft has 10 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct FiveMassShaft <: Shaft
     "Rotor inertia constant in MWs/MVA"
@@ -121,7 +121,7 @@ mutable struct FiveMassShaft <: Shaft
     states::Vector{Symbol}
     "FiveMassShaft has 10 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

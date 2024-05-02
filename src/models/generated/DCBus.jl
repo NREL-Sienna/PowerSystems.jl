@@ -22,7 +22,7 @@ A power-system DC bus.
 
 # Arguments
 - `number::Int`: number associated with the DC bus
-- `name::String`: the name of the DC bus
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
@@ -30,12 +30,12 @@ A power-system DC bus.
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct DCBus <: Bus
     "number associated with the DC bus"
     number::Int
-    "the name of the DC bus"
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "voltage as a multiple of basevoltage"
     magnitude::Union{Nothing, Float64}
@@ -51,7 +51,7 @@ mutable struct DCBus <: Bus
     ext::Dict{String, Any}
     "container for supplemental attributes"
     supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

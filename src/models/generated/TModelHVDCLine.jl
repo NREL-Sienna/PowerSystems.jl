@@ -23,10 +23,10 @@ This file is auto-generated. Do not edit.
 a HVDC T-Model DC line.
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
 - `active_power_flow::Float64`
-- `arc::Arc`
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
 - `r::Float64`: Series Resistance system per-unit value
 - `l::Float64`: Series Inductance system per-unit value
 - `c::Float64`: Shunt capacitance system per-unit value
@@ -34,12 +34,15 @@ a HVDC T-Model DC line.
 - `active_power_limits_to::MinMax`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct TModelHVDCLine <: DCBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
     available::Bool
     active_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
     "Series Resistance system per-unit value"
     r::Float64
@@ -53,7 +56,7 @@ mutable struct TModelHVDCLine <: DCBranch
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -24,7 +24,7 @@ Parameters of single mass shaft model. Typically represents the rotor mass.
 	δ: rotor angle,
 	ω: rotor speed
 - `n_states::Int`: SingleMass has 1 state
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SingleMass <: Shaft
     "Rotor inertia constant in MWs/MVA"
@@ -39,7 +39,7 @@ mutable struct SingleMass <: Shaft
     states::Vector{Symbol}
     "SingleMass has 1 state"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

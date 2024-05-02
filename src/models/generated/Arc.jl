@@ -16,14 +16,14 @@ A topological Arc.
 # Arguments
 - `from::Bus`: The initial bus
 - `to::Bus`: The terminal bus
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct Arc <: Topology
     "The initial bus"
     from::Bus
     "The terminal bus"
     to::Bus
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

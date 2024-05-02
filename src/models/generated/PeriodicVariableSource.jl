@@ -25,7 +25,7 @@ This file is auto-generated. Do not edit.
 This struct acts as an infinity bus with time varying phasor values magnitude and angle V(t) 	heta(t). Time varying functions are represented using fourier series
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
 - `internal_voltage_bias::Float64`: a0 term of the Fourier Series for the voltage
@@ -34,13 +34,14 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 - `internal_angle_bias::Float64`: a0 term of the Fourier Series for the angle
 - `internal_angle_frequencies::Vector{Float64}`: Frequencies in radians/s
 - `internal_angle_coefficients::Vector{Tuple{Float64,Float64}}`: Coefficients for terms n > 1. First component corresponds to sin and second component to cos
-- `base_power::Float64`: Base power
+- `base_power::Float64`: Base power of the unit (MVA)
 - `states::Vector{Symbol}`: State for time, voltage and angle
 - `n_states::Int`
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct PeriodicVariableSource <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Source Thevenin resistance"
     R_th::Float64
@@ -58,14 +59,14 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     internal_angle_frequencies::Vector{Float64}
     "Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
     internal_angle_coefficients::Vector{Tuple{Float64,Float64}}
-    "Base power"
+    "Base power of the unit (MVA)"
     base_power::Float64
     "State for time, voltage and angle"
     states::Vector{Symbol}
     n_states::Int
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

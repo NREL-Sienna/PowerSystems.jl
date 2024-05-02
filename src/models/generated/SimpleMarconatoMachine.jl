@@ -53,7 +53,7 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
 - `n_states::Int`: SimpleMarconatoMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SimpleMarconatoMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -92,7 +92,7 @@ mutable struct SimpleMarconatoMachine <: Machine
     states::Vector{Symbol}
     "SimpleMarconatoMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

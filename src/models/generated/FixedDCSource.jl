@@ -20,7 +20,7 @@ Parameters of a Fixed DC Source that returns a fixed DC voltage
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`
 - `n_states::Int`: FixedDCSource has no states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct FixedDCSource <: DCSource
     "rated VA"
@@ -30,7 +30,7 @@ mutable struct FixedDCSource <: DCSource
     states::Vector{Symbol}
     "FixedDCSource has no states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -50,7 +50,7 @@ This file is auto-generated. Do not edit.
 	Vr3: Rate feedback integrator
 - `n_states::Int`: The IEEET1 has 4 states
 - `states_types::Vector{StateTypes}`: IEEET1 I has 4 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct IEEET1 <: AVR
     "Voltage Measurement Time Constant in s"
@@ -91,7 +91,7 @@ mutable struct IEEET1 <: AVR
     n_states::Int
     "IEEET1 I has 4 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -57,7 +57,7 @@ This file is auto-generated. Do not edit.
 Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `Qref_Flag::Int`: Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control, validation range: `(1, 3)`
 - `PQ_Flag::Int`: Active and reactive power priority mode. 0 for Q priority, 1 for P priority, validation range: `(0, 1)`
 - `Gen_Flag::Int`: Define generator or storage system. 0 unit is a storage device, 1 unit is a generator, validation range: `(0, 1)`
@@ -98,13 +98,14 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power
+- `base_power::Float64`: Base power of the unit (MVA)
 - `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
 - `n_states::Int`: The states of GenericDER depend on the Flags
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct GenericDER <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control"
     Qref_Flag::Int
@@ -186,7 +187,7 @@ mutable struct GenericDER <: DynamicInjection
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    "Base power"
+    "Base power of the unit (MVA)"
     base_power::Float64
     "The states of GenericDER depend on the Flags"
     states::Vector{Symbol}
@@ -194,7 +195,7 @@ mutable struct GenericDER <: DynamicInjection
     n_states::Int
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

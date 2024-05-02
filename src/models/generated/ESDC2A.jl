@@ -56,7 +56,7 @@ Parameters of IEEE Std 421.5 Type DC2A Excitacion System. This model corresponds
 	Vr3: Rate feedback integrator
 - `n_states::Int`: The ESDC2A has 5 states
 - `states_types::Vector{StateTypes}`: ESDC2A has 5 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESDC2A <: AVR
     "Voltage Measurement Time Constant in s"
@@ -102,7 +102,7 @@ mutable struct ESDC2A <: AVR
     n_states::Int
     "ESDC2A has 5 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

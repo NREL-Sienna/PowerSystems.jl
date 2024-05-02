@@ -62,7 +62,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 	Vr3: Feedback output state
 - `n_states::Int`: ST1A has 5 states
 - `states_types::Vector{StateTypes}`: ST1A has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESST1A <: AVR
     "Code input for Underexcitization limiter (UEL) entry. Not supported."
@@ -114,7 +114,7 @@ mutable struct ESST1A <: AVR
     n_states::Int
     "ST1A has 5 states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

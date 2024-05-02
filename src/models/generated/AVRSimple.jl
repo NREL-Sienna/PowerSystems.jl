@@ -26,7 +26,7 @@ i.e. an integrator controller on EMF
 	Vf: field voltage
 - `n_states::Int`: Fixed AVR has 1 states
 - `states_types::Vector{StateTypes}`: Simple AVR has 1 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRSimple <: AVR
     "Proportional Gain"
@@ -42,7 +42,7 @@ mutable struct AVRSimple <: AVR
     n_states::Int
     "Simple AVR has 1 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -63,7 +63,7 @@ IEEE Stabilizing Model PSS.
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
 - `states_types::Vector{StateTypes}`: IEEEST has 7 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct IEEEST <: PSS
     "Code input for stabilizer"
@@ -117,7 +117,7 @@ mutable struct IEEEST <: PSS
     n_states::Int
     "IEEEST has 7 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

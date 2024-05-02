@@ -385,7 +385,7 @@
         },
         {
             "struct_name": "ACBus",
-            "docstring": "A power-system bus.",
+            "docstring": "An AC bus.",
             "inner_constructor_check": "check_bus_params",
             "fields": [
                 {
@@ -403,7 +403,7 @@
                 },
                 {
                     "name": "bustype",
-                    "comment": "bus type",
+                    "comment": "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, ACBusTypes}"
                 },
@@ -3159,7 +3159,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
                 },
@@ -3369,7 +3369,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
                 },
@@ -3537,7 +3537,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
                 },
@@ -3811,7 +3811,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
@@ -3943,7 +3943,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
@@ -4128,14 +4128,14 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
                     "default": "PrimeMovers.OT"
                 },
                 {
                     "name": "fuel",
-                    "comment": "Prime mover fuel according to EIA 923",
+                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list).",
                     "null_value": "ThermalFuels.OTHER",
                     "data_type": "ThermalFuels",
                     "default": "ThermalFuels.OTHER"
@@ -4250,13 +4250,13 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
                 {
                     "name": "fuel",
-                    "comment": "Prime mover fuel according to EIA 923",
+                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list).",
                     "null_value": "ThermalFuels.OTHER",
                     "data_type": "ThermalFuels"
                 },
@@ -4422,7 +4422,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
                 },
@@ -4596,7 +4596,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
                 },

@@ -48,7 +48,7 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
 - `n_states::Int`: SimpleAFMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SimpleAFMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -83,7 +83,7 @@ mutable struct SimpleAFMachine <: Machine
     states::Vector{Symbol}
     "SimpleAFMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

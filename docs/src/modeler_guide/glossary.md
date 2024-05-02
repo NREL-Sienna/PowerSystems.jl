@@ -84,7 +84,7 @@
 
 * *SEXS*: Simplified Excitation Systems model from PSS/E
 
-* *Static*:  [](@ref)
+* *Static*:
 
 * *STAB*:
 

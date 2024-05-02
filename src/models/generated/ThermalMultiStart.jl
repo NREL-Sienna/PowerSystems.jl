@@ -37,15 +37,15 @@ This file is auto-generated. Do not edit.
 Data Structure for thermal generation technologies.
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
 - `status::Bool`
-- `bus::ACBus`
+- `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
 - `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
-- `fuel::ThermalFuels`: Prime mover fuel according to EIA 923
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
+- `fuel::ThermalFuels`: Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list).
 - `active_power_limits::MinMax`
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `ramp_limits::Union{Nothing, UpDown}`, validation range: `(0, nothing)`, action if invalid: `error`
@@ -54,28 +54,31 @@ Data Structure for thermal generation technologies.
 - `start_time_limits::Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}`:  Time limits for start-up based on turbine temperature in hours
 - `start_types::Int`:  Number of start-up based on turbine temperature, validation range: `(1, 3)`, action if invalid: `error`
 - `operation_cost::OperationalCost`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `time_at_status::Float64`
 - `must_run::Bool`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
+- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
 - `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ThermalMultiStart <: ThermalGen
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
     available::Bool
     status::Bool
+    "Bus that this component is connected to"
     bus::ACBus
     active_power::Float64
     reactive_power::Float64
     "Thermal limited MVA Power Output of the unit. <= Capacity"
     rating::Float64
-    "Prime mover technology according to EIA 923"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
     prime_mover_type::PrimeMovers
-    "Prime mover fuel according to EIA 923"
+    "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)."
     fuel::ThermalFuels
     active_power_limits::MinMax
     reactive_power_limits::Union{Nothing, MinMax}
@@ -89,7 +92,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     " Number of start-up based on turbine temperature"
     start_types::Int
     operation_cost::OperationalCost
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA)"
     base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
@@ -99,11 +102,11 @@ mutable struct ThermalMultiStart <: ThermalGen
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
+    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
     time_series_container::InfrastructureSystems.TimeSeriesContainer
     "container for supplemental attributes"
     supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

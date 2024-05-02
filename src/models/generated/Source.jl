@@ -24,9 +24,9 @@ This file is auto-generated. Do not edit.
 This struct acts as an infinity bus.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`
 - `reactive_power::Float64`
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
@@ -36,11 +36,14 @@ This struct acts as an infinity bus.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct Source <: StaticInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
     active_power::Float64
     reactive_power::Float64
@@ -58,7 +61,7 @@ mutable struct Source <: StaticInjection
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

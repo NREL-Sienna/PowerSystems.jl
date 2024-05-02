@@ -24,7 +24,7 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 - `states::Vector{Symbol}`: Fixed AVR has no states
 - `n_states::Int`: Fixed AVR has no states
 - `states_types::Vector{StateTypes}`: Fixed AVR has no states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRFixed <: AVR
     "Fixed voltage field applied to the rotor winding"
@@ -39,7 +39,7 @@ mutable struct AVRFixed <: AVR
     n_states::Int
     "Fixed AVR has no states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

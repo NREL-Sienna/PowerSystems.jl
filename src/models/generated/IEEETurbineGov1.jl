@@ -66,7 +66,7 @@ IEEE Type 1 Speed-Governing Model
 	x_g6: Fourth Turbine Integrator, 
 - `n_states::Int`: IEEEG1 has 6 states
 - `states_types::Vector{StateTypes}`: IEEEG1 has 6 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct IEEETurbineGov1 <: TurbineGov
     "Governor Gain"
@@ -123,7 +123,7 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     n_states::Int
     "IEEEG1 has 6 differential states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

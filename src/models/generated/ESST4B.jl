@@ -60,7 +60,7 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 	Vm: Output integrator
 - `n_states::Int`: ST4B has 4 states
 - `states_types::Vector{StateTypes}`: ST4B has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESST4B <: AVR
     "Regulator input filter time constant in s"
@@ -110,7 +110,7 @@ mutable struct ESST4B <: AVR
     n_states::Int
     "ST4B has 4 states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

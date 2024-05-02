@@ -20,7 +20,7 @@ Parameters of a PSS that returns a fixed voltage to add to the reference for the
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`
 - `n_states::Int`: PSSFixed has no states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct PSSFixed <: PSS
     "Fixed voltage stabilization signal"
@@ -30,7 +30,7 @@ mutable struct PSSFixed <: PSS
     states::Vector{Symbol}
     "PSSFixed has no states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 
