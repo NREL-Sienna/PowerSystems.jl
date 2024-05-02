@@ -227,6 +227,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -281,6 +282,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -327,6 +329,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -394,7 +397,7 @@
                     "null_value": "init",
                     "name": "name",
                     "exclude_setter": true,
-                    "comment": "the name of the bus",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "data_type": "String"
                 },
                 {
@@ -491,7 +494,7 @@
                     "null_value": "init",
                     "name": "name",
                     "exclude_setter": true,
-                    "comment": "the name of the DC bus",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "data_type": "String"
                 },
                 {
@@ -590,6 +593,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -708,6 +712,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -834,6 +839,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -978,6 +984,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1102,6 +1109,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1216,6 +1224,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1309,6 +1318,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1403,6 +1413,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1482,6 +1493,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1588,6 +1600,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1659,6 +1672,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1745,6 +1759,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -1846,6 +1861,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2007,6 +2023,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2130,6 +2147,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2291,6 +2309,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2458,6 +2477,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2565,6 +2585,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2776,6 +2797,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -2899,6 +2921,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3061,6 +3084,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3268,6 +3292,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3424,6 +3449,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3701,11 +3727,12 @@
         },
         {
             "struct_name": "RenewableDispatch",
-            "docstring": "A *downward-dispatchable* renewable (wind or solar) generator whose output is limited the value or profile in the rating argument, but can curtailed downwards to satisfy power system constraints. These generators can also participate reserves markets by holding  Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref)",
+            "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints. These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3830,11 +3857,12 @@
         },
         {
             "struct_name": "RenewableFix",
-            "docstring": "A must-take renewable generator whose output is *fixed* the value or profile in the rating argument. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)",
+            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -3945,6 +3973,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4127,6 +4156,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4329,6 +4359,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4500,6 +4531,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4686,6 +4718,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4789,6 +4822,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4893,6 +4927,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -4952,6 +4987,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -5046,6 +5082,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -5157,6 +5194,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -5268,6 +5306,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -5342,6 +5381,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -15657,6 +15697,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -16068,6 +16109,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -16168,6 +16210,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
@@ -16282,6 +16325,7 @@
                 {
                     "null_value": "init",
                     "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
                     "exclude_setter": true,
                     "data_type": "String"
                 },
