@@ -13,8 +13,6 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -28,8 +26,6 @@ This file is auto-generated. Do not edit.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct FixedAdmittance <: ElectricLoad
@@ -43,20 +39,16 @@ mutable struct FixedAdmittance <: ElectricLoad
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -69,8 +61,6 @@ function FixedAdmittance(::Nothing)
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -88,10 +78,6 @@ get_dynamic_injector(value::FixedAdmittance) = value.dynamic_injector
 get_services(value::FixedAdmittance) = value.services
 """Get [`FixedAdmittance`](@ref) `ext`."""
 get_ext(value::FixedAdmittance) = value.ext
-"""Get [`FixedAdmittance`](@ref) `time_series_container`."""
-get_time_series_container(value::FixedAdmittance) = value.time_series_container
-"""Get [`FixedAdmittance`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::FixedAdmittance) = value.supplemental_attributes_container
 """Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
@@ -105,7 +91,3 @@ set_Y!(value::FixedAdmittance, val) = value.Y = val
 set_services!(value::FixedAdmittance, val) = value.services = val
 """Set [`FixedAdmittance`](@ref) `ext`."""
 set_ext!(value::FixedAdmittance, val) = value.ext = val
-"""Set [`FixedAdmittance`](@ref) `time_series_container`."""
-set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val
-"""Set [`FixedAdmittance`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::FixedAdmittance, val) = value.supplemental_attributes_container = val

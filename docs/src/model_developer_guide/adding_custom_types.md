@@ -12,9 +12,11 @@ Refer to the
 [managing components guide](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/components_and_container/)
 for component requirements.
 
-**Note**: `get_internal`, `get_name`, and `get_time_series_container` are
-imported into `PowerSystems`, so you should implement your methods as
-`PowerSystems` methods.
+In particular, please note the methods `supports_time_series` (default = false) and
+`supports_supplemental_attributes` (default = true) that you may need to implement.
+
+**Note**: `get_internal` and `get_name` are imported into `PowerSystems`, so you should
+implement your methods as `PowerSystems` methods.
 
 Some abstract types define required interface functions in docstring. Be sure
 to implement each of them for your new type.

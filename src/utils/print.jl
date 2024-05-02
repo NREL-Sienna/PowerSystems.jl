@@ -149,8 +149,7 @@ function Base.show(io::IO, ist::Component)
     is_first = true
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         getter_name = Symbol("get_$name")
-        if field_type <: IS.TimeSeriesContainer ||
-           field_type <: InfrastructureSystemsInternal
+        if field_type <: InfrastructureSystemsInternal
             continue
         elseif hasproperty(PowerSystems, getter_name)
             getter_func = getproperty(PowerSystems, getter_name)
@@ -190,8 +189,6 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
             if (obj isa InfrastructureSystemsInternal) && !default_units
                 print(io, "\n   ")
                 show(io, MIME"text/plain"(), obj.units_info)
-                continue
-            elseif obj isa IS.TimeSeriesContainer
                 continue
             elseif obj isa InfrastructureSystemsType ||
                    obj isa Vector{<:InfrastructureSystemsComponent}
@@ -258,3 +255,21 @@ function show_components(
     )
     return
 end
+
+# The placement of the type in the argument list has been confusing for people. Support
+# it both before and after the system.
+
+show_components(
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(sys, component_type, additional_columns; kwargs...)
+
+show_components(
+    io::IO,
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(io, sys, component_type, additional_columns; kwargs...)

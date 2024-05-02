@@ -18,8 +18,6 @@ This file is auto-generated. Do not edit.
         angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -38,8 +36,6 @@ This file is auto-generated. Do not edit.
 - `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
 - `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct Line <: ACBranch
@@ -59,20 +55,16 @@ mutable struct Line <: ACBranch
     "Services that this device contributes to"
     services::Vector{Service}
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,8 +82,6 @@ function Line(::Nothing)
         angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -119,10 +109,6 @@ get_angle_limits(value::Line) = value.angle_limits
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
 get_ext(value::Line) = value.ext
-"""Get [`Line`](@ref) `time_series_container`."""
-get_time_series_container(value::Line) = value.time_series_container
-"""Get [`Line`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::Line) = value.supplemental_attributes_container
 """Get [`Line`](@ref) `internal`."""
 get_internal(value::Line) = value.internal
 
@@ -148,7 +134,3 @@ set_angle_limits!(value::Line, val) = value.angle_limits = val
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""
 set_ext!(value::Line, val) = value.ext = val
-"""Set [`Line`](@ref) `time_series_container`."""
-set_time_series_container!(value::Line, val) = value.time_series_container = val
-"""Set [`Line`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::Line, val) = value.supplemental_attributes_container = val
