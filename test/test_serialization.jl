@@ -252,7 +252,7 @@ end
     @test !isempty(collect(IS.iterate_components_with_time_series(sys.data)))
     text = to_json(sys)
     sys2 = from_json(text, System)
-    exclude = Set([:time_series_container, :time_series_manager])
+    exclude = Set([:time_series_manager])
     @test PSY.compare_values(sys2, sys, exclude = exclude)
     @test isempty(collect(IS.iterate_components_with_time_series(sys2.data)))
 end

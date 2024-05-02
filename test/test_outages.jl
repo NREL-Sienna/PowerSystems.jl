@@ -21,7 +21,7 @@
 
     for gen in (gen1, gen2)
         for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
-            attributes = collect(get_supplemental_attributes(type, gen))
+            attributes = get_supplemental_attributes(type, gen)
             @test length(attributes) == 1
             uuid = IS.get_uuid(attributes[1])
             get_supplemental_attribute(sys, uuid)

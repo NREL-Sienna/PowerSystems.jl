@@ -252,14 +252,6 @@ function IS.from_json(
     kwargs...,
 )
     data = JSON3.read(io, Dict)
-    # These objects could be removed in to_json(sys). Doing it here will allow us to
-    # keep that JSON string fully consistent with time series and potentially use it in the
-    # future.
-    for component in data["data"]["components"]
-        if haskey(component, "time_series_container")
-            empty!(component["time_series_container"])
-        end
-    end
     sys = from_dict(System, data; kwargs...)
     _post_deserialize_handling(
         sys;
@@ -999,9 +991,12 @@ end
 """
 Check to see if the component of type T with name exists.
 """
-function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
-    return IS.has_component(T, sys.data.components, name)
+function has_component(sys::System, T::Type{<:Component}, name::AbstractString)
+    return IS.has_component(sys.data, T, name)
 end
+
+has_component(T::Type{<:Component}, sys::System, name::AbstractString) =
+    has_component(sys, T, name)
 
 """
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract
@@ -1857,19 +1852,18 @@ Allow types to implement handling of special cases during deserialization.
 """
 handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = nothing
 
-function handle_deserialization_special_cases!(component::Dict, ::Type{DynamicBranch})
-    # IS handles deserialization of supplemental attribues in each component.
-    # In this case the DynamicBranch's composed branch is not part of the system and so
-    # IS will not handle it. It can never attributes.
-    if !isempty(component["branch"]["supplemental_attributes_container"])
-        error(
-            "Bug: serialized DynamicBranch.branch has supplemental attributes: $component",
-        )
-    end
-    component["branch"]["supplemental_attributes_container"] =
-        IS.SupplementalAttributesContainer()
-    return
-end
+# TODO DT: Do I need to handle this in the new format upgrade?
+#function handle_deserialization_special_cases!(component::Dict, ::Type{DynamicBranch})
+#    # IS handles deserialization of supplemental attribues in each component.
+#    # In this case the DynamicBranch's composed branch is not part of the system and so
+#    # IS will not handle it. It can never attributes.
+#    if !isempty(component["branch"]["supplemental_attributes_container"])
+#        error(
+#            "Bug: serialized DynamicBranch.branch has supplemental attributes: $component",
+#        )
+#    end
+#    return
+#end
 
 """
 Return bus with name.
@@ -2303,9 +2297,7 @@ function convert_component!(
         line.angle_limits,
         line.services,
         line.ext,
-        InfrastructureSystems.TimeSeriesContainer(),
-        InfrastructureSystems.SupplementalAttributesContainer(),
-        deepcopy(line.internal),
+        _copy_internal_for_conversion(line),
     )
     IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
@@ -2348,9 +2340,7 @@ function convert_component!(
         line.angle_limits,
         line.services,
         line.ext,
-        InfrastructureSystems.TimeSeriesContainer(),
-        InfrastructureSystems.SupplementalAttributesContainer(),
-        deepcopy(line.internal),
+        _copy_internal_for_conversion(line),
     )
     IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
@@ -2381,10 +2371,8 @@ function convert_component!(
         max_constant_active_power = get_max_active_power(old_load),
         max_constant_reactive_power = get_max_active_power(old_load),
         dynamic_injector = get_dynamic_injector(old_load),
-        internal = deepcopy(get_internal(old_load)),
+        internal = _copy_internal_for_conversion(old_load),
         services = Device[],
-        supplemental_attributes_container = InfrastructureSystems.SupplementalAttributesContainer(),
-        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
     IS.assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
@@ -2395,6 +2383,21 @@ function convert_component!(
         add_service!(new_load, service, sys)
     end
     remove_component!(sys, old_load)
+end
+
+# Use this function to avoid deepcopy of shared_system_references.
+function _copy_internal_for_conversion(component::Component)
+    internal = get_internal(component)
+    refs = internal.shared_system_references
+    return InfrastructureSystemsInternal(;
+        uuid = deepcopy(internal.uuid),
+        units_info = deepcopy(internal.units_info),
+        shared_system_references = IS.SharedSystemReferences(;
+            supplemental_attribute_manager = refs.supplemental_attribute_manager,
+            time_series_manager = refs.time_series_manager,
+        ),
+        ext = deepcopy(internal.ext),
+    )
 end
 
 function _validate_or_skip!(sys, component, skip_validation)
@@ -2440,3 +2443,5 @@ Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
 function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.check_time_series_consistency(sys.data, T)
 end
+
+stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)

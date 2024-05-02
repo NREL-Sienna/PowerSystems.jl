@@ -607,7 +607,6 @@ export get_states_types
 export get_status
 export get_storage_capacity
 export get_storage_target
-export get_supplemental_attributes_container
 export get_sustained_time
 export get_switch
 export get_tF_delay
@@ -619,7 +618,6 @@ export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_time_limits_pump
-export get_time_series_container
 export get_to
 export get_to_branch_control
 export get_valve_position_limits
@@ -1137,7 +1135,6 @@ export set_states_types!
 export set_status!
 export set_storage_capacity!
 export set_storage_target!
-export set_supplemental_attributes_container!
 export set_sustained_time!
 export set_switch!
 export set_tF_delay!
@@ -1149,7 +1146,6 @@ export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
-export set_time_series_container!
 export set_to!
 export set_to_branch_control!
 export set_valve_position_limits!

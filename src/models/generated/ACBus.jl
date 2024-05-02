@@ -16,7 +16,6 @@ This file is auto-generated. Do not edit.
         area::Union{Nothing, Area}
         load_zone::Union{Nothing, LoadZone}
         ext::Dict{String, Any}
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -33,7 +32,6 @@ A power-system bus.
 - `area::Union{Nothing, Area}`: the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
 - `ext::Dict{String, Any}`
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct ACBus <: Bus
@@ -56,13 +54,11 @@ mutable struct ACBus <: Bus
     "the load zone containing the bus"
     load_zone::Union{Nothing, LoadZone}
     ext::Dict{String, Any}
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 
-    function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, internal, )
-        (number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, internal, ) = check_bus_params(
+    function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+        (number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = check_bus_params(
             number,
             name,
             bustype,
@@ -73,19 +69,18 @@ mutable struct ACBus <: Bus
             area,
             load_zone,
             ext,
-            supplemental_attributes_container,
             internal,
         )
-        new(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, internal, )
+        new(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
     end
 end
 
-function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
+    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function ACBus(; number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, supplemental_attributes_container, internal, )
+function ACBus(; number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -101,7 +96,6 @@ function ACBus(::Nothing)
         area=nothing,
         load_zone=nothing,
         ext=Dict{String, Any}(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -125,8 +119,6 @@ get_area(value::ACBus) = value.area
 get_load_zone(value::ACBus) = value.load_zone
 """Get [`ACBus`](@ref) `ext`."""
 get_ext(value::ACBus) = value.ext
-"""Get [`ACBus`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::ACBus) = value.supplemental_attributes_container
 """Get [`ACBus`](@ref) `internal`."""
 get_internal(value::ACBus) = value.internal
 
@@ -148,5 +140,3 @@ set_area!(value::ACBus, val) = value.area = val
 set_load_zone!(value::ACBus, val) = value.load_zone = val
 """Set [`ACBus`](@ref) `ext`."""
 set_ext!(value::ACBus, val) = value.ext = val
-"""Set [`ACBus`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::ACBus, val) = value.supplemental_attributes_container = val

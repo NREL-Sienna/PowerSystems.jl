@@ -375,8 +375,8 @@ end
     @test IS.compare_values(sys, sys2)
     # Ensure that the storage references got updated correctly.
     for component in get_components(x -> has_time_series(x), Component, sys2)
-        @test component.time_series_container.manager.data_store ===
-              sys2.data.time_series_manager.data_store
+        @test component.internal.shared_system_references.time_series_manager ===
+              sys2.data.time_series_manager
     end
 
     sys = PSB.build_system(
@@ -392,8 +392,8 @@ end
           sys2.data.time_series_manager.data_store.file_path
     @test IS.compare_values(sys, sys2)
     for component in get_components(x -> has_time_series(x), Component, sys2)
-        @test component.time_series_container.manager.data_store ===
-              sys2.data.time_series_manager.data_store
+        @test component.internal.shared_system_references.time_series_manager ===
+              sys2.data.time_series_manager
     end
 end
 

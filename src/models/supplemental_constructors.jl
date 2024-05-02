@@ -49,7 +49,6 @@ function ACBus(
         area,
         load_zone,
         ext,
-        IS.SupplementalAttributesContainer(),
         InfrastructureSystemsInternal(),
     )
 end
@@ -87,7 +86,6 @@ function InterruptibleLoad(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
 )
     @warn(
         "The InterruptibleLoad constructor that accepts a model type has been removed and \\
@@ -106,7 +104,6 @@ function InterruptibleLoad(
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         InfrastructureSystemsInternal(),
     )
 end
@@ -125,7 +122,6 @@ function InterruptibleLoad(;
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     @warn(
@@ -145,7 +141,6 @@ function InterruptibleLoad(;
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
@@ -169,7 +164,6 @@ function GenericBattery(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     GenericBattery(
@@ -191,7 +185,6 @@ function GenericBattery(
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
