@@ -30,6 +30,7 @@ pages = OrderedDict(
             "modeler_guide/market_bid_cost.md",
             "modeler_guide/modeling_with_JuMP.md",
             "modeler_guide/parsing.md",
+            "modeler_guide/glossary.md",
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
@@ -116,7 +117,7 @@ makedocs(
     modules = [PowerSystems, InfrastructureSystems],
     format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),),
     sitename = "PowerSystems.jl",
-    authors = "Jose Daniel Lara, Daniel Thom and Clayton Barrows",
+    authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, and Clayton Barrows",
     pages = Any[p for p in pages]
 )
 
