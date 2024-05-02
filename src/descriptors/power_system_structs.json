@@ -1552,7 +1552,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1812,7 +1812,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1904,7 +1904,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2102,7 +2102,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2262,7 +2262,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2424,7 +2424,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2579,7 +2579,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base Power",
+                    "comment": "Base power of the unit (MVA)",
                     "internal_default": "100.0",
                     "data_type": "Float64"
                 },
@@ -2750,7 +2750,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0.0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -3058,7 +3058,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -3201,7 +3201,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3416,7 +3416,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3526,7 +3526,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3839,7 +3839,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3959,7 +3959,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4099,7 +4099,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4330,7 +4330,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4510,7 +4510,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4684,7 +4684,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit in MVA",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -16123,7 +16123,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16341,7 +16341,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16733,7 +16733,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power",
+                    "comment": "Base power of the unit (MVA)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
