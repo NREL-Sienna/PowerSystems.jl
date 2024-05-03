@@ -253,7 +253,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -300,7 +300,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -336,7 +336,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -361,7 +361,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -601,7 +601,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -687,7 +687,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -722,7 +722,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -816,7 +816,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -851,7 +851,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -963,7 +963,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -998,7 +998,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1089,7 +1089,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1125,7 +1125,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1206,7 +1206,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1242,7 +1242,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1302,7 +1302,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1338,7 +1338,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1399,7 +1399,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1435,7 +1435,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1517,7 +1517,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1528,12 +1528,14 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -1552,7 +1554,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1591,7 +1593,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1626,7 +1628,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1665,7 +1667,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1700,7 +1702,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1753,7 +1755,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1789,7 +1791,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1800,19 +1802,21 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1857,7 +1861,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -1893,7 +1897,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -1904,7 +1908,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2021,7 +2025,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -2057,7 +2061,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -2068,12 +2072,14 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -2102,7 +2108,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2147,7 +2153,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -2262,7 +2268,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2424,7 +2430,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2579,7 +2585,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "internal_default": "100.0",
                     "data_type": "Float64"
                 },
@@ -2750,7 +2756,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0.0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2833,23 +2839,24 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "Bus on the AC side of this converter",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
                 {
                     "name": "dc_bus",
+                    "comment": "Bus on the DC side of this converter",
                     "null_value": "DCBus(nothing)",
                     "data_type": "DCBus"
                 },
                 {
                     "name": "active_power",
-                    "comment": "Active Power on the DCSide",
+                    "comment": "Active power (MW) on the DC side",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
@@ -2858,7 +2865,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the converter. <= Capacity",
+                    "comment": "Maximum output power rating of the converter (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2870,6 +2877,7 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
@@ -2894,7 +2902,7 @@
                 },
                 {
                     "name": "efficiency",
-                    "comment": "Conversion efficiency from AC Power to DC Power",
+                    "comment": "Conversion efficiency [0, 1.0] from AC Power to DC Power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
@@ -2902,7 +2910,7 @@
                 {
                     "name": "services",
                     "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
+                    "comment": "Services that this device contributes to. (Note: Services are not currently supported for IPCs.)",
                     "null_value": "Device[]",
                     "default": "Device[]"
                 },
@@ -2923,7 +2931,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -3058,7 +3066,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -3122,7 +3130,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -3133,12 +3141,14 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -3147,7 +3157,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3165,12 +3175,14 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
@@ -3178,7 +3190,7 @@
                 },
                 {
                     "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
+                    "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -3201,7 +3213,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3297,7 +3309,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -3332,7 +3344,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -3343,12 +3355,14 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -3357,7 +3371,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3375,6 +3389,7 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -3386,6 +3401,7 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
@@ -3393,7 +3409,7 @@
                 },
                 {
                     "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
+                    "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -3416,7 +3432,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3456,7 +3472,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -3491,7 +3507,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -3502,19 +3518,21 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3526,7 +3544,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3543,6 +3561,7 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -3554,6 +3573,7 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
@@ -3561,7 +3581,7 @@
                 },
                 {
                     "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
+                    "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -3584,7 +3604,7 @@
                 },
                 {
                     "name": "rating_pump",
-                    "comment": "Thermal limited MVA Power Withdrawl of the pump. <= Capacity",
+                    "comment": "Maximum power withdrawal (MVA) of the pump.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3609,7 +3629,7 @@
                 },
                 {
                     "name": "ramp_limits_pump",
-                    "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute of pump",
+                    "comment": "ramp up and ramp down limits in MW/min of pump",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -3740,7 +3760,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -3764,7 +3784,7 @@
         },
         {
             "struct_name": "RenewableDispatch",
-            "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints. These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref)",
+            "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints. These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3776,7 +3796,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -3787,19 +3807,21 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
@@ -3817,6 +3839,7 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
@@ -3839,7 +3862,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3872,7 +3895,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -3896,7 +3919,7 @@
         },
         {
             "struct_name": "RenewableFix",
-            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)",
+            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3908,7 +3931,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -3919,19 +3942,21 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3959,7 +3984,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3985,7 +4010,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -4009,7 +4034,7 @@
         },
         {
             "struct_name": "ThermalStandard",
-            "docstring": "Data Structure for thermal generation technologies.",
+            "docstring": "A thermal generator, such as a fossil fuel and nuclear generator. This is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -4021,12 +4046,13 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
                     "null_value": "false",
                     "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
                     "data_type": "Bool"
                 },
                 {
@@ -4037,6 +4063,7 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
@@ -4045,6 +4072,7 @@
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -4053,7 +4081,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4065,6 +4093,7 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -4076,13 +4105,14 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
                 },
                 {
                     "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW (in component base per unit) per minute",
+                    "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, UpDown}",
                     "valid_range": {
@@ -4099,7 +4129,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4122,6 +4152,7 @@
                 },
                 {
                     "name": "must_run",
+                    "comment": "Set to `true` if the unit is must run",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
@@ -4150,6 +4181,7 @@
                 {
                     "null_value": "INFINITE_TIME",
                     "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
                 },
@@ -4170,7 +4202,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -4194,7 +4226,7 @@
         },
         {
             "struct_name": "ThermalMultiStart",
-            "docstring": "Data Structure for thermal generation technologies.",
+            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, with a detailed representation of the start-up and shut-down processes. Based on the time elapsed since the last shut down, the generator can start-up again from a *hot*, *warm*, or *cold* state. For a simplified representation the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -4206,12 +4238,13 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
                     "null_value": "false",
                     "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
                     "data_type": "Bool"
                 },
                 {
@@ -4222,6 +4255,7 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
@@ -4230,6 +4264,7 @@
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -4238,7 +4273,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal limited MVA Power Output of the unit. <= Capacity",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4262,12 +4297,14 @@
                 },
                 {
                     "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
@@ -4308,13 +4345,13 @@
                 },
                 {
                     "name": "start_time_limits",
-                    "comment": " Time limits for start-up based on turbine temperature in hours",
+                    "comment": "Time limits for start-up based on turbine temperature in hours",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
                 },
                 {
                     "name": "start_types",
-                    "comment": " Number of start-up based on turbine temperature",
+                    "comment": "Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*.",
                     "null_value": "1",
                     "data_type": "Int",
                     "valid_range": {
@@ -4330,7 +4367,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4348,12 +4385,14 @@
                 },
                 {
                     "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)",
                     "null_value": "INFINITE_TIME",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
                 },
                 {
                     "name": "must_run",
+                    "comment": "Set to `true` if the unit is must run",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
@@ -4375,7 +4414,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -4411,7 +4450,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -4452,12 +4491,14 @@
                 },
                 {
                     "name": "rating",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -4496,6 +4537,7 @@
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -4504,13 +4546,14 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4549,7 +4592,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -4585,7 +4628,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -4626,12 +4669,14 @@
                 },
                 {
                     "name": "rating",
+                    "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -4670,6 +4715,7 @@
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
@@ -4678,13 +4724,14 @@
                 },
                 {
                     "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4737,7 +4784,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -4774,7 +4821,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -4879,7 +4926,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -4985,7 +5032,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5046,7 +5093,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5105,7 +5152,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -5142,7 +5189,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5219,7 +5266,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -5255,7 +5302,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5333,7 +5380,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -5368,7 +5415,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5444,7 +5491,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -5461,7 +5508,7 @@
                 },
                 {
                     "name": "time_series_container",
-                    "comment": "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).",
+                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
                     "null_value": "InfrastructureSystems.TimeSeriesContainer()",
                     "data_type": "InfrastructureSystems.TimeSeriesContainer",
                     "default": "InfrastructureSystems.TimeSeriesContainer()"
@@ -16123,7 +16170,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16173,7 +16220,7 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
                     "data_type": "Bool"
                 },
                 {
@@ -16184,11 +16231,13 @@
                 },
                 {
                     "name": "active_power",
+                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "reactive_power",
+                    "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
@@ -16341,7 +16390,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16733,7 +16782,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA)",
+                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"

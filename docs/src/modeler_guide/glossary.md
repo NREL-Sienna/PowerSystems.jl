@@ -7,17 +7,22 @@
 
 * *AC*: Alternating current
 
+* *AGC*: Automatic generation control
+
 * *AVR*: Automatic Voltage Regulator 
 
 ## D
 
 * *DC*: Direct current
 
-* *Dynamic*:
+* *Dynamic*: Refers to data and simulations for power system transient simulations using differential
+equations. Common examples include small signal stability analysis to verify the power system will
+maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
+see the definition for [Static](@ref "S") data.
 
 ## E
 
-* *EMF*: 
+* *EMF*: Electromotive force
 
 * *ESAC*:
 
@@ -55,7 +60,9 @@
 
 * *IEEET*:
 
-* *Injection*: 
+* *Injector* or *Injection*: Injectors refer to models that represent how a generator or storage 
+  device *injects* power into the power system. In `PowerSystems.jl`, some components can accept 
+  data for both `StaticInjection` and `DynamicInjection` models. A static injection 
 
 * *Interval*: The period of time between forecast initial times. In `PowerSystems.jl` all
   intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
@@ -63,6 +70,8 @@
   interval is `Hour(1)`.
 
 * *Initial time*: The first time-stamp in a forecast. See the article on [`Time Series Data`](@ref ts_data).
+
+* *IPC*: Interconnecting power converter
 
 ## P
 
@@ -84,7 +93,13 @@
 
 * *SEXS*: Simplified Excitation Systems model from PSS/E
 
-* *Static*:
+* *States*:
+
+* *Static*: Typically refers to quasi-static time series data or simulations where the power system 
+  and each of its components are assumed to be operating at a steady state equilibrium point at each 
+  time step. Static data can be used as the input to power flow models, including in e.g., 5-minute,
+  15-minute, or 1-hour time series simulations. For contrast, see the definition for
+  [Dynamic](@ref "D") data.
 
 * *STAB*:
 
