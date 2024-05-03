@@ -5641,7 +5641,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "Simple AVR has 1 differential states",
+                    "comment": "Simple AVR has 1 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -5739,7 +5739,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "SEXS has 2 differential states",
+                    "comment": "SEXS has 2 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -5925,7 +5925,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ESDC1A has 5 differential states",
+                    "comment": "ESDC1A has 5 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6112,7 +6112,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ESDC2A has 5 differential states",
+                    "comment": "ESDC2A has 5 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6276,7 +6276,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEET1 I has 4 differential states",
+                    "comment": "IEEET1 I has 4 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6424,7 +6424,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "AVR Type I has 4 differential states",
+                    "comment": "AVR Type I has 4 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6572,7 +6572,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "AVR Type II has 4 differential states",
+                    "comment": "AVR Type II has 4 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6696,7 +6696,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "SCRX has 2 differential states",
+                    "comment": "SCRX has 2 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6899,7 +6899,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ESAC1A has 5 states",
+                    "comment": "ESAC1A has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7101,7 +7101,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "EXAC1A has 5 states",
+                    "comment": "EXAC1A has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7297,7 +7297,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "EXAC1 has 5 states",
+                    "comment": "EXAC1 has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7544,7 +7544,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "EXAC2 has 5 states",
+                    "comment": "EXAC2 has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7790,7 +7790,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ESAC6A has 5 states",
+                    "comment": "ESAC6A has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -8012,7 +8012,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ST1A has 5 states",
+                    "comment": "ST1A has 5 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -8253,7 +8253,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "EXPIC has 6 states",
+                    "comment": "EXPIC has 6 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -8467,7 +8467,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "ST4B has 4 states",
+                    "comment": "ST4B has 4 [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -10745,7 +10745,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEEST has 7 differential states",
+                    "comment": "IEEEST has 7 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -10862,7 +10862,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "STAB1 has 3 differential states",
+                    "comment": "STAB1 has 3 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -11130,7 +11130,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEEST has 16 differential states",
+                    "comment": "IEEEST has 16 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -11432,7 +11432,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEEST has 17 differential states",
+                    "comment": "IEEEST has 17 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -11790,7 +11790,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEEST has 19 differential states",
+                    "comment": "IEEEST has 19 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -12244,7 +12244,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "GAST has 3 differential states",
+                    "comment": "GAST has 3 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -12376,7 +12376,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "DEGOV has 5 differential states",
+                    "comment": "DEGOV has 5 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -12765,7 +12765,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "GGOV1 has 10 differential states",
+                    "comment": "GGOV1 has 10 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -12911,7 +12911,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "TGOV1 has 2 differential states",
+                    "comment": "TGOV1 has 2 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -13079,7 +13079,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "HYGOV has 4 differential states",
+                    "comment": "HYGOV has 4 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -13335,7 +13335,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "IEEEG1 has 6 differential states",
+                    "comment": "IEEEG1 has 6 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
