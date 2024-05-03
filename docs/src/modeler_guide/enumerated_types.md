@@ -86,8 +86,10 @@ to otherwise categorize buses for modeling activities.
 
 ## [`StateTypes`](@id states_list)
 
-| EnumName |
-|----------|
-| `Differential` |
-| `Algebraic` |
-| `Hybrid` |
+`StateTypes` are used to denote the type of dynamic equation a specific state is subject to in `PowerSimulationsDynamics.jl`
+
+| EnumName | Description |
+|----------|-------------|
+| `Differential` | State evolves over time via a differential equation ``\dot{x} = f(x)`` |
+| `Algebraic` | State evolves over time by satisfying an algebraic equation ``0 = g(x)`` |
+| `Hybrid` | Depending on specific parameters, the state can be `Differential` or `Algebraic` |
