@@ -24,17 +24,17 @@ see the definition for [Static](@ref "S") data.
 
 * *EMF*: Electromotive force
 
-* *ESAC*:
+* *ESAC*: IEEE Type AC Excitation System model 
 
-* *ESDC*:
+* *ESDC*: IEEE Type DC Excitation System model 
 
-* *EXAC*:
+* *EXAC*: IEEE Type AC Excitation System (modified) model 
 
-* *EXPIC*:
+* *EXPIC*: Proportional/Integral Excitation System from PSS/E
 
-* *EXST*:
+* *EXST*: IEEE Type ST (Static) Excitation System model
 
-* *EX4VSA*:
+* *EX4VSA*: IEEE Excitation System for Voltage Security Assessment with Over-Excitation Limits.
 
 ## F
 
@@ -58,7 +58,7 @@ see the definition for [Static](@ref "S") data.
 
 ## I
 
-* *IEEET*:
+* *IEEET*: IEEE Type I Excitation System.
 
 * *Injector* or *Injection*: Injectors refer to models that represent how a generator or storage 
   device *injects* power into the power system. In `PowerSystems.jl`, some components can accept 
@@ -75,7 +75,7 @@ see the definition for [Static](@ref "S") data.
 
 ## P
 
-* *PSS*: [found under DynamicGeneratorComponent]
+* *PSS*: Power System Stabilizer
 
 * *PSSE* or *PSS/E*: Siemen's PSS&reg;E Power Simulator
 
@@ -89,11 +89,14 @@ see the definition for [Static](@ref "S") data.
 
 ## S
 
-* *SCRX*:
+* *SCRX*: Bus Fed or Solid Fed Static Exciter
 
-* *SEXS*: Simplified Excitation Systems model from PSS/E
+* *SEXS*: Simplified Excitation System model from PSS/E
 
-* *States*:
+* *States*: Correspond to the set of inputs, outputs or variables, that evolve dynamically in
+  `PowerSimulationsDynamics.jl`, commonly via a differential-algebraic system of equations.
+  In `PowerSystems.jl` a component associated to a `DynamicInjector` (for example an AVR) specify
+  the set of states that specific component requires to be modeled accurately.
 
 * *Static*: Typically refers to quasi-static time series data or simulations where the power system 
   and each of its components are assumed to be operating at a steady state equilibrium point at each 
@@ -101,8 +104,8 @@ see the definition for [Static](@ref "S") data.
   15-minute, or 1-hour time series simulations. For contrast, see the definition for
   [Dynamic](@ref "D") data.
 
-* *STAB*:
+* *STAB*: Speed Sensitive Stabilizing PSS Model
 
 ## V
 
-* *VSCDC*:
+* *VSCDCLine*: Voltage-Source Converter Direct Current Line
