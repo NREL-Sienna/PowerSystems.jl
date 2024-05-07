@@ -17,8 +17,6 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -35,10 +33,8 @@ Data structure for a static power load.
 - `max_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PowerLoad <: StaticLoad
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -59,20 +55,16 @@ mutable struct PowerLoad <: StaticLoad
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,8 +81,6 @@ function PowerLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -116,10 +106,6 @@ get_services(value::PowerLoad) = value.services
 get_dynamic_injector(value::PowerLoad) = value.dynamic_injector
 """Get [`PowerLoad`](@ref) `ext`."""
 get_ext(value::PowerLoad) = value.ext
-"""Get [`PowerLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::PowerLoad) = value.time_series_container
-"""Get [`PowerLoad`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::PowerLoad) = value.supplemental_attributes_container
 """Get [`PowerLoad`](@ref) `internal`."""
 get_internal(value::PowerLoad) = value.internal
 
@@ -141,7 +127,3 @@ set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = set_
 set_services!(value::PowerLoad, val) = value.services = val
 """Set [`PowerLoad`](@ref) `ext`."""
 set_ext!(value::PowerLoad, val) = value.ext = val
-"""Set [`PowerLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::PowerLoad, val) = value.time_series_container = val
-"""Set [`PowerLoad`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::PowerLoad, val) = value.supplemental_attributes_container = val

@@ -20,8 +20,6 @@ This file is auto-generated. Do not edit.
         phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -41,10 +39,8 @@ This file is auto-generated. Do not edit.
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `phase_angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -68,20 +64,16 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -101,8 +93,6 @@ function PhaseShiftingTransformer(::Nothing)
         phase_angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -134,10 +124,6 @@ get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limi
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
-"""Get [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
-get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_container
-"""Get [`PhaseShiftingTransformer`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::PhaseShiftingTransformer) = value.supplemental_attributes_container
 """Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
@@ -167,7 +153,3 @@ set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angl
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
-"""Set [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
-set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val
-"""Set [`PhaseShiftingTransformer`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::PhaseShiftingTransformer, val) = value.supplemental_attributes_container = val

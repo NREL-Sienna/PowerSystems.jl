@@ -3,7 +3,7 @@ function create_system_with_test_subsystems()
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = false,
-        time_series_read_only = true,
+        time_series_read_only = false,
     )
 
     components = collect(get_components(ThermalStandard, sys))

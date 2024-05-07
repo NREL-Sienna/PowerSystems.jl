@@ -14,12 +14,10 @@ This file is auto-generated. Do not edit.
         max_active_power::Float64
         max_reactive_power::Float64
         base_power::Float64
-        operation_cost::TwoPartCost
+        operation_cost::Union{LoadCost, MarketBidCost}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -33,14 +31,12 @@ This file is auto-generated. Do not edit.
 - `reactive_power::Float64`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::Union{LoadCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -55,28 +51,24 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     max_reactive_power::Float64
     "Base power of the unit (MVA)"
     base_power::Float64
-    "Operation Cost of Generation [`TwoPartCost`](@ref)"
-    operation_cost::TwoPartCost
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::Union{LoadCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,12 +82,10 @@ function InterruptiblePowerLoad(::Nothing)
         max_active_power=0.0,
         max_reactive_power=0.0,
         base_power=0.0,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=LoadCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -123,10 +113,6 @@ get_services(value::InterruptiblePowerLoad) = value.services
 get_dynamic_injector(value::InterruptiblePowerLoad) = value.dynamic_injector
 """Get [`InterruptiblePowerLoad`](@ref) `ext`."""
 get_ext(value::InterruptiblePowerLoad) = value.ext
-"""Get [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::InterruptiblePowerLoad) = value.time_series_container
-"""Get [`InterruptiblePowerLoad`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::InterruptiblePowerLoad) = value.supplemental_attributes_container
 """Get [`InterruptiblePowerLoad`](@ref) `internal`."""
 get_internal(value::InterruptiblePowerLoad) = value.internal
 
@@ -150,7 +136,3 @@ set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost =
 set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 """Set [`InterruptiblePowerLoad`](@ref) `ext`."""
 set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
-"""Set [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::InterruptiblePowerLoad, val) = value.time_series_container = val
-"""Set [`InterruptiblePowerLoad`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::InterruptiblePowerLoad, val) = value.supplemental_attributes_container = val

@@ -12,29 +12,6 @@ const COST_CONTAINERS =
 
 function _convert_data!(
     raw::Dict{String, Any},
-    ::Val{Symbol("1.0.0")},
-    ::Val{Symbol("2.0.0")},
-)
-    for component in raw["data"]["components"]
-        for ts_metadata in get(component, "time_series_container", [])
-            if ts_metadata["__metadata__"]["type"] == "DeterministicMetadata" &&
-               !haskey(ts_metadata, "time_series_type")
-                # This will allow deserialization to work.
-                # post_deserialize_conversion will fix the type.
-                ts_metadata["time_series_type"] = Dict(
-                    "__metadata__" => Dict(
-                        "module" => "InfrastructureSystems",
-                        "type" => "AbstractDeterministic",
-                    ),
-                )
-            end
-        end
-    end
-    return
-end
-
-function _convert_data!(
-    raw::Dict{String, Any},
     ::Val{Symbol("2.0.0")},
     ::Val{Symbol("3.0.0")},
 )
@@ -90,8 +67,21 @@ function _convert_cost(points::Vector)
     @assert all(length.(points) .== 2)
     @assert all([all(typeof.(point) .<: Real) for point in points])
     # NOTE: old representation stored points as (y, x); new representation is (x, y)
-    return PiecewiseLinearPointData([(x, y) for (y, x) in points])
+    return PiecewiseLinearData([(x, y) for (y, x) in points])
 end
+
+# _convert_op_cost: take a component type, an old operational cost type, and old operational
+# cost data; and create the proper new operational cost struct. Some of these cost structs
+# no longer exist, so we dispatch instead on symbols.
+_convert_op_cost(::Val{:ThermalStandard}, ::Val{:ThreePartCost}, op_cost::Dict) =
+    ThermalGenerationCost(
+        CostCurve(InputOutputCurve(op_cost["variable"])),
+        op_cost["fixed"],
+        op_cost["start_up"],
+        op_cost["shut_down"],
+    )
+
+# TODO implement remaining _convert_op_cost methods 
 
 function _convert_data!(
     raw::Dict{String, Any},
@@ -99,14 +89,21 @@ function _convert_data!(
     ::Val{Symbol("4.0.0")},
 )
     for component in vcat(raw["data"]["components"], raw["data"]["masked_components"])
+        # Convert costs: all old cost structs are in fields named `operation_cost`
         if haskey(component, "operation_cost")
             op_cost = component["operation_cost"]
+            # Step 1: insert a FunctionData
             if op_cost["__metadata__"]["type"] in COST_CONTAINERS &&
                haskey(op_cost["variable"], "cost")
                 old_cost = op_cost["variable"]["cost"]
-                new_cost = IS.serialize(_convert_cost(old_cost))
+                new_cost = _convert_cost(old_cost)
                 op_cost["variable"] = new_cost
             end
+            # Step 2: convert TwoPartCost/ThreePartCost to new domain-specific cost structs
+            comp_type = Val{Symbol(component["__metadata__"]["type"])}()
+            op_cost_type = Val{Symbol(op_cost["__metadata__"]["type"])}()
+            new_op_cost = IS.serialize(_convert_op_cost(comp_type, op_cost_type, op_cost))
+            component["operation_cost"] = new_op_cost
         end
     end
 end
@@ -146,24 +143,7 @@ end
 # Conversions to occur at the end of deserialization
 function post_deserialize_conversion!(sys::System, raw)
     old = raw["data_format_version"]
-    if old == "1.0.0"
-        for component in IS.iterate_components_with_time_series(sys.data.components)
-            ts_container = get_time_series_container(component)
-            for key in keys(ts_container.data)
-                if key.time_series_type == IS.DeterministicMetadata
-                    ts_metadata = ts_container.data[key]
-                    ts = get_time_series(
-                        AbstractDeterministic,
-                        component,
-                        get_name(ts_metadata);
-                        len = get_horizon(ts_metadata),
-                        count = 1,
-                    )
-                    ts_metadata.time_series_type = typeof(ts)
-                end
-            end
-        end
-    elseif old == "1.0.1" || old == "2.0.0" || old == "3.0.0"
+    if old == "1.0.1" || old == "2.0.0" || old == "3.0.0"
         # Version 1.0.1 can be converted
         raw["data_format_version"] = DATA_FORMAT_VERSION
         @warn(

@@ -1,226 +1,6 @@
 {
     "auto_generated_structs": [
         {
-            "struct_name": "TwoPartCost",
-            "docstring": "Data Structure Operational Cost Data in two parts: fixed and variable cost.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "ThreePartCost",
-            "docstring": "Data Structure Operational Cost Data in Three parts fixed, variable cost and start - stop costs.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "StorageManagementCost",
-            "docstring": "Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData",
-                    "default": "LinearFunctionData(0.0)"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "0.0"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn",
-                    "default": "0.0"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "energy_shortage_cost",
-                    "comment": "Cost incurred by the model for being short of the energy target.",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "energy_surplus_cost",
-                    "comment": "Cost incurred by the model for surplus energy stored.",
-                    "null_value": "0.0",
-                    "default": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "MarketBidCost",
-            "docstring": "Data Structure Operational Cost to reflect market bids of energy and ancilliary services.\nCompatible with most US Market bidding mechanisms",
-            "fields": [
-                {
-                    "name": "no_load",
-                    "comment": "no load cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets",
-                    "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
-                    "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "variable",
-                    "comment": "Variable Cost TimeSeriesKey",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, IS.TimeSeriesKey}",
-                    "default": "nothing"
-                },
-                {
-                    "name": "ancillary_services",
-                    "comment": "Bids for the ancillary services",
-                    "null_value": "Vector{Service}()",
-                    "data_type": "Vector{Service}",
-                    "default": "Vector{Service}()"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
-            "struct_name": "MultiStartCost",
-            "docstring": "Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.",
-            "fields": [
-                {
-                    "name": "variable",
-                    "comment": "variable cost",
-                    "null_value": "LinearFunctionData(0.0)",
-                    "data_type": "FunctionData"
-                },
-                {
-                    "name": "no_load",
-                    "comment": "no load cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "fixed",
-                    "comment": "fixed cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "start_up",
-                    "comment": "start-up cost",
-                    "null_value": "(hot = START_COST, warm = START_COST, cold = START_COST)",
-                    "data_type": "NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}"
-                },
-                {
-                    "name": "shut_down",
-                    "comment": "shut-down cost",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                }
-            ],
-            "supertype": "OperationalCost"
-        },
-        {
             "struct_name": "Area",
             "docstring": "A collection of buses for control purposes.",
             "fields": [
@@ -250,20 +30,6 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -297,20 +63,6 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -358,20 +110,6 @@
                     "null_value": "Dict{String, Int}()",
                     "data_type": "Dict{String, Int}",
                     "default": "Dict{String, Int}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -465,13 +203,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -543,13 +274,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -686,20 +410,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -813,20 +523,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -962,20 +658,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -1088,20 +770,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -1205,20 +873,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -1299,20 +953,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -1396,20 +1036,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -1565,9 +1191,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "LoadCost(nothing)",
+                    "data_type": "Union{LoadCost, MarketBidCost}",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "services",
@@ -1590,20 +1216,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -1664,20 +1276,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -1752,20 +1350,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -1858,20 +1442,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -2024,20 +1594,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -2150,20 +1706,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -2894,13 +2436,6 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
-                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
-                },
-                {
                     "name": "efficiency",
                     "comment": "Conversion efficiency [0, 1.0] from AC Power to DC Power",
                     "null_value": "0.0",
@@ -2928,20 +2463,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -3260,9 +2781,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3306,20 +2827,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -3443,9 +2950,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3469,20 +2976,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -3706,9 +3199,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "OperationalCost",
-                    "default": "TwoPartCost(LinearFunctionData(0.0), 0.0)",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
                     "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
@@ -3757,20 +3250,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -3856,9 +3335,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "TwoPartCost(nothing)",
-                    "data_type": "TwoPartCost",
-                    "comment": "Operation Cost of Generation [`TwoPartCost`](@ref)"
+                    "null_value": "RenewableGenerationCost(nothing)",
+                    "data_type": "Union{RenewableGenerationCost, MarketBidCost}",
+                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "base_power",
@@ -3892,20 +3371,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -4009,20 +3474,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -4124,8 +3575,8 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "ThreePartCost(nothing)",
-                    "data_type": "OperationalCost"
+                    "null_value": "ThermalGenerationCost(nothing)",
+                    "data_type": "Union{ThermalGenerationCost, MarketBidCost}"
                 },
                 {
                     "name": "base_power",
@@ -4199,20 +3650,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -4347,7 +3784,7 @@
                     "name": "start_time_limits",
                     "comment": "Time limits for start-up based on turbine temperature in hours",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, NamedTuple{(:hot, :warm, :cold), Tuple{Float64, Float64, Float64}}}"
+                    "data_type": "Union{Nothing, StartUpStages}"
                 },
                 {
                     "name": "start_types",
@@ -4362,8 +3799,8 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "MultiStartCost(nothing)",
-                    "data_type": "OperationalCost"
+                    "null_value": "ThermalGenerationCost(nothing)",
+                    "data_type": "Union{ThermalGenerationCost, MarketBidCost}"
                 },
                 {
                     "name": "base_power",
@@ -4411,20 +3848,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -4564,9 +3987,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "StorageManagementCost()",
-                    "default": "StorageManagementCost()",
-                    "data_type": "Union{StorageManagementCost, MarketBidCost}"
+                    "null_value": "StorageCost(nothing)",
+                    "default": "StorageCost(nothing)",
+                    "data_type": "Union{StorageCost, MarketBidCost}"
                 },
                 {
                     "name": "services",
@@ -4589,20 +4012,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -4742,9 +4151,9 @@
                 },
                 {
                     "name": "operation_cost",
-                    "null_value": "StorageManagementCost()",
-                    "data_type": "StorageManagementCost",
-                    "default": "Union{StorageManagementCost, MarketBidCost}"
+                    "null_value": "StorageCost(nothing)",
+                    "data_type": "StorageCost",
+                    "default": "StorageCost(nothing)"
                 },
                 {
                     "name": "storage_target",
@@ -4781,20 +4190,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -5151,20 +4546,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -5265,20 +4646,6 @@
                     "default": "Dict{String, Any}()"
                 },
                 {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
-                },
-                {
                     "name": "internal",
                     "comment": "PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
@@ -5377,20 +4744,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -5505,20 +4858,6 @@
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "time_series_container",
-                    "comment": "Contains references to the [`time series data`](@ref ts_data) linked to this component, for example, a forecast time-series of `active_power` for a renewable generator or a single time-series of requirements for a reserves component.",
-                    "null_value": "InfrastructureSystems.TimeSeriesContainer()",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer",
-                    "default": "InfrastructureSystems.TimeSeriesContainer()"
-                },
-                {
-                    "name": "supplemental_attributes_container",
-                    "comment": "container for supplemental attributes",
-                    "null_value": "InfrastructureSystems.SupplementalAttributesContainer()",
-                    "data_type": "InfrastructureSystems.SupplementalAttributesContainer",
-                    "default": "InfrastructureSystems.SupplementalAttributesContainer()"
                 },
                 {
                     "name": "internal",
@@ -16176,6 +15515,12 @@
                     "default": "100.0"
                 },
                 {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
                     "name": "states",
                     "exclude_setter": true,
                     "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
@@ -16188,13 +15533,6 @@
                     "comment": "The states of AggregateDistributedGenerationA depends on the Flags",
                     "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2]",
                     "data_type": "Int"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
@@ -16869,10 +16207,6 @@
                         "min": 0,
                         "max": null
                     }
-                },
-                {
-                    "name": "time_series_container",
-                    "data_type": "InfrastructureSystems.TimeSeriesContainer"
                 },
                 {
                     "name": "internal",

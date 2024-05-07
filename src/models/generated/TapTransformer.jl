@@ -18,8 +18,6 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -37,10 +35,8 @@ This file is auto-generated. Do not edit.
 - `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TapTransformer <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -63,20 +59,16 @@ mutable struct TapTransformer <: ACBranch
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,8 +86,6 @@ function TapTransformer(::Nothing)
         rate=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -123,10 +113,6 @@ get_rate(value::TapTransformer) = get_value(value, value.rate)
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
 get_ext(value::TapTransformer) = value.ext
-"""Get [`TapTransformer`](@ref) `time_series_container`."""
-get_time_series_container(value::TapTransformer) = value.time_series_container
-"""Get [`TapTransformer`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::TapTransformer) = value.supplemental_attributes_container
 """Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
@@ -152,7 +138,3 @@ set_rate!(value::TapTransformer, val) = value.rate = set_value(value, val)
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
 set_ext!(value::TapTransformer, val) = value.ext = val
-"""Set [`TapTransformer`](@ref) `time_series_container`."""
-set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val
-"""Set [`TapTransformer`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::TapTransformer, val) = value.supplemental_attributes_container = val

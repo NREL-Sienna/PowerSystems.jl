@@ -52,8 +52,8 @@ print(join(tt(PowerSystems.IS.InfrastructureSystemsType, concrete = false), ""))
 ### `TimeSeriesData`
 
 [_Read the Docs!_](https://nrel-sienna.github.io/PowerSystems.jl/stable/modeler_guide/time_series/)
-Every `Component` has a `time_series_container::InfrastructureSystems.TimeSeriesContainer`
-field. `TimeSeriesData` are used to hold time series information that describes the
+Some `Component` types support time series data (refer to `supports_time_series(component)`.
+`TimeSeriesData` are used to hold time series information that describes the
 temporally dependent data of fields within the same struct. For example, the
 `ThermalStandard.time_series_container` field can
 describe other fields in the struct (`available`, `activepower`, `reactivepower`).
@@ -192,7 +192,7 @@ get_forecast_initial_times(sys)
 We can find the names of all time series attached to a component:
 
 ```@repl basics
-ts_names = get_time_series_names(Deterministic, loads[1])
+show_time_series(loads[1])
 ```
 
 We can access a specific time series for a specific component:

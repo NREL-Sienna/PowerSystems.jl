@@ -15,13 +15,11 @@ This file is auto-generated. Do not edit.
         prime_mover_type::PrimeMovers
         reactive_power_limits::Union{Nothing, MinMax}
         power_factor::Float64
-        operation_cost::TwoPartCost
+        operation_cost::Union{RenewableGenerationCost, MarketBidCost}
         base_power::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -37,14 +35,12 @@ A renewable (e.g., wind or solar) generator whose output can be curtailed to sat
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `reactive_power_limits::Union{Nothing, MinMax}`
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
-- `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::Union{RenewableGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct RenewableDispatch <: RenewableGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -61,9 +57,9 @@ mutable struct RenewableDispatch <: RenewableGen
     prime_mover_type::PrimeMovers
     reactive_power_limits::Union{Nothing, MinMax}
     power_factor::Float64
-    "Operation Cost of Generation [`TwoPartCost`](@ref)"
-    operation_cost::TwoPartCost
-    "Base power of the unit (MVA)"
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::Union{RenewableGenerationCost, MarketBidCost}
+    "Base power of the unit in MVA"
     base_power::Float64
     "Services that this device contributes to"
     services::Vector{Service}
@@ -71,20 +67,16 @@ mutable struct RenewableDispatch <: RenewableGen
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function RenewableDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    RenewableDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, reactive_power_limits, power_factor, operation_cost, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -99,13 +91,11 @@ function RenewableDispatch(::Nothing)
         prime_mover_type=PrimeMovers.OT,
         reactive_power_limits=nothing,
         power_factor=1.0,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=RenewableGenerationCost(nothing),
         base_power=0.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -137,10 +127,6 @@ get_services(value::RenewableDispatch) = value.services
 get_dynamic_injector(value::RenewableDispatch) = value.dynamic_injector
 """Get [`RenewableDispatch`](@ref) `ext`."""
 get_ext(value::RenewableDispatch) = value.ext
-"""Get [`RenewableDispatch`](@ref) `time_series_container`."""
-get_time_series_container(value::RenewableDispatch) = value.time_series_container
-"""Get [`RenewableDispatch`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::RenewableDispatch) = value.supplemental_attributes_container
 """Get [`RenewableDispatch`](@ref) `internal`."""
 get_internal(value::RenewableDispatch) = value.internal
 
@@ -168,7 +154,3 @@ set_base_power!(value::RenewableDispatch, val) = value.base_power = val
 set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""
 set_ext!(value::RenewableDispatch, val) = value.ext = val
-"""Set [`RenewableDispatch`](@ref) `time_series_container`."""
-set_time_series_container!(value::RenewableDispatch, val) = value.time_series_container = val
-"""Set [`RenewableDispatch`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::RenewableDispatch, val) = value.supplemental_attributes_container = val

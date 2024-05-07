@@ -18,12 +18,10 @@ This file is auto-generated. Do not edit.
         ramp_limits::Union{Nothing, UpDown}
         time_limits::Union{Nothing, UpDown}
         base_power::Float64
-        operation_cost::OperationalCost
+        operation_cost::Union{HydroGenerationCost, MarketBidCost}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -41,14 +39,12 @@ This file is auto-generated. Do not edit.
 - `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroDispatch <: HydroGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -72,27 +68,23 @@ mutable struct HydroDispatch <: HydroGen
     "Base power of the unit (MVA)"
     base_power::Float64
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    operation_cost::Union{HydroGenerationCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -110,12 +102,10 @@ function HydroDispatch(::Nothing)
         ramp_limits=nothing,
         time_limits=nothing,
         base_power=0.0,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=HydroGenerationCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -151,10 +141,6 @@ get_services(value::HydroDispatch) = value.services
 get_dynamic_injector(value::HydroDispatch) = value.dynamic_injector
 """Get [`HydroDispatch`](@ref) `ext`."""
 get_ext(value::HydroDispatch) = value.ext
-"""Get [`HydroDispatch`](@ref) `time_series_container`."""
-get_time_series_container(value::HydroDispatch) = value.time_series_container
-"""Get [`HydroDispatch`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::HydroDispatch) = value.supplemental_attributes_container
 """Get [`HydroDispatch`](@ref) `internal`."""
 get_internal(value::HydroDispatch) = value.internal
 
@@ -186,7 +172,3 @@ set_operation_cost!(value::HydroDispatch, val) = value.operation_cost = val
 set_services!(value::HydroDispatch, val) = value.services = val
 """Set [`HydroDispatch`](@ref) `ext`."""
 set_ext!(value::HydroDispatch, val) = value.ext = val
-"""Set [`HydroDispatch`](@ref) `time_series_container`."""
-set_time_series_container!(value::HydroDispatch, val) = value.time_series_container = val
-"""Set [`HydroDispatch`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::HydroDispatch, val) = value.supplemental_attributes_container = val

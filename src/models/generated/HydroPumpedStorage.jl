@@ -28,15 +28,13 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         initial_storage::UpDown
         storage_target::UpDown
-        operation_cost::OperationalCost
+        operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         pump_efficiency::Float64
         conversion_factor::Float64
         time_at_status::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -65,16 +63,14 @@ This file is auto-generated. Do not edit.
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
 - `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
 - `time_at_status::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct HydroPumpedStorage <: HydroGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -116,7 +112,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
     storage_target::UpDown
     "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
+    operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Efficiency of pump"
     pump_efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
@@ -128,20 +124,16 @@ mutable struct HydroPumpedStorage <: HydroGen
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(LinearFunctionData(0.0), 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, supplemental_attributes_container, internal, )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -169,15 +161,13 @@ function HydroPumpedStorage(::Nothing)
         outflow=0.0,
         initial_storage=(up=0.0, down=0.0),
         storage_target=(up=0.0, down=0.0),
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=HydroGenerationCost(nothing),
         pump_efficiency=0.0,
         conversion_factor=0.0,
         time_at_status=INFINITE_TIME,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -239,10 +229,6 @@ get_services(value::HydroPumpedStorage) = value.services
 get_dynamic_injector(value::HydroPumpedStorage) = value.dynamic_injector
 """Get [`HydroPumpedStorage`](@ref) `ext`."""
 get_ext(value::HydroPumpedStorage) = value.ext
-"""Get [`HydroPumpedStorage`](@ref) `time_series_container`."""
-get_time_series_container(value::HydroPumpedStorage) = value.time_series_container
-"""Get [`HydroPumpedStorage`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::HydroPumpedStorage) = value.supplemental_attributes_container
 """Get [`HydroPumpedStorage`](@ref) `internal`."""
 get_internal(value::HydroPumpedStorage) = value.internal
 
@@ -300,7 +286,3 @@ set_time_at_status!(value::HydroPumpedStorage, val) = value.time_at_status = val
 set_services!(value::HydroPumpedStorage, val) = value.services = val
 """Set [`HydroPumpedStorage`](@ref) `ext`."""
 set_ext!(value::HydroPumpedStorage, val) = value.ext = val
-"""Set [`HydroPumpedStorage`](@ref) `time_series_container`."""
-set_time_series_container!(value::HydroPumpedStorage, val) = value.time_series_container = val
-"""Set [`HydroPumpedStorage`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::HydroPumpedStorage, val) = value.supplemental_attributes_container = val

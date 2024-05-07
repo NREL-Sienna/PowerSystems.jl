@@ -1,20 +1,3 @@
-"""
-Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to
-`0.0`.
-"""
-function MarketBidCost(
-    no_load,
-    start_up::Number,
-    shut_down,
-    variable = nothing,
-    ancillary_services = Vector{Service}(),
-)
-    # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
-    # Operators use `hot` when they don’t have multiple stages.
-    start_up_multi = (hot = start_up, warm = 0.0, cold = 0.0)
-    return MarketBidCost(no_load, start_up_multi, shut_down, variable, ancillary_services)
-end
-
 """Accepts angle_limits as a Float64."""
 function Line(
     name,
@@ -66,7 +49,6 @@ function ACBus(
         area,
         load_zone,
         ext,
-        IS.SupplementalAttributesContainer(),
         InfrastructureSystemsInternal(),
     )
 end
@@ -104,7 +86,6 @@ function InterruptibleLoad(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
 )
     @warn(
         "The InterruptibleLoad constructor that accepts a model type has been removed and \\
@@ -123,7 +104,6 @@ function InterruptibleLoad(
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         InfrastructureSystemsInternal(),
     )
 end
@@ -142,7 +122,6 @@ function InterruptibleLoad(;
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     @warn(
@@ -162,7 +141,6 @@ function InterruptibleLoad(;
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
@@ -186,7 +164,6 @@ function GenericBattery(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     GenericBattery(
@@ -204,11 +181,10 @@ function GenericBattery(
         reactive_power,
         reactive_power_limits,
         base_power,
-        StorageManagementCost(),
+        StorageCost(),
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end

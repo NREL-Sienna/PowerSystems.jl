@@ -17,8 +17,6 @@ This file is auto-generated. Do not edit.
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
-        supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
         internal::InfrastructureSystemsInternal
     end
 
@@ -35,10 +33,8 @@ a High voltage DC line.
 - `reactive_power_limits_to::MinMax`
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data).
-- `supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer`: container for supplemental attributes
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `ext::Dict{String, Any}`
+- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 mutable struct TwoTerminalHVDCLine <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -57,20 +53,16 @@ mutable struct TwoTerminalHVDCLine <: ACBranch
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Contains references to the time-series data linked to this component, such as forecast time-series of `active_power` for a renewable generator or a single time-series of component availability to model line outages. See [`Time Series Data`](@ref ts_data)."
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "container for supplemental attributes"
-    supplemental_attributes_container::InfrastructureSystems.SupplementalAttributesContainer
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, supplemental_attributes_container, InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, supplemental_attributes_container, internal, )
+function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -87,8 +79,6 @@ function TwoTerminalHVDCLine(::Nothing)
         loss=(l0=0.0, l1=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
-        supplemental_attributes_container=InfrastructureSystems.SupplementalAttributesContainer(),
     )
 end
 
@@ -114,10 +104,6 @@ get_loss(value::TwoTerminalHVDCLine) = value.loss
 get_services(value::TwoTerminalHVDCLine) = value.services
 """Get [`TwoTerminalHVDCLine`](@ref) `ext`."""
 get_ext(value::TwoTerminalHVDCLine) = value.ext
-"""Get [`TwoTerminalHVDCLine`](@ref) `time_series_container`."""
-get_time_series_container(value::TwoTerminalHVDCLine) = value.time_series_container
-"""Get [`TwoTerminalHVDCLine`](@ref) `supplemental_attributes_container`."""
-get_supplemental_attributes_container(value::TwoTerminalHVDCLine) = value.supplemental_attributes_container
 """Get [`TwoTerminalHVDCLine`](@ref) `internal`."""
 get_internal(value::TwoTerminalHVDCLine) = value.internal
 
@@ -141,7 +127,3 @@ set_loss!(value::TwoTerminalHVDCLine, val) = value.loss = val
 set_services!(value::TwoTerminalHVDCLine, val) = value.services = val
 """Set [`TwoTerminalHVDCLine`](@ref) `ext`."""
 set_ext!(value::TwoTerminalHVDCLine, val) = value.ext = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `time_series_container`."""
-set_time_series_container!(value::TwoTerminalHVDCLine, val) = value.time_series_container = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `supplemental_attributes_container`."""
-set_supplemental_attributes_container!(value::TwoTerminalHVDCLine, val) = value.supplemental_attributes_container = val

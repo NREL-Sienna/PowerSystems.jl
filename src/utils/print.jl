@@ -63,8 +63,7 @@ function show_system_table(io::IO, sys::System; kwargs...)
 end
 
 function show_components_table(io::IO, sys::System; kwargs...)
-    static_header = ["Type", "Count", "Has Static Time Series", "Has Forecasts"]
-    dynamic_header = ["Type", "Count"]
+    header = ["Type", "Count"]
     components = sys.data.components
 
     static_types = Vector{DataType}()
@@ -76,30 +75,15 @@ function show_components_table(io::IO, sys::System; kwargs...)
             push!(static_types, component_type)
         end
     end
-    static_data = Array{Any, 2}(undef, length(static_types), length(static_header))
-    dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(dynamic_header))
+    static_data = Array{Any, 2}(undef, length(static_types), length(header))
+    dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(header))
 
     static_type_names = [(IS.strip_module_name(x), x) for x in static_types]
     sort!(static_type_names; by = x -> x[1])
     for (i, (type_name, type)) in enumerate(static_type_names)
         vals = components.data[type]
-        has_sts = false
-        has_forecasts = false
-        for val in values(vals)
-            if has_time_series(val, StaticTimeSeries)
-                has_sts = true
-            end
-            if has_time_series(val, Forecast)
-                has_forecasts = true
-            end
-            if has_sts && has_forecasts
-                break
-            end
-        end
         static_data[i, 1] = type_name
         static_data[i, 2] = length(vals)
-        static_data[i, 3] = has_sts
-        static_data[i, 4] = has_forecasts
     end
 
     if !isempty(static_types)
@@ -107,7 +91,7 @@ function show_components_table(io::IO, sys::System; kwargs...)
         PrettyTables.pretty_table(
             io,
             static_data;
-            header = static_header,
+            header = header,
             title = "Static Components",
             alignment = :l,
             kwargs...,
@@ -127,7 +111,7 @@ function show_components_table(io::IO, sys::System; kwargs...)
         PrettyTables.pretty_table(
             io,
             dynamic_data;
-            header = dynamic_header,
+            header = header,
             title = "Dynamic Components",
             alignment = :l,
             kwargs...,
@@ -165,8 +149,7 @@ function Base.show(io::IO, ist::Component)
     is_first = true
     for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
         getter_name = Symbol("get_$name")
-        if field_type <: IS.TimeSeriesContainer ||
-           field_type <: InfrastructureSystemsInternal
+        if field_type <: InfrastructureSystemsInternal
             continue
         elseif hasproperty(PowerSystems, getter_name)
             getter_func = getproperty(PowerSystems, getter_name)
@@ -207,12 +190,6 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 print(io, "\n   ")
                 show(io, MIME"text/plain"(), obj.units_info)
                 continue
-            elseif obj isa IS.TimeSeriesContainer
-                val = ""
-                for (key, metadata) in obj.data
-                    ts_type = IS.time_series_metadata_to_data(metadata)
-                    val *= "\n      $(key.name): $ts_type"
-                end
             elseif obj isa InfrastructureSystemsType ||
                    obj isa Vector{<:InfrastructureSystemsComponent}
                 val = summary(getproperty(ist, name))
@@ -278,3 +255,21 @@ function show_components(
     )
     return
 end
+
+# The placement of the type in the argument list has been confusing for people. Support
+# it both before and after the system.
+
+show_components(
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(sys, component_type, additional_columns; kwargs...)
+
+show_components(
+    io::IO,
+    component_type::Type{<:Component},
+    sys::System,
+    additional_columns::Union{Dict, Vector} = Dict();
+    kwargs...,
+) = show_components(io, sys, component_type, additional_columns; kwargs...)

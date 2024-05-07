@@ -213,9 +213,3 @@ jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and 
 ```zsh
 jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and .active_power > 2.3)' system.json
 ```
-
-- View the time series metadata for a component.
-
-```zsh
-jq '.data.components | .[] | select(.__metadata__.type == "RenewableDispatch") | .time_series_container' system.json
-```

@@ -93,6 +93,8 @@ function has_service(device::Device, ::Type{T}) where {T <: Service}
     return false
 end
 
+has_service(T::Type{<:Service}, device::Device) = has_service(device, T)
+
 """
 Remove service from device if it is attached.
 """
