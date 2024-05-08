@@ -68,7 +68,7 @@ end
 """Get [`StorageCost`](@ref) `charge_variable_cost`."""
 get_charge_variable_cost(value::StorageCost) = value.charge_variable_cost
 """Get [`StorageCost`](@ref) `charge_variable_cost`."""
-get_discharge_variable_cost(value::StorageCost) = value.charge_variable_cost
+get_discharge_variable_cost(value::StorageCost) = value.discharge_variable_cost
 """Get [`StorageCost`](@ref) `fixed`."""
 get_fixed(value::StorageCost) = value.fixed
 """Get [`StorageCost`](@ref) `start_up`."""
