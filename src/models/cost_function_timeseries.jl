@@ -174,21 +174,30 @@ function get_fuel_cost(component::StaticInjection;
     len::Union{Nothing, Int} = nothing)
     op_cost = get_operation_cost(component)
     var_cost = get_variable(op_cost)
-    !(var_cost isa FuelCurve) && throw(ArgumentError("Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead"))
+    !(var_cost isa FuelCurve) && throw(
+        ArgumentError(
+            "Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead",
+        ),
+    )
     return _process_fuel_cost(component, get_fuel_cost(var_cost), start_time, len)
 end
 
 function _set_fuel_cost!(component::StaticInjection, fuel_cost)
     op_cost = get_operation_cost(component)
     var_cost = get_variable(op_cost)
-    !(var_cost isa FuelCurve) && throw(ArgumentError("Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead"))
-    new_var_cost = FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), fuel_cost)
+    !(var_cost isa FuelCurve) && throw(
+        ArgumentError(
+            "Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead",
+        ),
+    )
+    new_var_cost =
+        FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), fuel_cost)
     set_variable!(op_cost, new_var_cost)
 end
 
 "Set the fuel cost of the component's variable cost, which must be a `FuelCurve`, to a scalar value."
 set_fuel_cost!(_::System, component::StaticInjection, fuel_cost::Real) =
-    # the System is not required, but we take it for consistency with the time series method of this function
+# the System is not required, but we take it for consistency with the time series method of this function
     _set_fuel_cost!(component, Float64(fuel_cost))
 
 "Set the fuel cost of the component's variable cost, which must be a `FuelCurve`, to a time series value."

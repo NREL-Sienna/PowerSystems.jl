@@ -219,25 +219,25 @@ end
 end
 
 @testset "Test fuel cost (scalar and time series)" begin
-      sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-      generators = collect(get_components(ThermalStandard, sys))
-      generator = get_component(ThermalStandard, sys, "322_CT_6")
-      op_cost = get_operation_cost(generator)
-      value_curve = get_value_curve(get_variable(op_cost))
-      set_variable!(op_cost, FuelCurve(value_curve, 0.0))
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    op_cost = get_operation_cost(generator)
+    value_curve = get_value_curve(get_variable(op_cost))
+    set_variable!(op_cost, FuelCurve(value_curve, 0.0))
 
-      @test get_fuel_cost(generator) == 0.0
-      @test_throws ArgumentError get_fuel_cost(generator; len = 2)
+    @test get_fuel_cost(generator) == 0.0
+    @test_throws ArgumentError get_fuel_cost(generator; len = 2)
 
-      set_fuel_cost!(sys, generator, 1.23)
-      @test get_fuel_cost(generator) == 1.23
+    set_fuel_cost!(sys, generator, 1.23)
+    @test get_fuel_cost(generator) == 1.23
 
-      initial_time = Dates.DateTime("2020-01-01")
-      resolution = Dates.Hour(1)
-      horizon = 24
-      data_float = SortedDict(initial_time => test_costs[Float64])
-      forecast = IS.Deterministic("variable_cost", data_float, resolution)
-      set_fuel_cost!(sys, generator, forecast)
-      fuel_forecast = get_fuel_cost(generator; start_time = initial_time)
-      @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    horizon = 24
+    data_float = SortedDict(initial_time => test_costs[Float64])
+    forecast = IS.Deterministic("variable_cost", data_float, resolution)
+    set_fuel_cost!(sys, generator, forecast)
+    fuel_forecast = get_fuel_cost(generator; start_time = initial_time)
+    @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
 end
