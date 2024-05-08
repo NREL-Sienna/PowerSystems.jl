@@ -47,8 +47,8 @@ The default units for the x-axis are megawatts and can be specified with `power_
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-    "Either a fixed value for fuel cost or the name of a fuel cost time series name"
-    fuel_cost::Union{Float64, String}
+    "Either a fixed value for fuel cost or the name of a fuel cost time series"
+    fuel_cost::Union{Float64, TimeSeriesKey}
 end
 
 FuelCurve(value_curve::ValueCurve, power_units::UnitSystem, fuel_cost::Int) =
