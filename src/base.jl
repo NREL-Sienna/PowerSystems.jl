@@ -851,11 +851,11 @@ function IS.add_time_series_from_file_metadata_internal!(
         file_metadata.scaling_factor_multiplier =
             replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
         area_ts = IS.make_time_series!(cache, file_metadata)
-        IS.add_time_series!(data, component, area_ts; skip_if_present = true)
+        key = IS.add_time_series!(data, component, area_ts; skip_if_present = true)
     else
-        IS.add_time_series!(data, component, ts)
+        key = IS.add_time_series!(data, component, ts)
     end
-    return
+    return key
 end
 
 """
