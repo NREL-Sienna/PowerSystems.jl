@@ -325,7 +325,7 @@ export iterate_supplemental_attributes
 export get_time_series
 export get_time_series_type
 export get_time_series_array
-export list_time_series_resolutions
+export get_time_series_resolutions
 export supports_time_series
 export supports_supplemental_attributes
 export get_time_series_timestamps
@@ -337,7 +337,7 @@ export get_next_time_series_array!
 export get_next_time
 export get_horizon
 export get_forecast_initial_times
-export list_time_series_keys
+export get_time_series_keys
 export show_time_series
 export get_resolution
 export get_data
@@ -521,7 +521,7 @@ import InfrastructureSystems:
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    list_time_series_keys,
+    get_time_series_keys,
     show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports

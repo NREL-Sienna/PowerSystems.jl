@@ -408,7 +408,7 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolutions = [x.value for x in list_time_series_resolutions(sys)]
+    resolutions = [x.value for x in get_time_series_resolutions(sys)]
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
@@ -1324,10 +1324,10 @@ get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 Return a sorted Vector of distinct resolutions for all time series of the given type
 (or all types).
 """
-list_time_series_resolutions(
+get_time_series_resolutions(
     sys::System;
     time_series_type::Union{Type{<:TimeSeriesData}, Nothing} = nothing,
-) = IS.list_time_series_resolutions(sys.data; time_series_type = time_series_type)
+) = IS.get_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
 Return an iterator of time series in order of initial time.
