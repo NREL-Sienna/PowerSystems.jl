@@ -168,7 +168,7 @@ test_costs = Dict(
     end
 end
 
-@testset "Test MarketBidCost with PiecewiseLinearData Cost Timeseries with Service Forecast" begin
+@testset "Test MarketBidCost with PiecewiseLinearData Cost Timeseries with Service Bid Forecast" begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     name = "test"
