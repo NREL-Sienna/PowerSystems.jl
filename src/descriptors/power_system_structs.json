@@ -33,7 +33,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -66,7 +66,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -113,7 +113,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -183,28 +183,28 @@
                 },
                 {
                     "name": "area",
-                    "comment": "the area containing the bus",
+                    "comment": "(optional) the area containing the bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Area}",
                     "default": "nothing"
                 },
                 {
                     "name": "load_zone",
-                    "comment": "the load zone containing the bus",
+                    "comment": "(optional) the load zone containing the bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, LoadZone}",
                     "default": "nothing"
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -270,14 +270,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -303,7 +303,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -404,14 +404,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -519,14 +519,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -652,14 +652,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -764,14 +764,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -867,14 +867,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -949,14 +949,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1032,14 +1032,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1115,14 +1115,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1212,14 +1212,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1272,14 +1272,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1346,14 +1346,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1438,14 +1438,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1588,14 +1588,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1702,14 +1702,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1820,7 +1820,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1871,7 +1871,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -1982,7 +1982,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2039,7 +2039,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2120,7 +2120,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2147,7 +2147,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2308,58 +2308,58 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "P_ref",
-                    "comment": "Reference active power parameter",
+                    "comment": "(optional) Reference active power parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "Reference reactive power parameter",
+                    "comment": "(optional) Reference reactive power parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "V_ref",
-                    "comment": "Reference voltage parameter",
+                    "comment": "(optional) Reference voltage parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "ω_ref",
-                    "comment": "Reference frequency parameter",
+                    "comment": "(optional) Reference frequency parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "is_filter_differential",
-                    "comment": "Boolean to decide if filter states are differential or algebraic",
+                    "comment": "(optional) Boolean to decide if filter states are differential or algebraic",
                     "internal_default": "1",
                     "data_type": "Int"
                 },
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "The states are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tv_dc: DC voltage at the capacitor, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+                    "comment": "(optional) The states are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tv_dc: DC voltage at the capacitor, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
                     "internal_default": "[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
                     "data_type": "Vector{Symbol}"
                 },
                 {
                     "name": "n_states",
                     "exclude_setter": true,
-                    "comment": "ActiveConstantPowerLoad has 12 states",
+                    "comment": "(optional) ActiveConstantPowerLoad has 12 states",
                     "internal_default": 12,
                     "data_type": "Int"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2459,14 +2459,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2597,7 +2597,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2630,7 +2630,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2823,14 +2823,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -2972,14 +2972,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -3246,14 +3246,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -3367,14 +3367,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -3468,14 +3468,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -3646,14 +3646,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -3844,14 +3844,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4008,14 +4008,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4186,14 +4186,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4292,14 +4292,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4397,14 +4397,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4444,7 +4444,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4459,7 +4459,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4540,14 +4540,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4640,14 +4640,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4740,14 +4740,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4816,14 +4816,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4854,14 +4854,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4896,7 +4896,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4924,7 +4924,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -4959,7 +4959,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4986,7 +4986,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5057,7 +5057,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5084,7 +5084,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5243,7 +5243,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5270,7 +5270,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5430,7 +5430,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5457,7 +5457,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5594,7 +5594,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5621,7 +5621,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5742,7 +5742,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5769,7 +5769,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -5890,7 +5890,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5917,7 +5917,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -6014,7 +6014,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6041,7 +6041,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -6217,7 +6217,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6244,7 +6244,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -6419,7 +6419,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6446,7 +6446,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -6615,7 +6615,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6642,7 +6642,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -6862,7 +6862,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6889,7 +6889,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -7108,7 +7108,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7135,7 +7135,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -7330,7 +7330,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7357,7 +7357,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -7571,7 +7571,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7598,7 +7598,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -7785,7 +7785,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7812,7 +7812,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -7936,7 +7936,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7957,7 +7957,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8104,7 +8104,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8125,7 +8125,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8169,7 +8169,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8190,7 +8190,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8320,7 +8320,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8371,7 +8371,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8481,7 +8481,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8520,7 +8520,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8644,7 +8644,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8665,7 +8665,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8799,7 +8799,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8832,7 +8832,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -8966,7 +8966,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9011,7 +9011,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9145,7 +9145,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9178,7 +9178,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9262,7 +9262,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9283,7 +9283,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9407,7 +9407,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9428,7 +9428,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9562,7 +9562,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9595,7 +9595,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9729,7 +9729,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9762,7 +9762,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9786,7 +9786,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9807,7 +9807,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -9841,7 +9841,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9862,7 +9862,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -10063,7 +10063,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10090,7 +10090,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -10180,7 +10180,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10207,7 +10207,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -10448,7 +10448,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10475,7 +10475,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -10750,7 +10750,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10777,7 +10777,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11108,7 +11108,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11135,7 +11135,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11169,7 +11169,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11190,7 +11190,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11384,7 +11384,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11405,7 +11405,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11440,7 +11440,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11461,7 +11461,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11562,7 +11562,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11589,7 +11589,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -11694,7 +11694,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11721,7 +11721,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12083,7 +12083,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12110,7 +12110,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12229,7 +12229,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12256,7 +12256,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12397,7 +12397,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12424,7 +12424,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12653,7 +12653,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12680,7 +12680,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12771,7 +12771,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12792,7 +12792,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12853,7 +12853,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12874,7 +12874,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -12908,7 +12908,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13091,7 +13091,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13252,7 +13252,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13290,7 +13290,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13311,7 +13311,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -13446,7 +13446,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13524,7 +13524,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13582,7 +13582,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13630,7 +13630,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13688,7 +13688,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13746,7 +13746,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13781,7 +13781,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13850,7 +13850,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13909,7 +13909,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13978,7 +13978,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14037,7 +14037,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14222,7 +14222,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14498,7 +14498,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14557,7 +14557,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14637,7 +14637,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14697,7 +14697,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14825,7 +14825,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14883,7 +14883,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15019,7 +15019,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15057,7 +15057,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15091,7 +15091,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15125,7 +15125,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15536,7 +15536,7 @@
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -15634,14 +15634,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -15749,14 +15749,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
@@ -16141,14 +16141,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "comment": "(optional) An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
-                    "comment": "PowerSystems.jl internal reference. **Do not modify.**",
+                    "comment": "(optional) PowerSystems.jl internal reference. **Do not modify.**",
                     "data_type": "InfrastructureSystemsInternal",
                     "internal_default": "InfrastructureSystemsInternal()",
                     "exclude_setter": true
