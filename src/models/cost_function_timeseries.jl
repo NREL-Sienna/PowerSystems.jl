@@ -158,12 +158,22 @@ function set_variable_cost!(
     return
 end
 
-function _process_fuel_cost(::Component, fuel_cost::Float64, start_time::Union{Nothing, Dates.DateTime}, len::Union{Nothing, Int})
+function _process_fuel_cost(
+    ::Component,
+    fuel_cost::Float64,
+    start_time::Union{Nothing, Dates.DateTime},
+    len::Union{Nothing, Int},
+)
     isnothing(start_time) && isnothing(len) && return fuel_cost
     throw(ArgumentError("Got time series start_time and/or len, but fuel cost is a scalar"))
 end
 
-function _process_fuel_cost(component::Component, ts_key::TimeSeriesKey, start_time::Union{Nothing, Dates.DateTime}, len::Union{Nothing, Int})
+function _process_fuel_cost(
+    component::Component,
+    ts_key::TimeSeriesKey,
+    start_time::Union{Nothing, Dates.DateTime},
+    len::Union{Nothing, Int},
+)
     ts = get_time_series(component, ts_key, start_time, len)
     if start_time === nothing
         start_time = IS.get_initial_timestamp(ts)
