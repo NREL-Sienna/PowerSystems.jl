@@ -242,4 +242,6 @@ end
     set_fuel_cost!(sys, generator, forecast)
     fuel_forecast = get_fuel_cost(generator; start_time = initial_time)
     @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
+    fuel_forecast = get_fuel_cost(generator)  # missing start_time filled in with initial time
+    @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
 end
