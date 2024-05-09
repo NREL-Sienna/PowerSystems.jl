@@ -13898,7 +13898,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13917,14 +13917,14 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "The states of the ActivePowerDroop model are:\n\tθ_oc: Phase angle displacement of the inverter model,\n\tp_oc: Measured active power of the inverter model",
+                    "comment": "(optional) The states of the ActivePowerDroop model are:\n\tθ_oc: Phase angle displacement of the inverter model,\n\tp_oc: Measured active power of the inverter model",
                     "internal_default": "[:θ_oc, :p_oc]",
                     "data_type": "Vector{Symbol}"
                 },
                 {
                     "name": "n_states",
                     "exclude_setter": true,
-                    "comment": "ActivePowerDroop has two states",
+                    "comment": "(optional) ActivePowerDroop has two states",
                     "internal_default": 2,
                     "data_type": "Int"
                 }
