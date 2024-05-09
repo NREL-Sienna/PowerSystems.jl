@@ -104,3 +104,39 @@ set_decremental_offer_curves!(value::MarketBidCost, val) =
 """Set [`MarketBidCost`](@ref) `ancillary_service_offers`."""
 set_ancillary_service_offers!(value::MarketBidCost, val) =
     value.ancillary_service_offers = val
+
+# Each market bid curve (the elements that make up the incremental and decremental offer
+# curves in MarketBidCost) is a CostCurve{PiecewiseIncrementalCurve} with NaN initial input
+# and first x-coordinate
+function is_market_bid_curve(curve::ProductionVariableCost)
+    (curve isa CostCurve{PiecewiseIncrementalCurve}) || return false
+    value_curve = get_value_curve(curve)
+    return isnan(get_initial_input(value_curve)) &&
+        isnan(first(get_x_coords(get_function_data(value_curve))))
+end
+
+"""
+Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a MarketBidCost from a
+vector of power values, a vector of marginal costs, and an optional units system. The
+minimum power, and cost at minimum power, are not represented.
+"""
+function make_market_bid_curve(powers::Vector{Float64},
+    marginal_costs::Vector{Float64};
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS)
+    (length(powers) != length(marginal_costs)) &&
+        throw(ArgumentError("Must specify an equal number of powers and marginal_costs"))
+    fd = PiecewiseStepData(vcat(NaN, powers), marginal_costs)
+    return make_market_bid_curve(fd; power_units = power_units)
+end
+
+"""
+Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a MarketBidCost from
+the FunctionData that might be used to store such a cost curve in a time series.
+"""
+function make_market_bid_curve(data::PiecewiseStepData;
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS)
+    !isnan(first(get_x_coords(data))) && throw(ArgumentError("The first x-coordinate in the PiecewiseStepData representation must be NaN"))
+    cc = CostCurve(IncrementalCurve(data, NaN), power_units)
+    @assert is_market_bid_curve(cc)
+    return cc
+end

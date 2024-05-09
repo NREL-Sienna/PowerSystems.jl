@@ -134,6 +134,14 @@ end
           UnitSystem.DEVICE_BASE
 end
 
+@testset "Test market bid cost interface" begin
+      mbc = make_market_bid_curve([100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0])
+      @test is_market_bid_curve(mbc)
+      @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
+      @test_throws ArgumentError make_market_bid_curve(
+            [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0])
+end
+
 test_costs = Dict(
     QuadraticFunctionData =>
         repeat([QuadraticFunctionData(999.0, 2.0, 1.0)], 24),
