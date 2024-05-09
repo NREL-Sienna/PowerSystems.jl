@@ -42,7 +42,7 @@
     end
 
     @test get_forecast_initial_times(sys) == []
-    @test list_time_series_resolutions(sys)[1] == Dates.Hour(1)
+    @test get_time_series_resolutions(sys)[1] == Dates.Hour(1)
 
     # Get time_series with a name and without.
     components = collect(get_components(HydroEnergyReservoir, sys))
@@ -315,7 +315,7 @@ end
     forecast = Deterministic(; data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)
 
-    @test list_time_series_resolutions(sys)[1] == resolution
+    @test get_time_series_resolutions(sys)[1] == resolution
     @test get_forecast_horizon(sys) == horizon
     @test get_forecast_initial_timestamp(sys) == initial_time
     @test get_forecast_interval(sys) == Dates.Millisecond(second_time - initial_time)

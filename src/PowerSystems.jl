@@ -264,8 +264,9 @@ export Deterministic
 export Probabilistic
 export SingleTimeSeries
 export DeterministicSingleTimeSeries
-export StaticTimeSeriesInfo
-export ForecastInfo
+export TimeSeriesKey
+export StaticTimeSeriesKey
+export ForecastKey
 export Scenarios
 export ForecastCache
 export StaticTimeSeriesCache
@@ -322,8 +323,9 @@ export get_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export get_time_series
+export get_time_series_type
 export get_time_series_array
-export list_time_series_resolutions
+export get_time_series_resolutions
 export supports_time_series
 export supports_supplemental_attributes
 export get_time_series_timestamps
@@ -335,7 +337,7 @@ export get_next_time_series_array!
 export get_next_time
 export get_horizon
 export get_forecast_initial_times
-export list_time_series_info
+export get_time_series_keys
 export show_time_series
 export get_resolution
 export get_data
@@ -480,12 +482,13 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
-    StaticTimeSeriesInfo,
+    StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
-    ForecastInfo,
+    ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
+    TimeSeriesKey,
     TimeSeriesCounts,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
@@ -514,10 +517,11 @@ import InfrastructureSystems:
     iterate_windows,
     get_time_series,
     has_time_series,
+    get_time_series_type,
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    list_time_series_info,
+    get_time_series_keys,
     show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports

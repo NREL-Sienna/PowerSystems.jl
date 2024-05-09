@@ -4314,7 +4314,7 @@
                     "name": "variable",
                     "comment": "Variable Cost TimeSeriesKey",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, IS.TimeSeriesKey}"
+                    "data_type": "Union{Nothing, TimeSeriesKey}"
                 },
                 {
                     "null_value": "init",

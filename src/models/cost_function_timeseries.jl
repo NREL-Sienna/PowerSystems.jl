@@ -64,9 +64,9 @@ function get_variable_cost(
         )
     end
     raw_data = get_time_series(
-        time_series_key.time_series_type,
+        get_time_series_type(time_series_key),
         device,
-        time_series_key.name;
+        get_name(time_series_key);
         start_time = start_time,
         len = len,
         count = 1,
@@ -95,9 +95,9 @@ function get_variable_cost(
         )
     end
     raw_data = get_time_series(
-        time_series_key.time_series_type,
+        get_time_series_type(time_series_key),
         service,
-        time_series_key.name;
+        get_name(time_series_key);
         start_time = start_time,
         len = len,
         count = 1,
@@ -153,8 +153,7 @@ function set_variable_cost!(
     market_bid_cost = get_operation_cost(component)
     _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
 
-    add_time_series!(sys, component, time_series_data)
-    key = IS.TimeSeriesKey(time_series_data)
+    key = add_time_series!(sys, component, time_series_data)
     set_incremental_offer_curves!(market_bid_cost, key)
     return
 end
@@ -172,8 +171,7 @@ function set_variable_cost!(
     component::ReserveDemandCurve,
     time_series_data::IS.TimeSeriesData,
 )
-    add_time_series!(sys, component, time_series_data)
-    key = IS.TimeSeriesKey(time_series_data)
+    key = add_time_series!(sys, component, time_series_data)
     set_variable!(component, key)
     return
 end

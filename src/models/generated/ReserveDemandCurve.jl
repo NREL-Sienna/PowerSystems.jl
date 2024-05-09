@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
-        variable::Union{Nothing, IS.TimeSeriesKey}
+        variable::Union{Nothing, TimeSeriesKey}
         name::String
         available::Bool
         time_frame::Float64
@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
 Data Structure for a operating reserve with demand curve product for system simulations.
 
 # Arguments
-- `variable::Union{Nothing, IS.TimeSeriesKey}`: Variable Cost TimeSeriesKey
+- `variable::Union{Nothing, TimeSeriesKey}`: Variable Cost TimeSeriesKey
 - `name::String`
 - `available::Bool`
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
@@ -32,7 +32,7 @@ Data Structure for a operating reserve with demand curve product for system simu
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     "Variable Cost TimeSeriesKey"
-    variable::Union{Nothing, IS.TimeSeriesKey}
+    variable::Union{Nothing, TimeSeriesKey}
     name::String
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
