@@ -112,7 +112,7 @@ function is_market_bid_curve(curve::ProductionVariableCost)
     (curve isa CostCurve{PiecewiseIncrementalCurve}) || return false
     value_curve = get_value_curve(curve)
     return isnan(get_initial_input(value_curve)) &&
-        isnan(first(get_x_coords(get_function_data(value_curve))))
+           isnan(first(get_x_coords(get_function_data(value_curve))))
 end
 
 """
@@ -135,7 +135,11 @@ the FunctionData that might be used to store such a cost curve in a time series.
 """
 function make_market_bid_curve(data::PiecewiseStepData;
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS)
-    !isnan(first(get_x_coords(data))) && throw(ArgumentError("The first x-coordinate in the PiecewiseStepData representation must be NaN"))
+    !isnan(first(get_x_coords(data))) && throw(
+        ArgumentError(
+            "The first x-coordinate in the PiecewiseStepData representation must be NaN",
+        ),
+    )
     cc = CostCurve(IncrementalCurve(data, NaN), power_units)
     @assert is_market_bid_curve(cc)
     return cc

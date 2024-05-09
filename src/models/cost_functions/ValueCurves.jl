@@ -54,9 +54,9 @@ end
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
 
 # BASE METHODS
-Base.:(==)(a::T, b::T) where T <: ValueCurve = IS.double_equals_from_fields(a, b)
+Base.:(==)(a::T, b::T) where {T <: ValueCurve} = IS.double_equals_from_fields(a, b)
 
-Base.isequal(a::T, b::T) where T <: ValueCurve = IS.isequal_from_fields(a, b)
+Base.isequal(a::T, b::T) where {T <: ValueCurve} = IS.isequal_from_fields(a, b)
 
 Base.hash(a::ValueCurve) = IS.hash_from_fields(a)
 

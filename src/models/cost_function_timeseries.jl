@@ -35,7 +35,10 @@ function get_variable_cost(
     end
     data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
-    return TimeSeries.TimeArray(time_stamps, map(make_market_bid_curve, TimeSeries.values(data)))
+    return TimeSeries.TimeArray(
+        time_stamps,
+        map(make_market_bid_curve, TimeSeries.values(data)),
+    )
 end
 
 """

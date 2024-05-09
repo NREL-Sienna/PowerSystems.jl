@@ -135,17 +135,17 @@ end
 end
 
 @testset "Test market bid cost interface" begin
-      mbc = make_market_bid_curve([100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0])
-      @test is_market_bid_curve(mbc)
-      @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
-      @test_throws ArgumentError make_market_bid_curve(
-            [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0])
+    mbc = make_market_bid_curve([100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0])
+    @test is_market_bid_curve(mbc)
+    @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
+    @test_throws ArgumentError make_market_bid_curve(
+        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0])
 end
 
 test_costs = Dict(
-      CostCurve{QuadraticCurve} =>
+    CostCurve{QuadraticCurve} =>
         repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
-      CostCurve{PiecewiseIncrementalCurve} =>
+    CostCurve{PiecewiseIncrementalCurve} =>
         repeat([make_market_bid_curve([2.0, 3.0], [4.0, 6.0])], 24),
     Float64 =>
         collect(11.0:34.0),
@@ -165,7 +165,11 @@ test_costs = Dict(
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_quadratic)), resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_quadratic)),
+        resolution,
+    )
     @test_throws TypeError set_variable_cost!(sys, generator, forecast)
     for s in generator.services
         forecast = IS.Deterministic(get_name(s), service_data, resolution)
@@ -184,10 +188,18 @@ end
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)), resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
     set_variable_cost!(sys, generator, forecast)
     for s in generator.services
-        forecast = IS.Deterministic(get_name(s), Dict(k => get_function_data.(v) for (k, v) in pairs(service_data)), resolution)
+        forecast = IS.Deterministic(
+            get_name(s),
+            Dict(k => get_function_data.(v) for (k, v) in pairs(service_data)),
+            resolution,
+        )
         set_service_bid!(sys, generator, s, forecast)
     end
 
@@ -196,7 +208,10 @@ end
 
     for s in generator.services
         service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
-        @test isequal(first(TimeSeries.values(service_cost)), first(service_data[initial_time]))
+        @test isequal(
+            first(TimeSeries.values(service_cost)),
+            first(service_data[initial_time]),
+        )
     end
 end
 
@@ -217,7 +232,11 @@ end
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(nothing)
     add_component!(sys, reserve)
-    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)), resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
     set_variable_cost!(sys, reserve, forecast)
     cost_forecast = get_variable_cost(reserve; start_time = initial_time)
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
