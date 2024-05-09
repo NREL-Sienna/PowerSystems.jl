@@ -222,10 +222,12 @@ end
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, "322_CT_6")
+
+    @test_throws ArgumentError get_fuel_cost(generator)  # Can't get the fuel cost of a CostCurve
+
     op_cost = get_operation_cost(generator)
     value_curve = get_value_curve(get_variable(op_cost))
     set_variable!(op_cost, FuelCurve(value_curve, 0.0))
-
     @test get_fuel_cost(generator) == 0.0
     @test_throws ArgumentError get_fuel_cost(generator; len = 2)
 
