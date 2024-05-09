@@ -68,7 +68,7 @@ Generic Proportional/Integral Excitation System
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
 - `n_states::Int`: EXPIC1 has 6 states
-- `states_types::Vector{StateTypes}`: EXPIC has 6 states
+- `states_types::Vector{StateTypes}`: EXPIC has 6 [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EXPIC1 <: AVR
@@ -127,7 +127,7 @@ mutable struct EXPIC1 <: AVR
     states::Vector{Symbol}
     "EXPIC1 has 6 states"
     n_states::Int
-    "EXPIC has 6 states"
+    "EXPIC has 6 [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

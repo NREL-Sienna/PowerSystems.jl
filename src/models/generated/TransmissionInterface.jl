@@ -18,23 +18,23 @@ A collection of branches that make up an interface or corridor for the transfer 
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow_limits::MinMax`
 - `violation_penalty::Float64`: Penalty for violating the flow limits in the interface
 - `direction_mapping::Dict{String, Int}`: Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct TransmissionInterface <: Service
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     active_power_flow_limits::MinMax
     "Penalty for violating the flow limits in the interface"
     violation_penalty::Float64
     "Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface"
     direction_mapping::Dict{String, Int}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -67,7 +67,7 @@ Parameters of IEEE Std 421.5 Type AC6A Excitacion System. ESAC6A in PSSE and PSL
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: ESAC6A has 5 states
-- `states_types::Vector{StateTypes}`: ESAC6A has 5 states
+- `states_types::Vector{StateTypes}`: ESAC6A has 5 [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESAC6A <: AVR
@@ -124,7 +124,7 @@ mutable struct ESAC6A <: AVR
     states::Vector{Symbol}
     "ESAC6A has 5 states"
     n_states::Int
-    "ESAC6A has 5 states"
+    "ESAC6A has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

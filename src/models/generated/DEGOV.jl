@@ -42,7 +42,7 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 	x_a2: Actuator 2,
 	x_a3: Actuator 3,
 - `n_states::Int`: DEGOV has 5 states
-- `states_types::Vector{StateTypes}`: DEGOV has 5 differential states
+- `states_types::Vector{StateTypes}`: DEGOV has 5 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct DEGOV <: TurbineGov
@@ -75,7 +75,7 @@ mutable struct DEGOV <: TurbineGov
     states::Vector{Symbol}
     "DEGOV has 5 states"
     n_states::Int
-    "DEGOV has 5 differential states"
+    "DEGOV has 5 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

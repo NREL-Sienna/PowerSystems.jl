@@ -37,7 +37,7 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 	Vr1: First integrator,
 	Vr2: Second integrator
 - `n_states::Int`: SCRX has 2 states
-- `states_types::Vector{StateTypes}`: SCRX has 2 differential states
+- `states_types::Vector{StateTypes}`: SCRX has 2 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SCRX <: AVR
@@ -65,7 +65,7 @@ mutable struct SCRX <: AVR
     states::Vector{Symbol}
     "SCRX has 2 states"
     n_states::Int
-    "SCRX has 2 differential states"
+    "SCRX has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

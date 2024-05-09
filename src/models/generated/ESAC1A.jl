@@ -60,7 +60,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: ESAC1A has 5 states
-- `states_types::Vector{StateTypes}`: ESAC1A has 5 states
+- `states_types::Vector{StateTypes}`: ESAC1A has 5 [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESAC1A <: AVR
@@ -109,7 +109,7 @@ mutable struct ESAC1A <: AVR
     states::Vector{Symbol}
     "ESAC1A has 5 states"
     n_states::Int
-    "ESAC1A has 5 states"
+    "ESAC1A has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

@@ -58,7 +58,7 @@ Parameters of IEEE Std 421.5 Type AC1A.  EXAC1 in PSSE and PSLF
 	Ve: Integrator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: EXAC1 has 5 states
-- `states_types::Vector{StateTypes}`: EXAC1 has 5 states
+- `states_types::Vector{StateTypes}`: EXAC1 has 5 [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EXAC1 <: AVR
@@ -105,7 +105,7 @@ mutable struct EXAC1 <: AVR
     states::Vector{Symbol}
     "EXAC1 has 5 states"
     n_states::Int
-    "EXAC1 has 5 states"
+    "EXAC1 has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

@@ -95,7 +95,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:
 - `n_states::Int`: GeneralGovModel has 10 states
-- `states_types::Vector{StateTypes}`: GGOV1 has 10 differential states
+- `states_types::Vector{StateTypes}`: GGOV1 has 10 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct GeneralGovModel <: TurbineGov
@@ -181,7 +181,7 @@ mutable struct GeneralGovModel <: TurbineGov
     states::Vector{Symbol}
     "GeneralGovModel has 10 states"
     n_states::Int
-    "GGOV1 has 10 differential states"
+    "GGOV1 has 10 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

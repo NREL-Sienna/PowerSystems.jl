@@ -61,7 +61,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 	Va: Regulator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: ST1A has 5 states
-- `states_types::Vector{StateTypes}`: ST1A has 5 states
+- `states_types::Vector{StateTypes}`: ST1A has 5 [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESST1A <: AVR
@@ -112,7 +112,7 @@ mutable struct ESST1A <: AVR
     states::Vector{Symbol}
     "ST1A has 5 states"
     n_states::Int
-    "ST1A has 5 states"
+    "ST1A has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

@@ -88,7 +88,7 @@ IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 	x_p16: 2nd lead-lag, 
 	x_p17: 3rd lead-lag,
 - `n_states::Int`: IEEEST has 17 states
-- `states_types::Vector{StateTypes}`: IEEEST has 17 differential states
+- `states_types::Vector{StateTypes}`: IEEEST has 17 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct PSS2B <: PSS
@@ -167,7 +167,7 @@ mutable struct PSS2B <: PSS
     states::Vector{Symbol}
     "IEEEST has 17 states"
     n_states::Int
-    "IEEEST has 17 differential states"
+    "IEEEST has 17 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

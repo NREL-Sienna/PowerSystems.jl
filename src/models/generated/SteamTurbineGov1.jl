@@ -41,7 +41,7 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 	x_g1: Valve Opening,
 	x_g2: Lead-lag state
 - `n_states::Int`: TGOV1 has 2 states
-- `states_types::Vector{StateTypes}`: TGOV1 has 2 differential states
+- `states_types::Vector{StateTypes}`: TGOV1 has 2 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SteamTurbineGov1 <: TurbineGov
@@ -73,7 +73,7 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     states::Vector{Symbol}
     "TGOV1 has 2 states"
     n_states::Int
-    "TGOV1 has 2 differential states"
+    "TGOV1 has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

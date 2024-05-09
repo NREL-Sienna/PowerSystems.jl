@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bias::Float64`
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
@@ -37,7 +37,7 @@ This file is auto-generated. Do not edit.
 mutable struct AGC <: Service
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     bias::Float64
     "PID Proportional Constant"

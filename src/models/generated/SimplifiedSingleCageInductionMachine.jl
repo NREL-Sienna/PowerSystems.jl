@@ -40,7 +40,7 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `H::Float64`: Motor Inertia Constant [s], validation range: `(0, nothing)`
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
 - `B::Float64`: Torque-Speed Linear Term, validation range: `(0, 1)`
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `C::Float64`: Torque-Speed Constant Term
 - `τ_ref::Float64`: Reference torque parameter
@@ -74,7 +74,7 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     A::Float64
     "Torque-Speed Linear Term"
     B::Float64
-    "Base power of the unit (MVA)"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}

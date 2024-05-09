@@ -49,7 +49,7 @@ This file is auto-generated. Do not edit.
 	Vf: Exciter Output, 
 	Vr3: Rate feedback integrator
 - `n_states::Int`: The IEEET1 has 4 states
-- `states_types::Vector{StateTypes}`: IEEET1 I has 4 differential states
+- `states_types::Vector{StateTypes}`: IEEET1 I has 4 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct IEEET1 <: AVR
@@ -89,7 +89,7 @@ mutable struct IEEET1 <: AVR
     states::Vector{Symbol}
     "The IEEET1 has 4 states"
     n_states::Int
-    "IEEET1 I has 4 differential states"
+    "IEEET1 I has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

@@ -98,7 +98,7 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA)
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.
 - `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
 - `n_states::Int`: The states of GenericDER depend on the Flags
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
@@ -187,7 +187,7 @@ mutable struct GenericDER <: DynamicInjection
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    "Base power of the unit (MVA)"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     "The states of GenericDER depend on the Flags"
     states::Vector{Symbol}

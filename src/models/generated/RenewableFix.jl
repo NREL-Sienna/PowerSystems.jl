@@ -20,52 +20,54 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref)
+A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
-- `active_power::Float64`
-- `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `error`
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct RenewableFix <: RenewableGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    "Maximum output power rating of the unit (MVA)"
     rating::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
     prime_mover_type::PrimeMovers
     power_factor::Float64
-    "Base power of the unit (MVA)"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
+function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.

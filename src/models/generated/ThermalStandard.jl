@@ -29,52 +29,58 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for thermal generation technologies.
+A thermal generator, such as a fossil fuel and nuclear generator. This is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
-- `status::Bool`
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `status::Bool`: Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
 - `bus::ACBus`: Bus that this component is connected to
-- `active_power::Float64`, validation range: `active_power_limits`, action if invalid: `warn`
-- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, MinMax}`
-- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used., validation range: `active_power_limits`, action if invalid: `warn`
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`, action if invalid: `warn`
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`, action if invalid: `warn`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`, action if invalid: `error`
 - `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `must_run::Bool`
+- `must_run::Bool`: Set to `true` if the unit is must run
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `fuel::ThermalFuels`: Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list).
 - `services::Vector{Service}`: Services that this device contributes to
-- `time_at_status::Float64`
+- `time_at_status::Float64`: Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ThermalStandard <: ThermalGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
     status::Bool
     "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    "Maximum output power rating of the unit (MVA)"
     rating::Float64
+    "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable."
     reactive_power_limits::Union{Nothing, MinMax}
-    "ramp up and ramp down limits in MW (in component base per unit) per minute"
+    "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
     operation_cost::Union{ThermalGenerationCost, MarketBidCost}
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
+    "Set to `true` if the unit is must run"
     must_run::Bool
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
     prime_mover_type::PrimeMovers
@@ -82,12 +88,13 @@ mutable struct ThermalStandard <: ThermalGen
     fuel::ThermalFuels
     "Services that this device contributes to"
     services::Vector{Service}
+    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)"
     time_at_status::Float64
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

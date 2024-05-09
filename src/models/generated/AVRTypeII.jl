@@ -45,7 +45,7 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage
 - `n_states::Int`: AVR Type II has 4 states
-- `states_types::Vector{StateTypes}`: AVR Type II has 4 differential states
+- `states_types::Vector{StateTypes}`: AVR Type II has 4 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRTypeII <: AVR
@@ -81,7 +81,7 @@ mutable struct AVRTypeII <: AVR
     states::Vector{Symbol}
     "AVR Type II has 4 states"
     n_states::Int
-    "AVR Type II has 4 differential states"
+    "AVR Type II has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

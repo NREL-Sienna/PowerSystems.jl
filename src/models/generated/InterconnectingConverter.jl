@@ -25,43 +25,45 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
-- `bus::ACBus`: Bus that this component is connected to
-- `dc_bus::DCBus`
-- `active_power::Float64`: Active Power on the DCSide, validation range: `active_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Thermal limited MVA Power Output of the converter. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits::MinMax`
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus on the AC side of this converter
+- `dc_bus::DCBus`: Bus on the DC side of this converter
+- `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`, action if invalid: `warn`
+- `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `efficiency::Float64`: Conversion efficiency from AC Power to DC Power
-- `services::Vector{Service}`: Services that this device contributes to
+- `efficiency::Float64`: Conversion efficiency [0, 1.0] from AC Power to DC Power
+- `services::Vector{Service}`: Services that this device contributes to. (Note: Services are not currently supported for IPCs.)
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct InterconnectingConverter <: StaticInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
-    "Bus that this component is connected to"
+    "Bus on the AC side of this converter"
     bus::ACBus
+    "Bus on the DC side of this converter"
     dc_bus::DCBus
-    "Active Power on the DCSide"
+    "Active power (MW) on the DC side"
     active_power::Float64
-    "Thermal limited MVA Power Output of the converter. <= Capacity"
+    "Maximum output power rating of the converter (MVA)"
     rating::Float64
+    "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
     "Base power of the converter in MVA"
     base_power::Float64
-    "Conversion efficiency from AC Power to DC Power"
+    "Conversion efficiency [0, 1.0] from AC Power to DC Power"
     efficiency::Float64
-    "Services that this device contributes to"
+    "Services that this device contributes to. (Note: Services are not currently supported for IPCs.)"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

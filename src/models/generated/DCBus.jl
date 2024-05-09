@@ -27,8 +27,8 @@ A power-system DC bus.
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the DC bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct DCBus <: Bus
     "number associated with the DC bus"
@@ -47,7 +47,7 @@ mutable struct DCBus <: Bus
     load_zone::Union{Nothing, LoadZone}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -31,7 +31,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: SEXS has 2 states
-- `states_types::Vector{StateTypes}`: SEXS has 2 differential states
+- `states_types::Vector{StateTypes}`: SEXS has 2 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SEXS <: AVR
@@ -53,7 +53,7 @@ mutable struct SEXS <: AVR
     states::Vector{Symbol}
     "SEXS has 2 states"
     n_states::Int
-    "SEXS has 2 differential states"
+    "SEXS has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

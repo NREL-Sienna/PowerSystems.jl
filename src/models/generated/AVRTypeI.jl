@@ -45,7 +45,7 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 	Vr2: Stabilizing Feedback State,
 	Vm: Measured voltage
 - `n_states::Int`: The AVR Type I has 4 states
-- `states_types::Vector{StateTypes}`: AVR Type I has 4 differential states
+- `states_types::Vector{StateTypes}`: AVR Type I has 4 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRTypeI <: AVR
@@ -81,7 +81,7 @@ mutable struct AVRTypeI <: AVR
     states::Vector{Symbol}
     "The AVR Type I has 4 states"
     n_states::Int
-    "AVR Type I has 4 differential states"
+    "AVR Type I has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
     "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal

@@ -32,9 +32,9 @@ Data structure for a standard load.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
 - `constant_active_power::Float64`
 - `constant_reactive_power::Float64`
 - `impedance_active_power::Float64`
@@ -49,17 +49,17 @@ Data structure for a standard load.
 - `max_current_reactive_power::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct StandardLoad <: StaticLoad
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
-    "Base power of the unit (MVA)"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     constant_active_power::Float64
     constant_reactive_power::Float64
@@ -79,7 +79,7 @@ mutable struct StandardLoad <: StaticLoad
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

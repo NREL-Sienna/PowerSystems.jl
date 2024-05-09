@@ -33,31 +33,31 @@ Data structure for a battery compatible with energy management formulations.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
-- `rating::Float64`
-- `active_power::Float64`
+- `rating::Float64`: Maximum output power rating of the unit (MVA)
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
 - `input_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
 - `output_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: `(0, 1)`, action if invalid: `warn`
-- `reactive_power::Float64`, validation range: `reactive_power_limits`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, MinMax}`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`, action if invalid: `warn`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
 - `operation_cost::StorageCost`
 - `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
 - `cycle_limits::Int`: Storage Maximum number of cycles per year
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct BatteryEMS <: Storage
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
@@ -67,14 +67,18 @@ mutable struct BatteryEMS <: Storage
     initial_energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
     state_of_charge_limits::MinMax
+    "Maximum output power rating of the unit (MVA)"
     rating::Float64
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
     input_active_power_limits::MinMax
     output_active_power_limits::MinMax
     efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable."
     reactive_power_limits::Union{Nothing, MinMax}
-    "Base power of the unit (MVA)"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     operation_cost::StorageCost
     "Storage target at the end of simulation as ratio of storage capacity."
@@ -87,7 +91,7 @@ mutable struct BatteryEMS <: Storage
     dynamic_injector::Union{Nothing, DynamicInjection}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

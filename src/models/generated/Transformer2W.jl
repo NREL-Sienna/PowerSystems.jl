@@ -24,7 +24,7 @@ A 2-winding transformer that uses an equivalent circuit assuming the impedance i
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow::Float64`
 - `reactive_power_flow::Float64`
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
@@ -33,13 +33,13 @@ A 2-winding transformer that uses an equivalent circuit assuming the impedance i
 - `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct Transformer2W <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). For example, a time-series of availability can be attached here to include planned or un-planned outages over a simulation horizon."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     active_power_flow::Float64
     reactive_power_flow::Float64
@@ -56,7 +56,7 @@ mutable struct Transformer2W <: ACBranch
     services::Vector{Service}
     "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 
