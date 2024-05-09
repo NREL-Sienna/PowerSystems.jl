@@ -62,6 +62,7 @@ export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_function_data, get_initial_input, get_value_curve, get_power_units
 export get_fuel_cost, set_fuel_cost!
+export is_market_bid_curve, make_market_bid_curve
 
 export Generator
 export HydroGen

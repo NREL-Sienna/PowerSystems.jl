@@ -143,13 +143,10 @@ end
 end
 
 test_costs = Dict(
-    QuadraticFunctionData =>
-        repeat([QuadraticFunctionData(999.0, 2.0, 1.0)], 24),
-    PiecewiseLinearData =>
-        repeat(
-            [PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0])],
-            24,
-        ),
+      CostCurve{QuadraticCurve} =>
+        repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
+      CostCurve{PiecewiseIncrementalCurve} =>
+        repeat([make_market_bid_curve([2.0, 3.0], [4.0, 6.0])], 24),
     Float64 =>
         collect(11.0:34.0),
 )
@@ -163,12 +160,12 @@ test_costs = Dict(
     horizon = 24
     service_data = Dict(initial_time => rand(horizon))
     data_quadratic =
-        SortedDict(initial_time => test_costs[QuadraticFunctionData])
+        SortedDict(initial_time => test_costs[CostCurve{QuadraticCurve}])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", data_quadratic, resolution)
+    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_quadratic)), resolution)
     @test_throws TypeError set_variable_cost!(sys, generator, forecast)
     for s in generator.services
         forecast = IS.Deterministic(get_name(s), service_data, resolution)
@@ -181,25 +178,25 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData])
+    data_pwl = SortedDict(initial_time => test_costs[CostCurve{PiecewiseIncrementalCurve}])
     service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
+    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)), resolution)
     set_variable_cost!(sys, generator, forecast)
     for s in generator.services
-        forecast = IS.Deterministic(get_name(s), service_data, resolution)
+        forecast = IS.Deterministic(get_name(s), Dict(k => get_function_data.(v) for (k, v) in pairs(service_data)), resolution)
         set_service_bid!(sys, generator, s, forecast)
     end
 
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
-    @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
+    @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 
     for s in generator.services
         service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
-        @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
+        @test isequal(first(TimeSeries.values(service_cost)), first(service_data[initial_time]))
     end
 end
 
@@ -215,15 +212,15 @@ end
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData],
-        other_time => test_costs[PiecewiseLinearData])
+    data_pwl = SortedDict(initial_time => test_costs[CostCurve{PiecewiseIncrementalCurve}],
+        other_time => test_costs[CostCurve{PiecewiseIncrementalCurve}])
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(nothing)
     add_component!(sys, reserve)
-    forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
+    forecast = IS.Deterministic("variable_cost", Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)), resolution)
     set_variable_cost!(sys, reserve, forecast)
     cost_forecast = get_variable_cost(reserve; start_time = initial_time)
-    @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
+    @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 end
 
 @testset "Test fuel cost (scalar and time series)" begin

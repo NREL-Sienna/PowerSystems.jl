@@ -1,7 +1,3 @@
-# MarketBidCost has two variable costs, here we mean the incremental one
-get_generation_variable_cost(cost::MarketBidCost) = get_incremental_offer_curves(cost)
-# get_generation_variable_cost(cost::OperationalCost) = get_variable_cost(cost)
-
 function _validate_time_series_variable_cost(
     time_series_data::IS.TimeSeriesData;
     desired_type::Type = PiecewiseStepData,
@@ -39,7 +35,7 @@ function get_variable_cost(
     end
     data = IS.get_time_series_array(component, ts, start_time; len = len)
     time_stamps = TimeSeries.timestamp(data)
-    return data
+    return TimeSeries.TimeArray(time_stamps, map(make_market_bid_curve, TimeSeries.values(data)))
 end
 
 """
@@ -53,11 +49,11 @@ Returns variable cost bids time-series data for MarketBidCost.
 """
 function get_variable_cost(
     device::StaticInjection,
-    cost::OperationalCost;
+    cost::MarketBidCost;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    time_series_key = get_generation_variable_cost(cost)
+    time_series_key = get_incremental_offer_curves(cost)
     if isnothing(time_series_key)
         error(
             "Cost component is empty, please use `set_variable_cost!` to add variable cost forecast.",
@@ -123,7 +119,7 @@ function get_services_bid(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
-    variable_ts_key = get_generation_variable_cost(cost)
+    variable_ts_key = get_incremental_offer_curves(cost)
     raw_data = get_time_series(
         variable_ts_key.time_series_type,
         device,
