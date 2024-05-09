@@ -158,6 +158,72 @@ function set_variable_cost!(
     return
 end
 
+function _process_fuel_cost(
+    ::Component,
+    fuel_cost::Float64,
+    start_time::Union{Nothing, Dates.DateTime},
+    len::Union{Nothing, Int},
+)
+    isnothing(start_time) && isnothing(len) && return fuel_cost
+    throw(ArgumentError("Got time series start_time and/or len, but fuel cost is a scalar"))
+end
+
+function _process_fuel_cost(
+    component::Component,
+    ts_key::TimeSeriesKey,
+    start_time::Union{Nothing, Dates.DateTime},
+    len::Union{Nothing, Int},
+)
+    ts = get_time_series(component, ts_key, start_time, len)
+    if start_time === nothing
+        start_time = IS.get_initial_timestamp(ts)
+    end
+    return get_time_series_array(component, ts, start_time; len = len)
+end
+
+"Get the fuel cost of the component's variable cost, which must be a `FuelCurve`."
+function get_fuel_cost(component::StaticInjection;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing)
+    op_cost = get_operation_cost(component)
+    var_cost = get_variable(op_cost)
+    !(var_cost isa FuelCurve) && throw(
+        ArgumentError(
+            "Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead",
+        ),
+    )
+    return _process_fuel_cost(component, get_fuel_cost(var_cost), start_time, len)
+end
+
+function _set_fuel_cost!(component::StaticInjection, fuel_cost)
+    op_cost = get_operation_cost(component)
+    var_cost = get_variable(op_cost)
+    !(var_cost isa FuelCurve) && throw(
+        ArgumentError(
+            "Variable cost of type $(typeof(var_cost)) cannot represent a fuel cost, use FuelCurve instead",
+        ),
+    )
+    new_var_cost =
+        FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), fuel_cost)
+    set_variable!(op_cost, new_var_cost)
+end
+
+"Set the fuel cost of the component's variable cost, which must be a `FuelCurve`, to a scalar value."
+set_fuel_cost!(_::System, component::StaticInjection, fuel_cost::Real) =
+# the System is not required, but we take it for consistency with the time series method of this function
+    _set_fuel_cost!(component, Float64(fuel_cost))
+
+"Set the fuel cost of the component's variable cost, which must be a `FuelCurve`, to a time series value."
+function set_fuel_cost!(
+    sys::System,
+    component::StaticInjection,
+    time_series_data::IS.TimeSeriesData,
+)
+    _validate_time_series_variable_cost(time_series_data; desired_type = Float64)
+    key = add_time_series!(sys, component, time_series_data)
+    _set_fuel_cost!(component, key)
+end
+
 """
 Adds energy market bids time-series to the ReserveDemandCurve.
 
