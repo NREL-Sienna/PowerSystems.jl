@@ -2801,6 +2801,12 @@
                     "default": "1.0"
                 },
                 {
+                    "null_value": "false",
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "Bool"
+                },
+                {
                     "null_value": "INFINITE_TIME",
                     "name": "time_at_status",
                     "data_type": "Float64",
