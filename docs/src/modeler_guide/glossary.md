@@ -1,11 +1,13 @@
 # Glossary and Acronyms
 
-[A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [P](@ref) | [R](@ref) | [S](@ref) | 
-[V](@ref)
+[A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
+[S](@ref) | [V](@ref)
 
 ## A
 
 * *AC*: Alternating current
+
+* *ACE*: Area control error
 
 * *AGC*: Automatic generation control
 
@@ -14,6 +16,8 @@
 ## D
 
 * *DC*: Direct current
+
+* *DERA1*:
 
 * *Dynamic*: Refers to data and simulations for power system transient simulations using differential
 equations. Common examples include small signal stability analysis to verify the power system will
@@ -73,6 +77,10 @@ see the definition for [Static](@ref "S") data.
 
 * *IPC*: Interconnecting power converter
 
+## O
+
+* *OEL*:
+
 ## P
 
 * *PSS*: Power System Stabilizer
@@ -81,7 +89,17 @@ see the definition for [Static](@ref "S") data.
 
 * *PPA*: Power purchase agreement
 
+* *PSID*: 
+
+* *PSLF*:
+
+* *pu* or *p.u.*: Per-unit
+
 ## R
+
+* *REECB1*:
+
+* *REPCA1*:
 
 * *Resolution*: The period of time between each discrete value in a time series. All resolutions
   are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
@@ -92,6 +110,8 @@ see the definition for [Static](@ref "S") data.
 * *SCRX*: Bus Fed or Solid Fed Static Exciter
 
 * *SEXS*: Simplified Excitation System model from PSS/E
+
+* *SIL*: Surge impedance loading
 
 * *States*: Correspond to the set of inputs, outputs or variables, that evolve dynamically in
   `PowerSimulationsDynamics.jl`, commonly via a differential-algebraic system of equations.

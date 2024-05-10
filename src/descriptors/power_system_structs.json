@@ -46,7 +46,7 @@
         },
         {
             "struct_name": "LoadZone",
-            "docstring": "A collection of buses for electricity price analysis.",
+            "docstring": "A load zone for electricity price analysis.\n\nThe load zone can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@ref) in the zone.",
             "fields": [
                 {
                     "null_value": "init",
@@ -57,12 +57,14 @@
                 },
                 {
                     "name": "peak_active_power",
+                    "comment": "(optional) Peak active power in the zone (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "peak_reactive_power",
+                    "comment": "(optional) Peak reactive power in the zone (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -333,12 +335,14 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow on the line (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -440,12 +444,14 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow on the line (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -460,7 +466,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -471,7 +477,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -482,7 +488,7 @@
                     "name": "b",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
-                    "comment": "System per-unit value",
+                    "comment": "Susceptance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -505,6 +511,7 @@
                 },
                 {
                     "name": "angle_limits",
+                    "comment": "Minimum and maximum angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -555,12 +562,14 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -575,7 +584,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -586,7 +595,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -597,7 +606,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "Comment": "System per-unit value",
+                    "Comment": "in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -637,6 +646,7 @@
                 },
                 {
                     "name": "phase_angle_limits",
+                    "comment": "(optional)",
                     "null_value": "(min=-1.571, max=1.571)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -688,12 +698,14 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -801,12 +813,14 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -904,6 +918,7 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -986,6 +1001,7 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -1069,6 +1085,7 @@
                 },
                 {
                     "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -2318,25 +2335,25 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference active power parameter",
+                    "comment": "(optional) Reference active power (pu)",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "(optional) Reference reactive power parameter",
+                    "comment": "(optional) Reference reactive power (pu)",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference voltage parameter",
+                    "comment": "(optional) Reference voltage (pu)",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "ω_ref",
-                    "comment": "(optional) Reference frequency parameter",
+                    "comment": "(optional) Reference frequency (pu)",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
@@ -2440,7 +2457,7 @@
                 },
                 {
                     "name": "efficiency",
-                    "comment": "Conversion efficiency [0, 1.0] from AC Power to DC Power",
+                    "comment": "(optional) Conversion efficiency [0, 1.0] from AC Power to DC Power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
@@ -2787,18 +2804,18 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
+                    "comment": "(optional) Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "storage_target",
-                    "comment": "Storage target at the end of simulation as ratio of storage capacity.",
+                    "comment": "(optional) Storage target at the end of simulation as a fraction of storage capacity.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
                 },
                 {
                     "name": "conversion_factor",
-                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr.",
+                    "comment": "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
@@ -2806,12 +2823,13 @@
                 {
                     "null_value": "false",
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "comment": "(optional) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
                     "data_type": "Bool"
                 },
                 {
                     "null_value": "INFINITE_TIME",
                     "name": "time_at_status",
+                    "comment": "(optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
                 },
@@ -3201,7 +3219,7 @@
                 },
                 {
                     "name": "storage_target",
-                    "comment": "Storage target of upper reservoir at the end of simulation as ratio of storage capacity.",
+                    "comment": "(optional) Storage target of upper reservoir at the end of simulation as ratio of storage capacity.",
                     "null_value": "(up=0.0, down=0.0)",
                     "data_type": "UpDown",
                     "default": "(up=1.0, down=1.0)"
@@ -3211,11 +3229,11 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "Operation Cost of Generation [`OperationalCost`](@ref)"
+                    "comment": "(optional) Operation Cost of Generation [`OperationalCost`](@ref)"
                 },
                 {
                     "name": "pump_efficiency",
-                    "comment": "Efficiency of pump",
+                    "comment": "(optional) Pumping effciency [0, 1.0]",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0",
@@ -3227,7 +3245,7 @@
                 },
                 {
                     "name": "conversion_factor",
-                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr.",
+                    "comment": "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
@@ -3235,6 +3253,7 @@
                 {
                     "null_value": "INFINITE_TIME",
                     "name": "time_at_status",
+                    "comment": "(optional) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`",
                     "data_type": "Float64",
                     "default": "INFINITE_TIME"
                 },
@@ -4896,7 +4915,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point (p.u.)",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -4959,7 +4978,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5057,7 +5076,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5236,7 +5255,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5423,7 +5442,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5587,7 +5606,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5742,7 +5761,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -5890,7 +5909,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -6014,7 +6033,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -6210,7 +6229,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -6412,7 +6431,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -6608,7 +6627,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -6855,7 +6874,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -7101,7 +7120,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -7330,7 +7349,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -7564,7 +7583,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -7778,7 +7797,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -7936,7 +7955,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -8104,7 +8123,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -9165,13 +9184,13 @@
                     "name": "γd",
                     "data_type": "Float64",
                     "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "γq",
                     "data_type": "Float64",
                     "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "states",
@@ -11112,7 +11131,7 @@
                 },
                 {
                     "name": "hysteresis_binary_logic",
-                    "comment": "Hysteresis memory variable",
+                    "comment": "(optional) Hysteresis memory variable",
                     "null_value": 0,
                     "default": "1",
                     "data_type": "Int"
@@ -11440,7 +11459,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -11562,7 +11581,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Load Set-point",
+                    "comment": "(optional) Reference Load Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -11694,7 +11713,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Load Set-point",
+                    "comment": "(optional) Reference Load Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12083,7 +12102,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12229,7 +12248,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12397,7 +12416,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12653,7 +12672,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12771,7 +12790,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -12853,7 +12872,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13785,7 +13804,7 @@
             "fields": [
                 {
                     "name": "frequency",
-                    "comment": "(optional) Reference frequency",
+                    "comment": "(optional) Reference Frequency (pu)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "1.0"
@@ -13850,7 +13869,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13909,7 +13928,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13978,7 +13997,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14037,7 +14056,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14222,7 +14241,7 @@
                 },
                 {
                     "name": "P_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14487,7 +14506,7 @@
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "(optional) Reference Power Set-point",
+                    "comment": "(optional) Reference Reactive Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14498,7 +14517,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14557,7 +14576,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14626,7 +14645,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "Voltage Set-point",
+                    "comment": "(optional) Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14637,7 +14656,7 @@
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "Reactive Power Set-point",
+                    "comment": "(optional) Reactive Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -14686,7 +14705,7 @@
                 },
                 {
                     "name": "V_ref",
-                    "comment": "(optional) Reference Voltage Set-point",
+                    "comment": "(optional) Reference Voltage Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -15058,7 +15077,7 @@
             "fields": [
                 {
                     "name": "I_max",
-                    "comment": "Maximum limit on current controller input current (device base)",
+                    "comment": "Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15082,7 +15101,7 @@
             "fields": [
                 {
                     "name": "Id_max",
-                    "comment": "Maximum limit on d-axis current controller input current (device base)",
+                    "comment": "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15092,7 +15111,7 @@
                 },
                 {
                     "name": "Iq_max",
-                    "comment": "Maximum limit on d-axis current controller input current (device base)",
+                    "comment": "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15116,7 +15135,7 @@
             "fields": [
                 {
                     "name": "I_max",
-                    "comment": "Maximum limit on current controller input current (device base)",
+                    "comment": "Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15487,7 +15506,7 @@
                 },
                 {
                     "name": "ω_ref",
-                    "comment": "(optional) Reference frequency",
+                    "comment": "(optional) Reference Frequency (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -15694,14 +15713,14 @@
                 },
                 {
                     "name": "internal_voltage_bias",
-                    "comment": "a0 term of the Fourier Series for the voltage",
+                    "comment": "(optional) a0 term of the Fourier Series for the voltage",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "0.0"
                 },
                 {
                     "name": "internal_voltage_frequencies",
-                    "comment": "Frequencies in radians/s",
+                    "comment": "(optional) Frequencies in radians/s",
                     "null_value": [
                         0
                     ],
@@ -15710,21 +15729,21 @@
                 },
                 {
                     "name": "internal_voltage_coefficients",
-                    "comment": "Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
+                    "comment": "(optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
                     "null_value": "[(0.0, 0.0)]",
                     "data_type": "Vector{Tuple{Float64,Float64}}",
                     "default": "[(0.0, 0.0)]"
                 },
                 {
                     "name": "internal_angle_bias",
-                    "comment": "a0 term of the Fourier Series for the angle",
+                    "comment": "(optional) a0 term of the Fourier Series for the angle",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "0.0"
                 },
                 {
                     "name": "internal_angle_frequencies",
-                    "comment": "Frequencies in radians/s",
+                    "comment": "(optional) Frequencies in radians/s",
                     "null_value": [
                         0
                     ],
@@ -15733,14 +15752,14 @@
                 },
                 {
                     "name": "internal_angle_coefficients",
-                    "comment": "Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
+                    "comment": "(optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos",
                     "null_value": "[(0.0, 0.0)]",
                     "data_type": "Vector{Tuple{Float64,Float64}}",
                     "default": "[(0.0, 0.0)]"
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the source (MVA) for per unitization.",
+                    "comment": "(optional) Base power of the source (MVA) for per unitization.",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
