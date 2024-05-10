@@ -163,6 +163,34 @@ function get_fuel_cost(component::StaticInjection;
     )
 end
 
+"""
+Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If
+this field is a time series, the user may specify `start_time` and `len` and the function
+returns a `TimeArray` of `Float64`s; if the field is not a time series, the function
+returns a single `Float64`.
+"""
+get_no_load_cost(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Float64, device,
+    get_no_load_cost(cost), nothing, start_time, len)
+
+"""
+Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If
+this field is a time series, the user may specify `start_time` and `len` and the function
+returns a `TimeArray` of `Float64`s; if the field is not a time series, the function
+returns a single `Float64`.
+"""
+get_start_up(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(StartUpStages, device,
+    get_start_up(cost), StartUpStages, start_time, len)
+
 # SETTER HELPER FUNCTIONS
 """
 Helper function for cost setters.
@@ -198,7 +226,9 @@ Set the variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
-- `time_series_data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},`: the data
+- `time_series_data::Union{Nothing, IS.TimeSeriesData,
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
+  `PiecewiseStepData`.
 """
 function set_variable_cost!(
     sys::System,
@@ -215,7 +245,6 @@ function set_variable_cost!(
         data,
     )
     set_incremental_offer_curves!(market_bid_cost, to_set)
-    return
 end
 
 """
@@ -234,21 +263,58 @@ function set_variable_cost!(
     # TODO what type checking should be enforced on this time series?
     to_set = _process_set_cost(Any, Any, sys, component, data)
     set_variable!(component, to_set)
-    return
 end
 
 "Set the fuel cost of the component's variable cost, which must be a `FuelCurve`."
 function set_fuel_cost!(
     sys::System,
     component::StaticInjection,
-    time_series_data::Union{Float64, IS.TimeSeriesData},
+    data::Union{Float64, IS.TimeSeriesData},
 )
     var_cost = _validate_fuel_curve(component)
-    to_set = _process_set_cost(Float64, Float64, sys, component, time_series_data)
+    to_set = _process_set_cost(Float64, Float64, sys, component, data)
     op_cost = get_operation_cost(component)
     new_var_cost =
         FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), to_set)
     set_variable!(op_cost, new_var_cost)
+end
+
+"""
+Set the no-load cost for a `StaticInjection` device with a `MarketBidCost` to either a single number or a time series.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::Union{Float64, IS.TimeSeriesData},`: the data. If a time series, must be of eltype `Float64`.
+"""
+function set_no_load_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Float64, IS.TimeSeriesData},
+)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+    to_set = _process_set_cost(Float64, Float64, sys, component, data)
+    set_no_load_cost!(market_bid_cost, to_set)
+end
+
+"""
+Set the startup cost for a `StaticInjection` device with a `MarketBidCost` to either a single `StartUpStages` or a time series.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::Union{StartUpStages, IS.TimeSeriesData},`: the data. If a time series, must be of eltype `NTuple{3, Float64}`.
+"""
+function set_start_up!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{StartUpStages, IS.TimeSeriesData},
+)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+    to_set = _process_set_cost(StartUpStages, NTuple{3, Float64}, sys, component, data)
+    set_start_up!(market_bid_cost, to_set)
 end
 
 """

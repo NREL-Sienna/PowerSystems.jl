@@ -20,10 +20,10 @@ Compatible with most US Market bidding mechanisms that support demand and genera
 - `ancillary_service_offers::Vector{Service}`: Bids for the ancillary services
 """
 @kwdef mutable struct MarketBidCost <: OperationalCost
-    no_load_cost::Float64
+    no_load_cost::Union{TimeSeriesKey, Float64}
     """start-up cost at different stages of the thermal cycle.
     Warm is also referred to as intermediate in some markets"""
-    start_up::StartUpStages
+    start_up::Union{TimeSeriesKey, StartUpStages}
     "shut-down cost"
     shut_down::Float64
     "Variable Cost TimeSeriesKey"
@@ -41,6 +41,23 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     "Bids for the ancillary services"
     ancillary_service_offers::Vector{Service} = Vector{Service}()
 end
+
+MarketBidCost(
+    no_load_cost::Integer,
+    start_up::Union{TimeSeriesKey, StartUpStages},
+    shut_down,
+    incremental_offer_curves,
+    decremental_offer_curves,
+    ancillary_service_offers,
+) =
+    MarketBidCost(
+        Float64(no_load_cost),
+        start_up,
+        shut_down,
+        incremental_offer_curves,
+        decremental_offer_curves,
+        ancillary_service_offers,
+    )
 
 # Constructor for demo purposes; non-functional.
 function MarketBidCost(::Nothing)
