@@ -14,6 +14,13 @@ get_initial_input(cost::ProductionVariableCost) = get_initial_input(get_value_cu
 "Calculate the convexity of the underlying data"
 is_convex(cost::ProductionVariableCost) = is_convex(get_value_curve(cost))
 
+Base.:(==)(a::T, b::T) where {T <: ProductionVariableCost} =
+    IS.double_equals_from_fields(a, b)
+
+Base.isequal(a::T, b::T) where {T <: ProductionVariableCost} = IS.isequal_from_fields(a, b)
+
+Base.hash(a::ProductionVariableCost) = IS.hash_from_fields(a)
+
 """
 Direct representation of the variable operation cost of a power plant in currency. Composed
 of a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate
