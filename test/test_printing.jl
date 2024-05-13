@@ -53,6 +53,15 @@ end
     @test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(ElectricLoad, sys))[1])
 
+    io = IOBuffer()
+    component = first(get_components(ThermalGen, sys))
+    show(io, "text/plain", component)
+    text = String(take!(io))
+    expected_sa = string(has_supplemental_attributes(component))
+    expected_ts = string(has_time_series(component))
+    @test occursin("has_supplemental_attributes: $expected_sa", text)
+    @test occursin("has_time_series: $expected_ts", text)
+
     # Just make sure nothing blows up.
     for component in iterate_components(sys)
         print(devnull, component)
