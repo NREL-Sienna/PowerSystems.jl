@@ -129,3 +129,5 @@ see the definition for [Static](@ref "S") data.
 ## V
 
 * *VSCDCLine*: Voltage-Source Converter Direct Current Line
+
+* *VSM*:

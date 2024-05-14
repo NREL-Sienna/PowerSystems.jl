@@ -81,7 +81,7 @@
         },
         {
             "struct_name": "TransmissionInterface",
-            "docstring": "A collection of branches that make up an interface or corridor for the transfer of power.",
+            "docstring": "A collection of branches that make up an interface or corridor for the transfer of power, such as between different [`Areas`](@ref Area) or [`LoadZones`](@ref LoadZone).",
             "fields": [
                 {
                     "null_value": "init",
@@ -98,6 +98,7 @@
                 },
                 {
                     "name": "active_power_flow_limits",
+                    "comment": "Minimum and maximum active power flow limits on the interface (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
@@ -105,13 +106,13 @@
                 {
                     "name": "violation_penalty",
                     "null_value": "0.0",
-                    "comment": "Penalty for violating the flow limits in the interface",
+                    "comment": "(optional) Penalty cost for violating the flow limits in the interface",
                     "data_type": "Float64",
                     "default": "INFINITE_COST"
                 },
                 {
                     "name": "direction_mapping",
-                    "comment": "Map to set of multiplier to the flow in the line for cases when the line has a reverse direction with respect to the interface",
+                    "comment": "(optional) Dictionary of 1 or -1 flow multipliers for the lines, for cases when a line has a reverse direction with respect to the interface",
                     "null_value": "Dict{String, Int}()",
                     "data_type": "Dict{String, Int}",
                     "default": "Dict{String, Int}()"
@@ -720,7 +721,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Resistance in p.u. ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 2
@@ -731,7 +732,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Reactance in p.u. ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -742,7 +743,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "in p.u. ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -835,7 +836,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -846,7 +847,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -857,7 +858,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -931,24 +932,28 @@
                 },
                 {
                     "name": "active_power_limits_from",
+                    "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "active_power_limits_to",
+                    "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_limits_from",
+                    "comment": "Minimum and maximum reactive power limits to the FROM node (MVAR)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power_limits_to",
+                    "comment": "Minimum and maximum reactive power limits to the TO node (MVAR)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
@@ -1100,28 +1105,30 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Series Resistance system per-unit value"
+                    "comment": "Series Resistance in p.u. ([`System Base`](@ref per_unit))"
                 },
                 {
                     "null_value": "0.0",
                     "name": "l",
                     "data_type": "Float64",
-                    "comment": "Series Inductance system per-unit value"
+                    "comment": "Series Inductance in p.u. ([`System Base`](@ref per_unit))"
                 },
                 {
                     "null_value": "0.0",
                     "name": "c",
                     "data_type": "Float64",
-                    "comment": "Shunt capacitance system per-unit value"
+                    "comment": "Shunt capacitance in p.u. ([`System Base`](@ref per_unit))"
                 },
                 {
                     "name": "active_power_limits_from",
+                    "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
                 },
                 {
                     "name": "active_power_limits_to",
+                    "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
@@ -1331,20 +1338,20 @@
                 },
                 {
                     "name": "Y",
-                    "comment": "Initial impedance at N = 0",
+                    "comment": "Initial admittance at N = 0",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}"
                 },
                 {
                     "name": "number_of_steps",
-                    "comment": "Number of steps for adjustable shunt",
+                    "comment": "(optional) Number of steps for adjustable shunt",
                     "null_value": "0",
                     "data_type": "Int",
                     "default": "0"
                 },
                 {
                     "name": "Y_increase",
-                    "comment": "Admittance increment for each of step increase",
+                    "comment": "(optional) Admittance increment for each of step increase",
                     "null_value": "0",
                     "data_type": "Complex{Float64}",
                     "default": "0"
@@ -1352,7 +1359,7 @@
                 {
                     "name": "dynamic_injector",
                     "data_type": "Union{Nothing, DynamicInjection}",
-                    "comment": "corresponding dynamic injection model for admittance",
+                    "comment": "(optional) corresponding dynamic injection model for admittance",
                     "null_value": "nothing",
                     "exclude_setter": true,
                     "default": "nothing"
@@ -1498,7 +1505,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
+                    "comment": "Base power of the load (MVA) for per unitization.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1509,6 +1516,7 @@
                 },
                 {
                     "name": "constant_active_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
@@ -1516,6 +1524,7 @@
                 },
                 {
                     "name": "constant_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1523,6 +1532,7 @@
                 },
                 {
                     "name": "impedance_active_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1530,6 +1540,7 @@
                 },
                 {
                     "name": "impedance_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1537,6 +1548,7 @@
                 },
                 {
                     "name": "current_active_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1544,6 +1556,7 @@
                 },
                 {
                     "name": "current_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1558,6 +1571,7 @@
                 },
                 {
                     "name": "max_constant_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1565,6 +1579,7 @@
                 },
                 {
                     "name": "max_impedance_active_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1572,6 +1587,7 @@
                 },
                 {
                     "name": "max_impedance_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1579,6 +1595,7 @@
                 },
                 {
                     "name": "max_current_active_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1586,6 +1603,7 @@
                 },
                 {
                     "name": "max_current_reactive_power",
+                    "comment": "(optional)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1847,31 +1865,31 @@
                 },
                 {
                     "name": "C",
-                    "comment": "Torque-Speed Constant Term",
+                    "comment": "(**Do not modify.**) Torque-Speed Constant Term",
                     "internal_default": "PowerSystems.calculate_IM_torque_params(A, B)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "τ_ref",
-                    "comment": "Reference torque parameter",
+                    "comment": "(optional) Reference torque parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "B_shunt",
-                    "comment": "Susceptance Initialization Corrector Term",
+                    "comment": "(optional) Susceptance Initialization Corrector Term",
                     "internal_default": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "X_ad",
-                    "comment": "Equivalent d-axis reactance",
+                    "comment": "(**Do not modify.**) Equivalent d-axis reactance",
                     "internal_default": "(1.0 / X_m + 1.0 / X_ls + 1.0 / X_lr)^(-1)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "X_aq",
-                    "comment": "Equivalent q-axis reactance",
+                    "comment": "(**Do not modify.**) Equivalent q-axis reactance",
                     "internal_default": "X_ad",
                     "data_type": "Float64"
                 },
@@ -2009,37 +2027,37 @@
                 },
                 {
                     "name": "C",
-                    "comment": "Torque-Speed Constant Term",
+                    "comment": "(**Do not modify.**) Torque-Speed Constant Term",
                     "internal_default": "PowerSystems.calculate_IM_torque_params(A, B)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "τ_ref",
-                    "comment": "Reference torque parameter",
+                    "comment": "(optional) Reference torque parameter",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "B_shunt",
-                    "comment": "Susceptance Initialization Corrector Term",
+                    "comment": "(optional) Susceptance Initialization Corrector Term",
                     "internal_default": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "X_ss",
-                    "comment": "Stator self reactance",
+                    "comment": "(**Do not modify.**) Stator self reactance",
                     "internal_default": "X_ls + X_m",
                     "data_type": "Float64"
                 },
                 {
                     "name": "X_rr",
-                    "comment": "Rotor self reactance",
+                    "comment": "(**Do not modify.**) Rotor self reactance",
                     "internal_default": "X_lr + X_m",
                     "data_type": "Float64"
                 },
                 {
                     "name": "X_p",
-                    "comment": "Transient reactance",
+                    "comment": "(**Do not modify.**) Transient reactance",
                     "internal_default": "X_ss - X_m^2 / X_rr",
                     "data_type": "Float64"
                 },
@@ -2507,7 +2525,7 @@
                 },
                 {
                     "name": "K",
-                    "comment": "Gain in pu",
+                    "comment": "Gain in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2597,7 +2615,7 @@
                 },
                 {
                     "name": "CBase",
-                    "comment": "Capacitor Mvar",
+                    "comment": "Capacitor (MVAR)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -3291,7 +3309,7 @@
         },
         {
             "struct_name": "RenewableDispatch",
-            "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints. These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref).",
+            "docstring": "A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints.\n\nThese generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3412,7 +3430,7 @@
         },
         {
             "struct_name": "RenewableFix",
-            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).",
+            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar).\n\nIts output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3857,7 +3875,7 @@
                 },
                 {
                     "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
+                    "comment": "(optional) Set to `true` if the unit is must run",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
@@ -4274,7 +4292,7 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "comment": "(optional) the time in seconds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4286,7 +4304,7 @@
                 },
                 {
                     "name": "max_output_fraction",
-                    "comment": "the maximum fraction of the device's output that can be assigned to the service",
+                    "comment": "(optional) the maximum fraction of each device's output that can be assigned to the service",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4298,7 +4316,7 @@
                 },
                 {
                     "name": "max_participation_factor",
-                    "comment": "the maximum limit of reserve contribution per device",
+                    "comment": "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4310,7 +4328,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4367,7 +4385,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in system p.u.",
+                    "comment": "the static value of required reserves in p.u. ([`System Base`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4379,7 +4397,7 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "comment": "(optional) the time in seconds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4391,7 +4409,7 @@
                 },
                 {
                     "name": "max_output_fraction",
-                    "comment": "the maximum fraction of the device's output that can be assigned to the service",
+                    "comment": "(optional) the maximum fraction of each device's output that can be assigned to the service",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4403,7 +4421,7 @@
                 },
                 {
                     "name": "max_participation_factor",
-                    "comment": "the maximum limit of reserve contribution per device",
+                    "comment": "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4415,7 +4433,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4481,7 +4499,7 @@
                 },
                 {
                     "name": "contributing_services",
-                    "comment": "Services that contribute for this requirement constraint",
+                    "comment": "(optional) Services that contribute to this group requirement. Services must be added for this constraint to have an effect when conducting simulations in [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/latest/).",
                     "data_type": "Vector{Service}",
                     "null_value": "Vector{Service}()",
                     "default": "Vector{Service}()",
@@ -4534,7 +4552,7 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "comment": "(optional) the time in seconds that the reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4546,7 +4564,7 @@
                 },
                 {
                     "name": "max_participation_factor",
-                    "comment": "the maximum limit of reserve contribution per device",
+                    "comment": "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4558,7 +4576,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4622,7 +4640,7 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "comment": "(optional) the time in seconds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4634,7 +4652,7 @@
                 },
                 {
                     "name": "max_output_fraction",
-                    "comment": "the maximum fraction of the device's output that can be assigned to the service",
+                    "comment": "(optional) the maximum fraction of each device's output that can be assigned to the service",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4646,7 +4664,7 @@
                 },
                 {
                     "name": "max_participation_factor",
-                    "comment": "the maximum limit of reserve contribution per device",
+                    "comment": "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4658,7 +4676,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4722,7 +4740,7 @@
                 },
                 {
                     "name": "sustained_time",
-                    "comment": "the time in secounds reserve contribution must sustained at a specified level",
+                    "comment": "(optional) the time in seconds reserve contribution must sustained at a specified level",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4734,7 +4752,7 @@
                 },
                 {
                     "name": "max_output_fraction",
-                    "comment": "the maximum fraction of the device's output that can be assigned to the service",
+                    "comment": "(optional) the maximum fraction of each device's output that can be assigned to the service",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4746,7 +4764,7 @@
                 },
                 {
                     "name": "max_participation_factor",
-                    "comment": "the maximum limit of reserve contribution per device",
+                    "comment": "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4758,7 +4776,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4905,7 +4923,7 @@
             "fields": [
                 {
                     "name": "Vf",
-                    "comment": "Fixed voltage field applied to the rotor winding",
+                    "comment": "Fixed voltage field applied to the rotor winding in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -8357,31 +8375,31 @@
                 },
                 {
                     "name": "γ_d1",
-                    "comment": "γ_d1 parameter",
+                    "comment": "(**Do not modify.**) γ_d1 parameter",
                     "internal_default": "(Xd_pp - Xl) / (Xd_p - Xl)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_q1",
-                    "comment": "γ_q1 parameter",
+                    "comment": "(**Do not modify.**) γ_q1 parameter",
                     "internal_default": "(Xd_pp - Xl) / (Xq_p - Xl)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_d2",
-                    "comment": "γ_d2 parameter",
+                    "comment": "(**Do not modify.**) γ_d2 parameter",
                     "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_q2",
-                    "comment": "γ_q2 parameter",
+                    "comment": "(**Do not modify.**) γ_q2 parameter",
                     "internal_default": "(Xq_p - Xd_pp) / (Xq_p - Xl)^2",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_qd",
-                    "comment": "γ_qd parameter",
+                    "comment": "(**Do not modify.**) γ_qd parameter",
                     "internal_default": "(Xq - Xl) / (Xd - Xl)",
                     "data_type": "Float64"
                 },
@@ -8518,19 +8536,19 @@
                 },
                 {
                     "name": "γ_d1",
-                    "comment": "γ_d1 parameter",
+                    "comment": "(**Do not modify.**) γ_d1 parameter",
                     "internal_default": "(Xd_pp - Xl) / (Xd_p - Xl)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_q1",
-                    "comment": "γ_q1 parameter",
+                    "comment": "(**Do not modify.**) γ_q1 parameter",
                     "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)",
                     "data_type": "Float64"
                 },
                 {
                     "name": "γ_d2",
-                    "comment": "γ_d2 parameter",
+                    "comment": "(**Do not modify.**) γ_d2 parameter",
                     "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
                     "data_type": "Float64"
                 },
@@ -9005,25 +9023,25 @@
                     "name": "γ_d1",
                     "data_type": "Float64",
                     "internal_default": "(Xd_pp-Xl)/(Xd_p-Xl)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "γ_q1",
                     "data_type": "Float64",
                     "internal_default": "(Xq_pp-Xl)/(Xq_p-Xl)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "γ_d2",
                     "data_type": "Float64",
                     "internal_default": "(Xd_p - Xd_pp) / (Xd_p - Xl)^2",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "γ_q2",
                     "data_type": "Float64",
                     "internal_default": "(Xq_p - Xq_pp) / (Xq_p - Xl)^2",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "states",
@@ -9601,13 +9619,13 @@
                     "name": "inv_d_fluxlink",
                     "data_type": "Array{Float64,2}",
                     "internal_default": "inv([[-L_d L_ad L_ad]; [-L_ad L_ff L_f1d]; [-L_ad L_f1d L_1d]])",
-                    "comment": "Equations 3.127, 3.130, 3.131 From Kundur"
+                    "comment": "(**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur"
                 },
                 {
                     "name": "inv_q_fluxlink",
                     "data_type": "Array{Float64,2}",
                     "internal_default": "inv([[-L_q L_aq]; [-L_aq L_1q]])",
-                    "comment": "Equations 3.128, 3.132 From Kundur"
+                    "comment": "(**Do not modify.**) Equations 3.128, 3.132 From Kundur"
                 },
                 {
                     "name": "states",
@@ -9768,13 +9786,13 @@
                     "name": "γd",
                     "data_type": "Float64",
                     "internal_default": "((Td0_pp*Xd_pp)/(Td0_p*Xd_p) )*(Xd-Xd_p)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "γq",
                     "data_type": "Float64",
                     "internal_default": "((Tq0_pp*Xq_pp)/(Tq0_p*Xq_p) )*(Xq-Xq_p)",
-                    "comment": ""
+                    "comment": "(**Do not modify.**) Internal equation"
                 },
                 {
                     "name": "states",
@@ -9806,7 +9824,7 @@
             "fields": [
                 {
                     "name": "V_pss",
-                    "comment": "Fixed voltage stabilization signal",
+                    "comment": "Fixed voltage stabilization signal in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13088,7 +13106,7 @@
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "Initial machine reactive power from power flow",
+                    "comment": "(optional) Initial condition of reactive power from power flow",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13099,7 +13117,7 @@
                 },
                 {
                     "name": "R_source",
-                    "comment": "Output resistor used for the Thevenin Equivalent",
+                    "comment": "(optional) Output resistor used for the Thevenin Equivalent",
                     "null_value": 0,
                     "default": "0.0",
                     "data_type": "Float64",
@@ -13110,7 +13128,7 @@
                 },
                 {
                     "name": "X_source",
-                    "comment": "Output resistor used for the Thevenin Equivalent",
+                    "comment": "(optional) Output reactance used for the Thevenin Equivalent",
                     "null_value": 0,
                     "default": "1.0e5",
                     "data_type": "Float64",
@@ -13271,7 +13289,7 @@
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "Initial machine reactive power from power flow",
+                    "comment": "(optional) Initial condition of reactive power from power flow",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -13355,7 +13373,7 @@
             "fields": [
                 {
                     "name": "rated_voltage",
-                    "comment": "rated voltage",
+                    "comment": "Rated voltage (V)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13365,7 +13383,7 @@
                 },
                 {
                     "name": "rated_current",
-                    "comment": "rated current",
+                    "comment": "Rated current (A)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13375,7 +13393,7 @@
                 },
                 {
                     "name": "battery_voltage",
-                    "comment": "battery voltage",
+                    "comment": "battery voltage in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13385,7 +13403,7 @@
                 },
                 {
                     "name": "battery_resistance",
-                    "comment": "battery_resistance",
+                    "comment": "Battery resistance in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13395,7 +13413,7 @@
                 },
                 {
                     "name": "dc_dc_inductor",
-                    "comment": "DC/DC inductance",
+                    "comment": "DC/DC inductance in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13405,7 +13423,7 @@
                 },
                 {
                     "name": "dc_link_capacitance",
-                    "comment": "DC-link capacitor",
+                    "comment": "DC-link capacitance in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13415,7 +13433,7 @@
                 },
                 {
                     "name": "fs",
-                    "comment": "DC/DC converter switching frequency",
+                    "comment": "DC/DC converter switching frequency (kHz)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13465,7 +13483,7 @@
                 },
                 {
                     "name": "Vdc_ref",
-                    "comment": "Reference DC-Voltage Set-point",
+                    "comment": "(optional) Reference DC-Voltage Set-point in pu ([`Device Base`](@ref per_unit))",
                     "null_value": 0,
                     "default": "1.1",
                     "data_type": "Float64",
@@ -13484,7 +13502,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ZeroOrderBESS model are:\n\tv_dc: DC-link votlage,\n\ti_b: Battery current,\n\t ν: integrator state of the voltage controller,\n\t ζ: integrator state of the PI current controller",
+                    "comment": "(**Do not modify.**) The states of the ZeroOrderBESS model are:\n\tv_dc: DC-link voltage,\n\ti_b: Battery current,\n\t ν: integrator state of the voltage controller,\n\t ζ: integrator state of the PI current controller",
                     "internal_default": "[:v_dc, :i_b, :ν, :ζ]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14716,7 +14734,7 @@
                 },
                 {
                     "name": "Q_ref",
-                    "comment": "Reference Reactive Power Set-point",
+                    "comment": "(optional) Reference Reactive Power Set-point (pu)",
                     "null_value": 0,
                     "default": "1.0",
                     "data_type": "Float64",
@@ -15632,7 +15650,7 @@
                 },
                 {
                     "name": "internal_voltage",
-                    "comment": "Internal Voltage",
+                    "comment": "(optional) Internal Voltage (pu)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -15643,7 +15661,7 @@
                 },
                 {
                     "name": "internal_angle",
-                    "comment": "Internal Angle",
+                    "comment": "(optional) Internal Angle",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "0.0"
