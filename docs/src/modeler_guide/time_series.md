@@ -48,8 +48,8 @@ time of the forecast, and the columns represent the forecasted values.
   interval is `Hour(1)`.
 
 - **Horizon**: Is the count of discrete forecasted values, all horizons in `PowerSystems.jl`
-  are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
-  horizon 24.
+  are represented with `Dates.Period`. For instance, many Day-ahead markets will have a
+  forecast with a horizon of Dates.Hour(24).
 
 - **Forecast window**: Represents the forecasted value starting at a particular initial time.
 
@@ -428,7 +428,7 @@ Here's an example:
     add_time_series!(sys, component, ts)
 
     # Transform it to Deterministic
-    transform_single_time_series!(sys, 24, Hour(24))
+    transform_single_time_series!(sys, Hour(24), Hour(24))
 ```
 
 This function transforms all `SingleTimeSeries` instances stored in the system.

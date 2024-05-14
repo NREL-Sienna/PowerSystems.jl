@@ -1389,8 +1389,16 @@ end
 
 """
 Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
+If all SingleTimeSeries instances cannot be transformed then none will be.
+
+Any existing DeterministicSingleTimeSeries forecasts will be deleted even if the inputs are
+invalid.
 """
-function transform_single_time_series!(sys::System, horizon::Int, interval::Dates.Period)
+function transform_single_time_series!(
+    sys::System,
+    horizon::Dates.Period,
+    interval::Dates.Period,
+)
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
