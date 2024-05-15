@@ -145,7 +145,7 @@ function InterruptibleLoad(;
     )
 end
 
-function GenericBattery(
+function EnergyReservoirStorage(
     name::AbstractString,
     available::Bool,
     bus,
@@ -166,7 +166,7 @@ function GenericBattery(
     ext = Dict{String, Any}(),
     internal = InfrastructureSystemsInternal(),
 )
-    GenericBattery(
+    EnergyReservoirStorage(
         name,
         available,
         bus,

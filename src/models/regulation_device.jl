@@ -120,7 +120,7 @@ RegulationDeviceSupportedTypes = DataType[
     ThermalMultiStart,
     ThermalStandard,
     Source,
-    GenericBattery,
+    EnergyReservoirStorage,
 ]
 
 for RDT in RegulationDeviceSupportedTypes
