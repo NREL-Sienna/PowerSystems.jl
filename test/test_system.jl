@@ -311,7 +311,8 @@ end
     name = "test"
     horizon = Hour(24)
     horizon_count = 24
-    data = SortedDict(initial_time => ones(horizon_count), second_time => ones(horizon_count))
+    data =
+        SortedDict(initial_time => ones(horizon_count), second_time => ones(horizon_count))
 
     forecast = Deterministic(; data = data, name = name, resolution = resolution)
     add_time_series!(sys, gen, forecast)

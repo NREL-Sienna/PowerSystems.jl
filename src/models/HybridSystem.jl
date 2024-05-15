@@ -29,7 +29,10 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     input_active_power_limits::Union{Nothing, MinMax}
     output_active_power_limits::Union{Nothing, MinMax}
     reactive_power_limits::Union{Nothing, MinMax}
-    interconnection_efficiency::Union{Nothing, NamedTuple{(:in, :out), Tuple{Float64, Float64}}}
+    interconnection_efficiency::Union{
+        Nothing,
+        NamedTuple{(:in, :out), Tuple{Float64, Float64}},
+    }
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
@@ -206,7 +209,8 @@ set_output_active_power_limits!(value::HybridSystem, val) =
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = val
 """Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
-set_interconnection_efficiency!(value::HybridSystem, val) = value.interconnection_rating = val
+set_interconnection_efficiency!(value::HybridSystem, val) =
+    value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `base_power`."""
 set_base_power!(value::HybridSystem, val) = value.base_power = val
 """Set [`HybridSystem`](@ref) `operation_cost`."""
