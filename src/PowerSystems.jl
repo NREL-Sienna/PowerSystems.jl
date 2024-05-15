@@ -90,8 +90,7 @@ export InterruptiblePowerLoad
 export ExponentialLoad
 
 export Storage
-export GenericBattery
-export BatteryEMS
+export EnergyReservoirStorage
 
 export DynamicComponent
 export DynamicInjection
