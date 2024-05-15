@@ -408,7 +408,7 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolutions = [x.value for x in list_time_series_resolutions(sys)]
+    resolutions = [x.value for x in get_time_series_resolutions(sys)]
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
@@ -851,11 +851,11 @@ function IS.add_time_series_from_file_metadata_internal!(
         file_metadata.scaling_factor_multiplier =
             replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
         area_ts = IS.make_time_series!(cache, file_metadata)
-        IS.add_time_series!(data, component, area_ts; skip_if_present = true)
+        key = IS.add_time_series!(data, component, area_ts; skip_if_present = true)
     else
-        IS.add_time_series!(data, component, ts)
+        key = IS.add_time_series!(data, component, ts)
     end
-    return
+    return key
 end
 
 """
@@ -1324,10 +1324,10 @@ get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 Return a sorted Vector of distinct resolutions for all time series of the given type
 (or all types).
 """
-list_time_series_resolutions(
+get_time_series_resolutions(
     sys::System;
     time_series_type::Union{Type{<:TimeSeriesData}, Nothing} = nothing,
-) = IS.list_time_series_resolutions(sys.data; time_series_type = time_series_type)
+) = IS.get_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
 Return an iterator of time series in order of initial time.
@@ -1389,8 +1389,16 @@ end
 
 """
 Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
+If all SingleTimeSeries instances cannot be transformed then none will be.
+
+Any existing DeterministicSingleTimeSeries forecasts will be deleted even if the inputs are
+invalid.
 """
-function transform_single_time_series!(sys::System, horizon::Int, interval::Dates.Period)
+function transform_single_time_series!(
+    sys::System,
+    horizon::Dates.Period,
+    interval::Dates.Period,
+)
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,

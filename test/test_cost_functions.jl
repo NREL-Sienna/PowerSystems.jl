@@ -134,17 +134,26 @@ end
           UnitSystem.DEVICE_BASE
 end
 
+@testset "Test market bid cost interface" begin
+    mbc = make_market_bid_curve([100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0])
+    @test is_market_bid_curve(mbc)
+    @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
+    @test_throws ArgumentError make_market_bid_curve(
+        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0])
+end
+
 test_costs = Dict(
-    QuadraticFunctionData =>
-        repeat([QuadraticFunctionData(999.0, 2.0, 1.0)], 24),
-    PiecewiseLinearData =>
-        repeat(
-            [PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0])],
-            24,
-        ),
+    CostCurve{QuadraticCurve} =>
+        repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
+    CostCurve{PiecewiseIncrementalCurve} =>
+        repeat([make_market_bid_curve([2.0, 3.0], [4.0, 6.0])], 24),
+    Float64 =>
+        collect(11.0:34.0),
+    PSY.StartUpStages =>
+        repeat([(hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)], 24),
 )
 
-@testset "Test MarketBidCost with Quadratic Cost Timeseries with Service Forecast" begin
+@testset "Test MarketBidCost with Quadratic Cost Timeseries" begin
     # Will throw TypeErrors because market bids must be piecewise, not quadratic and service
     # bids must be piecewise, not scalar
     initial_time = Dates.DateTime("2020-01-01")
@@ -153,13 +162,16 @@ test_costs = Dict(
     horizon = 24
     service_data = Dict(initial_time => rand(horizon))
     data_quadratic =
-        SortedDict(initial_time => test_costs[QuadraticFunctionData])
+        SortedDict(initial_time => test_costs[CostCurve{QuadraticCurve}])
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    generators = collect(get_components(ThermalStandard, sys))
-    generator = get_component(ThermalStandard, sys, get_name(generators[1]))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", data_quadratic, resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_quadratic)),
+        resolution,
+    )
     @test_throws TypeError set_variable_cost!(sys, generator, forecast)
     for s in generator.services
         forecast = IS.Deterministic(get_name(s), service_data, resolution)
@@ -167,31 +179,41 @@ test_costs = Dict(
     end
 end
 
-@testset "Test MarketBidCost with PiecewiseLinearData Cost Timeseries" begin
+@testset "Test MarketBidCost with PiecewiseLinearData Cost Timeseries with Service Bid Forecast" begin
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData])
+    data_pwl = SortedDict(initial_time => test_costs[CostCurve{PiecewiseIncrementalCurve}])
     service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
-    generators = collect(get_components(ThermalStandard, sys))
-    generator = get_component(ThermalStandard, sys, get_name(generators[1]))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
     set_variable_cost!(sys, generator, forecast)
     for s in generator.services
-        forecast = IS.Deterministic(get_name(s), service_data, resolution)
+        forecast = IS.Deterministic(
+            get_name(s),
+            Dict(k => get_function_data.(v) for (k, v) in pairs(service_data)),
+            resolution,
+        )
         set_service_bid!(sys, generator, s, forecast)
     end
 
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
-    @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
+    @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 
     for s in generator.services
         service_cost = get_services_bid(generator, market_bid, s; start_time = initial_time)
-        @test first(TimeSeries.values(service_cost)) == first(service_data[initial_time])
+        @test isequal(
+            first(TimeSeries.values(service_cost)),
+            first(service_data[initial_time]),
+        )
     end
 end
 
@@ -207,13 +229,97 @@ end
     other_time = initial_time + resolution
     name = "test"
     horizon = 24
-    data_pwl = SortedDict(initial_time => test_costs[PiecewiseLinearData],
-        other_time => test_costs[PiecewiseLinearData])
+    data_pwl = SortedDict(initial_time => test_costs[CostCurve{PiecewiseIncrementalCurve}],
+        other_time => test_costs[CostCurve{PiecewiseIncrementalCurve}])
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(nothing)
     add_component!(sys, reserve)
-    forecast = IS.Deterministic("variable_cost", data_pwl, resolution)
+    forecast = IS.Deterministic(
+        "variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
     set_variable_cost!(sys, reserve, forecast)
     cost_forecast = get_variable_cost(reserve; start_time = initial_time)
-    @test first(TimeSeries.values(cost_forecast)) == first(data_pwl[initial_time])
+    @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
+end
+
+@testset "Test fuel cost (scalar and time series)" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+
+    @test_throws ArgumentError get_fuel_cost(generator)  # Can't get the fuel cost of a CostCurve
+
+    op_cost = get_operation_cost(generator)
+    value_curve = get_value_curve(get_variable(op_cost))
+    set_variable!(op_cost, FuelCurve(value_curve, 0.0))
+    @test get_fuel_cost(generator) == 0.0
+    @test_throws ArgumentError get_fuel_cost(generator; len = 2)
+
+    set_fuel_cost!(sys, generator, 1.23)
+    @test get_fuel_cost(generator) == 1.23
+
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    horizon = 24
+    data_float = SortedDict(initial_time => test_costs[Float64])
+    forecast = IS.Deterministic("fuel_cost", data_float, resolution)
+    set_fuel_cost!(sys, generator, forecast)
+    fuel_forecast = get_fuel_cost(generator; start_time = initial_time)
+    @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
+    fuel_forecast = get_fuel_cost(generator)  # missing start_time filled in with initial time
+    @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
+end
+@testset "Test no-load cost (scalar and time series)" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    market_bid = MarketBidCost(nothing)
+    set_operation_cost!(generator, market_bid)
+
+    op_cost = get_operation_cost(generator)
+    @test get_no_load_cost(generator, op_cost) == 0.0
+
+    set_no_load_cost!(sys, generator, 1.23)
+    @test get_no_load_cost(generator, op_cost) == 1.23
+
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    horizon = 24
+    data_float = SortedDict(initial_time => test_costs[Float64])
+    forecast = IS.Deterministic("no_load_cost", data_float, resolution)
+
+    set_no_load_cost!(sys, generator, forecast)
+    @test first(TimeSeries.values(get_no_load_cost(generator, op_cost))) ==
+          first(data_float[initial_time])
+end
+
+@testset "Test startup cost (tuple and time series)" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    market_bid = MarketBidCost(nothing)
+    set_operation_cost!(generator, market_bid)
+
+    op_cost = get_operation_cost(generator)
+    @test get_start_up(generator, op_cost) ==
+          (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
+
+    set_start_up!(sys, generator, (hot = 1.23, warm = 2.34, cold = 3.45))
+    @test get_start_up(generator, op_cost) == (hot = 1.23, warm = 2.34, cold = 3.45)
+
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    horizon = 24
+    data_sus = SortedDict(initial_time => test_costs[PSY.StartUpStages])
+    forecast = IS.Deterministic(
+        "start_up",
+        Dict(k => Tuple.(v) for (k, v) in pairs(data_sus)),
+        resolution,
+    )
+
+    set_start_up!(sys, generator, forecast)
+    @test first(TimeSeries.values(get_start_up(generator, op_cost))) ==
+          first(data_sus[initial_time])
 end

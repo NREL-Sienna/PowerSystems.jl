@@ -183,7 +183,7 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
     end
     try
         print(io, summary(ist), ":")
-        for (name, field_type) in zip(fieldnames(typeof(ist)), fieldtypes(typeof(ist)))
+        for name in fieldnames(typeof(ist))
             obj = getproperty(ist, name)
             getter_name = Symbol("get_$name")
             if (obj isa InfrastructureSystemsInternal) && !default_units
@@ -201,6 +201,14 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
             end
             print(io, "\n   ", name, ": ", val)
         end
+        print(
+            io,
+            "\n   ",
+            "has_supplemental_attributes",
+            ": ",
+            string(has_supplemental_attributes(ist)),
+        )
+        print(io, "\n   ", "has_time_series", ": ", string(has_time_series(ist)))
     finally
         if default_units
             set_units_setting!(ist, nothing)

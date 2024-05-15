@@ -54,12 +54,11 @@ end
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
 
 # BASE METHODS
-Base.:(==)(a::InputOutputCurve, b::InputOutputCurve) =
-    (get_function_data(a) == get_function_data(b))
+Base.:(==)(a::T, b::T) where {T <: ValueCurve} = IS.double_equals_from_fields(a, b)
 
-Base.:(==)(a::T, b::T) where {T <: Union{IncrementalCurve, AverageRateCurve}} =
-    (get_function_data(a) == get_function_data(b)) &&
-    (get_initial_input(a) == get_initial_input(b))
+Base.isequal(a::T, b::T) where {T <: ValueCurve} = IS.isequal_from_fields(a, b)
+
+Base.hash(a::ValueCurve) = IS.hash_from_fields(a)
 
 "Get an `InputOutputCurve` representing `f(x) = 0`"
 Base.zero(::Union{InputOutputCurve, Type{InputOutputCurve}}) =

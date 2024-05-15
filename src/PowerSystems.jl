@@ -60,7 +60,10 @@ export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCost, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
-export get_function_data, get_initial_input, get_value_curve, get_power_units, get_fuel_cost
+export get_function_data, get_initial_input, get_value_curve, get_power_units
+export get_fuel_cost, set_fuel_cost!
+export is_market_bid_curve, make_market_bid_curve
+export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 
 export Generator
 export HydroGen
@@ -264,8 +267,9 @@ export Deterministic
 export Probabilistic
 export SingleTimeSeries
 export DeterministicSingleTimeSeries
-export StaticTimeSeriesInfo
-export ForecastInfo
+export TimeSeriesKey
+export StaticTimeSeriesKey
+export ForecastKey
 export Scenarios
 export ForecastCache
 export StaticTimeSeriesCache
@@ -322,8 +326,9 @@ export get_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export get_time_series
+export get_time_series_type
 export get_time_series_array
-export list_time_series_resolutions
+export get_time_series_resolutions
 export supports_time_series
 export supports_supplemental_attributes
 export get_time_series_timestamps
@@ -335,7 +340,7 @@ export get_next_time_series_array!
 export get_next_time
 export get_horizon
 export get_forecast_initial_times
-export list_time_series_info
+export get_time_series_keys
 export show_time_series
 export get_resolution
 export get_data
@@ -480,12 +485,13 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
-    StaticTimeSeriesInfo,
+    StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
-    ForecastInfo,
+    ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
+    TimeSeriesKey,
     TimeSeriesCounts,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
@@ -514,10 +520,11 @@ import InfrastructureSystems:
     iterate_windows,
     get_time_series,
     has_time_series,
+    get_time_series_type,
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    list_time_series_info,
+    get_time_series_keys,
     show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
