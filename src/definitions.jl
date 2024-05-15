@@ -80,7 +80,7 @@ IS.@scoped_enum(
 )
 
 IS.@scoped_enum(
-    PumpStorageStatus,
+    PumpHydroStatus,
     OFF = 0,
     GEN = 1,
     PUMP = -1,
