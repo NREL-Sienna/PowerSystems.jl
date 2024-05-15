@@ -81,7 +81,7 @@ _convert_op_cost(::Val{:ThermalStandard}, ::Val{:ThreePartCost}, op_cost::Dict) 
         op_cost["shut_down"],
     )
 
-# TODO implement remaining _convert_op_cost methods 
+# TODO implement remaining _convert_op_cost methods
 
 function _convert_data!(
     raw::Dict{String, Any},
@@ -105,7 +105,12 @@ function _convert_data!(
             new_op_cost = IS.serialize(_convert_op_cost(comp_type, op_cost_type, op_cost))
             component["operation_cost"] = new_op_cost
         end
+        if component["__metadata__"]["type"] ∈ ["BatteryEMS", "GenericBattery"]
+            component["__metadata__"]["type"] = "EnergyReservoirStorage"
+            component["storage_technology_type"] = "StorageTech.OTHER_CHEM"
+        end
     end
+    return
 end
 
 function _convert_data!(
