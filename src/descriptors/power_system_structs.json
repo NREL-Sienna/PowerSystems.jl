@@ -3430,7 +3430,7 @@
         },
         {
             "struct_name": "RenewableFix",
-            "docstring": "A non-curtailable or must-take renewable generator (e.g., wind or solar).\n\nIts output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).",
+            "docstring": "A zero-cost, non-curtailable or must-take renewable generator (e.g., wind or solar).\n\nIts output is *fixed* or equal to its `active_power`, which is typically a time series. Example use: an aggregation of behind-the-meter distributed energy resources like rooftop solar. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3503,6 +3503,13 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "(optional) Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
                 },
                 {
                     "name": "dynamic_injector",
