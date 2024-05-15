@@ -79,6 +79,13 @@ IS.@scoped_enum(
     OTHER_THERM = 11, # Thermal Storage
 )
 
+IS.@scoped_enum(
+    PumpStorageStatus,
+    OFF = 0,
+    GEN = 1,
+    PUMP = -1,
+)
+
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
