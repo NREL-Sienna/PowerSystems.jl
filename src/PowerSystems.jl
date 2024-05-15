@@ -258,6 +258,7 @@ export AngleUnits
 export ACBusTypes
 export PrimeMovers
 export ThermalFuels
+export StorageTech
 export StateTypes
 
 export TimeSeriesData
