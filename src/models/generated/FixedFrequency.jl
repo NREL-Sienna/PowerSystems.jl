@@ -16,13 +16,14 @@ Parameters of a Fixed Frequency Estimator (i.e. no PLL).
 
 # Arguments
 - `frequency::Float64`: Reference used
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: FixedFrequency has no states
 - `n_states::Int`: FixedFrequency has no states
 """
 mutable struct FixedFrequency <: FrequencyEstimator
     "Reference used"
     frequency::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "FixedFrequency has no states"
     states::Vector{Symbol}

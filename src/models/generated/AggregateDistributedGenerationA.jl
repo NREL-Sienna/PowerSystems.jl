@@ -56,7 +56,7 @@ This file is auto-generated. Do not edit.
 Parameters of the DERA1 model in PSS/E
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `Pf_Flag::Int`: Flag for Power Factor Control, validation range: `(0, 1)`
 - `Freq_Flag::Int`: Flag to enable/disable frequency control, validation range: `(0, 1)`
 - `PQ_Flag::Int`: Flag used to enforce maximum current, validation range: `(0, 1)`
@@ -96,13 +96,14 @@ Parameters of the DERA1 model in PSS/E
 - `ω_ref::Float64`: Reference frequency, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.
 - `ext::Dict{String, Any}`
 - `states::Vector{Symbol}`: The states of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: The states of AggregateDistributedGenerationA depends on the Flags
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AggregateDistributedGenerationA <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Flag for Power Factor Control"
     Pf_Flag::Int
@@ -182,14 +183,14 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    "Base power"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     ext::Dict{String, Any}
     "The states of AggregateDistributedGenerationA depends on the Flags"
     states::Vector{Symbol}
     "The states of AggregateDistributedGenerationA depends on the Flags"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

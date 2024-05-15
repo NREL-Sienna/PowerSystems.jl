@@ -41,22 +41,22 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `active_power::Float64`
-- `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
-- `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
-- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `error`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`, action if invalid: `warn`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable., action if invalid: `warn`
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating_pump::Float64`: Maximum power withdrawal (MVA) of the pump., validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits_pump::MinMax`
 - `reactive_power_limits_pump::Union{Nothing, MinMax}`, action if invalid: `warn`
-- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
+- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min of pump, validation range: `(0, nothing)`, action if invalid: `error`
 - `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
@@ -69,32 +69,39 @@ This file is auto-generated. Do not edit.
 - `time_at_status::Float64`
 - `services::Vector{Service}`: Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct HydroPumpedStorage <: HydroGen
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    "Maximum output power rating of the unit (MVA)"
     rating::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "Prime mover technology according to EIA 923"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
     prime_mover_type::PrimeMovers
+    "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable."
     reactive_power_limits::Union{Nothing, MinMax}
-    "ramp up and ramp down limits in MW (in component base per unit) per minute"
+    "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
-    "Thermal limited MVA Power Withdrawl of the pump. <= Capacity"
+    "Maximum power withdrawal (MVA) of the pump."
     rating_pump::Float64
     active_power_limits_pump::MinMax
     reactive_power_limits_pump::Union{Nothing, MinMax}
-    "ramp up and ramp down limits in MW (in component base per unit) per minute of pump"
+    "ramp up and ramp down limits in MW/min of pump"
     ramp_limits_pump::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits of pump in hours"
     time_limits_pump::Union{Nothing, UpDown}
@@ -119,8 +126,9 @@ mutable struct HydroPumpedStorage <: HydroGen
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

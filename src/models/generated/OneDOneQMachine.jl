@@ -32,12 +32,12 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
 - `n_states::Int`: OneDOneQMachine has 2 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct OneDOneQMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -54,6 +54,7 @@ mutable struct OneDOneQMachine <: Machine
     Td0_p::Float64
     "Time constant of transient q-axis voltage"
     Tq0_p::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	eq_p: q-axis transient voltage,
@@ -61,7 +62,7 @@ mutable struct OneDOneQMachine <: Machine
     states::Vector{Symbol}
     "OneDOneQMachine has 2 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

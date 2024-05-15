@@ -22,8 +22,8 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bias::Float64`
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
@@ -31,11 +31,13 @@ This file is auto-generated. Do not edit.
 - `delta_t::Float64`: PID Discretization period [Seconds]
 - `area::Union{Nothing, Area}`: the area controlled by the AGC
 - `initial_ace::Float64`: PID Discretization period [Seconds]
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AGC <: Service
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     bias::Float64
     "PID Proportional Constant"
@@ -50,8 +52,9 @@ mutable struct AGC <: Service
     area::Union{Nothing, Area}
     "PID Discretization period [Seconds]"
     initial_ace::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

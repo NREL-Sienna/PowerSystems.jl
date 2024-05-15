@@ -19,27 +19,27 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A power-system bus.
+An AC bus.
 
 # Arguments
 - `number::Int`: number associated with the bus
-- `name::String`: the name of the bus
-- `bustype::Union{Nothing, ACBusTypes}`: bus type
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `bustype::Union{Nothing, ACBusTypes}`: Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: the load zone containing the bus
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ACBus <: Bus
     "number associated with the bus"
     number::Int
-    "the name of the bus"
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "bus type"
+    "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)"
     bustype::Union{Nothing, ACBusTypes}
     "angle of the bus in radians"
     angle::Union{Nothing, Float64}
@@ -53,8 +53,9 @@ mutable struct ACBus <: Bus
     area::Union{Nothing, Area}
     "the load zone containing the bus"
     load_zone::Union{Nothing, LoadZone}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 
     function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )

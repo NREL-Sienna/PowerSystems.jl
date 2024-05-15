@@ -28,11 +28,11 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
 - `V_lim::MinMax`: Field voltage limits
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: SEXS has 2 states
-- `states_types::Vector{StateTypes}`: SEXS has 2 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: SEXS has 2 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SEXS <: AVR
     "Ratio of lead and lag time constants"
@@ -47,14 +47,15 @@ mutable struct SEXS <: AVR
     V_lim::MinMax
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:	Vf: Voltage field,	Vr: Lead-lag state"
     states::Vector{Symbol}
     "SEXS has 2 states"
     n_states::Int
-    "SEXS has 2 differential states"
+    "SEXS has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

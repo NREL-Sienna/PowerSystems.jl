@@ -42,7 +42,7 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Accel::Float64`: Acceleration factor, validation range: `(0, 1)`
 - `Lvpl_sw::Int`: Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present), validation range: `(0, 1)`
 - `Q_ref::Float64`: Initial machine reactive power from power flow, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: RenewableEnergyVoltageConverterTypeA has 3 states
 """
@@ -75,6 +75,7 @@ mutable struct RenewableEnergyVoltageConverterTypeA <: Converter
     Lvpl_sw::Int
     "Initial machine reactive power from power flow"
     Q_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
     states::Vector{Symbol}

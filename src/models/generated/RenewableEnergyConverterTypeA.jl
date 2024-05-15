@@ -46,7 +46,7 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Q_ref::Float64`: Initial machine reactive power from power flow, validation range: `(0, nothing)`
 - `R_source::Float64`: Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
 - `X_source::Float64`: Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: RenewableEnergyConverterTypeA has 3 states
 """
@@ -83,6 +83,7 @@ mutable struct RenewableEnergyConverterTypeA <: Converter
     R_source::Float64
     "Output resistor used for the Thevenin Equivalent"
     X_source::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
     states::Vector{Symbol}

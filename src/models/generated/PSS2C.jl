@@ -80,7 +80,7 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `Xcomp::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
 - `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `hysteresis_binary_logic::Int`: Hysteresis memory variable
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
@@ -102,8 +102,8 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,
 - `n_states::Int`: IEEEST has 19 states
-- `states_types::Vector{StateTypes}`: IEEEST has 19 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: IEEEST has 19 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct PSS2C <: PSS
     "First Input Code for stabilizer"
@@ -170,6 +170,7 @@ mutable struct PSS2C <: PSS
     Tcomp::Float64
     "Hysteresis memory variable"
     hysteresis_binary_logic::Int
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st washout 1st input, 
@@ -194,9 +195,9 @@ mutable struct PSS2C <: PSS
     states::Vector{Symbol}
     "IEEEST has 19 states"
     n_states::Int
-    "IEEEST has 19 differential states"
+    "IEEEST has 19 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

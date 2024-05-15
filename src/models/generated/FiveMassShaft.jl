@@ -53,7 +53,7 @@ Parameters of 5 mass-spring shaft model.
 - `K_ip::Float64`: Intermediate pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_lp::Float64`: Low pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_ex::Float64`: Exciter angle coefficient, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	δ: rotor angle,
 	ω: rotor speed,
@@ -66,7 +66,7 @@ Parameters of 5 mass-spring shaft model.
 	δ_ex: rotor angle of exciter,
 	ω_lp: rotor speed of exciter
 - `n_states::Int`: FiveMassShaft has 10 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct FiveMassShaft <: Shaft
     "Rotor inertia constant in MWs/MVA"
@@ -105,6 +105,7 @@ mutable struct FiveMassShaft <: Shaft
     K_lp::Float64
     "Exciter angle coefficient"
     K_ex::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	δ: rotor angle,
@@ -120,7 +121,7 @@ mutable struct FiveMassShaft <: Shaft
     states::Vector{Symbol}
     "FiveMassShaft has 10 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

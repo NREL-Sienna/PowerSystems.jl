@@ -30,14 +30,14 @@ Speed-Sensitive Stabilizing Model
 - `T2T4::Float64`: Time constant division T2/T4, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T4::Float64`: Time constant, validation range: `(0.01, nothing)`, action if invalid: `warn`
 - `H_lim::Float64`: PSS output limit, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: washout filter,
 	x_p2: T1/T3 lead-lag block, 
 	x_p3: T2/T4 lead-lag block,
 - `n_states::Int`: STAB1 has 3 states
-- `states_types::Vector{StateTypes}`: STAB1 has 3 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: STAB1 has 3 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct STAB1 <: PSS
     "K/T for washout filter"
@@ -54,6 +54,7 @@ mutable struct STAB1 <: PSS
     T4::Float64
     "PSS output limit"
     H_lim::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: washout filter,
@@ -62,9 +63,9 @@ mutable struct STAB1 <: PSS
     states::Vector{Symbol}
     "STAB1 has 3 states"
     n_states::Int
-    "STAB1 has 3 differential states"
+    "STAB1 has 3 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

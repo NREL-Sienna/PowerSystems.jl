@@ -32,13 +32,13 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 - `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
 - `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`, action if invalid: `warn`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vr1: First integrator,
 	Vr2: Second integrator
 - `n_states::Int`: SCRX has 2 states
-- `states_types::Vector{StateTypes}`: SCRX has 2 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: SCRX has 2 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SCRX <: AVR
     "Lead input constant ratio"
@@ -57,6 +57,7 @@ mutable struct SCRX <: AVR
     rc_rfd::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vr1: First integrator,
@@ -64,9 +65,9 @@ mutable struct SCRX <: AVR
     states::Vector{Symbol}
     "SCRX has 2 states"
     n_states::Int
-    "SCRX has 2 differential states"
+    "SCRX has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -38,7 +38,7 @@ Parameters for the DC-side with a Battery Energy Storage System from paper at ht
 - `kpi::Float64`: current controller proportional gain, validation range: `(0, nothing)`
 - `kii::Float64`: current controller integral gain, validation range: `(0, nothing)`
 - `Vdc_ref::Float64`: Reference DC-Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ZeroOrderBESS model are:
 	v_dc: DC-link votlage,
 	i_b: Battery current,
@@ -71,6 +71,7 @@ mutable struct ZeroOrderBESS <: DCSource
     kii::Float64
     "Reference DC-Voltage Set-point"
     Vdc_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ZeroOrderBESS model are:
 	v_dc: DC-link votlage,

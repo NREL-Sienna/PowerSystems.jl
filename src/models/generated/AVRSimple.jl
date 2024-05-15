@@ -21,27 +21,28 @@ i.e. an integrator controller on EMF
 # Arguments
 - `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vf: field voltage
 - `n_states::Int`: Fixed AVR has 1 states
-- `states_types::Vector{StateTypes}`: Simple AVR has 1 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: Simple AVR has 1 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRSimple <: AVR
     "Proportional Gain"
     Kv::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vf: field voltage"
     states::Vector{Symbol}
     "Fixed AVR has 1 states"
     n_states::Int
-    "Simple AVR has 1 differential states"
+    "Simple AVR has 1 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -50,7 +50,7 @@ Parameters of Active Power Controller including REPCA1 and REECB1
 - `P_lim_inner::MinMax`: Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`
 - `T_pord::Float64`: Power filter time constant REECB time constant, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ActiveRenewableControllerAB model depends on the Flag
 - `n_states::Int`: The states of the ActiveRenewableControllerAB model depends on the Flag
 """
@@ -91,6 +91,7 @@ mutable struct ActiveRenewableControllerAB <: ActivePowerControl
     T_pord::Float64
     "Reference Power Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ActiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}

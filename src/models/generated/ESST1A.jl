@@ -53,7 +53,7 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, 5)`, action if invalid: `warn`
 - `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`, action if invalid: `warn`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
@@ -61,8 +61,8 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 	Va: Regulator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: ST1A has 5 states
-- `states_types::Vector{StateTypes}`: ST1A has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: ST1A has 5 [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct ESST1A <: AVR
     "Code input for Underexcitization limiter (UEL) entry. Not supported."
@@ -101,6 +101,7 @@ mutable struct ESST1A <: AVR
     I_lr::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vm: Sensed terminal voltage,
@@ -111,9 +112,9 @@ mutable struct ESST1A <: AVR
     states::Vector{Symbol}
     "ST1A has 5 states"
     n_states::Int
-    "ST1A has 5 states"
+    "ST1A has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

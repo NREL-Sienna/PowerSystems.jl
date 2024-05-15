@@ -19,18 +19,19 @@ Parameters of single mass shaft model. Typically represents the rotor mass.
 # Arguments
 - `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
 - `D::Float64`: Rotor natural damping in pu, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	δ: rotor angle,
 	ω: rotor speed
 - `n_states::Int`: SingleMass has 1 state
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SingleMass <: Shaft
     "Rotor inertia constant in MWs/MVA"
     H::Float64
     "Rotor natural damping in pu"
     D::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	δ: rotor angle,
@@ -38,7 +39,7 @@ mutable struct SingleMass <: Shaft
     states::Vector{Symbol}
     "SingleMass has 1 state"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

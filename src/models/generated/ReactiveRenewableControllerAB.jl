@@ -68,7 +68,7 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `K_qi::Float64`: Reactive power regulator integral gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ReactiveRenewableControllerAB model depends on the Flag
 - `n_states::Int`: The states of the ReactiveRenewableControllerAB model depends on the Flag
 """
@@ -127,6 +127,7 @@ mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     Q_ref::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ReactiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}

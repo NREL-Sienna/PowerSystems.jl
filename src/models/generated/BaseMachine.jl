@@ -21,10 +21,10 @@ Parameters of a Classic Machine: GENCLS in PSSE and PSLF
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
 - `Xd_p::Float64`: Reactance after EMF in machine per unit, validation range: `(0, nothing)`
 - `eq_p::Float64`: Fixed EMF behind the impedance, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: BaseMachine has no states
 - `n_states::Int`: BaseMachine has no states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct BaseMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -33,12 +33,13 @@ mutable struct BaseMachine <: Machine
     Xd_p::Float64
     "Fixed EMF behind the impedance"
     eq_p::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "BaseMachine has no states"
     states::Vector{Symbol}
     "BaseMachine has no states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

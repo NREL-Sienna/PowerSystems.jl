@@ -20,7 +20,7 @@ Parameters of a Reactive Virtual Oscillator controller. Model is based from the 
 - `k2::Float64`: VOC voltage-amplitude control gain, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `Q_ref::Float64`: Reference Reactive Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ReactiveVirtualOscilator model are:
 	E_oc: voltage reference state for inner control in the d-axis
 - `n_states::Int`: ReactiveVirtualOscillator has 1 state
@@ -32,6 +32,7 @@ mutable struct ReactiveVirtualOscillator <: ReactivePowerControl
     V_ref::Float64
     "Reference Reactive Power Set-point"
     Q_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ReactiveVirtualOscilator model are:
 	E_oc: voltage reference state for inner control in the d-axis"

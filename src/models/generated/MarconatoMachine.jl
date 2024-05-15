@@ -41,7 +41,7 @@ Parameters of 6-states synchronous machine: Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `γd::Float64`
 - `γq::Float64`
 - `states::Vector{Symbol}`: The states are:
@@ -52,7 +52,7 @@ Parameters of 6-states synchronous machine: Marconato model
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
 - `n_states::Int`: MarconatoMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct MarconatoMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -79,6 +79,7 @@ mutable struct MarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     γd::Float64
     γq::Float64
@@ -92,7 +93,7 @@ mutable struct MarconatoMachine <: Machine
     states::Vector{Symbol}
     "MarconatoMachine has 6 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

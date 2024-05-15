@@ -22,7 +22,7 @@ IEEE Transactions on Industry applications 33.1 (1997): 58-63.
 - `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`
 - `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`
 - `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the KauraPLL model are:
 	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),
 	vq_pll: q-axis of the measured voltage in the PLL SRF,
@@ -37,6 +37,7 @@ mutable struct KauraPLL <: FrequencyEstimator
     kp_pll::Float64
     "PLL integral gain"
     ki_pll::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the KauraPLL model are:
 	vd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),

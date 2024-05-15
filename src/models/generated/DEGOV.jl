@@ -34,7 +34,7 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 - `T6::Float64`: Actuator time constant, validation range: `(eps(), 100)`
 - `Td::Float64`: Engine time delay, validation range: `(eps(), 100)`
 - `P_ref::Float64`: Reference Load Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the DEGOV model are:
 	x_ecb1: Electric control box 1,
 	x_ecb2: Electric control box 2,
@@ -42,8 +42,8 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 	x_a2: Actuator 2,
 	x_a3: Actuator 3,
 - `n_states::Int`: DEGOV has 5 states
-- `states_types::Vector{StateTypes}`: DEGOV has 5 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: DEGOV has 5 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct DEGOV <: TurbineGov
     "Governor mechanism time constant"
@@ -64,6 +64,7 @@ mutable struct DEGOV <: TurbineGov
     Td::Float64
     "Reference Load Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the DEGOV model are:
 	x_ecb1: Electric control box 1,
@@ -74,9 +75,9 @@ mutable struct DEGOV <: TurbineGov
     states::Vector{Symbol}
     "DEGOV has 5 states"
     n_states::Int
-    "DEGOV has 5 differential states"
+    "DEGOV has 5 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

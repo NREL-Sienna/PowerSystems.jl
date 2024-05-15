@@ -38,15 +38,15 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage
 - `n_states::Int`: AVR Type II has 4 states
-- `states_types::Vector{StateTypes}`: AVR Type II has 4 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: AVR Type II has 4 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct AVRTypeII <: AVR
     "Regulator Gain"
@@ -71,6 +71,7 @@ mutable struct AVRTypeII <: AVR
     Be::Float64
     "Reference Voltage Set-point"
     V_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vf: Voltage field,
@@ -80,9 +81,9 @@ mutable struct AVRTypeII <: AVR
     states::Vector{Symbol}
     "AVR Type II has 4 states"
     n_states::Int
-    "AVR Type II has 4 differential states"
+    "AVR Type II has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

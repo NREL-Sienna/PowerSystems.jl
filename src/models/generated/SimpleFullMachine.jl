@@ -46,7 +46,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: `(0, nothing)`
 - `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
 - `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
 - `states::Vector{Symbol}`: The states are:
@@ -54,7 +54,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux
 - `n_states::Int`: SimpleFullMachine has 3 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SimpleFullMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -81,6 +81,7 @@ mutable struct SimpleFullMachine <: Machine
     L_1d::Float64
     "Inductance of the q-axis rotor damping circuit, in per unit"
     L_1q::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "Equations 3.127, 3.130, 3.131 From Kundur"
     inv_d_fluxlink::Array{Float64,2}
@@ -93,7 +94,7 @@ mutable struct SimpleFullMachine <: Machine
     states::Vector{Symbol}
     "SimpleFullMachine has 3 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

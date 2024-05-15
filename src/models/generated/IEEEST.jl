@@ -52,7 +52,7 @@ IEEE Stabilizing Model PSS.
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output `(Ls_min, Ls_max)`
 - `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, 1.25)`, action if invalid: `warn`
 - `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, 1.0)`, action if invalid: `warn`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	x_p1: 1st filter integration,
 	x_p2: 2nd filter integration, 
@@ -62,8 +62,8 @@ IEEE Stabilizing Model PSS.
 	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
 - `n_states::Int`: IEEEST has 7 states
-- `states_types::Vector{StateTypes}`: IEEEST has 7 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: IEEEST has 7 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct IEEEST <: PSS
     "Code input for stabilizer"
@@ -102,6 +102,7 @@ mutable struct IEEEST <: PSS
     Vcu::Float64
     "Cutoff limiter lower bound"
     Vcl::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	x_p1: 1st filter integration,
@@ -114,9 +115,9 @@ mutable struct IEEEST <: PSS
     states::Vector{Symbol}
     "IEEEST has 7 states"
     n_states::Int
-    "IEEEST has 7 differential states"
+    "IEEEST has 7 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

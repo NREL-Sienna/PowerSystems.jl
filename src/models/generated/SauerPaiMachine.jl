@@ -43,7 +43,7 @@ Parameters of synchronous machine: Sauer Pai model
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `γ_d1::Float64`
 - `γ_q1::Float64`
 - `γ_d2::Float64`
@@ -56,7 +56,7 @@ Parameters of synchronous machine: Sauer Pai model
 	ψd_pp: subtransient flux linkage in the d-axis
 	ψq_pp: subtransient flux linkage in the q-axis
 - `n_states::Int`: SauerPaiMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SauerPaiMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -83,6 +83,7 @@ mutable struct SauerPaiMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     γ_d1::Float64
     γ_q1::Float64
@@ -98,7 +99,7 @@ mutable struct SauerPaiMachine <: Machine
     states::Vector{Symbol}
     "SauerPaiMachine has 6 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

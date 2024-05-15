@@ -45,7 +45,7 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 - `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`
 - `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `γ_d1::Float64`: γ_d1 parameter
 - `γ_q1::Float64`: γ_q1 parameter
 - `γ_d2::Float64`: γ_d2 parameter
@@ -57,7 +57,7 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis
 - `n_states::Int`: RoundRotorMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct RoundRotorMachine <: Machine
     "Armature resistance"
@@ -84,6 +84,7 @@ mutable struct RoundRotorMachine <: Machine
     Xl::Float64
     "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2"
     Se::Tuple{Float64, Float64}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "γ_d1 parameter"
     γ_d1::Float64
@@ -103,7 +104,7 @@ mutable struct RoundRotorMachine <: Machine
     states::Vector{Symbol}
     "RoundRotorMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

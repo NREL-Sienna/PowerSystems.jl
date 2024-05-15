@@ -20,7 +20,7 @@ Parameters of an Active Virtual Oscillator controller. Model is based from the p
 - `k1::Float64`: VOC Synchronization Gain, validation range: `(0, nothing)`
 - `ψ::Float64`: Rotation angle of the controller, validation range: `(0, nothing)`
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the ActiveVirtualOscillator model are:
 	θ_oc: Phase angle displacement of the inverter model
 - `n_states::Int`: ActiveVirtualOscillator has one state
@@ -32,6 +32,7 @@ mutable struct ActiveVirtualOscillator <: ActivePowerControl
     ψ::Float64
     "Reference Power Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the ActiveVirtualOscillator model are:
 	θ_oc: Phase angle displacement of the inverter model"

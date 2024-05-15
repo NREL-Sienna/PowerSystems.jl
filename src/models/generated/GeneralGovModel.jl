@@ -82,7 +82,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `R_lim::UpDown`: Maximum rate of load increa
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
@@ -95,8 +95,8 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:
 - `n_states::Int`: GeneralGovModel has 10 states
-- `states_types::Vector{StateTypes}`: GGOV1 has 10 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: GGOV1 has 10 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct GeneralGovModel <: TurbineGov
     "Feedback signal for governor droop"
@@ -165,6 +165,7 @@ mutable struct GeneralGovModel <: TurbineGov
     R_lim::UpDown
     "Reference Power Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
@@ -180,9 +181,9 @@ mutable struct GeneralGovModel <: TurbineGov
     states::Vector{Symbol}
     "GeneralGovModel has 10 states"
     n_states::Int
-    "GGOV1 has 10 differential states"
+    "GGOV1 has 10 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

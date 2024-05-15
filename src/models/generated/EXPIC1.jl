@@ -58,7 +58,7 @@ Generic Proportional/Integral Excitation System
 - `Kc::Float64`: Exciter regulation factor, validation range: `(0, 2)`, action if invalid: `warn`
 - `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
@@ -68,8 +68,8 @@ Generic Proportional/Integral Excitation System
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
 - `n_states::Int`: EXPIC1 has 6 states
-- `states_types::Vector{StateTypes}`: EXPIC has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `states_types::Vector{StateTypes}`: EXPIC has 6 [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct EXPIC1 <: AVR
     "Regulator input filter time constant in s"
@@ -114,6 +114,7 @@ mutable struct EXPIC1 <: AVR
     V_ref::Float64
     "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
     saturation_coeffs::Tuple{Float64, Float64}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states are:
 	Vm: Sensed terminal voltage,
@@ -126,9 +127,9 @@ mutable struct EXPIC1 <: AVR
     states::Vector{Symbol}
     "EXPIC1 has 6 states"
     n_states::Int
-    "EXPIC has 6 states"
+    "EXPIC has 6 [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

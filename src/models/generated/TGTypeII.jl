@@ -25,11 +25,11 @@ Parameters of a Turbine Governor Type II.
 - `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `τ_limits::MinMax`: Power into the governor limits
 - `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: The states of the TGTypeI model are:
 	x_g1: lead-lag state
 - `n_states::Int`: TGTypeII has 1 state
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct TGTypeII <: TurbineGov
     "Droop parameter"
@@ -42,13 +42,14 @@ mutable struct TGTypeII <: TurbineGov
     τ_limits::MinMax
     "Reference Power Set-point"
     P_ref::Float64
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
     "The states of the TGTypeI model are:
 	x_g1: lead-lag state"
     states::Vector{Symbol}
     "TGTypeII has 1 state"
     n_states::Int
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 

@@ -21,20 +21,23 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial impedance at N = 0
 - `number_of_steps::Int`: Number of steps for adjustable shunt
 - `Y_increase::Complex{Float64}`: Admittance increment for each of step increase
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
 """
 mutable struct SwitchedAdmittance <: ElectricLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
     "Initial impedance at N = 0"
     Y::Complex{Float64}
@@ -46,8 +49,9 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
+    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "PowerSystems.jl internal reference. **Do not modify.**"
     internal::InfrastructureSystemsInternal
 end
 
