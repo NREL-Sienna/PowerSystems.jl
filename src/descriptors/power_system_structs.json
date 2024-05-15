@@ -2839,11 +2839,11 @@
                     "default": "1.0"
                 },
                 {
-                    "null_value": "OFF",
+                    "null_value": "false",
                     "name": "status",
                     "comment": "(optional) Initial commitment condition at the start of a simulation",
-                    "data_type": "PumpStorageStatus",
-                    "default": "OFF"
+                    "data_type": "Bool",
+                    "default": "false"
                 },
                 {
                     "null_value": "INFINITE_TIME",
@@ -3268,6 +3268,13 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
+                },
+                {
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "PumpHydroStatus",
+                    "default": "PumpHydroStatus.OFF",
+                    "null_value": "PumpHydroStatus.OFF"
                 },
                 {
                     "null_value": "INFINITE_TIME",
