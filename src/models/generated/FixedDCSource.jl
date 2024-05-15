@@ -16,21 +16,22 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
-- `voltage::Float64`: rated VA, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`
-- `n_states::Int`: FixedDCSource has no states
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `voltage::Float64`: Voltage (V), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) FixedDCSource has no states
+- `n_states::Int`: (**Do not modify.**) FixedDCSource has no states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct FixedDCSource <: DCSource
-    "rated VA"
+    "Voltage (V)"
     voltage::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
+    "(**Do not modify.**) FixedDCSource has no states"
     states::Vector{Symbol}
-    "FixedDCSource has no states"
+    "(**Do not modify.**) FixedDCSource has no states"
     n_states::Int
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

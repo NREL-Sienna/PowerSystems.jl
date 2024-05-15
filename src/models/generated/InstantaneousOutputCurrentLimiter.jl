@@ -14,16 +14,16 @@ This file is auto-generated. Do not edit.
 Parameters of Instantaneous (Square) Current Controller Limiter. Regulates inverter output current on the d and q axis separately.
 
 # Arguments
-- `Id_max::Float64`: Maximum limit on d-axis current controller input current (device base), validation range: `(0, nothing)`
-- `Iq_max::Float64`: Maximum limit on d-axis current controller input current (device base), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `Id_max::Float64`: Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
+- `Iq_max::Float64`: Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 """
 mutable struct InstantaneousOutputCurrentLimiter <: OutputCurrentLimiter
-    "Maximum limit on d-axis current controller input current (device base)"
+    "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))"
     Id_max::Float64
-    "Maximum limit on d-axis current controller input current (device base)"
+    "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))"
     Iq_max::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
 end
 

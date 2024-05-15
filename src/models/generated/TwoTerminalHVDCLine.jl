@@ -25,35 +25,40 @@ a High voltage DC line.
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `active_power_flow::Float64`
+- `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `active_power_limits_from::MinMax`
-- `active_power_limits_to::MinMax`
-- `reactive_power_limits_from::MinMax`
-- `reactive_power_limits_to::MinMax`
+- `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
+- `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
+- `reactive_power_limits_from::MinMax`: Minimum and maximum reactive power limits to the FROM node (MVAR)
+- `reactive_power_limits_to::MinMax`: Minimum and maximum reactive power limits to the TO node (MVAR)
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TwoTerminalHVDCLine <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
     "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
+    "Minimum and maximum active power flows to the FROM node (MW)"
     active_power_limits_from::MinMax
+    "Minimum and maximum active power flows to the TO node (MW)"
     active_power_limits_to::MinMax
+    "Minimum and maximum reactive power limits to the FROM node (MVAR)"
     reactive_power_limits_from::MinMax
+    "Minimum and maximum reactive power limits to the TO node (MVAR)"
     reactive_power_limits_to::MinMax
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

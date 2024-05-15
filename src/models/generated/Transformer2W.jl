@@ -25,38 +25,40 @@ A 2-winding transformer that uses an equivalent circuit assuming the impedance i
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
+- `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
+- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
+- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
+- `primary_shunt::Float64`: in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Transformer2W <: ACBranch
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow through the transformer (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow through the transformer (MVAR)"
     reactive_power_flow::Float64
     "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
-    "System per-unit value"
+    "Resistance in pu ([`System Base`](@ref per_unit))"
     r::Float64
-    "System per-unit value"
+    "Reactance in pu ([`System Base`](@ref per_unit))"
     x::Float64
-    "System per-unit value"
+    "in pu ([`System Base`](@ref per_unit))"
     primary_shunt::Float64
     rate::Union{Nothing, Float64}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

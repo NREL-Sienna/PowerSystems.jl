@@ -44,17 +44,17 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: `(0, nothing)`
 - `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
 - `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `inv_d_fluxlink::Array{Float64,2}`: Equations 3.127, 3.130, 3.131 From Kundur
-- `inv_q_fluxlink::Array{Float64,2}`: Equations 3.128, 3.132 From Kundur
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `inv_d_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur
+- `inv_q_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.128, 3.132 From Kundur
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux
-- `n_states::Int`: FullMachine has 5 states
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) FullMachine has 5 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct FullMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -81,22 +81,22 @@ mutable struct FullMachine <: Machine
     L_1d::Float64
     "Inductance of the q-axis rotor damping circuit, in per unit"
     L_1q::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Equations 3.127, 3.130, 3.131 From Kundur"
+    "(**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur"
     inv_d_fluxlink::Array{Float64,2}
-    "Equations 3.128, 3.132 From Kundur"
+    "(**Do not modify.**) Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux"
     states::Vector{Symbol}
-    "FullMachine has 5 states"
+    "(**Do not modify.**) FullMachine has 5 states"
     n_states::Int
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

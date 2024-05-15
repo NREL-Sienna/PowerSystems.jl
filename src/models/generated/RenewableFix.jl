@@ -15,12 +15,15 @@ This file is auto-generated. Do not edit.
         prime_mover_type::PrimeMovers
         power_factor::Float64
         base_power::Float64
+        services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
-A non-curtailable or must-take renewable generator (e.g., wind or solar). Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example uses include: an aggregation of behind-the-meter distributed energy resources like rooftop solar or a utility-scale generator whose PPA does not allow curtailment. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).
+A zero-cost, non-curtailable or must-take renewable generator (e.g., wind or solar).
+
+Its output is *fixed* or equal to its `active_power`, which is typically a time series. Example use: an aggregation of behind-the-meter distributed energy resources like rooftop solar. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -32,9 +35,10 @@ A non-curtailable or must-take renewable generator (e.g., wind or solar). Its ou
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct RenewableFix <: RenewableGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -54,20 +58,22 @@ mutable struct RenewableFix <: RenewableGen
     power_factor::Float64
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "corresponding dynamic injection device"
+    "(optional) Services that this device contributes to"
+    services::Vector{Service}
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, dynamic_injector, ext, internal, )
+function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,6 +88,7 @@ function RenewableFix(::Nothing)
         prime_mover_type=PrimeMovers.OT,
         power_factor=1.0,
         base_power=0.0,
+        services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
     )
@@ -105,6 +112,8 @@ get_prime_mover_type(value::RenewableFix) = value.prime_mover_type
 get_power_factor(value::RenewableFix) = value.power_factor
 """Get [`RenewableFix`](@ref) `base_power`."""
 get_base_power(value::RenewableFix) = value.base_power
+"""Get [`RenewableFix`](@ref) `services`."""
+get_services(value::RenewableFix) = value.services
 """Get [`RenewableFix`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
 """Get [`RenewableFix`](@ref) `ext`."""
@@ -128,5 +137,7 @@ set_prime_mover_type!(value::RenewableFix, val) = value.prime_mover_type = val
 set_power_factor!(value::RenewableFix, val) = value.power_factor = val
 """Set [`RenewableFix`](@ref) `base_power`."""
 set_base_power!(value::RenewableFix, val) = value.base_power = val
+"""Set [`RenewableFix`](@ref) `services`."""
+set_services!(value::RenewableFix, val) = value.services = val
 """Set [`RenewableFix`](@ref) `ext`."""
 set_ext!(value::RenewableFix, val) = value.ext = val

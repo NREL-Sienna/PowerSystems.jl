@@ -53,12 +53,12 @@ A thermal generator, such as a fossil fuel or nuclear generator, with a detailed
 - `start_types::Int`: Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*., validation range: `(1, 3)`, action if invalid: `error`
 - `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `services::Vector{Service}`: Services that this device contributes to
-- `time_at_status::Float64`: Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)
-- `must_run::Bool`: Set to `true` if the unit is must run
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `time_at_status::Float64`: (optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `must_run::Bool`: (optional) Set to `true` if the unit is must run
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ThermalMultiStart <: ThermalGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -95,17 +95,17 @@ mutable struct ThermalMultiStart <: ThermalGen
     operation_cost::Union{ThermalGenerationCost, MarketBidCost}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status` (optional)"
+    "(optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
-    "Set to `true` if the unit is must run"
+    "(optional) Set to `true` if the unit is must run"
     must_run::Bool
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

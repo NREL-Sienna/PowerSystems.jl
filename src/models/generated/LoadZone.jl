@@ -12,20 +12,24 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A collection of buses for electricity price analysis.
+A load zone for electricity price analysis.
+
+The load zone can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@ref) in the zone.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `peak_active_power::Float64`
-- `peak_reactive_power::Float64`
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `peak_active_power::Float64`: (optional) Peak active power in the zone (MW)
+- `peak_reactive_power::Float64`: (optional) Peak reactive power in the zone (MVAR)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct LoadZone <: AggregationTopology
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "(optional) Peak active power in the zone (MW)"
     peak_active_power::Float64
+    "(optional) Peak reactive power in the zone (MVAR)"
     peak_reactive_power::Float64
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

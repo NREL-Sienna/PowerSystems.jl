@@ -18,20 +18,20 @@ Parameters of RL series filter in algebraic representation
 # Arguments
 - `rf::Float64`: Series resistance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
 - `lf::Float64`: Series inductance in p.u. of converter filter to the grid, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: RLFilter has zero states
-- `n_states::Int`: RLFilter has zero states
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) RLFilter has zero states
+- `n_states::Int`: (**Do not modify.**) RLFilter has zero states
 """
 mutable struct RLFilter <: Filter
     "Series resistance in p.u. of converter filter to the grid"
     rf::Float64
     "Series inductance in p.u. of converter filter to the grid"
     lf::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "RLFilter has zero states"
+    "(**Do not modify.**) RLFilter has zero states"
     states::Vector{Symbol}
-    "RLFilter has zero states"
+    "(**Do not modify.**) RLFilter has zero states"
     n_states::Int
 end
 

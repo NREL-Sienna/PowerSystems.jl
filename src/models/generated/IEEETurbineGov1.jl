@@ -55,18 +55,18 @@ IEEE Type 1 Speed-Governing Model
 - `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
 - `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: The states of the IEEETurbineGov model are:
+- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
 	x_g2: Governor output,
 	x_g3: First Turbine integrator, 
 	x_g4: Second Turbine Integrator, 
 	x_g5: Third Turbine Integrator, 
 	x_g6: Fourth Turbine Integrator, 
-- `n_states::Int`: IEEEG1 has 6 states
-- `states_types::Vector{StateTypes}`: IEEEG1 has 6 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) IEEEG1 has 6 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEG1 has 6 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct IEEETurbineGov1 <: TurbineGov
     "Governor Gain"
@@ -107,11 +107,11 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     K7::Float64
     "Fraction of low presure shaft power fourth boiler pass"
     K8::Float64
-    "Reference Power Set-point"
+    "(optional) Reference Power Set-point (pu)"
     P_ref::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the IEEETurbineGov model are:
+    "(**Do not modify.**) The states of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
 	x_g2: Governor output,
 	x_g3: First Turbine integrator, 
@@ -119,11 +119,11 @@ mutable struct IEEETurbineGov1 <: TurbineGov
 	x_g5: Third Turbine Integrator, 
 	x_g6: Fourth Turbine Integrator, "
     states::Vector{Symbol}
-    "IEEEG1 has 6 states"
+    "(**Do not modify.**) IEEEG1 has 6 states"
     n_states::Int
-    "IEEEG1 has 6 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) IEEEG1 has 6 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

@@ -62,15 +62,15 @@ This file is auto-generated. Do not edit.
 - `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
-- `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
-- `time_at_status::Float64`
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `storage_target::UpDown`: (optional) Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (optional) Operation Cost of Generation [`OperationalCost`](@ref)
+- `pump_efficiency::Float64`: (optional) Pumping effciency [0, 1.0], validation range: `(0, 1)`, action if invalid: `warn`
+- `conversion_factor::Float64`: (optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
+- `time_at_status::Float64`: (optional) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct HydroPumpedStorage <: HydroGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -113,22 +113,23 @@ mutable struct HydroPumpedStorage <: HydroGen
     outflow::Float64
     "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
     initial_storage::UpDown
-    "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
+    "(optional) Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
     storage_target::UpDown
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    "(optional) Operation Cost of Generation [`OperationalCost`](@ref)"
     operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
-    "Efficiency of pump"
+    "(optional) Pumping effciency [0, 1.0]"
     pump_efficiency::Float64
-    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
+    "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
     conversion_factor::Float64
+    "(optional) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`"
     time_at_status::Float64
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

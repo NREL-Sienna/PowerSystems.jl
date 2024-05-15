@@ -17,18 +17,21 @@ A collection of buses for control purposes.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `peak_active_power::Float64`
-- `peak_reactive_power::Float64`
-- `load_response::Float64`
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `peak_active_power::Float64`: (optional) Peak active power in the area
+- `peak_reactive_power::Float64`: (optional) Peak reactive power in the area
+- `load_response::Float64`: (optional) 
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Area <: AggregationTopology
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "(optional) Peak active power in the area"
     peak_active_power::Float64
+    "(optional) Peak reactive power in the area"
     peak_reactive_power::Float64
+    "(optional) "
     load_response::Float64
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

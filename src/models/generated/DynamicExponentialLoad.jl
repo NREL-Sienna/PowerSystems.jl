@@ -30,13 +30,13 @@ Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILIT
 - `β::Float64`: Reactive power transient exponential coefficient, validation range: `(0, nothing)`
 - `T_p::Float64`: Active Power Time Constant, validation range: `(0, nothing)`
 - `T_q::Float64`: Reactive Power Time Constant, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_power::Float64`: (optional) Base power of the load (MVA) for per unitization.
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,
-- `n_states::Int`: DynamicExponentialLoad has 2 states
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) DynamicExponentialLoad has 2 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct DynamicExponentialLoad <: DynamicInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -53,17 +53,17 @@ mutable struct DynamicExponentialLoad <: DynamicInjection
     T_p::Float64
     "Reactive Power Time Constant"
     T_q::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "(optional) Base power of the load (MVA) for per unitization."
     base_power::Float64
-    "The states are:
+    "(**Do not modify.**) The states are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,"
     states::Vector{Symbol}
-    "DynamicExponentialLoad has 2 states"
+    "(**Do not modify.**) DynamicExponentialLoad has 2 states"
     n_states::Int
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

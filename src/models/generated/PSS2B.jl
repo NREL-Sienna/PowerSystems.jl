@@ -68,8 +68,8 @@ IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 - `Vs1_lim::Tuple{Float64, Float64}`: First input limits `(Vs1_min, Vs1_max)`
 - `Vs2_lim::Tuple{Float64, Float64}`: Second input limits `(Vs2_min, Vs2_max)`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -87,9 +87,9 @@ IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 	x_p15: 1st lead-lag, 
 	x_p16: 2nd lead-lag, 
 	x_p17: 3rd lead-lag,
-- `n_states::Int`: IEEEST has 17 states
-- `states_types::Vector{StateTypes}`: IEEEST has 17 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) IEEEST has 17 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 17 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct PSS2B <: PSS
     "First Input Code for stabilizer"
@@ -144,9 +144,9 @@ mutable struct PSS2B <: PSS
     Vs2_lim::Tuple{Float64, Float64}
     "PSS output limits `(Vst_min, Vst_max)`"
     Vst_lim::Tuple{Float64, Float64}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -165,11 +165,11 @@ mutable struct PSS2B <: PSS
 	x_p16: 2nd lead-lag, 
 	x_p17: 3rd lead-lag,"
     states::Vector{Symbol}
-    "IEEEST has 17 states"
+    "(**Do not modify.**) IEEEST has 17 states"
     n_states::Int
-    "IEEEST has 17 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) IEEEST has 17 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

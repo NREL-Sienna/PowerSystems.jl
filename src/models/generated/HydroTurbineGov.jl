@@ -39,16 +39,16 @@ Hydro Turbine-Governor.
 - `At::Float64`: Turbine gain, validation range: `(0.8, 1.5)`, action if invalid: `warn`
 - `D_T::Float64`: Turbine Damping, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`, action if invalid: `warn`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: The states of the HydroTurbineGov model are:
+- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the HydroTurbineGov model are:
 	x_g1: filter_output,
 	x_g2: desired gate, 
 	x_g3: gate opening, 
 	x_g4: turbine flow
-- `n_states::Int`: HYGOV has 4 states
-- `states_types::Vector{StateTypes}`: HYGOV has 4 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) HYGOV has 4 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) HYGOV has 4 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct HydroTurbineGov <: TurbineGov
     "Permanent droop parameter"
@@ -73,21 +73,21 @@ mutable struct HydroTurbineGov <: TurbineGov
     D_T::Float64
     "No-power flow"
     q_nl::Float64
-    "Reference Power Set-point"
+    "(optional) Reference Power Set-point (pu)"
     P_ref::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the HydroTurbineGov model are:
+    "(**Do not modify.**) The states of the HydroTurbineGov model are:
 	x_g1: filter_output,
 	x_g2: desired gate, 
 	x_g3: gate opening, 
 	x_g4: turbine flow"
     states::Vector{Symbol}
-    "HYGOV has 4 states"
+    "(**Do not modify.**) HYGOV has 4 states"
     n_states::Int
-    "HYGOV has 4 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) HYGOV has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

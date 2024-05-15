@@ -66,11 +66,11 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `V_lim::MinMax`: Upper/Lower limit on reactive power PI controller in REECB `(V_min, V_max)`. Only used when V_Flag = 1
 - `K_qp::Float64`: Reactive power regulator proportional gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `K_qi::Float64`: Reactive power regulator integral gain (used when V_Flag = 1), validation range: `(0, nothing)`
-- `Q_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: The states of the ReactiveRenewableControllerAB model depends on the Flag
-- `n_states::Int`: The states of the ReactiveRenewableControllerAB model depends on the Flag
+- `Q_ref::Float64`: (optional) Reference Reactive Power Set-point (pu), validation range: `(0, nothing)`
+- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag
+- `n_states::Int`: (**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag
 """
 mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     "Bus Number for voltage control; "
@@ -123,15 +123,15 @@ mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     K_qp::Float64
     "Reactive power regulator integral gain (used when V_Flag = 1)"
     K_qi::Float64
-    "Reference Power Set-point"
+    "(optional) Reference Reactive Power Set-point (pu)"
     Q_ref::Float64
-    "Reference Voltage Set-point"
+    "(optional) Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the ReactiveRenewableControllerAB model depends on the Flag"
+    "(**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}
-    "The states of the ReactiveRenewableControllerAB model depends on the Flag"
+    "(**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag"
     n_states::Int
 end
 

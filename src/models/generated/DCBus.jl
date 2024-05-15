@@ -25,10 +25,10 @@ A power-system DC bus.
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
-- `area::Union{Nothing, Area}`: the area containing the DC bus
-- `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `area::Union{Nothing, Area}`: (optional) the area containing the DC bus
+- `load_zone::Union{Nothing, LoadZone}`: (optional) the load zone containing the DC bus
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct DCBus <: Bus
     "number associated with the DC bus"
@@ -41,13 +41,13 @@ mutable struct DCBus <: Bus
     voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
-    "the area containing the DC bus"
+    "(optional) the area containing the DC bus"
     area::Union{Nothing, Area}
-    "the load zone containing the DC bus"
+    "(optional) the load zone containing the DC bus"
     load_zone::Union{Nothing, LoadZone}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

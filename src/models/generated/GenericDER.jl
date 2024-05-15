@@ -95,14 +95,14 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}`: Frequency ride through time points (tfrt1,tfrt2)
 - `tF_delay::Float64`: Time delay for reconnection after frequency ride-through disconnection, validation range: `(0, nothing)`
 - `FES_lim::MinMax`: Min and max frequency for entering service (FES_min,FES_max)
-- `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
-- `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.
-- `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
-- `n_states::Int`: The states of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `Pfa_ref::Float64`: (optional) Reference power factor, validation range: `(0, nothing)`
+- `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (optional) Base power of the unit (MVA) for per unitization.
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of GenericDER depend on the Flags
+- `n_states::Int`: (**Do not modify.**) The states of GenericDER depend on the Flags
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct GenericDER <: DynamicInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -181,21 +181,21 @@ mutable struct GenericDER <: DynamicInjection
     tF_delay::Float64
     "Min and max frequency for entering service (FES_min,FES_max)"
     FES_lim::MinMax
-    "Reference power factor"
+    "(optional) Reference power factor"
     Pfa_ref::Float64
-    "Reference reactive power, in pu"
+    "(optional) Reference reactive power, in pu"
     Q_ref::Float64
-    "Reference active power, in pu"
+    "(optional) Reference active power, in pu"
     P_ref::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "(optional) Base power of the unit (MVA) for per unitization."
     base_power::Float64
-    "The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The states of GenericDER depend on the Flags"
     states::Vector{Symbol}
-    "The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The states of GenericDER depend on the Flags"
     n_states::Int
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

@@ -30,7 +30,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `K::Float64`: Gain in pu, validation range: `(0, nothing)`
+- `K::Float64`: Gain in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
 - `T1::Float64`: Time constant in s, validation range: `(0, nothing)`
 - `T2::Float64`: Time constant in s, validation range: `(0, nothing)`
 - `T3::Float64`: Time constant in s, validation range: `(eps(), nothing)`
@@ -39,22 +39,22 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `Rmin::Float64`: Reactor minimum Mvar, validation range: `(0, nothing)`
 - `Vmax::Float64`: Maximum voltage in pu, validation range: `(0, nothing)`
 - `Vmin::Float64`: Minimum voltage in pu, validation range: `(0, nothing)`
-- `CBase::Float64`: Capacitor Mvar, validation range: `(0, nothing)`
+- `CBase::Float64`: Capacitor (MVAR), validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `R_th::Float64`: Source Thevenin resistance
-- `X_th::Float64`: Source Thevenin reactance
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `R_th::Float64`: (optional) Source Thevenin resistance
+- `X_th::Float64`: (optional) Source Thevenin reactance
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	thy: thyristor,
 	vr1: regulator output 1,
 	vr2: regulator output 2
-- `n_states::Int`: CSVGN1 has 3 states
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) CSVGN1 has 3 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct CSVGN1 <: DynamicInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Gain in pu"
+    "Gain in pu ([`Device Base`](@ref per_unit))"
     K::Float64
     "Time constant in s"
     T1::Float64
@@ -72,24 +72,24 @@ mutable struct CSVGN1 <: DynamicInjection
     Vmax::Float64
     "Minimum voltage in pu"
     Vmin::Float64
-    "Capacitor Mvar"
+    "Capacitor (MVAR)"
     CBase::Float64
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Source Thevenin resistance"
+    "(optional) Source Thevenin resistance"
     R_th::Float64
-    "Source Thevenin reactance"
+    "(optional) Source Thevenin reactance"
     X_th::Float64
-    "The states are:
+    "(**Do not modify.**) The states are:
 	thy: thyristor,
 	vr1: regulator output 1,
 	vr2: regulator output 2"
     states::Vector{Symbol}
-    "CSVGN1 has 3 states"
+    "(**Do not modify.**) CSVGN1 has 3 states"
     n_states::Int
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

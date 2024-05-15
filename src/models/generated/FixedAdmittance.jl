@@ -23,10 +23,10 @@ This file is auto-generated. Do not edit.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: System per-unit value
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection model for admittance
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct FixedAdmittance <: ElectricLoad
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -37,13 +37,13 @@ mutable struct FixedAdmittance <: ElectricLoad
     bus::ACBus
     "System per-unit value"
     Y::Complex{Float64}
-    "corresponding dynamic injection model for admittance"
+    "(optional) corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

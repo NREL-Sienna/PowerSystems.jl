@@ -24,6 +24,7 @@ This file is auto-generated. Do not edit.
         operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         storage_target::Float64
         conversion_factor::Float64
+        status::Bool
         time_at_status::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -49,14 +50,15 @@ This file is auto-generated. Do not edit.
 - `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `storage_target::Float64`: Storage target at the end of simulation as ratio of storage capacity.
-- `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
-- `time_at_status::Float64`
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (optional) Operation Cost of Generation [`OperationalCost`](@ref)
+- `storage_target::Float64`: (optional) Storage target at the end of simulation as a fraction of storage capacity.
+- `conversion_factor::Float64`: (optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
+- `status::Bool`: (optional) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
+- `time_at_status::Float64`: (optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct HydroEnergyReservoir <: HydroGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -89,29 +91,32 @@ mutable struct HydroEnergyReservoir <: HydroGen
     inflow::Float64
     "Initial storage capacity in the reservoir (units can be p.u-hr or m^3)."
     initial_storage::Float64
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    "(optional) Operation Cost of Generation [`OperationalCost`](@ref)"
     operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
-    "Storage target at the end of simulation as ratio of storage capacity."
+    "(optional) Storage target at the end of simulation as a fraction of storage capacity."
     storage_target::Float64
-    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
+    "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
     conversion_factor::Float64
+    "(optional) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
+    status::Bool
+    "(optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, status, time_at_status, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, time_at_status, services, dynamic_injector, ext, internal, )
+function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, status, time_at_status, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -135,6 +140,7 @@ function HydroEnergyReservoir(::Nothing)
         operation_cost=HydroGenerationCost(nothing),
         storage_target=0.0,
         conversion_factor=0.0,
+        status=false,
         time_at_status=INFINITE_TIME,
         services=Device[],
         dynamic_injector=nothing,
@@ -178,6 +184,8 @@ get_operation_cost(value::HydroEnergyReservoir) = value.operation_cost
 get_storage_target(value::HydroEnergyReservoir) = value.storage_target
 """Get [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroEnergyReservoir) = value.conversion_factor
+"""Get [`HydroEnergyReservoir`](@ref) `status`."""
+get_status(value::HydroEnergyReservoir) = value.status
 """Get [`HydroEnergyReservoir`](@ref) `time_at_status`."""
 get_time_at_status(value::HydroEnergyReservoir) = value.time_at_status
 """Get [`HydroEnergyReservoir`](@ref) `services`."""
@@ -223,6 +231,8 @@ set_operation_cost!(value::HydroEnergyReservoir, val) = value.operation_cost = v
 set_storage_target!(value::HydroEnergyReservoir, val) = value.storage_target = val
 """Set [`HydroEnergyReservoir`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroEnergyReservoir, val) = value.conversion_factor = val
+"""Set [`HydroEnergyReservoir`](@ref) `status`."""
+set_status!(value::HydroEnergyReservoir, val) = value.status = val
 """Set [`HydroEnergyReservoir`](@ref) `time_at_status`."""
 set_time_at_status!(value::HydroEnergyReservoir, val) = value.time_at_status = val
 """Set [`HydroEnergyReservoir`](@ref) `services`."""

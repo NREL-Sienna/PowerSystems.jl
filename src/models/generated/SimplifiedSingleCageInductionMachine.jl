@@ -41,19 +41,19 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
 - `B::Float64`: Torque-Speed Linear Term, validation range: `(0, 1)`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `C::Float64`: Torque-Speed Constant Term
-- `τ_ref::Float64`: Reference torque parameter
-- `B_shunt::Float64`: Susceptance Initialization Corrector Term
-- `X_ss::Float64`: Stator self reactance
-- `X_rr::Float64`: Rotor self reactance
-- `X_p::Float64`: Transient reactance
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `C::Float64`: (**Do not modify.**) Torque-Speed Constant Term
+- `τ_ref::Float64`: (optional) Reference torque parameter
+- `B_shunt::Float64`: (optional) Susceptance Initialization Corrector Term
+- `X_ss::Float64`: (**Do not modify.**) Stator self reactance
+- `X_rr::Float64`: (**Do not modify.**) Rotor self reactance
+- `X_p::Float64`: (**Do not modify.**) Transient reactance
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	ψ_qr: rotor flux in the q-axis,
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],
-- `n_states::Int`: SimplifiedSingleCageInductionMachine has 3 states
-- `internal::InfrastructureSystemsInternal`: PowerSystems.jl internal reference. **Do not modify.**
+- `n_states::Int`: (**Do not modify.**) SimplifiedSingleCageInductionMachine has 3 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
@@ -76,28 +76,28 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     B::Float64
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "An empty *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Torque-Speed Constant Term"
+    "(**Do not modify.**) Torque-Speed Constant Term"
     C::Float64
-    "Reference torque parameter"
+    "(optional) Reference torque parameter"
     τ_ref::Float64
-    "Susceptance Initialization Corrector Term"
+    "(optional) Susceptance Initialization Corrector Term"
     B_shunt::Float64
-    "Stator self reactance"
+    "(**Do not modify.**) Stator self reactance"
     X_ss::Float64
-    "Rotor self reactance"
+    "(**Do not modify.**) Rotor self reactance"
     X_rr::Float64
-    "Transient reactance"
+    "(**Do not modify.**) Transient reactance"
     X_p::Float64
-    "The states are:
+    "(**Do not modify.**) The states are:
 	ψ_qr: rotor flux in the q-axis,
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],"
     states::Vector{Symbol}
-    "SimplifiedSingleCageInductionMachine has 3 states"
+    "(**Do not modify.**) SimplifiedSingleCageInductionMachine has 3 states"
     n_states::Int
-    "PowerSystems.jl internal reference. **Do not modify.**"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
