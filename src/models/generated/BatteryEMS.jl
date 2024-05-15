@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         prime_mover_type::PrimeMovers
+        storage_technology_type::StorageTech
         initial_energy::Float64
         state_of_charge_limits::MinMax
         rating::Float64
@@ -36,6 +37,7 @@ Data structure for a battery compatible with energy management formulations.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
+- `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923.
 - `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
 - `rating::Float64`: Maximum output power rating of the unit (MVA)
@@ -63,6 +65,8 @@ mutable struct BatteryEMS <: Storage
     bus::ACBus
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
     prime_mover_type::PrimeMovers
+    "Storage Technology Complementary to EIA 923."
+    storage_technology_type::StorageTech
     "State of Charge of the Battery p.u.-hr"
     initial_energy::Float64
     "Maximum and Minimum storage capacity in p.u.-hr"
@@ -96,12 +100,12 @@ mutable struct BatteryEMS <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function BatteryEMS(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    BatteryEMS(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function BatteryEMS(name, available, bus, prime_mover_type, storage_technology_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    BatteryEMS(name, available, bus, prime_mover_type, storage_technology_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function BatteryEMS(; name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    BatteryEMS(name, available, bus, prime_mover_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, internal, )
+function BatteryEMS(; name, available, bus, prime_mover_type, storage_technology_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    BatteryEMS(name, available, bus, prime_mover_type, storage_technology_type, initial_energy, state_of_charge_limits, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -111,6 +115,7 @@ function BatteryEMS(::Nothing)
         available=false,
         bus=ACBus(nothing),
         prime_mover_type=PrimeMovers.BA,
+        storage_technology_type=StorageTech.OTHER_CHEM,
         initial_energy=0.0,
         state_of_charge_limits=(min=0.0, max=0.0),
         rating=0.0,
@@ -138,6 +143,8 @@ get_available(value::BatteryEMS) = value.available
 get_bus(value::BatteryEMS) = value.bus
 """Get [`BatteryEMS`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::BatteryEMS) = value.prime_mover_type
+"""Get [`BatteryEMS`](@ref) `storage_technology_type`."""
+get_storage_technology_type(value::BatteryEMS) = value.storage_technology_type
 """Get [`BatteryEMS`](@ref) `initial_energy`."""
 get_initial_energy(value::BatteryEMS) = get_value(value, value.initial_energy)
 """Get [`BatteryEMS`](@ref) `state_of_charge_limits`."""
@@ -179,6 +186,8 @@ set_available!(value::BatteryEMS, val) = value.available = val
 set_bus!(value::BatteryEMS, val) = value.bus = val
 """Set [`BatteryEMS`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::BatteryEMS, val) = value.prime_mover_type = val
+"""Set [`BatteryEMS`](@ref) `storage_technology_type`."""
+set_storage_technology_type!(value::BatteryEMS, val) = value.storage_technology_type = val
 """Set [`BatteryEMS`](@ref) `initial_energy`."""
 set_initial_energy!(value::BatteryEMS, val) = value.initial_energy = set_value(value, val)
 """Set [`BatteryEMS`](@ref) `state_of_charge_limits`."""

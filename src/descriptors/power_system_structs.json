@@ -3942,6 +3942,12 @@
                     "data_type": "PrimeMovers"
                 },
                 {
+                    "name": "storage_technology_type",
+                    "comment": "Storage Technology Complementary to EIA 923.",
+                    "null_value": "StorageTech.OTHER_CHEM",
+                    "data_type": "StorageTech"
+                },
+                {
                     "name": "initial_energy",
                     "null_value": "0.0",
                     "comment": "State of Charge of the Battery p.u.-hr",
@@ -4105,6 +4111,12 @@
                     "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
+                },
+                {
+                    "name": "storage_technology_type",
+                    "comment": "Storage Technology Complementary to EIA 923.",
+                    "null_value": "StorageTech.OTHER_CHEM",
+                    "data_type": "StorageTech"
                 },
                 {
                     "name": "initial_energy",
