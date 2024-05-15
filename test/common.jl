@@ -52,9 +52,10 @@ function create_system_with_dynamic_inverter()
         ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
-    battery = GenericBattery(;
+    battery = EnergyReservoirStorage(;
         name = "Battery",
         prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.OTHER_CHEM,
         available = true,
         bus = nodes_OMIB[2],
         initial_energy = 5.0,

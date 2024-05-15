@@ -10,7 +10,7 @@
         reactive_power = 1.0,
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
-        storage = GenericBattery(nothing),
+        storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
         base_power = 100.0,
         operation_cost = MarketBidCost(nothing),
@@ -92,7 +92,7 @@ end
     thermal_unit = first(get_components(ThermalStandard, sys))
     bus = get_bus(thermal_unit)
     electric_load = first(get_components(PowerLoad, sys))
-    storage = first(get_components(GenericBattery, sys))
+    storage = first(get_components(EnergyReservoirStorage, sys))
     renewable_unit = first(get_components(RenewableDispatch, sys))
 
     for subcomponent in (thermal_unit, electric_load, storage, renewable_unit)

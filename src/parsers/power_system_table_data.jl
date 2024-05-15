@@ -793,7 +793,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
             make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
-    elseif gen_type == GenericBattery
+    elseif gen_type == EnergyReservoirStorage
         head_dict, _ = gen_storage
         if !haskey(head_dict, gen.name)
             throw(DataFormatError("Cannot find storage for $(gen.name) in storage.csv"))
@@ -1336,11 +1336,12 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
-    battery = GenericBattery(;
+    battery = EnergyReservoirStorage(;
         name = gen.name,
         available = storage.available,
         bus = bus,
         prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
+        storage_technology_type = StorageTech.OTHER_CHEM,
         initial_energy = storage.energy_level,
         state_of_charge_limits = state_of_charge_limits,
         rating = storage.rating,

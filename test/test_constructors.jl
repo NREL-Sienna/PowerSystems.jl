@@ -43,7 +43,7 @@ end
 end
 
 @testset "Storage Constructors" begin
-    tStorage = GenericBattery(nothing)
+    tStorage = EnergyReservoirStorage(nothing)
     @test tStorage isa PowerSystems.Component
 end
 
