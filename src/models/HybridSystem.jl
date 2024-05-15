@@ -29,6 +29,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     input_active_power_limits::Union{Nothing, MinMax}
     output_active_power_limits::Union{Nothing, MinMax}
     reactive_power_limits::Union{Nothing, MinMax}
+    interconnection_efficiency::Union{Nothing, NamedTuple{(:in, :out), Tuple{Float64, Float64}}}
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
@@ -56,6 +57,7 @@ function HybridSystem(;
     input_active_power_limits = nothing,
     output_active_power_limits = nothing,
     reactive_power_limits = nothing,
+    interconnection_efficiency = nothing,
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
@@ -79,6 +81,7 @@ function HybridSystem(;
         input_active_power_limits,
         output_active_power_limits,
         reactive_power_limits,
+        interconnection_efficiency,
         services,
         dynamic_injector,
         ext,
@@ -99,13 +102,14 @@ function HybridSystem(::Nothing)
         operation_cost = MarketBidCost(nothing),
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
-        storage = GenericBattery(nothing),
+        storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
         interconnection_impedance = 0.0,
         interconnection_rating = nothing,
         input_active_power_limits = nothing,
         output_active_power_limits = nothing,
         reactive_power_limits = nothing,
+        interconnection_efficiency = nothing,
         services = Service[],
         dynamic_injector = nothing,
         ext = Dict{String, Any}(),
@@ -162,6 +166,8 @@ get_output_active_power_limits(value::HybridSystem) =
 """Get [`HybridSystem`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HybridSystem) =
     get_value(value, value.reactive_power_limits)
+"""get [`HybridSystem`](@ref) interconnection efficiency"""
+get_interconnection_efficiency(value::HybridSystem) = value.interconnection_efficiency
 """Get [`HybridSystem`](@ref) `base_power`."""
 get_base_power(value::HybridSystem) = value.base_power
 """Get [`HybridSystem`](@ref) `operation_cost`."""
@@ -199,6 +205,8 @@ set_output_active_power_limits!(value::HybridSystem, val) =
     value.output_active_power_limits = val
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = val
+"""Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
+set_interconnection_efficiency!(value::HybridSystem, val) = value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `base_power`."""
 set_base_power!(value::HybridSystem, val) = value.base_power = val
 """Set [`HybridSystem`](@ref) `operation_cost`."""
