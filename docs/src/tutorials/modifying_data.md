@@ -4,9 +4,9 @@ using PowerSystems
 using PowerSystemCaseBuilder
 
 c_sys5_pjm_da = build_system(PSITestSystems, "c_sys5_pjm")
-transform_single_time_series!(c_sys5_pjm_da, 24, Hour(24))
+transform_single_time_series!(c_sys5_pjm_da, Hour(24), Hour(24))
 c_sys5_pjm_rt = build_system(PSITestSystems, "c_sys5_pjm_rt")
-transform_single_time_series!(c_sys5_pjm_rt, 24, Hour(1))
+transform_single_time_series!(c_sys5_pjm_rt, Hour(24), Hour(1))
 
 for sys in [c_sys5_pjm_da, c_sys5_pjm_rt]
     th = get_component(ThermalStandard, sys, "Park City")
