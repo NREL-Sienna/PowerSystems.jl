@@ -64,6 +64,21 @@ IS.@scoped_enum(
     OTHER = 14,  # OTH     # Other
 )
 
+IS.@scoped_enum(
+    StorageTech,
+    PTES = 1, # Pumped thermal energy storage
+    LIB = 2, # LiON Battery
+    LAB = 3, # Lead Acid Battery
+    FLWB = 4, # Redox Flow Battery
+    SIB = 5, # Sodium Ion Battery
+    ZIB = 6, # Zinc Ion Battery,
+    HGS = 7, # Hydrogen Gas Storage,
+    LAES = 8, # Liquid Air Storage
+    OTHER_CHEM = 9, # Chemmical Storage
+    OTHER_MECH = 10, # Mechanical Storage
+    OTHER_THERM = 11, # Thermal Storage
+)
+
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
