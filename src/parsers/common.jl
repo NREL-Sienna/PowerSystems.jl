@@ -57,7 +57,12 @@ function get_generator_mapping(filename = nothing)
 
     mappings = Dict{NamedTuple, DataType}()
     for (gen_type, vals) in genmap
-        gen = getfield(PowerSystems, Symbol(gen_type))
+        if gen_type == "GenericBattery"
+            @warn "GenericBattery type is no longer supported. The new type is EnergyReservoirStorage"
+            gen = EnergyReservoirStorage
+        else
+            gen = getfield(PowerSystems, Symbol(gen_type))
+        end
         for val in vals
             key = (fuel = val["fuel"], unit_type = val["type"])
             if haskey(mappings, key)

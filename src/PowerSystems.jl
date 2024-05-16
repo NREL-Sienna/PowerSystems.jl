@@ -87,10 +87,10 @@ export StandardLoad
 export FixedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
+export ExponentialLoad
 
 export Storage
-export GenericBattery
-export BatteryEMS
+export EnergyReservoirStorage
 
 export DynamicComponent
 export DynamicInjection
@@ -257,6 +257,7 @@ export AngleUnits
 export ACBusTypes
 export PrimeMovers
 export ThermalFuels
+export StorageTech
 export StateTypes
 
 export TimeSeriesData

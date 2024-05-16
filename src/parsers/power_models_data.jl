@@ -394,11 +394,12 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
 end
 
 function make_generic_battery(storage_name, d, bus)
-    storage = GenericBattery(;
+    storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
         bus = bus,
         prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.OTHER_CHEM,
         initial_energy = d["energy"],
         state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
         rating = d["thermal_rating"],
@@ -547,8 +548,8 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableFix
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == GenericBattery
-            @warn "GenericBattery should be defined as a PowerModels storage... Skipping"
+        elseif gen_type == EnergyReservoirStorage
+            @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue
         else
             @error "Skipping unsupported generator" gen_type

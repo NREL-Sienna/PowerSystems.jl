@@ -53,7 +53,7 @@ This file is auto-generated. Do not edit.
 - `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (optional) Operation Cost of Generation [`OperationalCost`](@ref)
 - `storage_target::Float64`: (optional) Storage target at the end of simulation as a fraction of storage capacity.
 - `conversion_factor::Float64`: (optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
-- `status::Bool`: (optional) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
+- `status::Bool`: (optional) Initial commitment condition at the start of a simulation
 - `time_at_status::Float64`: (optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
@@ -97,7 +97,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     storage_target::Float64
     "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
     conversion_factor::Float64
-    "(optional) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
+    "(optional) Initial commitment condition at the start of a simulation"
     status::Bool
     "(optional) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`"
     time_at_status::Float64
@@ -111,11 +111,11 @@ mutable struct HydroEnergyReservoir <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+function HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status=false, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
     HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, status, time_at_status, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function HydroEnergyReservoir(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost=HydroGenerationCost(nothing), storage_target=1.0, conversion_factor=1.0, status=false, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     HydroEnergyReservoir(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, storage_capacity, inflow, initial_storage, operation_cost, storage_target, conversion_factor, status, time_at_status, services, dynamic_injector, ext, internal, )
 end
 
