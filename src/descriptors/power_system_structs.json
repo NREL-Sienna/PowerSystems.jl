@@ -4193,7 +4193,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4298,7 +4298,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4441,7 +4441,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4541,7 +4541,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4641,7 +4641,7 @@
                 },
                 {
                     "name": "deployed_fraction",
-                    "comment": "(optional) Fraction of ancillary services participation deployed from the assignment",
+                    "comment": "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
