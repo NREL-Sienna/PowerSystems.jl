@@ -607,7 +607,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "Comment": "in pu ([`System Base`](@ref per_unit))",
+                    "Comment": "Shunt reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -743,7 +743,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "Shunt reactance in p.u. ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -858,7 +858,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Shunt reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
