@@ -29,7 +29,7 @@
                 },
                 {
                     "name": "load_response",
-                    "comment": "(optional) ",
+                    "comment": "(optional) Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [`Example here.`](https://doi.org/10.1109/NAPS50074.2021.9449687)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -14173,7 +14173,7 @@
                 },
                 {
                     "name": "from_branch_control",
-                    "comment": "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)",
+                    "comment": "Monitored branch FROM bus identification number for line drop compensation (if 0 generator power will be used)",
                     "null_value": 0,
                     "data_type": "Int",
                     "valid_range": {
@@ -14183,7 +14183,7 @@
                 },
                 {
                     "name": "to_branch_control",
-                    "comment": "Monitored branch TO bus number for line drop compensation (if 0 generator power will be used)",
+                    "comment": "Monitored branch TO bus identification number for line drop compensation (if 0 generator power will be used)",
                     "null_value": 0,
                     "data_type": "Int",
                     "valid_range": {
