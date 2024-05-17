@@ -358,7 +358,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -369,7 +369,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "System per-unit value",
+                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -380,7 +380,7 @@
                     "name": "b",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
-                    "comment": "System per-unit value",
+                    "comment": "Shunt susceptance in pu ([`System Base`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
                     "valid_range": {
                         "min": 0,
                         "max": 100
@@ -390,6 +390,7 @@
                 {
                     "null_value": "0.0",
                     "name": "rate",
+                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rate` and `rate`",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
@@ -429,6 +430,7 @@
         },
         {
             "struct_name": "MonitoredLine",
+            "docstring": "A transmission line with additional power flow constraints specified by the system operator, more restrictive than the line's thermal limits.\n\nFor example, monitored lines can be used to restrict line flow following a contingency elsewhere in the network. See the `flow_limits` parameter. If monitoring is not needed, see [`Line`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -489,7 +491,7 @@
                     "name": "b",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
-                    "comment": "Susceptance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Shunt susceptance in pu ([`System Base`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -499,7 +501,7 @@
                 {
                     "name": "flow_limits",
                     "null_value": "(from_to=0.0, to_from=0.0)",
-                    "comment": "throw warning above max SIL",
+                    "comment": "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`.",
                     "data_type": "FromTo_ToFrom",
                     "needs_conversion": true
                 },
@@ -507,7 +509,7 @@
                     "null_value": "0.0",
                     "name": "rate",
                     "data_type": "Float64",
-                    "comment": "compare to SIL (warn) (theoretical limit)",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`",
                     "needs_conversion": true
                 },
                 {
@@ -616,6 +618,7 @@
                 },
                 {
                     "name": "tap",
+                    "comment": "Normalized tap changer position for phase shifting. 0 for -180 degrees, 1 for center, 2 for +180 degrees",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -626,6 +629,7 @@
                 },
                 {
                     "name": "α",
+                    "comment": "Phase shift (radians)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -636,6 +640,7 @@
                 },
                 {
                     "name": "rate",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -752,6 +757,7 @@
                 },
                 {
                     "name": "tap",
+                    "comment": "Normalized tap changer position for phase shifting. 0 for -180 degrees, 1 for center, 2 for +180 degrees",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -762,6 +768,7 @@
                 },
                 {
                     "name": "rate",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -867,6 +874,7 @@
                 },
                 {
                     "name": "rate",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -960,6 +968,7 @@
                 },
                 {
                     "name": "loss",
+                    "comment": "Linear loss model coefficients, where `l0` = constant loss (MW) and `l1` = linearly proportional loss rate (MW of loss per MW of flow)",
                     "null_value": "(l0=0.0, l1=0.0)",
                     "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
                 },
