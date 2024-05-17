@@ -293,7 +293,7 @@
         },
         {
             "struct_name": "Arc",
-            "docstring": "A topological Arc.",
+            "docstring": "A topological directed edge connecting two buses.\n Arcs are used to define the `from` and `to` buses, when defining a line or transformer.",
             "fields": [
                 {
                     "name": "from",
@@ -351,7 +351,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -460,7 +460,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -578,7 +578,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -714,7 +714,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -829,7 +829,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -927,7 +927,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -1014,7 +1014,7 @@
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
@@ -1098,7 +1098,7 @@
                 {
                     "null_value": "Arc(DCBus(nothing), DCBus(nothing))",
                     "name": "arc",
-                    "comment": "Used internally to represent network topology. **Do not modify.**",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
