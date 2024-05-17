@@ -1,7 +1,7 @@
 # Glossary and Acronyms
 
 [A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
-[S](@ref) | [V](@ref)
+[S](@ref) | [V](@ref) | [Z]@ref
 
 ## A
 
@@ -133,3 +133,12 @@ see the definition for [Static](@ref "S") data.
 * *VSCDCLine*: Voltage-Source Converter Direct Current Line
 
 * *VSM*:
+
+## Z
+
+* *ZIP load*: A ZIP load model accounts for the voltage-dependency of a load and is primarily used
+  for dynamics modeling. It includes three kinds of load: constant impedance (Z), constant current (I),
+  and constant power (P), though many dynamics models just use the constant impedance model.
+  [`StandardLoad`](@ref) and [`ExponentialLoad`](@ref) are both ZIP load models:
+  [`StandardLoad`](@ref) breaks up the load into each of its three components, while
+  [`ExponentialLoad`](@ref) expresses the load as an exponential equation. 

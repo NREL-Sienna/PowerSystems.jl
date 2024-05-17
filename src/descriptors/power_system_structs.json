@@ -1204,12 +1204,14 @@
                 },
                 {
                     "name": "max_active_power",
+                    "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "max_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -1399,7 +1401,7 @@
         },
         {
             "struct_name": "PowerLoad",
-            "docstring": "Data structure for a static power load.",
+            "docstring": "A [static](@ref S) power load, most commonly used for operational models such as power flow and operational optimizations.\n\nThis load consumes a set amount of power (set by `active_power` for a power flow simulation or a `max_active_power` time series for an operational simulation). For voltage-dependent loads used in [dynamics](@ref D) modeling, see [`StandardLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1447,12 +1449,14 @@
                 },
                 {
                     "name": "max_active_power",
+                    "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "max_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -1491,7 +1495,7 @@
         },
         {
             "struct_name": "StandardLoad",
-            "docstring": "Data structure for a standard load.",
+                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power). For an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1525,7 +1529,7 @@
                 },
                 {
                     "name": "constant_active_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Constant active power demand (MW) (P portion)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
@@ -1533,7 +1537,7 @@
                 },
                 {
                     "name": "constant_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Constant reactive power demand (MVAR) (P portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1541,7 +1545,7 @@
                 },
                 {
                     "name": "impedance_active_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Active power coefficient (MW) for constant impedance load (Z portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1549,7 +1553,7 @@
                 },
                 {
                     "name": "impedance_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Reactive power coefficient (MW) for constant impedance load (Z portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1557,7 +1561,7 @@
                 },
                 {
                     "name": "current_active_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Active power coefficient (MW) for constant current load (I portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1565,7 +1569,7 @@
                 },
                 {
                     "name": "current_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Reactive power coefficient (MW) for constant current load (I portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1573,6 +1577,7 @@
                 },
                 {
                     "name": "max_constant_active_power",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant power load (P portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1580,7 +1585,7 @@
                 },
                 {
                     "name": "max_constant_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant power load (P portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1588,7 +1593,7 @@
                 },
                 {
                     "name": "max_impedance_active_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant impedance load (Z portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1596,7 +1601,7 @@
                 },
                 {
                     "name": "max_impedance_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant impedance load (Z portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1604,7 +1609,7 @@
                 },
                 {
                     "name": "max_current_active_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant current load (I portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1612,7 +1617,7 @@
                 },
                 {
                     "name": "max_current_reactive_power",
-                    "comment": "(optional)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant current load (I portion)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1722,12 +1727,14 @@
                 },
                 {
                     "name": "max_active_power",
+                    "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "max_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
