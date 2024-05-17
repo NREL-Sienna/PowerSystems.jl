@@ -1657,7 +1657,7 @@
         },
         {
             "struct_name": "ExponentialLoad",
-            "docstring": "Data structure for a static exponential load.",
+            "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nAn `ExponentialLoad` models active power as P = P0 * V^α and reactive power as Q = Q0 * V^β, where the exponents α and β select govern the voltage dependency. For an alternative three-part formulation of the ZIP model, see [`StandardLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1680,21 +1680,21 @@
                 },
                 {
                     "name": "active_power",
-                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
+                    "comment": "Active power coefficient, P0 (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Reactive power coefficient, Q0 (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
-                    "name": "active_power_coefficient",
-                    "comment": "Coefficient relating voltage dependence for power P = P0 * V^α",
+                    "name": "α",
+                    "comment": "Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1704,8 +1704,8 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "reactive_power_coefficient",
-                    "comment": "Coefficient relating voltage dependence for power Q = Q0 * V^β",
+                    "name": "β",
+                    "comment": "Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1716,7 +1716,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
+                    "comment": "Base power (MVA) for per unitization.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
