@@ -134,7 +134,7 @@
             "fields": [
                 {
                     "name": "number",
-                    "comment": "number associated with the bus",
+                    "comment": "A unique bus identification number (positive integer)",
                     "null_value": "0",
                     "data_type": "Int"
                 },
@@ -224,7 +224,7 @@
             "fields": [
                 {
                     "name": "number",
-                    "comment": "number associated with the DC bus",
+                    "comment": "A unique bus identification number (positive integer)",
                     "null_value": "0",
                     "data_type": "Int"
                 },
@@ -9800,7 +9800,7 @@
                 },
                 {
                     "name": "remote_bus_control",
-                    "comment": "Remote  Bus number for control.",
+                    "comment": "ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10145,7 +10145,7 @@
                 },
                 {
                     "name": "remote_bus_control_1",
-                    "comment": "First Input Remote Bus number for control.",
+                    "comment": "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10162,7 +10162,7 @@
                 },
                 {
                     "name": "remote_bus_control_2",
-                    "comment": "Second Input Remote Bus number for control.",
+                    "comment": "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10413,7 +10413,7 @@
                 },
                 {
                     "name": "remote_bus_control_1",
-                    "comment": "First Input Remote Bus number for control.",
+                    "comment": "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10430,7 +10430,7 @@
                 },
                 {
                     "name": "remote_bus_control_2",
-                    "comment": "Second Input Remote Bus number for control.",
+                    "comment": "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10715,7 +10715,7 @@
                 },
                 {
                     "name": "remote_bus_control_1",
-                    "comment": "First Input Remote Bus number for control.",
+                    "comment": "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -10732,7 +10732,7 @@
                 },
                 {
                     "name": "remote_bus_control_2",
-                    "comment": "Second Input Remote Bus number for control.",
+                    "comment": "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int"
                 },
@@ -13977,8 +13977,8 @@
             "docstring": "Parameters of Active Power Controller including REPCA1 and REECB1",
             "fields": [
                 {
-                    "name": "bus_control",
-                    "comment": "Bus Number for voltage control; ",
+                    "name": "remote_bus_control",
+                    "comment": "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int",
                     "valid_range": {
@@ -14162,8 +14162,8 @@
             "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
             "fields": [
                 {
-                    "name": "bus_control",
-                    "comment": "Bus Number for voltage control; ",
+                    "name": "remote_bus_control",
+                    "comment": "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int",
                     "valid_range": {
