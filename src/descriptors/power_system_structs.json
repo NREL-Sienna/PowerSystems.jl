@@ -1168,6 +1168,7 @@
         },
         {
             "struct_name": "InterruptiblePowerLoad",
+            "docstring": "A [static](@ref S) power load that can be compensated for temporary or continuous interruptions to its requested demand.\n\n These loads are most commonly used for operational optimizations and can be used to model, for example, large commercial and industrial customers enrolled in demand response programs. This load has a target demand profile (set by a `max_active_power` time series for an operational simulation) that can be reduced to satisfy other system needs. For simpler loads without compensated demand response, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1190,14 +1191,14 @@
                 },
                 {
                     "name": "active_power",
-                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
+                    "comment": "Initial steady state active power demand (MW).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial steady state reactive power demand (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -1218,7 +1219,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
+                    "comment": "Base power (MVA) for per unitization.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1289,7 +1290,7 @@
                 },
                 {
                     "name": "Y",
-                    "comment": "System per-unit value",
+                    "comment": "Fixed admittance in p.u. ([`System Base`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}"
                 },
@@ -1401,7 +1402,7 @@
         },
         {
             "struct_name": "PowerLoad",
-            "docstring": "A [static](@ref S) power load, most commonly used for operational models such as power flow and operational optimizations.\n\nThis load consumes a set amount of power (set by `active_power` for a power flow simulation or a `max_active_power` time series for an operational simulation). For voltage-dependent loads used in [dynamics](@ref D) modeling, see [`StandardLoad`](@ref).",
+            "docstring": "A [static](@ref S) power load, most commonly used for operational models such as power flow and operational optimizations.\n\nThis load consumes a set amount of power (set by `active_power` for a power flow simulation or a `max_active_power` time series for an operational simulation). For loads that can be compensated for load interruptions through demand response programs, see [`InterruptiblePowerLoad`](@ref). For voltage-dependent loads used in [dynamics](@ref D) modeling, see [`StandardLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1424,21 +1425,21 @@
                 },
                 {
                     "name": "active_power",
-                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.",
+                    "comment": "Initial steady-state active power demand (MW).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial steady-state reactive power demand (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`.",
+                    "comment": "Base power (MVA) for per unitization.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1495,7 +1496,7 @@
         },
         {
             "struct_name": "StandardLoad",
-                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power). For an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
+                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to P = P_P * V^0 + P_I * V^1 + P_Z * V^2 for active power and Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2 for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -1529,7 +1530,7 @@
                 },
                 {
                     "name": "constant_active_power",
-                    "comment": "(optional) Constant active power demand (MW) (P portion)",
+                    "comment": "(optional) Constant active power demand in MW (P_P)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
@@ -1537,7 +1538,7 @@
                 },
                 {
                     "name": "constant_reactive_power",
-                    "comment": "(optional) Constant reactive power demand (MVAR) (P portion)",
+                    "comment": "(optional) Constant reactive power demand in MVAR (Q_P)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1545,7 +1546,7 @@
                 },
                 {
                     "name": "impedance_active_power",
-                    "comment": "(optional) Active power coefficient (MW) for constant impedance load (Z portion)",
+                    "comment": "(optional) Active power coefficient in MW for constant impedance load (P_Z)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1553,7 +1554,7 @@
                 },
                 {
                     "name": "impedance_reactive_power",
-                    "comment": "(optional) Reactive power coefficient (MW) for constant impedance load (Z portion)",
+                    "comment": "(optional) Reactive power coefficient in MVAR for constant impedance load (Q_Z)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1561,7 +1562,7 @@
                 },
                 {
                     "name": "current_active_power",
-                    "comment": "(optional) Active power coefficient (MW) for constant current load (I portion)",
+                    "comment": "(optional) Active power coefficient in MW for constant current load (P_I)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1569,7 +1570,7 @@
                 },
                 {
                     "name": "current_reactive_power",
-                    "comment": "(optional) Reactive power coefficient (MW) for constant current load (I portion)",
+                    "comment": "(optional) Reactive power coefficient in MVAR for constant current load (Q_I)",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1577,7 +1578,7 @@
                 },
                 {
                     "name": "max_constant_active_power",
-                    "comment": "(optional) Maximum active power (MW) drawn by constant power load (P portion)",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant power load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1585,7 +1586,7 @@
                 },
                 {
                     "name": "max_constant_reactive_power",
-                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant power load (P portion)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant power load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1593,7 +1594,7 @@
                 },
                 {
                     "name": "max_impedance_active_power",
-                    "comment": "(optional) Maximum active power (MW) drawn by constant impedance load (Z portion)",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant impedance load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1601,7 +1602,7 @@
                 },
                 {
                     "name": "max_impedance_reactive_power",
-                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant impedance load (Z portion)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant impedance load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1609,7 +1610,7 @@
                 },
                 {
                     "name": "max_current_active_power",
-                    "comment": "(optional) Maximum active power (MW) drawn by constant current load (I portion)",
+                    "comment": "(optional) Maximum active power (MW) drawn by constant current load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
@@ -1617,7 +1618,7 @@
                 },
                 {
                     "name": "max_current_reactive_power",
-                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant current load (I portion)",
+                    "comment": "(optional) Maximum reactive power (MVAR) drawn by constant current load",
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
