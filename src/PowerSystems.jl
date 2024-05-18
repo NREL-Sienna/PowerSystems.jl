@@ -215,10 +215,11 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
-# OutputOutputOutputCurrentLimiters Export
+# OutputCurrentLimiters Export
 export MagnitudeOutputCurrentLimiter
 export InstantaneousOutputCurrentLimiter
 export PriorityOutputCurrentLimiter
+export SaturationOutputCurrentLimiter
 
 export Source
 export PeriodicVariableSource
