@@ -114,6 +114,7 @@ include("RECurrentControlB.jl")
 include("MagnitudeOutputCurrentLimiter.jl")
 include("InstantaneousOutputCurrentLimiter.jl")
 include("PriorityOutputCurrentLimiter.jl")
+include("SaturationOutputCurrentLimiter.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
@@ -531,6 +532,7 @@ export get_kpc
 export get_kpi
 export get_kpv
 export get_kq
+export get_kw
 export get_kω
 export get_l
 export get_lf
@@ -1059,6 +1061,7 @@ export set_kpc!
 export set_kpi!
 export set_kpv!
 export set_kq!
+export set_kw!
 export set_kω!
 export set_l!
 export set_lf!
