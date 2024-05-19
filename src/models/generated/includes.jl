@@ -1,4 +1,5 @@
 include("Area.jl")
+include("AreaInterchange.jl")
 include("LoadZone.jl")
 include("TransmissionInterface.jl")
 include("ACBus.jl")
@@ -441,6 +442,8 @@ export get_angle
 export get_angle_limits
 export get_arc
 export get_area
+export get_area_from
+export get_area_to
 export get_available
 export get_b
 export get_base_power
@@ -970,6 +973,8 @@ export set_angle!
 export set_angle_limits!
 export set_arc!
 export set_area!
+export set_area_from!
+export set_area_to!
 export set_available!
 export set_b!
 export set_base_power!
