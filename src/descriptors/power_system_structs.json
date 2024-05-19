@@ -70,13 +70,13 @@
                 },
                 {
                     "null_value": "Area(nothing)",
-                    "name": "area_from",
+                    "name": "from_area",
                     "comment": "Area from which the power is extracted",
                     "data_type": "Area"
                 },
                 {
                     "null_value": "Area(nothing)",
-                    "name": "area_to",
+                    "name": "to_area",
                     "comment": "Area to which the power is injected",
                     "data_type": "Area"
                 },

@@ -1949,6 +1949,18 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
     return
 end
 
+function check_topology(sys::System, component::AreaInterchange)
+    throw_if_not_attached(get_from_area(component), sys)
+    throw_if_not_attached(get_to_area(component), sys)
+    return
+end
+
+function check_topology(sys::System, component::Component)
+    check_attached_buses(sys, component)
+    return
+end
+
+
 """
 Throws ArgumentError if any bus attached to the component is invalid.
 """

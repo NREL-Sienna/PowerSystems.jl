@@ -442,8 +442,6 @@ export get_angle
 export get_angle_limits
 export get_arc
 export get_area
-export get_area_from
-export get_area_to
 export get_available
 export get_b
 export get_base_power
@@ -488,6 +486,7 @@ export get_fl
 export get_flow_limits
 export get_frequency
 export get_from
+export get_from_area
 export get_from_branch_control
 export get_fs
 export get_fuel
@@ -622,6 +621,7 @@ export get_time_frame
 export get_time_limits
 export get_time_limits_pump
 export get_to
+export get_to_area
 export get_to_branch_control
 export get_valve_position_limits
 export get_variable
@@ -973,8 +973,6 @@ export set_angle!
 export set_angle_limits!
 export set_arc!
 export set_area!
-export set_area_from!
-export set_area_to!
 export set_available!
 export set_b!
 export set_base_power!
@@ -1019,6 +1017,7 @@ export set_fl!
 export set_flow_limits!
 export set_frequency!
 export set_from!
+export set_from_area!
 export set_from_branch_control!
 export set_fs!
 export set_fuel!
@@ -1153,6 +1152,7 @@ export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
 export set_to!
+export set_to_area!
 export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!
