@@ -17,6 +17,7 @@ export Arc
 export AggregationTopology
 export Area
 export LoadZone
+export AreaInterchange
 export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
