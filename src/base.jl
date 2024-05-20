@@ -2014,7 +2014,6 @@ handle_component_addition!(sys::System, component::Component; kwargs...) = nothi
 
 handle_component_removal!(sys::System, component::Component) = nothing
 
-
 function check_component_addition(sys::System, branch::AreaInterchange; kwargs...)
     throw_if_not_attached(get_from_area(branch), sys)
     throw_if_not_attached(get_to_area(branch), sys)
