@@ -220,6 +220,7 @@ export MagnitudeOutputCurrentLimiter
 export InstantaneousOutputCurrentLimiter
 export PriorityOutputCurrentLimiter
 export SaturationOutputCurrentLimiter
+export HybridOutputCurrentLimiter
 
 export Source
 export PeriodicVariableSource

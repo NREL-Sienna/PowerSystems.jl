@@ -11,7 +11,7 @@ This file is auto-generated. Do not edit.
         ext::Dict{String, Any}
     end
 
-Parameters of Saturation Current Controller Limiter. Regulates the magnitude of the inverter output current by regulating the magnitude of the output current, but with a closed loop feedback regulated by a gain which provides ant-windup.
+Parameters of Saturation Current Controller Limiter. Regulates the magnitude of the inverter output current, and applies a closed loop feedback regulated by a static gain which provides ant-windup.
 
 # Arguments
 - `I_max::Float64`: Maximum limit on current controller input current (device base), validation range: `(0, nothing)`
