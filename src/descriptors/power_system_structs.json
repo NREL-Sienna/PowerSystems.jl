@@ -15095,7 +15095,7 @@
         },
         {
             "struct_name": "SaturationOutputCurrentLimiter",
-            "docstring": "Parameters of Saturation Current Controller Limiter. Regulates the magnitude of the inverter output current by regulating the magnitude of the output current, but with a closed loop feedback regulated by a gain which provides ant-windup.",
+            "docstring": "Parameters of Saturation Current Controller Limiter. Regulates the magnitude of the inverter output current, and applies a closed loop feedback regulated by a static gain which provides ant-windup.",
             "fields": [
                 {
                     "name": "I_max",
@@ -15110,6 +15110,49 @@
                 {
                     "name": "kw",
                     "comment": "Defined feedback gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "OutputCurrentLimiter"
+        },
+        {
+            "struct_name": "HybridOutputCurrentLimiter",
+            "docstring": "Parameters of Hybrid Current Controller Limiter. Regulates the magnitude of the inverter output current, but with a closed loop feedback regulated by a virtual impedance which provides ant-windup. Described in: Novel Hybrid Current Limiter for Grid-Forming Inverter Control During Unbalanced Faults by Baeckland and Seo, 2023 ",
+            "fields": [
+                {
+                    "name": "I_max",
+                    "comment": "Maximum limit on current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "rv",
+                    "comment": "Real part of the virtual impedance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "lv",
+                    "comment": "Imaginary part of the virtual impedance",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
