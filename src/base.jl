@@ -556,7 +556,7 @@ function add_component!(
     set_units_setting!(component, sys.units_settings)
     @assert has_units_setting(component)
 
-    check_attached_buses(sys, component)
+    check_topology(sys, component)
     check_component_addition(sys, component; kwargs...)
 
     deserialization_in_progress = _is_deserialization_in_progress(sys)
@@ -1949,6 +1949,8 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
     return
 end
 
+check_topology(sys::System, component::AreaInterchange) = nothing
+
 function check_topology(sys::System, component::AreaInterchange)
     throw_if_not_attached(get_from_area(component), sys)
     throw_if_not_attached(get_to_area(component), sys)
@@ -1959,7 +1961,6 @@ function check_topology(sys::System, component::Component)
     check_attached_buses(sys, component)
     return
 end
-
 
 """
 Throws ArgumentError if any bus attached to the component is invalid.
