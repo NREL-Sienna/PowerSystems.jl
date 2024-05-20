@@ -358,7 +358,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -369,7 +369,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -380,7 +380,7 @@
                     "name": "b",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
-                    "comment": "Shunt susceptance in pu ([`System Base`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
+                    "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
                     "valid_range": {
                         "min": 0,
                         "max": 100
@@ -469,7 +469,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -480,7 +480,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -491,7 +491,7 @@
                     "name": "b",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
-                    "comment": "Shunt susceptance in pu ([`System Base`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
+                    "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value.",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -587,7 +587,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 4
@@ -598,7 +598,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -609,7 +609,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "Comment": "Shunt reactance in pu ([`System Base`](@ref per_unit))",
+                    "Comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -726,7 +726,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 2
@@ -737,7 +737,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "Reactance in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -748,7 +748,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "Shunt reactance in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -843,7 +843,7 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Resistance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -854,7 +854,7 @@
                     "null_value": "0.0",
                     "name": "x",
                     "data_type": "Float64",
-                    "comment": "Reactance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": -2,
                         "max": 4
@@ -865,7 +865,7 @@
                     "name": "primary_shunt",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "comment": "Shunt reactance in pu ([`System Base`](@ref per_unit))",
+                    "comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "valid_range": {
                         "min": 0,
                         "max": 2
@@ -1114,19 +1114,19 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Series Resistance in p.u. ([`System Base`](@ref per_unit))"
+                    "comment": "Series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
                 },
                 {
                     "null_value": "0.0",
                     "name": "l",
                     "data_type": "Float64",
-                    "comment": "Series Inductance in p.u. ([`System Base`](@ref per_unit))"
+                    "comment": "Series Inductance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
                 },
                 {
                     "null_value": "0.0",
                     "name": "c",
                     "data_type": "Float64",
-                    "comment": "Shunt capacitance in p.u. ([`System Base`](@ref per_unit))"
+                    "comment": "Shunt capacitance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
                 },
                 {
                     "name": "active_power_limits_from",
@@ -1290,7 +1290,7 @@
                 },
                 {
                     "name": "Y",
-                    "comment": "Fixed admittance in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Complex{Float64}"
                 },
@@ -2542,7 +2542,7 @@
                 },
                 {
                     "name": "K",
-                    "comment": "Gain in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Gain in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -4258,7 +4258,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in p.u. ([`System Base`](@ref per_unit))",
+                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4758,7 +4758,7 @@
             "fields": [
                 {
                     "name": "Vf",
-                    "comment": "Fixed voltage field applied to the rotor winding in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Fixed voltage field applied to the rotor winding in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -9659,7 +9659,7 @@
             "fields": [
                 {
                     "name": "V_pss",
-                    "comment": "Fixed voltage stabilization signal in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Fixed voltage stabilization signal in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13228,7 +13228,7 @@
                 },
                 {
                     "name": "battery_voltage",
-                    "comment": "battery voltage in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "battery voltage in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13238,7 +13238,7 @@
                 },
                 {
                     "name": "battery_resistance",
-                    "comment": "Battery resistance in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Battery resistance in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13248,7 +13248,7 @@
                 },
                 {
                     "name": "dc_dc_inductor",
-                    "comment": "DC/DC inductance in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "DC/DC inductance in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13258,7 +13258,7 @@
                 },
                 {
                     "name": "dc_link_capacitance",
-                    "comment": "DC-link capacitance in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "DC-link capacitance in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -13318,7 +13318,7 @@
                 },
                 {
                     "name": "Vdc_ref",
-                    "comment": "(optional) Reference DC-Voltage Set-point in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "(optional) Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "default": "1.1",
                     "data_type": "Float64",
@@ -14930,7 +14930,7 @@
             "fields": [
                 {
                     "name": "I_max",
-                    "comment": "Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Maximum limit on current controller input current in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -14954,7 +14954,7 @@
             "fields": [
                 {
                     "name": "Id_max",
-                    "comment": "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Maximum limit on d-axis current controller input current in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -14964,7 +14964,7 @@
                 },
                 {
                     "name": "Iq_max",
-                    "comment": "Maximum limit on d-axis current controller input current in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Maximum limit on d-axis current controller input current in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -14988,7 +14988,7 @@
             "fields": [
                 {
                     "name": "I_max",
-                    "comment": "Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit))",
+                    "comment": "Maximum limit on current controller input current in pu ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
