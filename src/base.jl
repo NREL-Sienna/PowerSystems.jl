@@ -1949,8 +1949,6 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
     return
 end
 
-check_topology(::System, ::Component) = nothing
-
 function check_topology(sys::System, component::AreaInterchange)
     throw_if_not_attached(get_from_area(component), sys)
     throw_if_not_attached(get_to_area(component), sys)
@@ -2015,6 +2013,13 @@ Refer to docstring for check_component_addition!
 handle_component_addition!(sys::System, component::Component; kwargs...) = nothing
 
 handle_component_removal!(sys::System, component::Component) = nothing
+
+
+function check_component_addition(sys::System, branch::AreaInterchange; kwargs...)
+    throw_if_not_attached(get_from_area(branch), sys)
+    throw_if_not_attached(get_to_area(branch), sys)
+    return
+end
 
 function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
@@ -2135,7 +2140,10 @@ function _handle_branch_addition_common!(sys::System, component::Branch)
     else
         set_arc!(component, _arc)
     end
+    return
 end
+
+_handle_branch_addition_common!(sys::System, component::AreaInterchange) = nothing
 
 """
 Throws ArgumentError if the bus number is not stored in the system.
