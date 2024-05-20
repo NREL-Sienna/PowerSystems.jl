@@ -1949,7 +1949,7 @@ function check_for_services_on_addition(sys::System, component::RegulationDevice
     return
 end
 
-check_topology(sys::System, component::AreaInterchange) = nothing
+check_topology(::System, ::Component) = nothing
 
 function check_topology(sys::System, component::AreaInterchange)
     throw_if_not_attached(get_from_area(component), sys)
