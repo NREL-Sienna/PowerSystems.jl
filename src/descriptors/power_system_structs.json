@@ -2104,7 +2104,7 @@
         },
         {
             "struct_name": "DynamicExponentialLoad",
-            "docstring": "Parameters of 2-states of a generic dynamic load model based on [Voltage stability analysis using generic dynamic load models](https://doi.org/10.1109/59.317575).",
+            "docstring": "Parameters of 2-states of a generic dynamic load model based on [\"Voltage stability analysis using generic dynamic load models.\"](https://doi.org/10.1109/59.317575)",
             "fields": [
                 {
                     "null_value": "init",
@@ -2212,7 +2212,7 @@
         },
         {
             "struct_name": "ActiveConstantPowerLoad",
-            "docstring": "Parameters of 12-states active power load based on the paper, [Dynamic Stability of a Microgrid With an Active Load[(https://doi.org/10.1109/TPEL.2013.2241455).",
+            "docstring": "Parameters of 12-states active power load based on the paper, [\"Dynamic Stability of a Microgrid With an Active Load.\"](https://doi.org/10.1109/TPEL.2013.2241455)",
             "fields": [
                 {
                     "null_value": "init",
@@ -13204,7 +13204,7 @@
         },
         {
             "struct_name": "ZeroOrderBESS",
-            "docstring": "Parameters for the DC-side with a Battery Energy Storage System from [Grid-Coupled Dynamic Response of Battery-Driven Voltage Source Converters.](https://arxiv.org/abs/2007.11776)",
+            "docstring": "Parameters for the DC-side with a Battery Energy Storage System from [\"Grid-Coupled Dynamic Response of Battery-Driven Voltage Source Converters.\"](https://arxiv.org/abs/2007.11776)",
             "fields": [
                 {
                     "name": "rated_voltage",
@@ -13537,7 +13537,7 @@
         },
         {
             "struct_name": "KauraPLL",
-            "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Kaura, Vikram, and Vladimir Blasko.\n\"Operation of a phase locked loop system under distorted utility conditions.\"\nIEEE Transactions on Industry applications 33.1 (1997): 58-63.",
+            "docstring": "Parameters of a Phase-Locked Loop (PLL) based on [\"Operation of a phase locked loop system under distorted utility conditions\"](https://doi.org/10.1109/28.567077) by Vikram Kaura, and Vladimir Blasko.",
             "fields": [
                 {
                     "name": "ω_lp",
@@ -13595,7 +13595,7 @@
         },
         {
             "struct_name": "ReducedOrderPLL",
-            "docstring": "Parameters of a Phase-Locked Loop (PLL) based on Purba, Dhople, Jafarpour, Bullo and Johnson.\n\"Reduced-order Structure-preserving Model for Parallel-connected Three-phase Grid-tied Inverters.\"\n2017 IEEE 18th Workshop on Control and Modeling for Power Electronics (COMPEL): 1-7.",
+            "docstring": "Parameters of a Phase-Locked Loop (PLL) based on [\"Reduced-order Structure-preserving Model for Parallel-connected Three-phase Grid-tied Inverters.\"](https://doi.org/10.1109/COMPEL.2017.8013389)",
             "fields": [
                 {
                     "name": "ω_lp",
@@ -13885,7 +13885,7 @@
         },
         {
             "struct_name": "ActiveVirtualOscillator",
-            "docstring": "Parameters of an Active Virtual Oscillator controller. Model is based on [Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control](https://doi.org/10.1109/TEC.2021.3083488).",
+            "docstring": "Parameters of an Active Virtual Oscillator controller. Model is based on [\"Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control.\"](https://doi.org/10.1109/TEC.2021.3083488)",
             "fields": [
                 {
                     "name": "k1",
@@ -14544,7 +14544,7 @@
         },
         {
             "struct_name": "ReactiveVirtualOscillator",
-            "docstring": "Parameters of a Reactive Virtual Oscillator controller. Model is based on [Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control](https://doi.org/10.1109/TEC.2021.3083488).",
+            "docstring": "Parameters of a Reactive Virtual Oscillator controller. Model is based on [\"Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control.\"](https://doi.org/10.1109/TEC.2021.3083488).",
             "fields": [
                 {
                     "name": "k2",
@@ -14604,7 +14604,7 @@
         },
         {
             "struct_name": "VoltageModeControl",
-            "docstring": "Parameters of an inner loop current control PID using virtual impedance based on D'Arco, Suul and Fosso.\n\"A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids.\"\nElectric Power Systems Research 122 (2015) 180–197.",
+            "docstring": "Parameters of an inner loop current control PID using virtual impedance based on [\"A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids.\"](https://doi.org/10.1016/j.epsr.2015.01.001)",
             "fields": [
                 {
                     "name": "kpv",
@@ -14732,7 +14732,7 @@
         },
         {
             "struct_name": "CurrentModeControl",
-            "docstring": "Parameters of an inner loop PI current control using based on Purba, Dhople, Jafarpour, Bullo and Johnson.\n\"Reduced-order Structure-preserving Model for Parallel-connected Three-phase Grid-tied Inverters.\"\n2017 IEEE 18th Workshop on Control and Modeling for Power Electronics (COMPEL): 1-7.",
+            "docstring": "Parameters of an inner loop proportional integral (PI) current control based on [\"Reduced-order Structure-preserving Model for Parallel-connected Three-phase Grid-tied Inverters.\"](https://doi.org/10.1109/COMPEL.2017.8013389)",
             "fields": [
                 {
                     "name": "kpc",
@@ -15651,7 +15651,7 @@
         }, 
         {
             "struct_name": "GenericDER",
-            "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf",
+            "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on [\"Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision.\"](http://hdl.handle.net/10125/70994)",
             "fields": [
                 {
                     "null_value": "init",
