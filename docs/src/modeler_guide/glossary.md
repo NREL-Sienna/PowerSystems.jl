@@ -1,7 +1,7 @@
 # Glossary and Acronyms
 
 [A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
-[S](@ref) | [V](@ref) | [Z]@ref
+[S](@ref) | [V](@ref) | [Z](@ref)
 
 ## A
 
@@ -22,7 +22,7 @@
 * *Dynamic*: Refers to data and simulations for power system transient simulations using differential
 equations. Common examples include small signal stability analysis to verify the power system will
 maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
-see the definition for [Static](@ref "S") data.
+see the definition for [Static](@ref S) data.
 
 ## E
 
@@ -123,8 +123,8 @@ see the definition for [Static](@ref "S") data.
   includes both power flow data for a single time point simulation as well as quasi-static time
   series data and models, where the power system is at an equilibrium point at each time step.
   Static data can be used as the input to single time point power flow models and production
-  cost models with, for example, 5-minute, 15-minute, or 1-hour [Resolution](@ref "R").
-  For contrast, see the definition for [Dynamic](@ref "D") data.
+  cost models with, for example, 5-minute, 15-minute, or 1-hour [Resolution](@ref R).
+  For contrast, see the definition for [Dynamic](@ref D) data.
 
 * *STAB*: Speed Sensitive Stabilizing PSS Model
 

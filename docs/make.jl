@@ -27,6 +27,7 @@ pages = OrderedDict(
             "modeler_guide/enumerated_types.md",
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
+            "modeler_guide/cost_functions.md",
             "modeler_guide/market_bid_cost.md",
             "modeler_guide/modeling_with_JuMP.md",
             "modeler_guide/parsing.md",
