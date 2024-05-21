@@ -13947,7 +13947,7 @@
             "docstring": "Parameters of Active Power Controller including REPCA1 and REECB1",
             "fields": [
                 {
-                    "name": "remote_bus_control",
+                    "name": "bus_control",
                     "comment": "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int",
@@ -14132,7 +14132,7 @@
             "docstring": "Parameters of Reactive Power Controller including REPCA1 and REECB1",
             "fields": [
                 {
-                    "name": "remote_bus_control",
+                    "name": "bus_control",
                     "comment": "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component.",
                     "null_value": 0,
                     "data_type": "Int",
