@@ -29,7 +29,7 @@
                 },
                 {
                     "name": "load_response",
-                    "comment": "(optional) Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [`Example here.`](https://doi.org/10.1109/NAPS50074.2021.9449687)",
+                    "comment": "(optional) Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [Example here.](https://doi.org/10.1109/NAPS50074.2021.9449687)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
@@ -2104,7 +2104,7 @@
         },
         {
             "struct_name": "DynamicExponentialLoad",
-            "docstring": "Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILITY ANALYSIS USING GENERIC DYNAMIC LOAD MODELS by W. Xu and Y. Mansour, IEEE Transactions on Power Systems, 1994.",
+            "docstring": "Parameters of 2-states of a generic dynamic load model based on [Voltage stability analysis using generic dynamic load models](https://doi.org/10.1109/59.317575).",
             "fields": [
                 {
                     "null_value": "init",
@@ -2212,7 +2212,7 @@
         },
         {
             "struct_name": "ActiveConstantPowerLoad",
-            "docstring": "Parameters of 12-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.",
+            "docstring": "Parameters of 12-states active power load based on the paper, [Dynamic Stability of a Microgrid With an Active Load[(https://doi.org/10.1109/TPEL.2013.2241455).",
             "fields": [
                 {
                     "null_value": "init",
@@ -4071,7 +4071,7 @@
                 },
                 {
                     "name": "operation_cost",
-                    "comment": "(optional) Operation Cost of Storage [`OperationalCost`](@ref)",
+                    "comment": "(optional) Operation Cost of Storage [`StorageCost`](@ref)",
                     "null_value": "StorageCost(nothing)",
                     "data_type": "StorageCost",
                     "default": "StorageCost(nothing)"
@@ -8558,7 +8558,7 @@
         },
         {
             "struct_name": "FullMachine",
-            "docstring": "Parameter of a full order flux stator-rotor model without zero sequence flux in the stator.\n The derivative of stator fluxes (ψd and ψq) is NOT neglected. Only one q-axis damping circuit is considered. All parameters are in machine per unit.\n Refer to Chapter 3 of Power System Stability and Control by P. Kundur or Chapter 11 of Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby, for more details.\n Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.",
+            "docstring": "Parameter of a full order flux stator-rotor model without zero sequence flux in the stator.\n The derivative of stator fluxes (ψd and ψq) is NOT neglected. Only one q-axis damping circuit is considered. All parameters are in machine per unit.\n Refer to Chapter 3 of [Power System Stability and Control by P. Kundur](https://www.accessengineeringlibrary.com/content/book/9781260473544) or Chapter 11 of [Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby](https://www.wiley.com/en-us/Power+System+Dynamics%3A+Stability+and+Control%2C+3rd+Edition-p-9781119526360), for more details.\n Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.",
             "fields": [
                 {
                     "name": "R",
@@ -13204,7 +13204,7 @@
         },
         {
             "struct_name": "ZeroOrderBESS",
-            "docstring": "Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776",
+            "docstring": "Parameters for the DC-side with a Battery Energy Storage System from [Grid-Coupled Dynamic Response of Battery-Driven Voltage Source Converters.](https://arxiv.org/abs/2007.11776)",
             "fields": [
                 {
                     "name": "rated_voltage",
@@ -13885,7 +13885,7 @@
         },
         {
             "struct_name": "ActiveVirtualOscillator",
-            "docstring": "Parameters of an Active Virtual Oscillator controller. Model is based from the paper Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control by O. Ajala et al.",
+            "docstring": "Parameters of an Active Virtual Oscillator controller. Model is based on [Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control](https://doi.org/10.1109/TEC.2021.3083488).",
             "fields": [
                 {
                     "name": "k1",
@@ -14544,7 +14544,7 @@
         },
         {
             "struct_name": "ReactiveVirtualOscillator",
-            "docstring": "Parameters of a Reactive Virtual Oscillator controller. Model is based from the paper Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control by O. Ajala et al.",
+            "docstring": "Parameters of a Reactive Virtual Oscillator controller. Model is based on [Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control](https://doi.org/10.1109/TEC.2021.3083488).",
             "fields": [
                 {
                     "name": "k2",
@@ -15648,7 +15648,7 @@
                 }
             ],
             "supertype": "DynamicInjection"
-        },
+        }, 
         {
             "struct_name": "GenericDER",
             "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf",
