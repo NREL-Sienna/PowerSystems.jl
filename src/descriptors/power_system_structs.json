@@ -1913,7 +1913,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψ_qs: stator flux in the q-axis,\n\tψ_ds: stator flux in the d-axis,\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψ_qs: stator flux in the q-axis,\n\tψ_ds: stator flux in the d-axis,\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
                     "internal_default": "[:ψ_qs, :ψ_ds, :ψ_qr, :ψ_dr, :ωr]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -2081,7 +2081,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψ_qr: rotor flux in the q-axis,\n\tψ_dr: rotor flux in the d-axis, \n\tωr: Rotor speed [pu],",
                     "internal_default": "[:ψ_qr, :ψ_dr, :ωr]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -2189,7 +2189,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p: Integrator state of the active power,\n\tx_q: Integrator state of the reactive power,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p: Integrator state of the active power,\n\tx_q: Integrator state of the reactive power,",
                     "internal_default": "[:x_p, :x_q]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -2212,7 +2212,7 @@
         },
         {
             "struct_name": "ActiveConstantPowerLoad",
-            "docstring": "Parameters of 12-states active power load based on the paper, [\"Dynamic Stability of a Microgrid With an Active Load.\"](https://doi.org/10.1109/TPEL.2013.2241455)",
+            "docstring": "Parameters of 12-[states](@ref S) active power load based on the paper, [\"Dynamic Stability of a Microgrid With an Active Load.\"](https://doi.org/10.1109/TPEL.2013.2241455)",
             "fields": [
                 {
                     "null_value": "init",
@@ -2394,14 +2394,14 @@
                 },
                 {
                     "name": "is_filter_differential",
-                    "comment": "(optional) Boolean to decide if filter states are differential or algebraic",
+                    "comment": "(optional) Boolean to decide if filter [states](@ref S) are differential or algebraic",
                     "internal_default": "1",
                     "data_type": "Int"
                 },
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tv_dc: DC voltage at the capacitor, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tθ_pll: PLL deviation angle, \n\tϵ_pll: PLL integrator state, \n\tη: DC-voltage controller integrator state, \n\tv_dc: DC voltage at the capacitor, \n\tγd: d-axis Current controller integrator state, \n\tγq: q-axis Current controller integrator state, \n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
                     "internal_default": "[:θ_pll, :ϵ_pll, :η, :v_dc, :γd, :γq, :ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -2672,7 +2672,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tthy: thyristor,\n\tvr1: regulator output 1,\n\tvr2: regulator output 2",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tthy: thyristor,\n\tvr1: regulator output 1,\n\tvr2: regulator output 2",
                     "internal_default": "[:thy, :vr1, :vr2]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -4792,21 +4792,21 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) Fixed AVR has no states",
+                    "comment": "(**Do not modify.**) Fixed AVR has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
                 {
                     "name": "n_states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) Fixed AVR has no states",
+                    "comment": "(**Do not modify.**) Fixed AVR has no [states](@ref S)",
                     "null_value": 0,
                     "internal_default": 0,
                     "data_type": "Int"
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) Fixed AVR has no states",
+                    "comment": "(**Do not modify.**) Fixed AVR has no [states](@ref S)",
                     "internal_default": "Vector{StateTypes}()",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -4855,14 +4855,14 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVf: field voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVf: field voltage",
                     "internal_default": "[:Vf]",
                     "data_type": "Vector{Symbol}"
                 },
                 {
                     "name": "n_states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) Fixed AVR has 1 states",
+                    "comment": "(**Do not modify.**) Fixed AVR has 1 [state](@ref S)",
                     "internal_default": 1,
                     "data_type": "Int"
                 },
@@ -4953,7 +4953,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\tVf: Voltage field,\tVr: Lead-lag state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\tVf: Voltage field,\tVr: Lead-lag state",
                     "internal_default": "[:Vf, :Vr]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5139,7 +5139,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
                     "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5326,7 +5326,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVt: Terminal Voltage,\n\tVr1: input lead lag,\n\tVr2: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
                     "internal_default": "[:Vt, :Vr1, :Vr2, :Vf, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5490,7 +5490,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVt: Terminal Voltage,\n\tVr: Regulator Output,\n\tVf: Exciter Output, \n\tVr3: Rate feedback integrator",
                     "internal_default": "[:Vt, :Vr1, :Vf, :Vr2]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5638,7 +5638,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVf: Voltage field,\n\tVr1: Amplifier State,\n\tVr2: Stabilizing Feedback State,\n\tVm: Measured voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVf: Voltage field,\n\tVr1: Amplifier State,\n\tVr2: Stabilizing Feedback State,\n\tVm: Measured voltage",
                     "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5786,7 +5786,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVf: Voltage field,\n\tVr1: First Lead-Lag state,\n\tVr2: Second lead-lag state,\n\tVm: Measured voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVf: Voltage field,\n\tVr1: First Lead-Lag state,\n\tVr2: Second lead-lag state,\n\tVm: Measured voltage",
                     "internal_default": "[:Vf, :Vr1, :Vr2, :Vm]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -5910,7 +5910,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVr1: First integrator,\n\tVr2: Second integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVr1: First integrator,\n\tVr2: Second integrator",
                     "internal_default": "[:Vr1, :Vr2]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -6113,7 +6113,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -6126,7 +6126,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) ESAC1A has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) ESAC1A has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6315,7 +6315,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -6328,7 +6328,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) EXAC1A has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) EXAC1A has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6511,7 +6511,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -6524,7 +6524,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) EXAC1 has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) EXAC1 has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -6758,7 +6758,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -6771,7 +6771,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) EXAC2 has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) EXAC2 has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7004,7 +7004,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: Lead-lag state,\n\tVr2: Regulator output state,\n\tVe: Integrator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Ve, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -7017,7 +7017,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) ESAC6A has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) ESAC6A has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7226,7 +7226,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second lead-lag state,\n\tVa: Regulator output state,\n\tVr3: Feedback output state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second lead-lag state,\n\tVa: Regulator output state,\n\tVr3: Feedback output state",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Va, :Vr3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -7239,7 +7239,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) ST1A has 5 [states](@ref S)",
+                    "comment": "(**Do not modify.**) ST1A has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7467,7 +7467,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tVf: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVr1: First Lead-lag state,\n\tVr2: Second regulator lead-lag state,\n\tVr2: Third regulator lead-lag state \n\tVf: Exciter output \n\tVr3: First feedback integrator,\n\tVr4: second feedback integrator",
                     "internal_default": "[:Vm, :Vr1, :Vr2, :Vf, :Vr3, :Vr4]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -7480,7 +7480,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) EXPIC has 6 [states](@ref S)",
+                    "comment": "(**Do not modify.**) EXPIC has 6 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7681,7 +7681,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed terminal voltage,\n\tVt: Sensed Terminal Voltage,\n\tVr1: Regulator Integrator,\n\tVr2: Regulator Output,\n\tVm: Output integrator",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tVt: Sensed Terminal Voltage,\n\tVr1: Regulator Integrator,\n\tVr2: Regulator Output,\n\tVm: Output integrator",
                     "internal_default": "[:Vt, :Vr1, :Vr2, :Vm]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -7694,7 +7694,7 @@
                 },
                 {
                     "name": "states_types",
-                    "comment": "(**Do not modify.**) ST4B has 4 [states](@ref S)",
+                    "comment": "(**Do not modify.**) ST4B has 4 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -7832,7 +7832,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVm: Sensed Terminal Voltage,\n\tVrll: Lead-Lag state,\n\tVr: Regulator Output, \n\tVfb: Feedback state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed Terminal Voltage,\n\tVrll: Lead-Lag state,\n\tVr: Regulator Output, \n\tVfb: Feedback state",
                     "internal_default": "[:Vm, :Vrll, :Vr, :Vfb]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8000,7 +8000,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tVll: Lead-lag internal state,\n\tVex: Exciter Output, \n\toel: OEL integrator state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVll: Lead-lag internal state,\n\tVex: Exciter Output, \n\toel: OEL integrator state",
                     "internal_default": "[:Vll, :Vex, :oel]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8065,7 +8065,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) BaseMachine has no states",
+                    "comment": "(**Do not modify.**) BaseMachine has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8088,7 +8088,7 @@
         },
         {
             "struct_name": "RoundRotorMachine",
-            "docstring": "Parameters of 4-states round-rotor synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.",
+            "docstring": "Parameters of 4-[states](@ref S) round-rotor synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.",
             "fields": [
                 {
                     "name": "R",
@@ -8246,7 +8246,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\ted_p: d-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψ_kq: flux linkage in the first equivalent damping circuit in the d-axis",
                     "internal_default": "[:eq_p, :ed_p, :ψ_kd, :ψ_kq]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8269,7 +8269,7 @@
         },
         {
             "struct_name": "SalientPoleMachine",
-            "docstring": "Parameters of 3-states salient-pole synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.",
+            "docstring": "Parameters of 3-[states](@ref S) salient-pole synchronous machine with quadratic/exponential saturation:\nIEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.",
             "fields": [
                 {
                     "name": "R",
@@ -8395,7 +8395,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\teq_p: q-axis generator voltage behind the transient reactance,\n\tψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,\n\tψq_pp: phasonf of the subtransient flux linkage in the q-axis",
                     "internal_default": "[:eq_p, :ψ_kd, :ψq_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8418,7 +8418,7 @@
         },
         {
             "struct_name": "AndersonFouadMachine",
-            "docstring": "Parameters of 6-states synchronous machine: Anderson-Fouad model",
+            "docstring": "Parameters of 6-[states](@ref S) synchronous machine: Anderson-Fouad model",
             "fields": [
                 {
                     "name": "R",
@@ -8540,7 +8540,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
                     "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8707,7 +8707,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψd: d-axis stator flux,\n\tψq: q-axis stator flux,\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψd: d-axis stator flux,\n\tψq: q-axis stator flux,\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
                     "internal_default": "[:ψd, :ψq, :ψf, :ψ1d, :ψ1q]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8886,7 +8886,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage\n\tψd_pp: subtransient flux linkage in the d-axis\n\tψq_pp: subtransient flux linkage in the q-axis",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage\n\tψd_pp: subtransient flux linkage in the d-axis\n\tψq_pp: subtransient flux linkage in the q-axis",
                     "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :ψd_pp, :ψq_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -8909,7 +8909,7 @@
         },
         {
             "struct_name": "MarconatoMachine",
-            "docstring": "Parameters of 6-states synchronous machine: Marconato model",
+            "docstring": "Parameters of 6-[states](@ref S) synchronous machine: Marconato model",
             "fields": [
                 {
                     "name": "R",
@@ -9053,7 +9053,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψq: q-axis stator flux,\n\tψd: d-axis stator flux,\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
                     "internal_default": "[:ψq, :ψd, :eq_p, :ed_p, :eq_pp, :ed_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9076,7 +9076,7 @@
         },
         {
             "struct_name": "OneDOneQMachine",
-            "docstring": "Parameters of 4-states synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when\n transmission network dynamics is neglected.",
+            "docstring": "Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when\n transmission network dynamics is neglected.",
             "fields": [
                 {
                     "name": "R",
@@ -9158,7 +9158,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage",
                     "internal_default": "[:eq_p, :ed_p]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9181,7 +9181,7 @@
         },
         {
             "struct_name": "SimpleAFMachine",
-            "docstring": "Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.\n If transmission dynamics is considered use the full order Anderson Fouad model.",
+            "docstring": "Parameters of 4-[states](@ref S) simplified Anderson-Fouad (SimpleAFMachine) model.\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.\n If transmission dynamics is considered use the full order Anderson Fouad model.",
             "fields": [
                 {
                     "name": "R",
@@ -9303,7 +9303,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
                     "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9470,7 +9470,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tψf: field rotor flux,\n\tψ1d: d-axis rotor damping flux,\n\tψ1q: q-axis rotor damping flux",
                     "internal_default": "[:ψf, :ψ1d, :ψ1q]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9493,7 +9493,7 @@
         },
         {
             "struct_name": "SimpleMarconatoMachine",
-            "docstring": "Parameters of 4-states synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.",
+            "docstring": "Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model\n The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and\n ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network\n dynamics is neglected.",
             "fields": [
                 {
                     "name": "R",
@@ -9637,7 +9637,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\teq_p: q-axis transient voltage,\n\ted_p: d-axis transient voltage,\n\teq_pp: q-axis subtransient voltage,\n\ted_pp: d-axis subtransient voltage",
                     "internal_default": "[:eq_p, :ed_p, :eq_pp, :ed_pp]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9682,7 +9682,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) PSSFixed has no states",
+                    "comment": "(**Do not modify.**) PSSFixed has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9737,7 +9737,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) PSSSimple has no states.",
+                    "comment": "(**Do not modify.**) PSSSimple has no [states](@ref S).",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -9959,7 +9959,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p1: 1st filter integration,\n\tx_p2: 2nd filter integration, \n\tx_p3: 3rd filter integration, \n\tx_p4: 4rd filter integration, \n\tx_p5: T1/T2 lead-lag integrator, \n\tx_p6: T3/T4 lead-lag integrator, \n\t:x_p7 last integer,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p1: 1st filter integration,\n\tx_p2: 2nd filter integration, \n\tx_p3: 3rd filter integration, \n\tx_p4: 4rd filter integration, \n\tx_p5: T1/T2 lead-lag integrator, \n\tx_p6: T3/T4 lead-lag integrator, \n\t:x_p7 last integer,",
                     "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -10076,7 +10076,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p1: washout filter,\n\tx_p2: T1/T3 lead-lag block, \n\tx_p3: T2/T4 lead-lag block,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p1: washout filter,\n\tx_p2: T1/T3 lead-lag block, \n\tx_p3: T2/T4 lead-lag block,",
                     "internal_default": "[:x_p1, :x_p2, :x_p3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -10344,7 +10344,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag,",
                     "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -10646,7 +10646,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag, \n\tx_p17: 3rd lead-lag,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag, \n\tx_p17: 3rd lead-lag,",
                     "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11004,7 +11004,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag, \n\tx_p17: 3rd lead-lag, \n\tx_p18: 4th lead-lag, \n\tx_p19: washout block for compensated frequency,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tx_p1: 1st washout 1st input, \n\tx_p2: 2nd washout 1st input, \n\tx_p3: transducer 1st input, \n\tx_p4: 1st washout 2nd input, \n\tx_p5: 2nd washout 2nd input, \n\tx_p6: transducer 2nd input, \n\tx_p7: ramp tracking filter state 1, \n\tx_p8: ramp tracking filter state 2, \n\tx_p9: ramp tracking filter state 3, \n\tx_p10: ramp tracking filter state 4, \n\tx_p11: ramp tracking filter state 5, \n\tx_p12: ramp tracking filter state 6, \n\tx_p13: ramp tracking filter state 7, \n\tx_p14: ramp tracking filter state 8, \n\tx_p15: 1st lead-lag, \n\tx_p16: 2nd lead-lag, \n\tx_p17: 3rd lead-lag, \n\tx_p18: 4th lead-lag, \n\tx_p19: washout block for compensated frequency,",
                     "internal_default": "[:x_p1, :x_p2, :x_p3, :x_p4, :x_p5, :x_p6, :x_p7, :x_p8, :x_p9, :x_p10, :x_p11, :x_p12, :x_p13, :x_p14, :x_p15, :x_p16, :x_p17, :x_p18, :x_p19]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11065,7 +11065,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tδ: rotor angle,\n\tω: rotor speed",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tδ: rotor angle,\n\tω: rotor speed",
                     "internal_default": "[:δ, :ω]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11280,7 +11280,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\n\tδ: rotor angle,\n\tω: rotor speed,\n\tδ_hp: rotor angle of high pressure turbine,\n\tω_hp: rotor speed of high pressure turbine,\n\tδ_ip: rotor angle of intermediate pressure turbine,\n\tω_ip: rotor speed of intermediate pressure turbine,\n\tδ_lp: rotor angle of low pressure turbine,\n\tω_lp: rotor speed of low pressure turbine,\n\tδ_ex: rotor angle of exciter,\n\tω_lp: rotor speed of exciter",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tδ: rotor angle,\n\tω: rotor speed,\n\tδ_hp: rotor angle of high pressure turbine,\n\tω_hp: rotor speed of high pressure turbine,\n\tδ_ip: rotor angle of intermediate pressure turbine,\n\tω_ip: rotor speed of intermediate pressure turbine,\n\tδ_lp: rotor angle of low pressure turbine,\n\tω_lp: rotor speed of low pressure turbine,\n\tδ_ex: rotor angle of exciter,\n\tω_lp: rotor speed of exciter",
                     "internal_default": "[:δ, :ω, :δ_hp, :ω_hp, :δ_ip, :ω_ip, :δ_lp, :ω_lp, :δ_ex, :ω_ex]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11336,7 +11336,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) TGFixed has no states",
+                    "comment": "(**Do not modify.**) TGFixed has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11458,7 +11458,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the GAST model are:\n\tx_g1: Fuel valve opening,\n\tx_g2: Fuel flow,\n\tx_g3: Exhaust temperature load",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the GAST model are:\n\tx_g1: Fuel valve opening,\n\tx_g2: Fuel flow,\n\tx_g3: Exhaust temperature load",
                     "internal_default": "[:x_g1, :x_g2, :x_g3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11590,7 +11590,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the DEGOV model are:\n\tx_ecb1: Electric control box 1,\n\tx_ecb2: Electric control box 2,\n\tx_a1: Actuator 1,\n\tx_a2: Actuator 2,\n\tx_a3: Actuator 3,",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the DEGOV model are:\n\tx_ecb1: Electric control box 1,\n\tx_ecb2: Electric control box 2,\n\tx_a1: Actuator 1,\n\tx_a2: Actuator 2,\n\tx_a3: Actuator 3,",
                     "internal_default": "[:x_ecb1, :x_ecb2, :x_a1, :x_a2, :x_a3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -11979,7 +11979,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the GGOV1 model are:\n\tPe: Machine Electrical Power Measurement,\n\tx_g1: Governor differential control,\n\tx_g2: Governor integral control, \n\tx_g3: Turbine actuator, \n\tx_g4: Turbine Lead-Lag, \n\tx_g5: Turbine load limiter measurement, \n\tx_g6: Turbine Load Limiter Integral Control, \n\tx_g7: Supervisory Load Control, \n\tx_g8: Acceleration Control, \n\tx_g9 Temperature Detection Lead - Lag:",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the GGOV1 model are:\n\tPe: Machine Electrical Power Measurement,\n\tx_g1: Governor differential control,\n\tx_g2: Governor integral control, \n\tx_g3: Turbine actuator, \n\tx_g4: Turbine Lead-Lag, \n\tx_g5: Turbine load limiter measurement, \n\tx_g6: Turbine Load Limiter Integral Control, \n\tx_g7: Supervisory Load Control, \n\tx_g8: Acceleration Control, \n\tx_g9 Temperature Detection Lead - Lag:",
                     "internal_default": "[:Pe, :x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7, :x_g8, :x_g9]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12125,7 +12125,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tx_g2: Lead-lag state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the SteamTurbineGov1 model are:\n\tx_g1: Valve Opening,\n\tx_g2: Lead-lag state",
                     "internal_default": "[:x_g1, :x_g2]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12293,7 +12293,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the HydroTurbineGov model are:\n\tx_g1: filter_output,\n\tx_g2: desired gate, \n\tx_g3: gate opening, \n\tx_g4: turbine flow",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the HydroTurbineGov model are:\n\tx_g1: filter_output,\n\tx_g2: desired gate, \n\tx_g3: gate opening, \n\tx_g4: turbine flow",
                     "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12549,7 +12549,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the IEEETurbineGov model are:\n\tx_g1: First Governor integrator,\n\tx_g2: Governor output,\n\tx_g3: First Turbine integrator, \n\tx_g4: Second Turbine Integrator, \n\tx_g5: Third Turbine Integrator, \n\tx_g6: Fourth Turbine Integrator, ",
                     "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12667,7 +12667,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the TGTypeI model are:\n\tx_g1: Governor state,\n\tx_g2: Servo state,\n\tx_g3: Reheat state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:\n\tx_g1: Governor state,\n\tx_g2: Servo state,\n\tx_g3: Reheat state",
                     "internal_default": "[:x_g1, :x_g2, :x_g3]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12749,7 +12749,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the TGTypeI model are:\n\tx_g1: lead-lag state",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:\n\tx_g1: lead-lag state",
                     "internal_default": "[:xg]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12804,7 +12804,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) AverageConverter has no states",
+                    "comment": "(**Do not modify.**) AverageConverter has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -12987,7 +12987,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
                     "internal_default": "[:Ip, :Iq, :Vmeas]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13148,7 +13148,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\tIp: Converter lag for Ipcmd,\tIq: Converter lag for Iqcmd,\tVmeas: Voltage filter for low voltage active current management",
                     "internal_default": "[:Ip, :Iq, :Vmeas]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13186,7 +13186,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) FixedDCSource has no states",
+                    "comment": "(**Do not modify.**) FixedDCSource has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13342,7 +13342,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ZeroOrderBESS model are:\n\tv_dc: DC-link voltage,\n\ti_b: Battery current,\n\t ν: integrator state of the voltage controller,\n\t ζ: integrator state of the PI current controller",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:\n\tv_dc: DC-link voltage,\n\ti_b: Battery current,\n\t ν: integrator state of the voltage controller,\n\t ζ: integrator state of the PI current controller",
                     "internal_default": "[:v_dc, :i_b, :ν, :ζ]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13358,7 +13358,7 @@
         },
         {
             "struct_name": "LCLFilter",
-            "docstring": "Parameters of a LCL filter outside the converter, the states are in the grid's reference frame",
+            "docstring": "Parameters of a LCL filter outside the converter, the [states](@ref S) are in the grid's reference frame",
             "fields": [
                 {
                     "name": "lf",
@@ -13420,7 +13420,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the LCLFilter model are:\n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the LCLFilter model are:\n\tir_cnv: Real current out of the converter,\n\tii_cnv: Imaginary current out of the converter,\n\tvr_filter: Real voltage at the filter's capacitor,\n\tvi_filter: Imaginary voltage at the filter's capacitor,\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
                     "internal_default": "[:ir_cnv, :ii_cnv, :vr_filter, :vi_filter, :ir_filter, :ii_filter]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13478,7 +13478,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the LCFilter model are:\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the LCFilter model are:\n\tir_filter: Real current out of the filter,\n\tii_filter: Imaginary current out of the filter",
                     "internal_default": "[:ir_filter, :ii_filter]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13526,7 +13526,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) RLFilter has zero states",
+                    "comment": "(**Do not modify.**) RLFilter has zero [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13584,7 +13584,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the KauraPLL model are:\n\tvd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tvq_pll: q-axis of the measured voltage in the PLL SRF,\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the KauraPLL model are:\n\tvd_pll: d-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tvq_pll: q-axis of the measured voltage in the PLL SRF,\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
                     "internal_default": "[:vd_pll, :vq_pll, :ε_pll, :θ_pll]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13642,7 +13642,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ReducedOrderPLL model are:\n\tvq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ReducedOrderPLL model are:\n\tvq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),\n\tε_pll: Integrator state of the PI controller,\n\tθ_pll: Phase angle displacement in the PLL SRF",
                     "internal_default": "[:vq_pll, :ε_pll, :θ_pll]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13677,7 +13677,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) FixedFrequency has no states",
+                    "comment": "(**Do not modify.**) FixedFrequency has no [states](@ref S)",
                     "internal_default": "Vector{Symbol}()",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13746,7 +13746,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the VirtualInertia model are:\n\tθ_oc: Phase angle displacement of the virtual synchronous generator model\n\tω_oc: Speed of the rotating reference frame of the virtual synchronous generator model",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the VirtualInertia model are:\n\tθ_oc: Phase angle displacement of the virtual synchronous generator model\n\tω_oc: Speed of the rotating reference frame of the virtual synchronous generator model",
                     "internal_default": "[:θ_oc, :ω_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13805,7 +13805,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ActivePowerDroop model are:\n\tθ_oc: Phase angle displacement of the inverter model,\n\tp_oc: Measured active power of the inverter model",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ActivePowerDroop model are:\n\tθ_oc: Phase angle displacement of the inverter model,\n\tp_oc: Measured active power of the inverter model",
                     "internal_default": "[:θ_oc, :p_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13874,7 +13874,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ActivePowerPI model are:\n\tσp_oc: Integrator state of the PI Controller,\n\tp_oc: Measured active power of the inverter model",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ActivePowerPI model are:\n\tσp_oc: Integrator state of the PI Controller,\n\tp_oc: Measured active power of the inverter model",
                     "internal_default": "[:σp_oc, :p_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -13933,7 +13933,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ActiveVirtualOscillator model are:\n\tθ_oc: Phase angle displacement of the inverter model",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ActiveVirtualOscillator model are:\n\tθ_oc: Phase angle displacement of the inverter model",
                     "internal_default": "[:θ_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14118,7 +14118,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ActiveRenewableControllerAB model depends on the Flag",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ActiveRenewableControllerAB model depends on the Flag",
                     "internal_default": "PowerSystems.get_activeRETypeAB_states(Freq_Flag)[1]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14394,7 +14394,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ReactiveRenewableControllerAB model depends on the Flag",
                     "internal_default": "PowerSystems.get_reactiveRETypeAB_states(Ref_Flag, PF_Flag, V_Flag)[1]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14453,7 +14453,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ReactivePowerDroop model are:\n\tq_oc: Filtered reactive output power",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ReactivePowerDroop model are:\n\tq_oc: Filtered reactive output power",
                     "internal_default": "[:q_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14533,7 +14533,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ReactivePowerPI model are:\n\tσq_oc: Integrator state of the PI Controller,\n\tq_oc: Measured reactive power of the inverter model",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ReactivePowerPI model are:\n\tσq_oc: Integrator state of the PI Controller,\n\tq_oc: Measured reactive power of the inverter model",
                     "internal_default": "[:σq_oc, :q_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14593,7 +14593,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the ReactiveVirtualOscilator model are:\n\tE_oc: voltage reference state for inner control in the d-axis",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the ReactiveVirtualOscilator model are:\n\tE_oc: voltage reference state for inner control in the d-axis",
                     "internal_default": "[:E_oc]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14721,7 +14721,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the VoltageModeControl model are:\n\tξd_ic: d-axis integrator state of the PI voltage controller,\n\tξq_ic: q-axis integrator state of the PI voltage controller,\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller,\n\tϕd_ic: d-axis low-pass filter of active damping,\n\tϕq_ic: q-axis low-pass filter of active damping",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the VoltageModeControl model are:\n\tξd_ic: d-axis integrator state of the PI voltage controller,\n\tξq_ic: q-axis integrator state of the PI voltage controller,\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller,\n\tϕd_ic: d-axis low-pass filter of active damping,\n\tϕq_ic: q-axis low-pass filter of active damping",
                     "internal_default": "[:ξd_ic, :ξq_ic, :γd_ic, :γq_ic, :ϕd_ic, :ϕq_ic]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14779,7 +14779,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the CurrentModeControl model are:\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the CurrentModeControl model are:\n\tγd_ic: d-axis integrator state of the PI current controller,\n\tγq_ic: q-axis integrator state of the PI current controller",
                     "internal_default": "[:γd_ic, :γq_ic]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -14915,7 +14915,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of the RECurrentControlB depends on the Flags",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the RECurrentControlB depends on the Flags",
                     "internal_default": "PowerSystems.get_REControlB_states(Q_Flag)",
                     "data_type": "Vector{Symbol}"
                 },
@@ -15412,7 +15412,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags",
                     "internal_default": "PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -15625,7 +15625,7 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) State for time, voltage and angle",
+                    "comment": "(**Do not modify.**) The [states](@ref S) for time, voltage and angle",
                     "internal_default": "[:Vt, :θt]",
                     "data_type": "Vector{Symbol}"
                 },
@@ -16018,14 +16018,14 @@
                 {
                     "name": "states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of GenericDER depend on the Flags",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags",
                     "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[1]",
                     "data_type": "Vector{Symbol}"
                 },
                 {
                     "name": "n_states",
                     "exclude_setter": true,
-                    "comment": "(**Do not modify.**) The states of GenericDER depend on the Flags",
+                    "comment": "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags",
                     "internal_default": "PowerSystems.get_GenericDER_states(Qref_Flag)[2]",
                     "data_type": "Int"
                 },
