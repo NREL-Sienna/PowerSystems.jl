@@ -4233,7 +4233,7 @@
         },
         {
             "struct_name": "StaticReserveNonSpinning",
-            "docstring": "Data Structure for a non-spinning reserve product for system simulations.",
+            "docstring": "A non-spinning reserve product.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage.",
             "fields": [
                 {
                     "null_value": "init",
@@ -4250,7 +4250,7 @@
                 },
                 {
                     "name": "time_frame",
-                    "comment": "the saturation time_frame in minutes to provide reserve contribution",
+                    "comment": "the saturation time frame in minutes that a participating device must provide its reserve contribution",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4681,6 +4681,7 @@
         },
         {
             "struct_name": "AGC",
+            "docstring": "Automatic generation control (AGC) for the system or a certain `Area` within the system.\n\nThis model uses a proportional–integral–derivative (PID) control to simulate a \"smooth\" response of the AGC to the area control error (ACE). Refer to [\"AGC Simulation Model for Large Renewable Energy Penetration Studies.\"](https://doi.org/10.1109/NAPS50074.2021.9449687)",
             "fields": [
                 {
                     "null_value": "init",
@@ -4697,6 +4698,7 @@
                 },
                 {
                     "name": "bias",
+                    "comment": "Area frequency bias in MW/Hz",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
