@@ -3744,7 +3744,7 @@
         },
         {
             "struct_name": "ThermalMultiStart",
-            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
+            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, that can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation of the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3942,7 +3942,7 @@
         },
         {
             "struct_name": "EnergyReservoirStorage",
-            "docstring": "Data structure for energy storage modeled as a generic energy reservoir. To be used in models that ignore the physical dynamics of the storage unit",
+            "docstring": "An energy storage device, modeled as a generic energy reservoir.\n\nThis is suitable for modeling storage charging and discharging with a round-trip efficiency, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach.",
             "fields": [
                 {
                     "null_value": "init",
