@@ -4156,7 +4156,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in system p.u.",
+                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4356,7 +4356,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in system p.u.",
+                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
