@@ -2,7 +2,7 @@
     "auto_generated_structs": [
         {
             "struct_name": "Area",
-            "docstring": "A collection of buses for control purposes.",
+            "docstring": "A collection of buses for control purposes.\n\nThe `Area` can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@ref) in the area.",
             "fields": [
                 {
                     "null_value": "init",
@@ -164,7 +164,7 @@
                 },
                 {
                     "name": "magnitude",
-                    "comment": "voltage as a multiple of basevoltage",
+                    "comment": "voltage as a multiple of `base_voltage`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": "voltage_limits",
@@ -172,7 +172,7 @@
                 },
                 {
                     "name": "voltage_limits",
-                    "comment": "limits on the voltage variation as multiples of basevoltage",
+                    "comment": "limits on the voltage variation as multiples of `base_voltage`",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}"
                 },
@@ -220,7 +220,7 @@
         },
         {
             "struct_name": "DCBus",
-            "docstring": "A power-system DC bus.",
+            "docstring": "A DC bus.",
             "fields": [
                 {
                     "name": "number",
@@ -237,7 +237,7 @@
                 },
                 {
                     "name": "magnitude",
-                    "comment": "voltage as a multiple of basevoltage",
+                    "comment": "voltage as a multiple of `base_voltage`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": "voltage_limits",
@@ -245,7 +245,7 @@
                 },
                 {
                     "name": "voltage_limits",
-                    "comment": "limits on the voltage variation as multiples of basevoltage",
+                    "comment": "limits on the voltage variation as multiples of `base_voltage`",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}"
                 },
@@ -293,7 +293,7 @@
         },
         {
             "struct_name": "Arc",
-            "docstring": "A topological directed edge connecting two buses.\n Arcs are used to define the `from` and `to` buses, when defining a line or transformer.",
+            "docstring": "A topological directed edge connecting two buses.\n\nArcs are used to define the `from` and `to` buses when defining a line or transformer.",
             "fields": [
                 {
                     "name": "from",
@@ -1168,7 +1168,7 @@
         },
         {
             "struct_name": "InterruptiblePowerLoad",
-            "docstring": "A [static](@ref S) power load that can be compensated for temporary or continuous interruptions to its requested demand.\n\n These loads are most commonly used for operational optimizations and can be used to model, for example, large commercial and industrial customers enrolled in demand response programs. This load has a target demand profile (set by a `max_active_power` time series for an operational simulation) that can be reduced to satisfy other system needs. For simpler loads without compensated demand response, see [`PowerLoad`](@ref).",
+            "docstring": "A [static](@ref S) power load that can be compensated for temporary or continuous interruptions to its requested demand.\n\n These loads are most commonly used for operational optimizations and can be used to model, for example, large commercial and industrial customers enrolled in demand response programs. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation) that can be reduced to satisfy other system needs. For simpler loads without an operating cost for demand response, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3563,7 +3563,7 @@
         },
         {
             "struct_name": "ThermalStandard",
-            "docstring": "A thermal generator, such as a fossil fuel and nuclear generator. This is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref).",
+            "docstring": "A thermal generator, such as a fossil fuel and nuclear generator.\n\nThis is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3741,7 +3741,7 @@
         },
         {
             "struct_name": "ThermalMultiStart",
-            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, with a detailed representation of the start-up and shut-down processes [described here](https://doi.org/10.1109/TPWRS.2013.2251373). Based on the time elapsed since the last shut down, the generator can start-up again from a *hot*, *warm*, or *cold* state. For a simplified representation the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
+            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
