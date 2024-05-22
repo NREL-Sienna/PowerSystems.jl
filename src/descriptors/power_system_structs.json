@@ -2695,6 +2695,7 @@
         },
         {
             "struct_name": "HydroEnergyReservoir",
+            "docstring": "A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.\n\nFor hydro generators with pumped storage, see [`HydroPumpedStorage`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -2903,6 +2904,7 @@
         },
         {
             "struct_name": "HydroDispatch",
+            "docstring": "A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.\n\nFor hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -3052,6 +3054,7 @@
         },
         {
             "struct_name": "HydroPumpedStorage",
+            "docstring": "A hydropower generator with pumped storage and upper and lower reservoirs. ",
             "fields": [
                 {
                     "null_value": "init",
