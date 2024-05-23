@@ -81,7 +81,7 @@
         },
         {
             "struct_name": "TransmissionInterface",
-            "docstring": "A collection of branches that make up an interface or corridor for the transfer of power, such as between different [`Areas`](@ref Area) or [`LoadZones`](@ref LoadZone).",
+            "docstring": "A collection of branches that make up an interface or corridor for the transfer of power, such as between different [`Areas`](@ref Area) or [`LoadZones`](@ref LoadZone).\n\nThe interface can be used to constrain the power flow across it.",
             "fields": [
                 {
                     "null_value": "init",
@@ -112,7 +112,7 @@
                 },
                 {
                     "name": "direction_mapping",
-                    "comment": "(optional) Dictionary of 1 or -1 flow multipliers for the lines, for cases when a line has a reverse direction with respect to the interface",
+                    "comment": "(optional) Dictionary of the line `name`s in the interface and their direction of flow (1 or -1) relative to the flow of the interface",
                     "null_value": "Dict{String, Int}()",
                     "data_type": "Dict{String, Int}",
                     "default": "Dict{String, Int}()"
@@ -1268,6 +1268,7 @@
         },
         {
             "struct_name": "FixedAdmittance",
+            "docstring": "A fixed admittance.\n\nMost often used in dynamics or AC power flow studies as a source of reactive power.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1328,6 +1329,7 @@
         },
         {
             "struct_name": "SwitchedAdmittance",
+            "docstring": "A switched admittance, with discrete steps to adjust the admittance.\n\nMost often used in power flow studies, iterating over the steps to see impacts of admittance on the results. Total admittance is calculated as: `Y` + `number_of_steps` * `Y_increase`",
             "fields": [
                 {
                     "null_value": "init",

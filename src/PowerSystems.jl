@@ -85,6 +85,7 @@ export StaticLoad
 export PowerLoad
 export StandardLoad
 export FixedAdmittance
+export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
 export ExponentialLoad
