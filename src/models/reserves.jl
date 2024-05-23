@@ -35,5 +35,10 @@ A [`Reserve`](@ref) can be specified as a `ReserveSymmetric` when it is defined.
 """
 abstract type ReserveSymmetric <: ReserveDirection end
 abstract type AbstractReserve <: Service end
+
+"""
+A reserve product to be able to respond to unexpected disturbances,
+such as the sudden loss of a transmission line or generator.
+"""
 abstract type Reserve{T <: ReserveDirection} <: AbstractReserve end
 abstract type ReserveNonSpinning <: AbstractReserve end
