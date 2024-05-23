@@ -4127,7 +4127,7 @@
         },
         {
             "struct_name": "StaticReserve",
-            "docstring": "Data Structure for a proportional reserve product for system simulations.",
+            "docstring": "A reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).",
             "parametric": "ReserveDirection",
             "fields": [
                 {
@@ -4156,7 +4156,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4233,7 +4233,7 @@
         },
         {
             "struct_name": "StaticReserveNonSpinning",
-            "docstring": "A non-spinning reserve product.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage.",
+            "docstring": "A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`StaticReserve`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -4261,7 +4261,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4338,7 +4338,7 @@
         },
         {
             "struct_name": "StaticReserveGroup",
-            "docstring": "Data Structure for a group reserve product for system simulations.",
+            "docstring": "A group reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nWhen defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).",
             "parametric": "ReserveDirection",
             "fields": [
                 {
@@ -4356,7 +4356,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the static value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "comment": "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4393,7 +4393,7 @@
         },
         {
             "struct_name": "ReserveDemandCurve",
-            "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.",
+            "docstring": "Data Structure for a operating reserve with demand curve product for system simulations.\n\nWhen defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).",
             "parametric": "ReserveDirection",
             "fields": [
                 {
@@ -4481,7 +4481,7 @@
         },
         {
             "struct_name": "VariableReserve",
-            "docstring": "Data Structure for the procurement products for system simulations.",
+            "docstring": "A reserve product with a time-varying procurement requirement, such as a higher requirement during hours with an expected high load or high ramp.\n\nThis reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref). To model the time varying requirement, a [\"`requirement`\" time series should be added](@ref ts_data) to this reserve.",
             "parametric": "ReserveDirection",
             "fields": [
                 {
@@ -4581,7 +4581,7 @@
         },
         {
             "struct_name": "VariableReserveNonSpinning",
-            "docstring": "Data Structure for the procurement products for system simulations.",
+            "docstring": "A non-spinning reserve product with a time-varying procurement requirement, such as a higher requirement during hours with an expected high load or high ramp.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. To model the time varying requirement, a [\"`requirement`\" time series should be added](@ref ts_data) to this reserve.\n\nThis is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`VariableReserve`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
