@@ -551,6 +551,7 @@
         },
         {
             "struct_name": "PhaseShiftingTransformer",
+            "docstring": "A phase-shifting transformer regulating the phase angle between two buses to control active power flow in the system.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
             "fields": [
                 {
                     "null_value": "init",
@@ -620,7 +621,7 @@
                 },
                 {
                     "name": "tap",
-                    "comment": "Normalized tap changer position for phase shifting. 0 for -180 degrees, 1 for center, 2 for +180 degrees",
+                    "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -631,7 +632,7 @@
                 },
                 {
                     "name": "α",
-                    "comment": "Phase shift (radians)",
+                    "comment": "Initial condition of phase shift (radians) between the `from` and `to` buses ",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -690,6 +691,7 @@
         },
         {
             "struct_name": "TapTransformer",
+            "docstring": "A 2-winding transformer, with a tap changer for variable turns ratio.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
             "fields": [
                 {
                     "null_value": "init",
@@ -759,7 +761,7 @@
                 },
                 {
                     "name": "tap",
-                    "comment": "Normalized tap changer position for phase shifting. 0 for -180 degrees, 1 for center, 2 for +180 degrees",
+                    "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -806,7 +808,7 @@
         },
         {
             "struct_name": "Transformer2W",
-            "docstring": "A 2-winding transformer that uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
+            "docstring": "A basic 2-winding transformer.\n\nThe model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.",
             "fields": [
                 {
                     "null_value": "init",
