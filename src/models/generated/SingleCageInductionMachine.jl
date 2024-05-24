@@ -46,7 +46,7 @@ Parameters of 5-states three-phase single cage induction machine with quadratic 
 - `B_shunt::Float64`: (optional) Susceptance Initialization Corrector Term
 - `X_ad::Float64`: (**Do not modify.**) Equivalent d-axis reactance
 - `X_aq::Float64`: (**Do not modify.**) Equivalent q-axis reactance
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψ_qs: stator flux in the q-axis,
 	ψ_ds: stator flux in the d-axis,
 	ψ_qr: rotor flux in the q-axis,
@@ -88,7 +88,7 @@ mutable struct SingleCageInductionMachine <: DynamicInjection
     X_ad::Float64
     "(**Do not modify.**) Equivalent q-axis reactance"
     X_aq::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψ_qs: stator flux in the q-axis,
 	ψ_ds: stator flux in the d-axis,
 	ψ_qr: rotor flux in the q-axis,

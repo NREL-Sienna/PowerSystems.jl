@@ -18,7 +18,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+A switched admittance, with discrete steps to adjust the admittance.
 
+Most often used in power flow studies, iterating over the steps to see impacts of admittance on the results. Total admittance is calculated as: `Y` + `number_of_steps` * `Y_increase`
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.

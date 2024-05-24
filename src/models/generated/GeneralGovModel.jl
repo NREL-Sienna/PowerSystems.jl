@@ -83,7 +83,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `R_lim::UpDown`: Maximum rate of load increa
 - `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the GGOV1 model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 
@@ -167,7 +167,7 @@ mutable struct GeneralGovModel <: TurbineGov
     P_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the GGOV1 model are:
+    "(**Do not modify.**) The [states](@ref S) of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 

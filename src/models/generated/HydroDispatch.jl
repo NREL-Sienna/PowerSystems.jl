@@ -25,7 +25,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.
 
+For hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.

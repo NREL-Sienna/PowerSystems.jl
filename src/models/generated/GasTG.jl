@@ -35,7 +35,7 @@ Parameters of Gas Turbine-Governor. GAST in PSSE and GAST_PTI in PowerWorld.
 - `D_turb::Float64`: Speed damping coefficient of gas turbine rotor, validation range: `(0, 0.5)`
 - `P_ref::Float64`: (optional) Reference Load Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the GAST model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the GAST model are:
 	x_g1: Fuel valve opening,
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load
@@ -64,7 +64,7 @@ mutable struct GasTG <: TurbineGov
     P_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the GAST model are:
+    "(**Do not modify.**) The [states](@ref S) of the GAST model are:
 	x_g1: Fuel valve opening,
 	x_g2: Fuel flow,
 	x_g3: Exhaust temperature load"

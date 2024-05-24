@@ -20,16 +20,18 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-a HVDC T-Model DC line.
+A High Voltage DC transmission line for modeling DC transmission networks.
+
+This line must be connected to a [`DCBus`](@ref) on each end. It uses a T-Model of the line impedance. This is suitable for operational simulations with a multi-terminal DC network.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
-- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: Series Resistance in p.u. ([`System Base`](@ref per_unit))
-- `l::Float64`: Series Inductance in p.u. ([`System Base`](@ref per_unit))
-- `c::Float64`: Shunt capacitance in p.u. ([`System Base`](@ref per_unit))
+- `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
+- `r::Float64`: Total series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance
+- `l::Float64`: Total series Inductance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance
+- `c::Float64`: Shunt capacitance in p.u. ([`SYSTEM_BASE`](@ref per_unit))
 - `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `services::Vector{Service}`: (optional) Services that this device contributes to
@@ -43,13 +45,13 @@ mutable struct TModelHVDCLine <: DCBranch
     available::Bool
     "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
-    "Used internally to represent network topology. **Do not modify.**"
+    "An [`Arc`](@ref) defining this line `from` a bus `to` another bus"
     arc::Arc
-    "Series Resistance in p.u. ([`System Base`](@ref per_unit))"
+    "Total series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance"
     r::Float64
-    "Series Inductance in p.u. ([`System Base`](@ref per_unit))"
+    "Total series Inductance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance"
     l::Float64
-    "Shunt capacitance in p.u. ([`System Base`](@ref per_unit))"
+    "Shunt capacitance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     c::Float64
     "Minimum and maximum active power flows to the FROM node (MW)"
     active_power_limits_from::MinMax

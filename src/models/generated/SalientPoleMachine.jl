@@ -25,7 +25,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 3-states salient-pole synchronous machine with quadratic/exponential saturation:
+Parameters of 3-[states](@ref S) salient-pole synchronous machine with quadratic/exponential saturation:
 IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 
 # Arguments
@@ -43,7 +43,7 @@ IEEE Std 1110 §5.3.1 (Model 2.1). GENSAL or GENSAE model in PSSE and PSLF.
 - `γ_d1::Float64`: (**Do not modify.**) γ_d1 parameter
 - `γ_q1::Float64`: (**Do not modify.**) γ_q1 parameter
 - `γ_d2::Float64`: (**Do not modify.**) γ_d2 parameter
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψq_pp: phasonf of the subtransient flux linkage in the q-axis
@@ -79,7 +79,7 @@ mutable struct SalientPoleMachine <: Machine
     γ_q1::Float64
     "(**Do not modify.**) γ_d2 parameter"
     γ_d2::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψq_pp: phasonf of the subtransient flux linkage in the q-axis"

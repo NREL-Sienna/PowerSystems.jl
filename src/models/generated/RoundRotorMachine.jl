@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states round-rotor synchronous machine with quadratic/exponential saturation:
+Parameters of 4-[states](@ref S) round-rotor synchronous machine with quadratic/exponential saturation:
 IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 
 # Arguments
@@ -51,7 +51,7 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 - `γ_d2::Float64`: (**Do not modify.**) γ_d2 parameter
 - `γ_q2::Float64`: (**Do not modify.**) γ_q2 parameter
 - `γ_qd::Float64`: (**Do not modify.**) γ_qd parameter
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
@@ -96,7 +96,7 @@ mutable struct RoundRotorMachine <: Machine
     γ_q2::Float64
     "(**Do not modify.**) γ_qd parameter"
     γ_qd::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,

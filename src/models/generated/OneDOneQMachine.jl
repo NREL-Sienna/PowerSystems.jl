@@ -19,7 +19,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states synchronous machine: Simplified Marconato model
+Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when
  transmission network dynamics is neglected.
@@ -33,7 +33,7 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
 - `n_states::Int`: (**Do not modify.**) OneDOneQMachine has 2 states
@@ -56,7 +56,7 @@ mutable struct OneDOneQMachine <: Machine
     Tq0_p::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage"
     states::Vector{Symbol}

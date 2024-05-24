@@ -19,7 +19,7 @@ Parameters of an average converter model
 - `rated_voltage::Float64`: Rated voltage (V), validation range: `(0, nothing)`
 - `rated_current::Float64`: Rated current (A), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) AverageConverter has no states
+- `states::Vector{Symbol}`: (**Do not modify.**) AverageConverter has no [states](@ref S)
 - `n_states::Int`: (**Do not modify.**) AverageConverter has no states
 """
 mutable struct AverageConverter <: Converter
@@ -29,7 +29,7 @@ mutable struct AverageConverter <: Converter
     rated_current::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) AverageConverter has no states"
+    "(**Do not modify.**) AverageConverter has no [states](@ref S)"
     states::Vector{Symbol}
     "(**Do not modify.**) AverageConverter has no states"
     n_states::Int

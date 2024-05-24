@@ -49,7 +49,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `inv_d_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.128, 3.132 From Kundur
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux
@@ -87,7 +87,7 @@ mutable struct SimpleFullMachine <: Machine
     inv_d_fluxlink::Array{Float64,2}
     "(**Do not modify.**) Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψf: field rotor flux,
 	ψ1d: d-axis rotor damping flux,
 	ψ1q: q-axis rotor damping flux"

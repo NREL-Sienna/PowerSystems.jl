@@ -20,18 +20,20 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A 2-winding transformer that uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
+A basic 2-winding transformer.
+
+The model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
-- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
-- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`: in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
+- `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
+- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
+- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
+- `primary_shunt::Float64`: Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
+- `rate::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
@@ -45,14 +47,15 @@ mutable struct Transformer2W <: ACBranch
     active_power_flow::Float64
     "Initial condition of reactive power flow through the transformer (MVAR)"
     reactive_power_flow::Float64
-    "Used internally to represent network topology. **Do not modify.**"
+    "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus"
     arc::Arc
-    "Resistance in pu ([`System Base`](@ref per_unit))"
+    "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     r::Float64
-    "Reactance in pu ([`System Base`](@ref per_unit))"
+    "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    "in pu ([`System Base`](@ref per_unit))"
+    "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Float64
+    "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`"
     rate::Union{Nothing, Float64}
     "(optional) Services that this device contributes to"
     services::Vector{Service}

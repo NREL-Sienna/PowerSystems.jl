@@ -21,7 +21,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-This struct acts as an infinity bus.
+An infinite bus with a constant voltage output.
+
+Commonly used in dynamics simulations to represent a very large machine on a single bus.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.

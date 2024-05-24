@@ -32,7 +32,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A thermal generator, such as a fossil fuel or nuclear generator, with a detailed representation of the start-up and shut-down processes. Based on the time elapsed since the last shut down, the generator can start-up again from a *hot*, *warm*, or *cold* state. For a simplified representation the start-up and shut-down processes, see [`ThermalStandard`](@ref).
+A thermal generator, such as a fossil fuel or nuclear generator, that can start-up again from a *hot*, *warm*, or *cold* state.
+
+`ThermalMultiStart has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on ["Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem."](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation of the start-up and shut-down processes, see [`ThermalStandard`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.

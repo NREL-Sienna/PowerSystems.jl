@@ -32,7 +32,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.
 
+For hydro generators with pumped storage, see [`HydroPumpedStorage`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.

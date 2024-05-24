@@ -18,26 +18,26 @@ This file is auto-generated. Do not edit.
 Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
-- `Vf::Float64`: Fixed voltage field applied to the rotor winding in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
+- `Vf::Float64`: Fixed voltage field applied to the rotor winding in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) Fixed AVR has no states
-- `n_states::Int`: (**Do not modify.**) Fixed AVR has no states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) Fixed AVR has no states
+- `states::Vector{Symbol}`: (**Do not modify.**) Fixed AVR has no [states](@ref S)
+- `n_states::Int`: (**Do not modify.**) Fixed AVR has no [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) Fixed AVR has no [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct AVRFixed <: AVR
-    "Fixed voltage field applied to the rotor winding in pu ([`Device Base`](@ref per_unit))"
+    "Fixed voltage field applied to the rotor winding in pu ([`DEVICE_BASE`](@ref per_unit))"
     Vf::Float64
     "(optional) Reference Voltage Set-point (pu)"
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) Fixed AVR has no states"
+    "(**Do not modify.**) Fixed AVR has no [states](@ref S)"
     states::Vector{Symbol}
-    "(**Do not modify.**) Fixed AVR has no states"
+    "(**Do not modify.**) Fixed AVR has no [states](@ref S)"
     n_states::Int
-    "(**Do not modify.**) Fixed AVR has no states"
+    "(**Do not modify.**) Fixed AVR has no [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal

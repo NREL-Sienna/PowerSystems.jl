@@ -22,19 +22,21 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+An AC transmission line with additional power flow constraints specified by the system operator, more restrictive than the line's thermal limits.
 
+For example, monitored lines can be used to restrict line flow following a contingency elsewhere in the network. See the `flow_limits` parameter. If monitoring is not needed, see [`Line`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
-- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `b::FromTo`: Susceptance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
-- `flow_limits::FromTo_ToFrom`: throw warning above max SIL
-- `rate::Float64`: compare to SIL (warn) (theoretical limit)
+- `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
+- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
+- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
+- `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value., validation range: `(0, 2)`, action if invalid: `warn`
+- `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`.
+- `rate::Float64`: Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`
 - `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
@@ -49,17 +51,17 @@ mutable struct MonitoredLine <: ACBranch
     active_power_flow::Float64
     "Initial condition of reactive power flow on the line (MVAR)"
     reactive_power_flow::Float64
-    "Used internally to represent network topology. **Do not modify.**"
+    "An [`Arc`](@ref) defining this line `from` a bus `to` another bus"
     arc::Arc
-    "Resistance in pu ([`System Base`](@ref per_unit))"
+    "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     r::Float64
-    "Reactance in pu ([`System Base`](@ref per_unit))"
+    "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    "Susceptance in pu ([`System Base`](@ref per_unit))"
+    "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value."
     b::FromTo
-    "throw warning above max SIL"
+    "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`."
     flow_limits::FromTo_ToFrom
-    "compare to SIL (warn) (theoretical limit)"
+    "Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`"
     rate::Float64
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax

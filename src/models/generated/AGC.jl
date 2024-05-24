@@ -19,12 +19,14 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+Automatic generation control (AGC) for the system or a certain `Area` within the system.
 
+This model uses a proportional–integral–derivative (PID) control to simulate a "smooth" response of the AGC to the area control error (ACE). Refer to ["AGC Simulation Model for Large Renewable Energy Penetration Studies."](https://doi.org/10.1109/NAPS50074.2021.9449687)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `bias::Float64`
+- `bias::Float64`: Area frequency bias in MW/Hz
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
 - `K_d::Float64`: PID Derivative Constant
@@ -39,6 +41,7 @@ mutable struct AGC <: Service
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Area frequency bias in MW/Hz"
     bias::Float64
     "PID Proportional Constant"
     K_p::Float64

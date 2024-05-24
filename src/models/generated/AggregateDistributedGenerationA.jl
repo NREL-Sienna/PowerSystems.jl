@@ -98,7 +98,7 @@ Parameters of the DERA1 model in PSS/E
 - `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: (optional) Base power (MVA) for per unitization.
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
@@ -187,7 +187,7 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     base_power::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags"
     states::Vector{Symbol}
     "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
     n_states::Int

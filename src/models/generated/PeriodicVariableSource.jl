@@ -35,7 +35,7 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 - `internal_angle_frequencies::Vector{Float64}`: (optional) Frequencies in radians/s
 - `internal_angle_coefficients::Vector{Tuple{Float64,Float64}}`: (optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos
 - `base_power::Float64`: (optional) Base power of the source (MVA) for per unitization.
-- `states::Vector{Symbol}`: (**Do not modify.**) State for time, voltage and angle
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) for time, voltage and angle
 - `n_states::Int`: (**Do not modify.**) PeriodicVariableSource has 2 states.
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
@@ -61,7 +61,7 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     internal_angle_coefficients::Vector{Tuple{Float64,Float64}}
     "(optional) Base power of the source (MVA) for per unitization."
     base_power::Float64
-    "(**Do not modify.**) State for time, voltage and angle"
+    "(**Do not modify.**) The [states](@ref S) for time, voltage and angle"
     states::Vector{Symbol}
     "(**Do not modify.**) PeriodicVariableSource has 2 states."
     n_states::Int

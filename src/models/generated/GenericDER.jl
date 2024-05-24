@@ -54,7 +54,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf
+Parameters of a Generic Distributed Energy Resource Model. Based on ["Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision."](http://hdl.handle.net/10125/70994)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -99,8 +99,8 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: (optional) Base power of the unit (MVA) for per unitization.
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of GenericDER depend on the Flags
-- `n_states::Int`: (**Do not modify.**) The states of GenericDER depend on the Flags
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
+- `n_states::Int`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
@@ -189,9 +189,9 @@ mutable struct GenericDER <: DynamicInjection
     P_ref::Float64
     "(optional) Base power of the unit (MVA) for per unitization."
     base_power::Float64
-    "(**Do not modify.**) The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     states::Vector{Symbol}
-    "(**Do not modify.**) The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     n_states::Int
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}

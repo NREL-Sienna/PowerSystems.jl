@@ -39,7 +39,7 @@ Parameters of an Automatic Voltage Regulator Type I - Resembles IEEE Type DC1
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: Amplifier State,
 	Vr2: Stabilizing Feedback State,
@@ -73,7 +73,7 @@ mutable struct AVRTypeI <: AVR
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: Amplifier State,
 	Vr2: Stabilizing Feedback State,

@@ -33,7 +33,7 @@ This exciter is based on an IEEE type SCRX solid state exciter.  The output fiel
 - `rc_rfd::Float64`: Field current capability. Set = 0 for negative current capability. Typical value 10, validation range: `(0, 10)`, action if invalid: `warn`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vr1: First integrator,
 	Vr2: Second integrator
 - `n_states::Int`: (**Do not modify.**) SCRX has 2 states
@@ -59,7 +59,7 @@ mutable struct SCRX <: AVR
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vr1: First integrator,
 	Vr2: Second integrator"
     states::Vector{Symbol}

@@ -48,7 +48,7 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `X_ss::Float64`: (**Do not modify.**) Stator self reactance
 - `X_rr::Float64`: (**Do not modify.**) Rotor self reactance
 - `X_p::Float64`: (**Do not modify.**) Transient reactance
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψ_qr: rotor flux in the q-axis,
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],
@@ -90,7 +90,7 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     X_rr::Float64
     "(**Do not modify.**) Transient reactance"
     X_p::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψ_qr: rotor flux in the q-axis,
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],"

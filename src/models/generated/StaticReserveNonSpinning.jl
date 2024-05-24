@@ -18,17 +18,19 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for a non-spinning reserve product for system simulations.
+A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.
+
+This reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`StaticReserve`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
-- `requirement::Float64`: the static value of required reserves in p.u. ([`System Base`](@ref per_unit)), validation range: `(0, nothing)`, action if invalid: `error`
+- `time_frame::Float64`: the saturation time frame in minutes that a participating device must provide its reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
+- `requirement::Float64`: the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, nothing)`, action if invalid: `error`
 - `sustained_time::Float64`: (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
 - `max_output_fraction::Float64`: (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: (optional) Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: (optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0., validation range: `(0, 1)`, action if invalid: `error`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
@@ -37,9 +39,9 @@ mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
-    "the saturation time_frame in minutes to provide reserve contribution"
+    "the saturation time frame in minutes that a participating device must provide its reserve contribution"
     time_frame::Float64
-    "the static value of required reserves in p.u. ([`System Base`](@ref per_unit))"
+    "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     requirement::Float64
     "(optional) the time in seconds reserve contribution must sustained at a specified level"
     sustained_time::Float64
@@ -47,7 +49,7 @@ mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
     max_output_fraction::Float64
     "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device"
     max_participation_factor::Float64
-    "(optional) Fraction of ancillary services participation deployed from the assignment"
+    "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0."
     deployed_fraction::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}

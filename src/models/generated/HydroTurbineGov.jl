@@ -41,7 +41,7 @@ Hydro Turbine-Governor.
 - `q_nl::Float64`: No-power flow, validation range: `(0, nothing)`, action if invalid: `warn`
 - `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the HydroTurbineGov model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the HydroTurbineGov model are:
 	x_g1: filter_output,
 	x_g2: desired gate, 
 	x_g3: gate opening, 
@@ -77,7 +77,7 @@ mutable struct HydroTurbineGov <: TurbineGov
     P_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the HydroTurbineGov model are:
+    "(**Do not modify.**) The [states](@ref S) of the HydroTurbineGov model are:
 	x_g1: filter_output,
 	x_g2: desired gate, 
 	x_g3: gate opening, 

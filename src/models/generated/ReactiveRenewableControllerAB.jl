@@ -41,9 +41,9 @@ This file is auto-generated. Do not edit.
 Parameters of Reactive Power Controller including REPCA1 and REECB1
 
 # Arguments
-- `bus_control::Int`: Bus Number for voltage control; , validation range: `(0, nothing)`
-- `from_branch_control::Int`: Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
-- `to_branch_control::Int`: Monitored branch TO bus number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
+- `bus_control::Int`: ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component., validation range: `(0, nothing)`
+- `from_branch_control::Int`: Monitored branch FROM bus identification number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
+- `to_branch_control::Int`: Monitored branch TO bus identification number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
 - `branch_id_control::String`: Branch circuit id for line drop compensation (as a string). If 0 generator power will be used
 - `VC_Flag::Int`: Voltage Compensator Flag for REPCA1, validation range: `(0, 1)`
 - `Ref_Flag::Int`: Flag for Reactive Power Control for REPCA1. 0: Q-control, 1: V-control, validation range: `(0, 1)`
@@ -69,15 +69,15 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `Q_ref::Float64`: (optional) Reference Reactive Power Set-point (pu), validation range: `(0, nothing)`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactiveRenewableControllerAB model depends on the Flag
 - `n_states::Int`: (**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag
 """
 mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
-    "Bus Number for voltage control; "
+    "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component."
     bus_control::Int
-    "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)"
+    "Monitored branch FROM bus identification number for line drop compensation (if 0 generator power will be used)"
     from_branch_control::Int
-    "Monitored branch TO bus number for line drop compensation (if 0 generator power will be used)"
+    "Monitored branch TO bus identification number for line drop compensation (if 0 generator power will be used)"
     to_branch_control::Int
     "Branch circuit id for line drop compensation (as a string). If 0 generator power will be used"
     branch_id_control::String
@@ -129,7 +129,7 @@ mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag"
+    "(**Do not modify.**) The [states](@ref S) of the ReactiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}
     "(**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag"
     n_states::Int

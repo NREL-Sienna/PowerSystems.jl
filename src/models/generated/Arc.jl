@@ -11,7 +11,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A topological Arc.
+A topological directed edge connecting two buses.
+
+Arcs are used to define the `from` and `to` buses when defining a line or transformer.
 
 # Arguments
 - `from::Bus`: The initial bus

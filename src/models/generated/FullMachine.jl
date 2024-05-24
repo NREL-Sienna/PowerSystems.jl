@@ -28,7 +28,7 @@ This file is auto-generated. Do not edit.
 
 Parameter of a full order flux stator-rotor model without zero sequence flux in the stator.
  The derivative of stator fluxes (ψd and ψq) is NOT neglected. Only one q-axis damping circuit is considered. All parameters are in machine per unit.
- Refer to Chapter 3 of Power System Stability and Control by P. Kundur or Chapter 11 of Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby, for more details.
+ Refer to Chapter 3 of [Power System Stability and Control by P. Kundur](https://www.accessengineeringlibrary.com/content/book/9781260473544) or Chapter 11 of [Power System Dynamics: Stability and Control, by J. Machowski, J. Bialek and J. Bumby](https://www.wiley.com/en-us/Power+System+Dynamics%3A+Stability+and+Control%2C+3rd+Edition-p-9781119526360), for more details.
  Note that the models are somewhat different (but equivalent) due to the different Park Transformation used in both books.
 
 # Arguments
@@ -47,7 +47,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `inv_d_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.128, 3.132 From Kundur
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,
@@ -87,7 +87,7 @@ mutable struct FullMachine <: Machine
     inv_d_fluxlink::Array{Float64,2}
     "(**Do not modify.**) Equations 3.128, 3.132 From Kundur"
     inv_q_fluxlink::Array{Float64,2}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψd: d-axis stator flux,
 	ψq: q-axis stator flux,
 	ψf: field rotor flux,

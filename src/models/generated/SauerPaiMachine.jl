@@ -48,7 +48,7 @@ Parameters of synchronous machine: Sauer Pai model
 - `γ_q1::Float64`: (**Do not modify.**) Internal equation
 - `γ_d2::Float64`: (**Do not modify.**) Internal equation
 - `γ_q2::Float64`: (**Do not modify.**) Internal equation
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
@@ -93,7 +93,7 @@ mutable struct SauerPaiMachine <: Machine
     γ_d2::Float64
     "(**Do not modify.**) Internal equation"
     γ_q2::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,

@@ -18,7 +18,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data Structure for the procurement products for system simulations.
+A reserve product with a time-varying procurement requirement, such as a higher requirement during hours with an expected high load or high ramp.
+
+This reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref). To model the time varying requirement, a ["`requirement`" time series should be added](@ref ts_data) to this reserve.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -28,7 +30,7 @@ Data Structure for the procurement products for system simulations.
 - `sustained_time::Float64`: (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
 - `max_output_fraction::Float64`: (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
 - `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: (optional) Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: (optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0., validation range: `(0, 1)`, action if invalid: `error`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
@@ -47,7 +49,7 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     max_output_fraction::Float64
     "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device"
     max_participation_factor::Float64
-    "(optional) Fraction of ancillary services participation deployed from the assignment"
+    "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0."
     deployed_fraction::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}

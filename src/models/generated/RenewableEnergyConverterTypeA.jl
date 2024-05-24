@@ -47,7 +47,7 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `R_source::Float64`: (optional) Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
 - `X_source::Float64`: (optional) Output reactance used for the Thevenin Equivalent, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: (**Do not modify.**) RenewableEnergyConverterTypeA has 3 states
 """
 mutable struct RenewableEnergyConverterTypeA <: Converter
@@ -85,7 +85,7 @@ mutable struct RenewableEnergyConverterTypeA <: Converter
     X_source::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
+    "(**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
     states::Vector{Symbol}
     "(**Do not modify.**) RenewableEnergyConverterTypeA has 3 states"
     n_states::Int

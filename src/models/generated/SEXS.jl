@@ -29,7 +29,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `V_lim::MinMax`: Field voltage limits
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:	Vf: Voltage field,	Vr: Lead-lag state
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: (**Do not modify.**) SEXS has 2 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) SEXS has 2 [differential](@ref states_list) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
@@ -49,7 +49,7 @@ mutable struct SEXS <: AVR
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:	Vf: Voltage field,	Vr: Lead-lag state"
+    "(**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state"
     states::Vector{Symbol}
     "(**Do not modify.**) SEXS has 2 states"
     n_states::Int

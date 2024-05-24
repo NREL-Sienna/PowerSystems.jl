@@ -30,7 +30,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Data structure for energy storage modeled as a generic energy reservoir. To be used in models that ignore the physical dynamics of the storage unit
+An energy storage device, modeled as a generic energy reservoir.
+
+This is suitable for modeling storage charging and discharging with a round-trip efficiency, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -48,7 +50,7 @@ Data structure for energy storage modeled as a generic energy reservoir. To be u
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::StorageCost`: (optional) Operation Cost of Storage [`OperationalCost`](@ref)
+- `operation_cost::StorageCost`: (optional) Operation Cost of Storage [`StorageCost`](@ref)
 - `storage_target::Float64`: (optional) Storage target at the end of simulation as ratio of storage capacity.
 - `cycle_limits::Int`: (optional) Storage Maximum number of cycles per year
 - `services::Vector{Service}`: (optional) Services that this device contributes to
@@ -84,7 +86,7 @@ mutable struct EnergyReservoirStorage <: Storage
     reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "(optional) Operation Cost of Storage [`OperationalCost`](@ref)"
+    "(optional) Operation Cost of Storage [`StorageCost`](@ref)"
     operation_cost::StorageCost
     "(optional) Storage target at the end of simulation as ratio of storage capacity."
     storage_target::Float64

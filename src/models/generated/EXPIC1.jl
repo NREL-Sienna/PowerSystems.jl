@@ -59,7 +59,7 @@ Generic Proportional/Integral Excitation System
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second regulator lead-lag state,
@@ -68,7 +68,7 @@ Generic Proportional/Integral Excitation System
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
 - `n_states::Int`: (**Do not modify.**) EXPIC1 has 6 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) EXPIC has 6 [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) EXPIC has 6 states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct EXPIC1 <: AVR
@@ -116,7 +116,7 @@ mutable struct EXPIC1 <: AVR
     saturation_coeffs::Tuple{Float64, Float64}
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second regulator lead-lag state,
@@ -127,7 +127,7 @@ mutable struct EXPIC1 <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) EXPIC1 has 6 states"
     n_states::Int
-    "(**Do not modify.**) EXPIC has 6 [states](@ref S)"
+    "(**Do not modify.**) EXPIC has 6 states"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal

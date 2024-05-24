@@ -52,14 +52,14 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `θp_rad::Float64`: (**Do not modify.**) Potential circuit phase angle (radians)
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vt: Sensed Terminal Voltage,
 	Vr1: Regulator Integrator,
 	Vr2: Regulator Output,
 	Vm: Output integrator
 - `n_states::Int`: (**Do not modify.**) ST4B has 4 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST4B has 4 [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST4B has 4 states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ESST4B <: AVR
@@ -99,7 +99,7 @@ mutable struct ESST4B <: AVR
     θp_rad::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vt: Sensed Terminal Voltage,
 	Vr1: Regulator Integrator,
@@ -108,7 +108,7 @@ mutable struct ESST4B <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) ST4B has 4 states"
     n_states::Int
-    "(**Do not modify.**) ST4B has 4 [states](@ref S)"
+    "(**Do not modify.**) ST4B has 4 states"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal

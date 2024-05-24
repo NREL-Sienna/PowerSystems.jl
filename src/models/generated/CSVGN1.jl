@@ -30,7 +30,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `K::Float64`: Gain in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
+- `K::Float64`: Gain in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
 - `T1::Float64`: Time constant in s, validation range: `(0, nothing)`
 - `T2::Float64`: Time constant in s, validation range: `(0, nothing)`
 - `T3::Float64`: Time constant in s, validation range: `(eps(), nothing)`
@@ -44,7 +44,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `R_th::Float64`: (optional) Source Thevenin resistance
 - `X_th::Float64`: (optional) Source Thevenin reactance
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	thy: thyristor,
 	vr1: regulator output 1,
 	vr2: regulator output 2
@@ -54,7 +54,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 mutable struct CSVGN1 <: DynamicInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "Gain in pu ([`Device Base`](@ref per_unit))"
+    "Gain in pu ([`DEVICE_BASE`](@ref per_unit))"
     K::Float64
     "Time constant in s"
     T1::Float64
@@ -82,7 +82,7 @@ mutable struct CSVGN1 <: DynamicInjection
     R_th::Float64
     "(optional) Source Thevenin reactance"
     X_th::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	thy: thyristor,
 	vr1: regulator output 1,
 	vr2: regulator output 2"

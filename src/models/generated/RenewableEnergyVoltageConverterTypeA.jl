@@ -43,7 +43,7 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Lvpl_sw::Int`: Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present), validation range: `(0, 1)`
 - `Q_ref::Float64`: (optional) Initial condition of reactive power from power flow, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: (**Do not modify.**) RenewableEnergyVoltageConverterTypeA has 3 states
 """
 mutable struct RenewableEnergyVoltageConverterTypeA <: Converter
@@ -77,7 +77,7 @@ mutable struct RenewableEnergyVoltageConverterTypeA <: Converter
     Q_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
+    "(**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
     states::Vector{Symbol}
     "(**Do not modify.**) RenewableEnergyVoltageConverterTypeA has 3 states"
     n_states::Int

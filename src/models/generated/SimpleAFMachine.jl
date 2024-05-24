@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
+Parameters of 4-[states](@ref S) simplified Anderson-Fouad (SimpleAFMachine) model.
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network
  dynamics is neglected.
@@ -42,7 +42,7 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
@@ -75,7 +75,7 @@ mutable struct SimpleAFMachine <: Machine
     Tq0_pp::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,

@@ -35,7 +35,7 @@ IEEE Stabilizing Model PSS.
 
 # Arguments
 - `input_code::Int`: Code input for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control::Int`: Remote  Bus number for control.
+- `remote_bus_control::Int`: ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component.
 - `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`
@@ -53,7 +53,7 @@ IEEE Stabilizing Model PSS.
 - `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, 1.25)`, action if invalid: `warn`
 - `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, 1.0)`, action if invalid: `warn`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
 	x_p2: 2nd filter integration, 
 	x_p3: 3rd filter integration, 
@@ -68,7 +68,7 @@ IEEE Stabilizing Model PSS.
 mutable struct IEEEST <: PSS
     "Code input for stabilizer"
     input_code::Int
-    "Remote  Bus number for control."
+    "ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component."
     remote_bus_control::Int
     "Filter coefficient"
     A1::Float64
@@ -104,7 +104,7 @@ mutable struct IEEEST <: PSS
     Vcl::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
 	x_p2: 2nd filter integration, 
 	x_p3: 3rd filter integration, 

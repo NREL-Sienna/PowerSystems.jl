@@ -49,9 +49,9 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 
 # Arguments
 - `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 7)`, action if invalid: `error`
-- `remote_bus_control_1::Int`: First Input Remote Bus number for control.
+- `remote_bus_control_1::Int`: First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.
 - `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control_2::Int`: Second Input Remote Bus number for control.
+- `remote_bus_control_2::Int`: Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component.
 - `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
 - `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
 - `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
@@ -81,7 +81,7 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
 - `hysteresis_binary_logic::Int`: (optional) Hysteresis memory variable
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -108,11 +108,11 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 mutable struct PSS2C <: PSS
     "First Input Code for stabilizer"
     input_code_1::Int
-    "First Input Remote Bus number for control."
+    "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component."
     remote_bus_control_1::Int
     "Second Input Code for stabilizer"
     input_code_2::Int
-    "Second Input Remote Bus number for control."
+    "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component."
     remote_bus_control_2::Int
     "M parameter for ramp tracking filter"
     M_rtf::Int
@@ -172,7 +172,7 @@ mutable struct PSS2C <: PSS
     hysteresis_binary_logic::Int
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 

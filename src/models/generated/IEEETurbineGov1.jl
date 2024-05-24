@@ -57,7 +57,7 @@ IEEE Type 1 Speed-Governing Model
 - `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
 - `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the IEEETurbineGov model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
 	x_g2: Governor output,
 	x_g3: First Turbine integrator, 
@@ -111,7 +111,7 @@ mutable struct IEEETurbineGov1 <: TurbineGov
     P_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the IEEETurbineGov model are:
+    "(**Do not modify.**) The [states](@ref S) of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
 	x_g2: Governor output,
 	x_g3: First Turbine integrator, 

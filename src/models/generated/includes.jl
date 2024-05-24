@@ -39,7 +39,6 @@ include("ReserveDemandCurve.jl")
 include("VariableReserve.jl")
 include("VariableReserveNonSpinning.jl")
 include("AGC.jl")
-include("Transfer.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("SEXS.jl")
@@ -430,7 +429,6 @@ export get_Y_increase
 export get_Zerox
 export get_a
 export get_active_power
-export get_active_power_coefficient
 export get_active_power_flow
 export get_active_power_flow_limits
 export get_active_power_limits
@@ -511,7 +509,7 @@ export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
-export get_inverter_firing_angle
+export get_inverter_extinction_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
 export get_is_filter_differential
@@ -578,7 +576,6 @@ export get_rating
 export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
-export get_reactive_power_coefficient
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
@@ -959,7 +956,6 @@ export set_Y_increase!
 export set_Zerox!
 export set_a!
 export set_active_power!
-export set_active_power_coefficient!
 export set_active_power_flow!
 export set_active_power_flow_limits!
 export set_active_power_limits!
@@ -1040,7 +1036,7 @@ export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
-export set_inverter_firing_angle!
+export set_inverter_extinction_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
 export set_is_filter_differential!
@@ -1107,7 +1103,6 @@ export set_rating!
 export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
-export set_reactive_power_coefficient!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!

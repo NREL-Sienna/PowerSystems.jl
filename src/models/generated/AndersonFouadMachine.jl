@@ -23,7 +23,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 6-states synchronous machine: Anderson-Fouad model
+Parameters of 6-[states](@ref S) synchronous machine: Anderson-Fouad model
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
@@ -38,7 +38,7 @@ Parameters of 6-states synchronous machine: Anderson-Fouad model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
@@ -73,7 +73,7 @@ mutable struct AndersonFouadMachine <: Machine
     Tq0_pp::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,

@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 12-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.
+Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynamic Stability of a Microgrid With an Active Load."](https://doi.org/10.1109/TPEL.2013.2241455)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -55,8 +55,8 @@ Parameters of 12-states active power load based on the paper Dynamic Stability o
 - `Q_ref::Float64`: (optional) Reference reactive power (pu)
 - `V_ref::Float64`: (optional) Reference voltage (pu)
 - `ω_ref::Float64`: (optional) Reference frequency (pu)
-- `is_filter_differential::Int`: (optional) Boolean to decide if filter states are differential or algebraic
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `is_filter_differential::Int`: (optional) Boolean to decide if filter [states](@ref S) are differential or algebraic
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 
@@ -113,9 +113,9 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     V_ref::Float64
     "(optional) Reference frequency (pu)"
     ω_ref::Float64
-    "(optional) Boolean to decide if filter states are differential or algebraic"
+    "(optional) Boolean to decide if filter [states](@ref S) are differential or algebraic"
     is_filter_differential::Int
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 

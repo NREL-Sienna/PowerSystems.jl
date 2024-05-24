@@ -32,7 +32,7 @@ Parameters of a Turbine Governor Type I.
 - `valve_position_limits::MinMax`: Valve position limits in MW
 - `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the TGTypeI model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: Governor state,
 	x_g2: Servo state,
 	x_g3: Reheat state
@@ -58,7 +58,7 @@ mutable struct TGTypeI <: TurbineGov
     P_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the TGTypeI model are:
+    "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: Governor state,
 	x_g2: Servo state,
 	x_g3: Reheat state"

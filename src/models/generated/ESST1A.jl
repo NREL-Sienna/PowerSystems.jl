@@ -54,14 +54,14 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`, action if invalid: `warn`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second lead-lag state,
 	Va: Regulator output state,
 	Vr3: Feedback output state
 - `n_states::Int`: (**Do not modify.**) ST1A has 5 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST1A has 5 [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST1A has 5 states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ESST1A <: AVR
@@ -103,7 +103,7 @@ mutable struct ESST1A <: AVR
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second lead-lag state,
@@ -112,7 +112,7 @@ mutable struct ESST1A <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) ST1A has 5 states"
     n_states::Int
-    "(**Do not modify.**) ST1A has 5 [states](@ref S)"
+    "(**Do not modify.**) ST1A has 5 states"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal

@@ -21,7 +21,7 @@ Parameters of a Reactive Power droop controller
 - `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
 - `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReactivePowerDroop model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power
 - `n_states::Int`: (**Do not modify.**) ReactivePowerDroop has 1 state
 """
@@ -34,7 +34,7 @@ mutable struct ReactivePowerDroop <: ReactivePowerControl
     V_ref::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the ReactivePowerDroop model are:
+    "(**Do not modify.**) The [states](@ref S) of the ReactivePowerDroop model are:
 	q_oc: Filtered reactive output power"
     states::Vector{Symbol}
     "(**Do not modify.**) ReactivePowerDroop has 1 state"

@@ -21,9 +21,7 @@ This file is auto-generated. Do not edit.
         n_states::Int
     end
 
-Parameters of an inner loop current control PID using virtual impedance based on D'Arco, Suul and Fosso.
-"A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids."
-Electric Power Systems Research 122 (2015) 180–197.
+Parameters of an inner loop current control PID using virtual impedance based on ["A Virtual Synchronous Machine implementation for distributed control of power converters in SmartGrids."](https://doi.org/10.1016/j.epsr.2015.01.001)
 
 # Arguments
 - `kpv::Float64`: voltage controller proportional gain, validation range: `(0, nothing)`
@@ -37,7 +35,7 @@ Electric Power Systems Research 122 (2015) 180–197.
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the VoltageModeControl model are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,
@@ -69,7 +67,7 @@ mutable struct VoltageModeControl <: InnerControl
     kad::Float64
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the VoltageModeControl model are:
+    "(**Do not modify.**) The [states](@ref S) of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,

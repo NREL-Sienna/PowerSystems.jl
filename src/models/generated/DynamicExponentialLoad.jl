@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILITY ANALYSIS USING GENERIC DYNAMIC LOAD MODELS by W. Xu and Y. Mansour, IEEE Transactions on Power Systems, 1994.
+Parameters of 2-states of a generic dynamic load model based on ["Voltage stability analysis using generic dynamic load models."](https://doi.org/10.1109/59.317575)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -32,7 +32,7 @@ Parameters of 2-states of a generic dynamic load model based on VOLTAGE STABILIT
 - `T_q::Float64`: Reactive Power Time Constant, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `base_power::Float64`: (optional) Base power of the load (MVA) for per unitization.
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,
 - `n_states::Int`: (**Do not modify.**) DynamicExponentialLoad has 2 states
@@ -57,7 +57,7 @@ mutable struct DynamicExponentialLoad <: DynamicInjection
     ext::Dict{String, Any}
     "(optional) Base power of the load (MVA) for per unitization."
     base_power::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,"
     states::Vector{Symbol}

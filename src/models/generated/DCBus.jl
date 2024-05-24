@@ -17,13 +17,13 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A power-system DC bus.
+A DC bus.
 
 # Arguments
-- `number::Int`: number associated with the DC bus
+- `number::Int`: A unique bus identification number (positive integer)
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
-- `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
+- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`, action if invalid: `warn`
+- `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
 - `area::Union{Nothing, Area}`: (optional) the area containing the DC bus
 - `load_zone::Union{Nothing, LoadZone}`: (optional) the load zone containing the DC bus
@@ -31,13 +31,13 @@ A power-system DC bus.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct DCBus <: Bus
-    "number associated with the DC bus"
+    "A unique bus identification number (positive integer)"
     number::Int
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
-    "voltage as a multiple of basevoltage"
+    "voltage as a multiple of `base_voltage`"
     magnitude::Union{Nothing, Float64}
-    "limits on the voltage variation as multiples of basevoltage"
+    "limits on the voltage variation as multiples of `base_voltage`"
     voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
