@@ -1042,7 +1042,7 @@
                 },
                 {
                     "name": "rectifier_firing_angle",
-                    "comment": "Minimum and maximum rectifier firing angle ``\\alpha`` (radians)",
+                    "comment": "Minimum and maximum rectifier firing angle (α) (radians)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
@@ -1060,7 +1060,7 @@
                 },
                 {
                     "name": "inverter_extinction_angle",
-                    "comment": "Minimum and maximum inverter extinction ``\\gamma`` angle (radians)",
+                    "comment": "Minimum and maximum inverter extinction angle (γ) (radians)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
@@ -1090,7 +1090,7 @@
         },
         {
             "struct_name": "TModelHVDCLine",
-            "docstring": "A High Voltage DC transmission line for modeling DC transmission networks.\n\nThis line must be connected to a [`DCBus`] on each end. It uses a T-Model of the line impedance. This is suitable for operational simulations with a multi-terminal DC network.",
+            "docstring": "A High Voltage DC transmission line for modeling DC transmission networks.\n\nThis line must be connected to a [`DCBus`](@ref) on each end. It uses a T-Model of the line impedance. This is suitable for operational simulations with a multi-terminal DC network.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1506,7 +1506,7 @@
         },
         {
             "struct_name": "StandardLoad",
-                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to P = P_P * V^0 + P_I * V^1 + P_Z * V^2 for active power and Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2 for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
+                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to `P = P_P * V^0 + P_I * V^1 + P_Z * V^2` for active power and `Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2` for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).",
             "fields": [
                 {
                     "null_value": "init",

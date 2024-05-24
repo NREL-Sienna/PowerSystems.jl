@@ -20,7 +20,7 @@
 * *DERA1*:
 
 * *Dynamic*: Refers to data and simulations for power system transient simulations using differential
-  equations. Common examples include small signal stability analysis to verify the power system will
+  equations. Common examples include signal stability analysis to verify the power system will
   maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
   see the definition for [Static](@ref S) data.
 
