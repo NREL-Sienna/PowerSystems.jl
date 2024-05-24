@@ -320,6 +320,7 @@
         },
         {
             "struct_name": "Line",
+            "docstring": "An AC transmission line",
             "fields": [
                 {
                     "null_value": "init",
@@ -396,6 +397,7 @@
                 },
                 {
                     "name": "angle_limits",
+                    "comment": "Minimum and maximum angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -430,7 +432,7 @@
         },
         {
             "struct_name": "MonitoredLine",
-            "docstring": "A transmission line with additional power flow constraints specified by the system operator, more restrictive than the line's thermal limits.\n\nFor example, monitored lines can be used to restrict line flow following a contingency elsewhere in the network. See the `flow_limits` parameter. If monitoring is not needed, see [`Line`](@ref).",
+            "docstring": "An AC transmission line with additional power flow constraints specified by the system operator, more restrictive than the line's thermal limits.\n\nFor example, monitored lines can be used to restrict line flow following a contingency elsewhere in the network. See the `flow_limits` parameter. If monitoring is not needed, see [`Line`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -652,7 +654,7 @@
                 },
                 {
                     "name": "phase_angle_limits",
-                    "comment": "(optional)",
+                    "comment": "(optional) Minimum and maximum phase angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -910,7 +912,7 @@
         },
         {
             "struct_name": "TwoTerminalHVDCLine",
-            "docstring": "a High voltage DC line.",
+            "docstring": "A High Voltage DC line, which must be connected to an [`ACBus`](@ref) on each end.\n\nThis model is appropriate for operational simulations with a linearized DC power flow approximation with losses proportional to the power flow. For modeling a DC network, see [`TModelHVDCLine`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -998,7 +1000,7 @@
         },
         {
             "struct_name": "TwoTerminalVSCDCLine",
-            "docstring": "As implemented in Milano's Book, Page 397.",
+            "docstring": "A Voltage Sourced Converter (VSC)-HVDC transmission line.\n\nAs implemented in [\"Power System Modelling and Scripting\"](https://link.springer.com/book/10.1007/978-3-642-13669-6) by Federico Milano, Chapter 18, Page 397. This model is suitable for dynamic simulations.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1028,31 +1030,37 @@
                 },
                 {
                     "name": "rectifier_tap_limits",
+                    "comment": "Minimum and maximum rectifier tap limits as a ratio between the primary and secondary side voltages",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
                 {
                     "name": "rectifier_xrc",
+                    "comment": "Rectifier commutation reactance in p.u. ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "rectifier_firing_angle",
+                    "comment": "Minimum and maximum rectifier firing angle ``\\alpha`` (radians)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
                 {
                     "name": "inverter_tap_limits",
+                    "comment": "Minimum and maximum inverter tap limits as a ratio between the primary and secondary side voltages",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
                 {
                     "name": "inverter_xrc",
+                    "comment": "Inverter commutation reactance in p.u. ([`DEVICE_BASE`](@ref per_unit))",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
                 {
-                    "name": "inverter_firing_angle",
+                    "name": "inverter_extinction_angle",
+                    "comment": "Minimum and maximum inverter extinction ``\\gamma`` angle (radians)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
@@ -1082,7 +1090,7 @@
         },
         {
             "struct_name": "TModelHVDCLine",
-            "docstring": "a HVDC T-Model DC line.",
+            "docstring": "A High Voltage DC transmission line for modeling DC transmission networks.\n\nThis line must be connected to a [`DCBus`] on each end. It uses a T-Model of the line impedance. This is suitable for operational simulations with a multi-terminal DC network.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1114,13 +1122,13 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
+                    "comment": "Total series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance"
                 },
                 {
                     "null_value": "0.0",
                     "name": "l",
                     "data_type": "Float64",
-                    "comment": "Series Inductance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
+                    "comment": "Total series Inductance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance"
                 },
                 {
                     "null_value": "0.0",
