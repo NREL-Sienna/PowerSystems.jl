@@ -62,7 +62,7 @@ export ProductionVariableCost, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_function_data, get_initial_input, get_value_curve, get_power_units
-export get_fuel_cost, set_fuel_cost!
+export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 
@@ -216,10 +216,12 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
-# OutputOutputOutputCurrentLimiters Export
+# OutputCurrentLimiters Export
 export MagnitudeOutputCurrentLimiter
 export InstantaneousOutputCurrentLimiter
 export PriorityOutputCurrentLimiter
+export SaturationOutputCurrentLimiter
+export HybridOutputCurrentLimiter
 
 export Source
 export PeriodicVariableSource
