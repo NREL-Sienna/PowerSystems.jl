@@ -15437,7 +15437,7 @@
         },
         {
             "struct_name": "Source",
-            "docstring": "This struct acts as an infinity bus.",
+            "docstring": "An infinite bus with a constant voltage output.\n\nCommonly used in dynamics simulations to represent a very large machine on a single bus.",
             "fields": [
                 {
                     "null_value": "init",
