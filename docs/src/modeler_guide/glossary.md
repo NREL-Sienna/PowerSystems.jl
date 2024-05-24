@@ -20,9 +20,9 @@
 * *DERA1*:
 
 * *Dynamic*: Refers to data and simulations for power system transient simulations using differential
-equations. Common examples include small signal stability analysis to verify the power system will
-maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
-see the definition for [Static](@ref S) data.
+  equations. Common examples include small signal stability analysis to verify the power system will
+  maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
+  see the definition for [Static](@ref S) data.
 
 ## E
 
@@ -65,13 +65,13 @@ see the definition for [Static](@ref S) data.
 * *IEEET*: IEEE Type I Excitation System.
 
 * *Injector* or *Injection*: Injectors refer to models that represent how a generator or storage 
-  device *injects* power into the power system. In `PowerSystems.jl`, some components can accept 
-  data for both `StaticInjection` and `DynamicInjection` models. A static injection 
+  device *injects* power or current into the power system. Loads are negative injectors. In
+  `PowerSystems.jl`, some components can accept data for both [`StaticInjection`](@ref) and
+  [`DynamicInjection`](@ref) models for both [static](@ref S) and [dynamic](@ref D) modeling.
 
 * *Interval*: The period of time between forecast initial times. In `PowerSystems.jl` all
   intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
-  simulation, the forecast is usually `Hour(24)`, in the example above, the
-  interval is `Hour(1)`.
+  simulation, the interval is usually `Hour(24)`.
 
 * *Initial time*: The first time-stamp in a forecast. See the article on [`Time Series Data`](@ref ts_data).
 

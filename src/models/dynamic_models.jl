@@ -4,7 +4,14 @@ Abstract type for all components used to compose a [`DynamicInjection`](@ref) de
 abstract type DynamicComponent <: DeviceParameter end
 
 """
-Abstract type for all dynamic injection types
+Abstract type for all [Dynamic Devices](@ref)
+
+A [dynamic](@ref D) [injection](@ref I) is the continuous time response of a generator,
+typically modeled with differential equations. 
+    
+`DynamicInjection` components can added on to [`StaticInjection`](@ref) components,
+which together define all the information needed to model the device in a dynamic
+simulation.
 """
 abstract type DynamicInjection <: Device end
 
