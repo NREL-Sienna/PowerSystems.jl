@@ -83,6 +83,8 @@ see the definition for [Static](@ref S) data.
 
 ## P
 
+* *PLL*: Phase-locked loop
+
 * *PSS*: Power System Stabilizer
 
 * *PSSE* or *PSS/E*: Siemen's PSS&reg;E Power Simulator
@@ -114,9 +116,10 @@ see the definition for [Static](@ref S) data.
 * *SIL*: Surge impedance loading
 
 * *States*: Correspond to the set of inputs, outputs or variables, that evolve dynamically in
-  `PowerSimulationsDynamics.jl`, commonly via a differential-algebraic system of equations.
-  In `PowerSystems.jl` a component associated to a `DynamicInjector` (for example an AVR) specify
-  the set of states that specific component requires to be modeled accurately.
+  [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/),
+  commonly via a differential-algebraic system of equations. In `PowerSystems.jl`, a component
+  associated to a `DynamicInjector` (for example an AVR) specifies the set of states that specific
+  component requires to be modeled accurately.
 
 * *Static*: Typically refers to steady state data or models where the power system
   and each of its components are assumed to be operating at a steady state equilibrium point. This
