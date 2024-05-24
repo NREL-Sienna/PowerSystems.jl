@@ -1,4 +1,4 @@
-# PowerSystems Cost Functions
+# Cost Functions
 
 PowerSystems.jl provides an extensive type hierarchy to explicitly express relationships between power production and cost. This lets the modeler represent cost functions as linear, quadratic, or piecewise input-output curves, potentially piecewise marginal heat rates, average heat rates, and more, as best fits the input data.
 

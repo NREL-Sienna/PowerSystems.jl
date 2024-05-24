@@ -55,7 +55,6 @@ pages["Model Library"] = make_model_library(
         StaticInjection,
         Service,
         Branch,
-        PSY.DeviceParameter,
     ],
     exceptions = [PSY.DynamicComponent,
                   PSY.ActivePowerControl,
@@ -68,7 +67,10 @@ pages["Model Library"] = make_model_library(
         "DynamicInjection" => ["Dynamic Inverter" => "model_library/dynamic_inverter.md",
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
-        "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"]
+        "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"],
+        "Costs" => ["Operating Costs" => "model_library/costs.md",
+        "Cost Curves" => "model_library/cost_curves.md"
+        ]
         )
 )
 
