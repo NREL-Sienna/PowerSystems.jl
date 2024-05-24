@@ -2432,9 +2432,8 @@ function _validate_or_skip!(sys, component, skip_validation)
 end
 
 """
-Return an instance of TimeSeriesCounts.
-
-See also: [`TimeSeriesCounts`](@ref)
+Returns counts of time series including attachments to components and supplemental
+attributes.
 """
 get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 
