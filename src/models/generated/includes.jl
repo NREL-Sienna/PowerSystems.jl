@@ -1,4 +1,5 @@
 include("Area.jl")
+include("AreaInterchange.jl")
 include("LoadZone.jl")
 include("TransmissionInterface.jl")
 include("ACBus.jl")
@@ -487,6 +488,7 @@ export get_fl
 export get_flow_limits
 export get_frequency
 export get_from
+export get_from_area
 export get_from_branch_control
 export get_fs
 export get_fuel
@@ -622,6 +624,7 @@ export get_time_frame
 export get_time_limits
 export get_time_limits_pump
 export get_to
+export get_to_area
 export get_to_branch_control
 export get_valve_position_limits
 export get_variable
@@ -1017,6 +1020,7 @@ export set_fl!
 export set_flow_limits!
 export set_frequency!
 export set_from!
+export set_from_area!
 export set_from_branch_control!
 export set_fs!
 export set_fuel!
@@ -1152,6 +1156,7 @@ export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
 export set_to!
+export set_to_area!
 export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!

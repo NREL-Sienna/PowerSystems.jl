@@ -210,6 +210,18 @@ function _check_branch_consistency(sys::System, branch::Branch)
     _check_subsystem_assignments(sys, branch, get_arc(branch), msg; symmetric_diff = true)
 end
 
+function _check_branch_consistency(sys::System, branch::AreaInterchange)
+    msg = "An area interchange must be assigned to the same subystems as its areas."
+    _check_subsystem_assignments(
+        sys,
+        branch,
+        get_area_from(arc),
+        msg;
+        symmetric_diff = false,
+    )
+    _check_subsystem_assignments(sys, branch, get_area_to(arc), msg; symmetric_diff = false)
+end
+
 function _check_subcomponent_consistency(sys::System, component::StaticInjectionSubsystem)
     for subcomponent in get_subcomponents(component)
         _check_subsystem_assignments(
