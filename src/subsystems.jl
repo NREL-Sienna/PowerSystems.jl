@@ -212,7 +212,13 @@ end
 
 function _check_branch_consistency(sys::System, branch::AreaInterchange)
     msg = "An area interchange must be assigned to the same subystems as its areas."
-    _check_subsystem_assignments(sys, branch, get_area_from(arc), msg; symmetric_diff = false)
+    _check_subsystem_assignments(
+        sys,
+        branch,
+        get_area_from(arc),
+        msg;
+        symmetric_diff = false,
+    )
     _check_subsystem_assignments(sys, branch, get_area_to(arc), msg; symmetric_diff = false)
 end
 
