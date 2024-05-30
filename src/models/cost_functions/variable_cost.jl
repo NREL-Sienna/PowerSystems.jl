@@ -39,7 +39,10 @@ data. The default units for the x-axis are megawatts and can be specified with
 end
 
 CostCurve(value_curve) = CostCurve(; value_curve)
-CostCurve(value_curve, vom_cost) = CostCurve(; value_curve, vom_cost)
+CostCurve(value_curve, vom_cost::Float64) =
+    CostCurve(; value_curve, vom_cost = vom_cost)
+CostCurve(value_curve, power_units::UnitSystem) =
+    CostCurve(; value_curve, power_units = power_units)
 
 Base.:(==)(a::CostCurve, b::CostCurve) =
     (get_value_curve(a) == get_value_curve(b)) &&
@@ -69,13 +72,16 @@ end
 FuelCurve(
     value_curve::ValueCurve,
     power_units::UnitSystem,
-    fuel_cost::Int,
+    fuel_cost::Real,
     vom_cost::Float64,
 ) =
     FuelCurve(value_curve, power_units, Float64(fuel_cost), vom_cost)
 
 FuelCurve(value_curve, fuel_cost) = FuelCurve(; value_curve, fuel_cost)
-FuelCurve(value_curve, fuel_cost, vom_cost) = FuelCurve(; value_curve, fuel_cost, vom_cost)
+FuelCurve(value_curve, fuel_cost::Union{Float64, TimeSeriesKey}, vom_cost::Float64) =
+    FuelCurve(; value_curve, fuel_cost, vom_cost = vom_cost)
+FuelCurve(value_curve, power_units::UnitSystem, fuel_cost::Union{Float64, TimeSeriesKey}) =
+    FuelCurve(; value_curve, power_units = power_units, fuel_cost = fuel_cost)
 
 Base.:(==)(a::FuelCurve, b::FuelCurve) =
     (get_value_curve(a) == get_value_curve(b)) &&
