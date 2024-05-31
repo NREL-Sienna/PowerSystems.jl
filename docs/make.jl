@@ -47,12 +47,12 @@ pages = OrderedDict(
             "Troubleshooting" => "code_base_developer_guide/troubleshooting.md"
             ],
         "Model Library" => Any[],
-        "Reference" => =>
+        "Reference" =>
             Any["Public API" => "api/public.md",
-            "Internal API Reference" => "api/internal.md"
+            "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
-            "Enumerated Types" => "api/enumerated_types.md",
-            ],
+            "Enumerated Types" => "api/enumerated_types.md"
+            ]
 
 
 )

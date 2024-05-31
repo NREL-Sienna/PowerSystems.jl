@@ -1,4 +1,4 @@
-## [Per-unit conventions](@id per_unit)
+# [Per-unit Conventions](@id per_unit)
 
 It is often useful to express power systems data in relative terms using per-unit conventions.
 `PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
