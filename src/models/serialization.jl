@@ -62,7 +62,11 @@ function serialize_uuid_handling(val)
     return serialize(value)
 end
 
-function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <: _CONTAINS_SHOULD_ENCODE}
+function IS.deserialize(
+    ::Type{T},
+    data::Dict,
+    component_cache::Dict,
+) where {T <: _CONTAINS_SHOULD_ENCODE}
     @debug "deserialize Component" _group = IS.LOG_GROUP_SERIALIZATION T data
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
