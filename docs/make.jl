@@ -19,19 +19,20 @@ pages = OrderedDict(
             "Use Dynamic Data" => "tutorials/dynamic_data.md",
             "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
         ],
-        "Modeler Guide" =>
+        "How to..." =>  Any[
+        ],
+        "Explanation" =>
             Any[
-            "modeler_guide/type_structure.md",
-            "modeler_guide/system.md",
-            "modeler_guide/time_series.md",
-            "modeler_guide/enumerated_types.md",
-            "modeler_guide/example_dynamic_data.md",
-            "modeler_guide/system_dynamic_data.md",
-            "modeler_guide/cost_functions.md",
-            "modeler_guide/market_bid_cost.md",
-            "modeler_guide/modeling_with_JuMP.md",
-            "modeler_guide/parsing.md",
-            "modeler_guide/glossary.md",
+            "explanation/type_structure.md",
+            "explanation/system.md",
+            "explanation/time_series.md",
+            "explanation/example_dynamic_data.md",
+            "explanation/system_dynamic_data.md",
+            "explanation/cost_functions.md",
+            "explanation/market_bid_cost.md",
+            "explanation/modeling_with_JuMP.md",
+            "explanation/parsing.md",
+
             ],
         "Model Developer Guide" =>
             Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
@@ -45,8 +46,14 @@ pages = OrderedDict(
             "Troubleshooting" => "code_base_developer_guide/troubleshooting.md"
             ],
         "Model Library" => Any[],
-        "Public API Reference" => "api/public.md",
-        "Internal API Reference" => "api/internal.md"
+        "Reference" => =>
+            Any["Public API" => "api/public.md",
+            "Internal API Reference" => "api/internal.md"
+            "Glossary and Acronyms" => "api/glossary.md",
+            "Enumerated Types" => "api/enumerated_types.md",
+            ],
+
+
 )
 
 pages["Model Library"] = make_model_library(
@@ -89,7 +96,8 @@ end
 julia_file_filter = x -> occursin(".jl", x)
 folders = Dict(
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
-    "Modeler Guide" => filter(julia_file_filter, readdir("docs/src/modeler_guide")),
+    "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
+    "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
     "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
     "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
