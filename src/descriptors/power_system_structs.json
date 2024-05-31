@@ -3756,7 +3756,7 @@
         },
         {
             "struct_name": "ThermalMultiStart",
-            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, that can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation of the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
+            "docstring": "A thermal generator, such as a fossil fuel or nuclear generator, that can start-up again from a *hot*, *warm*, or *cold* state.\n\n`ThermalMultiStart` has a detailed representation of the start-up process based on the time elapsed since the last shut down, as well as a detailed shut-down process. The model is based on [\"Tight and Compact MILP Formulation for the Thermal Unit Commitment Problem.\"](https://doi.org/10.1109/TPWRS.2013.2251373). For a simplified representation of the start-up and shut-down processes, see [`ThermalStandard`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
