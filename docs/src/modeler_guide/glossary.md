@@ -42,7 +42,9 @@
 
 ## F
 
-* *Fixed*: 
+* *Fixed*: A predetermined variable or quantity, which can be time-varying or an expression.
+  Examples: A distributed energy resource that cannot be curtailed or dispatched whose output
+  is determined by the weather, or a time-varying reserve requirement that must be met.
 
 * *Forecast*: Predicted values of a time-varying quantity that commonly features
   a look-ahead and can have multiple data values representing each time period.
