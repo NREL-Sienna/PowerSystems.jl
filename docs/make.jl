@@ -25,6 +25,7 @@ pages = OrderedDict(
             Any[
             "explanation/type_structure.md",
             "explanation/system.md",
+            "explanation/per_unit.md",
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
             "explanation/system_dynamic_data.md",
