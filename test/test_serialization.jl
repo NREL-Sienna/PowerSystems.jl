@@ -120,6 +120,25 @@ end
         ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
+        service = StaticReserve{ReserveDown}(;
+            name = "init_$i",
+            available = false,
+            time_frame = 0.0,
+            requirement = 0.0,
+            sustained_time = 0.0,
+            max_output_fraction = 1.0,
+            max_participation_factor = 1.0,
+            deployed_fraction = 0.0,
+            ext = Dict{String, Any}(),
+        )
+        add_component!(sys, service)
+        add_service!(gen, service, sys)
+        set_service_bid!(
+            sys,
+            gen,
+            service,
+            IS.SingleTimeSeries(; name = "init_$i", data = ta),
+        )
     end
     _, result = validate_serialization(sys)
     @test result
