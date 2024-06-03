@@ -1127,8 +1127,8 @@ function correct_thermal_limits!(data::Dict{String, <:Any})
                 y = LinearAlgebra.pinv(z)
                 y_mag = abs.(y[c, c])
 
-                fr_vmax = data["bus"][string(branch["f_bus"])]["vmax"][c]
-                to_vmax = data["bus"][string(branch["t_bus"])]["vmax"][c]
+                fr_vmax = data["bus"][branch["f_bus"]]["vmax"][c]
+                to_vmax = data["bus"][branch["t_bus"]]["vmax"][c]
                 m_vmax = max(fr_vmax, to_vmax)
 
                 c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2 * fr_vmax * to_vmax * cos(theta_max))
