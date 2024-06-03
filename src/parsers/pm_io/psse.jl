@@ -613,7 +613,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
-                push!(pm_data["bus"], starbus)
+                pm_data["bus"]["starbus_$(starbus_id)"] = starbus
                 starbus_id += 1
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
