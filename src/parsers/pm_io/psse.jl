@@ -36,7 +36,7 @@ function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
     else
-        return pm_bus_data["bus"][bus_i]["field"]
+        return pm_bus_data["bus"][bus_i][field]
     end
 end
 
@@ -226,9 +226,9 @@ given by `["I", "ID"]` in PSS(R)E Generator specification.
 """
 function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Generator data into a PowerModels Dict..."
-    pm_data["gen"] = []
     if haskey(pti_data, "GENERATOR")
-        for gen in pti_data["GENERATOR"]
+        pm_data["gen"] = Vector{Dict{String, Any}}(undef, length(pti_data["GENERATOR"]))
+        for (ix, gen) in enumerate(pti_data["GENERATOR"])
             sub_data = Dict{String, Any}()
 
             sub_data["gen_bus"] = pop!(gen, "I")
@@ -258,8 +258,10 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, gen)
             end
 
-            push!(pm_data["gen"], sub_data)
+            pm_data["gen"][ix] = sub_data
         end
+    else
+        pm_data["gen"] = Vector{Dict{String, Any}}()
     end
 end
 
