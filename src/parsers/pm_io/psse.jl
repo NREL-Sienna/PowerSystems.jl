@@ -32,7 +32,7 @@ function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
 end
 
 function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
-    _bus = get(pm_data["bus"], bus_i, nothing)
+    _bus = get(pm_bus_data["bus"], bus_i, nothing)
     if isnothing(_bus)
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
