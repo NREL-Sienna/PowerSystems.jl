@@ -1791,7 +1791,7 @@ function check_voltage_setpoints(data::Dict{String, <:Any})
         cnd_str = haskey(data, "conductors") ? "conductor $(c) " : ""
         for (i, gen) in data["gen"]
             bus_id = gen["gen_bus"]
-            bus = data["bus"]["$(bus_id)"]
+            bus = data["bus"][bus_id]
             if gen["vg"][c] != bus["vm"][c]
                 @info "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)" maxlog =
                     PS_MAX_LOG
@@ -1802,8 +1802,8 @@ function check_voltage_setpoints(data::Dict{String, <:Any})
             bus_fr_id = dcline["f_bus"]
             bus_to_id = dcline["t_bus"]
 
-            bus_fr = data["bus"]["$(bus_fr_id)"]
-            bus_to = data["bus"]["$(bus_to_id)"]
+            bus_fr = data["bus"][bus_fr_id]
+            bus_to = data["bus"][bus_to_id]
 
             if dcline["vf"][c] != bus_fr["vm"][c]
                 @info(
