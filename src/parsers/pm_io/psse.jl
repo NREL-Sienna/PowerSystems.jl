@@ -21,30 +21,36 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     return
 end
 
+function _get_bus_value(bus_i, field::String, pm_bus_data::Array)
+    for bus in pm_bus_data
+        if bus["index"] == bus_i
+            return bus[field]
+        end
+    end
+    @info("Could not find bus $bus_i, returning 0 for field $field")
+    return 0
+end
+
+function _get_bus_value(bus_i, field::String, pm_bus_data::Dict{String, Any})
+    for bus in values(pm_bus_data)
+        if bus["index"] == bus_i
+            return bus[field]
+        end
+    end
+    @info("Could not find bus $bus_i, returning 0 for field $field")
+    return 0
+end
+
 """
     _get_bus_value(bus_i, field, pm_data)
 
 Returns the value of `field` of `bus_i` from the PowerModels data. Requires
 "bus" Dict to already be populated.
 """
-function _get_bus_value(bus_i, field, pm_data)
-    if isa(pm_data["bus"], Array)
-        for bus in pm_data["bus"]
-            if bus["index"] == bus_i
-                return bus[field]
-            end
-        end
-    elseif isa(pm_data["bus"], Dict)
-        for (k, bus) in pm_data["bus"]
-            if bus["index"] == bus_i
-                return bus[field]
-            end
-        end
-    end
-
-    @info("Could not find bus $bus_i, returning 0 for field $field")
-    return 0
+function _get_bus_value(bus_i, field::String, pm_data)
+    return _get_bus_value(bus_i, field, pm_data["bus"])
 end
+
 
 """
     _find_max_bus_id(pm_data)
@@ -53,7 +59,7 @@ Returns the maximum bus id in `pm_data`
 """
 function _find_max_bus_id(pm_data::Dict)::Int
     max_id = 0
-    for bus in pm_data["bus"]
+    for bus in values(pm_data["bus"])
         if bus["index"] > max_id && !endswith(bus["name"], "starbus")
             max_id = bus["index"]
         end
