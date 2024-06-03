@@ -12,37 +12,6 @@ docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils");
 include(joinpath(docs_dir, "docs_utils.jl")) #hide
 ```
 
-## Types in PowerSystems
-
-PowerSystems.jl provides a type hierarchy for specifying power system data. Data that
-describes infrastructure components is held in `struct`s. For example, a `Bus` is defined
-as follows with fields for the parameters required to describe a bus (along with an
-`internal` field used by InfrastructureSystems to improve the efficiency of handling data).
-
-```@repl basics
-print_struct(ACBus)
-```
-
-### Type Hierarchy
-
-PowerSystems is intended to organize data containers by the behavior of the devices that
-the data represents. To that end, a type hierarchy has been defined with several levels of
-abstract types starting with `InfrastructureSystemsType`. There are a bunch of subtypes of
-`InfrastructureSystemsType`, but the important ones to know about are:
-
-- `Component`: includes all elements of power system data
-  - `Topology`: includes non physical elements describing network connectivity
-  - `Service`: includes descriptions of system requirements (other than energy balance)
-  - `Device`: includes descriptions of all the physical devices in a power system
-- `InfrastructureSystems.DeviceParameter`: includes structs that hold data describing the
- dynamic, or economic capabilities of `Device`.
-- `TimeSeriesData`: Includes all time series types
-  - `Forecast`: includes structs to define time series of forecasted data where multiple
-values can represent each time stamp
-  - `StaticTimeSeries`: includes structs to define time series with a single value for each
-time stamp
-- `System`: collects all of the `Component`s
-
 The following code displays the hierarchy, but concrete types are omitted for brevity:
 
 ```@repl basics
