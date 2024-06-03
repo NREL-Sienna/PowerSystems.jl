@@ -288,7 +288,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, bus)
             end
-            key = "$(bus["NAME"])_$(sub_data["index"])"
+            key = "$(sub_data["name"])_$(sub_data["index"])"
             if haskey(pm_data["bus"], key)
                 error()
             end
