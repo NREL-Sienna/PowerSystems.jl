@@ -170,7 +170,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
-    bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
+    bus_data = SortedDict(data["bus"])
 
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
