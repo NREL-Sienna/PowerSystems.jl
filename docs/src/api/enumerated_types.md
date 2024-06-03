@@ -1,45 +1,37 @@
 
-# Enumerated Types
+# Specifying the type of...
 
-To specify fields representing an option from a pre-defined list, some of the fields of
-`Component` structs are specified with
-[`IS.scoped_enums`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.@scoped_enum-Tuple{Any,%20Vararg{Any,%20N}%20where%20N}) (e.g.
-`set_fuel!(gen, ThermalFuels.COAL)`). Below are the enumerated types contained in `PowerSystems`.
+Some fields in PowerSystems.jl are specified with an option from a pre-defined list
+(Specified with [`IS.scoped_enums`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.@scoped_enum-Tuple{Any,%20Vararg{Any,%20N}%20where%20N})).
 
-## [`ThermalFuels`](@id tf_list)
+Example syntax:
+```
+set_fuel!(gen, ThermalFuels.COAL)
+```
 
-Each `ThermalGen` generator struct contains a field for `fuel::ThermalFuels` where `ThermalFuels`
-are intended to reflect the options denoted by the
-[Aggregated Fuel Codes](https://www.eia.gov/survey/form/eia_923/instructions.pdf) from the
-EIA Annual Energy Review. Specifically, `ThermalFuels` is an enumerated type with the
-following options:
+These predefined lists are below:
 
-| EnumName | EIA Fuel Code | Description |
-|----------|---------------|-------------|
-| `COAL` | COL | Anthracite Coal and Bituminous Coal |
-| `WASTE_COAL` | WOC | Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal) |
-| `DISTILLATE_FUEL_OIL` | DFO | Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4) |
-| `WASTE_OIL` | WOO | Waste Oil Kerosene and JetFuel Butane, Propane |
-| `PETROLEUM_COKE` | PC | Petroleum Coke |
-| `RESIDUAL_FUEL_OIL` | RFO | Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil) |
-| `NATURAL_GAS` | NG | Natural Gas |
-| `OTHER_GAS` | OOG | Other Gas and blast furnace gas |
-| `NUCLEAR` | NUC | Nuclear Fission (Uranium, Plutonium, Thorium) |
-| `AG_BIPRODUCT` | ORW | Agricultural Crop Byproducts/Straw/Energy Crops |
-| `MUNICIPAL_WASTE` |  MLG | Municipal Solid Waste – Biogenic component |
-| `WOOD_WASTE` | WWW | Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids) |
-| `GEOTHERMAL` | GEO | Geothermal |
-| `OTHER` | OTH | Other |
+## [AC Buses](@id acbustypes_list)
 
-## [`PrimeMovers`](@id pm_list)
+`ACBusTypes` categorize buses for modeling activities and denote which quantities are specified
+for load flow calculations. `ACBusTypes` has the options:
 
-Each generator struct contains a field for `prime_mover::PrimeMovers` where `PrimeMovers`
-are intended to reflect the options denoted by
-[EIA form 923](https://www.eia.gov/survey/form/eia_923/instructions.pdf). Specifically,
-`PrimeMovers` is an enumerated type with the following options:
+| Name | Description |
+|:----------|:-------------|
+| `ISOLATED` | Disconnected from network |
+| `PQ` | Active and reactive power defined (load bus)|
+| `PV` | Active power and voltage magnitude defined (generator bus)|
+| `REF` | Reference bus (θ = 0)|
+| `SLACK` | Slack bus |
 
-| EnumName | Description |
-|----------|-------------|
+## [Prime Movers](@id pm_list)
+
+Each generator contains a field for `prime_mover::PrimeMovers`, based on the options in
+[EIA form 923](https://www.eia.gov/survey/form/eia_923/instructions.pdf).
+`PrimeMovers` has the options:
+
+| Name | Description |
+|:----------|:-------------|
 | `BA` | Energy Storage, Battery |
 | `BT` | Turbines Used in a Binary Cycle (including those used for geothermal applications) |
 | `CA` | Combined-Cycle – Steam Part |
@@ -60,36 +52,71 @@ are intended to reflect the options denoted by
 | `PS` | Energy Storage, Reversible Hydraulic Turbine (Pumped Storage) |
 | `OT` | Other |
 | `ST` | Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine) |
-| `PV` | Photovoltaic *renaming from EIA PV to PVe to avoid conflict with ACBusType.PV |
+| `PVe` | Photovoltaic \(*Note*: renaming from EIA PV to PVe to avoid conflict with `ACBusType.PV`\) |
 | `WT` | Wind Turbine, Onshore |
 | `WS` | Wind Turbine, Offshore |
 
-## [`ACBusTypes`](@id acbustypes_list)
+## [Fuels for Thermal Generators](@id tf_list)
 
-`ACBusTypes` is used to denote which quantities are specified for load flow calculations and
-to otherwise categorize buses for modeling activities.
+Each [`ThermalGen`](@ref) generator has a field for `fuel::ThermalFuels` where `ThermalFuels`
+are intended to reflect the options in the
+[Aggregated Fuel Codes](https://www.eia.gov/survey/form/eia_923/instructions.pdf) from the
+EIA Annual Energy Review. `ThermalFuels` has the options:
 
-| EnumName | Description |
-|----------|-------------|
-| `ISOLATED` | Disconnected from network |
-| `PQ` | Active and reactive power defined (load bus)|
-| `PV` | Active power and voltage magnitude defined (generator bus)|
-| `REF` | Reference bus (θ = 0)|
-| `SLACK` | Slack bus |
+| Name | EIA Fuel Code | Description |
+|:----------|:---------------|:-------------|
+| `COAL` | COL | Anthracite Coal and Bituminous Coal |
+| `WASTE_COAL` | WOC | Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal) |
+| `DISTILLATE_FUEL_OIL` | DFO | Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4) |
+| `WASTE_OIL` | WOO | Waste Oil Kerosene and JetFuel Butane, Propane |
+| `PETROLEUM_COKE` | PC | Petroleum Coke |
+| `RESIDUAL_FUEL_OIL` | RFO | Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil) |
+| `NATURAL_GAS` | NG | Natural Gas |
+| `OTHER_GAS` | OOG | Other Gas and blast furnace gas |
+| `NUCLEAR` | NUC | Nuclear Fission (Uranium, Plutonium, Thorium) |
+| `AG_BIPRODUCT` | ORW | Agricultural Crop Byproducts/Straw/Energy Crops |
+| `MUNICIPAL_WASTE` |  MLG | Municipal Solid Waste – Biogenic component |
+| `WOOD_WASTE` | WWW | Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids) |
+| `GEOTHERMAL` | GEO | Geothermal |
+| `OTHER` | OTH | Other |
 
-## [`AngleUnits`](@id angleunits_list)
+## [Energy Storage](@id storagetech_list)
 
-| EnumName |
-|----------|
-| `DEGREES` |
-| `RADIANS` |
+`StorageTech` defines the storage technology used in an energy [`Storage`](@ref) system, based
+on the options in [EIA form 923](https://www.eia.gov/survey/form/eia_923/instructions.pdf).
+`StorageTech` has the options:
 
-## [`StateTypes`](@id states_list)
+| Name | Description |
+|:----------|:-------------|
+| `PTES` | Pumped thermal energy storage |
+| `LIB` | LiON Battery |
+| `LAB` | Lead Acid Battery |
+| `FLWB` | Redox Flow Battery |
+| `SIB` | Sodium Ion Battery |
+| `ZIB` | Zinc Ion Battery |
+| `HGS` | Hydrogen Gas Storage |
+| `LAES` | Liquid Air Storage |
+| `OTHER_CHEM` | Other Chemical Storage |
+| `OTHER_MECH` | Other Mechanical Storage |
+| `OTHER_THERM` | Other Thermal Storage |
 
-`StateTypes` are used to denote the type of dynamic equation a specific state is subject to in `PowerSimulationsDynamics.jl`
+## [Dynamic States](@id states_list)
 
-| EnumName | Description |
-|----------|-------------|
+`StateTypes` are used to denote the type of dynamic equation a specific [state](@ref S) is subject
+to in [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/).
+`StateTypes` has the options:
+
+| Name | Description |
+|:----------|:-------------|
 | `Differential` | State evolves over time via a differential equation ``\dot{x} = f(x)`` |
 | `Algebraic` | State evolves over time by satisfying an algebraic equation ``0 = g(x)`` |
 | `Hybrid` | Depending on specific parameters, the state can be `Differential` or `Algebraic` |
+
+## [Angle Units](@id angleunits_list)
+
+`AngleUnits` can be specified in:
+
+| Name |
+|----------|
+| `DEGREES` |
+| `RADIANS` |

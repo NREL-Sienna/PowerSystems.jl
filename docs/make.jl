@@ -51,7 +51,7 @@ pages = OrderedDict(
             Any["Public API" => "api/public.md",
             "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
-            "Enumerated Types" => "api/enumerated_types.md"
+            "Specifying the type of..." => "api/enumerated_types.md"
             ]
 
 
