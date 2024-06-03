@@ -1679,7 +1679,7 @@ function correct_bus_types!(data::Dict{String, <:Any})
     for (i, gen) in data["gen"]
         #println(gen)
         if gen["gen_status"] == 1
-            push!(bus_gens[string(gen["gen_bus"])], i)
+            push!(bus_gens[gen["gen_bus"]], i)
         end
     end
 
