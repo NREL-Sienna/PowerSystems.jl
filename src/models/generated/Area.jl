@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         peak_active_power::Float64
         peak_reactive_power::Float64
         load_response::Float64
+        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
@@ -20,6 +21,7 @@ A collection of buses for control purposes.
 - `peak_active_power::Float64`: (optional) Peak active power in the area
 - `peak_reactive_power::Float64`: (optional) Peak reactive power in the area
 - `load_response::Float64`: (optional) 
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Area <: AggregationTopology
@@ -31,16 +33,18 @@ mutable struct Area <: AggregationTopology
     peak_reactive_power::Float64
     "(optional) "
     load_response::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, )
-    Area(name, peak_active_power, peak_reactive_power, load_response, InfrastructureSystemsInternal(), )
+function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, ext, InfrastructureSystemsInternal(), )
 end
 
-function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, internal=InfrastructureSystemsInternal(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, internal, )
+function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -50,6 +54,7 @@ function Area(::Nothing)
         peak_active_power=0.0,
         peak_reactive_power=0.0,
         load_response=0.0,
+        ext=Dict{String, Any}(),
     )
 end
 
@@ -61,6 +66,8 @@ get_peak_active_power(value::Area) = get_value(value, value.peak_active_power)
 get_peak_reactive_power(value::Area) = get_value(value, value.peak_reactive_power)
 """Get [`Area`](@ref) `load_response`."""
 get_load_response(value::Area) = value.load_response
+"""Get [`Area`](@ref) `ext`."""
+get_ext(value::Area) = value.ext
 """Get [`Area`](@ref) `internal`."""
 get_internal(value::Area) = value.internal
 
@@ -70,3 +77,5 @@ set_peak_active_power!(value::Area, val) = value.peak_active_power = set_value(v
 set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = set_value(value, val)
 """Set [`Area`](@ref) `load_response`."""
 set_load_response!(value::Area, val) = value.load_response = val
+"""Set [`Area`](@ref) `ext`."""
+set_ext!(value::Area, val) = value.ext = val
