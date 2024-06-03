@@ -1433,7 +1433,7 @@ function check_reference_bus(data::Dict{String, <:Any})
         error("check_reference_bus does not yet support multinetwork data")
     end
 
-    ref_buses = Dict{String, Any}()
+    ref_buses = Dict{Int, Any}()
     for (k, v) in data["bus"]
         if v["bus_type"] == 3
             ref_buses[k] = v
@@ -1450,7 +1450,7 @@ function check_reference_bus(data::Dict{String, <:Any})
                 "no reference bus found, setting bus $(gen_bus) as reference based on generator $(big_gen["index"])"
             )
         else
-            (bus_item, state) = Base.iterate(data["bus"])
+            (bus_item, state) = Base.iterate(value(data["bus"]))
             bus_item.second["bus_type"] = 3
             @warn(
                 "no reference bus found, setting bus $(bus_item.second["index"]) as reference"
