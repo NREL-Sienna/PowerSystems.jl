@@ -294,7 +294,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, bus)
             end
 
-            if haskey(pm_data["bus"], key)
+            if haskey(pm_data["bus"], sub_data["bus_i"])
                 error("Repeated $(sub_data["bus_i"])")
             end
             pm_data["bus"][sub_data["bus_i"]] = sub_data
