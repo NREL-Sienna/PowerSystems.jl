@@ -76,8 +76,8 @@ end
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
         if !branch["transformer"] &&
-           pm_data.data["bus"][string(branch["f_bus"])]["base_kv"] !=
-           pm_data.data["bus"][string(branch["t_bus"])]["base_kv"]
+           pm_data.data["bus"][branch["f_bus"]]["base_kv"] !=
+           pm_data.data["bus"][branch["t_bus"]]["base_kv"]
             branch["transformer"] = true
             @warn "Branch $k endpoints have different voltage levels, converting to transformer."
         end
