@@ -1,6 +1,6 @@
 """
     mutable struct ThermalGenerationCost <: OperationalCost
-        variable::ProductionVariableCost
+        variable::ProductionVariableCostCurve
         fixed::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64
@@ -9,14 +9,14 @@
 Data Structure Operational Cost Data which includes fixed, variable cost, multiple start up cost and stop costs.
 
 # Arguments
-- `variable::ProductionVariableCost`: Production Variable Cost. Can take fuel curves or cost curve represenations
+- `variable::ProductionVariableCostCurve`: Production Variable Cost. Can take fuel curves or cost curve represenations
 - `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost represenations this field can be duplicative.
 - `start_up::Union{NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}, Float64}`: start-up cost can take linear of multi-stage costs
 - `shut_down::Float64`: cost of turning the unit offline.
 """
 @kwdef mutable struct ThermalGenerationCost <: OperationalCost
     "variable cost"
-    variable::ProductionVariableCost
+    variable::ProductionVariableCostCurve
     "fixed cost"
     fixed::Float64
     "start-up cost"
