@@ -390,8 +390,8 @@
                 },
                 {
                     "null_value": "0.0",
-                    "name": "rate",
-                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rate` and `rate`",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
@@ -503,15 +503,15 @@
                 {
                     "name": "flow_limits",
                     "null_value": "(from_to=0.0, to_from=0.0)",
-                    "comment": "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`.",
+                    "comment": "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`.",
                     "data_type": "FromTo_ToFrom",
                     "needs_conversion": true
                 },
                 {
                     "null_value": "0.0",
-                    "name": "rate",
+                    "name": "rating",
                     "data_type": "Float64",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
                     "needs_conversion": true
                 },
                 {
@@ -642,8 +642,8 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "rate",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -771,8 +771,8 @@
                     "validation_action": "error"
                 },
                 {
-                    "name": "rate",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -877,8 +877,8 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "rate",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -11966,7 +11966,7 @@
                 },
                 {
                     "name": "R_lim",
-                    "comment": "Maximum rate of load increa",
+                    "comment": "Maximum rate of load increase",
                     "null_value": "(up = 0.0, down = 0.0)",
                     "data_type": "UpDown"
                 },
