@@ -32,8 +32,7 @@ function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
 end
 
 function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
-    _bus = get(pm_bus_data["bus"], bus_i, nothing)
-    if isnothing(_bus)
+    if !haskey(pm_bus_data["bus"], bus_i)
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
     else
@@ -295,7 +294,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, bus)
             end
 
-            if haskey(sub_data["bus_i"], key)
+            if haskey(pm_data["bus"], key)
                 error("Repeated $(sub_data["bus_i"])")
             end
             pm_data["bus"][sub_data["bus_i"]] = sub_data
