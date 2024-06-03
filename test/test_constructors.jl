@@ -21,7 +21,7 @@ end
     for T in subtypes(PSY.OperationalCost)
         isabstracttype(T) || (@test T(nothing) isa IS.InfrastructureSystemsType)
     end
-    # TODO add concrete subtypes of ProductionVariableCost?
+    # TODO add concrete subtypes of ProductionVariableCostCurve?
 
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component

@@ -125,7 +125,7 @@ set_ancillary_service_offers!(value::MarketBidCost, val) =
 # Each market bid curve (the elements that make up the incremental and decremental offer
 # curves in MarketBidCost) is a CostCurve{PiecewiseIncrementalCurve} with NaN initial input
 # and first x-coordinate
-function is_market_bid_curve(curve::ProductionVariableCost)
+function is_market_bid_curve(curve::ProductionVariableCostCurve)
     (curve isa CostCurve{PiecewiseIncrementalCurve}) || return false
     value_curve = get_value_curve(curve)
     return isnan(get_initial_input(value_curve)) &&
