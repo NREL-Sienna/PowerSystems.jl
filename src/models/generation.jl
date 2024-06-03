@@ -7,6 +7,7 @@ abstract type HydroGen <: Generator end
 
 """
 Supertype for all renewable generation technologies
+
 Requires the implementation of `get_rating`and `get_power_factor` methods
 """
 abstract type RenewableGen <: Generator end
