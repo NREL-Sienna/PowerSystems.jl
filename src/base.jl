@@ -172,7 +172,7 @@ function System(
             ext = Dict{String, Any}(),
         ),
     ],
-    generators = [ThermalStandard(nothing), RenewableFix(nothing)],
+    generators = [ThermalStandard(nothing), RenewableNonDispatch(nothing)],
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,

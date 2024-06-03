@@ -1298,9 +1298,9 @@ function make_renewable_generator(
             operation_cost = operation_cost,
             base_power = base_power,
         )
-    elseif gen_type == RenewableFix
-        @debug "Creating $(gen.name) as RenewableFix" _group = IS.LOG_GROUP_PARSING
-        generator = RenewableFix(;
+    elseif gen_type == RenewableNonDispatch
+        @debug "Creating $(gen.name) as RenewableNonDispatch" _group = IS.LOG_GROUP_PARSING
+        generator = RenewableNonDispatch(;
             name = gen.name,
             available = gen.available,
             bus = bus,
