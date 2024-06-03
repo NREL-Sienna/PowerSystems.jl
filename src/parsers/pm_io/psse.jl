@@ -21,7 +21,7 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     return
 end
 
-function _get_bus_value(bus_i, field::String, pm_bus_data::Array)
+function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
     for bus in pm_bus_data
         if bus["index"] == bus_i
             return bus[field]
@@ -31,14 +31,14 @@ function _get_bus_value(bus_i, field::String, pm_bus_data::Array)
     return 0
 end
 
-function _get_bus_value(bus_i, field::String, pm_bus_data::Dict{String, Any})
-    for bus in values(pm_bus_data)
-        if bus["index"] == bus_i
-            return bus[field]
-        end
+function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
+    _bus = get(pm_data["bus"], bus_i, nothing)
+    if isnothing(_bus)
+        @info("Could not find bus $bus_i, returning 0 for field $field")
+        return 0
+    else
+        return _bus["field"]
     end
-    @info("Could not find bus $bus_i, returning 0 for field $field")
-    return 0
 end
 
 """
@@ -47,7 +47,7 @@ end
 Returns the value of `field` of `bus_i` from the PowerModels data. Requires
 "bus" Dict to already be populated.
 """
-function _get_bus_value(bus_i, field::String, pm_data)
+function _get_bus_value(bus_i::Int, field::String, pm_data)
     return _get_bus_value(bus_i, field, pm_data["bus"])
 end
 
@@ -272,7 +272,7 @@ by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
-    pm_data["bus"] = Dict{String, Any}()
+    pm_data["bus"] = Dict{Int, Any}()
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
             sub_data = Dict{String, Any}()
@@ -294,11 +294,11 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, bus)
             end
-            key = "$(sub_data["name"])_$(sub_data["index"])"
-            if haskey(pm_data["bus"], key)
-                error()
+
+            if haskey(sub_data["bus_i"], key)
+                error("Repeated $(sub_data["bus_i"])")
             end
-            pm_data["bus"][key] = sub_data
+            pm_data["bus"][sub_data["bus_i"]] = sub_data
         end
     end
 end
@@ -613,7 +613,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
-                pm_data["bus"]["starbus_$(starbus_id)"] = starbus
+                pm_data["bus"][starbus_id] = starbus
                 starbus_id += 1
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
