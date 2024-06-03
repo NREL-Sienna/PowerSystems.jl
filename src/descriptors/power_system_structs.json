@@ -4138,7 +4138,7 @@
             "supertype": "Storage"
         },
         {
-            "struct_name": "StaticReserve",
+            "struct_name": "ConstantReserve",
             "docstring": "A reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes online generators that can respond right away after an unexpected contingency, such as a transmission line or generator outage. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).",
             "parametric": "ReserveDirection",
             "fields": [
@@ -4244,8 +4244,8 @@
             "supertype": "Reserve{T}"
         },
         {
-            "struct_name": "StaticReserveNonSpinning",
-            "docstring": "A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`StaticReserve`](@ref).",
+            "struct_name": "ConstantReserveNonSpinning",
+            "docstring": "A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.\n\nThis reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`ConstantReserve`](@ref).",
             "fields": [
                 {
                     "null_value": "init",
@@ -4349,7 +4349,7 @@
             "supertype": "ReserveNonSpinning"
         },
         {
-            "struct_name": "StaticReserveGroup",
+            "struct_name": "ConstantReserveGroup",
             "docstring": "A reserve product met by a group of individual reserves.\n\nThe group reserve requirement is added in addition to any individual reserve requirements, and devices that contribute to individual reserves within the group can also contribute to the overarching group reserve requirement. Example: A group of spinning and non-spinning reserves, where online generators providing spinning reserves can also contribute to the non-spinning reserve requirement.\n\nThis model has a constant procurement requirement, such as 3% of the system base power at all times. When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).",
             "parametric": "ReserveDirection",
             "fields": [

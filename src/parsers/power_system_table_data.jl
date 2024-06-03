@@ -752,7 +752,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
         direction = get_reserve_direction(reserve.direction)
         if isnothing(requirement)
-            service = StaticReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
+            service = ConstantReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
         else
             service = VariableReserve{direction}(
                 reserve.name,

@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
+    mutable struct ConstantReserveNonSpinning <: ReserveNonSpinning
         name::String
         available::Bool
         time_frame::Float64
@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
 
 A non-spinning reserve product with a constant procurement requirement, such as 3% of the system base power at all times.
 
-This reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`StaticReserve`](@ref).
+This reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`ConstantReserve`](@ref).
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
@@ -34,7 +34,7 @@ This reserve product includes back-up generators that might not be currently syn
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
-mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
+mutable struct ConstantReserveNonSpinning <: ReserveNonSpinning
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
@@ -57,17 +57,17 @@ mutable struct StaticReserveNonSpinning <: ReserveNonSpinning
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
-    StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
+function ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
+    ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    StaticReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
+function ConstantReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ConstantReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
-function StaticReserveNonSpinning(::Nothing)
-    StaticReserveNonSpinning(;
+function ConstantReserveNonSpinning(::Nothing)
+    ConstantReserveNonSpinning(;
         name="init",
         available=false,
         time_frame=0.0,
@@ -80,40 +80,40 @@ function StaticReserveNonSpinning(::Nothing)
     )
 end
 
-"""Get [`StaticReserveNonSpinning`](@ref) `name`."""
-get_name(value::StaticReserveNonSpinning) = value.name
-"""Get [`StaticReserveNonSpinning`](@ref) `available`."""
-get_available(value::StaticReserveNonSpinning) = value.available
-"""Get [`StaticReserveNonSpinning`](@ref) `time_frame`."""
-get_time_frame(value::StaticReserveNonSpinning) = value.time_frame
-"""Get [`StaticReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::StaticReserveNonSpinning) = get_value(value, value.requirement)
-"""Get [`StaticReserveNonSpinning`](@ref) `sustained_time`."""
-get_sustained_time(value::StaticReserveNonSpinning) = value.sustained_time
-"""Get [`StaticReserveNonSpinning`](@ref) `max_output_fraction`."""
-get_max_output_fraction(value::StaticReserveNonSpinning) = value.max_output_fraction
-"""Get [`StaticReserveNonSpinning`](@ref) `max_participation_factor`."""
-get_max_participation_factor(value::StaticReserveNonSpinning) = value.max_participation_factor
-"""Get [`StaticReserveNonSpinning`](@ref) `deployed_fraction`."""
-get_deployed_fraction(value::StaticReserveNonSpinning) = value.deployed_fraction
-"""Get [`StaticReserveNonSpinning`](@ref) `ext`."""
-get_ext(value::StaticReserveNonSpinning) = value.ext
-"""Get [`StaticReserveNonSpinning`](@ref) `internal`."""
-get_internal(value::StaticReserveNonSpinning) = value.internal
+"""Get [`ConstantReserveNonSpinning`](@ref) `name`."""
+get_name(value::ConstantReserveNonSpinning) = value.name
+"""Get [`ConstantReserveNonSpinning`](@ref) `available`."""
+get_available(value::ConstantReserveNonSpinning) = value.available
+"""Get [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
+get_time_frame(value::ConstantReserveNonSpinning) = value.time_frame
+"""Get [`ConstantReserveNonSpinning`](@ref) `requirement`."""
+get_requirement(value::ConstantReserveNonSpinning) = get_value(value, value.requirement)
+"""Get [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
+get_sustained_time(value::ConstantReserveNonSpinning) = value.sustained_time
+"""Get [`ConstantReserveNonSpinning`](@ref) `max_output_fraction`."""
+get_max_output_fraction(value::ConstantReserveNonSpinning) = value.max_output_fraction
+"""Get [`ConstantReserveNonSpinning`](@ref) `max_participation_factor`."""
+get_max_participation_factor(value::ConstantReserveNonSpinning) = value.max_participation_factor
+"""Get [`ConstantReserveNonSpinning`](@ref) `deployed_fraction`."""
+get_deployed_fraction(value::ConstantReserveNonSpinning) = value.deployed_fraction
+"""Get [`ConstantReserveNonSpinning`](@ref) `ext`."""
+get_ext(value::ConstantReserveNonSpinning) = value.ext
+"""Get [`ConstantReserveNonSpinning`](@ref) `internal`."""
+get_internal(value::ConstantReserveNonSpinning) = value.internal
 
-"""Set [`StaticReserveNonSpinning`](@ref) `available`."""
-set_available!(value::StaticReserveNonSpinning, val) = value.available = val
-"""Set [`StaticReserveNonSpinning`](@ref) `time_frame`."""
-set_time_frame!(value::StaticReserveNonSpinning, val) = value.time_frame = val
-"""Set [`StaticReserveNonSpinning`](@ref) `requirement`."""
-set_requirement!(value::StaticReserveNonSpinning, val) = value.requirement = set_value(value, val)
-"""Set [`StaticReserveNonSpinning`](@ref) `sustained_time`."""
-set_sustained_time!(value::StaticReserveNonSpinning, val) = value.sustained_time = val
-"""Set [`StaticReserveNonSpinning`](@ref) `max_output_fraction`."""
-set_max_output_fraction!(value::StaticReserveNonSpinning, val) = value.max_output_fraction = val
-"""Set [`StaticReserveNonSpinning`](@ref) `max_participation_factor`."""
-set_max_participation_factor!(value::StaticReserveNonSpinning, val) = value.max_participation_factor = val
-"""Set [`StaticReserveNonSpinning`](@ref) `deployed_fraction`."""
-set_deployed_fraction!(value::StaticReserveNonSpinning, val) = value.deployed_fraction = val
-"""Set [`StaticReserveNonSpinning`](@ref) `ext`."""
-set_ext!(value::StaticReserveNonSpinning, val) = value.ext = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `available`."""
+set_available!(value::ConstantReserveNonSpinning, val) = value.available = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
+set_time_frame!(value::ConstantReserveNonSpinning, val) = value.time_frame = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `requirement`."""
+set_requirement!(value::ConstantReserveNonSpinning, val) = value.requirement = set_value(value, val)
+"""Set [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
+set_sustained_time!(value::ConstantReserveNonSpinning, val) = value.sustained_time = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `max_output_fraction`."""
+set_max_output_fraction!(value::ConstantReserveNonSpinning, val) = value.max_output_fraction = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `max_participation_factor`."""
+set_max_participation_factor!(value::ConstantReserveNonSpinning, val) = value.max_participation_factor = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `deployed_fraction`."""
+set_deployed_fraction!(value::ConstantReserveNonSpinning, val) = value.deployed_fraction = val
+"""Set [`ConstantReserveNonSpinning`](@ref) `ext`."""
+set_ext!(value::ConstantReserveNonSpinning, val) = value.ext = val

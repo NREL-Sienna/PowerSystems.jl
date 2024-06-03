@@ -32,9 +32,9 @@ include("RenewableFix.jl")
 include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
-include("StaticReserve.jl")
-include("StaticReserveNonSpinning.jl")
-include("StaticReserveGroup.jl")
+include("ConstantReserve.jl")
+include("ConstantReserveNonSpinning.jl")
+include("ConstantReserveGroup.jl")
 include("ReserveDemandCurve.jl")
 include("VariableReserve.jl")
 include("VariableReserveNonSpinning.jl")
@@ -569,7 +569,6 @@ export get_r
 export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
-export get_rate
 export get_rated_current
 export get_rated_voltage
 export get_rating
@@ -1096,7 +1095,6 @@ export set_r!
 export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
-export set_rate!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!

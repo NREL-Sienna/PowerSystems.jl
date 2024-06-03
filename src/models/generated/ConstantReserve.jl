@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
+    mutable struct ConstantReserve{T <: ReserveDirection} <: Reserve{T}
         name::String
         available::Bool
         time_frame::Float64
@@ -34,7 +34,7 @@ This reserve product includes online generators that can respond right away afte
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
-mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
+mutable struct ConstantReserve{T <: ReserveDirection} <: Reserve{T}
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
@@ -57,17 +57,17 @@ mutable struct StaticReserve{T <: ReserveDirection} <: Reserve{T}
     internal::InfrastructureSystemsInternal
 end
 
-function StaticReserve{T}(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), ) where T <: ReserveDirection
-    StaticReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
+function ConstantReserve{T}(name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), ) where T <: ReserveDirection
+    ConstantReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
-function StaticReserve{T}(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
-    StaticReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
+function ConstantReserve{T}(; name, available, time_frame, requirement, sustained_time=3600.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), ) where T <: ReserveDirection
+    ConstantReserve{T}(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
-function StaticReserve{T}(::Nothing) where T <: ReserveDirection
-    StaticReserve{T}(;
+function ConstantReserve{T}(::Nothing) where T <: ReserveDirection
+    ConstantReserve{T}(;
         name="init",
         available=false,
         time_frame=0.0,
@@ -80,40 +80,40 @@ function StaticReserve{T}(::Nothing) where T <: ReserveDirection
     )
 end
 
-"""Get [`StaticReserve`](@ref) `name`."""
-get_name(value::StaticReserve) = value.name
-"""Get [`StaticReserve`](@ref) `available`."""
-get_available(value::StaticReserve) = value.available
-"""Get [`StaticReserve`](@ref) `time_frame`."""
-get_time_frame(value::StaticReserve) = value.time_frame
-"""Get [`StaticReserve`](@ref) `requirement`."""
-get_requirement(value::StaticReserve) = get_value(value, value.requirement)
-"""Get [`StaticReserve`](@ref) `sustained_time`."""
-get_sustained_time(value::StaticReserve) = value.sustained_time
-"""Get [`StaticReserve`](@ref) `max_output_fraction`."""
-get_max_output_fraction(value::StaticReserve) = value.max_output_fraction
-"""Get [`StaticReserve`](@ref) `max_participation_factor`."""
-get_max_participation_factor(value::StaticReserve) = value.max_participation_factor
-"""Get [`StaticReserve`](@ref) `deployed_fraction`."""
-get_deployed_fraction(value::StaticReserve) = value.deployed_fraction
-"""Get [`StaticReserve`](@ref) `ext`."""
-get_ext(value::StaticReserve) = value.ext
-"""Get [`StaticReserve`](@ref) `internal`."""
-get_internal(value::StaticReserve) = value.internal
+"""Get [`ConstantReserve`](@ref) `name`."""
+get_name(value::ConstantReserve) = value.name
+"""Get [`ConstantReserve`](@ref) `available`."""
+get_available(value::ConstantReserve) = value.available
+"""Get [`ConstantReserve`](@ref) `time_frame`."""
+get_time_frame(value::ConstantReserve) = value.time_frame
+"""Get [`ConstantReserve`](@ref) `requirement`."""
+get_requirement(value::ConstantReserve) = get_value(value, value.requirement)
+"""Get [`ConstantReserve`](@ref) `sustained_time`."""
+get_sustained_time(value::ConstantReserve) = value.sustained_time
+"""Get [`ConstantReserve`](@ref) `max_output_fraction`."""
+get_max_output_fraction(value::ConstantReserve) = value.max_output_fraction
+"""Get [`ConstantReserve`](@ref) `max_participation_factor`."""
+get_max_participation_factor(value::ConstantReserve) = value.max_participation_factor
+"""Get [`ConstantReserve`](@ref) `deployed_fraction`."""
+get_deployed_fraction(value::ConstantReserve) = value.deployed_fraction
+"""Get [`ConstantReserve`](@ref) `ext`."""
+get_ext(value::ConstantReserve) = value.ext
+"""Get [`ConstantReserve`](@ref) `internal`."""
+get_internal(value::ConstantReserve) = value.internal
 
-"""Set [`StaticReserve`](@ref) `available`."""
-set_available!(value::StaticReserve, val) = value.available = val
-"""Set [`StaticReserve`](@ref) `time_frame`."""
-set_time_frame!(value::StaticReserve, val) = value.time_frame = val
-"""Set [`StaticReserve`](@ref) `requirement`."""
-set_requirement!(value::StaticReserve, val) = value.requirement = set_value(value, val)
-"""Set [`StaticReserve`](@ref) `sustained_time`."""
-set_sustained_time!(value::StaticReserve, val) = value.sustained_time = val
-"""Set [`StaticReserve`](@ref) `max_output_fraction`."""
-set_max_output_fraction!(value::StaticReserve, val) = value.max_output_fraction = val
-"""Set [`StaticReserve`](@ref) `max_participation_factor`."""
-set_max_participation_factor!(value::StaticReserve, val) = value.max_participation_factor = val
-"""Set [`StaticReserve`](@ref) `deployed_fraction`."""
-set_deployed_fraction!(value::StaticReserve, val) = value.deployed_fraction = val
-"""Set [`StaticReserve`](@ref) `ext`."""
-set_ext!(value::StaticReserve, val) = value.ext = val
+"""Set [`ConstantReserve`](@ref) `available`."""
+set_available!(value::ConstantReserve, val) = value.available = val
+"""Set [`ConstantReserve`](@ref) `time_frame`."""
+set_time_frame!(value::ConstantReserve, val) = value.time_frame = val
+"""Set [`ConstantReserve`](@ref) `requirement`."""
+set_requirement!(value::ConstantReserve, val) = value.requirement = set_value(value, val)
+"""Set [`ConstantReserve`](@ref) `sustained_time`."""
+set_sustained_time!(value::ConstantReserve, val) = value.sustained_time = val
+"""Set [`ConstantReserve`](@ref) `max_output_fraction`."""
+set_max_output_fraction!(value::ConstantReserve, val) = value.max_output_fraction = val
+"""Set [`ConstantReserve`](@ref) `max_participation_factor`."""
+set_max_participation_factor!(value::ConstantReserve, val) = value.max_participation_factor = val
+"""Set [`ConstantReserve`](@ref) `deployed_fraction`."""
+set_deployed_fraction!(value::ConstantReserve, val) = value.deployed_fraction = val
+"""Set [`ConstantReserve`](@ref) `ext`."""
+set_ext!(value::ConstantReserve, val) = value.ext = val

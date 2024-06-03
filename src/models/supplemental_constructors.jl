@@ -54,7 +54,7 @@ function ACBus(
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(
+function ConstantReserve(
     name,
     contributingdevices::IS.FlattenIteratorWrapper,
     timeframe,
@@ -62,7 +62,7 @@ function StaticReserve(
     time_series,
     internal,
 )
-    return StaticReserve(
+    return ConstantReserve(
         name,
         collect(contributingdevices),
         timeframe,
