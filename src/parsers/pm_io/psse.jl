@@ -36,7 +36,7 @@ function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
     else
-        return _bus["field"]
+        return pm_bus_data["bus"][bus_i]["field"]
     end
 end
 
