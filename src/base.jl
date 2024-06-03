@@ -697,15 +697,15 @@ function add_service!(device::Device, service::Service, sys::System)
 end
 
 """
-Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
 - `sys::System`: system
-- `service::StaticReserveGroup`: service to add
+- `service::ConstantReserveGroup`: service to add
 """
 function add_service!(
     sys::System,
-    service::StaticReserveGroup;
+    service::ConstantReserveGroup;
     skip_validation = false,
     kwargs...,
 )
@@ -720,10 +720,10 @@ function add_service!(
     return
 end
 
-"""Set StaticReserveGroup contributing_services with check"""
+"""Set ConstantReserveGroup contributing_services with check"""
 function set_contributing_services!(
     sys::System,
-    service::StaticReserveGroup,
+    service::ConstantReserveGroup,
     val::Vector{<:Service},
 )
     for _service in val
@@ -734,16 +734,16 @@ function set_contributing_services!(
 end
 
 """
-Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
 - `sys::System`: system
-- `service::StaticReserveGroup`: service to add
+- `service::ConstantReserveGroup`: service to add
 - `contributing_services`: contributing services to the group
 """
 function add_service!(
     sys::System,
-    service::StaticReserveGroup,
+    service::ConstantReserveGroup,
     contributing_services::Vector{<:Service};
     skip_validation = false,
     kwargs...,
@@ -957,15 +957,15 @@ end
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
 function check_component_removal(sys::System, service::T) where {T <: Service}
-    if T == StaticReserveGroup
+    if T == ConstantReserveGroup
         return
     end
-    groupservices = get_components(StaticReserveGroup, sys)
+    groupservices = get_components(ConstantReserveGroup, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
             throw(
                 ArgumentError(
-                    "service $(get_name(service)) cannot be removed with an attached StaticReserveGroup",
+                    "service $(get_name(service)) cannot be removed with an attached ConstantReserveGroup",
                 ),
             )
             return
@@ -1830,11 +1830,11 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
-        skip_types = [StaticReserveGroup],
+        skip_types = [ConstantReserveGroup],
     )
     deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
-    deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
+    deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
     deserialize_and_add!(; skip_types = [StaticInjectionSubsystem, RegulationDevice])
     deserialize_and_add!()
 

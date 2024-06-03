@@ -853,12 +853,12 @@
         {
             "name": "reserve_category",
             "value_options": [
-                "StaticReserve",
+                "ConstantReserve",
                 "VariableReserve",
                 "Transfer"
             ],
             "description": "Type of Struct",
-            "default_value": "StaticReserve"
+            "default_value": "ConstantReserve"
         },
         {
             "name": "direction",

@@ -76,8 +76,8 @@ end
 end
 
 @testset "Service Constructors" begin
-    tStaticReserve = StaticReserve{ReserveUp}(nothing)
-    @test tStaticReserve isa PowerSystems.Service
+    tConstantReserve = ConstantReserve{ReserveUp}(nothing)
+    @test tConstantReserve isa PowerSystems.Service
     tVariableReserve = VariableReserve{ReserveDown}(nothing)
     @test tVariableReserve isa PowerSystems.Service
 end

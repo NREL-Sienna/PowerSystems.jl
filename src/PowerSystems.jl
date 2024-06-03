@@ -244,13 +244,13 @@ export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export StaticReserve
+export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
 export Transfer
-export StaticReserveGroup
-export StaticReserveNonSpinning
+export ConstantReserveGroup
+export ConstantReserveNonSpinning
 export VariableReserveNonSpinning
 export TransmissionInterface
 

@@ -74,10 +74,10 @@ end
         push!(devices, gen)
     end
 
-    service = StaticReserve{ReserveDown}(nothing)
+    service = ConstantReserve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
 
-    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
     add_service!(sys, groupservice)
     members = Vector{Service}()
     push!(members, service)
