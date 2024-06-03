@@ -85,7 +85,7 @@ PowerSystems defines the following Julia structs to represent forecasts:
 - [`Scenarios`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.Scenarios): Stores a set of probable trajectories for forecasted quantity
   with equal probability.
 
-## Storage
+## Data Storage
 
 By default PowerSystems stores time series data in an HDF5 file. This prevents
 large datasets from overwhelming system memory. If you know that your dataset
