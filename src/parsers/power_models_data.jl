@@ -134,7 +134,7 @@ function make_bus(bus_dict::Dict{String, Any})
     return bus
 end
 
-function make_bus(bus_name::String, bus_number::Int, d, bus_types, area::PSY.Area)
+function make_bus(bus_name::String, bus_number::Int, d, bus_types, area::Area)
     bus = make_bus(
         Dict{String, Any}(
             "name" => bus_name,
