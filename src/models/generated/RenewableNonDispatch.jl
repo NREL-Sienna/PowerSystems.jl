@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct RenewableFix <: RenewableGen
+    mutable struct RenewableNonDispatch <: RenewableGen
         name::String
         available::Bool
         bus::ACBus
@@ -21,9 +21,9 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A zero-cost, non-curtailable or must-take renewable generator (e.g., wind or solar).
+A non-dispatchable (i.e., non-curtailable or must-take) renewable generator.
 
-Its output is *fixed* or equal to its [`max_active_power` time series](@ref ts_data). Example use: an aggregation of behind-the-meter distributed energy resources like rooftop solar. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).
+Its output is equal to its [`max_active_power` time series](@ref ts_data) by default. Example use: an aggregation of behind-the-meter distributed energy resources like rooftop solar. For curtailable or downward dispatachable generation, see [`RenewableDispatch`](@ref).
 
 Renewable generators do not have a `max_active_power` parameter, which is instead calculated when calling [`get_max_active_power()`](@ref get_max_active_power(d::T) where {T <: RenewableGen}).
 
@@ -42,7 +42,7 @@ Renewable generators do not have a `max_active_power` parameter, which is instea
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
-mutable struct RenewableFix <: RenewableGen
+mutable struct RenewableNonDispatch <: RenewableGen
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
@@ -70,17 +70,17 @@ mutable struct RenewableFix <: RenewableGen
     internal::InfrastructureSystemsInternal
 end
 
-function RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function RenewableFix(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    RenewableFix(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
+function RenewableNonDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    RenewableNonDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, power_factor, base_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
-function RenewableFix(::Nothing)
-    RenewableFix(;
+function RenewableNonDispatch(::Nothing)
+    RenewableNonDispatch(;
         name="init",
         available=false,
         bus=ACBus(nothing),
@@ -96,50 +96,50 @@ function RenewableFix(::Nothing)
     )
 end
 
-"""Get [`RenewableFix`](@ref) `name`."""
-get_name(value::RenewableFix) = value.name
-"""Get [`RenewableFix`](@ref) `available`."""
-get_available(value::RenewableFix) = value.available
-"""Get [`RenewableFix`](@ref) `bus`."""
-get_bus(value::RenewableFix) = value.bus
-"""Get [`RenewableFix`](@ref) `active_power`."""
-get_active_power(value::RenewableFix) = get_value(value, value.active_power)
-"""Get [`RenewableFix`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableFix) = get_value(value, value.reactive_power)
-"""Get [`RenewableFix`](@ref) `rating`."""
-get_rating(value::RenewableFix) = get_value(value, value.rating)
-"""Get [`RenewableFix`](@ref) `prime_mover_type`."""
-get_prime_mover_type(value::RenewableFix) = value.prime_mover_type
-"""Get [`RenewableFix`](@ref) `power_factor`."""
-get_power_factor(value::RenewableFix) = value.power_factor
-"""Get [`RenewableFix`](@ref) `base_power`."""
-get_base_power(value::RenewableFix) = value.base_power
-"""Get [`RenewableFix`](@ref) `services`."""
-get_services(value::RenewableFix) = value.services
-"""Get [`RenewableFix`](@ref) `dynamic_injector`."""
-get_dynamic_injector(value::RenewableFix) = value.dynamic_injector
-"""Get [`RenewableFix`](@ref) `ext`."""
-get_ext(value::RenewableFix) = value.ext
-"""Get [`RenewableFix`](@ref) `internal`."""
-get_internal(value::RenewableFix) = value.internal
+"""Get [`RenewableNonDispatch`](@ref) `name`."""
+get_name(value::RenewableNonDispatch) = value.name
+"""Get [`RenewableNonDispatch`](@ref) `available`."""
+get_available(value::RenewableNonDispatch) = value.available
+"""Get [`RenewableNonDispatch`](@ref) `bus`."""
+get_bus(value::RenewableNonDispatch) = value.bus
+"""Get [`RenewableNonDispatch`](@ref) `active_power`."""
+get_active_power(value::RenewableNonDispatch) = get_value(value, value.active_power)
+"""Get [`RenewableNonDispatch`](@ref) `reactive_power`."""
+get_reactive_power(value::RenewableNonDispatch) = get_value(value, value.reactive_power)
+"""Get [`RenewableNonDispatch`](@ref) `rating`."""
+get_rating(value::RenewableNonDispatch) = get_value(value, value.rating)
+"""Get [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::RenewableNonDispatch) = value.prime_mover_type
+"""Get [`RenewableNonDispatch`](@ref) `power_factor`."""
+get_power_factor(value::RenewableNonDispatch) = value.power_factor
+"""Get [`RenewableNonDispatch`](@ref) `base_power`."""
+get_base_power(value::RenewableNonDispatch) = value.base_power
+"""Get [`RenewableNonDispatch`](@ref) `services`."""
+get_services(value::RenewableNonDispatch) = value.services
+"""Get [`RenewableNonDispatch`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::RenewableNonDispatch) = value.dynamic_injector
+"""Get [`RenewableNonDispatch`](@ref) `ext`."""
+get_ext(value::RenewableNonDispatch) = value.ext
+"""Get [`RenewableNonDispatch`](@ref) `internal`."""
+get_internal(value::RenewableNonDispatch) = value.internal
 
-"""Set [`RenewableFix`](@ref) `available`."""
-set_available!(value::RenewableFix, val) = value.available = val
-"""Set [`RenewableFix`](@ref) `bus`."""
-set_bus!(value::RenewableFix, val) = value.bus = val
-"""Set [`RenewableFix`](@ref) `active_power`."""
-set_active_power!(value::RenewableFix, val) = value.active_power = set_value(value, val)
-"""Set [`RenewableFix`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableFix, val) = value.reactive_power = set_value(value, val)
-"""Set [`RenewableFix`](@ref) `rating`."""
-set_rating!(value::RenewableFix, val) = value.rating = set_value(value, val)
-"""Set [`RenewableFix`](@ref) `prime_mover_type`."""
-set_prime_mover_type!(value::RenewableFix, val) = value.prime_mover_type = val
-"""Set [`RenewableFix`](@ref) `power_factor`."""
-set_power_factor!(value::RenewableFix, val) = value.power_factor = val
-"""Set [`RenewableFix`](@ref) `base_power`."""
-set_base_power!(value::RenewableFix, val) = value.base_power = val
-"""Set [`RenewableFix`](@ref) `services`."""
-set_services!(value::RenewableFix, val) = value.services = val
-"""Set [`RenewableFix`](@ref) `ext`."""
-set_ext!(value::RenewableFix, val) = value.ext = val
+"""Set [`RenewableNonDispatch`](@ref) `available`."""
+set_available!(value::RenewableNonDispatch, val) = value.available = val
+"""Set [`RenewableNonDispatch`](@ref) `bus`."""
+set_bus!(value::RenewableNonDispatch, val) = value.bus = val
+"""Set [`RenewableNonDispatch`](@ref) `active_power`."""
+set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, val)
+"""Set [`RenewableNonDispatch`](@ref) `reactive_power`."""
+set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, val)
+"""Set [`RenewableNonDispatch`](@ref) `rating`."""
+set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, val)
+"""Set [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::RenewableNonDispatch, val) = value.prime_mover_type = val
+"""Set [`RenewableNonDispatch`](@ref) `power_factor`."""
+set_power_factor!(value::RenewableNonDispatch, val) = value.power_factor = val
+"""Set [`RenewableNonDispatch`](@ref) `base_power`."""
+set_base_power!(value::RenewableNonDispatch, val) = value.base_power = val
+"""Set [`RenewableNonDispatch`](@ref) `services`."""
+set_services!(value::RenewableNonDispatch, val) = value.services = val
+"""Set [`RenewableNonDispatch`](@ref) `ext`."""
+set_ext!(value::RenewableNonDispatch, val) = value.ext = val

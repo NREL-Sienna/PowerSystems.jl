@@ -378,7 +378,7 @@ end
 
 function make_renewable_fix(gen_name, d, bus, sys_mbase)
     base_conversion = sys_mbase / d["mbase"]
-    generator = RenewableFix(;
+    generator = RenewableNonDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -546,7 +546,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == RenewableFix
+        elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == EnergyReservoirStorage
             @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"

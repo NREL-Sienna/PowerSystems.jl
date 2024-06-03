@@ -27,7 +27,7 @@ end
     bus = ACBus(nothing)
     bus.name = "Bus1234"
     add_component!(sys, bus)
-    tg = RenewableFix(nothing)
+    tg = RenewableNonDispatch(nothing)
     tg.bus = bus
     add_component!(sys, tg)
     # TODO 1.0

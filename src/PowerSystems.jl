@@ -73,7 +73,7 @@ export HydroPumpedStorage
 export InterconnectingConverter
 
 export RenewableGen
-export RenewableFix
+export RenewableNonDispatch
 export RenewableDispatch
 
 export ThermalGen
