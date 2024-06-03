@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         x::Float64
         b::FromTo
         flow_limits::FromTo_ToFrom
-        rate::Float64
+        rating::Float64
         angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -35,8 +35,8 @@ For example, monitored lines can be used to restrict line flow following a conti
 - `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value., validation range: `(0, 2)`, action if invalid: `warn`
-- `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`.
-- `rate::Float64`: Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`
+- `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`.
+- `rating::Float64`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`
 - `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
@@ -59,10 +59,10 @@ mutable struct MonitoredLine <: ACBranch
     x::Float64
     "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value."
     b::FromTo
-    "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rate`."
+    "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`."
     flow_limits::FromTo_ToFrom
-    "Thermal rating (MVA). Flow through the transformer must be between `-rate` and `rate`"
-    rate::Float64
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    rating::Float64
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
     "(optional) Services that this device contributes to"
@@ -73,12 +73,12 @@ mutable struct MonitoredLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, services=Device[], ext=Dict{String, Any}(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -93,7 +93,7 @@ function MonitoredLine(::Nothing)
         x=0.0,
         b=(from=0.0, to=0.0),
         flow_limits=(from_to=0.0, to_from=0.0),
-        rate=0.0,
+        rating=0.0,
         angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -118,8 +118,8 @@ get_x(value::MonitoredLine) = value.x
 get_b(value::MonitoredLine) = value.b
 """Get [`MonitoredLine`](@ref) `flow_limits`."""
 get_flow_limits(value::MonitoredLine) = get_value(value, value.flow_limits)
-"""Get [`MonitoredLine`](@ref) `rate`."""
-get_rate(value::MonitoredLine) = get_value(value, value.rate)
+"""Get [`MonitoredLine`](@ref) `rating`."""
+get_rating(value::MonitoredLine) = get_value(value, value.rating)
 """Get [`MonitoredLine`](@ref) `angle_limits`."""
 get_angle_limits(value::MonitoredLine) = value.angle_limits
 """Get [`MonitoredLine`](@ref) `services`."""
@@ -145,8 +145,8 @@ set_x!(value::MonitoredLine, val) = value.x = val
 set_b!(value::MonitoredLine, val) = value.b = val
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
 set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, val)
-"""Set [`MonitoredLine`](@ref) `rate`."""
-set_rate!(value::MonitoredLine, val) = value.rate = set_value(value, val)
+"""Set [`MonitoredLine`](@ref) `rating`."""
+set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, val)
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 """Set [`MonitoredLine`](@ref) `services`."""

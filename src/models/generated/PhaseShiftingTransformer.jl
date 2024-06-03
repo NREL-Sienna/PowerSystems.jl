@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         primary_shunt::Float64
         tap::Float64
         α::Float64
-        rate::Union{Nothing, Float64}
+        rating::Union{Nothing, Float64}
         phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -38,7 +38,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `primary_shunt::Float64`, validation range: `(0, 2)`, action if invalid: `warn`
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`, action if invalid: `error`
 - `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`, action if invalid: `error`
 - `phase_angle_limits::MinMax`: (optional) Minimum and maximum phase angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
@@ -64,8 +64,8 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     "Initial condition of phase shift (radians) between the `from` and `to` buses "
     α::Float64
-    "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`"
-    rate::Union{Nothing, Float64}
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    rating::Union{Nothing, Float64}
     "(optional) Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
     "(optional) Services that this device contributes to"
@@ -76,12 +76,12 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -97,7 +97,7 @@ function PhaseShiftingTransformer(::Nothing)
         primary_shunt=0.0,
         tap=1.0,
         α=0.0,
-        rate=0.0,
+        rating=0.0,
         phase_angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -124,8 +124,8 @@ get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
 get_α(value::PhaseShiftingTransformer) = value.α
-"""Get [`PhaseShiftingTransformer`](@ref) `rate`."""
-get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
+"""Get [`PhaseShiftingTransformer`](@ref) `rating`."""
+get_rating(value::PhaseShiftingTransformer) = get_value(value, value.rating)
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
@@ -153,8 +153,8 @@ set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt =
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
-"""Set [`PhaseShiftingTransformer`](@ref) `rate`."""
-set_rate!(value::PhaseShiftingTransformer, val) = value.rate = set_value(value, val)
+"""Set [`PhaseShiftingTransformer`](@ref) `rating`."""
+set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""

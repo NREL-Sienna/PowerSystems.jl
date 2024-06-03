@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         primary_shunt::Float64
-        rate::Union{Nothing, Float64}
+        rating::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -33,7 +33,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
 - `primary_shunt::Float64`: Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
@@ -55,8 +55,8 @@ mutable struct Transformer2W <: ACBranch
     x::Float64
     "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Float64
-    "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`"
-    rate::Union{Nothing, Float64}
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    rating::Union{Nothing, Float64}
     "(optional) Services that this device contributes to"
     services::Vector{Service}
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
@@ -65,12 +65,12 @@ mutable struct Transformer2W <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services=Device[], ext=Dict{String, Any}(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -84,7 +84,7 @@ function Transformer2W(::Nothing)
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
-        rate=nothing,
+        rating=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -106,8 +106,8 @@ get_r(value::Transformer2W) = value.r
 get_x(value::Transformer2W) = value.x
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
 get_primary_shunt(value::Transformer2W) = value.primary_shunt
-"""Get [`Transformer2W`](@ref) `rate`."""
-get_rate(value::Transformer2W) = get_value(value, value.rate)
+"""Get [`Transformer2W`](@ref) `rating`."""
+get_rating(value::Transformer2W) = get_value(value, value.rating)
 """Get [`Transformer2W`](@ref) `services`."""
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
@@ -129,8 +129,8 @@ set_r!(value::Transformer2W, val) = value.r = val
 set_x!(value::Transformer2W, val) = value.x = val
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
-"""Set [`Transformer2W`](@ref) `rate`."""
-set_rate!(value::Transformer2W, val) = value.rate = set_value(value, val)
+"""Set [`Transformer2W`](@ref) `rating`."""
+set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val)
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""
