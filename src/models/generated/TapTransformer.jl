@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         x::Float64
         primary_shunt::Float64
         tap::Float64
-        rate::Union{Nothing, Float64}
+        rating::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -35,7 +35,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `x::Float64`: Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
 - `primary_shunt::Float64`: Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`, action if invalid: `error`
-- `rate::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`, validation range: `(0, nothing)`, action if invalid: `error`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`, action if invalid: `error`
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
@@ -59,8 +59,8 @@ mutable struct TapTransformer <: ACBranch
     primary_shunt::Float64
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
-    "Thermal rating (MVA). Flow through the transformer must be between -`rate` and `rate`"
-    rate::Union{Nothing, Float64}
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    rating::Union{Nothing, Float64}
     "(optional) Services that this device contributes to"
     services::Vector{Service}
     "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
@@ -69,12 +69,12 @@ mutable struct TapTransformer <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,7 +89,7 @@ function TapTransformer(::Nothing)
         x=0.0,
         primary_shunt=0.0,
         tap=1.0,
-        rate=0.0,
+        rating=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -113,8 +113,8 @@ get_x(value::TapTransformer) = value.x
 get_primary_shunt(value::TapTransformer) = value.primary_shunt
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
-"""Get [`TapTransformer`](@ref) `rate`."""
-get_rate(value::TapTransformer) = get_value(value, value.rate)
+"""Get [`TapTransformer`](@ref) `rating`."""
+get_rating(value::TapTransformer) = get_value(value, value.rating)
 """Get [`TapTransformer`](@ref) `services`."""
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
@@ -138,8 +138,8 @@ set_x!(value::TapTransformer, val) = value.x = val
 set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
-"""Set [`TapTransformer`](@ref) `rate`."""
-set_rate!(value::TapTransformer, val) = value.rate = set_value(value, val)
+"""Set [`TapTransformer`](@ref) `rating`."""
+set_rating!(value::TapTransformer, val) = value.rating = set_value(value, val)
 """Set [`TapTransformer`](@ref) `services`."""
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
