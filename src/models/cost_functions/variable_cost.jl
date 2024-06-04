@@ -6,7 +6,7 @@ IS.deserialize(T::Type{<:ProductionVariableCostCurve}, val::Dict) = IS.deseriali
 "Get the underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
 get_value_curve(cost::ProductionVariableCostCurve) = cost.value_curve
 "Get the variable operation and maintenance cost in \$/(power_units h)"
-get_vom_cost(cost::ProductionVariableCost) = cost.vom_cost
+get_vom_cost(cost::ProductionVariableCostCurve) = cost.vom_cost
 "Get the units for the x-axis of the curve"
 get_power_units(cost::ProductionVariableCostCurve) = cost.power_units
 "Get the `FunctionData` representation of this `ProductionVariableCostCurve`'s `ValueCurve`"
