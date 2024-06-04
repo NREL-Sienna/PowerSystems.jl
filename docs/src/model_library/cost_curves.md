@@ -1,18 +1,14 @@
-### Cost Curves
+### Variable Cost Curves
 ```@docs
 CostCurve
 FuelCurve
+```
+
+### [`ValueCurve`](@ref)s
+```@docs
 LinearCurve
 QuadraticCurve
 PiecewisePointCurve
 PiecewiseIncrementalCurve
 PiecewiseAverageCurve
-```
-
-### Generic Cost Curves
-```@docs
-ValueCurve
-InputOutputCurve
-IncrementalCurve
-AverageRateCurve
 ```
