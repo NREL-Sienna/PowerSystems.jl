@@ -69,7 +69,7 @@ pages["Model Library"] = make_model_library(
         ],
         "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"],
         "Costs" => ["Operating Costs" => "model_library/costs.md",
-        "Cost Curves" => "model_library/cost_curves.md"
+        "Variable Cost Curves" => "model_library/cost_curves.md"
         ]
         )
 )

@@ -25,7 +25,7 @@ Base.hash(a::ProductionVariableCostCurve) = IS.hash_from_fields(a)
 
 """
 Direct representation of the variable operation cost of a power plant in currency. Composed
-of a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate
+of a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate
 data. The default units for the x-axis are megawatts and can be specified with
 `power_units`.
 """
@@ -55,7 +55,7 @@ Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
 """
 Representation of the variable operation cost of a power plant in terms of fuel (MBTU,
 liters, m^3, etc.), coupled with a conversion factor between fuel and currency. Composed of
-a [`ValueCurve`][@ref] that may represent input-output, incremental, or average rate data.
+a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate data.
 The default units for the x-axis are megawatts and can be specified with `power_units`.
 """
 @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
