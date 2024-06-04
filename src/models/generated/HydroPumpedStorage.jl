@@ -64,7 +64,7 @@ A hydropower generator with pumped storage and upper and lower reservoirs.
 - `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
 - `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`, action if invalid: `error`
 - `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity
-- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: [Operating cost](@ref cost_library) of generation
 - `pump_efficiency::Float64`: Pumping effciency [0, 1.0], validation range: `(0, 1)`, action if invalid: `warn`
 - `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `status::PumpHydroStatus`: Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
@@ -117,7 +117,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     initial_storage::UpDown
     "Storage target of upper reservoir at the end of simulation as ratio of storage capacity"
     storage_target::UpDown
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    "[Operating cost](@ref cost_library) of generation"
     operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Pumping effciency [0, 1.0]"
     pump_efficiency::Float64
