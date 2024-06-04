@@ -67,11 +67,13 @@ pages["Model Library"] = make_model_library(
     exceptions = [PSY.DynamicComponent,
                   PSY.ActivePowerControl,
                   PSY.ReactivePowerControl,
-                  PSY.DynamicBranch
+                  PSY.DynamicBranch,
+                  PSY.HybridSystem
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
-        "StaticInjection" => ["Regulation Device" => "model_library/regulation_device.md"],
+        "StaticInjection" => ["Regulation Device" => "model_library/regulation_device.md",
+        "HybridSystem" => "model_library/hybrid_system.md"],
         "DynamicInjection" => ["Dynamic Inverter" => "model_library/dynamic_inverter.md",
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
