@@ -18,32 +18,34 @@ This file is auto-generated. Do not edit.
         inverter_firing_angle::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 As implemented in Milano's Book, Page 397.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `arc::Arc`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
 - `rectifier_tap_limits::MinMax`
 - `rectifier_xrc::Float64`
 - `rectifier_firing_angle::MinMax`
 - `inverter_tap_limits::MinMax`
 - `inverter_xrc::Float64`
 - `inverter_firing_angle::MinMax`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TwoTerminalVSCDCLine <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
     rectifier_tap_limits::MinMax
     rectifier_xrc::Float64
@@ -51,21 +53,20 @@ mutable struct TwoTerminalVSCDCLine <: ACBranch
     inverter_tap_limits::MinMax
     inverter_xrc::Float64
     inverter_firing_angle::MinMax
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalVSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, time_series_container, internal, )
+function TwoTerminalVSCDCLine(; name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalVSCDCLine(name, available, active_power_flow, arc, rectifier_tap_limits, rectifier_xrc, rectifier_firing_angle, inverter_tap_limits, inverter_xrc, inverter_firing_angle, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -83,7 +84,6 @@ function TwoTerminalVSCDCLine(::Nothing)
         inverter_firing_angle=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -111,8 +111,6 @@ get_inverter_firing_angle(value::TwoTerminalVSCDCLine) = value.inverter_firing_a
 get_services(value::TwoTerminalVSCDCLine) = value.services
 """Get [`TwoTerminalVSCDCLine`](@ref) `ext`."""
 get_ext(value::TwoTerminalVSCDCLine) = value.ext
-"""Get [`TwoTerminalVSCDCLine`](@ref) `time_series_container`."""
-get_time_series_container(value::TwoTerminalVSCDCLine) = value.time_series_container
 """Get [`TwoTerminalVSCDCLine`](@ref) `internal`."""
 get_internal(value::TwoTerminalVSCDCLine) = value.internal
 
@@ -138,5 +136,3 @@ set_inverter_firing_angle!(value::TwoTerminalVSCDCLine, val) = value.inverter_fi
 set_services!(value::TwoTerminalVSCDCLine, val) = value.services = val
 """Set [`TwoTerminalVSCDCLine`](@ref) `ext`."""
 set_ext!(value::TwoTerminalVSCDCLine, val) = value.ext = val
-"""Set [`TwoTerminalVSCDCLine`](@ref) `time_series_container`."""
-set_time_series_container!(value::TwoTerminalVSCDCLine, val) = value.time_series_container = val

@@ -17,52 +17,57 @@ This file is auto-generated. Do not edit.
         loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 a High voltage DC line.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `arc::Arc`
-- `active_power_limits_from::MinMax`
-- `active_power_limits_to::MinMax`
-- `reactive_power_limits_from::MinMax`
-- `reactive_power_limits_to::MinMax`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
+- `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
+- `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
+- `reactive_power_limits_from::MinMax`: Minimum and maximum reactive power limits to the FROM node (MVAR)
+- `reactive_power_limits_to::MinMax`: Minimum and maximum reactive power limits to the TO node (MVAR)
 - `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TwoTerminalHVDCLine <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
+    "Minimum and maximum active power flows to the FROM node (MW)"
     active_power_limits_from::MinMax
+    "Minimum and maximum active power flows to the TO node (MW)"
     active_power_limits_to::MinMax
+    "Minimum and maximum reactive power limits to the FROM node (MVAR)"
     reactive_power_limits_from::MinMax
+    "Minimum and maximum reactive power limits to the TO node (MVAR)"
     reactive_power_limits_to::MinMax
     loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, time_series_container, internal, )
+function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,7 +84,6 @@ function TwoTerminalHVDCLine(::Nothing)
         loss=(l0=0.0, l1=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -105,8 +109,6 @@ get_loss(value::TwoTerminalHVDCLine) = value.loss
 get_services(value::TwoTerminalHVDCLine) = value.services
 """Get [`TwoTerminalHVDCLine`](@ref) `ext`."""
 get_ext(value::TwoTerminalHVDCLine) = value.ext
-"""Get [`TwoTerminalHVDCLine`](@ref) `time_series_container`."""
-get_time_series_container(value::TwoTerminalHVDCLine) = value.time_series_container
 """Get [`TwoTerminalHVDCLine`](@ref) `internal`."""
 get_internal(value::TwoTerminalHVDCLine) = value.internal
 
@@ -130,5 +132,3 @@ set_loss!(value::TwoTerminalHVDCLine, val) = value.loss = val
 set_services!(value::TwoTerminalHVDCLine, val) = value.services = val
 """Set [`TwoTerminalHVDCLine`](@ref) `ext`."""
 set_ext!(value::TwoTerminalHVDCLine, val) = value.ext = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `time_series_container`."""
-set_time_series_container!(value::TwoTerminalHVDCLine, val) = value.time_series_container = val

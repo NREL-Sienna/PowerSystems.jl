@@ -4,8 +4,6 @@ using InteractiveUtils
 const IS = InfrastructureSystems
 const PSY = PowerSystems
 
-IS.strip_module_name
-
 function _check_exception(T, exceptions::Vector)
     for type_exception in exceptions
         if T <: type_exception
@@ -37,13 +35,13 @@ function _write_first_level_markdown(c::String)
 end
 
 function _write_second_level_markdown(input::DataType, subtypes::Vector{DataType}, exceptions)
-    c = IS.strip_module_name(input)
+    c = string(nameof(input))
     file_name = "model_library/generated_$(c).md"
             open(joinpath("docs/src", file_name), "w") do io
                 print(io, "# $input\n\n")
                 for T_ in subtypes
                     _check_exception(T_, exceptions) && continue
-                    T = IS.strip_module_name(T_)
+                    T = string(nameof(T_))
                     print(
                         io,
                         """
@@ -77,11 +75,11 @@ manual_additions = Dict{String, Any}("DynamicInverterComponent" => Any["OuterCon
 )
     for abstract_type in dyn_categories
         @info "Making entries for subtypes of $abstract_type"
-        abstract_type_string = IS.strip_module_name(abstract_type)
+        abstract_type_string = string(nameof(abstract_type))
         addition = Dict{String, Any}()
         internal_index = Any[]
         for c_ in subtypes(abstract_type)
-            c_string = IS.strip_module_name(c_)
+            c_string = string(nameof(c_))
             _check_exception(c_, exceptions) && continue
             concretes = IS.get_all_concrete_subtypes(c_)
             file_name = _write_second_level_markdown(c_,
@@ -110,12 +108,12 @@ function make_model_library(;
         concrete = IS.get_all_concrete_subtypes(abstract_type)
         for c_ in concrete
             _check_exception(c_, exceptions) && continue
-            c = IS.strip_module_name(c_)
+            c = string(nameof(c_))
             file_name = _write_first_level_markdown(c)
             push!(internal_index, c => file_name)
         end
         isempty(internal_index) && continue
-        model_library[IS.strip_module_name(abstract_type)] = internal_index
+        model_library[string(nameof(abstract_type))] = internal_index
     end
 
     make_dynamics_library!(model_library)

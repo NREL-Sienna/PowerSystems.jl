@@ -15,52 +15,52 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `Y::Complex{Float64}`: Initial impedance at N = 0
-- `number_of_steps::Int`: Number of steps for adjustable shunt
-- `Y_increase::Complex{Float64}`: Admittance increment for each of step increase
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
+- `Y::Complex{Float64}`: Initial admittance at N = 0
+- `number_of_steps::Int`: (optional) Number of steps for adjustable shunt
+- `Y_increase::Complex{Float64}`: (optional) Admittance increment for each of step increase
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection model for admittance
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct SwitchedAdmittance <: ElectricLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
-    "Initial impedance at N = 0"
+    "Initial admittance at N = 0"
     Y::Complex{Float64}
-    "Number of steps for adjustable shunt"
+    "(optional) Number of steps for adjustable shunt"
     number_of_steps::Int
-    "Admittance increment for each of step increase"
+    "(optional) Admittance increment for each of step increase"
     Y_increase::Complex{Float64}
-    "corresponding dynamic injection model for admittance"
+    "(optional) corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, time_series_container, internal, )
+function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -75,7 +75,6 @@ function SwitchedAdmittance(::Nothing)
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -97,8 +96,6 @@ get_dynamic_injector(value::SwitchedAdmittance) = value.dynamic_injector
 get_services(value::SwitchedAdmittance) = value.services
 """Get [`SwitchedAdmittance`](@ref) `ext`."""
 get_ext(value::SwitchedAdmittance) = value.ext
-"""Get [`SwitchedAdmittance`](@ref) `time_series_container`."""
-get_time_series_container(value::SwitchedAdmittance) = value.time_series_container
 """Get [`SwitchedAdmittance`](@ref) `internal`."""
 get_internal(value::SwitchedAdmittance) = value.internal
 
@@ -116,5 +113,3 @@ set_Y_increase!(value::SwitchedAdmittance, val) = value.Y_increase = val
 set_services!(value::SwitchedAdmittance, val) = value.services = val
 """Set [`SwitchedAdmittance`](@ref) `ext`."""
 set_ext!(value::SwitchedAdmittance, val) = value.ext = val
-"""Set [`SwitchedAdmittance`](@ref) `time_series_container`."""
-set_time_series_container!(value::SwitchedAdmittance, val) = value.time_series_container = val

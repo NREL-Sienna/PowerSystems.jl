@@ -14,61 +14,63 @@ This file is auto-generated. Do not edit.
         max_active_power::Float64
         max_reactive_power::Float64
         base_power::Float64
-        operation_cost::TwoPartCost
+        operation_cost::Union{LoadCost, MarketBidCost}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `active_power::Float64`
-- `reactive_power::Float64`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::TwoPartCost`: Operation Cost of Generation [`TwoPartCost`](@ref)
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
+- `operation_cost::Union{LoadCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
     max_active_power::Float64
     max_reactive_power::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
-    "Operation Cost of Generation [`TwoPartCost`](@ref)"
-    operation_cost::TwoPartCost
-    "Services that this device contributes to"
+    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    operation_cost::Union{LoadCost, MarketBidCost}
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, time_series_container, internal, )
+function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -82,11 +84,10 @@ function InterruptiblePowerLoad(::Nothing)
         max_active_power=0.0,
         max_reactive_power=0.0,
         base_power=0.0,
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=LoadCost(nothing),
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -114,8 +115,6 @@ get_services(value::InterruptiblePowerLoad) = value.services
 get_dynamic_injector(value::InterruptiblePowerLoad) = value.dynamic_injector
 """Get [`InterruptiblePowerLoad`](@ref) `ext`."""
 get_ext(value::InterruptiblePowerLoad) = value.ext
-"""Get [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::InterruptiblePowerLoad) = value.time_series_container
 """Get [`InterruptiblePowerLoad`](@ref) `internal`."""
 get_internal(value::InterruptiblePowerLoad) = value.internal
 
@@ -139,5 +138,3 @@ set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost =
 set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 """Set [`InterruptiblePowerLoad`](@ref) `ext`."""
 set_ext!(value::InterruptiblePowerLoad, val) = value.ext = val
-"""Set [`InterruptiblePowerLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::InterruptiblePowerLoad, val) = value.time_series_container = val

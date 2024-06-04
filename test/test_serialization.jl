@@ -1,62 +1,22 @@
-@testset "Test JSON serialization of RTS data with mutable time series" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-    # Add an AGC service to cover its special serialization.
-    control_area = get_component(Area, sys, "1")
-    AGC_service = PSY.AGC(;
-        name = "AGC_Area1",
-        available = true,
-        bias = 739.0,
-        K_p = 2.5,
-        K_i = 0.1,
-        K_d = 0.0,
-        delta_t = 4,
-        area = control_area,
-    )
-    initial_time = Dates.DateTime("2020-01-01T00:00:00")
-    end_time = Dates.DateTime("2020-01-01T23:00:00")
-    dates = collect(initial_time:Dates.Hour(1):end_time)
-    data = collect(1:24)
-    name = "active_power"
-    contributing_devices = Vector{Device}()
-    for g in get_components(
-        x -> (get_prime_mover_type(x) ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
-        ThermalStandard,
-        sys,
-    )
-        if get_area(get_bus(g)) != control_area
-            continue
-        end
-        ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
-        time_series = IS.SingleTimeSeries(;
-            name = name,
-            data = ta,
-            scaling_factor_multiplier = get_active_power,
-        )
-        add_time_series!(sys, g, time_series)
-
-        t = RegulationDevice(g; participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
-        add_component!(sys, t)
-        @test isnothing(get_component(ThermalStandard, sys, get_name(g)))
-        push!(contributing_devices, t)
-    end
-    add_service!(sys, AGC_service, contributing_devices)
-
-    sys2, result = validate_serialization(sys; time_series_read_only = false)
+@testset "Test JSON serialization of RTS data with RegulationDevice" begin
+    sys = create_system_with_regulation_device()
+    sys2, result = validate_serialization(sys)
     @test result
 
     # Ensure the time_series attached to the ThermalStandard got deserialized.
     for rd in get_components(RegulationDevice, sys2)
-        @test get_time_series(SingleTimeSeries, rd, name) isa SingleTimeSeries
+        @test get_time_series(SingleTimeSeries, rd, "active_power") isa SingleTimeSeries
     end
 
     clear_time_series!(sys2)
 end
 
 @testset "Test JSON serialization of RTS data with immutable time series" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    sys =
+        PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)
     sys2, result = validate_serialization(sys; time_series_read_only = true)
     @test result
-    @test_throws ErrorException clear_time_series!(sys2)
+    @test_throws ArgumentError clear_time_series!(sys2)
     # Full error checking is done in IS.
 end
 
@@ -149,13 +109,36 @@ end
         initial_time = Dates.DateTime("2020-01-01T00:00:00")
         end_time = Dates.DateTime("2020-01-01T23:00:00")
         dates = collect(initial_time:Dates.Hour(1):end_time)
-        data = collect(1:24)
+        data =
+            PiecewiseStepData.(
+                [[i, i + 1, i + 2] for i in 1.0:24.0],
+                [[i, i + 1] for i in 1.0:24.0],
+            )
         market_bid = MarketBidCost(nothing)
         set_operation_cost!(gen, market_bid)
         add_component!(sys, gen)
         ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
+        service = StaticReserve{ReserveDown}(;
+            name = "init_$i",
+            available = false,
+            time_frame = 0.0,
+            requirement = 0.0,
+            sustained_time = 0.0,
+            max_output_fraction = 1.0,
+            max_participation_factor = 1.0,
+            deployed_fraction = 0.0,
+            ext = Dict{String, Any}(),
+        )
+        add_component!(sys, service)
+        add_service!(gen, service, sys)
+        set_service_bid!(
+            sys,
+            gen,
+            service,
+            IS.SingleTimeSeries(; name = "init_$i", data = ta),
+        )
     end
     _, result = validate_serialization(sys)
     @test result
@@ -222,6 +205,12 @@ end
     end
 end
 
+@testset "Test serialization of supplemental attributes" begin
+    sys = create_system_with_outages()
+    sys2, result = validate_serialization(sys; assign_new_uuids = true)
+    @test result
+end
+
 @testset "Test verification of invalid ext fields" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     gen = first(get_components(ThermalStandard, sys))
@@ -266,4 +255,84 @@ end
     @test sys2.frequency == frequency
     @test sys2.metadata.name == name
     @test sys2.metadata.description == description
+end
+
+@testset "Test serialization of subsystems" begin
+    sys = create_system_with_subsystems()
+    sys2, result = validate_serialization(sys)
+    @test result
+    @test sort!(collect(get_subsystems(sys))) == ["subsystem_1"]
+end
+
+@testset "Test serialization to JSON string" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    set_name!(sys, "test_RTS_GMLC_sys")
+    set_description!(sys, "test description")
+    @test !isempty(collect(IS.iterate_components_with_time_series(sys.data)))
+    text = to_json(sys)
+    sys2 = from_json(text, System)
+    exclude = Set([:time_series_manager])
+    @test PSY.compare_values(sys2, sys, exclude = exclude)
+    @test isempty(collect(IS.iterate_components_with_time_series(sys2.data)))
+end
+
+@testset "Test serialization of component with shared time series" begin
+    for use_scaling_factor in (true, false)
+        for in_memory in (true, false)
+            sys = System(100.0)
+            bus = ACBus(nothing)
+            bus.bustype = ACBusTypes.REF
+            add_component!(sys, bus)
+            gen = ThermalStandard(nothing)
+            gen.name = "gen1"
+            gen.bus = bus
+            gen.base_power = 1.0
+            gen.active_power = 1.2
+            gen.reactive_power = 2.3
+            gen.active_power_limits = (0.0, 5.0)
+            add_component!(sys, gen)
+
+            initial_time = Dates.DateTime("2020-01-01T00:00:00")
+            end_time = Dates.DateTime("2020-01-01T23:00:00")
+            dates = collect(initial_time:Dates.Hour(1):end_time)
+            data = rand(length(dates))
+            ta = TimeSeries.TimeArray(dates, data, ["1"])
+            sfm1 = use_scaling_factor ? get_max_active_power : nothing
+            sfm2 = use_scaling_factor ? get_max_reactive_power : nothing
+            ts1a = SingleTimeSeries(;
+                name = "max_active_power",
+                data = ta,
+                scaling_factor_multiplier = sfm1,
+            )
+            add_time_series!(sys, gen, ts1a)
+            ts2a = SingleTimeSeries(
+                ts1a,
+                "max_reactive_power";
+                scaling_factor_multiplier = sfm2,
+            )
+            add_time_series!(sys, gen, ts2a)
+
+            sys2, result = validate_serialization(sys)
+            @test result
+
+            @test IS.get_num_time_series(sys2.data) == 1
+            gen2 = get_component(ThermalStandard, sys2, "gen1")
+            ts1b = get_time_series(SingleTimeSeries, gen2, "max_active_power")
+            ts2b = get_time_series(SingleTimeSeries, gen2, "max_reactive_power")
+            @test ts1b.data == ts2b.data
+            ta_vals = TimeSeries.values(ta)
+            expected1 = use_scaling_factor ? ta_vals * get_max_active_power(gen) : ta_vals
+            expected2 = use_scaling_factor ? ta_vals * get_max_reactive_power(gen) : ta_vals
+            @test get_time_series_values(
+                gen2,
+                ts1b,
+                initial_time;
+            ) == expected1
+            @test get_time_series_values(
+                gen2,
+                ts2b,
+                initial_time;
+            ) == expected2
+        end
+    end
 end

@@ -19,61 +19,64 @@ This file is auto-generated. Do not edit.
         angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
-- `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `b::FromTo`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
+- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
+- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
+- `b::FromTo`: Susceptance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
 - `flow_limits::FromTo_ToFrom`: throw warning above max SIL
 - `rate::Float64`: compare to SIL (warn) (theoretical limit)
-- `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct MonitoredLine <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow on the line (MVAR)"
     reactive_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
-    "System per-unit value"
+    "Resistance in pu ([`System Base`](@ref per_unit))"
     r::Float64
-    "System per-unit value"
+    "Reactance in pu ([`System Base`](@ref per_unit))"
     x::Float64
-    "System per-unit value"
+    "Susceptance in pu ([`System Base`](@ref per_unit))"
     b::FromTo
     "throw warning above max SIL"
     flow_limits::FromTo_ToFrom
     "compare to SIL (warn) (theoretical limit)"
     rate::Float64
+    "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, time_series_container, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rate, angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,7 +95,6 @@ function MonitoredLine(::Nothing)
         angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -122,8 +124,6 @@ get_angle_limits(value::MonitoredLine) = value.angle_limits
 get_services(value::MonitoredLine) = value.services
 """Get [`MonitoredLine`](@ref) `ext`."""
 get_ext(value::MonitoredLine) = value.ext
-"""Get [`MonitoredLine`](@ref) `time_series_container`."""
-get_time_series_container(value::MonitoredLine) = value.time_series_container
 """Get [`MonitoredLine`](@ref) `internal`."""
 get_internal(value::MonitoredLine) = value.internal
 
@@ -151,5 +151,3 @@ set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 set_services!(value::MonitoredLine, val) = value.services = val
 """Set [`MonitoredLine`](@ref) `ext`."""
 set_ext!(value::MonitoredLine, val) = value.ext = val
-"""Set [`MonitoredLine`](@ref) `time_series_container`."""
-set_time_series_container!(value::MonitoredLine, val) = value.time_series_container = val

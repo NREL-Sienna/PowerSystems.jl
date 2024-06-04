@@ -19,26 +19,27 @@ Parameters of single mass shaft model. Typically represents the rotor mass.
 # Arguments
 - `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
 - `D::Float64`: Rotor natural damping in pu, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	δ: rotor angle,
 	ω: rotor speed
-- `n_states::Int`: SingleMass has 1 state
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) SingleMass has 1 state
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct SingleMass <: Shaft
     "Rotor inertia constant in MWs/MVA"
     H::Float64
     "Rotor natural damping in pu"
     D::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	δ: rotor angle,
 	ω: rotor speed"
     states::Vector{Symbol}
-    "SingleMass has 1 state"
+    "(**Do not modify.**) SingleMass has 1 state"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

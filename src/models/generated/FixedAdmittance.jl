@@ -13,46 +13,46 @@ This file is auto-generated. Do not edit.
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: System per-unit value
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection model for admittance
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct FixedAdmittance <: ElectricLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
     "System per-unit value"
     Y::Complex{Float64}
-    "corresponding dynamic injection model for admittance"
+    "(optional) corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function FixedAdmittance(name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, time_series_container, internal, )
+function FixedAdmittance(; name, available, bus, Y, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    FixedAdmittance(name, available, bus, Y, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -65,7 +65,6 @@ function FixedAdmittance(::Nothing)
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -83,8 +82,6 @@ get_dynamic_injector(value::FixedAdmittance) = value.dynamic_injector
 get_services(value::FixedAdmittance) = value.services
 """Get [`FixedAdmittance`](@ref) `ext`."""
 get_ext(value::FixedAdmittance) = value.ext
-"""Get [`FixedAdmittance`](@ref) `time_series_container`."""
-get_time_series_container(value::FixedAdmittance) = value.time_series_container
 """Get [`FixedAdmittance`](@ref) `internal`."""
 get_internal(value::FixedAdmittance) = value.internal
 
@@ -98,5 +95,3 @@ set_Y!(value::FixedAdmittance, val) = value.Y = val
 set_services!(value::FixedAdmittance, val) = value.services = val
 """Set [`FixedAdmittance`](@ref) `ext`."""
 set_ext!(value::FixedAdmittance, val) = value.ext = val
-"""Set [`FixedAdmittance`](@ref) `time_series_container`."""
-set_time_series_container!(value::FixedAdmittance, val) = value.time_series_container = val

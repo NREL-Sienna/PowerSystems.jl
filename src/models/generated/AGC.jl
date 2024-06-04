@@ -22,36 +22,39 @@ This file is auto-generated. Do not edit.
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bias::Float64`
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
-- `K_d::Float64`: PID Derrivative Constant
+- `K_d::Float64`: PID Derivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
-- `area::Union{Nothing, Area}`: the area controlled by the AGC
-- `initial_ace::Float64`: PID Discretization period [Seconds]
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `area::Union{Nothing, Area}`: (optional) the area controlled by the AGC
+- `initial_ace::Float64`: (optional) Initial condition for ACE
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct AGC <: Service
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     bias::Float64
     "PID Proportional Constant"
     K_p::Float64
     "PID Integral Constant"
     K_i::Float64
-    "PID Derrivative Constant"
+    "PID Derivative Constant"
     K_d::Float64
     "PID Discretization period [Seconds]"
     delta_t::Float64
-    "the area controlled by the AGC"
+    "(optional) the area controlled by the AGC"
     area::Union{Nothing, Area}
-    "PID Discretization period [Seconds]"
+    "(optional) Initial condition for ACE"
     initial_ace::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

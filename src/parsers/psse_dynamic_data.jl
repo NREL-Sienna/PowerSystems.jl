@@ -246,9 +246,11 @@ function _parse_dyr_components(data::Dict)
     gen_map = yaml_mapping["generator_mapping"][1]
     # inv_map contains al the supported structs for inverters
     inv_map = yaml_mapping["inverter_mapping"][1]
-
+    # additional_map contains all the supported structs for additional injectors
+    additional_map = yaml_mapping["additional_mapping"][1]
     gen_keys = Set(keys(gen_map))
     inv_keys = Set(keys(inv_map))
+    additional_keys = Set(keys(additional_map))
 
     # dic will contain the dictionary index by bus.
     # Each entry will be a dictionary, with id as keys, that contains the vector of components
@@ -285,6 +287,15 @@ function _parse_dyr_components(data::Dict)
                     componentID,
                     inv_map,
                 )
+            elseif componentID[1] in additional_keys
+                #TODO: Make multiple dispatch for this
+                _parse_dera1!(
+                    bus_dict,
+                    componentID,
+                    componentValues,
+                    param_map,
+                    bus_num,
+                )
             else
                 @warn "$(componentID[1]) at bus $bus_num, id $(componentID[2]), not supported in PowerSystems.jl. Skipping data."
             end
@@ -294,6 +305,39 @@ function _parse_dyr_components(data::Dict)
         system_dic[bus_num] = bus_dict
     end
     return system_dic
+end
+
+"""
+Parse dictionary of data (from `_parse_dyr_file`) into a dictionary of DERA1.
+The function receives the parsed dictionary and constructs a dictionary indexed by bus, that contains a
+dictionary with each DERA1 indexed by its id.
+
+"""
+function _parse_dera1!(
+    bus_dict,
+    componentID,
+    componentValues,
+    param_map::Dict,
+    bus_num::Int,
+)
+    temp = get!(bus_dict, componentID[2], fill!(Vector{Any}(undef, 1), missing))
+    params_ix = param_map["AggregateDistributedGenerationA"]
+    constructor_dera =
+        (args...) ->
+            InteractiveUtils.getfield(PowerSystems, :AggregateDistributedGenerationA)(
+                args...,
+            )
+    dera1_args = _populate_args(params_ix, componentValues)
+    # Update name
+    dera1_args[1] = componentID[1] * "_" * string(bus_num) * "_" * componentID[2]
+    # Transform Flags to Int
+    dera1_args[2:7] = Int64.(dera1_args[2:7])
+    # Transform vl tuples to vector of tuples
+    dera1_args[24] = [dera1_args[24]]
+    dera1_args[25] = [dera1_args[25]]
+    dera1 = constructor_dera(dera1_args...)
+    temp[1] = dera1
+    return
 end
 
 """
@@ -479,6 +523,12 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
             elseif length(temp_dict[_id]) == 7 # Inverter has 7 components (6 if Outer is put together)
                 dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_inv, g)
+            elseif length(temp_dict[_id]) == 1
+                #TODO: While we only have 1 thing (DERA1) it will work, 
+                #TODO: but we need to generalize this for any generic dynamic injector
+                dyn_inj = temp_dict[_id][1]
+                set_name!(dyn_inj, get_name(g))
+                add_component!(sys, dyn_inj, g)
             else
                 @assert false
             end

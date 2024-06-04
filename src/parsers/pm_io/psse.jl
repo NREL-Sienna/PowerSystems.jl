@@ -487,7 +487,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     error("invalid transformer $(transformer["CW"])")
                 end
 
-                @assert transformer["X1-2"] > 0.0 && br_x > 0.0
+                if transformer["X1-2"] < 0.0 && br_x < 0.0
+                    @warn "transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) has an impedance $(br_x) and ratio $(transformer["X1-2"])"
+                end
                 sub_data["br_r"] = br_r
                 sub_data["br_x"] = br_x
 

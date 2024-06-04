@@ -35,14 +35,14 @@ Steam Turbine-Governor. This model considers both TGOV1 or TGOV1DU in PSS/E.
 - `DB_h::Float64`: Deadband for overspeed, validation range: `(0, nothing)`, action if invalid: `warn`
 - `DB_l::Float64`: Deadband for underspeed, validation range: `(nothing, 0)`, action if invalid: `warn`
 - `T_rate::Float64`: Turbine Rate (MW). If zero, generator base is used., validation range: `(0, nothing)`, action if invalid: `warn`
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the SteamTurbineGov1 model are:
+- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
 	x_g2: Lead-lag state
-- `n_states::Int`: TGOV1 has 2 states
-- `states_types::Vector{StateTypes}`: TGOV1 has 2 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) TGOV1 has 2 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) TGOV1 has 2 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct SteamTurbineGov1 <: TurbineGov
     "Droop parameter"
@@ -63,18 +63,19 @@ mutable struct SteamTurbineGov1 <: TurbineGov
     DB_l::Float64
     "Turbine Rate (MW). If zero, generator base is used."
     T_rate::Float64
-    "Reference Power Set-point"
+    "(optional) Reference Power Set-point (pu)"
     P_ref::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the SteamTurbineGov1 model are:
+    "(**Do not modify.**) The states of the SteamTurbineGov1 model are:
 	x_g1: Valve Opening,
 	x_g2: Lead-lag state"
     states::Vector{Symbol}
-    "TGOV1 has 2 states"
+    "(**Do not modify.**) TGOV1 has 2 states"
     n_states::Int
-    "TGOV1 has 2 differential states"
+    "(**Do not modify.**) TGOV1 has 2 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

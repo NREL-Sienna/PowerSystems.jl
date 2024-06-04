@@ -18,10 +18,11 @@
 end
 
 @testset "Generation Constructors" begin
-    tThreePartCost = ThreePartCost(nothing)
-    @test tThreePartCost isa IS.InfrastructureSystemsType
-    tTwoPartCost = TwoPartCost(nothing)
-    @test tTwoPartCost isa IS.InfrastructureSystemsType
+    for T in subtypes(PSY.OperationalCost)
+        isabstracttype(T) || (@test T(nothing) isa IS.InfrastructureSystemsType)
+    end
+    # TODO add concrete subtypes of ProductionVariableCost?
+
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
@@ -42,7 +43,7 @@ end
 end
 
 @testset "Storage Constructors" begin
-    tStorage = GenericBattery(nothing)
+    tStorage = EnergyReservoirStorage(nothing)
     @test tStorage isa PowerSystems.Component
 end
 

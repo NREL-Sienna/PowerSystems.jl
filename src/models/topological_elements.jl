@@ -10,6 +10,8 @@ All subtypes must implement the method `get_aggregation_topology_accessor`.
 """
 abstract type AggregationTopology <: Topology end
 
+supports_time_series(::AggregationTopology) = true
+
 """
 Abstract type to represent any type of Bus, AC or DC.
 """

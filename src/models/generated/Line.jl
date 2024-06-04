@@ -18,33 +18,36 @@ This file is auto-generated. Do not edit.
         angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
-- `arc::Arc`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
 - `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
 - `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
 - `b::FromTo`: System per-unit value, validation range: `(0, 100)`, action if invalid: `warn`
 - `rate::Float64`
 - `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Line <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow on the line (MVAR)"
     reactive_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
     "System per-unit value"
     r::Float64
@@ -54,21 +57,20 @@ mutable struct Line <: ACBranch
     b::FromTo
     rate::Float64
     angle_limits::MinMax
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, time_series_container, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rate, angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,7 +88,6 @@ function Line(::Nothing)
         angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -114,8 +115,6 @@ get_angle_limits(value::Line) = value.angle_limits
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
 get_ext(value::Line) = value.ext
-"""Get [`Line`](@ref) `time_series_container`."""
-get_time_series_container(value::Line) = value.time_series_container
 """Get [`Line`](@ref) `internal`."""
 get_internal(value::Line) = value.internal
 
@@ -141,5 +140,3 @@ set_angle_limits!(value::Line, val) = value.angle_limits = val
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""
 set_ext!(value::Line, val) = value.ext = val
-"""Set [`Line`](@ref) `time_series_container`."""
-set_time_series_container!(value::Line, val) = value.time_series_container = val

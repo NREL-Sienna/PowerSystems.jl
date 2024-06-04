@@ -81,9 +81,9 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Tsa::Float64`: Temperature detection lead time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`, action if invalid: `warn`
 - `R_lim::UpDown`: Maximum rate of load increa
-- `P_ref::Float64`: Reference Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the GGOV1 model are:
+- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 
@@ -94,9 +94,9 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 	x_g7: Supervisory Load Control, 
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:
-- `n_states::Int`: GeneralGovModel has 10 states
-- `states_types::Vector{StateTypes}`: GGOV1 has 10 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) GeneralGovModel has 10 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) GGOV1 has 10 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct GeneralGovModel <: TurbineGov
     "Feedback signal for governor droop"
@@ -163,10 +163,11 @@ mutable struct GeneralGovModel <: TurbineGov
     Tsb::Float64
     "Maximum rate of load increa"
     R_lim::UpDown
-    "Reference Power Set-point"
+    "(optional) Reference Power Set-point (pu)"
     P_ref::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the GGOV1 model are:
+    "(**Do not modify.**) The states of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
 	x_g2: Governor integral control, 
@@ -178,11 +179,11 @@ mutable struct GeneralGovModel <: TurbineGov
 	x_g8: Acceleration Control, 
 	x_g9 Temperature Detection Lead - Lag:"
     states::Vector{Symbol}
-    "GeneralGovModel has 10 states"
+    "(**Do not modify.**) GeneralGovModel has 10 states"
     n_states::Int
-    "GGOV1 has 10 differential states"
+    "(**Do not modify.**) GGOV1 has 10 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

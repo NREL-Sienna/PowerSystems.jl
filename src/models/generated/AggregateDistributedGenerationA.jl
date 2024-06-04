@@ -47,16 +47,16 @@ This file is auto-generated. Do not edit.
         Q_ref::Float64
         P_ref::Float64
         base_power::Float64
+        ext::Dict{String, Any}
         states::Vector{Symbol}
         n_states::Int
-        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
 Parameters of the DERA1 model in PSS/E
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `Pf_Flag::Int`: Flag for Power Factor Control, validation range: `(0, 1)`
 - `Freq_Flag::Int`: Flag to enable/disable frequency control, validation range: `(0, 1)`
 - `PQ_Flag::Int`: Flag used to enforce maximum current, validation range: `(0, 1)`
@@ -91,18 +91,19 @@ Parameters of the DERA1 model in PSS/E
 - `Tv::Float64`: Time constant on the output of the multiplier (s), validation range: `(0, nothing)`
 - `Vpr::Float64`: Voltage below which frequency tripping is disabled (pu), validation range: `(0, nothing)`
 - `Iq_lim::MinMax`: Reactive current injection limits (Iqll, Iqhl)
-- `V_ref::Float64`: User defined voltage reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
-- `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
-- `ω_ref::Float64`: Reference frequency, validation range: `(0, nothing)`
-- `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power
-- `states::Vector{Symbol}`: The states of AggregateDistributedGenerationA depends on the Flags
-- `n_states::Int`: The states of AggregateDistributedGenerationA depends on the Flags
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `V_ref::Float64`: (optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
+- `Pfa_ref::Float64`: (optional) Reference power factor, validation range: `(0, nothing)`
+- `ω_ref::Float64`: (optional) Reference Frequency (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (optional) Base power (MVA) for per unitization.
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
+- `n_states::Int`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct AggregateDistributedGenerationA <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "Flag for Power Factor Control"
     Pf_Flag::Int
@@ -172,24 +173,25 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     Vpr::Float64
     "Reactive current injection limits (Iqll, Iqhl)"
     Iq_lim::MinMax
-    "User defined voltage reference. If 0, PSID initializes to initial terminal voltage"
+    "(optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage"
     V_ref::Float64
-    "Reference power factor"
+    "(optional) Reference power factor"
     Pfa_ref::Float64
-    "Reference frequency"
+    "(optional) Reference Frequency (pu)"
     ω_ref::Float64
-    "Reference reactive power, in pu"
+    "(optional) Reference reactive power, in pu"
     Q_ref::Float64
-    "Reference active power, in pu"
+    "(optional) Reference active power, in pu"
     P_ref::Float64
-    "Base power"
+    "(optional) Base power (MVA) for per unitization."
     base_power::Float64
-    "The states of AggregateDistributedGenerationA depends on the Flags"
-    states::Vector{Symbol}
-    "The states of AggregateDistributedGenerationA depends on the Flags"
-    n_states::Int
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
+    states::Vector{Symbol}
+    "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
+    n_states::Int
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
@@ -197,8 +199,8 @@ function AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_
     AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, ω_ref, Q_ref, P_ref, base_power, ext, PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], InfrastructureSystemsInternal(), )
 end
 
-function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, ω_ref=1.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, ω_ref, Q_ref, P_ref, base_power, states, n_states, ext, internal, )
+function AggregateDistributedGenerationA(; name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref=1.0, Pfa_ref=0.0, ω_ref=1.0, Q_ref=0.0, P_ref=1.0, base_power=100.0, ext=Dict{String, Any}(), states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[1], n_states=PowerSystems.get_AggregateDistributedGenerationA_states(Freq_Flag)[2], internal=InfrastructureSystemsInternal(), )
+    AggregateDistributedGenerationA(name, Pf_Flag, Freq_Flag, PQ_Flag, Gen_Flag, Vtrip_Flag, Ftrip_Flag, T_rv, Trf, dbd_pnts, K_qv, Tp, T_iq, D_dn, D_up, fdbd_pnts, fe_lim, P_lim, dP_lim, Tpord, Kpg, Kig, I_max, vl_pnts, vh_pnts, Vrfrac, fl, fh, tfl, tfh, Tg, rrpwr, Tv, Vpr, Iq_lim, V_ref, Pfa_ref, ω_ref, Q_ref, P_ref, base_power, ext, states, n_states, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -331,12 +333,12 @@ get_Q_ref(value::AggregateDistributedGenerationA) = value.Q_ref
 get_P_ref(value::AggregateDistributedGenerationA) = value.P_ref
 """Get [`AggregateDistributedGenerationA`](@ref) `base_power`."""
 get_base_power(value::AggregateDistributedGenerationA) = value.base_power
+"""Get [`AggregateDistributedGenerationA`](@ref) `ext`."""
+get_ext(value::AggregateDistributedGenerationA) = value.ext
 """Get [`AggregateDistributedGenerationA`](@ref) `states`."""
 get_states(value::AggregateDistributedGenerationA) = value.states
 """Get [`AggregateDistributedGenerationA`](@ref) `n_states`."""
 get_n_states(value::AggregateDistributedGenerationA) = value.n_states
-"""Get [`AggregateDistributedGenerationA`](@ref) `ext`."""
-get_ext(value::AggregateDistributedGenerationA) = value.ext
 """Get [`AggregateDistributedGenerationA`](@ref) `internal`."""
 get_internal(value::AggregateDistributedGenerationA) = value.internal
 

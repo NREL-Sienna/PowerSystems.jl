@@ -35,7 +35,7 @@ This file is auto-generated. Do not edit.
 Parameters of 12-states active power load based on the paper Dynamic Stability of a Microgrid With an Active Load from N. Bottrell, M. Prodanovic and T. Green in IEEE Transactions on Power Electronics, 2013.
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `r_load::Float64`: DC-side resistor, validation range: `(0, nothing)`
 - `c_dc::Float64`: DC-side capacitor, validation range: `(0, nothing)`
 - `rf::Float64`: Converter side filter resistance, validation range: `(0, nothing)`
@@ -49,14 +49,14 @@ Parameters of 12-states active power load based on the paper Dynamic Stability o
 - `kiv::Float64`: Integral constant for Voltage Control block, validation range: `(0, nothing)`
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `P_ref::Float64`: Reference active power parameter
-- `Q_ref::Float64`: Reference reactive power parameter
-- `V_ref::Float64`: Reference voltage parameter
-- `ω_ref::Float64`: Reference frequency parameter
-- `is_filter_differential::Int`: Boolean to decide if filter states are differential or algebraic
-- `states::Vector{Symbol}`: The states are:
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: (optional) Reference active power (pu)
+- `Q_ref::Float64`: (optional) Reference reactive power (pu)
+- `V_ref::Float64`: (optional) Reference voltage (pu)
+- `ω_ref::Float64`: (optional) Reference frequency (pu)
+- `is_filter_differential::Int`: (optional) Boolean to decide if filter states are differential or algebraic
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 
@@ -69,10 +69,11 @@ Parameters of 12-states active power load based on the paper Dynamic Stability o
 	vi_filter: Imaginary voltage at the filter's capacitor,
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
-- `n_states::Int`: ActiveConstantPowerLoad has 12 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) ActiveConstantPowerLoad has 12 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ActiveConstantPowerLoad <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
     "DC-side resistor"
     r_load::Float64
@@ -100,20 +101,21 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     kpc::Float64
     "Integral constant for Current Control block"
     kic::Float64
-    "Base power"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "Reference active power parameter"
+    "(optional) Reference active power (pu)"
     P_ref::Float64
-    "Reference reactive power parameter"
+    "(optional) Reference reactive power (pu)"
     Q_ref::Float64
-    "Reference voltage parameter"
+    "(optional) Reference voltage (pu)"
     V_ref::Float64
-    "Reference frequency parameter"
+    "(optional) Reference frequency (pu)"
     ω_ref::Float64
-    "Boolean to decide if filter states are differential or algebraic"
+    "(optional) Boolean to decide if filter states are differential or algebraic"
     is_filter_differential::Int
-    "The states are:
+    "(**Do not modify.**) The states are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
 	η: DC-voltage controller integrator state, 
@@ -127,9 +129,9 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}
-    "ActiveConstantPowerLoad has 12 states"
+    "(**Do not modify.**) ActiveConstantPowerLoad has 12 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

@@ -10,37 +10,36 @@ This file is auto-generated. Do not edit.
         available::Bool
         requirement::Float64
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `requirement::Float64`
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Transfer <: Service
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     requirement::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function Transfer(name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Transfer(name, available, requirement, ext, time_series_container, InfrastructureSystemsInternal(), )
+function Transfer(name, available, requirement, ext=Dict{String, Any}(), )
+    Transfer(name, available, requirement, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transfer(; name, available, requirement, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Transfer(name, available, requirement, ext, time_series_container, internal, )
+function Transfer(; name, available, requirement, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transfer(name, available, requirement, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -50,7 +49,6 @@ function Transfer(::Nothing)
         available=false,
         requirement=0.0,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -62,8 +60,6 @@ get_available(value::Transfer) = value.available
 get_requirement(value::Transfer) = value.requirement
 """Get [`Transfer`](@ref) `ext`."""
 get_ext(value::Transfer) = value.ext
-"""Get [`Transfer`](@ref) `time_series_container`."""
-get_time_series_container(value::Transfer) = value.time_series_container
 """Get [`Transfer`](@ref) `internal`."""
 get_internal(value::Transfer) = value.internal
 
@@ -73,5 +69,3 @@ set_available!(value::Transfer, val) = value.available = val
 set_requirement!(value::Transfer, val) = value.requirement = val
 """Set [`Transfer`](@ref) `ext`."""
 set_ext!(value::Transfer, val) = value.ext = val
-"""Set [`Transfer`](@ref) `time_series_container`."""
-set_time_series_container!(value::Transfer, val) = value.time_series_container = val

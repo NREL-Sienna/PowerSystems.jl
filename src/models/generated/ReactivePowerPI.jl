@@ -22,13 +22,13 @@ Parameters of a Proportional-Integral Reactive Power controller for a specified 
 - `Kp_q::Float64`: Proportional Gain, validation range: `(0, nothing)`
 - `Ki_q::Float64`: Integral Gain, validation range: `(0, nothing)`
 - `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
-- `V_ref::Float64`: Voltage Set-point, validation range: `(0, nothing)`
-- `Q_ref::Float64`: Reactive Power Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the ReactivePowerPI model are:
+- `V_ref::Float64`: (optional) Voltage Set-point (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: (optional) Reactive Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,
 	q_oc: Measured reactive power of the inverter model
-- `n_states::Int`: ReactivePowerPI has two states
+- `n_states::Int`: (**Do not modify.**) ReactivePowerPI has two states
 """
 mutable struct ReactivePowerPI <: ReactivePowerControl
     "Proportional Gain"
@@ -37,16 +37,17 @@ mutable struct ReactivePowerPI <: ReactivePowerControl
     Ki_q::Float64
     "filter frequency cutoff"
     ωf::Float64
-    "Voltage Set-point"
+    "(optional) Voltage Set-point (pu)"
     V_ref::Float64
-    "Reactive Power Set-point"
+    "(optional) Reactive Power Set-point (pu)"
     Q_ref::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the ReactivePowerPI model are:
+    "(**Do not modify.**) The states of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,
 	q_oc: Measured reactive power of the inverter model"
     states::Vector{Symbol}
-    "ReactivePowerPI has two states"
+    "(**Do not modify.**) ReactivePowerPI has two states"
     n_states::Int
 end
 

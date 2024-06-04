@@ -58,18 +58,18 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 - `V_lr::Float64`: Maximum exciter field current, validation range: `(0, nothing)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: Lead-lag state,
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state
-- `n_states::Int`: EXAC2 has 5 states
-- `states_types::Vector{StateTypes}`: EXAC2 has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) EXAC2 has 5 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) EXAC2 has 5 [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct EXAC2 <: AVR
     "Regulator input filter time constant in s"
@@ -110,23 +110,24 @@ mutable struct EXAC2 <: AVR
     E_sat::Tuple{Float64, Float64}
     "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
     Se::Tuple{Float64, Float64}
-    "Reference Voltage Set-point"
+    "(optional) Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
+    "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
     saturation_coeffs::Tuple{Float64, Float64}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: Lead-lag state,
 	Vr2: Regulator output state,
 	Ve: Integrator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "EXAC2 has 5 states"
+    "(**Do not modify.**) EXAC2 has 5 states"
     n_states::Int
-    "EXAC2 has 5 states"
+    "(**Do not modify.**) EXAC2 has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

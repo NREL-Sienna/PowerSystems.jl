@@ -36,15 +36,15 @@ IEEE Type ST1 Excitation System (PTI version)
 - `Kc::Float64`: Current field constant limiter multiplier, validation range: `(0, nothing)`
 - `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `warn`
 - `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(eps(), nothing)`, action if invalid: `error`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vm: Sensed Terminal Voltage,
 	Vrll: Lead-Lag state,
 	Vr: Regulator Output, 
 	Vfb: Feedback state
-- `n_states::Int`: The EXST1 has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) The EXST1 has 4 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct EXST1 <: AVR
     "Voltage Measurement Time Constant in s"
@@ -67,18 +67,19 @@ mutable struct EXST1 <: AVR
     Kf::Float64
     "Excitation control system stabilizer time constant"
     Tf::Float64
-    "Reference Voltage Set-point"
+    "(optional) Reference Voltage Set-point (pu)"
     V_ref::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	Vm: Sensed Terminal Voltage,
 	Vrll: Lead-Lag state,
 	Vr: Regulator Output, 
 	Vfb: Feedback state"
     states::Vector{Symbol}
-    "The EXST1 has 4 states"
+    "(**Do not modify.**) The EXST1 has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

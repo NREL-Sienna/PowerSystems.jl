@@ -320,7 +320,7 @@ end
 
 function make_hydro_gen(gen_name, d, bus, sys_mbase)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = TwoPartCost(0.0, 0.0)
+    curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
@@ -347,7 +347,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
 end
 
 function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = TwoPartCost(0.0, 0.0)
+    cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])
@@ -394,11 +394,12 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
 end
 
 function make_generic_battery(storage_name, d, bus)
-    storage = GenericBattery(;
+    storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
         bus = bus,
         prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.OTHER_CHEM,
         initial_energy = d["energy"],
         state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
         rating = d["thermal_rating"],
@@ -413,6 +414,7 @@ function make_generic_battery(storage_name, d, bus)
     return storage
 end
 
+# TODO test this more directly?
 """
 The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
     c(p) = c_n*p^n+...+c_1p+c_0
@@ -421,43 +423,44 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
 function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Number)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
+        # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
         if model == GeneratorCostModels.PIECEWISE_LINEAR
+            # For now, we make the fixed cost the y-intercept of the first segment of the
+            # piecewise curve and the variable cost a PiecewiseLinearData representing
+            # the data minus this fixed cost; in a future update, there will be no
+            # separation between the PiecewiseLinearData and the fixed cost.
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
             cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
-            cost = [(p, c) for (p, c) in zip(cost_p, power_p)]
-            fixed = max(
-                0.0,
-                cost[1][1] -
-                (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
+            points = collect(zip(power_p, cost_p))
+            (first_x, first_y) = first(points)
+            fixed = max(0.0,
+                first_y - first(get_slopes(PiecewiseLinearData(points))) * first_x,
             )
-            cost = [(c[1] - fixed, c[2]) for c in cost]
+            cost = PiecewiseLinearData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
-            if d["ncost"] == 0
-                cost = (0.0, 0.0)
-                fixed = 0.0
-            elseif d["ncost"] == 1
-                cost = (0.0, 0.0)
-                fixed = d["cost"][1]
-            elseif d["ncost"] == 2
-                cost = (0.0, d["cost"][1]) ./ sys_mbase
-                fixed = d["cost"][2]
-            elseif d["ncost"] == 3
-                cost = (d["cost"][1] / sys_mbase, d["cost"][2]) ./ sys_mbase
-                fixed = d["cost"][3]
-            else
-                throw(
-                    DataFormatError(
-                        "invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree",
-                    ),
-                )
-            end
+            # For now, we make the variable cost a QuadraticFunctionData with all but the
+            # constant term and make the fixed cost the constant term; in a future update,
+            # there will be no separation between the QuadraticFunctionData and the fixed
+            # cost.
+            # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
+            coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
+            coeffs = Dict((i, c / sys_mbase^i) for (i, c) in coeffs)
+            quadratic_degrees = [2, 1, 0]
+            (keys(coeffs) <= Set(quadratic_degrees)) || throw(
+                ArgumentError(
+                    "Can only handle polynomials up to degree two; given coefficients $coeffs",
+                ),
+            )
+            cost = QuadraticFunctionData(get.(Ref(coeffs), quadratic_degrees, 0)...)
+            fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
+        cost = CostCurve(InputOutputCurve((cost)))
         startup = d["startup"]
         shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = ThreePartCost(nothing)
+        tmpcost = ThermalGenerationCost(nothing)
         cost = tmpcost.variable
         fixed = tmpcost.fixed
         startup = tmpcost.start_up
@@ -467,7 +470,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    operation_cost = ThreePartCost(;
+    operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
         start_up = startup,
@@ -545,8 +548,8 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableFix
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == GenericBattery
-            @warn "GenericBattery should be defined as a PowerModels storage... Skipping"
+        elseif gen_type == EnergyReservoirStorage
+            @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue
         else
             @error "Skipping unsupported generator" gen_type

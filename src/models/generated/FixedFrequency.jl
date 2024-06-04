@@ -15,18 +15,19 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed Frequency Estimator (i.e. no PLL).
 
 # Arguments
-- `frequency::Float64`: Reference used
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: FixedFrequency has no states
-- `n_states::Int`: FixedFrequency has no states
+- `frequency::Float64`: (optional) Reference Frequency (pu)
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) FixedFrequency has no states
+- `n_states::Int`: (**Do not modify.**) FixedFrequency has no states
 """
 mutable struct FixedFrequency <: FrequencyEstimator
-    "Reference used"
+    "(optional) Reference Frequency (pu)"
     frequency::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "FixedFrequency has no states"
+    "(**Do not modify.**) FixedFrequency has no states"
     states::Vector{Symbol}
-    "FixedFrequency has no states"
+    "(**Do not modify.**) FixedFrequency has no states"
     n_states::Int
 end
 

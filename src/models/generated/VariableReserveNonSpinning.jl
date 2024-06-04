@@ -15,53 +15,52 @@ This file is auto-generated. Do not edit.
         max_participation_factor::Float64
         deployed_fraction::Float64
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 Data Structure for the procurement products for system simulations.
 
 # Arguments
-- `name::String`
-- `available::Bool`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
-- `sustained_time::Float64`: the time in secounds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_output_fraction::Float64`: the maximum fraction of the device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
-- `max_participation_factor::Float64`: the maximum limit of reserve contribution per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `sustained_time::Float64`: (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
+- `max_output_fraction::Float64`: (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
+- `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: (optional) Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
     "the required quantity of the product should be scaled by a TimeSeriesData"
     requirement::Float64
-    "the time in secounds reserve contribution must sustained at a specified level"
+    "(optional) the time in seconds reserve contribution must sustained at a specified level"
     sustained_time::Float64
-    "the maximum fraction of the device's output that can be assigned to the service"
+    "(optional) the maximum fraction of each device's output that can be assigned to the service"
     max_output_fraction::Float64
-    "the maximum limit of reserve contribution per device"
+    "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device"
     max_participation_factor::Float64
-    "Fraction of ancillary services participation deployed from the assignment"
+    "(optional) Fraction of ancillary services participation deployed from the assignment"
     deployed_fraction::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, time_series_container, InfrastructureSystemsInternal(), )
+function VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, InfrastructureSystemsInternal(), )
 end
 
-function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, time_series_container, internal, )
+function VariableReserveNonSpinning(; name, available, time_frame, requirement, sustained_time=14400.0, max_output_fraction=1.0, max_participation_factor=1.0, deployed_fraction=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    VariableReserveNonSpinning(name, available, time_frame, requirement, sustained_time, max_output_fraction, max_participation_factor, deployed_fraction, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,7 +75,6 @@ function VariableReserveNonSpinning(::Nothing)
         max_participation_factor=1.0,
         deployed_fraction=0.0,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -98,8 +96,6 @@ get_max_participation_factor(value::VariableReserveNonSpinning) = value.max_part
 get_deployed_fraction(value::VariableReserveNonSpinning) = value.deployed_fraction
 """Get [`VariableReserveNonSpinning`](@ref) `ext`."""
 get_ext(value::VariableReserveNonSpinning) = value.ext
-"""Get [`VariableReserveNonSpinning`](@ref) `time_series_container`."""
-get_time_series_container(value::VariableReserveNonSpinning) = value.time_series_container
 """Get [`VariableReserveNonSpinning`](@ref) `internal`."""
 get_internal(value::VariableReserveNonSpinning) = value.internal
 
@@ -119,5 +115,3 @@ set_max_participation_factor!(value::VariableReserveNonSpinning, val) = value.ma
 set_deployed_fraction!(value::VariableReserveNonSpinning, val) = value.deployed_fraction = val
 """Set [`VariableReserveNonSpinning`](@ref) `ext`."""
 set_ext!(value::VariableReserveNonSpinning, val) = value.ext = val
-"""Set [`VariableReserveNonSpinning`](@ref) `time_series_container`."""
-set_time_series_container!(value::VariableReserveNonSpinning, val) = value.time_series_container = val

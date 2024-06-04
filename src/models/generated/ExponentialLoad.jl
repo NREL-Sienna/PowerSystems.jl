@@ -19,60 +19,62 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 Data structure for a static exponential load.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `active_power::Float64`
-- `reactive_power::Float64`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
 - `active_power_coefficient::Float64`: Coefficient relating voltage dependence for power P = P0 * V^α, validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_coefficient::Float64`: Coefficient relating voltage dependence for power Q = Q0 * V^β, validation range: `(0, nothing)`, action if invalid: `warn`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
 - `max_active_power::Float64`
 - `max_reactive_power::Float64`
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ExponentialLoad <: StaticLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
     "Coefficient relating voltage dependence for power P = P0 * V^α"
     active_power_coefficient::Float64
     "Coefficient relating voltage dependence for power Q = Q0 * V^β"
     reactive_power_coefficient::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
     base_power::Float64
     max_active_power::Float64
     max_reactive_power::Float64
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function ExponentialLoad(; name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
+function ExponentialLoad(; name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ExponentialLoad(name, available, bus, active_power, reactive_power, active_power_coefficient, reactive_power_coefficient, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -91,7 +93,6 @@ function ExponentialLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -121,8 +122,6 @@ get_services(value::ExponentialLoad) = value.services
 get_dynamic_injector(value::ExponentialLoad) = value.dynamic_injector
 """Get [`ExponentialLoad`](@ref) `ext`."""
 get_ext(value::ExponentialLoad) = value.ext
-"""Get [`ExponentialLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::ExponentialLoad) = value.time_series_container
 """Get [`ExponentialLoad`](@ref) `internal`."""
 get_internal(value::ExponentialLoad) = value.internal
 
@@ -148,5 +147,3 @@ set_max_reactive_power!(value::ExponentialLoad, val) = value.max_reactive_power 
 set_services!(value::ExponentialLoad, val) = value.services = val
 """Set [`ExponentialLoad`](@ref) `ext`."""
 set_ext!(value::ExponentialLoad, val) = value.ext = val
-"""Set [`ExponentialLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::ExponentialLoad, val) = value.time_series_container = val

@@ -17,7 +17,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     active_power::Float64
     reactive_power::Float64
     base_power::Float64
-    operation_cost::OperationalCost
+    operation_cost::MarketBidCost
     thermal_unit::Union{Nothing, ThermalGen}
     electric_load::Union{Nothing, ElectricLoad}
     storage::Union{Nothing, Storage}
@@ -29,12 +29,15 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     input_active_power_limits::Union{Nothing, MinMax}
     output_active_power_limits::Union{Nothing, MinMax}
     reactive_power_limits::Union{Nothing, MinMax}
+    interconnection_efficiency::Union{
+        Nothing,
+        NamedTuple{(:in, :out), Tuple{Float64, Float64}},
+    }
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
@@ -47,7 +50,7 @@ function HybridSystem(;
     active_power = 0.0,
     reactive_power = 0.0,
     base_power = 100.0,
-    operation_cost = TwoPartCost(nothing),
+    operation_cost = MarketBidCost(nothing),
     thermal_unit = nothing,
     electric_load = nothing,
     storage = nothing,
@@ -57,10 +60,10 @@ function HybridSystem(;
     input_active_power_limits = nothing,
     output_active_power_limits = nothing,
     reactive_power_limits = nothing,
+    interconnection_efficiency = nothing,
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     return HybridSystem(
@@ -81,10 +84,10 @@ function HybridSystem(;
         input_active_power_limits,
         output_active_power_limits,
         reactive_power_limits,
+        interconnection_efficiency,
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
@@ -99,20 +102,20 @@ function HybridSystem(::Nothing)
         active_power = 0.0,
         reactive_power = 0.0,
         base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
+        operation_cost = MarketBidCost(nothing),
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
-        storage = GenericBattery(nothing),
+        storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
         interconnection_impedance = 0.0,
         interconnection_rating = nothing,
         input_active_power_limits = nothing,
         output_active_power_limits = nothing,
         reactive_power_limits = nothing,
+        interconnection_efficiency = nothing,
         services = Service[],
         dynamic_injector = nothing,
         ext = Dict{String, Any}(),
-        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
         internal = InfrastructureSystemsInternal(),
     )
 end
@@ -166,6 +169,8 @@ get_output_active_power_limits(value::HybridSystem) =
 """Get [`HybridSystem`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HybridSystem) =
     get_value(value, value.reactive_power_limits)
+"""get [`HybridSystem`](@ref) interconnection efficiency"""
+get_interconnection_efficiency(value::HybridSystem) = value.interconnection_efficiency
 """Get [`HybridSystem`](@ref) `base_power`."""
 get_base_power(value::HybridSystem) = value.base_power
 """Get [`HybridSystem`](@ref) `operation_cost`."""
@@ -177,8 +182,6 @@ get_dynamic_injector(value::HybridSystem) = value.dynamic_injector
 """Get [`HybridSystem`](@ref) `ext`."""
 get_ext(value::HybridSystem) = value.ext
 
-InfrastructureSystems.get_time_series_container(value::HybridSystem) =
-    value.time_series_container
 """Get [`HybridSystem`](@ref) `internal`."""
 get_internal(value::HybridSystem) = value.internal
 
@@ -205,6 +208,9 @@ set_output_active_power_limits!(value::HybridSystem, val) =
     value.output_active_power_limits = val
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = val
+"""Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
+set_interconnection_efficiency!(value::HybridSystem, val) =
+    value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `base_power`."""
 set_base_power!(value::HybridSystem, val) = value.base_power = val
 """Set [`HybridSystem`](@ref) `operation_cost`."""
@@ -213,9 +219,6 @@ set_operation_cost!(value::HybridSystem, val) = value.operation_cost = val
 set_services!(value::HybridSystem, val) = value.services = val
 """Set [`HybridSystem`](@ref) `ext`."""
 set_ext!(value::HybridSystem, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
-    value.time_series_container = val
 
 """
 Return an iterator over the subcomponents in the HybridSystem.
@@ -268,7 +271,7 @@ function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
 end
 
 function _raise_if_attached_to_system(hybrid::HybridSystem)
-    if hybrid.time_series_container.time_series_storage !== nothing
+    if !isnothing(IS.get_time_series_manager(hybrid))
         throw(
             ArgumentError(
                 "Operation not allowed because the HybridSystem is attached to a system",

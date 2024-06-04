@@ -36,15 +36,15 @@ Electric Power Systems Research 122 (2015) 180–197.
 - `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the VoltageModeControl model are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,
 	γq_ic: q-axis integrator state of the PI current controller,
 	ϕd_ic: d-axis low-pass filter of active damping,
 	ϕq_ic: q-axis low-pass filter of active damping
-- `n_states::Int`: VoltageModeControl has 6 states
+- `n_states::Int`: (**Do not modify.**) VoltageModeControl has 6 states
 """
 mutable struct VoltageModeControl <: InnerControl
     "voltage controller proportional gain"
@@ -67,8 +67,9 @@ mutable struct VoltageModeControl <: InnerControl
     ωad::Float64
     "active damping gain"
     kad::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the VoltageModeControl model are:
+    "(**Do not modify.**) The states of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
 	γd_ic: d-axis integrator state of the PI current controller,
@@ -76,7 +77,7 @@ mutable struct VoltageModeControl <: InnerControl
 	ϕd_ic: d-axis low-pass filter of active damping,
 	ϕq_ic: q-axis low-pass filter of active damping"
     states::Vector{Symbol}
-    "VoltageModeControl has 6 states"
+    "(**Do not modify.**) VoltageModeControl has 6 states"
     n_states::Int
 end
 

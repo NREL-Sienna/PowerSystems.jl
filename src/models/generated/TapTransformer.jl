@@ -18,57 +18,59 @@ This file is auto-generated. Do not edit.
         rate::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
-- `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(-2, 2)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
+- `arc::Arc`: Used internally to represent network topology. **Do not modify.**
+- `r::Float64`: Resistance in p.u. ([`System Base`](@ref per_unit)), validation range: `(-2, 2)`, action if invalid: `warn`
+- `x::Float64`: Reactance in p.u. ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
+- `primary_shunt::Float64`: in p.u. ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
 - `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
 - `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TapTransformer <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Initial condition of active power flow through the transformer (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow through the transformer (MVAR)"
     reactive_power_flow::Float64
+    "Used internally to represent network topology. **Do not modify.**"
     arc::Arc
-    "System per-unit value"
+    "Resistance in p.u. ([`System Base`](@ref per_unit))"
     r::Float64
-    "System per-unit value"
+    "Reactance in p.u. ([`System Base`](@ref per_unit))"
     x::Float64
-    "System per-unit value"
+    "in p.u. ([`System Base`](@ref per_unit))"
     primary_shunt::Float64
     tap::Float64
     rate::Union{Nothing, Float64}
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, time_series_container, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rate, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -86,7 +88,6 @@ function TapTransformer(::Nothing)
         rate=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -114,8 +115,6 @@ get_rate(value::TapTransformer) = get_value(value, value.rate)
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
 get_ext(value::TapTransformer) = value.ext
-"""Get [`TapTransformer`](@ref) `time_series_container`."""
-get_time_series_container(value::TapTransformer) = value.time_series_container
 """Get [`TapTransformer`](@ref) `internal`."""
 get_internal(value::TapTransformer) = value.internal
 
@@ -141,5 +140,3 @@ set_rate!(value::TapTransformer, val) = value.rate = set_value(value, val)
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
 set_ext!(value::TapTransformer, val) = value.ext = val
-"""Set [`TapTransformer`](@ref) `time_series_container`."""
-set_time_series_container!(value::TapTransformer, val) = value.time_series_container = val

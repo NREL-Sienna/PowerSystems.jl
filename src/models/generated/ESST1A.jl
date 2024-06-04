@@ -52,17 +52,17 @@ Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSL
 - `Tf::Float64`: Rate feedback time constant in s, validation range: `(eps(), 1.5)`, action if invalid: `error`
 - `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, 5)`, action if invalid: `warn`
 - `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`, action if invalid: `warn`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second lead-lag state,
 	Va: Regulator output state,
 	Vr3: Feedback output state
-- `n_states::Int`: ST1A has 5 states
-- `states_types::Vector{StateTypes}`: ST1A has 5 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) ST1A has 5 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST1A has 5 [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ESST1A <: AVR
     "Code input for Underexcitization limiter (UEL) entry. Not supported."
@@ -99,21 +99,22 @@ mutable struct ESST1A <: AVR
     K_lr::Float64
     "Exciter output current limit reference"
     I_lr::Float64
-    "Reference Voltage Set-point"
+    "(optional) Reference Voltage Set-point (pu)"
     V_ref::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second lead-lag state,
 	Va: Regulator output state,
 	Vr3: Feedback output state"
     states::Vector{Symbol}
-    "ST1A has 5 states"
+    "(**Do not modify.**) ST1A has 5 states"
     n_states::Int
-    "ST1A has 5 states"
+    "(**Do not modify.**) ST1A has 5 [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

@@ -22,12 +22,12 @@ Parameters of a Phase-Locked Loop (PLL) based on Purba, Dhople, Jafarpour, Bullo
 - `ω_lp::Float64`: PLL low-pass filter frequency (rad/sec), validation range: `(0, nothing)`
 - `kp_pll::Float64`: PLL proportional gain, validation range: `(0, nothing)`
 - `ki_pll::Float64`: PLL integral gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the ReducedOrderPLL model are:
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReducedOrderPLL model are:
 	vq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),
 	ε_pll: Integrator state of the PI controller,
 	θ_pll: Phase angle displacement in the PLL SRF
-- `n_states::Int`: ReducedOrderPLL has 3 states
+- `n_states::Int`: (**Do not modify.**) ReducedOrderPLL has 3 states
 """
 mutable struct ReducedOrderPLL <: FrequencyEstimator
     "PLL low-pass filter frequency (rad/sec)"
@@ -36,13 +36,14 @@ mutable struct ReducedOrderPLL <: FrequencyEstimator
     kp_pll::Float64
     "PLL integral gain"
     ki_pll::Float64
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states of the ReducedOrderPLL model are:
+    "(**Do not modify.**) The states of the ReducedOrderPLL model are:
 	vq_pll: q-axis of the measured voltage in the PLL synchronous reference frame (SRF),
 	ε_pll: Integrator state of the PI controller,
 	θ_pll: Phase angle displacement in the PLL SRF"
     states::Vector{Symbol}
-    "ReducedOrderPLL has 3 states"
+    "(**Do not modify.**) ReducedOrderPLL has 3 states"
     n_states::Int
 end
 

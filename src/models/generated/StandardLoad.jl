@@ -25,70 +25,81 @@ This file is auto-generated. Do not edit.
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
 Data structure for a standard load.
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `constant_active_power::Float64`
-- `constant_reactive_power::Float64`
-- `impedance_active_power::Float64`
-- `impedance_reactive_power::Float64`
-- `current_active_power::Float64`
-- `current_reactive_power::Float64`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `bus::ACBus`: Bus that this component is connected to
+- `base_power::Float64`: Base power of the load (MVA) for per unitization., validation range: `(0, nothing)`, action if invalid: `warn`
+- `constant_active_power::Float64`: (optional)
+- `constant_reactive_power::Float64`: (optional)
+- `impedance_active_power::Float64`: (optional)
+- `impedance_reactive_power::Float64`: (optional)
+- `current_active_power::Float64`: (optional)
+- `current_reactive_power::Float64`: (optional)
 - `max_constant_active_power::Float64`
-- `max_constant_reactive_power::Float64`
-- `max_impedance_active_power::Float64`
-- `max_impedance_reactive_power::Float64`
-- `max_current_active_power::Float64`
-- `max_current_reactive_power::Float64`
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `max_constant_reactive_power::Float64`: (optional)
+- `max_impedance_active_power::Float64`: (optional)
+- `max_impedance_reactive_power::Float64`: (optional)
+- `max_current_active_power::Float64`: (optional)
+- `max_current_reactive_power::Float64`: (optional)
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct StandardLoad <: StaticLoad
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
-    "Base power of the unit in MVA"
+    "Base power of the load (MVA) for per unitization."
     base_power::Float64
+    "(optional)"
     constant_active_power::Float64
+    "(optional)"
     constant_reactive_power::Float64
+    "(optional)"
     impedance_active_power::Float64
+    "(optional)"
     impedance_reactive_power::Float64
+    "(optional)"
     current_active_power::Float64
+    "(optional)"
     current_reactive_power::Float64
     max_constant_active_power::Float64
+    "(optional)"
     max_constant_reactive_power::Float64
+    "(optional)"
     max_impedance_active_power::Float64
+    "(optional)"
     max_impedance_reactive_power::Float64
+    "(optional)"
     max_current_active_power::Float64
+    "(optional)"
     max_current_reactive_power::Float64
-    "Services that this device contributes to"
+    "(optional) Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
+    "(optional) corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 
-function StandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function StandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function StandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, time_series_container, internal, )
+function StandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -113,7 +124,6 @@ function StandardLoad(::Nothing)
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -155,8 +165,6 @@ get_services(value::StandardLoad) = value.services
 get_dynamic_injector(value::StandardLoad) = value.dynamic_injector
 """Get [`StandardLoad`](@ref) `ext`."""
 get_ext(value::StandardLoad) = value.ext
-"""Get [`StandardLoad`](@ref) `time_series_container`."""
-get_time_series_container(value::StandardLoad) = value.time_series_container
 """Get [`StandardLoad`](@ref) `internal`."""
 get_internal(value::StandardLoad) = value.internal
 
@@ -194,5 +202,3 @@ set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_re
 set_services!(value::StandardLoad, val) = value.services = val
 """Set [`StandardLoad`](@ref) `ext`."""
 set_ext!(value::StandardLoad, val) = value.ext = val
-"""Set [`StandardLoad`](@ref) `time_series_container`."""
-set_time_series_container!(value::StandardLoad, val) = value.time_series_container = val

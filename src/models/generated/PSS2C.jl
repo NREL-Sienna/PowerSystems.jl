@@ -79,9 +79,9 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 - `PSS_Hysteresis_param::Tuple{Float64, Float64}`: PSS output hysteresis parameters `(PSSOFF, PSSON)`
 - `Xcomp::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
 - `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
-- `hysteresis_binary_logic::Int`: Hysteresis memory variable
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `hysteresis_binary_logic::Int`: (optional) Hysteresis memory variable
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -101,9 +101,9 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 	x_p17: 3rd lead-lag, 
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,
-- `n_states::Int`: IEEEST has 19 states
-- `states_types::Vector{StateTypes}`: IEEEST has 19 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) IEEEST has 19 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct PSS2C <: PSS
     "First Input Code for stabilizer"
@@ -168,10 +168,11 @@ mutable struct PSS2C <: PSS
     Xcomp::Float64
     "Time measured with compensated frequency"
     Tcomp::Float64
-    "Hysteresis memory variable"
+    "(optional) Hysteresis memory variable"
     hysteresis_binary_logic::Int
+    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The states are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -192,11 +193,11 @@ mutable struct PSS2C <: PSS
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,"
     states::Vector{Symbol}
-    "IEEEST has 19 states"
+    "(**Do not modify.**) IEEEST has 19 states"
     n_states::Int
-    "IEEEST has 19 differential states"
+    "(**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference."
     internal::InfrastructureSystemsInternal
 end
 

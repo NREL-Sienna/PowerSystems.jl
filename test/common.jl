@@ -52,9 +52,10 @@ function create_system_with_dynamic_inverter()
         ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
     ]
 
-    battery = GenericBattery(;
+    battery = EnergyReservoirStorage(;
         name = "Battery",
         prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.OTHER_CHEM,
         available = true,
         bus = nodes_OMIB[2],
         initial_energy = 5.0,
@@ -156,11 +157,122 @@ function create_system_with_dynamic_inverter()
     return sys
 end
 
+function create_system_with_regulation_device()
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    # Add an AGC service to cover its special serialization.
+    control_area = get_component(Area, sys, "1")
+    AGC_service = PSY.AGC(;
+        name = "AGC_Area1",
+        available = true,
+        bias = 739.0,
+        K_p = 2.5,
+        K_i = 0.1,
+        K_d = 0.0,
+        delta_t = 4,
+        area = control_area,
+    )
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    data = collect(1:24)
+    name = "active_power"
+    contributing_devices = Vector{Device}()
+    for g in get_components(
+        x -> (get_prime_mover_type(x) ∈ [PrimeMovers.ST, PrimeMovers.CC, PrimeMovers.CT]),
+        ThermalStandard,
+        sys,
+    )
+        if get_area(get_bus(g)) != control_area
+            continue
+        end
+        ta = TimeSeries.TimeArray(dates, data, [Symbol(get_name(g))])
+        time_series = IS.SingleTimeSeries(;
+            name = name,
+            data = ta,
+            scaling_factor_multiplier = get_active_power,
+        )
+        add_time_series!(sys, g, time_series)
+
+        t = RegulationDevice(g; participation_factor = (up = 1.0, dn = 1.0), droop = 0.04)
+        add_component!(sys, t)
+        @test isnothing(get_component(ThermalStandard, sys, get_name(g)))
+        push!(contributing_devices, t)
+    end
+    add_service!(sys, AGC_service, contributing_devices)
+    return sys
+end
+
+"""
+Create a system with supplemental attributes with the criteria below.
+
+- Two GeographicInfo instances each assigned to multiple components.
+- Two ThermalStandards each with two ForcedOutage instances and two PlannedOutage instances.
+- Each outage has time series.
+"""
+function create_system_with_outages()
+    sys = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_forecasts = true,
+    )
+    gens = collect(get_components(ThermalStandard, sys))
+    gen1 = gens[1]
+    gen2 = gens[2]
+    geo1 = GeographicInfo(; geo_json = Dict("x" => 1.0, "y" => 2.0))
+    geo2 = GeographicInfo(; geo_json = Dict("x" => 3.0, "y" => 4.0))
+    add_supplemental_attribute!(sys, gen1, geo1)
+    add_supplemental_attribute!(sys, gen1.bus, geo1)
+    add_supplemental_attribute!(sys, gen2, geo2)
+    add_supplemental_attribute!(sys, gen2.bus, geo2)
+    initial_time = Dates.DateTime("2020-01-01T00:00:00")
+    end_time = Dates.DateTime("2020-01-01T23:00:00")
+    dates = collect(initial_time:Dates.Hour(1):end_time)
+    fo1 = GeometricDistributionForcedOutage(;
+        mean_time_to_recovery = 1.0,
+        outage_transition_probability = 0.5,
+    )
+    fo2 = GeometricDistributionForcedOutage(;
+        mean_time_to_recovery = 2.0,
+        outage_transition_probability = 0.5,
+    )
+    po1 = PlannedOutage(; outage_schedule = "1")
+    po2 = PlannedOutage(; outage_schedule = "2")
+    add_supplemental_attribute!(sys, gen1, fo1)
+    add_supplemental_attribute!(sys, gen1, po1)
+    add_supplemental_attribute!(sys, gen2, fo2)
+    add_supplemental_attribute!(sys, gen2, po2)
+    for (i, outage) in enumerate((fo1, fo2, po1, po2))
+        data = collect(i:(i + 23))
+        ta = TimeSeries.TimeArray(dates, data, ["1"])
+        name = "ts_$(i)"
+        ts = SingleTimeSeries(; name = name, data = ta)
+        add_time_series!(sys, outage, ts)
+    end
+
+    return sys
+end
+
+function create_system_with_subsystems()
+    sys = PSB.build_system(
+        PSITestSystems,
+        "test_RTS_GMLC_sys";
+        add_forecasts = true,
+        time_series_read_only = false,
+    )
+    add_subsystem!(sys, "subsystem_1")
+    for component in iterate_components(sys)
+        add_component_to_subsystem!(sys, "subsystem_1", component)
+    end
+
+    # TODO: Replace with multiple valid subsystems
+    return sys
+end
+
 function test_accessors(component)
     ps_type = typeof(component)
 
     for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))
-        if field_name === :name || field_name === :time_series_container
+        if field_name === :name
             func = getfield(InfrastructureSystems, Symbol("get_" * string(field_name)))
             _func! =
                 getfield(InfrastructureSystems, Symbol("set_" * string(field_name) * "!"))
@@ -233,12 +345,11 @@ function validate_serialization(
         sys_ext = get_ext(sys)
         sys_ext["data"] = 5
         ext_test_bus_name = ""
-        IS.prepare_for_serialization!(sys.data, path; force = true)
         bus = collect(get_components(PSY.ACBus, sys))[1]
         ext_test_bus_name = PSY.get_name(bus)
         ext = PSY.get_ext(bus)
         ext["test_field"] = 1
-        to_json(sys, path)
+        to_json(sys, path; force = true)
 
         data = open(path, "r") do io
             JSON3.read(io)
