@@ -62,9 +62,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     bus_number_to_bus = read_bus!(sys, data; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
-    @show "before gen"
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
-    @show "after gen"
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
@@ -112,7 +110,7 @@ end
 """
 Internal branch name retreval from pm2ps_dict
 """
-function _get_pm_branch_name(device_dict, bus_f, bus_t)
+function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
     # Additional if-else are used to catch line id in PSSe parsing cases
     if haskey(device_dict, "name")
         index = device_dict["name"]
@@ -222,7 +220,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     return bus_number_to_bus
 end
 
-function make_power_load(d, bus, sys_mbase; kwargs...)
+function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
@@ -236,7 +234,7 @@ function make_power_load(d, bus, sys_mbase; kwargs...)
     )
 end
 
-function make_standard_load(d, bus, sys_mbase; kwargs...)
+function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return StandardLoad(;
         name = _get_name(d),
@@ -337,7 +335,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_hydro_gen(gen_name, d, bus, sys_mbase)
+function make_hydro_gen(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
@@ -365,7 +363,7 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     )
 end
 
-function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
+function make_renewable_dispatch(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
     cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
@@ -395,7 +393,7 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_renewable_fix(gen_name, d, bus, sys_mbase)
+function make_renewable_fix(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
     base_conversion = sys_mbase / d["mbase"]
     generator = RenewableFix(;
         name = gen_name,
@@ -412,7 +410,7 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_generic_battery(storage_name, d, bus)
+function make_generic_battery(storage_name::String, d::Dict, bus::ACBus)
     storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
@@ -439,7 +437,7 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Number)
+function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Float64)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
         # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
@@ -584,7 +582,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_branch(name, d, bus_f, bus_t)
+function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
@@ -608,7 +606,7 @@ function make_branch(name, d, bus_f, bus_t)
     return value
 end
 
-function make_line(name, d, bus_f, bus_t)
+function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -630,7 +628,7 @@ function make_line(name, d, bus_f, bus_t)
     )
 end
 
-function make_transformer_2w(name, d, bus_f, bus_t)
+function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -651,7 +649,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
     )
 end
 
-function make_tap_transformer(name, d, bus_f, bus_t)
+function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -673,7 +671,13 @@ function make_tap_transformer(name, d, bus_f, bus_t)
     )
 end
 
-function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
+function make_phase_shifting_transformer(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    alpha::Float64,
+)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -720,7 +724,7 @@ function read_branch!(
     end
 end
 
-function make_dcline(name, d, bus_f, bus_t)
+function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     return TwoTerminalHVDCLine(;
         name = name,
         available = d["br_status"] == 1,
@@ -758,7 +762,7 @@ function read_dcline!(
     end
 end
 
-function make_shunt(name, d, bus)
+function make_shunt(name::String, d::Dict, bus::ACBus)
     return FixedAdmittance(;
         name = name,
         available = Bool(d["status"]),
