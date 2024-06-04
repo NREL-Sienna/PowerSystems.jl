@@ -777,7 +777,7 @@ function read_shunt!(
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
-    @info "Reading branch data"
+    @info "Reading shunt data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
         return
