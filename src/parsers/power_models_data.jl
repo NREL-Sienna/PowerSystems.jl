@@ -102,7 +102,7 @@ end
 
 function _get_pm_bus_name(device_dict::Dict)
     if haskey(device_dict, "name")
-        name = strip(device_dict["name"])*"_"*string(device_dict["bus_i"])
+        name = strip(device_dict["name"]) * "_" * string(device_dict["bus_i"])
     else
         name = strip(join(string.(device_dict["source_id"]), "-"))
     end
@@ -145,7 +145,13 @@ function make_bus(bus_dict::Dict{String, Any})
     return bus
 end
 
-function make_bus(bus_name::Union{String, SubString{String}}, bus_number::Int, d, bus_types, area::Area)
+function make_bus(
+    bus_name::Union{String, SubString{String}},
+    bus_number::Int,
+    d,
+    bus_types,
+    area::Area,
+)
     bus = make_bus(
         Dict{String, Any}(
             "name" => bus_name,
@@ -283,7 +289,12 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     end
 end
 
-function make_loadzone(name::String, active_power::Float64, reactive_power::Float64; kwargs...)
+function make_loadzone(
+    name::String,
+    active_power::Float64,
+    reactive_power::Float64;
+    kwargs...,
+)
     return LoadZone(;
         name = name,
         peak_active_power = active_power,
@@ -301,7 +312,8 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
         push!(get!(zone_bus_map, bus["zone"], Vector()), bus)
     end
 
-    load_zone_map = Dict{Int, Dict{String, Float64}}(i => Dict("pd" => 0.0, "qd" => 0.0) for i in zones)
+    load_zone_map =
+        Dict{Int, Dict{String, Float64}}(i => Dict("pd" => 0.0, "qd" => 0.0) for i in zones)
     for (key, load) in data["load"]
         zone = data["bus"][load["load_bus"]]["zone"]
         load_zone_map[zone]["pd"] += load["pd"]
@@ -312,7 +324,12 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
         load_zone_map[zone]["qd"] += load["qy"]
     end
     for zone in zones
-        load_zone = make_loadzone(string(zone), load_zone_map[zone]["pd"], load_zone_map[zone]["qd"]; kwargs...)
+        load_zone = make_loadzone(
+            string(zone),
+            load_zone_map[zone]["pd"],
+            load_zone_map[zone]["qd"];
+            kwargs...,
+        )
         add_component!(sys, load_zone; skip_validation = SKIP_PM_VALIDATION)
         for bus in zone_bus_map[zone]
             set_load_zone!(bus_number_to_bus[bus["bus_i"]], load_zone)

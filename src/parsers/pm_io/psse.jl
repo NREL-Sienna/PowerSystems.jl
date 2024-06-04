@@ -50,7 +50,6 @@ function _get_bus_value(bus_i::Int, field::String, pm_data)
     return _get_bus_value(bus_i, field, pm_data["bus"])
 end
 
-
 """
     _find_max_bus_id(pm_data)
 
