@@ -89,13 +89,22 @@ end
 """
 Internal component name retreval from pm2ps_dict
 """
-function _get_pm_dict_name(device_dict)
+function _get_pm_dict_name(device_dict::Dict)
     if haskey(device_dict, "name")
         name = device_dict["name"]
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
     else
         name = string(device_dict["index"])
+    end
+    return name
+end
+
+function _get_pm_bus_name(device_dict::Dict)
+    if haskey(device_dict, "name")
+        name = strip(device_dict["name"])*"_"*string(device_dict["bus_i"])
+    else
+        name = strip(join(string.(device_dict["source_id"]), "-"))
     end
     return name
 end
@@ -178,11 +187,10 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         @error "No bus data found" # TODO : need for a model without a bus
     end
 
-    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :bus_name_formatter, _get_pm_bus_name)
     for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
-        d["name"] = get(d, "name", string(d["bus_i"]))
         bus_name = strip(_get_name(d))
         bus_number = Int(d["bus_i"])
 
@@ -275,48 +283,40 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     end
 end
 
-function make_loadzone(name, active_power, reactive_power; kwargs...)
-    _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
+function make_loadzone(name::String, active_power::Float64, reactive_power::Float64; kwargs...)
     return LoadZone(;
         name = name,
-        peak_active_power = sum(active_power),
-        peak_reactive_power = sum(reactive_power),
+        peak_active_power = active_power,
+        peak_reactive_power = reactive_power,
     )
 end
 
 function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
     @info "Reading LoadZones data in PowerModels dict to populate System ..."
-
+    _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     zones = Set{Int}()
-    for (i, bus) in data["bus"]
+    zone_bus_map = Dict{Int, Vector}()
+    for (_, bus) in data["bus"]
         push!(zones, bus["zone"])
+        push!(get!(zone_bus_map, bus["zone"], Vector()), bus)
     end
 
+    load_zone_map = Dict{Int, Dict{String, Float64}}(i => Dict("pd" => 0.0, "qd" => 0.0) for i in zones)
+    for (key, load) in data["load"]
+        zone = data["bus"][load["load_bus"]]["zone"]
+        load_zone_map[zone]["pd"] += load["pd"]
+        load_zone_map[zone]["qd"] += load["qd"]
+        load_zone_map[zone]["pd"] += load["pi"]
+        load_zone_map[zone]["qd"] += load["qi"]
+        load_zone_map[zone]["pd"] += load["py"]
+        load_zone_map[zone]["qd"] += load["qy"]
+    end
     for zone in zones
-        buses = [
-            bus_number_to_bus[b["bus_i"]] for b in values(data["bus"]) if b["zone"] == zone
-        ]
-        bus_names = Set{String}()
-        for bus in buses
-            push!(bus_names, get_name(bus))
-        end
-
-        active_power = Vector{Float64}()
-        reactive_power = Vector{Float64}()
-
-        for (key, load) in data["load"]
-            load_bus = bus_number_to_bus[load["load_bus"]]
-            if get_name(load_bus) in bus_names
-                push!(active_power, load["pd"])
-                push!(reactive_power, load["qd"])
-            end
-        end
-
-        load_zone = make_loadzone(string(zone), active_power, reactive_power; kwargs...)
-        for bus in buses
-            set_load_zone!(bus, load_zone)
-        end
+        load_zone = make_loadzone(string(zone), load_zone_map[zone]["pd"], load_zone_map[zone]["qd"]; kwargs...)
         add_component!(sys, load_zone; skip_validation = SKIP_PM_VALIDATION)
+        for bus in zone_bus_map[zone]
+            set_load_zone!(bus_number_to_bus[bus["bus_i"]], load_zone)
+        end
     end
 end
 
