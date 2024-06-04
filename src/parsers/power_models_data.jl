@@ -62,7 +62,9 @@ function System(pm_data::PowerModelsData; kwargs...)
     bus_number_to_bus = read_bus!(sys, data; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
+    @show "before gen"
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
+    @show "after gen"
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
