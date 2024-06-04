@@ -1,4 +1,5 @@
 include("Area.jl")
+include("AreaInterchange.jl")
 include("LoadZone.jl")
 include("TransmissionInterface.jl")
 include("ACBus.jl")
@@ -113,6 +114,8 @@ include("RECurrentControlB.jl")
 include("MagnitudeOutputCurrentLimiter.jl")
 include("InstantaneousOutputCurrentLimiter.jl")
 include("PriorityOutputCurrentLimiter.jl")
+include("SaturationOutputCurrentLimiter.jl")
+include("HybridOutputCurrentLimiter.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
@@ -483,6 +486,7 @@ export get_fl
 export get_flow_limits
 export get_frequency
 export get_from
+export get_from_area
 export get_from_branch_control
 export get_fs
 export get_fuel
@@ -529,6 +533,7 @@ export get_kpc
 export get_kpi
 export get_kpv
 export get_kq
+export get_kw
 export get_kω
 export get_l
 export get_lf
@@ -615,6 +620,7 @@ export get_time_frame
 export get_time_limits
 export get_time_limits_pump
 export get_to
+export get_to_area
 export get_to_branch_control
 export get_valve_position_limits
 export get_variable
@@ -1009,6 +1015,7 @@ export set_fl!
 export set_flow_limits!
 export set_frequency!
 export set_from!
+export set_from_area!
 export set_from_branch_control!
 export set_fs!
 export set_fuel!
@@ -1055,6 +1062,7 @@ export set_kpc!
 export set_kpi!
 export set_kpv!
 export set_kq!
+export set_kw!
 export set_kω!
 export set_l!
 export set_lf!
@@ -1141,6 +1149,7 @@ export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
 export set_to!
+export set_to_area!
 export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!

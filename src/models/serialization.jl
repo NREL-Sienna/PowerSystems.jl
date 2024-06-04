@@ -15,7 +15,9 @@ const _ENCODE_AS_UUID_B =
 should_encode_as_uuid(val) = any(x -> val isa x, _ENCODE_AS_UUID_B)
 should_encode_as_uuid(::Type{T}) where {T} = any(x -> T <: x, _ENCODE_AS_UUID_A)
 
-function IS.serialize(component::T) where {T <: Component}
+const _CONTAINS_SHOULD_ENCODE = Union{Component, MarketBidCost}  # PSY types with fields that we should_encode_as_uuid
+
+function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}
     @debug "serialize" _group = IS.LOG_GROUP_SERIALIZATION component T
     data = Dict{String, Any}()
     for name in fieldnames(T)
@@ -60,7 +62,11 @@ function serialize_uuid_handling(val)
     return serialize(value)
 end
 
-function IS.deserialize(::Type{T}, data::Dict, component_cache::Dict) where {T <: Component}
+function IS.deserialize(
+    ::Type{T},
+    data::Dict,
+    component_cache::Dict,
+) where {T <: _CONTAINS_SHOULD_ENCODE}
     @debug "deserialize Component" _group = IS.LOG_GROUP_SERIALIZATION T data
     vals = Dict{Symbol, Any}()
     for (name, type) in zip(fieldnames(T), fieldtypes(T))
@@ -111,9 +117,9 @@ function deserialize_uuid_handling(field_type, val, component_cache)
             component = component_cache[uuid]
             value = component
         end
-    elseif field_type <: Component
+    elseif field_type <: _CONTAINS_SHOULD_ENCODE
         value = IS.deserialize(field_type, val, component_cache)
-    elseif field_type <: Union{Nothing, Component}
+    elseif field_type <: Union{Nothing, _CONTAINS_SHOULD_ENCODE}
         value = IS.deserialize(field_type.b, val, component_cache)
     elseif field_type <: InfrastructureSystemsType
         value = deserialize(field_type, val)

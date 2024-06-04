@@ -5,6 +5,8 @@ IS.deserialize(T::Type{<:ProductionVariableCostCurve}, val::Dict) = IS.deseriali
 
 "Get the underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
 get_value_curve(cost::ProductionVariableCostCurve) = cost.value_curve
+"Get the variable operation and maintenance cost in \$/(power_units h)"
+get_vom_cost(cost::ProductionVariableCost) = cost.vom_cost
 "Get the units for the x-axis of the curve"
 get_power_units(cost::ProductionVariableCostCurve) = cost.power_units
 "Get the `FunctionData` representation of this `ProductionVariableCostCurve`'s `ValueCurve`"
@@ -32,13 +34,20 @@ data. The default units for the x-axis are megawatts and can be specified with
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
+    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    vom_cost::Float64 = 0.0
 end
 
 CostCurve(value_curve) = CostCurve(; value_curve)
+CostCurve(value_curve, vom_cost::Float64) =
+    CostCurve(; value_curve, vom_cost = vom_cost)
+CostCurve(value_curve, power_units::UnitSystem) =
+    CostCurve(; value_curve, power_units = power_units)
 
 Base.:(==)(a::CostCurve, b::CostCurve) =
     (get_value_curve(a) == get_value_curve(b)) &&
-    (get_power_units(a) == get_power_units(b))
+    (get_power_units(a) == get_power_units(b)) &&
+    (get_vom_cost(a) == get_vom_cost(b))
 
 "Get a `CostCurve` representing zero variable cost"
 Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
@@ -56,17 +65,29 @@ The default units for the x-axis are megawatts and can be specified with `power_
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
     "Either a fixed value for fuel cost or the key to a fuel cost time series"
     fuel_cost::Union{Float64, TimeSeriesKey}
+    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    vom_cost::Float64 = 0.0
 end
 
-FuelCurve(value_curve::ValueCurve, power_units::UnitSystem, fuel_cost::Int) =
-    FuelCurve(value_curve, power_units, Float64(fuel_cost))
+FuelCurve(
+    value_curve::ValueCurve,
+    power_units::UnitSystem,
+    fuel_cost::Real,
+    vom_cost::Float64,
+) =
+    FuelCurve(value_curve, power_units, Float64(fuel_cost), vom_cost)
 
 FuelCurve(value_curve, fuel_cost) = FuelCurve(; value_curve, fuel_cost)
+FuelCurve(value_curve, fuel_cost::Union{Float64, TimeSeriesKey}, vom_cost::Float64) =
+    FuelCurve(; value_curve, fuel_cost, vom_cost = vom_cost)
+FuelCurve(value_curve, power_units::UnitSystem, fuel_cost::Union{Float64, TimeSeriesKey}) =
+    FuelCurve(; value_curve, power_units = power_units, fuel_cost = fuel_cost)
 
 Base.:(==)(a::FuelCurve, b::FuelCurve) =
     (get_value_curve(a) == get_value_curve(b)) &&
     (get_power_units(a) == get_power_units(b)) &&
-    (get_fuel_cost(a) == get_fuel_cost(b))
+    (get_fuel_cost(a) == get_fuel_cost(b)) &&
+    (get_vom_cost(a) == get_vom_cost(b))
 
 "Get a `FuelCurve` representing zero fuel usage and zero fuel cost"
 Base.zero(::Union{FuelCurve, Type{FuelCurve}}) = FuelCurve(zero(ValueCurve), 0.0)

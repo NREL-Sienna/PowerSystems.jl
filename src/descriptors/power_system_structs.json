@@ -35,6 +35,13 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "ext",
+                    "comment": "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
                     "name": "internal",
                     "comment": "(**Do not modify.**) PowerSystems.jl internal reference.",
                     "data_type": "InfrastructureSystemsInternal",
@@ -43,6 +50,66 @@
                 }
             ],
             "supertype": "AggregationTopology"
+        },
+        {
+            "struct_name": "AreaInterchange",
+            "docstring": "Flow exchanged between Areas. This Interchange is agnostic to the lines connecting the areas. It does not substitute Interface which is the total flow across a group of lines.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Area(nothing)",
+                    "name": "from_area",
+                    "comment": "Area from which the power is extracted",
+                    "data_type": "Area"
+                },
+                {
+                    "null_value": "Area(nothing)",
+                    "name": "to_area",
+                    "comment": "Area to which the power is injected",
+                    "data_type": "Area"
+                },
+                {
+                    "name": "flow_limits",
+                    "null_value": "(from_to=0.0, to_from=0.0)",
+                    "comment": "Max flow between the areas. It ignores lines and other branches totals",
+                    "data_type": "FromTo_ToFrom",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "ext",
+                    "comment": "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference.",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "Branch"
         },
         {
             "struct_name": "LoadZone",
@@ -68,6 +135,13 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "ext",
+                    "comment": "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "internal",
@@ -15026,6 +15100,82 @@
                 {
                     "name": "ext",
                     "comment": "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "OutputCurrentLimiter"
+        },
+        {
+            "struct_name": "SaturationOutputCurrentLimiter",
+            "docstring": "Parameters of Saturation Current Controller Limiter. Regulates the magnitude of the inverter output current, and applies a closed loop feedback regulated by a static gain which provides ant-windup.",
+            "fields": [
+                {
+                    "name": "I_max",
+                    "comment": "Maximum limit on current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "kw",
+                    "comment": "Defined feedback gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                }
+            ],
+            "supertype": "OutputCurrentLimiter"
+        },
+        {
+            "struct_name": "HybridOutputCurrentLimiter",
+            "docstring": "Parameters of Hybrid Current Controller Limiter. Regulates the magnitude of the inverter output current, but with a closed loop feedback regulated by a virtual impedance which provides ant-windup. Described in: Novel Hybrid Current Limiter for Grid-Forming Inverter Control During Unbalanced Faults by Baeckland and Seo, 2023 ",
+            "fields": [
+                {
+                    "name": "I_max",
+                    "comment": "Maximum limit on current controller input current (device base)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "rv",
+                    "comment": "Real part of the virtual impedance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "lv",
+                    "comment": "Imaginary part of the virtual impedance",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
