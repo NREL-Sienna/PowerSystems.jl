@@ -36,7 +36,7 @@ This file is auto-generated. Do not edit.
 
 Modified AC2. This excitation systems consists of an alternator main exciter feeding its output via non-controlled rectifiers.
 The exciter does not employ self-excitation, and the voltage regulator power is taken from a source that is not affected by external transients.
-Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main exciter is used, feeding its output via non-controlled rectifiers. The Type AC2C model is similar to that of Type AC1C except for the inclusion of exciter time constant compensation and exciter field current limiting elements. EXAC2 in PSSE and PSLF.
+Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main exciter is used, feeding its output via non-controlled rectifiers. The Type AC2C model is similar to that of Type AC1C except for the inclusion of exciter time constant compensation and exciter field current limiting elements. EXAC2 in PSSE and PSLF
 
 # Arguments
 - `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
@@ -58,9 +58,9 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 - `V_lr::Float64`: Maximum exciter field current, validation range: `(0, nothing)`, action if invalid: `warn`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: Lead-lag state,
@@ -69,7 +69,7 @@ Parameters of IEEE Std 421.5 Type AC2A Excitacion System. The alternator main ex
 	Vr3: Feedback output state
 - `n_states::Int`: (**Do not modify.**) EXAC2 has 5 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) EXAC2 has 5 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct EXAC2 <: AVR
     "Regulator input filter time constant in s"
@@ -110,11 +110,11 @@ mutable struct EXAC2 <: AVR
     E_sat::Tuple{Float64, Float64}
     "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))"
     Se::Tuple{Float64, Float64}
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
     "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
     saturation_coeffs::Tuple{Float64, Float64}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
@@ -127,7 +127,7 @@ mutable struct EXAC2 <: AVR
     n_states::Int
     "(**Do not modify.**) EXAC2 has 5 states"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

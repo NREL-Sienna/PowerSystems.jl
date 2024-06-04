@@ -22,40 +22,40 @@ A non-spinning reserve product with a time-varying procurement requirement, such
 
 This reserve product includes back-up generators that might not be currently synchronized with the power system, but can come online quickly after an unexpected contingency, such as a transmission line or generator outage. To model the time varying requirement, a ["`requirement`" time series should be added](@ref ts_data) to this reserve.
 
-This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`VariableReserve`](@ref).
+This is only an upwards reserve. For faster-responding upwards or downwards reserves from components already synchronized with the system, see [`VariableReserve`](@ref)
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
-- `sustained_time::Float64`: (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_output_fraction::Float64`: (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
-- `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: (optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0., validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `sustained_time::Float64`: the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
+- `max_output_fraction::Float64`: the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
+- `max_participation_factor::Float64`: the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`, action if invalid: `error`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct VariableReserveNonSpinning <: ReserveNonSpinning
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
     "the required quantity of the product should be scaled by a TimeSeriesData"
     requirement::Float64
-    "(optional) the time in seconds reserve contribution must sustained at a specified level"
+    "the time in seconds reserve contribution must sustained at a specified level"
     sustained_time::Float64
-    "(optional) the maximum fraction of each device's output that can be assigned to the service"
+    "the maximum fraction of each device's output that can be assigned to the service"
     max_output_fraction::Float64
-    "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device"
+    "the maximum portion [0, 1.0] of the reserve that can be contributed per device"
     max_participation_factor::Float64
-    "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0."
+    "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0"
     deployed_fraction::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

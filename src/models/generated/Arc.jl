@@ -13,19 +13,19 @@ This file is auto-generated. Do not edit.
 
 A topological directed edge connecting two buses.
 
-Arcs are used to define the `from` and `to` buses when defining a line or transformer.
+Arcs are used to define the `from` and `to` buses when defining a line or transformer
 
 # Arguments
 - `from::Bus`: The initial bus
 - `to::Bus`: The terminal bus
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Arc <: Topology
     "The initial bus"
     from::Bus
     "The terminal bus"
     to::Bus
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

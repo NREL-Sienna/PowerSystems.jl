@@ -37,8 +37,8 @@ Parameters for the DC-side with a Battery Energy Storage System from ["Grid-Coup
 - `kiv::Float64`: voltage controller integral gain, validation range: `(0, nothing)`
 - `kpi::Float64`: current controller proportional gain, validation range: `(0, nothing)`
 - `kii::Float64`: current controller integral gain, validation range: `(0, nothing)`
-- `Vdc_ref::Float64`: (optional) Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `Vdc_ref::Float64`: Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,
 	i_b: Battery current,
@@ -69,9 +69,9 @@ mutable struct ZeroOrderBESS <: DCSource
     kpi::Float64
     "current controller integral gain"
     kii::Float64
-    "(optional) Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit))"
+    "Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit))"
     Vdc_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,

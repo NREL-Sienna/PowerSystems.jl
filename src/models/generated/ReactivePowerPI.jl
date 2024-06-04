@@ -22,9 +22,9 @@ Parameters of a Proportional-Integral Reactive Power controller for a specified 
 - `Kp_q::Float64`: Proportional Gain, validation range: `(0, nothing)`
 - `Ki_q::Float64`: Integral Gain, validation range: `(0, nothing)`
 - `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
-- `V_ref::Float64`: (optional) Voltage Set-point (pu), validation range: `(0, nothing)`
-- `Q_ref::Float64`: (optional) Reactive Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: Voltage Set-point (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: Reactive Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,
 	q_oc: Measured reactive power of the inverter model
@@ -37,11 +37,11 @@ mutable struct ReactivePowerPI <: ReactivePowerControl
     Ki_q::Float64
     "filter frequency cutoff"
     ωf::Float64
-    "(optional) Voltage Set-point (pu)"
+    "Voltage Set-point (pu)"
     V_ref::Float64
-    "(optional) Reactive Power Set-point (pu)"
+    "Reactive Power Set-point (pu)"
     Q_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,

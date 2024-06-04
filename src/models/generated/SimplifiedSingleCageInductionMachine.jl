@@ -28,10 +28,10 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 3-states three-phase single cage induction machine with quadratic torque-speed relationship.
+Parameters of 3-states three-phase single cage induction machine with quadratic torque-speed relationship
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `R_s::Float64`: Armature stator resistance, validation range: `(0, nothing)`
 - `R_r::Float64`: Rotor resistance, validation range: `(0, nothing)`
 - `X_ls::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
@@ -40,11 +40,11 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `H::Float64`: Motor Inertia Constant [s], validation range: `(0, nothing)`
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
 - `B::Float64`: Torque-Speed Linear Term, validation range: `(0, 1)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `C::Float64`: (**Do not modify.**) Torque-Speed Constant Term
-- `τ_ref::Float64`: (optional) Reference torque parameter
-- `B_shunt::Float64`: (optional) Susceptance Initialization Corrector Term
+- `τ_ref::Float64`: Reference torque parameter
+- `B_shunt::Float64`: Susceptance Initialization Corrector Term
 - `X_ss::Float64`: (**Do not modify.**) Stator self reactance
 - `X_rr::Float64`: (**Do not modify.**) Rotor self reactance
 - `X_p::Float64`: (**Do not modify.**) Transient reactance
@@ -53,10 +53,10 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 	ψ_dr: rotor flux in the d-axis, 
 	ωr: Rotor speed [pu],
 - `n_states::Int`: (**Do not modify.**) SimplifiedSingleCageInductionMachine has 3 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Armature stator resistance"
     R_s::Float64
@@ -74,15 +74,15 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     A::Float64
     "Torque-Speed Linear Term"
     B::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) Torque-Speed Constant Term"
     C::Float64
-    "(optional) Reference torque parameter"
+    "Reference torque parameter"
     τ_ref::Float64
-    "(optional) Susceptance Initialization Corrector Term"
+    "Susceptance Initialization Corrector Term"
     B_shunt::Float64
     "(**Do not modify.**) Stator self reactance"
     X_ss::Float64
@@ -97,7 +97,7 @@ mutable struct SimplifiedSingleCageInductionMachine <: DynamicInjection
     states::Vector{Symbol}
     "(**Do not modify.**) SimplifiedSingleCageInductionMachine has 3 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

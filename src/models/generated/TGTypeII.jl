@@ -17,19 +17,19 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Turbine Governor Type II.
+Parameters of a Turbine Governor Type II
 
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, nothing)`
 - `T1::Float64`: Transient gain time constant, validation range: `(0, nothing)`
 - `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `τ_limits::MinMax`: Power into the governor limits
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: lead-lag state
 - `n_states::Int`: (**Do not modify.**) TGTypeII has 1 state
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TGTypeII <: TurbineGov
     "Droop parameter"
@@ -40,16 +40,16 @@ mutable struct TGTypeII <: TurbineGov
     T2::Float64
     "Power into the governor limits"
     τ_limits::MinMax
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: lead-lag state"
     states::Vector{Symbol}
     "(**Do not modify.**) TGTypeII has 1 state"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

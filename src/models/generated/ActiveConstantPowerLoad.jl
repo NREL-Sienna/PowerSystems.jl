@@ -35,7 +35,7 @@ This file is auto-generated. Do not edit.
 Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynamic Stability of a Microgrid With an Active Load."](https://doi.org/10.1109/TPEL.2013.2241455)
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `r_load::Float64`: DC-side resistor, validation range: `(0, nothing)`
 - `c_dc::Float64`: DC-side capacitor, validation range: `(0, nothing)`
 - `rf::Float64`: Converter side filter resistance, validation range: `(0, nothing)`
@@ -49,13 +49,13 @@ Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynami
 - `kiv::Float64`: Integral constant for Voltage Control block, validation range: `(0, nothing)`
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `P_ref::Float64`: (optional) Reference active power (pu)
-- `Q_ref::Float64`: (optional) Reference reactive power (pu)
-- `V_ref::Float64`: (optional) Reference voltage (pu)
-- `ω_ref::Float64`: (optional) Reference frequency (pu)
-- `is_filter_differential::Int`: (optional) Boolean to decide if filter [states](@ref S) are differential or algebraic
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `P_ref::Float64`: Reference active power (pu)
+- `Q_ref::Float64`: Reference reactive power (pu)
+- `V_ref::Float64`: Reference voltage (pu)
+- `ω_ref::Float64`: Reference frequency (pu)
+- `is_filter_differential::Int`: Boolean to decide if filter [states](@ref S) are differential or algebraic
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	θ_pll: PLL deviation angle, 
 	ϵ_pll: PLL integrator state, 
@@ -70,10 +70,10 @@ Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynami
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
 - `n_states::Int`: (**Do not modify.**) ActiveConstantPowerLoad has 12 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ActiveConstantPowerLoad <: DynamicInjection
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "DC-side resistor"
     r_load::Float64
@@ -101,19 +101,19 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     kpc::Float64
     "Integral constant for Current Control block"
     kic::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(optional) Reference active power (pu)"
+    "Reference active power (pu)"
     P_ref::Float64
-    "(optional) Reference reactive power (pu)"
+    "Reference reactive power (pu)"
     Q_ref::Float64
-    "(optional) Reference voltage (pu)"
+    "Reference voltage (pu)"
     V_ref::Float64
-    "(optional) Reference frequency (pu)"
+    "Reference frequency (pu)"
     ω_ref::Float64
-    "(optional) Boolean to decide if filter [states](@ref S) are differential or algebraic"
+    "Boolean to decide if filter [states](@ref S) are differential or algebraic"
     is_filter_differential::Int
     "(**Do not modify.**) The [states](@ref S) are:
 	θ_pll: PLL deviation angle, 
@@ -131,7 +131,7 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     states::Vector{Symbol}
     "(**Do not modify.**) ActiveConstantPowerLoad has 12 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

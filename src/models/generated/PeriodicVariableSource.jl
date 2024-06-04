@@ -25,49 +25,49 @@ This file is auto-generated. Do not edit.
 This struct acts as an infinity bus with time varying phasor values magnitude and angle V(t) 	heta(t). Time varying functions are represented using fourier series
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
-- `internal_voltage_bias::Float64`: (optional) a0 term of the Fourier Series for the voltage
-- `internal_voltage_frequencies::Vector{Float64}`: (optional) Frequencies in radians/s
-- `internal_voltage_coefficients::Vector{Tuple{Float64,Float64}}`: (optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos
-- `internal_angle_bias::Float64`: (optional) a0 term of the Fourier Series for the angle
-- `internal_angle_frequencies::Vector{Float64}`: (optional) Frequencies in radians/s
-- `internal_angle_coefficients::Vector{Tuple{Float64,Float64}}`: (optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos
-- `base_power::Float64`: (optional) Base power of the source (MVA) for per unitization.
+- `internal_voltage_bias::Float64`: a0 term of the Fourier Series for the voltage
+- `internal_voltage_frequencies::Vector{Float64}`: Frequencies in radians/s
+- `internal_voltage_coefficients::Vector{Tuple{Float64,Float64}}`: Coefficients for terms n > 1. First component corresponds to sin and second component to cos
+- `internal_angle_bias::Float64`: a0 term of the Fourier Series for the angle
+- `internal_angle_frequencies::Vector{Float64}`: Frequencies in radians/s
+- `internal_angle_coefficients::Vector{Tuple{Float64,Float64}}`: Coefficients for terms n > 1. First component corresponds to sin and second component to cos
+- `base_power::Float64`: Base power of the source (MVA) for per unitization
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) for time, voltage and angle
-- `n_states::Int`: (**Do not modify.**) PeriodicVariableSource has 2 states.
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `n_states::Int`: (**Do not modify.**) PeriodicVariableSource has 2 states
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PeriodicVariableSource <: DynamicInjection
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Source Thevenin resistance"
     R_th::Float64
     "Source Thevenin reactance"
     X_th::Float64
-    "(optional) a0 term of the Fourier Series for the voltage"
+    "a0 term of the Fourier Series for the voltage"
     internal_voltage_bias::Float64
-    "(optional) Frequencies in radians/s"
+    "Frequencies in radians/s"
     internal_voltage_frequencies::Vector{Float64}
-    "(optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
+    "Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
     internal_voltage_coefficients::Vector{Tuple{Float64,Float64}}
-    "(optional) a0 term of the Fourier Series for the angle"
+    "a0 term of the Fourier Series for the angle"
     internal_angle_bias::Float64
-    "(optional) Frequencies in radians/s"
+    "Frequencies in radians/s"
     internal_angle_frequencies::Vector{Float64}
-    "(optional) Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
+    "Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
     internal_angle_coefficients::Vector{Tuple{Float64,Float64}}
-    "(optional) Base power of the source (MVA) for per unitization."
+    "Base power of the source (MVA) for per unitization"
     base_power::Float64
     "(**Do not modify.**) The [states](@ref S) for time, voltage and angle"
     states::Vector{Symbol}
-    "(**Do not modify.**) PeriodicVariableSource has 2 states."
+    "(**Do not modify.**) PeriodicVariableSource has 2 states"
     n_states::Int
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

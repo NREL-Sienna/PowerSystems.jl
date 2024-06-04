@@ -24,28 +24,28 @@ This file is auto-generated. Do not edit.
 
 A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.
 
-An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as Q = Q0 * V^β, where the exponents α and β select govern the voltage dependency. For an alternative three-part formulation of the ZIP model, see [`StandardLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref).
+An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as Q = Q0 * V^β, where the exponents α and β select govern the voltage dependency. For an alternative three-part formulation of the ZIP model, see [`StandardLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Active power coefficient, P0 (MW)
 - `reactive_power::Float64`: Reactive power coefficient, Q0 (MVAR)
 - `α::Float64`: Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`, action if invalid: `warn`
 - `β::Float64`: Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`, action if invalid: `warn`
-- `base_power::Float64`: Base power (MVA) for per unitization., validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`, action if invalid: `warn`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `services::Vector{Service}`: Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ExponentialLoad <: StaticLoad
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
@@ -57,19 +57,19 @@ mutable struct ExponentialLoad <: StaticLoad
     α::Float64
     "Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only"
     β::Float64
-    "Base power (MVA) for per unitization."
+    "Base power (MVA) for per unitization"
     base_power::Float64
     "Maximum active power (MW) that this load can demand"
     max_active_power::Float64
     "Maximum reactive power (MVAR) that this load can demand"
     max_reactive_power::Float64
-    "(optional) Services that this device contributes to"
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) corresponding dynamic injection device"
+    "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

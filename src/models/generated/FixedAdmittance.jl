@@ -18,34 +18,34 @@ This file is auto-generated. Do not edit.
 
 A fixed admittance.
 
-Most often used in dynamics or AC power flow studies as a source of reactive power.
+Most often used in dynamics or AC power flow studies as a source of reactive power
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection model for admittance
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
+- `services::Vector{Service}`: Services that this device contributes to
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct FixedAdmittance <: ElectricLoad
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
     "Fixed admittance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     Y::Complex{Float64}
-    "(optional) corresponding dynamic injection model for admittance"
+    "corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) Services that this device contributes to"
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
