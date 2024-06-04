@@ -24,24 +24,24 @@ This file is auto-generated. Do not edit.
 Interconnecting Power Converter (IPC) for transforming power from an ACBus to a DCBus
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus on the AC side of this converter
 - `dc_bus::DCBus`: Bus on the DC side of this converter
 - `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`, action if invalid: `warn`
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`, action if invalid: `error`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `efficiency::Float64`: (optional) Conversion efficiency [0, 1.0] from AC Power to DC Power
-- `services::Vector{Service}`: (optional) Services that this device contributes to.
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `efficiency::Float64`: Conversion efficiency [0, 1.0] from AC Power to DC Power
+- `services::Vector{Service}`: Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterconnectingConverter <: StaticInjection
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus on the AC side of this converter"
     bus::ACBus
@@ -55,15 +55,15 @@ mutable struct InterconnectingConverter <: StaticInjection
     active_power_limits::MinMax
     "Base power of the converter in MVA"
     base_power::Float64
-    "(optional) Conversion efficiency [0, 1.0] from AC Power to DC Power"
+    "Conversion efficiency [0, 1.0] from AC Power to DC Power"
     efficiency::Float64
-    "(optional) Services that this device contributes to."
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) corresponding dynamic injection device"
+    "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

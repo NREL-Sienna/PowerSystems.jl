@@ -21,37 +21,37 @@ A reserve product with an [Operating Reserve Demand Curve (ORDC)](https://hepg.h
 
 The ORDC is modeled as a discretized set of `(Reserve capacity (MW), Price (\$/MWh))` steps, which can vary with time. Use [`set_variable_cost!`](@ref) to define the ORDCs.
 
-When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref).
+When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref)
 
 # Arguments
 - `variable::Union{Nothing, TimeSeriesKey}`: Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
-- `sustained_time::Float64`: (optional) the time in seconds that the reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: (optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0., validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `sustained_time::Float64`: the time in seconds that the reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
+- `max_participation_factor::Float64`: the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
+- `deployed_fraction::Float64`: Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`, action if invalid: `error`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
     "Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter"
     variable::Union{Nothing, TimeSeriesKey}
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
-    "(optional) the time in seconds that the reserve contribution must sustained at a specified level"
+    "the time in seconds that the reserve contribution must sustained at a specified level"
     sustained_time::Float64
-    "(optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device"
+    "the maximum portion [0, 1.0] of the reserve that can be contributed per device"
     max_participation_factor::Float64
-    "(optional) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0."
+    "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0"
     deployed_fraction::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

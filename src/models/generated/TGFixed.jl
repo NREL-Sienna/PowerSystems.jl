@@ -19,24 +19,24 @@ Parameters of a fixed Turbine Governor that returns a fixed mechanical torque
 
 # Arguments
 - `efficiency::Float64`: Efficiency factor that multiplies `P_ref`, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) TGFixed has no [states](@ref S)
 - `n_states::Int`: (**Do not modify.**) TGFixed has no states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TGFixed <: TurbineGov
     "Efficiency factor that multiplies `P_ref`"
     efficiency::Float64
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) TGFixed has no [states](@ref S)"
     states::Vector{Symbol}
     "(**Do not modify.**) TGFixed has no states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

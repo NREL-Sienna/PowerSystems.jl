@@ -49,9 +49,9 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 - `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`, action if invalid: `warn`
 - `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`, action if invalid: `warn`
 - `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`, action if invalid: `error`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `θp_rad::Float64`: (**Do not modify.**) Potential circuit phase angle (radians)
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vt: Sensed Terminal Voltage,
@@ -60,7 +60,7 @@ Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSL
 	Vm: Output integrator
 - `n_states::Int`: (**Do not modify.**) ST4B has 4 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) ST4B has 4 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ESST4B <: AVR
     "Regulator input filter time constant in s"
@@ -93,11 +93,11 @@ mutable struct ESST4B <: AVR
     Xl::Float64
     "Potential circuit phase angle (degrees)"
     θp::Float64
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
     "(**Do not modify.**) Potential circuit phase angle (radians)"
     θp_rad::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
@@ -110,7 +110,7 @@ mutable struct ESST4B <: AVR
     n_states::Int
     "(**Do not modify.**) ST4B has 4 states"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

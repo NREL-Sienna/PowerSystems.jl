@@ -17,23 +17,23 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A DC bus.
+A DC bus
 
 # Arguments
 - `number::Int`: A unique bus identification number (positive integer)
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`, action if invalid: `warn`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
-- `area::Union{Nothing, Area}`: (optional) the area containing the DC bus
-- `load_zone::Union{Nothing, LoadZone}`: (optional) the load zone containing the DC bus
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `area::Union{Nothing, Area}`: the area containing the DC bus
+- `load_zone::Union{Nothing, LoadZone}`: the load zone containing the DC bus
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct DCBus <: Bus
     "A unique bus identification number (positive integer)"
     number::Int
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "voltage as a multiple of `base_voltage`"
     magnitude::Union{Nothing, Float64}
@@ -41,13 +41,13 @@ mutable struct DCBus <: Bus
     voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
-    "(optional) the area containing the DC bus"
+    "the area containing the DC bus"
     area::Union{Nothing, Area}
-    "(optional) the load zone containing the DC bus"
+    "the load zone containing the DC bus"
     load_zone::Union{Nothing, LoadZone}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

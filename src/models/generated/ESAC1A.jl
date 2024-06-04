@@ -50,9 +50,9 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
 - `Vr_lim::MinMax`: Limits for exciter field voltage: `(Vr_min, Vr_max)`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: Lead-lag state,
@@ -61,7 +61,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. This model corresponds
 	Vr3: Feedback output state
 - `n_states::Int`: (**Do not modify.**) ESAC1A has 5 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) ESAC1A has 5 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ESAC1A <: AVR
     "Regulator input filter time constant in s"
@@ -94,11 +94,11 @@ mutable struct ESAC1A <: AVR
     Se::Tuple{Float64, Float64}
     "Limits for exciter field voltage: `(Vr_min, Vr_max)`"
     Vr_lim::MinMax
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
     "(**Do not modify.**) Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x"
     saturation_coeffs::Tuple{Float64, Float64}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
@@ -111,7 +111,7 @@ mutable struct ESAC1A <: AVR
     n_states::Int
     "(**Do not modify.**) ESAC1A has 5 states"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

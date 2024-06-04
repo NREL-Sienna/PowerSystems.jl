@@ -41,7 +41,7 @@ Parameters of 6-[states](@ref S) synchronous machine: Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `γd::Float64`: (**Do not modify.**) Internal equation
 - `γq::Float64`: (**Do not modify.**) Internal equation
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
@@ -52,7 +52,7 @@ Parameters of 6-[states](@ref S) synchronous machine: Marconato model
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
 - `n_states::Int`: (**Do not modify.**) MarconatoMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct MarconatoMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -79,7 +79,7 @@ mutable struct MarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) Internal equation"
     γd::Float64
@@ -95,7 +95,7 @@ mutable struct MarconatoMachine <: Machine
     states::Vector{Symbol}
     "(**Do not modify.**) MarconatoMachine has 6 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

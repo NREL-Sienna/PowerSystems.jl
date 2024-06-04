@@ -56,9 +56,9 @@ Generic Proportional/Integral Excitation System
 - `Kp::Float64`: Potential source gain, validation range: `(0, 5)`, action if invalid: `warn`
 - `Ki::Float64`: current source gain, validation range: `(0, 1.1)`
 - `Kc::Float64`: Exciter regulation factor, validation range: `(0, 2)`, action if invalid: `warn`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
@@ -69,7 +69,7 @@ Generic Proportional/Integral Excitation System
 	Vr4: second feedback integrator
 - `n_states::Int`: (**Do not modify.**) EXPIC1 has 6 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) EXPIC has 6 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct EXPIC1 <: AVR
     "Regulator input filter time constant in s"
@@ -110,11 +110,11 @@ mutable struct EXPIC1 <: AVR
     Ki::Float64
     "Exciter regulation factor"
     Kc::Float64
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
     "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
     saturation_coeffs::Tuple{Float64, Float64}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
@@ -129,7 +129,7 @@ mutable struct EXPIC1 <: AVR
     n_states::Int
     "(**Do not modify.**) EXPIC has 6 states"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

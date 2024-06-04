@@ -35,7 +35,7 @@ IEEE Stabilizing Model PSS.
 
 # Arguments
 - `input_code::Int`: Code input for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control::Int`: ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component.
+- `remote_bus_control::Int`: ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component
 - `A1::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A2::Float64`: Filter coefficient, validation range: `(0, nothing)`, action if invalid: `warn`
 - `A3::Float64`: Filter coefficient, validation range: `(0, nothing)`
@@ -52,7 +52,7 @@ IEEE Stabilizing Model PSS.
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output `(Ls_min, Ls_max)`
 - `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, 1.25)`, action if invalid: `warn`
 - `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, 1.0)`, action if invalid: `warn`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
 	x_p2: 2nd filter integration, 
@@ -63,12 +63,12 @@ IEEE Stabilizing Model PSS.
 	:x_p7 last integer,
 - `n_states::Int`: (**Do not modify.**) IEEEST has 7 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 7 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct IEEEST <: PSS
     "Code input for stabilizer"
     input_code::Int
-    "ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component."
+    "ACBus identification [`number`](@ref ACBus) for control. `0` identifies the bus connected to this component"
     remote_bus_control::Int
     "Filter coefficient"
     A1::Float64
@@ -102,7 +102,7 @@ mutable struct IEEEST <: PSS
     Vcu::Float64
     "Cutoff limiter lower bound"
     Vcl::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
@@ -117,7 +117,7 @@ mutable struct IEEEST <: PSS
     n_states::Int
     "(**Do not modify.**) IEEEST has 7 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

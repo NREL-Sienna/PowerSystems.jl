@@ -21,8 +21,8 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `Ta::Float64`: VSM inertia constant, validation range: `(0, nothing)`
 - `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`
 - `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the VirtualInertia model are:
 	θ_oc: Phase angle displacement of the virtual synchronous generator model
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model
@@ -35,9 +35,9 @@ mutable struct VirtualInertia <: ActivePowerControl
     kd::Float64
     "frequency droop gain"
     kω::Float64
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the VirtualInertia model are:
 	θ_oc: Phase angle displacement of the virtual synchronous generator model

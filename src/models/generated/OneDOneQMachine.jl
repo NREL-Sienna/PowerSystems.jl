@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
 Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when
- transmission network dynamics is neglected.
+ transmission network dynamics is neglected
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
@@ -32,12 +32,12 @@ Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
 - `n_states::Int`: (**Do not modify.**) OneDOneQMachine has 2 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct OneDOneQMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -54,7 +54,7 @@ mutable struct OneDOneQMachine <: Machine
     Td0_p::Float64
     "Time constant of transient q-axis voltage"
     Tq0_p::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
@@ -62,7 +62,7 @@ mutable struct OneDOneQMachine <: Machine
     states::Vector{Symbol}
     "(**Do not modify.**) OneDOneQMachine has 2 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

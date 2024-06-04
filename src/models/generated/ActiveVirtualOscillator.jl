@@ -19,8 +19,8 @@ Parameters of an Active Virtual Oscillator controller. Model is based on ["Model
 # Arguments
 - `k1::Float64`: VOC Synchronization Gain, validation range: `(0, nothing)`
 - `ψ::Float64`: Rotation angle of the controller, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ActiveVirtualOscillator model are:
 	θ_oc: Phase angle displacement of the inverter model
 - `n_states::Int`: (**Do not modify.**) ActiveVirtualOscillator has one state
@@ -30,9 +30,9 @@ mutable struct ActiveVirtualOscillator <: ActivePowerControl
     k1::Float64
     "Rotation angle of the controller"
     ψ::Float64
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ActiveVirtualOscillator model are:
 	θ_oc: Phase angle displacement of the inverter model"

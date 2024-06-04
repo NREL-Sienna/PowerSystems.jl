@@ -24,22 +24,22 @@ Automatic generation control (AGC) for the system or a certain `Area` within the
 This model uses a proportional–integral–derivative (PID) control to simulate a "smooth" response of the AGC to the area control error (ACE). Refer to ["AGC Simulation Model for Large Renewable Energy Penetration Studies."](https://doi.org/10.1109/NAPS50074.2021.9449687)
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bias::Float64`: Area frequency bias in MW/Hz
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
 - `K_d::Float64`: PID Derivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
-- `area::Union{Nothing, Area}`: (optional) the area controlled by the AGC
-- `initial_ace::Float64`: (optional) Initial condition for ACE
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `area::Union{Nothing, Area}`: the area controlled by the AGC
+- `initial_ace::Float64`: Initial condition for ACE
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AGC <: Service
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Area frequency bias in MW/Hz"
     bias::Float64
@@ -51,13 +51,13 @@ mutable struct AGC <: Service
     K_d::Float64
     "PID Discretization period [Seconds]"
     delta_t::Float64
-    "(optional) the area controlled by the AGC"
+    "the area controlled by the AGC"
     area::Union{Nothing, Area}
-    "(optional) Initial condition for ACE"
+    "Initial condition for ACE"
     initial_ace::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

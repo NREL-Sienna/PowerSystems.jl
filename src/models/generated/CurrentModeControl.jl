@@ -19,8 +19,8 @@ Parameters of an inner loop proportional integral (PI) current control based on 
 # Arguments
 - `kpc::Float64`: Current controller proportional gain, validation range: `(0, nothing)`
 - `kic::Float64`: Current controller integral gain, validation range: `(0, nothing)`
-- `kffv::Float64`: Gain to enable feed-forward gain of voltage., validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `kffv::Float64`: Gain to enable feed-forward gain of voltage, validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the CurrentModeControl model are:
 	γd_ic: d-axis integrator state of the PI current controller,
 	γq_ic: q-axis integrator state of the PI current controller
@@ -31,9 +31,9 @@ mutable struct CurrentModeControl <: InnerControl
     kpc::Float64
     "Current controller integral gain"
     kic::Float64
-    "Gain to enable feed-forward gain of voltage."
+    "Gain to enable feed-forward gain of voltage"
     kffv::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the CurrentModeControl model are:
 	γd_ic: d-axis integrator state of the PI current controller,

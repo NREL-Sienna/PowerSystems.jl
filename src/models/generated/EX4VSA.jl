@@ -40,14 +40,14 @@ IEEE Excitation System for Voltage Security Assesment
 - `Tb::Float64`: Denominator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `Te::Float64`: Exciter Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
 - `E_lim::MinMax`: Voltage regulator limits (regulator output) (E_min, E_max)
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vll: Lead-lag internal state,
 	Vex: Exciter Output, 
 	oel: OEL integrator state
 - `n_states::Int`: (**Do not modify.**) The EX4VSA has 3 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct EX4VSA <: AVR
     "OEL Field current limit"
@@ -74,9 +74,9 @@ mutable struct EX4VSA <: AVR
     Te::Float64
     "Voltage regulator limits (regulator output) (E_min, E_max)"
     E_lim::MinMax
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vll: Lead-lag internal state,
@@ -85,7 +85,7 @@ mutable struct EX4VSA <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) The EX4VSA has 3 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

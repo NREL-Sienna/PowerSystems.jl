@@ -30,14 +30,14 @@ Speed-Sensitive Stabilizing Model
 - `T2T4::Float64`: Time constant division T2/T4, validation range: `(0, nothing)`, action if invalid: `warn`
 - `T4::Float64`: Time constant, validation range: `(0.01, nothing)`, action if invalid: `warn`
 - `H_lim::Float64`: PSS output limit, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: washout filter,
 	x_p2: T1/T3 lead-lag block, 
 	x_p3: T2/T4 lead-lag block,
 - `n_states::Int`: (**Do not modify.**) STAB1 has 3 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) STAB1 has 3 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct STAB1 <: PSS
     "K/T for washout filter"
@@ -54,7 +54,7 @@ mutable struct STAB1 <: PSS
     T4::Float64
     "PSS output limit"
     H_lim::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: washout filter,
@@ -65,7 +65,7 @@ mutable struct STAB1 <: PSS
     n_states::Int
     "(**Do not modify.**) STAB1 has 3 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
