@@ -44,7 +44,7 @@ This is a standard representation with options to include a minimum up time, min
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`, action if invalid: `warn`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`, action if invalid: `error`
-- `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`
+- `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`: [Operating cost](@ref cost_library) of generation
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`, action if invalid: `warn`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
 - `must_run::Bool`: Set to `true` if the unit is must run
@@ -77,6 +77,7 @@ mutable struct ThermalStandard <: ThermalGen
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
+    "[Operating cost](@ref cost_library) of generation"
     operation_cost::Union{ThermalGenerationCost, MarketBidCost}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64

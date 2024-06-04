@@ -1,4 +1,4 @@
-### Operating Costs
+### [Operating Costs](@id cost_library)
 
 ```@docs
 ThermalGenerationCost
