@@ -4030,7 +4030,7 @@
         },
         {
             "struct_name": "EnergyReservoirStorage",
-            "docstring": "An energy storage device, modeled as a generic energy reservoir.\n\nThis is suitable for modeling storage charging and discharging with a round-trip efficiency, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach",
+            "docstring": "An energy storage device, modeled as a generic energy reservoir.\n\nThis is suitable for modeling storage charging and discharging with average efficiency losses, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach",
             "fields": [
                 {
                     "null_value": "init",
@@ -4064,9 +4064,9 @@
                     "data_type": "StorageTech"
                 },
                 {
-                    "name": "initial_energy",
+                    "name": "storage_capacity",
+                    "comment": "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen)",
                     "null_value": "0.0",
-                    "comment": "State of Charge of the Battery p.u.-hr",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -4076,13 +4076,24 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "state_of_charge_limits",
+                    "name": "storage_level_limits",
                     "null_value": "(min=0.0, max=0.0)",
-                    "comment": "Maximum and Minimum storage capacity in p.u.-hr",
+                    "comment": "Minimum and maximum allowable storage levels [0, 1], which can be used to model derates or other restrictions, such as state-of-charge restrictions on battery cycling",
                     "data_type": "MinMax",
                     "valid_range": {
                         "min": 0,
-                        "max": null
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "initial_storage_capacity_level",
+                    "null_value": "0.0",
+                    "comment": "Initial storage capacity level as a ratio [0, 1.0] of `storage_capacity`",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
                     },
                     "validation_action": "error",
                     "needs_conversion": true
@@ -4103,6 +4114,7 @@
                 },
                 {
                     "name": "input_active_power_limits",
+                    "comment": "Minimum and maximum limits on the input active power (i.e., charging)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -4114,6 +4126,7 @@
                 },
                 {
                     "name": "output_active_power_limits",
+                    "comment": "Minimum and maximum limits on the output active power (i.e., discharging)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "valid_range": {
@@ -4125,6 +4138,7 @@
                 },
                 {
                     "name": "efficiency",
+                    "comment": "Average efficiency [0, 1] `in` (charging/filling) and `out` (discharging/consuming) of the storage system",
                     "null_value": "(in=0.0, out=0.0)",
                     "data_type": "NamedTuple{(:in, :out), Tuple{Float64, Float64}}",
                     "valid_range": {
@@ -4159,6 +4173,13 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "conversion_factor",
+                    "comment": "Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
                 },
                 {
                     "name": "operation_cost",
