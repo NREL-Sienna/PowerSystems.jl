@@ -32,14 +32,14 @@ An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as 
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Active power coefficient, P0 (MW)
 - `reactive_power::Float64`: Reactive power coefficient, Q0 (MVAR)
-- `α::Float64`: Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`, action if invalid: `warn`
-- `β::Float64`: Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`, action if invalid: `warn`
-- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`, action if invalid: `warn`
+- `α::Float64`: Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`
+- `β::Float64`: Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ExponentialLoad <: StaticLoad

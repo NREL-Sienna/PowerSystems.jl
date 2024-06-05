@@ -31,9 +31,9 @@ This model uses a proportional–integral–derivative (PID) control to simulate
 - `K_i::Float64`: PID Integral Constant
 - `K_d::Float64`: PID Derivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
-- `area::Union{Nothing, Area}`: the area controlled by the AGC
-- `initial_ace::Float64`: Initial condition for ACE
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `area::Union{Nothing, Area}`: (default: `nothing`) the area controlled by the AGC
+- `initial_ace::Float64`: (default: `0.0`) Initial condition for ACE
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AGC <: Service

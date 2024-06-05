@@ -28,14 +28,14 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus on the AC side of this converter
 - `dc_bus::DCBus`: Bus on the DC side of this converter
-- `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`, action if invalid: `warn`
-- `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`, action if invalid: `error`
+- `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`
+- `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
-- `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `efficiency::Float64`: Conversion efficiency [0, 1.0] from AC Power to DC Power
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`
+- `efficiency::Float64`: (default: `1.0`) Conversion efficiency [0, 1.0] from AC Power to DC Power
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterconnectingConverter <: StaticInjection

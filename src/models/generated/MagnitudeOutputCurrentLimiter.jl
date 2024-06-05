@@ -14,7 +14,7 @@ Parameters of Magnitude (Circular) Current Controller Limiter. Regulates only th
 
 # Arguments
 - `I_max::Float64`: Maximum limit on current controller input current in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 """
 mutable struct MagnitudeOutputCurrentLimiter <: OutputCurrentLimiter
     "Maximum limit on current controller input current in pu ([`DEVICE_BASE`](@ref per_unit))"

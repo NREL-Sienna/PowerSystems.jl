@@ -27,11 +27,11 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
-- `number_of_steps::Int`: Number of steps for adjustable shunt
-- `Y_increase::Complex{Float64}`: Admittance increment for each of step increase
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection model for admittance
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `number_of_steps::Int`: (default: `0`) Number of steps for adjustable shunt
+- `Y_increase::Complex{Float64}`: (default: `0`) Admittance increment for each of step increase
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SwitchedAdmittance <: ElectricLoad

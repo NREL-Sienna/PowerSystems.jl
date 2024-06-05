@@ -30,7 +30,7 @@ Parameters of 2-states of a generic dynamic load model based on ["Voltage stabil
 - `β::Float64`: Reactive power transient exponential coefficient, validation range: `(0, nothing)`
 - `T_p::Float64`: Active Power Time Constant, validation range: `(0, nothing)`
 - `T_q::Float64`: Reactive Power Time Constant, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `base_power::Float64`: Base power of the load (MVA) for per unitization
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p: Integrator state of the active power,

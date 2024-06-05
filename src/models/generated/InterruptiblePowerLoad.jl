@@ -33,11 +33,11 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`, action if invalid: `warn`
+- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [Operating cost](@ref cost_library) of interrupting load
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad

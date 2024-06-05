@@ -36,8 +36,8 @@ As implemented in ["Power System Modelling and Scripting"](https://link.springer
 - `inverter_tap_limits::MinMax`: Minimum and maximum inverter tap limits as a ratio between the primary and secondary side voltages
 - `inverter_xrc::Float64`: Inverter commutation reactance in p.u. ([`DEVICE_BASE`](@ref per_unit))
 - `inverter_extinction_angle::MinMax`: Minimum and maximum inverter extinction angle (γ) (radians)
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TwoTerminalVSCDCLine <: ACBranch
