@@ -2945,7 +2945,7 @@
                 {
                     "null_value": "false",
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
                     "data_type": "Bool",
                     "default": "false"
                 },
@@ -3358,7 +3358,7 @@
                 },
                 {
                     "name": "pump_efficiency",
-                    "comment": "Pumping effciency [0, 1.0]",
+                    "comment": "Pumping efficiency [0, 1.0]",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0",
@@ -3377,7 +3377,7 @@
                 },
                 {
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "comment": "Initial commitment condition at the start of a simulation (`PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`)",
                     "data_type": "PumpHydroStatus",
                     "default": "PumpHydroStatus.OFF",
                     "null_value": "PumpHydroStatus.OFF"
