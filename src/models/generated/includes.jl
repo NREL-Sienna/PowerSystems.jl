@@ -497,8 +497,8 @@ export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
-export get_initial_energy
 export get_initial_storage
+export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
 export get_input_code_1
@@ -601,11 +601,11 @@ export get_services
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
-export get_state_of_charge_limits
 export get_states
 export get_states_types
 export get_status
 export get_storage_capacity
+export get_storage_level_limits
 export get_storage_target
 export get_storage_technology_type
 export get_sustained_time
@@ -1026,8 +1026,8 @@ export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
-export set_initial_energy!
 export set_initial_storage!
+export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
 export set_input_code_1!
@@ -1130,11 +1130,11 @@ export set_services!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
-export set_state_of_charge_limits!
 export set_states!
 export set_states_types!
 export set_status!
 export set_storage_capacity!
+export set_storage_level_limits!
 export set_storage_target!
 export set_storage_technology_type!
 export set_sustained_time!
