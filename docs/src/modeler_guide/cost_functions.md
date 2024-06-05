@@ -6,8 +6,9 @@ To represent a cost for a particular [`Component`](@ref), the modeler first choo
 
 ## Variable Cost Representations
 For more details, see the documentation page for each type.
+
 | Type alias | Description | Constructor parameters | Example |
-| --- | --- | --- | --- |
+| :--- | :--- | :--- | :--- |
 | `LinearCurve` | Linear input-output curve with zero no-load cost (constant average rate) | Average/marginal rate | `LinearCurve(3.0)` |
 | `LinearCurve` | Linear input-output curve with nonzero no-load cost (constant marginal rate) | Marginal rate, cost at zero production | `LinearCurve(3.0, 5.0)` |
 | `QuadraticCurve` | Quadratic input-output curve, may have nonzero no-load cost | Quadratic, proportional, and constant terms of input-output curve | `QuadraticCurve(1.0, 1.0, 18.0)` |

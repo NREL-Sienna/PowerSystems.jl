@@ -5,7 +5,7 @@ IS.deserialize(T::Type{<:ProductionVariableCostCurve}, val::Dict) = IS.deseriali
 
 "Get the underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
 get_value_curve(cost::ProductionVariableCostCurve) = cost.value_curve
-"Get the variable operation and maintenance cost in \$/(power_units h)"
+"Get the variable operation and maintenance cost in currency/(power_units h)"
 get_vom_cost(cost::ProductionVariableCostCurve) = cost.vom_cost
 "Get the units for the x-axis of the curve"
 get_power_units(cost::ProductionVariableCostCurve) = cost.power_units
@@ -24,17 +24,31 @@ Base.isequal(a::T, b::T) where {T <: ProductionVariableCostCurve} = IS.isequal_f
 Base.hash(a::ProductionVariableCostCurve) = IS.hash_from_fields(a)
 
 """
+    @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
+        value_curve::T
+        power_units::UnitSystem = UnitSystem.NATURAL_UNITS
+        vom_cost::Float64 = 0.0
+    end
+
 Direct representation of the variable operation cost of a power plant in currency. Composed
 of a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate
 data. The default units for the x-axis are megawatts and can be specified with
 `power_units`.
+
+# Arguments
+  - `value_curve::T`: The underlying `ValueCurve` representation of this
+    `ProductionVariableCostCurve`
+  - `power_units::UnitSystem = UnitSystem.NATURAL_UNITS`: The units for the x-axis of the
+    curve; defaults to natural units (megawatts)
+  - `vom_cost::Float64 = 0.0`: Additional proportional Variable Operation and Maintenance
+    cost in currency/(power_unit h)
 """
 @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    "Additional proportional Variable Operation and Maintenance cost in currency/(power_unit h)"
     vom_cost::Float64 = 0.0
 end
 
@@ -53,10 +67,27 @@ Base.:(==)(a::CostCurve, b::CostCurve) =
 Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
 
 """
+    @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
+        value_curve::T
+        power_units::UnitSystem = UnitSystem.NATURAL_UNITS
+        fuel_cost::Union{Float64, TimeSeriesKey}
+        vom_cost::Float64 = 0.0
+    end
+
 Representation of the variable operation cost of a power plant in terms of fuel (MBTU,
 liters, m^3, etc.), coupled with a conversion factor between fuel and currency. Composed of
 a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate data.
 The default units for the x-axis are megawatts and can be specified with `power_units`.
+
+# Arguments
+  - `value_curve::T`: The underlying `ValueCurve` representation of this
+    `ProductionVariableCostCurve`
+  - `power_units::UnitSystem = UnitSystem.NATURAL_UNITS`: The units for the x-axis of the
+    curve; defaults to natural units (megawatts)
+  - `fuel_cost::Union{Float64, TimeSeriesKey}`: Either a fixed value for fuel cost or the
+    key to a fuel cost time series
+  - `vom_cost::Float64 = 0.0`: Additional proportional Variable Operation and Maintenance
+    cost in currency/(power_unit h)
 """
 @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
@@ -65,7 +96,7 @@ The default units for the x-axis are megawatts and can be specified with `power_
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
     "Either a fixed value for fuel cost or the key to a fuel cost time series"
     fuel_cost::Union{Float64, TimeSeriesKey}
-    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    "Additional proportional Variable Operation and Maintenance Cost in currency/(power_unit h)"
     vom_cost::Float64 = 0.0
 end
 
