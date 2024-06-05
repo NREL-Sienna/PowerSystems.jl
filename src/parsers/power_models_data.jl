@@ -313,7 +313,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
     load_zone_map =
         Dict{Int, Dict{String, Float64}}(i => Dict("pd" => 0.0, "qd" => 0.0) for i in zones)
     for (key, load) in data["load"]
-        zone = load_zone_map[data["bus"][load["load_bus"]]["zone"]]
+        zone = data["bus"][load["load_bus"]]["zone"]
         load_zone_map[zone]["pd"] += load["pd"]
         load_zone_map[zone]["qd"] += load["qd"]
         load_zone_map[zone]["pd"] += load["pi"]
