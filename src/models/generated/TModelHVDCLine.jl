@@ -34,8 +34,8 @@ This line must be connected to a [`DCBus`](@ref) on each end. It uses a T-Model 
 - `c::Float64`: Shunt capacitance in p.u. ([`SYSTEM_BASE`](@ref per_unit))
 - `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TModelHVDCLine <: DCBranch

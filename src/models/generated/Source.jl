@@ -33,11 +33,11 @@ Commonly used in dynamics simulations to represent a very large machine on a sin
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
-- `internal_voltage::Float64`: Internal Voltage (pu), validation range: `(0, nothing)`
-- `internal_angle::Float64`: Internal Angle
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal_voltage::Float64`: (default: `1.0`) Internal Voltage (pu), validation range: `(0, nothing)`
+- `internal_angle::Float64`: (default: `0.0`) Internal Angle
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Source <: StaticInjection

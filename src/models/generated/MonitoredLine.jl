@@ -32,14 +32,14 @@ For example, monitored lines can be used to restrict line flow following a conti
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
 - `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
-- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 2)`, action if invalid: `warn`
+- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
+- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
+- `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 2)`
 - `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`
 - `rating::Float64`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`
-- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct MonitoredLine <: ACBranch

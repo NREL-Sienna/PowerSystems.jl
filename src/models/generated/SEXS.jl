@@ -27,8 +27,8 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `K::Float64`: Gain, validation range: `(0, nothing)`
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
 - `V_lim::MinMax`: Field voltage limits
-- `V_ref::Float64`: Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: (**Do not modify.**) SEXS has 2 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) SEXS has 2 [differential](@ref states_list) [states](@ref S)

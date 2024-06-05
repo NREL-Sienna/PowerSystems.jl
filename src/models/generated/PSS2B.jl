@@ -42,33 +42,33 @@ This file is auto-generated. Do not edit.
 IEEE 421.5 2005 PSS2B IEEE Dual-Input Stabilizer Model
 
 # Arguments
-- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
+- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 6)`
 - `remote_bus_control_1::Int`: First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
-- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
+- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`
 - `remote_bus_control_2::Int`: Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
-- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T10::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T11::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
+- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`
+- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`
+- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`
+- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`
+- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`
+- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`
+- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`
+- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`
+- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`
+- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`
+- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`
+- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
+- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
+- `T10::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`
+- `T11::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`
 - `Vs1_lim::Tuple{Float64, Float64}`: First input limits `(Vs1_min, Vs1_max)`
 - `Vs2_lim::Tuple{Float64, Float64}`: Second input limits `(Vs2_min, Vs2_max)`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 

@@ -27,11 +27,11 @@ When defining the reserve, the `ReserveDirection` must be specified to define th
 - `variable::Union{Nothing, TimeSeriesKey}`: Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
-- `sustained_time::Float64`: the time in seconds that the reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_participation_factor::Float64`: the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
+- `sustained_time::Float64`: (default: `3600.0`) the time in seconds that the reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
+- `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
+- `deployed_fraction::Float64`: (default: `0.0`) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}

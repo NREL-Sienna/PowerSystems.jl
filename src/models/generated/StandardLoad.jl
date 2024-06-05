@@ -38,22 +38,22 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the load (MVA) for per unitization, validation range: `(0, nothing)`, action if invalid: `warn`
-- `constant_active_power::Float64`: Constant active power demand in MW (P_P)
-- `constant_reactive_power::Float64`: Constant reactive power demand in MVAR (Q_P)
-- `impedance_active_power::Float64`: Active power coefficient in MW for constant impedance load (P_Z)
-- `impedance_reactive_power::Float64`: Reactive power coefficient in MVAR for constant impedance load (Q_Z)
-- `current_active_power::Float64`: Active power coefficient in MW for constant current load (P_I)
-- `current_reactive_power::Float64`: Reactive power coefficient in MVAR for constant current load (Q_I)
-- `max_constant_active_power::Float64`: Maximum active power (MW) drawn by constant power load
-- `max_constant_reactive_power::Float64`: Maximum reactive power (MVAR) drawn by constant power load
-- `max_impedance_active_power::Float64`: Maximum active power (MW) drawn by constant impedance load
-- `max_impedance_reactive_power::Float64`: Maximum reactive power (MVAR) drawn by constant impedance load
-- `max_current_active_power::Float64`: Maximum active power (MW) drawn by constant current load
-- `max_current_reactive_power::Float64`: Maximum reactive power (MVAR) drawn by constant current load
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`: An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `base_power::Float64`: Base power of the load (MVA) for per unitization, validation range: `(0, nothing)`
+- `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
+- `constant_reactive_power::Float64`: (default: `0.0`) Constant reactive power demand in MVAR (Q_P)
+- `impedance_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant impedance load (P_Z)
+- `impedance_reactive_power::Float64`: (default: `0.0`) Reactive power coefficient in MVAR for constant impedance load (Q_Z)
+- `current_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant current load (P_I)
+- `current_reactive_power::Float64`: (default: `0.0`) Reactive power coefficient in MVAR for constant current load (Q_I)
+- `max_constant_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant power load
+- `max_constant_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant power load
+- `max_impedance_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant impedance load
+- `max_impedance_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant impedance load
+- `max_current_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant current load
+- `max_current_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant current load
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct StandardLoad <: StaticLoad
