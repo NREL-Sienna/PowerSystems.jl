@@ -1,7 +1,8 @@
 abstract type ProductionVariableCostCurve{T <: ValueCurve} end
 
 IS.serialize(val::ProductionVariableCostCurve) = IS.serialize_struct(val)
-IS.deserialize(T::Type{<:ProductionVariableCostCurve}, val::Dict) = IS.deserialize_struct(T, val)
+IS.deserialize(T::Type{<:ProductionVariableCostCurve}, val::Dict) =
+    IS.deserialize_struct(T, val)
 
 "Get the underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
 get_value_curve(cost::ProductionVariableCostCurve) = cost.value_curve
@@ -10,16 +11,19 @@ get_vom_cost(cost::ProductionVariableCostCurve) = cost.vom_cost
 "Get the units for the x-axis of the curve"
 get_power_units(cost::ProductionVariableCostCurve) = cost.power_units
 "Get the `FunctionData` representation of this `ProductionVariableCostCurve`'s `ValueCurve`"
-get_function_data(cost::ProductionVariableCostCurve) = get_function_data(get_value_curve(cost))
+get_function_data(cost::ProductionVariableCostCurve) =
+    get_function_data(get_value_curve(cost))
 "Get the `initial_input` field of this `ProductionVariableCostCurve`'s `ValueCurve` (not defined for input-output data)"
-get_initial_input(cost::ProductionVariableCostCurve) = get_initial_input(get_value_curve(cost))
+get_initial_input(cost::ProductionVariableCostCurve) =
+    get_initial_input(get_value_curve(cost))
 "Calculate the convexity of the underlying data"
 is_convex(cost::ProductionVariableCostCurve) = is_convex(get_value_curve(cost))
 
 Base.:(==)(a::T, b::T) where {T <: ProductionVariableCostCurve} =
     IS.double_equals_from_fields(a, b)
 
-Base.isequal(a::T, b::T) where {T <: ProductionVariableCostCurve} = IS.isequal_from_fields(a, b)
+Base.isequal(a::T, b::T) where {T <: ProductionVariableCostCurve} =
+    IS.isequal_from_fields(a, b)
 
 Base.hash(a::ProductionVariableCostCurve) = IS.hash_from_fields(a)
 
