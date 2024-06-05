@@ -3,7 +3,7 @@
 [A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
 [S](@ref) | [V](@ref) | [Z](@ref)
 
-## A
+### A
 
 * *AC*: Alternating current
 
@@ -13,7 +13,7 @@
 
 * *AVR*: Automatic Voltage Regulator 
 
-## D
+### D
 
 * *DC*: Direct current
 
@@ -24,7 +24,7 @@
   maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
   see the definition for [Static](@ref S) data.
 
-## E
+### E
 
 * *EMF*: Electromotive force
 
@@ -40,7 +40,7 @@
 
 * *EX4VSA*: IEEE Excitation System for Voltage Security Assessment with Over-Excitation Limits.
 
-## F
+### F
 
 * *Forecast*: Predicted values of a time-varying quantity that commonly features
   a look-ahead and can have multiple data values representing each time period.
@@ -50,7 +50,7 @@
 * *Forecast window*: Represents the forecasted value starting at a particular initial time.
     See the article on [`Time Series Data`](@ref ts_data).
 
-## H
+### H
 
 * *Horizon*: Is the count of discrete values in a forecast, all horizons in `PowerSystems.jl`
   are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
@@ -58,7 +58,7 @@
 
 * *HVDC*: High-voltage DC
 
-## I
+### I
 
 * *IEEET*: IEEE Type I Excitation System.
 
@@ -75,11 +75,11 @@
 
 * *IPC*: Interconnecting power converter
 
-## O
+### O
 
 * *OEL*:
 
-## P
+### P
 
 * *PLL*: Phase-locked loop
 
@@ -95,7 +95,7 @@
 
 * *pu* or *p.u.*: Per-unit
 
-## R
+### R
 
 * *REECB1*:
 
@@ -105,7 +105,7 @@
   are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
   has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`. 
 
-## S
+### S
 
 * *SCRX*: Bus Fed or Solid Fed Static Exciter
 
@@ -129,13 +129,13 @@
 
 * *STAB*: Speed Sensitive Stabilizing PSS Model
 
-## V
+### V
 
 * *VSCDCLine*: Voltage-Source Converter Direct Current Line
 
 * *VSM*:
 
-## Z
+### Z
 
 * *ZIP load*: A ZIP load model accounts for the voltage-dependency of a load and is primarily used
   for dynamics modeling. It includes three kinds of load: constant impedance (Z), constant current (I),

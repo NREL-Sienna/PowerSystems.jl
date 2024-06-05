@@ -20,11 +20,12 @@ pages = OrderedDict(
             "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
         ],
         "How to..." =>  Any[
+            "install PowerSystems.jl" => "how_to/install.md",
         ],
         "Explanation" =>
             Any[
-            "explanation/type_structure.md",
             "explanation/system.md",
+            "explanation/type_structure.md",
             "explanation/per_unit.md",
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
@@ -51,7 +52,8 @@ pages = OrderedDict(
             Any["Public API" => "api/public.md",
             "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
-            "Specifying the type of..." => "api/enumerated_types.md"
+            "Specifying the type of..." => "api/enumerated_types.md",
+            "Citation" => "api/citation.md"
             ]
 
 
