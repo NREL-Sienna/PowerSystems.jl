@@ -31,12 +31,12 @@ function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
     return 0
 end
 
-function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
-    if !haskey(pm_bus_data["bus"], bus_i)
+function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Dict)
+    if !haskey(pm_bus_data, bus_i)
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
     else
-        return pm_bus_data["bus"][bus_i][field]
+        return pm_bus_data[bus_i][field]
     end
 end
 
