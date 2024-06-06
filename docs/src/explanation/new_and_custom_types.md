@@ -1,4 +1,4 @@
-# Creating a custom `Component`
+# New and Custom Types
 
 ## Type Hierarchy
 

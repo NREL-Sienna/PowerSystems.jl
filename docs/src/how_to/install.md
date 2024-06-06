@@ -10,8 +10,6 @@ PowerSystems.jl is a command line tool written in the Julia programming language
 ] add PowerSystems
 ```
 
-</br>
-
 To use the current development version instead, "checkout" the main branch of this package with:
 
 ```julia

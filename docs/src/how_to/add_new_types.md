@@ -1,4 +1,4 @@
-# Adding PowerSystems Types
+# Add a New Type
 
 This page describes how developers should add types to `PowerSystems.jl` Refer to
 the

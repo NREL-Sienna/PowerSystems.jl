@@ -11,7 +11,7 @@ pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  Any[
-            "Introduction" => "tutorials/basics.md",
+            "Getting Started" => "tutorials/getting_started.md",
             "Add Forecasts" => "tutorials/add_forecasts.md",
             "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
         ],
@@ -21,11 +21,15 @@ pages = OrderedDict(
             "parse tabular data" => "how_to/parse_tabular_data.md",
             "serialize data to a JSON" => "how_to/serialize_data.md",
             "load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
+            "add additional data to a component" => "how_to/adding_additional_fields.md",
+            "add a new Type" => "how_to/add_new_types.md",
+            "customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
         ],
         "Explanation" =>
             Any[
             "explanation/system.md",
             "explanation/type_structure.md",
+            "explanation/new_and_custom_types.md",
             "explanation/per_unit.md",
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
@@ -33,18 +37,6 @@ pages = OrderedDict(
             "explanation/market_bid_cost.md",
             "explanation/modeling_with_JuMP.md",
             "explanation/parsing.md",
-
-            ],
-        "Model Developer Guide" =>
-            Any["Extending Parsing" => "model_developer_guide/extending_parsing.md",
-                "Adding Types" => "model_developer_guide/adding_custom_types.md",
-                "Adding Additional Fields" => "model_developer_guide/adding_additional_fields.md",
-
-            ],
-            "Code Base Developer Guide" =>
-            Any["Developer Guide" => "code_base_developer_guide/developer.md",
-            "Adding New Types" => "code_base_developer_guide/adding_new_types.md",
-            "Troubleshooting" => "code_base_developer_guide/troubleshooting.md"
             ],
         "Model Library" => Any[],
         "Reference" =>
@@ -52,6 +44,7 @@ pages = OrderedDict(
             "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
             "Specifying the type of..." => "api/enumerated_types.md",
+            "Developer Guidelines" => "api/developer_guidelines.md",
             "Citation" => "api/citation.md"
             ]
 
@@ -102,8 +95,6 @@ folders = Dict(
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
     "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
-    "Model Developer Guide" => filter(julia_file_filter, readdir("docs/src/model_developer_guide")),
-    "Code Base Developer Guide" => filter(julia_file_filter, readdir("docs/src/code_base_developer_guide")),
 )
 for (section, folder) in folders
     for file in folder
