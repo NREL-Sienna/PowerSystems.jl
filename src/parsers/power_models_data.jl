@@ -98,9 +98,13 @@ function _get_pm_dict_name(device_dict::Dict)::String
     return name
 end
 
-function _get_pm_bus_name(device_dict::Dict)
+function _get_pm_bus_name(device_dict::Dict, unique_names::Bool)
     if haskey(device_dict, "name")
-        name = strip(device_dict["name"]) * "_" * string(device_dict["bus_i"])
+        if unique_names
+            name = strip(device_dict["name"])
+        else
+            name = strip(device_dict["name"]) * "_" * string(device_dict["bus_i"])
+        end
     else
         name = strip(join(string.(device_dict["source_id"]), "-"))
     end
@@ -185,13 +189,28 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
-    bus_data = SortedDict(data["bus"])
-
+    unique_bus_names = true
+    bus_data = SortedDict{Int, Any}()
+    # Bus name uniqueness is not enforced by PSSE. This loop avoids forcing the users to have to
+    # pass the bus formatter always for larger datasets.
+    bus_names = Set{String}()
+    for (k, b) in data["bus"]
+        # If buses aren't unique stop searching and growing the set
+        if unique_bus_names && haskey(b, "name")
+            if b["name"] ∈ bus_names
+                unique_bus_names = false
+            end
+            push!(bus_names, b["name"])
+        end
+        bus_data[k] = b
+    end
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
     end
 
-    _get_name = get(kwargs, :bus_name_formatter, _get_pm_bus_name)
+    default_bus_naming = x -> _get_pm_bus_name(x, unique_bus_names)
+
+    _get_name = get(kwargs, :bus_name_formatter, default_bus_naming)
     for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
@@ -300,7 +319,12 @@ function make_loadzone(
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
+function read_loadzones!(
+    sys::System,
+    data::Dict{String, Any},
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
     @info "Reading LoadZones data in PowerModels dict to populate System ..."
     _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     zones = Set{Int}()
@@ -336,7 +360,12 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_hydro_gen(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_hydro_gen(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
@@ -364,7 +393,12 @@ function make_hydro_gen(gen_name::Union{SubString{String}, String}, d::Dict, bus
     )
 end
 
-function make_renewable_dispatch(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_renewable_dispatch(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
@@ -394,7 +428,12 @@ function make_renewable_dispatch(gen_name::Union{SubString{String}, String}, d::
     return generator
 end
 
-function make_renewable_fix(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_renewable_fix(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     base_conversion = sys_mbase / d["mbase"]
     generator = RenewableFix(;
         name = gen_name,
@@ -411,7 +450,11 @@ function make_renewable_fix(gen_name::Union{SubString{String}, String}, d::Dict,
     return generator
 end
 
-function make_generic_battery(storage_name::Union{SubString{String}, String}, d::Dict, bus::ACBus)
+function make_generic_battery(
+    storage_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+)
     storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
@@ -438,7 +481,12 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_thermal_gen(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
         # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
