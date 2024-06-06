@@ -316,10 +316,11 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
         zone = data["bus"][load["load_bus"]]["zone"]
         load_zone_map[zone]["pd"] += load["pd"]
         load_zone_map[zone]["qd"] += load["qd"]
-        load_zone_map[zone]["pd"] += load["pi"]
-        load_zone_map[zone]["qd"] += load["qi"]
-        load_zone_map[zone]["pd"] += load["py"]
-        load_zone_map[zone]["qd"] += load["qy"]
+        # Use get with defaults because matpower data doesn't have other load representations
+        load_zone_map[zone]["pd"] += get(load, "pi", 0.0)
+        load_zone_map[zone]["qd"] += get(load, "qi", 0.0)
+        load_zone_map[zone]["pd"] += get(load, "py", 0.0)
+        load_zone_map[zone]["qd"] += get(load, "qy", 0.0)
     end
     for zone in zones
         load_zone = make_loadzone(
@@ -335,7 +336,7 @@ function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_hydro_gen(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_hydro_gen(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
@@ -363,7 +364,7 @@ function make_hydro_gen(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float6
     )
 end
 
-function make_renewable_dispatch(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_renewable_dispatch(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
     cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
@@ -393,7 +394,7 @@ function make_renewable_dispatch(gen_name::String, d::Dict, bus::ACBus, sys_mbas
     return generator
 end
 
-function make_renewable_fix(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_renewable_fix(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
     base_conversion = sys_mbase / d["mbase"]
     generator = RenewableFix(;
         name = gen_name,
@@ -410,7 +411,7 @@ function make_renewable_fix(gen_name::String, d::Dict, bus::ACBus, sys_mbase::Fl
     return generator
 end
 
-function make_generic_battery(storage_name::String, d::Dict, bus::ACBus)
+function make_generic_battery(storage_name::Union{SubString{String}, String}, d::Dict, bus::ACBus)
     storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
@@ -437,7 +438,7 @@ The polynomial term follows the convention that for an n-degree polynomial, at l
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Float64)
+function make_thermal_gen(gen_name::Union{SubString{String}, String}, d::Dict, bus::ACBus, sys_mbase::Float64)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
         # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
