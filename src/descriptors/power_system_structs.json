@@ -4175,18 +4175,18 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "conversion_factor",
-                    "comment": "Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
                     "name": "operation_cost",
                     "comment": "[Operating cost](@ref cost_library) of storage",
                     "null_value": "StorageCost(nothing)",
                     "data_type": "StorageCost",
                     "default": "StorageCost(nothing)"
+                },
+                {
+                    "name": "conversion_factor",
+                    "comment": "Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
                 },
                 {
                     "name": "storage_target",
