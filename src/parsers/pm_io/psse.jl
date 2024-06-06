@@ -250,8 +250,9 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["ncost"] = 2
             sub_data["cost"] = [1.0, 0.0]
 
-            sub_data["source_id"] = ["generator", sub_data["gen_bus"], pop!(gen, "ID")]
-            sub_data["index"] = length(pm_data["gen"]) + 1
+            sub_data["source_id"] =
+                ["generator", string(sub_data["gen_bus"]), pop!(gen, "ID")]
+            sub_data["index"] = ix
 
             if import_all
                 _import_remaining_keys!(sub_data, gen)
@@ -1064,7 +1065,6 @@ function _pti_to_powermodels!(
     # update lookup structure
     for (k, v) in pm_data
         if isa(v, Array)
-            #println("updating $(k)")
             dict = Dict{String, Any}()
             for item in v
                 @assert("index" in keys(item))

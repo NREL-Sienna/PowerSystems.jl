@@ -547,7 +547,6 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     sys_mbase = data["baseMVA"]
 
     _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
-
     for (name, pm_gen) in data["gen"]
         gen_name = _get_name(pm_gen)
 
