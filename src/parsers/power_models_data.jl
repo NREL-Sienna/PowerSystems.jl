@@ -87,9 +87,9 @@ end
 """
 Internal component name retreval from pm2ps_dict
 """
-function _get_pm_dict_name(device_dict::Dict)
+function _get_pm_dict_name(device_dict::Dict)::String
     if haskey(device_dict, "name")
-        name = device_dict["name"]
+        name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
     else
