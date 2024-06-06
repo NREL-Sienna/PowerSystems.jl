@@ -21,7 +21,7 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     return
 end
 
-function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
+function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
     for bus in pm_bus_data
         if bus["index"] == bus_i
             return bus[field]
@@ -31,7 +31,7 @@ function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
     return 0
 end
 
-function _get_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
+function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Dict{String, Any})
     if !haskey(pm_bus_data["bus"], bus_i)
         @info("Could not find bus $bus_i, returning 0 for field $field")
         return 0
@@ -46,8 +46,8 @@ end
 Returns the value of `field` of `bus_i` from the PowerModels data. Requires
 "bus" Dict to already be populated.
 """
-function _get_bus_value(bus_i::Int, field::String, pm_data)
-    return _get_bus_value(bus_i, field, pm_data["bus"])
+function _get_bus_value(bus_i::Int, field::String, pm_data::Dict{String, Any})
+    return _find_bus_value(bus_i, field, pm_data["bus"])
 end
 
 """
