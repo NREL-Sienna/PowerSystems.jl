@@ -1,8 +1,4 @@
-# Serializing PowerSystem Data
-
-**Originally Contributed by**: Clayton Barrows
-
-## Introduction
+# Serialize Data to a JSON
 
 PowerSystems.jl supports serializing/deserializing data with JSON. This provides an example of how to write and read a `System` to/from disk.
 

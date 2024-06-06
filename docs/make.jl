@@ -12,15 +12,15 @@ pages = OrderedDict(
         "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  Any[
             "Introduction" => "tutorials/basics.md",
-            "Parsing PowerFlow Data" => "tutorials/parse_powerflow_cases.md",
-            "Parsing Tabular Data" => "tutorials/parse_tabular_data.md",
             "Add Forecasts" => "tutorials/add_forecasts.md",
-            "Serialize Data" => "tutorials/serialize_data.md",
-            "Use Dynamic Data" => "tutorials/dynamic_data.md",
-            "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
+            "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
         ],
         "How to..." =>  Any[
             "install PowerSystems.jl" => "how_to/install.md",
+            "load a Matpower or PSSE file" => "how_to/parse_powerflow_cases.md",
+            "parse tabular data" => "how_to/parse_tabular_data.md",
+            "serialize data to a JSON" => "how_to/serialize_data.md",
+            "load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
         ],
         "Explanation" =>
             Any[
@@ -29,7 +29,6 @@ pages = OrderedDict(
             "explanation/per_unit.md",
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
-            "explanation/system_dynamic_data.md",
             "explanation/cost_functions.md",
             "explanation/market_bid_cost.md",
             "explanation/modeling_with_JuMP.md",

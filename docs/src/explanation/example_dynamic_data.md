@@ -25,7 +25,7 @@ Each generator is a data structure that is defined by the following components:
 - [Prime Mover and Turbine Governor](@ref TurbineGov): Thermo-mechanical dynamics and associated controllers.
 
 ```@raw html
-<img src="../../assets/gen_metamodel.png" width="75%"/>
+<img src="../assets/gen_metamodel.png" width="75%"/>
 ```
 
 Each inverter is a data structure that is defined by the following components:
@@ -42,5 +42,5 @@ Each inverter is a data structure that is defined by the following components:
 - [Filter](@ref Filter): Used to connect the converter output to the grid.
 
 ```@raw html
-<img src="../../assets/inv_metamodel.png" width="75%"/>
+<img src="../assets/inv_metamodel.png" width="75%"/>
 ``` ⠀

@@ -21,5 +21,3 @@ sys = System(joinpath(file_dir, "case5_re.m"))
 file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data"); #hide
 sys = System(joinpath(file_dir, "RTS-GMLC.RAW"))
 ```
-
-This data set does not contain any time series data. For this, check the next tutorial.

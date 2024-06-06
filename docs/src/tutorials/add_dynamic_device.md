@@ -307,3 +307,5 @@ Finally we can seraliaze the system data for later reloading
 ```julia
 to_json(threebus_sys, "YOUR_DIR/threebus_sys.json")
 ```
+
+For more details to handle dynamic data, [check the tutorial in PowerSimulationsDynamics](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/tutorials/tutorial_dynamic_data/).
