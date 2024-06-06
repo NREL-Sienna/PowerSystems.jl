@@ -63,7 +63,7 @@ System(; kwargs...)
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
 """
-struct System <: IS.InfrastructureSystemsType
+mutable struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
