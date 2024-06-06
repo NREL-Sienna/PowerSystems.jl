@@ -8,6 +8,8 @@
 # have here nicely packaged and presented to the user.
 
 """
+    const LinearCurve = InputOutputCurve{LinearFunctionData}
+
 A linear input-output curve, representing a constant marginal rate. May have zero no-load
 cost (i.e., constant average rate) or not.
 
@@ -24,6 +26,8 @@ InputOutputCurve{LinearFunctionData}(proportional_term::Real, constant_term::Rea
     InputOutputCurve(LinearFunctionData(proportional_term, constant_term))
 
 """
+    const QuadraticCurve = InputOutputCurve{QuadraticFunctionData}
+
 A quadratic input-output curve, may have nonzero no-load cost.
 
 # Arguments
@@ -39,6 +43,8 @@ InputOutputCurve{QuadraticFunctionData}(quadratic_term, proportional_term, const
     )
 
 """
+    const PiecewisePointCurve = InputOutputCurve{PiecewiseLinearData}
+
 A piecewise linear curve specified by cost values at production points.
 
 # Arguments
@@ -52,6 +58,8 @@ InputOutputCurve{PiecewiseLinearData}(points::Vector) =
 get_points(curve::PiecewisePointCurve) = get_points(get_function_data(curve))
 
 """
+    const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
+
 A piecewise linear curve specified by marginal rates (slopes) between production points. May
 have nonzero initial value.
 
@@ -69,6 +77,8 @@ IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vec
 get_slopes(curve::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(curve))
 
 """
+    const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
+
 A piecewise linear curve specified by average rates between production points. May have
 nonzero initial value.
 

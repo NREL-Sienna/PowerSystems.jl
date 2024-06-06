@@ -18,7 +18,7 @@ Parameters of Hybrid Current Controller Limiter. Regulates the magnitude of the 
 - `I_max::Float64`: Maximum limit on current controller input current (device base), validation range: `(0, nothing)`
 - `rv::Float64`: Real part of the virtual impedance, validation range: `(0, nothing)`
 - `lv::Float64`: Imaginary part of the virtual impedance, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`)
 """
 mutable struct HybridOutputCurrentLimiter <: OutputCurrentLimiter
     "Maximum limit on current controller input current (device base)"

@@ -752,7 +752,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
         direction = get_reserve_direction(reserve.direction)
         if isnothing(requirement)
-            service = StaticReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
+            service = ConstantReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
         else
             service = VariableReserve{direction}(
                 reserve.name,
@@ -1298,9 +1298,9 @@ function make_renewable_generator(
             operation_cost = operation_cost,
             base_power = base_power,
         )
-    elseif gen_type == RenewableFix
-        @debug "Creating $(gen.name) as RenewableFix" _group = IS.LOG_GROUP_PARSING
-        generator = RenewableFix(;
+    elseif gen_type == RenewableNonDispatch
+        @debug "Creating $(gen.name) as RenewableNonDispatch" _group = IS.LOG_GROUP_PARSING
+        generator = RenewableNonDispatch(;
             name = gen.name,
             available = gen.available,
             bus = bus,
@@ -1342,8 +1342,9 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         bus = bus,
         prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
         storage_technology_type = StorageTech.OTHER_CHEM,
-        initial_energy = storage.energy_level,
-        state_of_charge_limits = state_of_charge_limits,
+        storage_capacity=storage.storage_capacity,
+        storage_level_limits=(min=storage.min_storage_capacity/storage.storage_capacity, max=1.0),
+        initial_storage_capacity_level=storage.energy_level/storage.storage_capacity,
         rating = storage.rating,
         active_power = storage.active_power,
         input_active_power_limits = input_active_power_limits,
@@ -1352,7 +1353,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        operation_cost = StorageCost(),
+        operation_cost = StorageCost()
     )
 
     return battery

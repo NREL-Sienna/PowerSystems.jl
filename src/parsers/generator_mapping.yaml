@@ -14,7 +14,7 @@ RenewableDispatch:
 - {fuel: WIND, type: null}
 - {fuel: SOLAR, type: CSP}  # TODO: may need a new struct
 
-RenewableFix:
+RenewableNonDispatch:
 - {fuel: SOLAR, type: RTPV}
 
 ThermalStandard:

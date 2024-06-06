@@ -27,7 +27,7 @@ end
     bus = ACBus(nothing)
     bus.name = "Bus1234"
     add_component!(sys, bus)
-    tg = RenewableFix(nothing)
+    tg = RenewableNonDispatch(nothing)
     tg.bus = bus
     add_component!(sys, tg)
     # TODO 1.0
@@ -74,10 +74,10 @@ end
         push!(devices, gen)
     end
 
-    service = StaticReserve{ReserveDown}(nothing)
+    service = ConstantReserve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
 
-    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
     add_service!(sys, groupservice)
     members = Vector{Service}()
     push!(members, service)

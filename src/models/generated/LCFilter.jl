@@ -20,8 +20,8 @@ Parameters of a LCL filter outside the converter
 - `lf::Float64`: filter inductance, validation range: `(0, nothing)`
 - `rf::Float64`: filter resistance, validation range: `(0, nothing)`
 - `cf::Float64`: filter capacitance, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the LCFilter model are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the LCFilter model are:
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter
 - `n_states::Int`: (**Do not modify.**) LCFilter has two states
@@ -33,9 +33,9 @@ mutable struct LCFilter <: Filter
     rf::Float64
     "filter capacitance"
     cf::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the LCFilter model are:
+    "(**Do not modify.**) The [states](@ref S) of the LCFilter model are:
 	ir_filter: Real current out of the filter,
 	ii_filter: Imaginary current out of the filter"
     states::Vector{Symbol}

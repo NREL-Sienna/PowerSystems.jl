@@ -29,18 +29,17 @@ include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
-include("RenewableFix.jl")
+include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
-include("StaticReserve.jl")
-include("StaticReserveNonSpinning.jl")
-include("StaticReserveGroup.jl")
+include("ConstantReserve.jl")
+include("ConstantReserveNonSpinning.jl")
+include("ConstantReserveGroup.jl")
 include("ReserveDemandCurve.jl")
 include("VariableReserve.jl")
 include("VariableReserveNonSpinning.jl")
 include("AGC.jl")
-include("Transfer.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("SEXS.jl")
@@ -433,7 +432,6 @@ export get_Y_increase
 export get_Zerox
 export get_a
 export get_active_power
-export get_active_power_coefficient
 export get_active_power_flow
 export get_active_power_flow_limits
 export get_active_power_limits
@@ -499,8 +497,8 @@ export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
-export get_initial_energy
 export get_initial_storage
+export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
 export get_input_code_1
@@ -515,7 +513,7 @@ export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
-export get_inverter_firing_angle
+export get_inverter_extinction_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
 export get_is_filter_differential
@@ -576,14 +574,12 @@ export get_r
 export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
-export get_rate
 export get_rated_current
 export get_rated_voltage
 export get_rating
 export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
-export get_reactive_power_coefficient
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
@@ -605,11 +601,11 @@ export get_services
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
-export get_state_of_charge_limits
 export get_states
 export get_states_types
 export get_status
 export get_storage_capacity
+export get_storage_level_limits
 export get_storage_target
 export get_storage_technology_type
 export get_sustained_time
@@ -965,7 +961,6 @@ export set_Y_increase!
 export set_Zerox!
 export set_a!
 export set_active_power!
-export set_active_power_coefficient!
 export set_active_power_flow!
 export set_active_power_flow_limits!
 export set_active_power_limits!
@@ -1031,8 +1026,8 @@ export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
-export set_initial_energy!
 export set_initial_storage!
+export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
 export set_input_code_1!
@@ -1047,7 +1042,7 @@ export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
-export set_inverter_firing_angle!
+export set_inverter_extinction_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
 export set_is_filter_differential!
@@ -1108,14 +1103,12 @@ export set_r!
 export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
-export set_rate!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
 export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
-export set_reactive_power_coefficient!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
@@ -1137,11 +1130,11 @@ export set_services!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
-export set_state_of_charge_limits!
 export set_states!
 export set_states_types!
 export set_status!
 export set_storage_capacity!
+export set_storage_level_limits!
 export set_storage_target!
 export set_storage_technology_type!
 export set_sustained_time!

@@ -58,7 +58,7 @@ export get_y_coords
 export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
-export ProductionVariableCost, CostCurve, FuelCurve
+export ProductionVariableCostCurve, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_function_data, get_initial_input, get_value_curve, get_power_units
@@ -74,7 +74,7 @@ export HydroPumpedStorage
 export InterconnectingConverter
 
 export RenewableGen
-export RenewableFix
+export RenewableNonDispatch
 export RenewableDispatch
 
 export ThermalGen
@@ -86,6 +86,7 @@ export StaticLoad
 export PowerLoad
 export StandardLoad
 export FixedAdmittance
+export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
 export ExponentialLoad
@@ -246,13 +247,13 @@ export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export StaticReserve
+export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
 export Transfer
-export StaticReserveGroup
-export StaticReserveNonSpinning
+export ConstantReserveGroup
+export ConstantReserveNonSpinning
 export VariableReserveNonSpinning
 export TransmissionInterface
 

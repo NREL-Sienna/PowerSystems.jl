@@ -21,7 +21,7 @@ end
     for T in subtypes(PSY.OperationalCost)
         isabstracttype(T) || (@test T(nothing) isa IS.InfrastructureSystemsType)
     end
-    # TODO add concrete subtypes of ProductionVariableCost?
+    # TODO add concrete subtypes of ProductionVariableCostCurve?
 
     tThermalGen = ThermalStandard(nothing)
     @test tThermalGen isa PowerSystems.Component
@@ -29,8 +29,8 @@ end
     @test tHydroDispatch isa PowerSystems.Component
     tHydroEnergyReservoir = HydroEnergyReservoir(nothing)
     @test tHydroEnergyReservoir isa PowerSystems.Component
-    tRenewableFix = RenewableFix(nothing)
-    @test tRenewableFix isa PowerSystems.Component
+    tRenewableNonDispatch = RenewableNonDispatch(nothing)
+    @test tRenewableNonDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
@@ -76,14 +76,14 @@ end
 end
 
 @testset "Service Constructors" begin
-    tStaticReserve = StaticReserve{ReserveUp}(nothing)
-    @test tStaticReserve isa PowerSystems.Service
+    tConstantReserve = ConstantReserve{ReserveUp}(nothing)
+    @test tConstantReserve isa PowerSystems.Service
     tVariableReserve = VariableReserve{ReserveDown}(nothing)
     @test tVariableReserve isa PowerSystems.Service
 end
 
 @testset "TimeSeriesData Constructors" begin
-    tg = RenewableFix(nothing)
+    tg = RenewableNonDispatch(nothing)
     data = PowerSystems.TimeSeries.TimeArray(
         [DateTime("01-01-01"), DateTime("01-01-01") + Hour(1)],
         [1.0, 1.0],

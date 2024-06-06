@@ -22,7 +22,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
+Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld
 
 # Arguments
 - `T1::Float64`: Governor mechanism time constant, validation range: `(eps(), 100)`
@@ -33,9 +33,9 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 - `T5::Float64`: Governor lag time constant, validation range: `(eps(), 100)`
 - `T6::Float64`: Actuator time constant, validation range: `(eps(), 100)`
 - `Td::Float64`: Engine time delay, validation range: `(eps(), 100)`
-- `P_ref::Float64`: (optional) Reference Load Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the DEGOV model are:
+- `P_ref::Float64`: (default: `1.0`) Reference Load Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the DEGOV model are:
 	x_ecb1: Electric control box 1,
 	x_ecb2: Electric control box 2,
 	x_a1: Actuator 1,
@@ -43,7 +43,7 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 	x_a3: Actuator 3,
 - `n_states::Int`: (**Do not modify.**) DEGOV has 5 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) DEGOV has 5 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct DEGOV <: TurbineGov
     "Governor mechanism time constant"
@@ -62,11 +62,11 @@ mutable struct DEGOV <: TurbineGov
     T6::Float64
     "Engine time delay"
     Td::Float64
-    "(optional) Reference Load Set-point (pu)"
+    "Reference Load Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the DEGOV model are:
+    "(**Do not modify.**) The [states](@ref S) of the DEGOV model are:
 	x_ecb1: Electric control box 1,
 	x_ecb2: Electric control box 2,
 	x_a1: Actuator 1,
@@ -77,7 +77,7 @@ mutable struct DEGOV <: TurbineGov
     n_states::Int
     "(**Do not modify.**) DEGOV has 5 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

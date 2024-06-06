@@ -37,16 +37,16 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Va_lim::MinMax`: Limits for pi controler `(Va_min, Va_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage
 - `n_states::Int`: (**Do not modify.**) AVR Type II has 4 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) AVR Type II has 4 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AVRTypeII <: AVR
     "Regulator Gain"
@@ -69,11 +69,11 @@ mutable struct AVRTypeII <: AVR
     Ae::Float64
     "2nd ceiling coefficient"
     Be::Float64
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
@@ -83,7 +83,7 @@ mutable struct AVRTypeII <: AVR
     n_states::Int
     "(**Do not modify.**) AVR Type II has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

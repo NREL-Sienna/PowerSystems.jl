@@ -20,7 +20,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Turbine Governor Type I.
+Parameters of a Turbine Governor Type I
 
 # Arguments
 - `R::Float64`: Droop parameter, validation range: `(0, nothing)`
@@ -30,14 +30,14 @@ Parameters of a Turbine Governor Type I.
 - `T4::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `T5::Float64`: Reheat time constant, validation range: `(0, nothing)`
 - `valve_position_limits::MinMax`: Valve position limits in MW
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the TGTypeI model are:
+- `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: Governor state,
 	x_g2: Servo state,
 	x_g3: Reheat state
 - `n_states::Int`: (**Do not modify.**) TGTypeI has 3 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TGTypeI <: TurbineGov
     "Droop parameter"
@@ -54,18 +54,18 @@ mutable struct TGTypeI <: TurbineGov
     T5::Float64
     "Valve position limits in MW"
     valve_position_limits::MinMax
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the TGTypeI model are:
+    "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: Governor state,
 	x_g2: Servo state,
 	x_g3: Reheat state"
     states::Vector{Symbol}
     "(**Do not modify.**) TGTypeI has 3 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
