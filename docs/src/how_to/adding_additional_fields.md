@@ -1,4 +1,4 @@
-# Adding additional data to a component 
+# [Adding additional data to a component](@id additional_fields)
 
 All `PowerSystems.jl` components have an `ext` field that contains an empty `Dictionary`.
 This Dictionary is useful to contain additional required data where there is no need to

@@ -41,7 +41,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `Vmin::Float64`: Minimum voltage in pu, validation range: `(0, nothing)`
 - `CBase::Float64`: Capacitor (MVAR), validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `R_th::Float64`: Source Thevenin resistance
 - `X_th::Float64`: Source Thevenin reactance
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
@@ -76,7 +76,7 @@ mutable struct CSVGN1 <: DynamicInjection
     CBase::Float64
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "Source Thevenin resistance"
     R_th::Float64

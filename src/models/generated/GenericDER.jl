@@ -101,7 +101,7 @@ Parameters of a Generic Distributed Energy Resource Model. Based on ["Modeling F
 - `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for per unitization
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
 - `n_states::Int`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct GenericDER <: DynamicInjection
@@ -193,7 +193,7 @@ mutable struct GenericDER <: DynamicInjection
     states::Vector{Symbol}
     "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     n_states::Int
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
