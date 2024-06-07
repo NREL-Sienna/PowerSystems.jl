@@ -2083,11 +2083,16 @@ function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeS
 end
 
 function Base.setproperty!(sys::System, s::Symbol, v)
-    @error "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system. This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
+    @error(
+        "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system.\\
+        This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
+    )
     Base.setfield!(sys, s, v)
 end
 
 function Base.setproperty!(sys::System, s::Symbol, v, order::Symbol)
-    @error "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system. This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
-    Base.setfield!(sys, s, v, order)
+    @error(
+        "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system.\\
+        This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
+    )    Base.setfield!(sys, s, v, order)
 end
