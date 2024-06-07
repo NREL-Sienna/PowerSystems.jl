@@ -1,4 +1,4 @@
-# Load a `system` from [`PowerSystemCaseBuilder`](@id psb)
+# [Load a `system` from `PowerSystemCaseBuilder`](@id psb)
 
 **Originally Contributed by**: Clayton Barrows
 

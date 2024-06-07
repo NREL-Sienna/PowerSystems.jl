@@ -12,17 +12,19 @@ pages = OrderedDict(
         "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  Any[
             "Getting Started" => "tutorials/getting_started.md",
+            "Working with Time Series" => "tutorials/working_with_time_series.md",
             "Add Forecasts" => "tutorials/add_forecasts.md",
             "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
         ],
         "How to..." =>  Any[
             "install PowerSystems.jl" => "how_to/install.md",
+            "get data from a component" => "how_to/get_component_data.md",
             "load a Matpower or PSSE file" => "how_to/parse_powerflow_cases.md",
             "parse tabular data" => "how_to/parse_tabular_data.md",
-            "serialize data to a JSON" => "how_to/serialize_data.md",
             "load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "add additional data to a component" => "how_to/adding_additional_fields.md",
             "add a new Type" => "how_to/add_new_types.md",
+            "serialize data to a JSON" => "how_to/serialize_data.md",
             "customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
         ],
         "Explanation" =>

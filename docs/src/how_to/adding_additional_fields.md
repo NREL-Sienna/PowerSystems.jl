@@ -19,7 +19,7 @@ for g in get_components(ThermalStandard, system)
 end
 ```
 Here, we added additional data called `my_data` to the [`ThermalStandard`](@ref)
-generators in a previously defined [`system`](@ref).
+generators in a previously defined [`System`](@ref).
 
 __Step 2:__ Retrieve your data using `get_ext` again:
 ```@repl generated_adding_additional_fields
