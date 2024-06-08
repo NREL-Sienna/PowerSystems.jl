@@ -1,3 +1,5 @@
+# [Working with Time Series Data](@id tutorial_time_series)
+
 ### `TimeSeriesData`
 
 ```@setup timeseries

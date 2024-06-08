@@ -1,4 +1,4 @@
-# Parsing Tabular Data
+# [Parsing Tabular Data](@id tabular_parser)
 
 **Originally Contributed by**: Clayton Barrows
 

@@ -3,7 +3,8 @@
 Welcome to PowerSystems.jl!
 
 In this tutorial, we will create a power system and add some components to it,
-including some nodes, lines, generators, and loads. 
+including some nodes, a transmission line, transformer, load, and both renewable
+and fossil fuel generators. 
 
 ### Setup 
 
@@ -42,7 +43,7 @@ We'll start by creating some buses. By referring to the documentation for
 unique identifier and name, base voltage, and whether it's a [load, generator,
 or reference bus](@ref acbustypes_list). 
 
-Let's start with a reference bus, with the minimum necessary information:
+Let's start with a reference bus:
 
 ```@repl basics
 bus1 = ACBus(1, "bus1", ACBusTypes.REF, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0)
@@ -71,7 +72,12 @@ Let's also add these to our `System`, using [`add_components!`](@ref) to add the
 at the same time:
 ```@repl basics
 add_components!(sys, [bus2, bus3])
-sys
+```
+
+Now, let's use [`show_components`](@ref) to verify some basic information about
+the buses:
+```@repl basics
+show_components(sys, ACBus)
 ```
 
 ### Adding Transmission Lines
@@ -86,11 +92,14 @@ line = Line(
         0.00281,
         0.0281,
         (from = 0.00356, to = 0.00356),
-        2.0,
+        200.0,
         (min = -0.7, max = 0.7),
     )
 ```
-and a [transformer](@ref Transformer2W) between our 230 kV `bus2` and 110 kV `bus3`:
+Note that we also had to define an [`Arc`](@ref) in the process to define the connection between
+the two buses.
+
+Finally, we'll add a [transformer](@ref Transformer2W) between our 230 kV `bus2` and 110 kV `bus3`:
 ```@repl basics
 transformer = Transformer2W(
         "transformer1",
@@ -101,17 +110,82 @@ transformer = Transformer2W(
         0.00281,
         0.0281,
         0.01,
-        2.0,
+        200.0,
     )
 ```
 
-Let's also add these to our `System` and print our system summary:
+Let's also add these to our `System`:
 ```@repl basics
 add_components!(sys, [line, transformer])
+```
+
+Finally, let's check our `System` summary to see all the network topology components we have added
+are attached:
+```@repl basics
 sys
 ```
-Notice now we see all the network topology components we have added are included
-in the system. 
 
 ### Adding Generators and Loads
 
+Now that our network topology is complete, we'll start adding components that [inject](@ref I) or
+withdraw power from the network.
+
+We'll start with adding a 10 MW [load](@ref PowerLoad) to `bus3`:
+```@repl basics
+load = PowerLoad("load1", true, bus3, 0.0, 0.0, 10.0, 10.0, 0.0)
+```
+
+We'll also add a 5 MW solar power plant and a 10 MW wind plant to `bus2`:
+```@repl basics
+solar = RenewableDispatch("solar1", true, bus2, 0.0, 0.0, 5.0, PrimeMovers.PVe, (min=0.0, max=0.25), 1.0, RenewableGenerationCost(nothing), 5.0)
+wind = RenewableDispatch("wind1", true, bus2, 0.0, 0.0, 10.0, PrimeMovers.WT, (min=0.0, max=0.5), 1.0, RenewableGenerationCost(nothing), 10.0)
+```
+Note that we've used a generic renewable generator to model both wind and solar, but we
+can distinguish between them based on the [prime mover](@ref pm_list). 
+
+Finally, we'll also add a gas generator:
+```@repl basics
+gas = ThermalStandard(
+        "gas1",
+        true,
+        bus2,
+        0.0,
+        0.0,
+        30.0,
+        (min=10.0, max=30.0),
+        nothing,
+        (up=5.0, down=5.0),
+        ThermalGenerationCost(nothing),
+        30.0;
+        must_run = false,
+        prime_mover_type = PrimeMovers.CC,
+        fuel = ThermalFuels.NATURAL_GAS)
+```
+
+Again, we complete the step by adding all these new components to our `System`:
+```@repl basics
+add_components!(sys, [load, solar, wind, gas])
+```
+
+### Exploring the System
+
+You have built a power system including buses, a transmission line, a transformer,
+a load, and different types of generators. 
+
+Remember that we can see a summary of our `System` using the print statement:
+```@repl basics
+sys
+```
+
+Now, let's use [`show_components`](@ref) again to look at all our generators:
+```@repl basics
+show_components(sys, Generator)
+```
+
+
+### Next Steps
+
+Next, you might want to:
+- [Learn how to add time series data to components](@ref tutorial_time_series)
+- [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parse_files)
+- [Create your own `System` from .csv files instead of creating it manually](@ref tabular_parser)

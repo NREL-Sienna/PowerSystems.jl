@@ -1,4 +1,4 @@
-# Parsing Files
+# [Parsing Files](@id parse_files)
 
 **Originally Contributed by**: Clayton Barrows
 
