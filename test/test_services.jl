@@ -205,9 +205,12 @@ end
 
     mapping = get_contributing_device_mapping(sys)
     @test length(mapping) == length(services)
-    key1 = ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[1])))
-    key2 = ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[2])))
-    key3 = ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[3])))
+    key1 =
+        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[1])))
+    key2 =
+        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[2])))
+    key3 =
+        ServiceContributingDevicesKey((ConstantReserve{ReserveUp}, get_name(services[3])))
     @test haskey(mapping, key1)
     @test haskey(mapping, key2)
     @test haskey(mapping, key3)
@@ -259,8 +262,8 @@ end
             actual_count += 1
         end
     end
-
-    @test 14 == actual_count
+    # Changed 14 to 13 as we eliminated the Transfer Service
+    @test 13 == actual_count
 end
 
 @testset "Test AGC Device and Regulation Services" begin

@@ -120,7 +120,7 @@ end
         ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
-        service = StaticReserve{ReserveDown}(;
+        service = ConstantReserve{ReserveDown}(;
             name = "init_$i",
             available = false,
             time_frame = 0.0,
