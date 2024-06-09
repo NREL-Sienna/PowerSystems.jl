@@ -394,14 +394,16 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
 end
 
 function make_generic_battery(storage_name, d, bus)
+    energy_rating = iszero(d["energy_rating"]) ? d["energy"] : d["energy_rating"]
     storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
         bus = bus,
         prime_mover_type = PrimeMovers.BA,
         storage_technology_type = StorageTech.OTHER_CHEM,
-        initial_energy = d["energy"],
-        state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
+        storage_capacity = energy_rating,
+        storage_level_limits = (min = 0.0, max = energy_rating),
+        initial_storage_capacity_level = d["energy"] / energy_rating,
         rating = d["thermal_rating"],
         active_power = d["ps"],
         input_active_power_limits = (min = 0.0, max = d["charge_rating"]),
@@ -606,7 +608,7 @@ function make_line(name, d, bus_f, bus_t)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rate = d["rate_a"],
+        rating = d["rate_a"],
         angle_limits = (min = d["angmin"], max = d["angmax"]),
     )
 end
@@ -628,7 +630,7 @@ function make_transformer_2w(name, d, bus_f, bus_t)
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
@@ -650,7 +652,7 @@ function make_tap_transformer(name, d, bus_f, bus_t)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
@@ -673,7 +675,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
