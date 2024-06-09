@@ -8,7 +8,7 @@ function Line(
     r,
     x,
     b,
-    rate,
+    rating,
     angle_limits::Float64,
 )
     return Line(
@@ -20,7 +20,7 @@ function Line(
         r,
         x,
         b,
-        rate,
+        rating,
         (min = -angle_limits, max = angle_limits),
     )
 end
