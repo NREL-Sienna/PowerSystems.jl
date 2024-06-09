@@ -165,7 +165,7 @@ get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, value.sto
 """Get [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::EnergyReservoirStorage) = value.storage_level_limits
 """Get [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
-get_initial_storage_capacity_level(value::EnergyReservoirStorage) = get_value(value, value.initial_storage_capacity_level)
+get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initial_storage_capacity_level
 """Get [`EnergyReservoirStorage`](@ref) `rating`."""
 get_rating(value::EnergyReservoirStorage) = get_value(value, value.rating)
 """Get [`EnergyReservoirStorage`](@ref) `active_power`."""
@@ -212,7 +212,7 @@ set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capaci
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
-set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = set_value(value, val)
+set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
 """Set [`EnergyReservoirStorage`](@ref) `rating`."""
 set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, val)
 """Set [`EnergyReservoirStorage`](@ref) `active_power`."""

@@ -4095,8 +4095,7 @@
                         "min": 0,
                         "max": 1
                     },
-                    "validation_action": "error",
-                    "needs_conversion": true
+                    "validation_action": "error"
                 },
                 {
                     "name": "rating",
