@@ -9,6 +9,9 @@ sort_name(x) = sort(collect(x); by = get_name)
     @test subtype_to_string(ThermalStandard) == "ThermalStandard"
     @test component_to_qualified_string(ThermalStandard, "Solitude") ==
           "ThermalStandard__Solitude"
+    @test component_to_qualified_string(
+        PSY.get_component(ThermalStandard, test_sys, "Solitude")) ==
+          "ThermalStandard__Solitude"
 end
 
 @testset "Test SingleComponentSelector" begin
