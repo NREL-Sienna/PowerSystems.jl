@@ -18,14 +18,6 @@ function add_service_internal!(device::Device, service::Service)
 end
 
 function add_service_internal!(device::Device, service::AGC)
-    if !isa(device, RegulationDevice)
-        throw(
-            IS.ConflictingInputsError(
-                "AGC service can only accept contributing devices of type RegulationDevice",
-            ),
-        )
-    end
-
     device_bus_area = get_area(get_bus(device))
     service_area = get_area(service)
     if isnothing(device_bus_area) ||

@@ -113,16 +113,3 @@ end
     @test ts isa PowerSystems.TimeSeriesData
 end
 
-@testset "Regulation Device" begin
-    original_device = ThermalStandard(nothing)
-    regulation = RegulationDevice(original_device)
-    @test get_rating(regulation) == 0.0
-    set_rating!(regulation, 10.0)
-    @test get_rating(regulation) == 10.0
-    regulation = RegulationDevice(original_device; droop = 0.5)
-    @test get_droop(regulation) == 0.5
-    @test get_participation_factor(regulation) == (up = 0.0, dn = 0.0)
-    @test get_reserve_limit_up(regulation) == 0.0
-    @test get_reserve_limit_dn(regulation) == 0.0
-    @test get_inertia(regulation) == 0.0
-end

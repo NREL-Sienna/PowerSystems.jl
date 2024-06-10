@@ -1824,7 +1824,6 @@ function deserialize_components!(sys::System, raw)
     # Most components have buses.
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
-    # RegulationDevice instances have one StaticInjection subcomponent.
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
@@ -1835,7 +1834,7 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
     deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
-    deserialize_and_add!(; skip_types = [StaticInjectionSubsystem, RegulationDevice])
+    deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
 
     for subsystem in get_components(StaticInjectionSubsystem, sys)
@@ -1844,10 +1843,6 @@ function deserialize_components!(sys::System, raw)
         for subcomponent in get_subcomponents(subsystem)
             IS.mask_component!(sys.data, subcomponent)
         end
-    end
-
-    for component in get_components(RegulationDevice, sys)
-        IS.mask_component!(sys.data, component.device)
     end
 end
 
@@ -1937,14 +1932,6 @@ check_for_services_on_addition(sys::System, component::Component) = nothing
 function check_for_services_on_addition(sys::System, component::Device)
     if supports_services(component) && length(get_services(component)) > 0
         throw(ArgumentError("type Device cannot be added with services"))
-    end
-    return
-end
-
-# Needed because get_services returns the services of the underlying struct
-function check_for_services_on_addition(sys::System, component::RegulationDevice)
-    for d in get_services(component)
-        isa(d, AGC) && throw(ArgumentError("type Device cannot be added with services"))
     end
     return
 end
@@ -2086,15 +2073,6 @@ function handle_component_addition!(sys::System, bus::ACBus; kwargs...)
     return
 end
 
-function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
-    copy_time_series!(component, component.device)
-    if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
-        # This will not be true during deserialization, and so won't run then.
-        IS.mask_component!(sys.data, component.device; remove_time_series = true)
-    end
-    return
-end
-
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
     _handle_branch_addition_common!(sys, component)
     return
@@ -2160,12 +2138,6 @@ function handle_component_removal!(sys::System, device::Device)
     # This may have to be refactored if handle_component_removal! needs to be implemented
     # for a subtype.
     clear_services!(device)
-    return
-end
-
-function handle_component_removal!(sys::System, component::RegulationDevice)
-    _handle_component_removal_common!(component)
-    IS.remove_masked_component!(sys.data, component.device)
     return
 end
 

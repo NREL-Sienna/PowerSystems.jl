@@ -1,16 +1,3 @@
-@testset "Test JSON serialization of RTS data with RegulationDevice" begin
-    sys = create_system_with_regulation_device()
-    sys2, result = validate_serialization(sys)
-    @test result
-
-    # Ensure the time_series attached to the ThermalStandard got deserialized.
-    for rd in get_components(RegulationDevice, sys2)
-        @test get_time_series(SingleTimeSeries, rd, "active_power") isa SingleTimeSeries
-    end
-
-    clear_time_series!(sys2)
-end
-
 @testset "Test JSON serialization of RTS data with immutable time series" begin
     sys =
         PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)

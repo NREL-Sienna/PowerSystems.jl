@@ -255,25 +255,6 @@ end
     end
 end
 
-@testset "Test subsystems with RegulationDevice" begin
-    sys = create_system_with_regulation_device()
-    rd = first(get_components(RegulationDevice, sys))
-
-    subsystem_name = "subsystem_1"
-    add_subsystem!(sys, subsystem_name)
-    add_component_to_subsystem!(sys, subsystem_name, rd)
-    # Ensure that its device gets added automatically.
-    @test is_assigned_to_subsystem(sys, rd.device, subsystem_name)
-
-    remove_component_from_subsystem!(sys, subsystem_name, rd.device)
-    @test_throws IS.InvalidValue PSY._check_subcomponent_consistency(sys, rd)
-
-    add_component_to_subsystem!(sys, subsystem_name, rd.device)
-    remove_component_from_subsystem!(sys, subsystem_name, rd)
-    # Ensure that its device gets removed automatically.
-    @test !is_assigned_to_subsystem(sys, rd.device, subsystem_name)
-end
-
 @testset "Test get subsystems and components for c_sys5" begin
     bus_c = ACBus(3, "nodeC", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
     bus_d = ACBus(4, "nodeD", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)

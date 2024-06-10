@@ -101,7 +101,6 @@ export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
-export RegulationDevice
 
 export GenericDER
 export AggregateDistributedGenerationA
@@ -644,7 +643,6 @@ include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
-include("models/regulation_device.jl")
 include("models/HybridSystem.jl")
 
 #Methods for devices
