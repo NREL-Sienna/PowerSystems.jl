@@ -227,7 +227,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
-                "Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg",
+                "Found duplicate bus names for $(get_name(bus)), consider reviewing your `bus_name_formatter` function",
             ),
         )
 
