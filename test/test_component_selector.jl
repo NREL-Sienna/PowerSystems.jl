@@ -1,5 +1,3 @@
-# TODO copied directly from https://github.com/GabrielKS/PowerAnalytics.jl/tree/gks/entity-metric-redesign, will require major refactor
-
 test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys5_all_components")
 test_sys2 = PSB.build_system(PSB.PSISystems, "5_bus_hydro_uc_sys")
 
