@@ -11,8 +11,8 @@ get_function_data(curve::ValueCurve) = curve.function_data
 """
 An input-output curve, directly relating the production quantity to the cost: `y = f(x)`.
 Can be used, for instance, in the representation of a [`CostCurve`](@ref) where `x` is MW
-and `y` is \$/hr, or in the representation of a [`FuelCurve`](@ref) where `x` is MW and `y`
-is fuel/hr.
+and `y` is currency/hr, or in the representation of a [`FuelCurve`](@ref) where `x` is MW
+and `y` is fuel/hr.
 """
 @kwdef struct InputOutputCurve{
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData},
@@ -24,8 +24,8 @@ end
 """
 An incremental (or 'marginal') curve, relating the production quantity to the derivative of
 cost: `y = f'(x)`. Can be used, for instance, in the representation of a [`CostCurve`](@ref)
-where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`](@ref) where
-`x` is MW and `y` is fuel/MWh.
+where `x` is MW and `y` is currency/MWh, or in the representation of a [`FuelCurve`](@ref)
+where `x` is MW and `y` is fuel/MWh.
 """
 @kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
               ValueCurve{T}
@@ -38,7 +38,7 @@ end
 """
 An average rate curve, relating the production quantity to the average cost rate from the
 origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
-[`CostCurve`](@ref) where `x` is MW and `y` is \$/MWh, or in the representation of a
+[`CostCurve`](@ref) where `x` is MW and `y` is currency/MWh, or in the representation of a
 [`FuelCurve`](@ref) where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
