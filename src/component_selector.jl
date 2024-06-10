@@ -1,3 +1,18 @@
+# Most of this is implemented by wrapping the IS versions, replacing
+# InfrastructureSystemsComponent with Component and SystemData with System
+
+"""
+Get the components of the System that make up the ComponentSelector.
+"""
+get_components(e::ComponentSelector, sys::System) =
+    IS.get_components(e, sys.data)
+
+"""
+Get the sub-selectors that make up the ComponentSelectorSet.
+"""
+get_subselectors(e::ComponentSelectorSet, sys::System) =
+    IS.get_subselectors(e, sys.data)
+
 # SingleComponentSelector
 # Construction
 """
@@ -17,29 +32,10 @@ System with the given Component's subtype and name.
 select_components(component_ref::Component, name::Union{String, Nothing} = nothing) =
     IS.select_components(component_ref, name)
 
-# Contents
-function get_components(e::SingleComponentSelector, sys::System)
-    com = get_component(e.component_subtype, sys, e.component_name)
-    return (com === nothing || !get_available(com)) ? [] : [com]
-end
-
 # ListComponentSelector
-#Construction
+# Construction
 select_components(content::ComponentSelector...; name::Union{String, Nothing} = nothing) =
     IS.select_components(content...; name)
-
-#Contents
-function get_components(e::ListComponentSelector, sys::System)
-    sub_components = Iterators.map(x -> get_components(x, sys), e.content)
-    return Iterators.filter(
-        get_available,
-        Iterators.flatten(sub_components),
-    )
-end
-
-function get_subselectors(e::ListComponentSelector, sys::System)
-    return e.content
-end
 
 # SubtypeComponentSelector
 # Construction
@@ -52,15 +48,6 @@ select_components(
     component_subtype::Type{<:Component};
     name::Union{String, Nothing} = nothing,
 ) = IS.select_components(component_subtype; name)
-
-# Contents
-function get_subselectors(e::SubtypeComponentSelector, sys::System)
-    return Iterators.map(select_components, get_components(e, sys))
-end
-
-function get_components(e::SubtypeComponentSelector, sys::System)
-    return Iterators.filter(get_available, IS.get_components(e.component_subtype, sys.data))
-end
 
 # FilterComponentSelector
 # Construction
@@ -77,19 +64,8 @@ function select_components(
     return IS.select_components(filter_fn, component_subtype, name)
 end
 
-# Contents
-function get_subselectors(e::FilterComponentSelector, sys::System)
-    return Iterators.map(select_components, get_components(e, sys))
-end
-
-function get_components(e::FilterComponentSelector, sys::System)
-    return Iterators.filter(
-        get_available,
-        IS.get_components(e.filter_fn, e.component_subtype, sys.data),
-    )
-end
-
 # TopologyComponentSelector
+# This one is wholly implemented in PowerSystems rather than in IS because it depends on AggregationTopology
 "ComponentSelectorSet represented by an AggregationTopology and a subtype of Component."
 struct TopologyComponentSelector <: ComponentSelectorSet
     topology_subtype::Type{<:AggregationTopology}
@@ -116,11 +92,9 @@ select_components(
 )
 
 # Naming
-default_name(e::TopologyComponentSelector) =
+IS.default_name(e::TopologyComponentSelector) =
     component_to_qualified_string(e.topology_subtype, e.topology_name) * NAME_DELIMETER *
     subtype_to_string(e.component_subtype)
-
-get_name(e::TopologyComponentSelector) = (e.name !== nothing) ? e.name : default_name(e)
 
 # Contents
 function get_subselectors(e::TopologyComponentSelector, sys::System)
@@ -129,12 +103,9 @@ end
 
 function get_components(e::TopologyComponentSelector, sys::System)
     agg_topology = get_component(e.topology_subtype, sys, e.topology_name)
-    return Iterators.filter(
-        get_available,
-        get_components_in_aggregation_topology(
-            e.component_subtype,
-            sys,
-            agg_topology,
-        ),
+    return get_components_in_aggregation_topology(
+        e.component_subtype,
+        sys,
+        agg_topology,
     )
 end
