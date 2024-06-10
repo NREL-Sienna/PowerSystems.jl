@@ -1127,8 +1127,8 @@ function correct_thermal_limits!(data::Dict{String, <:Any})
                 y = LinearAlgebra.pinv(z)
                 y_mag = abs.(y[c, c])
 
-                fr_vmax = data["bus"][string(branch["f_bus"])]["vmax"][c]
-                to_vmax = data["bus"][string(branch["t_bus"])]["vmax"][c]
+                fr_vmax = data["bus"][branch["f_bus"]]["vmax"][c]
+                to_vmax = data["bus"][branch["t_bus"]]["vmax"][c]
                 m_vmax = max(fr_vmax, to_vmax)
 
                 c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2 * fr_vmax * to_vmax * cos(theta_max))
@@ -1433,7 +1433,7 @@ function check_reference_bus(data::Dict{String, <:Any})
         error("check_reference_bus does not yet support multinetwork data")
     end
 
-    ref_buses = Dict{String, Any}()
+    ref_buses = Dict{Int, Any}()
     for (k, v) in data["bus"]
         if v["bus_type"] == 3
             ref_buses[k] = v
@@ -1450,7 +1450,7 @@ function check_reference_bus(data::Dict{String, <:Any})
                 "no reference bus found, setting bus $(gen_bus) as reference based on generator $(big_gen["index"])"
             )
         else
-            (bus_item, state) = Base.iterate(data["bus"])
+            (bus_item, state) = Base.iterate(value(data["bus"]))
             bus_item.second["bus_type"] = 3
             @warn(
                 "no reference bus found, setting bus $(bus_item.second["index"]) as reference"
@@ -1679,7 +1679,7 @@ function correct_bus_types!(data::Dict{String, <:Any})
     for (i, gen) in data["gen"]
         #println(gen)
         if gen["gen_status"] == 1
-            push!(bus_gens[string(gen["gen_bus"])], i)
+            push!(bus_gens[gen["gen_bus"]], i)
         end
     end
 
@@ -1791,7 +1791,7 @@ function check_voltage_setpoints(data::Dict{String, <:Any})
         cnd_str = haskey(data, "conductors") ? "conductor $(c) " : ""
         for (i, gen) in data["gen"]
             bus_id = gen["gen_bus"]
-            bus = data["bus"]["$(bus_id)"]
+            bus = data["bus"][bus_id]
             if gen["vg"][c] != bus["vm"][c]
                 @info "the $(cnd_str)voltage setpoint on generator $(i) does not match the value at bus $(bus_id)" maxlog =
                     PS_MAX_LOG
@@ -1802,8 +1802,8 @@ function check_voltage_setpoints(data::Dict{String, <:Any})
             bus_fr_id = dcline["f_bus"]
             bus_to_id = dcline["t_bus"]
 
-            bus_fr = data["bus"]["$(bus_fr_id)"]
-            bus_to = data["bus"]["$(bus_to_id)"]
+            bus_fr = data["bus"][bus_fr_id]
+            bus_to = data["bus"][bus_to_id]
 
             if dcline["vf"][c] != bus_fr["vm"][c]
                 @info(
