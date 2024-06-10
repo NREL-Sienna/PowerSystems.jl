@@ -492,7 +492,7 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 
-#ComponentSelector
+# ComponentSelector
 export ComponentSelector
 export ComponentSelectorElement
 export ComponentSelectorSet
