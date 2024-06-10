@@ -4,7 +4,7 @@ PowerSystems.jl provides an extensive type hierarchy to explicitly express relat
 
 To represent a cost for a particular [`Component`](@ref), the modeler first chooses one of the variable cost representations in the table below. Then, they wrap this [`ProductionVariableCostCurve`](@ref) in either a [`CostCurve`](@ref) to indicate a cost in currency or in a [`FuelCurve`](@ref) to indicate a cost per unit of fuel plus a fuel cost. Finally, the user creates a domain-specific [`OperationalCost`](@ref) that contains this variable cost as well as other costs that may exist in that domain, such as a fixed cost that is always incurred when the unit is on. For instance, we may have `RenewableGenerationCost(CostCurve(LinearCurve(22.0)))` to represent the cost of a renewable unit that produces at \$22/MWh, or `ThermalGenerationCost(; variable = CostCurve(LinearCurve(22.0)), fixed = 1.0, start_up = 2.0, shut_down = 3.0)` to represent the cost of a thermal unit that produces at \$22/MWh plus a fixed cost of \$1.0/hr, a start-up cost of \$2.0, and a shut-down cost of \$3.0. Below, we give the options for `ProductionVariableCostCurve`s. Information on what domain-specific cost must be provided for a given component type can be found in that component type's documentation.
 
-## Variable Cost Representations
+## [Variable Cost Representations](@id curve_table)
 For more details, see the documentation page for each type. "Example interpretation" assumes the cost is wrapped in a `CostCurve` with natural units. Note that all three `Piecewise` options here fundamentally represent the same curve.
 
 | Type alias | Description | Constructor parameters | Example | Example interpretation |

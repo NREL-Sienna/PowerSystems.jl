@@ -1,5 +1,5 @@
 """
-    mutable struct HydroGenerationCost <: OperationalCost
+    @kwdef mutable struct HydroGenerationCost <: OperationalCost
         variable::ProductionVariableCostCurve
         fixed::Float64
     end

@@ -18,6 +18,7 @@ pages = OrderedDict(
             "Serialize Data" => "tutorials/serialize_data.md",
             "Use Dynamic Data" => "tutorials/dynamic_data.md",
             "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
+            "Add an Operating Cost" => "tutorials/add_cost_curve.md",
         ],
         "Modeler Guide" =>
             Any[

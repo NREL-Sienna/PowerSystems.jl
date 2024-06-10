@@ -1,7 +1,7 @@
 const STORAGE_OPERATION_MODES = NamedTuple{(:charge, :discharge), NTuple{2, Float64}}
 
 """
-    mutable struct StorageCost <: OperationalCost
+    @kwdef mutable struct StorageCost <: OperationalCost
         charge_variable_cost::CostCurve
         discharge_variable_cost::CostCurve
         fixed::Float64

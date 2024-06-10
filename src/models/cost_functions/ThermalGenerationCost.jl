@@ -1,5 +1,5 @@
 """
-    mutable struct ThermalGenerationCost <: OperationalCost
+    @kwdef mutable struct ThermalGenerationCost <: OperationalCost
         variable::ProductionVariableCostCurve
         fixed::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}

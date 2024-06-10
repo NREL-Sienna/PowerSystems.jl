@@ -1,5 +1,5 @@
 """
-    mutable struct RenewableGenerationCost <: OperationalCost
+    @kwdef mutable struct RenewableGenerationCost <: OperationalCost
         variable::CostCurve
         curtailment_cost::CostCurve
     end

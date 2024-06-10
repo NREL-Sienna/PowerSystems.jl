@@ -4,7 +4,7 @@ CostCurve
 FuelCurve
 ```
 
-### [`ValueCurve`](@ref)s
+### [`ValueCurve`s](@id value_curve_library)
 ```@docs
 LinearCurve
 QuadraticCurve

@@ -1,5 +1,5 @@
 """
-    mutable struct MarketBidCost <: OperationalCost
+    @kwdef mutable struct MarketBidCost <: OperationalCost
         no_load_cost::Float64
         start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
         shut_down::Float64

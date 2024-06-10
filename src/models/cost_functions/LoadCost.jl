@@ -1,5 +1,5 @@
 """
-    mutable struct LoadCost <: OperationalCost
+    @kwdef mutable struct LoadCost <: OperationalCost
         "variable cost"
         variable::CostCurve
         "fixed cost"
