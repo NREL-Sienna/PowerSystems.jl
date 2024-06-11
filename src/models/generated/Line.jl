@@ -29,13 +29,13 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `b::FromTo`: System per-unit value, validation range: `(0, 100)`, action if invalid: `warn`
-- `rate::Float64`
-- `angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `r::Float64`: System per-unit value, validation range: `(0, 4)`
+- `x::Float64`: System per-unit value, validation range: `(0, 4)`
+- `b::FromTo`: System per-unit value, validation range: `(0, 100)`
+- `rate::Float64`:
+- `angle_limits::MinMax`:, validation range: `(-1.571, 1.571)`
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Line <: ACBranch

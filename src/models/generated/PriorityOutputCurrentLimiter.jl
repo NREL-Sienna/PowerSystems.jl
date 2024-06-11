@@ -16,7 +16,7 @@ Parameters of Priority-Based Current Controller Limiter. Regulates the magnitude
 # Arguments
 - `I_max::Float64`: Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
 - `ϕ_I::Float64`: Pre-defined angle (measured against the d-axis) for I_ref once limit I_max is hit, validation range: `(-1.571, 1.571)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 """
 mutable struct PriorityOutputCurrentLimiter <: OutputCurrentLimiter
     "Maximum limit on current controller input current in pu ([`Device Base`](@ref per_unit))"

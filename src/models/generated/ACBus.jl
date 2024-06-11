@@ -25,13 +25,13 @@ An AC bus.
 - `number::Int`: number associated with the bus
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `bustype::Union{Nothing, ACBusTypes}`: Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)
-- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`
+- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
-- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
-- `area::Union{Nothing, Area}`: (optional) the area containing the bus
-- `load_zone::Union{Nothing, LoadZone}`: (optional) the load zone containing the bus
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`
+- `area::Union{Nothing, Area}`: (default: `nothing`) (optional) the area containing the bus
+- `load_zone::Union{Nothing, LoadZone}`: (default: `nothing`) (optional) the load zone containing the bus
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct ACBus <: Bus

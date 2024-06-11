@@ -24,14 +24,14 @@ This file is auto-generated. Do not edit.
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `bias::Float64`
+- `bias::Float64`:
 - `K_p::Float64`: PID Proportional Constant
 - `K_i::Float64`: PID Integral Constant
 - `K_d::Float64`: PID Derivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
-- `area::Union{Nothing, Area}`: (optional) the area controlled by the AGC
-- `initial_ace::Float64`: (optional) Initial condition for ACE
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `area::Union{Nothing, Area}`: (default: `nothing`) (optional) the area controlled by the AGC
+- `initial_ace::Float64`: (default: `0.0`) (optional) Initial condition for ACE
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct AGC <: Service

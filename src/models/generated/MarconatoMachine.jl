@@ -41,7 +41,7 @@ Parameters of 6-states synchronous machine: Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `γd::Float64`: (**Do not modify.**) Internal equation
 - `γq::Float64`: (**Do not modify.**) Internal equation
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:

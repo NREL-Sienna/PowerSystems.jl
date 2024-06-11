@@ -28,12 +28,12 @@ A 2-winding transformer that uses an equivalent circuit assuming the impedance i
 - `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
-- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`: in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`
+- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(-2, 4)`
+- `primary_shunt::Float64`: in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`
+- `rate::Union{Nothing, Float64}`:, validation range: `(0, nothing)`
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Transformer2W <: ACBranch

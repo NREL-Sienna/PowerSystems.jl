@@ -18,10 +18,10 @@ A collection of buses for control purposes.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `peak_active_power::Float64`: (optional) Peak active power in the area
-- `peak_reactive_power::Float64`: (optional) Peak reactive power in the area
-- `load_response::Float64`: (optional) 
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `peak_active_power::Float64`: (default: `0.0`) (optional) Peak active power in the area
+- `peak_reactive_power::Float64`: (default: `0.0`) (optional) Peak reactive power in the area
+- `load_response::Float64`: (default: `0.0`) (optional) 
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct Area <: AggregationTopology

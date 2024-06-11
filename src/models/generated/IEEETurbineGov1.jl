@@ -36,27 +36,27 @@ This file is auto-generated. Do not edit.
 IEEE Type 1 Speed-Governing Model
 
 # Arguments
-- `K::Float64`: Governor Gain, validation range: `(5, 30)`, action if invalid: `warn`
-- `T1::Float64`: Input Filter Lag, validation range: `(0, 5)`, action if invalid: `warn`
-- `T2::Float64`: Input Filter Lead, validation range: `(0, 10)`, action if invalid: `warn`
-- `T3::Float64`: Valve position Time Constant, validation range: `(eps(), 1)`, action if invalid: `error`
-- `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`, action if invalid: `warn`
-- `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0)`, action if invalid: `warn`
+- `K::Float64`: Governor Gain, validation range: `(5, 30)`
+- `T1::Float64`: Input Filter Lag, validation range: `(0, 5)`
+- `T2::Float64`: Input Filter Lead, validation range: `(0, 10)`
+- `T3::Float64`: Valve position Time Constant, validation range: `(eps(), 1)`
+- `U0::Float64`: Maximum Valve Opening Rate, validation range: `(0.01, 0.03)`
+- `U_c::Float64`: Maximum Valve closing rate, validation range: `(-0.3, 0)`
 - `valve_position_limits::MinMax`: Valve position limits in MW
-- `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1)`, action if invalid: `warn`
-- `K1::Float64`: Fraction of high presure shaft power, validation range: `(-2, 1)`, action if invalid: `warn`
-- `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T5::Float64`: Time constant for second boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
-- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `T6::Float64`: Time constant for third boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
-- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: `(0, 0.35)`, action if invalid: `warn`
-- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: `(0, 0.55)`, action if invalid: `warn`
-- `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, 10)`, action if invalid: `warn`
-- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `T4::Float64`: Time Constant inlet steam, validation range: `(0, 1)`
+- `K1::Float64`: Fraction of high presure shaft power, validation range: `(-2, 1)`
+- `K2::Float64`: Fraction of low presure shaft power, validation range: `(0, nothing)`
+- `T5::Float64`: Time constant for second boiler pass, validation range: `(0, 10)`
+- `K3::Float64`: Fraction of high presure shaft power second boiler pass, validation range: `(0, 0.5)`
+- `K4::Float64`: Fraction of low presure shaft power second boiler pass, validation range: `(0, 0.5)`
+- `T6::Float64`: Time constant for third boiler pass, validation range: `(0, 10)`
+- `K5::Float64`: Fraction of high presure shaft power third boiler pass, validation range: `(0, 0.35)`
+- `K6::Float64`: Fraction of low presure shaft power third boiler pass, validation range: `(0, 0.55)`
+- `T7::Float64`: Time constant for fourth boiler pass, validation range: `(0, 10)`
+- `K7::Float64`: Fraction of high presure shaft power fourth boiler pass, validation range: `(0, 0.3)`
+- `K8::Float64`: Fraction of low presure shaft power fourth boiler pass, validation range: `(0, 0.3)`
+- `P_ref::Float64`: (default: `1.0`) (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of the IEEETurbineGov model are:
 	x_g1: First Governor integrator,
 	x_g2: Governor output,

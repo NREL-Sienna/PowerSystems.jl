@@ -22,12 +22,12 @@ A power-system DC bus.
 # Arguments
 - `number::Int`: number associated with the DC bus
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`, action if invalid: `warn`
+- `magnitude::Union{Nothing, Float64}`: voltage as a multiple of basevoltage, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of basevoltage
-- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`, action if invalid: `error`
-- `area::Union{Nothing, Area}`: (optional) the area containing the DC bus
-- `load_zone::Union{Nothing, LoadZone}`: (optional) the load zone containing the DC bus
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`
+- `area::Union{Nothing, Area}`: (default: `nothing`) (optional) the area containing the DC bus
+- `load_zone::Union{Nothing, LoadZone}`: (default: `nothing`) (optional) the load zone containing the DC bus
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct DCBus <: Bus

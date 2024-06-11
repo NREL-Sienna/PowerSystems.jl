@@ -37,8 +37,8 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Va_lim::MinMax`: Limits for pi controler `(Va_min, Va_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: (default: `1.0`) (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,

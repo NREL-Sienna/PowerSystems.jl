@@ -25,7 +25,7 @@ Flow exchanged between Areas. This Interchange is agnostic to the lines connecti
 - `from_area::Area`: Area from which the power is extracted
 - `to_area::Area`: Area to which the power is injected
 - `flow_limits::FromTo_ToFrom`: Max flow between the areas. It ignores lines and other branches totals
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct AreaInterchange <: Branch

@@ -38,22 +38,22 @@ Data structure for energy storage modeled as a generic energy reservoir. To be u
 - `bus::ACBus`: Bus that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
 - `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923.
-- `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
-- `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`, action if invalid: `error`
+- `initial_energy::Float64`: State of Charge of the Battery p.u.-hr, validation range: `(0, nothing)`
+- `state_of_charge_limits::MinMax`: Maximum and Minimum storage capacity in p.u.-hr, validation range: `(0, nothing)`
 - `rating::Float64`: Maximum output power rating of the unit (MVA)
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
-- `input_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
-- `output_active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `error`
-- `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`, validation range: `(0, 1)`, action if invalid: `warn`
-- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`, action if invalid: `warn`
+- `input_active_power_limits::MinMax`:, validation range: `(0, nothing)`
+- `output_active_power_limits::MinMax`:, validation range: `(0, nothing)`
+- `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`:, validation range: `(0, 1)`
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::StorageCost`: (optional) Operation Cost of Storage [`OperationalCost`](@ref)
-- `storage_target::Float64`: (optional) Storage target at the end of simulation as ratio of storage capacity.
-- `cycle_limits::Int`: (optional) Storage Maximum number of cycles per year
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
+- `operation_cost::StorageCost`: (default: `StorageCost(nothing)`) (optional) Operation Cost of Storage [`OperationalCost`](@ref)
+- `storage_target::Float64`: (default: `0.0`) (optional) Storage target at the end of simulation as ratio of storage capacity.
+- `cycle_limits::Int`: (default: `1e4`) (optional) Storage Maximum number of cycles per year
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct EnergyReservoirStorage <: Storage

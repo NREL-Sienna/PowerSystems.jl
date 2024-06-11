@@ -30,14 +30,14 @@ This file is auto-generated. Do not edit.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `reactive_power_flow::Float64`: Initial condition of reactive power flow on the line (MVAR)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`, action if invalid: `warn`
-- `b::FromTo`: Susceptance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`, action if invalid: `warn`
+- `r::Float64`: Resistance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`
+- `x::Float64`: Reactance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 4)`
+- `b::FromTo`: Susceptance in pu ([`System Base`](@ref per_unit)), validation range: `(0, 2)`
 - `flow_limits::FromTo_ToFrom`: throw warning above max SIL
 - `rate::Float64`: compare to SIL (warn) (theoretical limit)
-- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct MonitoredLine <: ACBranch

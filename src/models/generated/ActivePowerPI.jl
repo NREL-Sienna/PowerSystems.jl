@@ -21,8 +21,8 @@ Parameters of a Proportional-Integral Active Power controller for a specified po
 - `Kp_p::Float64`: Proportional Gain, validation range: `(0, nothing)`
 - `Ki_p::Float64`: Integral Gain, validation range: `(0, nothing)`
 - `ωz::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: (default: `1.0`) (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of the ActivePowerPI model are:
 	σp_oc: Integrator state of the PI Controller,
 	p_oc: Measured active power of the inverter model

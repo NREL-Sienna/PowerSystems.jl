@@ -17,7 +17,7 @@ Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
 - `voltage::Float64`: Voltage (V), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) FixedDCSource has no states
 - `n_states::Int`: (**Do not modify.**) FixedDCSource has no states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.

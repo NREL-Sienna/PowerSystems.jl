@@ -19,7 +19,7 @@ Parameters of single mass shaft model. Typically represents the rotor mass.
 # Arguments
 - `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
 - `D::Float64`: Rotor natural damping in pu, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	δ: rotor angle,
 	ω: rotor speed

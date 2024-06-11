@@ -35,25 +35,25 @@ This excitation system supplies power through a transformer from the generator t
 Parameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF
 
 # Arguments
-- `UEL_flags::Int`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: `(1, 3)`, action if invalid: `warn`
+- `UEL_flags::Int`: Code input for Underexcitization limiter (UEL) entry. Not supported., validation range: `(1, 3)`
 - `PSS_flags::Int`: Code input for Power System Stabilizer (PSS) or (VOS) entry., validation range: `(1, 2)`
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.1)`, action if invalid: `warn`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.1)`
 - `Vi_lim::Tuple{Float64, Float64}`: Voltage error limits (regulator input) (Vi_min, Vi_max)
-- `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
+- `Tc::Float64`: First regulator denominator (lead) time constant in s, validation range: `(0, 10)`
 - `Tb::Float64`: First regulator denominator (lag) time constant in s, validation range: `(0, 20)`
-- `Tc1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
-- `Tb1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, 20)`, action if invalid: `warn`
-- `Ka::Float64`: Voltage regulator gain, validation range: `(50, 1000)`, action if invalid: `warn`
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
+- `Tc1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, 10)`
+- `Tb1::Float64`: Second regulator denominator (lead) time constant in s, validation range: `(0, 20)`
+- `Ka::Float64`: Voltage regulator gain, validation range: `(50, 1000)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 0.5)`
 - `Va_lim::MinMax`: Limits for regulator output `(Va_min, Va_max)`
 - `Vr_lim::MinMax`: Limits for exciter output `(Vr_min, Vr_max)`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
-- `Tf::Float64`: Rate feedback time constant in s, validation range: `(eps(), 1.5)`, action if invalid: `error`
-- `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, 5)`, action if invalid: `warn`
-- `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`, action if invalid: `warn`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 0.3)`
+- `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`
+- `Tf::Float64`: Rate feedback time constant in s, validation range: `(eps(), 1.5)`
+- `K_lr::Float64`: Exciter output current limiter gain, validation range: `(0, 5)`
+- `I_lr::Float64`: Exciter output current limit reference, validation range: `(0, 5)`
+- `V_ref::Float64`: (default: `1.0`) (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,

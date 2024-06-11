@@ -34,22 +34,22 @@ Data structure for a standard load.
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the load (MVA) for per unitization., validation range: `(0, nothing)`, action if invalid: `warn`
-- `constant_active_power::Float64`: (optional)
-- `constant_reactive_power::Float64`: (optional)
-- `impedance_active_power::Float64`: (optional)
-- `impedance_reactive_power::Float64`: (optional)
-- `current_active_power::Float64`: (optional)
-- `current_reactive_power::Float64`: (optional)
-- `max_constant_active_power::Float64`
-- `max_constant_reactive_power::Float64`: (optional)
-- `max_impedance_active_power::Float64`: (optional)
-- `max_impedance_reactive_power::Float64`: (optional)
-- `max_current_active_power::Float64`: (optional)
-- `max_current_reactive_power::Float64`: (optional)
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `base_power::Float64`: Base power of the load (MVA) for per unitization., validation range: `(0, nothing)`
+- `constant_active_power::Float64`: (default: `0.0`) (optional)
+- `constant_reactive_power::Float64`: (default: `0.0`) (optional)
+- `impedance_active_power::Float64`: (default: `0.0`) (optional)
+- `impedance_reactive_power::Float64`: (default: `0.0`) (optional)
+- `current_active_power::Float64`: (default: `0.0`) (optional)
+- `current_reactive_power::Float64`: (default: `0.0`) (optional)
+- `max_constant_active_power::Float64`: (default: `0.0`)
+- `max_constant_reactive_power::Float64`: (default: `0.0`) (optional)
+- `max_impedance_active_power::Float64`: (default: `0.0`) (optional)
+- `max_impedance_reactive_power::Float64`: (default: `0.0`) (optional)
+- `max_current_active_power::Float64`: (default: `0.0`) (optional)
+- `max_current_reactive_power::Float64`: (default: `0.0`) (optional)
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct StandardLoad <: StaticLoad

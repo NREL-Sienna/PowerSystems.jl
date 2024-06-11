@@ -91,13 +91,13 @@ Parameters of the DERA1 model in PSS/E
 - `Tv::Float64`: Time constant on the output of the multiplier (s), validation range: `(0, nothing)`
 - `Vpr::Float64`: Voltage below which frequency tripping is disabled (pu), validation range: `(0, nothing)`
 - `Iq_lim::MinMax`: Reactive current injection limits (Iqll, Iqhl)
-- `V_ref::Float64`: (optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
-- `Pfa_ref::Float64`: (optional) Reference power factor, validation range: `(0, nothing)`
-- `ω_ref::Float64`: (optional) Reference Frequency (pu), validation range: `(0, nothing)`
-- `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: (optional) Base power (MVA) for per unitization.
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: (default: `1.0`) (optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
+- `Pfa_ref::Float64`: (default: `0.0`) (optional) Reference power factor, validation range: `(0, nothing)`
+- `ω_ref::Float64`: (default: `1.0`) (optional) Reference Frequency (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: (default: `0.0`) (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (default: `1.0`) (optional) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (default: `100.0`) (optional) Base power (MVA) for per unitization.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.

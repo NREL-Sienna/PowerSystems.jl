@@ -28,14 +28,14 @@ As implemented in Milano's Book, Page 397.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
 - `arc::Arc`: Used internally to represent network topology. **Do not modify.**
-- `rectifier_tap_limits::MinMax`
-- `rectifier_xrc::Float64`
-- `rectifier_firing_angle::MinMax`
-- `inverter_tap_limits::MinMax`
-- `inverter_xrc::Float64`
-- `inverter_firing_angle::MinMax`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `rectifier_tap_limits::MinMax`:
+- `rectifier_xrc::Float64`:
+- `rectifier_firing_angle::MinMax`:
+- `inverter_tap_limits::MinMax`:
+- `inverter_xrc::Float64`:
+- `inverter_firing_angle::MinMax`:
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TwoTerminalVSCDCLine <: ACBranch

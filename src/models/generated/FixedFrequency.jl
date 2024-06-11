@@ -15,8 +15,8 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed Frequency Estimator (i.e. no PLL).
 
 # Arguments
-- `frequency::Float64`: (optional) Reference Frequency (pu)
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `frequency::Float64`: (default: `1.0`) (optional) Reference Frequency (pu)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) FixedFrequency has no states
 - `n_states::Int`: (**Do not modify.**) FixedFrequency has no states
 """

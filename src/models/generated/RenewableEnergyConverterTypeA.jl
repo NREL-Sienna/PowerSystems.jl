@@ -43,10 +43,10 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Iqr_lims::MinMax`: Limit on rate of change for reactive current (pu/s) (Iqr_min, Iqr_max)
 - `Accel::Float64`: Acceleration factor, validation range: `(0, 1)`
 - `Lvpl_sw::Int`: Low voltage power logic (LVPL) switch. (0: LVPL not present, 1: LVPL present), validation range: `(0, 1)`
-- `Q_ref::Float64`: (optional) Initial condition of reactive power from power flow, validation range: `(0, nothing)`
-- `R_source::Float64`: (optional) Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
-- `X_source::Float64`: (optional) Output reactance used for the Thevenin Equivalent, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `Q_ref::Float64`: (default: `1.0`) (optional) Initial condition of reactive power from power flow, validation range: `(0, nothing)`
+- `R_source::Float64`: (default: `0.0`) (optional) Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
+- `X_source::Float64`: (default: `1.0e5`) (optional) Output reactance used for the Thevenin Equivalent, validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: (**Do not modify.**) RenewableEnergyConverterTypeA has 3 states
 """

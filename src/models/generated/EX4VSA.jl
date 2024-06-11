@@ -28,20 +28,20 @@ This file is auto-generated. Do not edit.
 IEEE Excitation System for Voltage Security Assesment
 
 # Arguments
-- `Iflim::Float64`: OEL Field current limit, validation range: `(0, nothing)`, action if invalid: `warn`
-- `d::Float64`: OEL parameter d, validation range: `(0, nothing)`, action if invalid: `warn`
-- `f::Float64`: OEL parameter f, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Spar::Float64`: OEL parameter Spar, validation range: `(0, nothing)`, action if invalid: `warn`
-- `K1::Float64`: OEL delay time constant, validation range: `(0, nothing)`, action if invalid: `warn`
-- `K2::Float64`: OEL parameter K2, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Iflim::Float64`: OEL Field current limit, validation range: `(0, nothing)`
+- `d::Float64`: OEL parameter d, validation range: `(0, nothing)`
+- `f::Float64`: OEL parameter f, validation range: `(0, nothing)`
+- `Spar::Float64`: OEL parameter Spar, validation range: `(0, nothing)`
+- `K1::Float64`: OEL delay time constant, validation range: `(0, nothing)`
+- `K2::Float64`: OEL parameter K2, validation range: `(0, nothing)`
 - `Oel_lim::MinMax`: Oel integrator limits (Oel_min, Oel_max)
-- `G::Float64`: AVR Exciter Gain, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ta::Float64`: Numerator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tb::Float64`: Denominator lead-lag (lag) time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Te::Float64`: Exciter Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
+- `G::Float64`: AVR Exciter Gain, validation range: `(0, nothing)`
+- `Ta::Float64`: Numerator lead-lag (lag) time constant in s, validation range: `(0, nothing)`
+- `Tb::Float64`: Denominator lead-lag (lag) time constant in s, validation range: `(0, nothing)`
+- `Te::Float64`: Exciter Time Constant in s, validation range: `(0, nothing)`
 - `E_lim::MinMax`: Voltage regulator limits (regulator output) (E_min, E_max)
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: (default: `1.0`) (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vll: Lead-lag internal state,
 	Vex: Exciter Output, 

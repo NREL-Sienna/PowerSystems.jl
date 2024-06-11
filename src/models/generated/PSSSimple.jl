@@ -19,7 +19,7 @@ Parameters of a PSS that returns a proportional droop voltage to add to the refe
 # Arguments
 - `K_ω::Float64`: Proportional gain for frequency, validation range: `(0, nothing)`
 - `K_p::Float64`: Proportional gain for active power, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) PSSSimple has no states.
 - `n_states::Int`: (**Do not modify.**) PSSSimple has no states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.

@@ -95,13 +95,13 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}`: Frequency ride through time points (tfrt1,tfrt2)
 - `tF_delay::Float64`: Time delay for reconnection after frequency ride-through disconnection, validation range: `(0, nothing)`
 - `FES_lim::MinMax`: Min and max frequency for entering service (FES_min,FES_max)
-- `Pfa_ref::Float64`: (optional) Reference power factor, validation range: `(0, nothing)`
-- `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: (optional) Base power of the unit (MVA) for per unitization.
+- `Pfa_ref::Float64`: (default: `0.0`) (optional) Reference power factor, validation range: `(0, nothing)`
+- `Q_ref::Float64`: (default: `0.0`) (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (default: `1.0`) (optional) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (default: `100.0`) (optional) Base power of the unit (MVA) for per unitization.
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of GenericDER depend on the Flags
 - `n_states::Int`: (**Do not modify.**) The states of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct GenericDER <: DynamicInjection

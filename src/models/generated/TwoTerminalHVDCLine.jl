@@ -31,9 +31,9 @@ a High voltage DC line.
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `reactive_power_limits_from::MinMax`: Minimum and maximum reactive power limits to the FROM node (MVAR)
 - `reactive_power_limits_to::MinMax`: Minimum and maximum reactive power limits to the TO node (MVAR)
-- `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`:
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct TwoTerminalHVDCLine <: ACBranch

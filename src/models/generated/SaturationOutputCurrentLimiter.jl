@@ -16,7 +16,7 @@ Parameters of Saturation Current Controller Limiter. Regulates the magnitude of 
 # Arguments
 - `I_max::Float64`: Maximum limit on current controller input current (device base), validation range: `(0, nothing)`
 - `kw::Float64`: Defined feedback gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`)
 """
 mutable struct SaturationOutputCurrentLimiter <: OutputCurrentLimiter
     "Maximum limit on current controller input current (device base)"

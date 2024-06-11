@@ -33,8 +33,8 @@ Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld.
 - `T5::Float64`: Governor lag time constant, validation range: `(eps(), 100)`
 - `T6::Float64`: Actuator time constant, validation range: `(eps(), 100)`
 - `Td::Float64`: Engine time delay, validation range: `(eps(), 100)`
-- `P_ref::Float64`: (optional) Reference Load Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `P_ref::Float64`: (default: `1.0`) (optional) Reference Load Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of the DEGOV model are:
 	x_ecb1: Electric control box 1,
 	x_ecb2: Electric control box 2,

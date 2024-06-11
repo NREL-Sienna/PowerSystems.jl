@@ -29,13 +29,13 @@ This file is auto-generated. Do not edit.
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
-- `max_active_power::Float64`
-- `max_reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
+- `max_active_power::Float64`:
+- `max_reactive_power::Float64`:
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `services::Vector{Service}`: (default: `Device[]`) (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad

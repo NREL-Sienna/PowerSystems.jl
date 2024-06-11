@@ -32,22 +32,22 @@ Self-excited shunt fields with the voltage regulator operating in a mode commonl
 Parameters of IEEE Std 421.5 Type DC1A Excitacion System. This model corresponds to ESDC1A in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`, action if invalid: `warn`
-- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`, action if invalid: `warn`
-- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Tr::Float64`: Voltage Measurement Time Constant in s, validation range: `(0, 0.5)`
+- `Ka::Float64`: Amplifier Gain, validation range: `(10, 500)`
+- `Ta::Float64`: Amplifier Time Constant in s, validation range: `(0, 1)`
+- `Tb::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
+- `Tc::Float64`: Regulator input Time Constant in s, validation range: `(0, nothing)`
 - `Vr_lim::MinMax`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
 - `Ke::Float64`: Exciter constant related to self-excited field, validation range: `(0, nothing)`
-- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(eps(), 1)`, action if invalid: `error`
-- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`, action if invalid: `error`
-- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(eps(), nothing)`, action if invalid: `error`
-- `switch::Int`: Switch, validation range: `(0, 1)`, action if invalid: `error`
+- `Te::Float64`: Exciter time constant, integration rate associated with exciter control, validation range: `(eps(), 1)`
+- `Kf::Float64`: Excitation control system stabilizer gain, validation range: `(eps(), 0.3)`
+- `Tf::Float64`: Excitation control system stabilizer time constant, validation range: `(eps(), nothing)`
+- `switch::Int`: Switch, validation range: `(0, 1)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `saturation_coeffs::Tuple{Float64, Float64}`: (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: (default: `1.0`) (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `saturation_coeffs::Tuple{Float64, Float64}`: (default: `PowerSystems.get_avr_saturation(E_sat, Se)`) (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	Vt: Terminal Voltage,
 	Vr1: input lead lag,

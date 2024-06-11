@@ -23,13 +23,13 @@ Data Structure for the procurement products for system simulations.
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
-- `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`, action if invalid: `error`
+- `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
 - `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
-- `sustained_time::Float64`: (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`, action if invalid: `error`
-- `max_output_fraction::Float64`: (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`, action if invalid: `error`
-- `max_participation_factor::Float64`: (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`, action if invalid: `error`
-- `deployed_fraction::Float64`: (optional) Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`, action if invalid: `error`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `sustained_time::Float64`: (default: `14400.0`) (optional) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
+- `max_output_fraction::Float64`: (default: `1.0`) (optional) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
+- `max_participation_factor::Float64`: (default: `1.0`) (optional) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
+- `deployed_fraction::Float64`: (default: `0.0`) (optional) Fraction of ancillary services participation deployed from the assignment, validation range: `(0, 1)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct VariableReserveNonSpinning <: ReserveNonSpinning

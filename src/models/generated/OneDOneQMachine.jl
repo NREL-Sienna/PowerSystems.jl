@@ -32,7 +32,7 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage

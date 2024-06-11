@@ -21,7 +21,7 @@ The load zone can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
 - `peak_active_power::Float64`: (optional) Peak active power in the zone (MW)
 - `peak_reactive_power::Float64`: (optional) Peak reactive power in the zone (MVAR)
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct LoadZone <: AggregationTopology

@@ -19,8 +19,8 @@ Parameters of a AVR that returns a fixed voltage to the rotor winding
 
 # Arguments
 - `Vf::Float64`: Fixed voltage field applied to the rotor winding in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `V_ref::Float64`: (default: `1.0`) (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) Fixed AVR has no states
 - `n_states::Int`: (**Do not modify.**) Fixed AVR has no states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) Fixed AVR has no states

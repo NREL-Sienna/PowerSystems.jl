@@ -36,7 +36,7 @@ Electric Power Systems Research 122 (2015) 180–197.
 - `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `states::Vector{Symbol}`: (**Do not modify.**) The states of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
