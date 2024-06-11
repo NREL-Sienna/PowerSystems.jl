@@ -1,8 +1,9 @@
 # Cost aliases: a simplified interface to the portion of the parametric
 # `ValueCurve{FunctionData}` design that the user is likely to interact with. Each alias
-# consists of a simple name for a particular `ValueCurve{FunctionData}` type and a
-# constructor and methods to interact with it without having to think about `FunctionData`.
-# Everything here is properly speaking mere syntactic sugar for the underlying
+# consists of a simple name for a particular `ValueCurve{FunctionData}` type, a constructor
+# and methods to interact with it without having to think about `FunctionData`, and
+# overridden printing behavior to complete the illusion. Everything here (aside from the
+# overridden printing) is properly speaking mere syntactic sugar for the underlying
 # `ValueCurve{FunctionData}` design. One could imagine similar convenience constructors and
 # methods being defined for all the `ValueCurve{FunctionData}` types, not just the ones we
 # have here nicely packaged and presented to the user.
@@ -23,6 +24,12 @@ InputOutputCurve{LinearFunctionData}(proportional_term::Real) =
 InputOutputCurve{LinearFunctionData}(proportional_term::Real, constant_term::Real) =
     InputOutputCurve(LinearFunctionData(proportional_term, constant_term))
 
+function Base.show(io::IO, data::LinearCurve)
+    fd = get_function_data(data)
+    p, c = get_proportional_term(fd), get_constant_term(fd)
+    print(io, "$(typeof(data))($p, $c)")
+end
+
 """
 A quadratic input-output curve, may have nonzero no-load cost.
 
@@ -38,6 +45,12 @@ InputOutputCurve{QuadraticFunctionData}(quadratic_term, proportional_term, const
         QuadraticFunctionData(quadratic_term, proportional_term, constant_term),
     )
 
+function Base.show(io::IO, data::QuadraticCurve)
+    fd = get_function_data(data)
+    q, p, c = get_quadratic_term(fd), get_proportional_term(fd), get_constant_term(fd)
+    print(io, "$(typeof(data))($q, $p, $c)")
+end
+
 """
 A piecewise linear curve specified by cost values at production points.
 
@@ -50,6 +63,10 @@ InputOutputCurve{PiecewiseLinearData}(points::Vector) =
     InputOutputCurve(PiecewiseLinearData(points))
 
 get_points(curve::PiecewisePointCurve) = get_points(get_function_data(curve))
+
+# Here we manually circumvent the @NamedTuple{x::Float64, y::Float64} annotation, but we keep things looking like named tuples
+Base.show(io::IO, data::PiecewisePointCurve) =
+    print(io, "$(typeof(data))([$(join(get_points(data), ", "))])")
 
 """
 A piecewise linear curve specified by marginal rates (slopes) between production points. May
@@ -68,6 +85,14 @@ IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vec
 
 get_slopes(curve::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(curve))
 
+function Base.show(io::IO, data::PiecewiseIncrementalCurve)
+    initial_input = get_initial_input(data)
+    fd = get_function_data(data)
+    x_coords = get_x_coords(fd)
+    slopes = get_slopes(data)
+    print(io, "$(typeof(data))($initial_input, $x_coords, $slopes)")
+end
+
 """
 A piecewise linear curve specified by average rates between production points. May have
 nonzero initial value.
@@ -81,4 +106,12 @@ const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
 AverageRateCurve{PiecewiseStepData}(initial_input, x_coords::Vector, y_coords::Vector) =
     AverageRateCurve(PiecewiseStepData(x_coords, y_coords), initial_input)
 
-# TODO documentation, more getters, custom printing so it always shows the type alias (like Vector does)
+function Base.show(io::IO, data::PiecewiseAverageCurve)
+    initial_input = get_initial_input(data)
+    fd = get_function_data(data)
+    x_coords = get_x_coords(fd)
+    y_coords = get_y_coords(fd)
+    print(io, "$(typeof(data))($initial_input, $x_coords, $y_coords)")
+end
+
+# TODO documentation, more getters

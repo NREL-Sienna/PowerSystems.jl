@@ -9,6 +9,8 @@
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test zero(io_quadratic) == InputOutputCurve(LinearFunctionData(0, 0))
     @test zero(InputOutputCurve) == InputOutputCurve(LinearFunctionData(0, 0))
+    @test repr(io_quadratic) == sprint(show, io_quadratic) ==
+          "QuadraticCurve(3.0, 2.0, 1.0)"  # repr is overridden due to cost alias
 
     io_linear = InputOutputCurve(LinearFunctionData(2, 1))
     @test io_linear isa InputOutputCurve{LinearFunctionData}
@@ -19,6 +21,8 @@
           IncrementalCurve(LinearFunctionData(0, 2), 1.0)
     @test AverageRateCurve(io_linear) ==
           AverageRateCurve(LinearFunctionData(0, 2), 1.0)
+    @test repr(io_linear) == sprint(show, io_linear) ==
+          "LinearCurve(2.0, 1.0)"  # repr is overridden due to cost alias
 
     io_piecewise = InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test io_piecewise isa InputOutputCurve{PiecewiseLinearData}
@@ -28,6 +32,8 @@
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test AverageRateCurve(io_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    @test repr(io_piecewise) == sprint(show, io_piecewise) ==
+          "PiecewisePointCurve([(x = 1.0, y = 6.0), (x = 3.0, y = 9.0), (x = 5.0, y = 13.0)])"  # repr is overridden due to cost alias
 
     # IncrementalCurve
     inc_linear = IncrementalCurve(LinearFunctionData(6, 2), 1.0)
@@ -42,6 +48,8 @@
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test zero(inc_linear) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(IncrementalCurve) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
+    @test repr(inc_linear) == sprint(show, inc_linear) ==
+          "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0)"
 
     inc_piecewise = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test inc_piecewise isa IncrementalCurve{PiecewiseStepData}
@@ -51,6 +59,8 @@
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test AverageRateCurve(inc_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    @test repr(inc_piecewise) == sprint(show, inc_piecewise) ==
+          "PiecewiseIncrementalCurve(6.0, [1.0, 3.0, 5.0], [1.5, 2.0])"  # repr is overridden due to cost alias
 
     # AverageRateCurve
     ar_linear = AverageRateCurve(LinearFunctionData(3, 2), 1.0)
@@ -65,6 +75,8 @@
           IncrementalCurve(LinearFunctionData(6, 2), 1.0)
     @test zero(ar_linear) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
+    @test repr(ar_linear) == sprint(show, ar_linear) ==
+          "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0)"
 
     ar_piecewise = AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
     @test get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
@@ -73,6 +85,8 @@
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test IncrementalCurve(ar_piecewise) ==
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
+    @test repr(ar_piecewise) == sprint(show, ar_piecewise) ==
+          "PiecewiseAverageCurve(6.0, [1.0, 3.0, 5.0], [3.0, 2.6])"  # repr is overridden due to cost alias
 
     # Serialization round trip
     curves_by_type = [  # typeof() gives parameterized types
