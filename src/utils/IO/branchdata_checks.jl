@@ -88,7 +88,7 @@ function calculate_thermal_limits!(branch, basemva::Float64)
         is_valid = false
 
     elseif get_rate(branch) == 0.0
-        @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
+        @warn "Data for branch $(get_name(branch)) rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
             PS_MAX_LOG
         if get_angle_limits(branch) == get_angle_limits(Line(nothing))
             branch.rate =
@@ -100,7 +100,7 @@ function calculate_thermal_limits!(branch, basemva::Float64)
     elseif get_rate(branch) > linerate_calculation(branch)
         mult = get_rate(branch) / linerate_calculation(branch)
         if mult > 50
-            @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog =
+            @warn "Data for branch $(get_name(branch)) rating is $(mult) times larger than the base MVA for the system" maxlog =
                 PS_MAX_LOG
         end
     end
