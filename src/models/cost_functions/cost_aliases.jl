@@ -8,6 +8,9 @@
 # methods being defined for all the `ValueCurve{FunctionData}` types, not just the ones we
 # have here nicely packaged and presented to the user.
 
+"Whether there is a cost alias for the instance or type under consideration"
+is_cost_alias(::Union{ValueCurve, Type{<:ValueCurve}}) = false
+
 """
 A linear input-output curve, representing a constant marginal rate. May have zero no-load
 cost (i.e., constant average rate) or not.
@@ -17,6 +20,8 @@ cost (i.e., constant average rate) or not.
 - `constant_term::Float64`: optional, cost at zero production, defaults to `0.0`
 """
 const LinearCurve = InputOutputCurve{LinearFunctionData}
+
+is_cost_alias(::Union{LinearCurve, Type{LinearCurve}}) = true
 
 InputOutputCurve{LinearFunctionData}(proportional_term::Real) =
     InputOutputCurve(LinearFunctionData(proportional_term))
@@ -40,6 +45,8 @@ A quadratic input-output curve, may have nonzero no-load cost.
 """
 const QuadraticCurve = InputOutputCurve{QuadraticFunctionData}
 
+is_cost_alias(::Union{QuadraticCurve, Type{QuadraticCurve}}) = true
+
 InputOutputCurve{QuadraticFunctionData}(quadratic_term, proportional_term, constant_term) =
     InputOutputCurve(
         QuadraticFunctionData(quadratic_term, proportional_term, constant_term),
@@ -58,6 +65,8 @@ A piecewise linear curve specified by cost values at production points.
 - `points::Vector{Tuple{Float64, Float64}}` or similar: vector of `(production, cost)` pairs
 """
 const PiecewisePointCurve = InputOutputCurve{PiecewiseLinearData}
+
+is_cost_alias(::Union{PiecewisePointCurve, Type{PiecewisePointCurve}}) = true
 
 InputOutputCurve{PiecewiseLinearData}(points::Vector) =
     InputOutputCurve(PiecewiseLinearData(points))
@@ -79,6 +88,8 @@ have nonzero initial value.
   the points
 """
 const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
+
+is_cost_alias(::Union{PiecewiseIncrementalCurve, Type{PiecewiseIncrementalCurve}}) = true
 
 IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vector) =
     IncrementalCurve(PiecewiseStepData(x_coords, slopes), initial_input)
@@ -102,6 +113,8 @@ nonzero initial value.
   rate)` pairs
 """
 const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
+
+is_cost_alias(::Union{PiecewiseAverageCurve, Type{PiecewiseAverageCurve}}) = true
 
 AverageRateCurve{PiecewiseStepData}(initial_input, x_coords::Vector, y_coords::Vector) =
     AverageRateCurve(PiecewiseStepData(x_coords, y_coords), initial_input)
