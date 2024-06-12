@@ -162,6 +162,15 @@ end
     @test zero(FuelCurve) ==
           FuelCurve(InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
 
+    @test repr(cc) == sprint(show, cc) ==
+          "CostCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 0.0)"
+    @test repr(fc) == sprint(show, fc) ==
+          "FuelCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 4.0, 0.0)"
+    @test sprint(show, "text/plain", cc) ==
+          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+    @test sprint(show, "text/plain", fc) ==
+          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+
     @test get_power_units(cc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(fc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(CostCurve(zero(InputOutputCurve), UnitSystem.SYSTEM_BASE)) ==

@@ -94,3 +94,22 @@ Base.zero(::Union{FuelCurve, Type{FuelCurve}}) = FuelCurve(zero(ValueCurve), 0.0
 
 "Get the fuel cost or the name of the fuel cost time series"
 get_fuel_cost(cost::FuelCurve) = cost.fuel_cost
+
+# The strategy here is to put all the short stuff on the first line, then break and let the value_curve take more space
+function Base.show(io::IO, ::MIME"text/plain", curve::CostCurve)
+    print(
+        io,
+        "$(nameof(typeof(curve))) with power_units $(curve.power_units), vom_cost $(LinearCurve(0.0)), and value_curve:\n  ",
+    )
+    vc_printout = sprint(show, "text/plain", curve.value_curve)  # Capture the value_curve `show` so we can indent it
+    print(io, replace(vc_printout, "\n" => "\n  "))
+end
+
+function Base.show(io::IO, ::MIME"text/plain", curve::FuelCurve)
+    print(
+        io,
+        "$(nameof(typeof(curve))) with power_units $(curve.power_units), fuel_cost $(curve.fuel_cost), vom_cost $(LinearCurve(0.0)), and value_curve:\n  ",
+    )
+    vc_printout = sprint(show, "text/plain", curve.value_curve)
+    print(io, replace(vc_printout, "\n" => "\n  "))
+end
