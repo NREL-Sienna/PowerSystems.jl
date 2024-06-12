@@ -124,10 +124,11 @@ function Base.summary(tech::DeviceParameter)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", data::OperationalCost)
-    println(io, "$(typeof(data)): ")
+    print(io, "$(typeof(data)): ")
     for field_name in fieldnames(typeof(data))
         val = getproperty(data, field_name)
-        print(io, "    $(field_name): $val\n")
+        val_printout = replace(sprint(show, "text/plain", val), "\n" => "\n  ")
+        print(io, "\n  $(field_name): $val_printout")
     end
 end
 
