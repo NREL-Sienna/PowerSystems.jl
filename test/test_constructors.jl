@@ -112,4 +112,3 @@ end
     ts = Scenarios("scalingfactor", data, Hour(1))
     @test ts isa PowerSystems.TimeSeriesData
 end
-

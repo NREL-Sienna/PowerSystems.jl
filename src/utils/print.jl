@@ -128,7 +128,7 @@ function Base.summary(io::IO, data::OperationalCost)
     for field_name in fieldnames(typeof(data))
         val = getproperty(data, field_name)
         # Only the most important fields
-        (val isa ProductionVariableCost) &&
+        (val isa ProductionVariableCostCurve) &&
             push!(field_msgs, "$(field_name): $(typeof(val))")
         (val isa TimeSeriesKey) &&
             push!(field_msgs, "$(field_name): time series \"$(get_name(val))\"")

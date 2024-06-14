@@ -130,7 +130,7 @@ Base.zero(::Union{FuelCurve, Type{FuelCurve}}) = FuelCurve(zero(ValueCurve), 0.0
 "Get the fuel cost or the name of the fuel cost time series"
 get_fuel_cost(cost::FuelCurve) = cost.fuel_cost
 
-Base.show(io::IO, m::MIME"text/plain", curve::ProductionVariableCost) =
+Base.show(io::IO, m::MIME"text/plain", curve::ProductionVariableCostCurve) =
     (get(io, :compact, false)::Bool ? _show_compact : _show_expanded)(io, m, curve)
 
 # The strategy here is to put all the short stuff on the first line, then break and let the value_curve take more space
@@ -152,7 +152,7 @@ function _show_compact(io::IO, ::MIME"text/plain", curve::FuelCurve)
     print(io, replace(vc_printout, "\n" => "\n  "))
 end
 
-function _show_expanded(io::IO, ::MIME"text/plain", curve::ProductionVariableCost)
+function _show_expanded(io::IO, ::MIME"text/plain", curve::ProductionVariableCostCurve)
     print(io, "$(nameof(typeof(curve))):")
     for field_name in fieldnames(typeof(curve))
         val = getproperty(curve, field_name)
