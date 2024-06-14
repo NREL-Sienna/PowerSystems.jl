@@ -1,4 +1,4 @@
-# Adding an Operating Cost
+# [Adding an Operating Cost](@id cost_how_to)
 
 This how-to guide covers the steps to select and add an operating cost to a component,
 such as a generator, load, or energy storage system.
