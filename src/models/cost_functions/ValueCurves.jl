@@ -169,3 +169,29 @@ IncrementalCurve(data::AverageRateCurve) = IncrementalCurve(InputOutputCurve(dat
 is_convex(curve::InputOutputCurve) = is_convex(get_function_data(curve))
 "Calculate the convexity of the underlying data"
 is_convex(curve::ValueCurve) = is_convex(InputOutputCurve(curve))
+
+# PRINTING
+# For cost aliases, return the alias name; otherwise, return the type name without the parameter
+simple_type_name(curve::ValueCurve) =
+    string(is_cost_alias(curve) ? typeof(curve) : nameof(typeof(curve)))
+
+function Base.show(io::IO, ::MIME"text/plain", curve::InputOutputCurve)
+    print(io, simple_type_name(curve))
+    is_cost_alias(curve) && print(io, " (a type of $InputOutputCurve)")
+    print(io, " with function: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end
+
+function Base.show(io::IO, ::MIME"text/plain", curve::IncrementalCurve)
+    print(io, simple_type_name(curve))
+    print(io, " where initial value is $(get_initial_input(curve))")
+    print(io, " and derivative function f is: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end
+
+function Base.show(io::IO, ::MIME"text/plain", curve::AverageRateCurve)
+    print(io, simple_type_name(curve))
+    print(io, " where initial value is $(get_initial_input(curve))")
+    print(io, " and average rate function f is: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end
