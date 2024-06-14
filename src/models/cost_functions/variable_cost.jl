@@ -52,12 +52,12 @@ data. The default units for the x-axis are megawatts and can be specified with
     value_curve::T
     "The units for the x-axis of the curve; defaults to natural units (megawatts)"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-    "Additional proportional Variable Operation and Maintenance cost in currency/(power_unit h)"
-    vom_cost::Float64 = 0.0
+    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    vom_cost::LinearCurve = LinearCurve(0.0)
 end
 
 CostCurve(value_curve) = CostCurve(; value_curve)
-CostCurve(value_curve, vom_cost::Float64) =
+CostCurve(value_curve, vom_cost::LinearCurve) =
     CostCurve(; value_curve, vom_cost = vom_cost)
 CostCurve(value_curve, power_units::UnitSystem) =
     CostCurve(; value_curve, power_units = power_units)
@@ -100,20 +100,20 @@ The default units for the x-axis are megawatts and can be specified with `power_
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
     "Either a fixed value for fuel cost or the key to a fuel cost time series"
     fuel_cost::Union{Float64, TimeSeriesKey}
-    "Additional proportional Variable Operation and Maintenance Cost in currency/(power_unit h)"
-    vom_cost::Float64 = 0.0
+    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    vom_cost::LinearCurve = LinearCurve(0.0)
 end
 
 FuelCurve(
     value_curve::ValueCurve,
     power_units::UnitSystem,
     fuel_cost::Real,
-    vom_cost::Float64,
+    vom_cost::LinearCurve,
 ) =
     FuelCurve(value_curve, power_units, Float64(fuel_cost), vom_cost)
 
 FuelCurve(value_curve, fuel_cost) = FuelCurve(; value_curve, fuel_cost)
-FuelCurve(value_curve, fuel_cost::Union{Float64, TimeSeriesKey}, vom_cost::Float64) =
+FuelCurve(value_curve, fuel_cost::Union{Float64, TimeSeriesKey}, vom_cost::LinearCurve) =
     FuelCurve(; value_curve, fuel_cost, vom_cost = vom_cost)
 FuelCurve(value_curve, power_units::UnitSystem, fuel_cost::Union{Float64, TimeSeriesKey}) =
     FuelCurve(; value_curve, power_units = power_units, fuel_cost = fuel_cost)
