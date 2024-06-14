@@ -1,4 +1,8 @@
-"Type that represents an abstract cost curve without units on the cost"
+"""
+Supertype that represents a unitless cost curve
+
+Concrete options are [listed here.](@ref value_curve_library)
+"""
 abstract type ValueCurve{T <: FunctionData} end
 
 # JSON SERIALIZATION
