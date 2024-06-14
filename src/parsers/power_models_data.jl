@@ -435,7 +435,7 @@ function make_renewable_fix(
     sys_mbase::Float64,
 )
     base_conversion = sys_mbase / d["mbase"]
-    generator = RenewableFix(;
+    generator = RenewableNonDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -455,14 +455,16 @@ function make_generic_battery(
     d::Dict,
     bus::ACBus,
 )
+    energy_rating = iszero(d["energy_rating"]) ? d["energy"] : d["energy_rating"]
     storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
         bus = bus,
         prime_mover_type = PrimeMovers.BA,
         storage_technology_type = StorageTech.OTHER_CHEM,
-        initial_energy = d["energy"],
-        state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
+        storage_capacity = energy_rating,
+        storage_level_limits = (min = 0.0, max = energy_rating),
+        initial_storage_capacity_level = d["energy"] / energy_rating,
         rating = d["thermal_rating"],
         active_power = d["ps"],
         input_active_power_limits = (min = 0.0, max = d["charge_rating"]),
@@ -611,7 +613,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == RenewableFix
+        elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == EnergyReservoirStorage
             @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
@@ -671,7 +673,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rate = d["rate_a"],
+        rating = d["rate_a"],
         angle_limits = (min = d["angmin"], max = d["angmax"]),
     )
 end
@@ -693,7 +695,7 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
@@ -715,7 +717,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
@@ -744,7 +746,7 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 

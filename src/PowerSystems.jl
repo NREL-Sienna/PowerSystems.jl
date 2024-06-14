@@ -58,7 +58,7 @@ export get_y_coords
 export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
-export ProductionVariableCost, CostCurve, FuelCurve
+export ProductionVariableCostCurve, CostCurve, FuelCurve
 export OperationalCost, MarketBidCost, LoadCost, StorageCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_function_data, get_initial_input, get_value_curve, get_power_units
@@ -74,7 +74,7 @@ export HydroPumpedStorage
 export InterconnectingConverter
 
 export RenewableGen
-export RenewableFix
+export RenewableNonDispatch
 export RenewableDispatch
 
 export ThermalGen
@@ -86,6 +86,7 @@ export StaticLoad
 export PowerLoad
 export StandardLoad
 export FixedAdmittance
+export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
 export ExponentialLoad
@@ -100,7 +101,6 @@ export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
-export RegulationDevice
 
 export GenericDER
 export AggregateDistributedGenerationA
@@ -246,13 +246,12 @@ export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export StaticReserve
+export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
-export Transfer
-export StaticReserveGroup
-export StaticReserveNonSpinning
+export ConstantReserveGroup
+export ConstantReserveNonSpinning
 export VariableReserveNonSpinning
 export TransmissionInterface
 
@@ -406,18 +405,6 @@ export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
-export set_droop!
-export set_participation_factor!
-export set_inertia!
-export set_reserve_limit_up!
-export set_reserve_limit_dn!
-export set_cost!
-export get_droop
-export get_inertia
-export get_reserve_limit_up
-export get_reserve_limit_dn
-export get_participation_factor
-export get_cost
 export get_units_base
 export get_runchecks
 export get_thermal_unit
@@ -643,7 +630,6 @@ include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
-include("models/regulation_device.jl")
 include("models/HybridSystem.jl")
 
 #Methods for devices

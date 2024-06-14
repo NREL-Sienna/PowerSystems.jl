@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
 Parameters of Active Power Controller including REPCA1 and REECB1
 
 # Arguments
-- `bus_control::Int`: Bus Number for voltage control; , validation range: `(0, nothing)`
+- `bus_control::Int`: ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component, validation range: `(0, nothing)`
 - `from_branch_control::Int`: Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
 - `to_branch_control::Int`: Monitored branch TO bus number for line drop compensation (if 0 generator power will be used), validation range: `(0, nothing)`
 - `branch_id_control::String`: Branch circuit id for line drop compensation (as a string). If 0 generator power will be used
@@ -49,13 +49,13 @@ Parameters of Active Power Controller including REPCA1 and REECB1
 - `dP_lim::MinMax`: Upper/Lower limit on power reference ramp rates`(dP_min, dP_max)`
 - `P_lim_inner::MinMax`: Upper/Lower limit on power reference for REECB`(P_min_inner, P_max_inner)`
 - `T_pord::Float64`: Power filter time constant REECB time constant, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ActiveRenewableControllerAB model depends on the Flag
+- `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ActiveRenewableControllerAB model depends on the Flag
 - `n_states::Int`: (**Do not modify.**) The states of the ActiveRenewableControllerAB model depends on the Flag
 """
 mutable struct ActiveRenewableControllerAB <: ActivePowerControl
-    "Bus Number for voltage control; "
+    "ACBus identification [`number`](@ref ACBus) for voltage control. `0` identifies the local bus connected to this component"
     bus_control::Int
     "Monitored branch FROM bus number for line drop compensation (if 0 generator power will be used)"
     from_branch_control::Int
@@ -89,11 +89,11 @@ mutable struct ActiveRenewableControllerAB <: ActivePowerControl
     P_lim_inner::MinMax
     "Power filter time constant REECB time constant"
     T_pord::Float64
-    "(optional) Reference Power Set-point (pu)"
+    "Reference Power Set-point (pu)"
     P_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the ActiveRenewableControllerAB model depends on the Flag"
+    "(**Do not modify.**) The [states](@ref S) of the ActiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}
     "(**Do not modify.**) The states of the ActiveRenewableControllerAB model depends on the Flag"
     n_states::Int

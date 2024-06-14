@@ -27,6 +27,7 @@ pages = OrderedDict(
             "modeler_guide/enumerated_types.md",
             "modeler_guide/example_dynamic_data.md",
             "modeler_guide/system_dynamic_data.md",
+            "modeler_guide/cost_functions.md",
             "modeler_guide/market_bid_cost.md",
             "modeler_guide/modeling_with_JuMP.md",
             "modeler_guide/parsing.md",
@@ -54,20 +55,23 @@ pages["Model Library"] = make_model_library(
         StaticInjection,
         Service,
         Branch,
-        PSY.DeviceParameter,
     ],
     exceptions = [PSY.DynamicComponent,
                   PSY.ActivePowerControl,
                   PSY.ReactivePowerControl,
-                  PSY.DynamicBranch
+                  PSY.DynamicBranch,
+                  PSY.HybridSystem
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
-        "StaticInjection" => ["Regulation Device" => "model_library/regulation_device.md"],
+        "StaticInjection" => ["HybridSystem" => "model_library/hybrid_system.md"],
         "DynamicInjection" => ["Dynamic Inverter" => "model_library/dynamic_inverter.md",
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
-        "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"]
+        "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"],
+        "Costs" => ["Operating Costs" => "model_library/costs.md",
+        "Variable Cost Curves" => "model_library/cost_curves.md"
+        ]
         )
 )
 

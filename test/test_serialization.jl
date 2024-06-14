@@ -1,16 +1,3 @@
-@testset "Test JSON serialization of RTS data with RegulationDevice" begin
-    sys = create_system_with_regulation_device()
-    sys2, result = validate_serialization(sys)
-    @test result
-
-    # Ensure the time_series attached to the ThermalStandard got deserialized.
-    for rd in get_components(RegulationDevice, sys2)
-        @test get_time_series(SingleTimeSeries, rd, "active_power") isa SingleTimeSeries
-    end
-
-    clear_time_series!(sys2)
-end
-
 @testset "Test JSON serialization of RTS data with immutable time series" begin
     sys =
         PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; time_series_read_only = true)
@@ -27,7 +14,7 @@ end
     bus = ACBus(nothing)
     bus.name = "Bus1234"
     add_component!(sys, bus)
-    tg = RenewableFix(nothing)
+    tg = RenewableNonDispatch(nothing)
     tg.bus = bus
     add_component!(sys, tg)
     # TODO 1.0
@@ -74,10 +61,10 @@ end
         push!(devices, gen)
     end
 
-    service = StaticReserve{ReserveDown}(nothing)
+    service = ConstantReserve{ReserveDown}(nothing)
     add_service!(sys, service, devices)
 
-    groupservice = StaticReserveGroup{ReserveDown}(nothing)
+    groupservice = ConstantReserveGroup{ReserveDown}(nothing)
     add_service!(sys, groupservice)
     members = Vector{Service}()
     push!(members, service)
@@ -120,7 +107,7 @@ end
         ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
         set_variable_cost!(sys, gen, time_series)
-        service = StaticReserve{ReserveDown}(;
+        service = ConstantReserve{ReserveDown}(;
             name = "init_$i",
             available = false,
             time_frame = 0.0,

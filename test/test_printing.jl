@@ -86,13 +86,13 @@ end
 
     @test isnothing(show(IOBuffer(), "text/plain", sys))
     @test isnothing(show(IOBuffer(), "text/html", sys))
-    @test isnothing(show_components(IOBuffer(), sys, RenewableFix))
-    @test isnothing(show_components(IOBuffer(), sys, RenewableFix, [:rating]))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableNonDispatch))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableNonDispatch, [:rating]))
     @test isnothing(
         show_components(
             IOBuffer(),
             sys,
-            RenewableFix,
+            RenewableNonDispatch,
             Dict("ts" => x -> has_time_series(x)),
         ),
     )

@@ -23,23 +23,23 @@ This file is auto-generated. Do not edit.
         n_states::Int
     end
 
-Parameters for the DC-side with a Battery Energy Storage System from paper at https://arxiv.org/abs/2007.11776
+Parameters for the DC-side with a Battery Energy Storage System from ["Grid-Coupled Dynamic Response of Battery-Driven Voltage Source Converters."](https://arxiv.org/abs/2007.11776)
 
 # Arguments
 - `rated_voltage::Float64`: Rated voltage (V), validation range: `(0, nothing)`
 - `rated_current::Float64`: Rated current (A), validation range: `(0, nothing)`
-- `battery_voltage::Float64`: battery voltage in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
-- `battery_resistance::Float64`: Battery resistance in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
-- `dc_dc_inductor::Float64`: DC/DC inductance in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
-- `dc_link_capacitance::Float64`: DC-link capacitance in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
+- `battery_voltage::Float64`: battery voltage in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
+- `battery_resistance::Float64`: Battery resistance in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
+- `dc_dc_inductor::Float64`: DC/DC inductance in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
+- `dc_link_capacitance::Float64`: DC-link capacitance in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
 - `fs::Float64`: DC/DC converter switching frequency (kHz), validation range: `(0, nothing)`
 - `kpv::Float64`: voltage controller proportional gain, validation range: `(0, nothing)`
 - `kiv::Float64`: voltage controller integral gain, validation range: `(0, nothing)`
 - `kpi::Float64`: current controller proportional gain, validation range: `(0, nothing)`
 - `kii::Float64`: current controller integral gain, validation range: `(0, nothing)`
-- `Vdc_ref::Float64`: (optional) Reference DC-Voltage Set-point in pu ([`Device Base`](@ref per_unit)), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ZeroOrderBESS model are:
+- `Vdc_ref::Float64`: (default: `1.1`) Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,
 	i_b: Battery current,
 	 ν: integrator state of the voltage controller,
@@ -51,13 +51,13 @@ mutable struct ZeroOrderBESS <: DCSource
     rated_voltage::Float64
     "Rated current (A)"
     rated_current::Float64
-    "battery voltage in pu ([`Device Base`](@ref per_unit))"
+    "battery voltage in pu ([`DEVICE_BASE`](@ref per_unit))"
     battery_voltage::Float64
-    "Battery resistance in pu ([`Device Base`](@ref per_unit))"
+    "Battery resistance in pu ([`DEVICE_BASE`](@ref per_unit))"
     battery_resistance::Float64
-    "DC/DC inductance in pu ([`Device Base`](@ref per_unit))"
+    "DC/DC inductance in pu ([`DEVICE_BASE`](@ref per_unit))"
     dc_dc_inductor::Float64
-    "DC-link capacitance in pu ([`Device Base`](@ref per_unit))"
+    "DC-link capacitance in pu ([`DEVICE_BASE`](@ref per_unit))"
     dc_link_capacitance::Float64
     "DC/DC converter switching frequency (kHz)"
     fs::Float64
@@ -69,11 +69,11 @@ mutable struct ZeroOrderBESS <: DCSource
     kpi::Float64
     "current controller integral gain"
     kii::Float64
-    "(optional) Reference DC-Voltage Set-point in pu ([`Device Base`](@ref per_unit))"
+    "Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit))"
     Vdc_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the ZeroOrderBESS model are:
+    "(**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,
 	i_b: Battery current,
 	 ν: integrator state of the voltage controller,

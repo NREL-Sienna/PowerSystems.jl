@@ -14,27 +14,27 @@ This file is auto-generated. Do not edit.
         n_states::Int
     end
 
-Parameters of a Reactive Virtual Oscillator controller. Model is based from the paper Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control by O. Ajala et al.
+Parameters of a Reactive Virtual Oscillator controller. Model is based on ["Model Reduction for Inverters with Current Limiting and Dispatchable Virtual Oscillator Control."](https://doi.org/10.1109/TEC.2021.3083488)
 
 # Arguments
 - `k2::Float64`: VOC voltage-amplitude control gain, validation range: `(0, nothing)`
-- `V_ref::Float64`: (optional) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `Q_ref::Float64`: (optional) Reference Reactive Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of the ReactiveVirtualOscilator model are:
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: (default: `1.0`) Reference Reactive Power Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactiveVirtualOscilator model are:
 	E_oc: voltage reference state for inner control in the d-axis
 - `n_states::Int`: (**Do not modify.**) ReactiveVirtualOscillator has 1 state
 """
 mutable struct ReactiveVirtualOscillator <: ReactivePowerControl
     "VOC voltage-amplitude control gain"
     k2::Float64
-    "(optional) Reference Voltage Set-point (pu)"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "(optional) Reference Reactive Power Set-point (pu)"
+    "Reference Reactive Power Set-point (pu)"
     Q_ref::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of the ReactiveVirtualOscilator model are:
+    "(**Do not modify.**) The [states](@ref S) of the ReactiveVirtualOscilator model are:
 	E_oc: voltage reference state for inner control in the d-axis"
     states::Vector{Symbol}
     "(**Do not modify.**) ReactiveVirtualOscillator has 1 state"

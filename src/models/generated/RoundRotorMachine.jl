@@ -29,8 +29,8 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states round-rotor synchronous machine with quadratic/exponential saturation:
-IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
+Parameters of 4-[states](@ref S) round-rotor synchronous machine with quadratic/exponential saturation:
+IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF
 
 # Arguments
 - `R::Float64`: Armature resistance, validation range: `(0, nothing)`
@@ -45,19 +45,19 @@ IEEE Std 1110 §5.3.2 (Model 2.2). GENROU or GENROE model in PSSE and PSLF.
 - `Xd_pp::Float64`: Sub-Transient reactance after EMF in d-axis per unit. Note: Xd_pp = Xq_pp, validation range: `(0, nothing)`
 - `Xl::Float64`: Stator leakage reactance, validation range: `(0, nothing)`
 - `Se::Tuple{Float64, Float64}`: Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `γ_d1::Float64`: (**Do not modify.**) γ_d1 parameter
 - `γ_q1::Float64`: (**Do not modify.**) γ_q1 parameter
 - `γ_d2::Float64`: (**Do not modify.**) γ_d2 parameter
 - `γ_q2::Float64`: (**Do not modify.**) γ_q2 parameter
 - `γ_qd::Float64`: (**Do not modify.**) γ_qd parameter
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
 	ψ_kq: flux linkage in the first equivalent damping circuit in the d-axis
 - `n_states::Int`: (**Do not modify.**) RoundRotorMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct RoundRotorMachine <: Machine
     "Armature resistance"
@@ -84,7 +84,7 @@ mutable struct RoundRotorMachine <: Machine
     Xl::Float64
     "Saturation factor at 1 and 1.2 pu flux: S(1.0) = B(|ψ_pp|-A)^2"
     Se::Tuple{Float64, Float64}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
     "(**Do not modify.**) γ_d1 parameter"
     γ_d1::Float64
@@ -96,7 +96,7 @@ mutable struct RoundRotorMachine <: Machine
     γ_q2::Float64
     "(**Do not modify.**) γ_qd parameter"
     γ_qd::Float64
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis generator voltage behind the transient reactance,
 	ed_p: d-axis generator voltage behind the transient reactance,
 	ψ_kd: flux linkage in the first equivalent damping circuit in the d-axis,
@@ -104,7 +104,7 @@ mutable struct RoundRotorMachine <: Machine
     states::Vector{Symbol}
     "(**Do not modify.**) RoundRotorMachine has 4 states"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

@@ -26,7 +26,8 @@ abstract type InverterComponent <: DynamicComponent end
     end
 
 A dynamic inverter is composed by 6 components, namely a Converter, an Outer Control, an Inner Control,
-a DC Source, a Frequency Estimator and a Filter. It requires a Static Injection device that is attached to it.
+a DC Source, a Frequency Estimator and a Filter. It requires a [`StaticInjection`](@ref) device that is
+attached to it.
 
 # Arguments
 - `name::String`: Name of inverter.

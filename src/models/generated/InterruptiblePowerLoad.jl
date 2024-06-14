@@ -21,47 +21,51 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
+A [static](@ref S) power load that can be compensated for temporary or continuous interruptions to its requested demand.
 
+ These loads are most commonly used for operational optimizations and can be used to model, for example, large commercial and industrial customers enrolled in demand response programs. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation) that can be reduced to satisfy other system needs. For simpler loads without an operating cost for demand response, see [`PowerLoad`](@ref)
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
-- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
-- `max_active_power::Float64`
-- `max_reactive_power::Float64`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `operation_cost::Union{LoadCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `active_power::Float64`: Initial steady state active power demand (MW)
+- `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
+- `max_active_power::Float64`: Maximum active power (MW) that this load can demand
+- `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
+- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
+- `operation_cost::Union{LoadCost, MarketBidCost}`: [Operating cost](@ref cost_library) of interrupting load
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
-    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
+    "Initial steady state active power demand (MW)"
     active_power::Float64
-    "Initial reactive power set point of the unit (MVAR)"
+    "Initial steady state reactive power demand (MVAR)"
     reactive_power::Float64
+    "Maximum active power (MW) that this load can demand"
     max_active_power::Float64
+    "Maximum reactive power (MVAR) that this load can demand"
     max_reactive_power::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "Base power (MVA) for per unitization"
     base_power::Float64
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    "[Operating cost](@ref cost_library) of interrupting load"
     operation_cost::Union{LoadCost, MarketBidCost}
-    "(optional) Services that this device contributes to"
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) corresponding dynamic injection device"
+    "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

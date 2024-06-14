@@ -130,12 +130,12 @@ end
             end
 
             cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
-            @test get_rate(cdm_ac_branches[2]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[2]))
-            @test get_rate(cdm_ac_branches[6]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[6]))
-            @test get_rate(cdm_ac_branches[120]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+            @test get_rating(cdm_ac_branches[2]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[2]))
+            @test get_rating(cdm_ac_branches[6]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[6]))
+            @test get_rating(cdm_ac_branches[120]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
             cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==

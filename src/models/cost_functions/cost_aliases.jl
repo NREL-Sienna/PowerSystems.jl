@@ -8,6 +8,8 @@
 # have here nicely packaged and presented to the user.
 
 """
+    LinearCurve(proportional_term::Float64, constant_term::Float64)
+
 A linear input-output curve, representing a constant marginal rate. May have zero no-load
 cost (i.e., constant average rate) or not.
 
@@ -24,6 +26,8 @@ InputOutputCurve{LinearFunctionData}(proportional_term::Real, constant_term::Rea
     InputOutputCurve(LinearFunctionData(proportional_term, constant_term))
 
 """
+    QuadraticCurve(quadratic_term::Float64, proportional_term::Float64, constant_term::Float64)
+
 A quadratic input-output curve, may have nonzero no-load cost.
 
 # Arguments
@@ -39,6 +43,8 @@ InputOutputCurve{QuadraticFunctionData}(quadratic_term, proportional_term, const
     )
 
 """
+    PiecewisePointCurve(points::Vector{Tuple{Float64, Float64}})
+
 A piecewise linear curve specified by cost values at production points.
 
 # Arguments
@@ -52,13 +58,15 @@ InputOutputCurve{PiecewiseLinearData}(points::Vector) =
 get_points(curve::PiecewisePointCurve) = get_points(get_function_data(curve))
 
 """
+    PiecewiseIncrementalCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
+
 A piecewise linear curve specified by marginal rates (slopes) between production points. May
 have nonzero initial value.
 
 # Arguments
 - `initial_input::Float64`: cost at minimum production point
-- `x_coords::Float64`: vector of `n` production points
-- `slopes::Float64`: vector of `n-1` marginal rates/slopes of the curve segments between
+- `x_coords::Vector{Float64}`: vector of `n` production points
+- `slopes::Vector{Float64}`: vector of `n-1` marginal rates/slopes of the curve segments between
   the points
 """
 const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
@@ -69,16 +77,20 @@ IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vec
 get_slopes(curve::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(curve))
 
 """
+    PiecewiseAverageCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
+
 A piecewise linear curve specified by average rates between production points. May have
 nonzero initial value.
 
 # Arguments
-- `pairs::Vector{Tuple{Float64, Float64}}` or similar: vector of `(production, average
-  rate)` pairs
+- `initial_input::Float64`: cost at minimum production point
+- `x_coords::Vector{Float64}`: vector of `n` production points
+- `slopes::Vector{Float64}`: vector of `n-1` average rates/slopes of the curve segments between
+  the points
 """
 const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
 
-AverageRateCurve{PiecewiseStepData}(initial_input, x_coords::Vector, y_coords::Vector) =
-    AverageRateCurve(PiecewiseStepData(x_coords, y_coords), initial_input)
+AverageRateCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vector) =
+    AverageRateCurve(PiecewiseStepData(x_coords, slopes), initial_input)
 
 # TODO documentation, more getters, custom printing so it always shows the type alias (like Vector does)
