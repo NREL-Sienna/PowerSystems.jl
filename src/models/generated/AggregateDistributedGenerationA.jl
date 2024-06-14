@@ -56,7 +56,7 @@ This file is auto-generated. Do not edit.
 Parameters of the DERA1 model in PSS/E
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `Pf_Flag::Int`: Flag for Power Factor Control, validation range: `(0, 1)`
 - `Freq_Flag::Int`: Flag to enable/disable frequency control, validation range: `(0, 1)`
 - `PQ_Flag::Int`: Flag used to enforce maximum current, validation range: `(0, 1)`
@@ -91,19 +91,19 @@ Parameters of the DERA1 model in PSS/E
 - `Tv::Float64`: Time constant on the output of the multiplier (s), validation range: `(0, nothing)`
 - `Vpr::Float64`: Voltage below which frequency tripping is disabled (pu), validation range: `(0, nothing)`
 - `Iq_lim::MinMax`: Reactive current injection limits (Iqll, Iqhl)
-- `V_ref::Float64`: (optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
-- `Pfa_ref::Float64`: (optional) Reference power factor, validation range: `(0, nothing)`
-- `ω_ref::Float64`: (optional) Reference Frequency (pu), validation range: `(0, nothing)`
-- `Q_ref::Float64`: (optional) Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: (optional) Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: (optional) Base power (MVA) for per unitization.
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
+- `V_ref::Float64`: (default: `1.0`) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
+- `Pfa_ref::Float64`: (default: `0.0`) Reference power factor, validation range: `(0, nothing)`
+- `ω_ref::Float64`: (default: `1.0`) Reference Frequency (pu), validation range: `(0, nothing)`
+- `Q_ref::Float64`: (default: `0.0`) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (default: `1.0`) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (default: `100.0`) Base power (MVA) for per unitization
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AggregateDistributedGenerationA <: DynamicInjection
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Flag for Power Factor Control"
     Pf_Flag::Int
@@ -173,25 +173,25 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     Vpr::Float64
     "Reactive current injection limits (Iqll, Iqhl)"
     Iq_lim::MinMax
-    "(optional) User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage"
+    "User defined voltage reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage"
     V_ref::Float64
-    "(optional) Reference power factor"
+    "Reference power factor"
     Pfa_ref::Float64
-    "(optional) Reference Frequency (pu)"
+    "Reference Frequency (pu)"
     ω_ref::Float64
-    "(optional) Reference reactive power, in pu"
+    "Reference reactive power, in pu"
     Q_ref::Float64
-    "(optional) Reference active power, in pu"
+    "Reference active power, in pu"
     P_ref::Float64
-    "(optional) Base power (MVA) for per unitization."
+    "Base power (MVA) for per unitization"
     base_power::Float64
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags"
     states::Vector{Symbol}
     "(**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags"
     n_states::Int
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

@@ -12,6 +12,8 @@
 is_cost_alias(::Union{ValueCurve, Type{<:ValueCurve}}) = false
 
 """
+    LinearCurve(proportional_term::Float64, constant_term::Float64)
+
 A linear input-output curve, representing a constant marginal rate. May have zero no-load
 cost (i.e., constant average rate) or not.
 
@@ -36,6 +38,8 @@ function Base.show(io::IO, data::LinearCurve)
 end
 
 """
+    QuadraticCurve(quadratic_term::Float64, proportional_term::Float64, constant_term::Float64)
+
 A quadratic input-output curve, may have nonzero no-load cost.
 
 # Arguments
@@ -59,6 +63,8 @@ function Base.show(io::IO, data::QuadraticCurve)
 end
 
 """
+    PiecewisePointCurve(points::Vector{Tuple{Float64, Float64}})
+
 A piecewise linear curve specified by cost values at production points.
 
 # Arguments
@@ -78,13 +84,15 @@ Base.show(io::IO, data::PiecewisePointCurve) =
     print(io, "$(typeof(data))([$(join(get_points(data), ", "))])")
 
 """
+    PiecewiseIncrementalCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
+
 A piecewise linear curve specified by marginal rates (slopes) between production points. May
 have nonzero initial value.
 
 # Arguments
 - `initial_input::Float64`: cost at minimum production point
-- `x_coords::Float64`: vector of `n` production points
-- `slopes::Float64`: vector of `n-1` marginal rates/slopes of the curve segments between
+- `x_coords::Vector{Float64}`: vector of `n` production points
+- `slopes::Vector{Float64}`: vector of `n-1` marginal rates/slopes of the curve segments between
   the points
 """
 const PiecewiseIncrementalCurve = IncrementalCurve{PiecewiseStepData}
@@ -105,12 +113,16 @@ function Base.show(io::IO, data::PiecewiseIncrementalCurve)
 end
 
 """
+    PiecewiseAverageCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
+
 A piecewise linear curve specified by average rates between production points. May have
 nonzero initial value.
 
 # Arguments
-- `pairs::Vector{Tuple{Float64, Float64}}` or similar: vector of `(production, average
-  rate)` pairs
+- `initial_input::Float64`: cost at minimum production point
+- `x_coords::Vector{Float64}`: vector of `n` production points
+- `slopes::Vector{Float64}`: vector of `n-1` average rates/slopes of the curve segments between
+  the points
 """
 const PiecewiseAverageCurve = AverageRateCurve{PiecewiseStepData}
 

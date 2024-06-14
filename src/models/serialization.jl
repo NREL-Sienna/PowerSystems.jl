@@ -36,7 +36,7 @@ function IS.serialize(component::T) where {T <: _CONTAINS_SHOULD_ENCODE}
     IS.add_serialization_metadata!(data, T)
 
     # This is a temporary workaround until these types are not parameterized.
-    if T <: Reserve || T <: StaticReserveGroup
+    if T <: Reserve || T <: ConstantReserveGroup
         data[IS.METADATA_KEY][IS.CONSTRUCT_WITH_PARAMETERS_KEY] = true
     end
 

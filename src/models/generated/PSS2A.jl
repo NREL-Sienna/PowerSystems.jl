@@ -38,30 +38,30 @@ This file is auto-generated. Do not edit.
 IEEE Dual-Input Stabilizer Model
 
 # Arguments
-- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control_1::Int`: First Input Remote Bus number for control.
-- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control_2::Int`: Second Input Remote Bus number for control.
-- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
+- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 6)`
+- `remote_bus_control_1::Int`: First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
+- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`
+- `remote_bus_control_2::Int`: Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
+- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`
+- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`
+- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`
+- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`
+- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`
+- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`
+- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`
+- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`
+- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`
+- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`
+- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`
+- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
+- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `states::Vector{Symbol}`: (**Do not modify.**) The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -80,16 +80,16 @@ IEEE Dual-Input Stabilizer Model
 	x_p16: 2nd lead-lag,
 - `n_states::Int`: (**Do not modify.**) IEEEST has 16 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 16 [differential](@ref states_list) [states](@ref S)
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PSS2A <: PSS
     "First Input Code for stabilizer"
     input_code_1::Int
-    "First Input Remote Bus number for control."
+    "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component"
     remote_bus_control_1::Int
     "Second Input Code for stabilizer"
     input_code_2::Int
-    "Second Input Remote Bus number for control."
+    "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component"
     remote_bus_control_2::Int
     "M parameter for ramp tracking filter"
     M_rtf::Int
@@ -127,9 +127,9 @@ mutable struct PSS2A <: PSS
     T4::Float64
     "PSS output limits `(Vst_min, Vst_max)`"
     Vst_lim::Tuple{Float64, Float64}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -151,7 +151,7 @@ mutable struct PSS2A <: PSS
     n_states::Int
     "(**Do not modify.**) IEEEST has 16 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

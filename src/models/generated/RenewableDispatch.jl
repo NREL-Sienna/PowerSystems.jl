@@ -25,54 +25,56 @@ This file is auto-generated. Do not edit.
 
 A renewable (e.g., wind or solar) generator whose output can be curtailed to satisfy power system constraints.
 
-These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some `active_power`. Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableFix`](@ref).
+These generators can also participate in reserves markets, including upwards reserves by proactively curtailing some available power (based on its [`max_active_power` time series](@ref ts_data)). Example uses include: a utility-scale wind or solar generator whose PPA allows curtailment. For non-curtailable or must-take renewables, see [`RenewableNonDispatch`](@ref).
+
+Renewable generators do not have a `max_active_power` parameter, which is instead calculated when calling [`get_max_active_power()`](@ref get_max_active_power(d::T) where {T <: RenewableGen})
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `error`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
-- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable.
-- `power_factor::Float64`, validation range: `(0, 1)`, action if invalid: `error`
-- `operation_cost::Union{RenewableGenerationCost, MarketBidCost}`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `power_factor::Float64`:, validation range: `(0, 1)`
+- `operation_cost::Union{RenewableGenerationCost, MarketBidCost}`: [Operating cost](@ref cost_library) of generation
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct RenewableDispatch <: RenewableGen
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
-    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
     "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
     "Maximum output power rating of the unit (MVA)"
     rating::Float64
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
-    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable."
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}
     power_factor::Float64
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
+    "[Operating cost](@ref cost_library) of generation"
     operation_cost::Union{RenewableGenerationCost, MarketBidCost}
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "(optional) Services that this device contributes to"
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) corresponding dynamic injection device"
+    "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

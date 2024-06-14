@@ -39,67 +39,67 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-
+A hydropower generator with pumped storage and upper and lower reservoirs. 
 
 # Arguments
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name.
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used.
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`., validation range: `(0, nothing)`, action if invalid: `warn`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list).
-- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable., action if invalid: `warn`
-- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `rating_pump::Float64`: Maximum power withdrawal (MVA) of the pump., validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits_pump::MinMax`
-- `reactive_power_limits_pump::Union{Nothing, MinMax}`, action if invalid: `warn`
-- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min of pump, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_target::UpDown`: (optional) Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (optional) Operation Cost of Generation [`OperationalCost`](@ref)
-- `pump_efficiency::Float64`: (optional) Pumping effciency [0, 1.0], validation range: `(0, 1)`, action if invalid: `warn`
-- `conversion_factor::Float64`: (optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
-- `status::PumpHydroStatus`: Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
-- `time_at_status::Float64`: (optional) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`
-- `services::Vector{Service}`: (optional) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `rating_pump::Float64`: Maximum power withdrawal (MVA) of the pump, validation range: `(0, nothing)`
+- `active_power_limits_pump::MinMax`:
+- `reactive_power_limits_pump::Union{Nothing, MinMax}`:
+- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min of pump, validation range: `(0, nothing)`
+- `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`
+- `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3), validation range: `(0, nothing)`
+- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
+- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
+- `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
+- `storage_target::UpDown`: (default: `(up=1.0, down=1.0)`) Storage target of upper reservoir at the end of simulation as ratio of storage capacity
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [Operating cost](@ref cost_library) of generation
+- `pump_efficiency::Float64`: (default: `1.0`) Pumping efficiency [0, 1.0], validation range: `(0, 1)`
+- `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
+- `status::PumpHydroStatus`: (default: `PumpHydroStatus.OFF`) Initial commitment condition at the start of a simulation (`PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`)
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct HydroPumpedStorage <: HydroGen
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name."
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
-    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used."
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
     "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
     "Maximum output power rating of the unit (MVA)"
     rating::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`."
+    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)."
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
     "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
-    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable."
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
-    "Maximum power withdrawal (MVA) of the pump."
+    "Maximum power withdrawal (MVA) of the pump"
     rating_pump::Float64
     active_power_limits_pump::MinMax
     reactive_power_limits_pump::Union{Nothing, MinMax}
@@ -107,33 +107,33 @@ mutable struct HydroPumpedStorage <: HydroGen
     ramp_limits_pump::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits of pump in hours"
     time_limits_pump::Union{Nothing, UpDown}
-    "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)."
+    "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)"
     storage_capacity::UpDown
     "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
     "Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr)"
     outflow::Float64
-    "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
+    "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)"
     initial_storage::UpDown
-    "(optional) Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
+    "Storage target of upper reservoir at the end of simulation as ratio of storage capacity"
     storage_target::UpDown
-    "(optional) Operation Cost of Generation [`OperationalCost`](@ref)"
+    "[Operating cost](@ref cost_library) of generation"
     operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
-    "(optional) Pumping effciency [0, 1.0]"
+    "Pumping efficiency [0, 1.0]"
     pump_efficiency::Float64
-    "(optional) Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
+    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
-    "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
+    "Initial commitment condition at the start of a simulation (`PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`)"
     status::PumpHydroStatus
-    "(optional) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`"
+    "Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`"
     time_at_status::Float64
-    "(optional) Services that this device contributes to"
+    "Services that this device contributes to"
     services::Vector{Service}
-    "(optional) corresponding dynamic injection device"
+    "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "(optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)."
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "(**Do not modify.**) PowerSystems.jl internal reference."
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

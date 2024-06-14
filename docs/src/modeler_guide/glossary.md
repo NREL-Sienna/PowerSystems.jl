@@ -1,7 +1,7 @@
 # Glossary and Acronyms
 
 [A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
-[S](@ref) | [V](@ref)
+[S](@ref) | [V](@ref) | [Z](@ref)
 
 ## A
 
@@ -20,9 +20,9 @@
 * *DERA1*:
 
 * *Dynamic*: Refers to data and simulations for power system transient simulations using differential
-equations. Common examples include small signal stability analysis to verify the power system will
-maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
-see the definition for [Static](@ref "S") data.
+  equations. Common examples include signal stability analysis to verify the power system will
+  maintain stability in the few seconds following an unexpected fault or generator trip. For contrast,
+  see the definition for [Static](@ref S) data.
 
 ## E
 
@@ -41,8 +41,6 @@ see the definition for [Static](@ref "S") data.
 * *EX4VSA*: IEEE Excitation System for Voltage Security Assessment with Over-Excitation Limits.
 
 ## F
-
-* *Fixed*: 
 
 * *Forecast*: Predicted values of a time-varying quantity that commonly features
   a look-ahead and can have multiple data values representing each time period.
@@ -65,13 +63,13 @@ see the definition for [Static](@ref "S") data.
 * *IEEET*: IEEE Type I Excitation System.
 
 * *Injector* or *Injection*: Injectors refer to models that represent how a generator or storage 
-  device *injects* power into the power system. In `PowerSystems.jl`, some components can accept 
-  data for both `StaticInjection` and `DynamicInjection` models. A static injection 
+  device *injects* power or current into the power system. Loads are negative injectors. In
+  `PowerSystems.jl`, some components can accept data for both [`StaticInjection`](@ref) and
+  [`DynamicInjection`](@ref) models for both [static](@ref S) and [dynamic](@ref D) modeling.
 
 * *Interval*: The period of time between forecast initial times. In `PowerSystems.jl` all
   intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
-  simulation, the forecast is usually `Hour(24)`, in the example above, the
-  interval is `Hour(1)`.
+  simulation, the interval is usually `Hour(24)`.
 
 * *Initial time*: The first time-stamp in a forecast. See the article on [`Time Series Data`](@ref ts_data).
 
@@ -82,6 +80,8 @@ see the definition for [Static](@ref "S") data.
 * *OEL*:
 
 ## P
+
+* *PLL*: Phase-locked loop
 
 * *PSS*: Power System Stabilizer
 
@@ -114,15 +114,18 @@ see the definition for [Static](@ref "S") data.
 * *SIL*: Surge impedance loading
 
 * *States*: Correspond to the set of inputs, outputs or variables, that evolve dynamically in
-  `PowerSimulationsDynamics.jl`, commonly via a differential-algebraic system of equations.
-  In `PowerSystems.jl` a component associated to a `DynamicInjector` (for example an AVR) specify
-  the set of states that specific component requires to be modeled accurately.
+  [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/),
+  commonly via a differential-algebraic system of equations. In `PowerSystems.jl`, a component
+  associated to a `DynamicInjector` (for example an AVR) specifies the set of states that specific
+  component requires to be modeled accurately.
 
-* *Static*: Typically refers to quasi-static time series data or simulations where the power system 
-  and each of its components are assumed to be operating at a steady state equilibrium point at each 
-  time step. Static data can be used as the input to power flow models, including in e.g., 5-minute,
-  15-minute, or 1-hour time series simulations. For contrast, see the definition for
-  [Dynamic](@ref "D") data.
+* *Static*: Typically refers to steady state data or models where the power system
+  and each of its components are assumed to be operating at a steady state equilibrium point. This
+  includes both power flow data for a single time point simulation as well as quasi-static time
+  series data and models, where the power system is at an equilibrium point at each time step.
+  Static data can be used as the input to single time point power flow models and production
+  cost models with, for example, 5-minute, 15-minute, or 1-hour [Resolution](@ref R).
+  For contrast, see the definition for [Dynamic](@ref D) data.
 
 * *STAB*: Speed Sensitive Stabilizing PSS Model
 
@@ -131,3 +134,12 @@ see the definition for [Static](@ref "S") data.
 * *VSCDCLine*: Voltage-Source Converter Direct Current Line
 
 * *VSM*:
+
+## Z
+
+* *ZIP load*: A ZIP load model accounts for the voltage-dependency of a load and is primarily used
+  for dynamics modeling. It includes three kinds of load: constant impedance (Z), constant current (I),
+  and constant power (P), though many dynamics models just use the constant impedance model.
+  [`StandardLoad`](@ref) and [`ExponentialLoad`](@ref) are both ZIP load models:
+  [`StandardLoad`](@ref) breaks up the load into each of its three components, while
+  [`ExponentialLoad`](@ref) expresses the load as an exponential equation. 

@@ -183,6 +183,13 @@ end
           UnitSystem.SYSTEM_BASE
     @test get_power_units(FuelCurve(zero(InputOutputCurve), UnitSystem.DEVICE_BASE, 1.0)) ==
           UnitSystem.DEVICE_BASE
+
+    @test get_vom_cost(cc) == LinearCurve(0.0)
+    @test get_vom_cost(fc) == LinearCurve(0.0)
+    @test get_vom_cost(CostCurve(zero(InputOutputCurve), LinearCurve(1.0, 2.0))) ==
+          LinearCurve(1.0, 2.0)
+    @test get_vom_cost(FuelCurve(zero(InputOutputCurve), 1.0, LinearCurve(3.0, 4.0))) ==
+          LinearCurve(3.0, 4.0)
 end
 
 @testset "Test market bid cost interface" begin

@@ -8,7 +8,7 @@ function Line(
     r,
     x,
     b,
-    rate,
+    rating,
     angle_limits::Float64,
 )
     return Line(
@@ -20,7 +20,7 @@ function Line(
         r,
         x,
         b,
-        rate,
+        rating,
         (min = -angle_limits, max = angle_limits),
     )
 end
@@ -54,7 +54,7 @@ function ACBus(
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(
+function ConstantReserve(
     name,
     contributingdevices::IS.FlattenIteratorWrapper,
     timeframe,
@@ -62,7 +62,7 @@ function StaticReserve(
     time_series,
     internal,
 )
-    return StaticReserve(
+    return ConstantReserve(
         name,
         collect(contributingdevices),
         timeframe,
@@ -150,8 +150,10 @@ function EnergyReservoirStorage(
     available::Bool,
     bus,
     prime_mover_type,
-    initial_energy,
-    state_of_charge_limits,
+    storage_technology_type,
+    storage_capacity,
+    storage_level_limits,
+    initial_storage_capacity_level,
     rating,
     active_power,
     input_active_power_limits,
@@ -171,8 +173,10 @@ function EnergyReservoirStorage(
         available,
         bus,
         prime_mover_type,
-        initial_energy,
-        state_of_charge_limits,
+        storage_technology_type,
+        storage_capacity,
+        storage_level_limits,
+        initial_storage_capacity_level,
         rating,
         active_power,
         input_active_power_limits,
@@ -181,10 +185,10 @@ function EnergyReservoirStorage(
         reactive_power,
         reactive_power_limits,
         base_power,
-        StorageCost(),
-        services,
-        dynamic_injector,
-        ext,
-        internal,
+        StorageCost();
+        services = services,
+        dynamic_injector = dynamic_injector,
+        ext = ext,
+        internal = internal,
     )
 end
