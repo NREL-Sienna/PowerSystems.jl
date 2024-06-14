@@ -59,19 +59,16 @@ sys
 ```
 Notice that `System` now shows a summary of components in the system.
 
-Now, let's create two other buses:
+Let's create a second bus:
 ```@repl basics
 bus2 = ACBus(2, "bus2", ACBusTypes.PV, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0)
-bus3 = ACBus(3, "bus3", ACBusTypes.PQ, 0.0, 1.0, (min = 0.9, max = 1.05), 110.0)
 ```
-What's different about these buses? `bus2` is
-[a bus with a generator](@ref acbustypes_list), and `bus3` is a load bus with 110
-kV base voltage.
+Notice that we've defined this bus with [power and voltage variables,](@ref acbustypes_list)
+in case we do a power flow.
 
-Let's also add these to our `System`, using [`add_components!`](@ref) to add them
-at the same time:
+Let's also add this to our `System`:
 ```@repl basics
-add_components!(sys, [bus2, bus3])
+add_component!(sys, bus2)
 ```
 
 Now, let's use [`show_components`](@ref) to verify some basic information about
@@ -80,7 +77,7 @@ the buses:
 show_components(sys, ACBus)
 ```
 
-### Adding Transmission Lines
+### Adding a Transmission Line
 Let's connect our buses. We'll add a transmission [`Line`](@ref) between `bus1` and `bus2`: 
 ```@repl basics
 line = Line(
@@ -99,24 +96,9 @@ line = Line(
 Note that we also had to define an [`Arc`](@ref) in the process to define the connection between
 the two buses.
 
-Finally, we'll add a [transformer](@ref Transformer2W) between our 230 kV `bus2` and 110 kV `bus3`:
+Let's also add this to our `System`:
 ```@repl basics
-transformer = Transformer2W(
-        "transformer1",
-        true,
-        0.0,
-        0.0,
-        Arc(from = bus2, to = bus3),
-        0.00281,
-        0.0281,
-        0.01,
-        200.0,
-    )
-```
-
-Let's also add these to our `System`:
-```@repl basics
-add_components!(sys, [line, transformer])
+add_components!(sys, line)
 ```
 
 Finally, let's check our `System` summary to see all the network topology components we have added
@@ -125,23 +107,29 @@ are attached:
 sys
 ```
 
-### Adding Generators and Loads
+### Adding a Load
 
 Now that our network topology is complete, we'll start adding components that [inject](@ref I) or
 withdraw power from the network.
 
-We'll start with adding a 10 MW [load](@ref PowerLoad) to `bus3`:
+We'll start with defining a 10 MW [load](@ref PowerLoad) to `bus1`:
 ```@repl basics
-load = PowerLoad("load1", true, bus3, 0.0, 0.0, 10.0, 10.0, 0.0)
+load = PowerLoad("load1", true, bus1, 0.0, 0.0, 10.0, 10.0, 0.0)
+```
+And add it to the system:
+```@repl basics
+add_components(sys, load)
 ```
 
-We'll also add a 5 MW solar power plant and a 10 MW wind plant to `bus2`:
+### Adding Generators
+Finally, we'll add two generators: one renewable and one thermal.
+
+We'll add a 5 MW solar power plant to `bus2`:
 ```@repl basics
 solar = RenewableDispatch("solar1", true, bus2, 0.0, 0.0, 5.0, PrimeMovers.PVe, (min=0.0, max=0.25), 1.0, RenewableGenerationCost(nothing), 5.0)
-wind = RenewableDispatch("wind1", true, bus2, 0.0, 0.0, 10.0, PrimeMovers.WT, (min=0.0, max=0.5), 1.0, RenewableGenerationCost(nothing), 10.0)
 ```
-Note that we've used a generic renewable generator to model both wind and solar, but we
-can distinguish between them based on the [prime mover](@ref pm_list). 
+Note that we've used a generic renewable generator to model solar, but we
+can specify that it is solar through the [prime mover](@ref pm_list). 
 
 Finally, we'll also add a gas generator:
 ```@repl basics
@@ -162,9 +150,12 @@ gas = ThermalStandard(
         fuel = ThermalFuels.NATURAL_GAS)
 ```
 
-Again, we complete the step by adding all these new components to our `System`:
+Again, we complete the step by adding all these new components :
+
+This time, let's add these components to our `System` using [`add_components!`](@ref)
+to add them at the same time:
 ```@repl basics
-add_components!(sys, [load, solar, wind, gas])
+add_components!(sys, [solar, gas])
 ```
 
 ### Exploring the System
@@ -181,7 +172,6 @@ Now, let's use [`show_components`](@ref) again to look at all our generators:
 ```@repl basics
 show_components(sys, Generator)
 ```
-
 
 ### Next Steps
 
