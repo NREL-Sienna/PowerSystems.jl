@@ -104,7 +104,7 @@ function _show_compact(io::IO, ::MIME"text/plain", curve::CostCurve)
         io,
         "$(nameof(typeof(curve))) with power_units $(curve.power_units), vom_cost $(curve.vom_cost), and value_curve:\n  ",
     )
-    vc_printout = sprint(show, "text/plain", curve.value_curve)  # Capture the value_curve `show` so we can indent it
+    vc_printout = sprint(show, "text/plain", curve.value_curve; context = io)  # Capture the value_curve `show` so we can indent it
     print(io, replace(vc_printout, "\n" => "\n  "))
 end
 
@@ -113,7 +113,7 @@ function _show_compact(io::IO, ::MIME"text/plain", curve::FuelCurve)
         io,
         "$(nameof(typeof(curve))) with power_units $(curve.power_units), fuel_cost $(curve.fuel_cost), vom_cost $(curve.vom_cost), and value_curve:\n  ",
     )
-    vc_printout = sprint(show, "text/plain", curve.value_curve)
+    vc_printout = sprint(show, "text/plain", curve.value_curve; context = io)
     print(io, replace(vc_printout, "\n" => "\n  "))
 end
 
@@ -121,7 +121,8 @@ function _show_expanded(io::IO, ::MIME"text/plain", curve::ProductionVariableCos
     print(io, "$(nameof(typeof(curve))):")
     for field_name in fieldnames(typeof(curve))
         val = getproperty(curve, field_name)
-        val_printout = replace(sprint(show, "text/plain", val), "\n" => "\n  ")
+        val_printout =
+            replace(sprint(show, "text/plain", val; context = io), "\n" => "\n  ")
         print(io, "\n  $(field_name): $val_printout")
     end
 end
