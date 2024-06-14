@@ -86,7 +86,7 @@ function calculate_thermal_limits!(branch, basemva::Float64)
     if get_rating(branch) < 0.0
         @error "PowerSystems does not support negative line rates"
         is_valid = false
-    elseif get_rate(branch) == 0.0
+    elseif get_rating(branch) == 0.0
         @warn "Data for branch $(summary(branch)) rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
             PS_MAX_LOG
         if get_angle_limits(branch) == get_angle_limits(Line(nothing))
