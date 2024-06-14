@@ -81,6 +81,14 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["utils/print.jl"]
+Public = true
+Private = false
+Filter = t -> t ∉ [System]
+```
+
 ## Additional Component Methods
 
 ```@autodocs
