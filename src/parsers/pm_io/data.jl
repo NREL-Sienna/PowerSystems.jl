@@ -1450,7 +1450,7 @@ function check_reference_bus(data::Dict{String, <:Any})
                 "no reference bus found, setting bus $(gen_bus) as reference based on generator $(big_gen["index"])"
             )
         else
-            (bus_item, state) = Base.iterate(value(data["bus"]))
+            (bus_item, state) = Base.iterate(values(data["bus"]))
             bus_item.second["bus_type"] = 3
             @warn(
                 "no reference bus found, setting bus $(bus_item.second["index"]) as reference"
