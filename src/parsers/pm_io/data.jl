@@ -1451,9 +1451,9 @@ function check_reference_bus(data::Dict{String, <:Any})
             )
         else
             (bus_item, state) = Base.iterate(values(data["bus"]))
-            bus_item.second["bus_type"] = 3
+            bus_item["bus_type"] = 3
             @warn(
-                "no reference bus found, setting bus $(bus_item.second["index"]) as reference"
+                "no reference bus found, setting bus $(bus_item["index"]) as reference"
             )
         end
     end
