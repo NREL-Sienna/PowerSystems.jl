@@ -4,6 +4,31 @@ function _validate_market_bid_cost(cost, context)
         StackTraces.stacktrace()[2].func, context, MarketBidCost, cost))
 end
 
+# VALIDATORS
+function _validate_reserve_demand_curve(cost, name)
+    !(cost isa CostCurve{PiecewiseIncrementalCurve}) && throw(
+        ArgumentError(
+            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
+        ),
+    )
+    value_curve = get_value_curve(cost)
+    function_data = get_function_data(value_curve)
+    x_coords = get_x_coords(function_data)
+    slopes = get_y_coords(function_data)
+    if first(x_coords) != 0
+        error(
+            "Reserve demand curve from $name is starting at $(first(x_coords)) and must start at zero.",
+        )
+    end
+    for ix in 1:(length(slopes) - 1)
+        if slopes[ix + 1] > slopes[ix]
+            error(
+                "Reserve demand curve from $name has increasing derivatives and should be non-increasing.",
+            )
+        end
+    end
+end
+
 function _validate_fuel_curve(component::Component)
     op_cost = get_operation_cost(component)
     var_cost = get_variable(op_cost)
@@ -263,6 +288,24 @@ function set_variable_cost!(
     # TODO what type checking should be enforced on this time series?
     to_set = _process_set_cost(Any, Any, sys, component, data)
     set_variable!(component, to_set)
+end
+
+"""
+Adds fixed energy market bids to the ReserveDemandCurve.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::ReserveDemandCurve`: the curve
+- `time_series_data::CostCurve{PiecewiseIncrementalCurve}
+"""
+function set_variable_cost!(
+    ::System,
+    component::ReserveDemandCurve,
+    data::CostCurve{PiecewiseIncrementalCurve},
+)
+    name = get_name(component)
+    _validate_reserve_demand_curve(data, name)
+    set_variable!(component, data)
 end
 
 "Set the fuel cost of the component's variable cost, which must be a `FuelCurve`."

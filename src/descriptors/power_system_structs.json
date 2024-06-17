@@ -4506,9 +4506,9 @@
             "fields": [
                 {
                     "name": "variable",
-                    "comment": "Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter",
+                    "comment": "Create this object with `variable` = `nothing`, then add assign a cost curve or time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, TimeSeriesKey}"
+                    "data_type": "Union{Nothing, TimeSeriesKey, CostCurve{PiecewiseIncrementalCurve}}"
                 },
                 {
                     "null_value": "init",

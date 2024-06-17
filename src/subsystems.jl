@@ -199,7 +199,13 @@ function _check_branch_consistency(sys::System, branch::AreaInterchange)
         msg;
         symmetric_diff = false,
     )
-    _check_subsystem_assignments(sys, branch, get_to_area(branch), msg; symmetric_diff = false)
+    _check_subsystem_assignments(
+        sys,
+        branch,
+        get_to_area(branch),
+        msg;
+        symmetric_diff = false,
+    )
 end
 
 function _check_subcomponent_consistency(sys::System, component::StaticInjectionSubsystem)
