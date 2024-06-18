@@ -1,21 +1,21 @@
 """
-    @kwdef mutable struct RenewableGenerationCost <: OperationalCost
-        variable::CostCurve
-        curtailment_cost::CostCurve
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
 
-Data Structure for the Operational Cost of Renewable Power Plants which includes the
-variable cost of energy (like a PPA) and the cost of curtailing power. For example,
-curtailment Costs can be used to represent the loss of tax incentives.
+    RenewableGenerationCost(variable, curtailment_cost)
+    RenewableGenerationCost(variable; curtailment_cost)
+    RenewableGenerationCost(; variable, curtailment_cost)
 
-# Arguments
-- `variable::CostCurve`: Variable cost.
-- `curtailment_cost::CostCurve`: Input/output cost of curtailing power.
+An operational cost of renewable generators which includes the variable cost of energy
+(like a [PPA](@ref P)) and the cost of curtailing power. For example, curtailment costs
+can be used to represent the loss of tax incentives.
+
+The `variable` cost is a required parameter, but `zero(CostCurve)` can be used to set it to 0.
 """
 @kwdef mutable struct RenewableGenerationCost <: OperationalCost
-    "variable cost"
+    "Variable cost represented as a [`CostCurve`](@ref)"
     variable::CostCurve
-    "curtailment cost"
+    "(default of 0) Cost of curtailing power represented as a [`CostCurve`](@ref)"
     curtailment_cost::CostCurve = zero(CostCurve)
 end
 

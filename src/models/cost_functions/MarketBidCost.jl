@@ -1,38 +1,33 @@
 """
-    @kwdef mutable struct MarketBidCost <: OperationalCost
-        no_load_cost::Float64
-        start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
-        shut_down::Float64
-        incremental_offer_curves::Union{Nothing, TimeSeriesKey, PiecewiseLinearData}  # TODO update docs given struct
-        decremental_offer_curves::Union{Nothing, TimeSeriesKey, PiecewiseLinearData}
-        ancillary_service_offers::Vector{Service}
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
 
-Data Structure Operational Cost to reflect market bids of energy and ancilliary services for any asset.
+    MarketBidCost(no_load_cost, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
+    MarketBidCost(; no_load_cost, start_up, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
+    MarketBidCost(no_load_cost, start_up::Real, shut_down, incremental_offer_curves, decremental_offer_curves, ancillary_service_offers)
+
+An operating cost for market bids of energy and ancilliary services for any asset.
 Compatible with most US Market bidding mechanisms that support demand and generation side.
-
-# Arguments
-- `no_load_cost::Float64`: no load cost
-- `start_up::NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}`: start-up cost at different stages of the thermal cycle. Warm is also refered as intermediate in some markets
-- `shut_down::Float64`: shut-down cost, validation range: `(0, nothing)`, action if invalid: `warn`
-- `incremental_offer_curves::Union{Nothing, TimeSeriesKey, PiecewiseLinearData}`: Sell Offer Curves data, can be a time series or a fixed PiecewiseLinearData
-- `decremental_offer_curves::Union{Nothing, TimeSeriesKey, PiecewiseLinearData}`: Buy Offer Curves data, can be a time series or a fixed PiecewiseLinearData
-- `ancillary_service_offers::Vector{Service}`: Bids for the ancillary services
 """
 @kwdef mutable struct MarketBidCost <: OperationalCost
+    "No load cost"
     no_load_cost::Union{TimeSeriesKey, Float64}
-    """start-up cost at different stages of the thermal cycle.
-    Warm is also referred to as intermediate in some markets"""
+    "Start-up cost at different stages of the thermal cycle as the unit cools after a 
+    shutdown (e.g., *hot*, *warm*, or *cold* starts). Warm is also referred to as
+    intermediate in some markets. Can also accept a single value if there is only one
+    start-up cost"
     start_up::Union{TimeSeriesKey, StartUpStages}
-    "shut-down cost"
+    "Shut-down cost"
     shut_down::Float64
-    "Variable Cost TimeSeriesKey"
+    "Sell Offer Curves data, which can be a time series or a [`CostCurve`](@ref) using
+    [`PiecewiseIncrementalCurve`](@ref)"
     incremental_offer_curves::Union{
         Nothing,
         TimeSeriesKey,
         CostCurve{PiecewiseIncrementalCurve},
     } = nothing
-    "Variable Cost TimeSeriesKey"
+    "Buy Offer Curves data, can be a time series or a [`CostCurve`](@ref) using
+    [`PiecewiseIncrementalCurve`](@ref)"
     decremental_offer_curves::Union{
         Nothing,
         TimeSeriesKey,

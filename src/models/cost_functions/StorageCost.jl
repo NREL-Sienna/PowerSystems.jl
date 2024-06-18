@@ -1,43 +1,32 @@
 const STORAGE_OPERATION_MODES = NamedTuple{(:charge, :discharge), NTuple{2, Float64}}
 
 """
-    @kwdef mutable struct StorageCost <: OperationalCost
-        charge_variable_cost::CostCurve
-        discharge_variable_cost::CostCurve
-        fixed::Float64
-        start_up::Union{STORAGE_OPERATION_MODES, Float64}
-        shut_down::Float64
-        energy_shortage_cost::Float64
-        energy_surplus_cost::Float64
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
 
-Data Structure for Operational Cost Data like variable cost and start - stop costs and energy storage cost.
-This data structure is not intended to represent market storage systems market operations like the submission of
-buy/sell bids.
+    StorageCost(charge_variable_cost, discharge_variable_cost, fixed, start_up, shut_down, energy_shortage_cost, energy_surplus_cost)
+    StorageCost(; charge_variable_cost, discharge_variable_cost, fixed, start_up, shut_down, energy_shortage_cost, energy_surplus_cost)
 
-# Arguments
-- `charge_variable_cost::CostCurve`: variable cost represented as a CostCurve
-- `discharge_variable_cost::CostCurve`: variable cost represented as a CostCurve
-- `fixed::Float64`: fixed cost of operating the storage system
-- `start_up::Union{STORAGE_OPERATION_MODES, Float64}`: start-up cost, validation range:, action if invalid
-- `shut_down::Float64`: shut-down cost, validation range: action if invalid
-- `energy_shortage_cost::Float64`: Cost incurred by the model for being short of the energy target.
-- `energy_surplus_cost::Float64`: Cost incurred by the model for surplus energy stored.
+An operational cost for storage units including fixed costs and variable costs to charge
+or discharge.
+
+This data structure is not intended to represent market storage systems market operations
+like the submission of buy/sell bids -- see [`MarketBidCost`](@ref) instead.
 """
 @kwdef mutable struct StorageCost <: OperationalCost
-    "charge variable cost"
+    "(default of 0) Variable cost of charging represented as a [`CostCurve`](@ref)"
     charge_variable_cost::CostCurve = zero(CostCurve)
-    "discharge variable cost"
+    "(default of 0) Variable cost of discharging represented as a [`CostCurve`](@ref)"
     discharge_variable_cost::CostCurve = zero(CostCurve)
-    "fixed cost"
+    "(default: 0) Fixed cost of operating the storage system"
     fixed::Float64 = 0.0
-    "start-up cost"
+    "(default: 0) Start-up cost"
     start_up::Union{STORAGE_OPERATION_MODES, Float64} = 0.0
-    "shut-down cost"
+    "(default: 0) Shut-down cost"
     shut_down::Float64 = 0.0
-    "Cost incurred by the model for being short of the energy target."
+    "(default: 0) Cost incurred by the model for being short of the energy target"
     energy_shortage_cost::Float64 = 0.0
-    "Cost incurred by the model for surplus energy stored."
+    "(default: 0) Cost incurred by the model for surplus energy stored"
     energy_surplus_cost::Float64 = 0.0
 end
 

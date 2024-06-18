@@ -44,12 +44,6 @@ definitions:
 RenewableGenerationCost(variable = CostCurve(value_curve = LinearCurve(22.0)))
 ```
 
-!!! tip
-    Note that most of these operational costs and value curves have keyword based
-    constructors using [@kwdef](https://docs.julialang.org/en/v1.9-dev/base/base/#Base.@kwdef),
-    so you only need to populate the data that you have. In this case, we ignore the
-    `curtailment_cost` parameter for [`RenewableGenerationCost`](@ref).
-
 ## Example 2: A Thermal Generator
 
 We have a thermal generating unit that has a heat rate of 7 GJ/MWh at 100 MW and 9 GJ/MWh at
