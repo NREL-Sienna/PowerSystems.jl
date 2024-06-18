@@ -989,6 +989,13 @@ function remove_component!(
 end
 
 """
+Check to see if the component of type T exists.
+"""
+function has_component(sys::System, T::Type{<:Component})
+    return IS.has_component(sys.data, T)
+end
+
+"""
 Check to see if the component of type T with name exists.
 """
 function has_component(sys::System, T::Type{<:Component}, name::AbstractString)

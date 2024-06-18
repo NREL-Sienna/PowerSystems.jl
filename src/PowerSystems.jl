@@ -250,7 +250,6 @@ export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
-#export Transfer
 export ConstantReserveGroup
 export ConstantReserveNonSpinning
 export VariableReserveNonSpinning
@@ -406,18 +405,6 @@ export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
-export set_droop!
-export set_participation_factor!
-export set_inertia!
-export set_reserve_limit_up!
-export set_reserve_limit_dn!
-export set_cost!
-export get_droop
-export get_inertia
-export get_reserve_limit_up
-export get_reserve_limit_dn
-export get_participation_factor
-export get_cost
 export get_units_base
 export get_runchecks
 export get_thermal_unit
