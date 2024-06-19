@@ -26,6 +26,10 @@ RenewableGenerationCost(::Nothing) = RenewableGenerationCost(zero(CostCurve))
 
 """Get [`RenewableGenerationCost`](@ref) `variable`."""
 get_variable(value::RenewableGenerationCost) = value.variable
+"""Get [`RenewableGenerationCost`](@ref) `curtailment_cost`."""
+get_curtailment_cost(value::RenewableGenerationCost) = value.curtailment_cost
 
 """Set [`RenewableGenerationCost`](@ref) `variable`."""
 set_variable!(value::RenewableGenerationCost, val) = value.variable = val
+"""Set [`RenewableGenerationCost`](@ref) `curtailment_cost`."""
+set_curtailment_cost!(value::RenewableGenerationCost, val) = value.curtailment_cost = val
