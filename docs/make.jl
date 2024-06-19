@@ -55,7 +55,7 @@ pages["Model Library"] = make_model_library(
         Topology,
         StaticInjection,
         Service,
-        Branch,
+        Branch
     ],
     exceptions = [PSY.DynamicComponent,
                   PSY.ActivePowerControl,
@@ -71,9 +71,14 @@ pages["Model Library"] = make_model_library(
         "Dynamic Generator" => "model_library/dynamic_generator.md",
         ],
         "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"],
-        "Costs" => ["Operating Costs" => "model_library/costs.md",
-        "Variable Cost Curves" => "model_library/cost_curves.md"
-        ]
+        "Operating Costs" => ["ThermalGenerationCost" =>"model_library/thermal_generation_cost.md",
+        "HydroGenerationCost" =>"model_library/hydro_generation_cost.md",
+        "RenewableGenerationCost" =>"model_library/renewable_generation_cost.md",
+        "StorageCost" =>"model_library/storage_cost.md",
+        "LoadCost" =>"model_library/load_cost.md",
+        "MarketBidCost" =>"model_library/market_bid_cost.md"],
+        "Cost Curves" => ["Variable Cost Curves" => "model_library/cost_curves.md",
+        "Value Curves" => "model_library/value_curves.md"]
         )
 )
 

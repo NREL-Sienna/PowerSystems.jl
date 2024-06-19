@@ -1,4 +1,14 @@
-""" Supertype for operational cost representation in the model"""
+"""
+Supertype for operational cost representations
+
+Current concrete types include:
+- [`ThermalGenerationCost`](@ref)
+- [`HydroGenerationCost`](@ref)
+- [`RenewableGenerationCost`](@ref)
+- [`StorageCost`](@ref)
+- [`LoadCost`](@ref)
+- [`MarketBidCost`](@ref)
+"""
 abstract type OperationalCost <: DeviceParameter end
 
 IS.serialize(val::OperationalCost) = IS.serialize_struct(val)

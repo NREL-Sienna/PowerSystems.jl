@@ -8,7 +8,7 @@ using PowerSystems #hide
 ```
 
 To begin, the user must make 2 or 3 decisions before defining the operating cost:
-1. Select an appropriate [`OperationalCost`](@ref) from the [Operating Costs](@ref cost_library)
+1. Select an appropriate [`OperationalCost`](@ref) from the [`OperationalCost`](@ref)
     options. In general, each operating cost has parameters to define fixed and variable costs.
     To be able to define an `OperationalCost`, you must first select a curve to represent the
     variable cost(s).

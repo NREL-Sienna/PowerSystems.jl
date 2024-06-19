@@ -1316,7 +1316,7 @@
                     "name": "operation_cost",
                     "null_value": "LoadCost(nothing)",
                     "data_type": "Union{LoadCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of interrupting load"
+                    "comment": "[`OperationalCost`](@ref) of interrupting load"
                 },
                 {
                     "name": "services",
@@ -2926,7 +2926,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "storage_target",
@@ -3104,7 +3104,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "services",
@@ -3354,7 +3354,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "pump_efficiency",
@@ -3497,7 +3497,7 @@
                     "name": "operation_cost",
                     "null_value": "RenewableGenerationCost(nothing)",
                     "data_type": "Union{RenewableGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -3744,7 +3744,7 @@
                     "name": "operation_cost",
                     "null_value": "ThermalGenerationCost(nothing)",
                     "data_type": "Union{ThermalGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -3969,7 +3969,7 @@
                     "name": "operation_cost",
                     "null_value": "ThermalGenerationCost(nothing)",
                     "data_type": "Union{ThermalGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -4175,7 +4175,7 @@
                 },
                 {
                     "name": "operation_cost",
-                    "comment": "[Operating cost](@ref cost_library) of storage",
+                    "comment": "[`OperationalCost`](@ref) of storage",
                     "null_value": "StorageCost(nothing)",
                     "data_type": "StorageCost",
                     "default": "StorageCost(nothing)"
