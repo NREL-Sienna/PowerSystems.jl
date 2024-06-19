@@ -61,7 +61,8 @@ pages["Model Library"] = make_model_library(
                   PSY.ActivePowerControl,
                   PSY.ReactivePowerControl,
                   PSY.DynamicBranch,
-                  PSY.HybridSystem
+                  PSY.HybridSystem,
+                  PSY.OperationalCost
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
