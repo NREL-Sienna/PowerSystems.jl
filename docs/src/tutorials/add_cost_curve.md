@@ -60,7 +60,15 @@ Following the decision steps above:
 This time, we'll define each step individually, beginning with the heat rate curve:
 ```@repl costcurve
 heat_rate_curve = PiecewisePointCurve([(100.0, 7.0), (200.0, 9.0)])
+```
+
+Use the heat rate to define the fuel curve, including the cost of fuel:
+```@repl costcurve
 fuel_curve = FuelCurve(value_curve = heat_rate_curve, fuel_cost = 20.0)
+```
+
+Finally, define the full operating cost:
+```@repl costcurve
 cost = ThermalGenerationCost(variable = fuel_curve, fixed = 6.0, start_up = 2000.0, shut_down = 1000.0)
 ```
 This `OperationalCost` can be used when defining a component or added to an existing component using
