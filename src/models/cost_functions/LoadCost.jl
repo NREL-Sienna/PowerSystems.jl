@@ -21,14 +21,12 @@ end
 # Constructor for demo purposes; non-functional.
 LoadCost(::Nothing) = LoadCost(zero(CostCurve), 0.0)
 
-"""Get [`ThermalGenerationCost`](@ref) `variable`."""
+"""Get [`LoadCost`](@ref) `variable`."""
 get_variable(value::LoadCost) = value.variable
-"""Get [`ThermalGenerationCost`](@ref) `fixed`."""
+"""Get [`LoadCost`](@ref) `fixed`."""
 get_fixed(value::LoadCost) = value.fixed
-"""Get [`ThermalGenerationCost`](@ref) `start_up`."""
 
-"""Set [`ThermalGenerationCost`](@ref) `variable`."""
+"""Set [`LoadCost`](@ref) `variable`."""
 set_variable!(value::LoadCost, val) = value.variable = val
-"""Set [`ThermalGenerationCost`](@ref) `fixed`."""
+"""Set [`LoadCost`](@ref) `fixed`."""
 set_fixed!(value::LoadCost, val) = value.fixed = val
-"""Set [`ThermalGenerationCost`](@ref) `start_up`."""
