@@ -934,9 +934,10 @@ function create_pwl_cost(
         var_cost = PiecewisePointCurve(PiecewiseLinearData(cost_pairs))
     elseif length(cost_pairs) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = LinearCurve(cost_pairs[1].y)
+        var_cost = LinearCurve(cost_pairs[1].y/cost_pairs[1].x)
     else
-        @warn "Unable to calculate variable cost for $(gen.name)" cost_pairs maxlog = 5
+        @warn "$(gen.name) has no costs defined, using 0.0" cost_pairs maxlog = 5
+        var_cost = LinearCurve(0.0)
     end
 
     return var_cost
