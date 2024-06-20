@@ -1,9 +1,9 @@
-# Getting Started
+# Creating Your First System
 
 Welcome to PowerSystems.jl!
 
 In this tutorial, we will create a power system and add some components to it,
-including some nodes, a transmission line, transformer, load, and both renewable
+including some nodes, a transmission line, load, and both renewable
 and fossil fuel generators. 
 
 ### Setup 
@@ -98,7 +98,7 @@ the two buses.
 
 Let's also add this to our `System`:
 ```@repl basics
-add_components!(sys, line)
+add_component!(sys, line)
 ```
 
 Finally, let's check our `System` summary to see all the network topology components we have added
@@ -118,7 +118,7 @@ load = PowerLoad("load1", true, bus1, 0.0, 0.0, 10.0, 10.0, 0.0)
 ```
 And add it to the system:
 ```@repl basics
-add_components(sys, load)
+add_component!(sys, load)
 ```
 
 ### Adding Generators
@@ -128,13 +128,14 @@ We'll add a 5 MW solar power plant to `bus2`:
 ```@repl basics
 solar = RenewableDispatch("solar1", true, bus2, 0.0, 0.0, 5.0, PrimeMovers.PVe, (min=0.0, max=0.25), 1.0, RenewableGenerationCost(nothing), 5.0)
 ```
-Note that we've used a generic renewable generator to model solar, but we
-can specify that it is solar through the [prime mover](@ref pm_list). 
+Note that we've used a generic [renewable generator](@ref RenewableDispatch) to model
+solar, but we can specify that it is solar through the [prime mover](@ref pm_list). 
 
-Finally, we'll also add a gas generator:
+Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard):
 ```@repl basics
 gas = ThermalStandard(
         "gas1",
+        true,
         true,
         bus2,
         0.0,
@@ -144,33 +145,64 @@ gas = ThermalStandard(
         nothing,
         (up=5.0, down=5.0),
         ThermalGenerationCost(nothing),
-        30.0;
-        must_run = false,
-        prime_mover_type = PrimeMovers.CC,
-        fuel = ThermalFuels.NATURAL_GAS)
+        30.0,
+        (up=8.0, down=8.0),
+        false,
+        PrimeMovers.CC,
+        ThermalFuels.NATURAL_GAS)
 ```
 
-Again, we complete the step by adding all these new components :
-
 This time, let's add these components to our `System` using [`add_components!`](@ref)
-to add them at the same time:
+to add them both at the same time:
 ```@repl basics
 add_components!(sys, [solar, gas])
 ```
 
 ### Exploring the System
 
-You have built a power system including buses, a transmission line, a transformer,
-a load, and different types of generators. 
+You have built a power system including buses, a transmission line, a load, and different
+types of generators. 
 
 Remember that we can see a summary of our `System` using the print statement:
 ```@repl basics
 sys
 ```
 
-Now, let's use [`show_components`](@ref) again to look at all our generators:
+Now, let's double-check some of our data by retrieving it from the `System`.
+Let's use [`show_components`](@ref) to get an overview of our renewable generators:
 ```@repl basics
-show_components(sys, Generator)
+show_components(sys, RenewableDispatch)
+```
+
+We just have the one renewable generator named `solar1`. Use [`get_component`](@ref) to
+retrieve it by name:
+```@repl basics
+retrieved_component = get_component(RenewableDispatch, sys, "solar1");
+```
+
+Let's double-check what type of renewable generator this is using a `get_` function:
+```@repl basics
+get_prime_mover(retrieved_component)
+```
+Verify that this a `PVe`, or solar photovoltaic, generator.
+
+Let's also use a `get_` function to double-check its rating is 5.0 MW:
+```@repl basics
+get_rating(retrieved_component)
+```
+
+What other data can you retrieve? Try changing the `get_` function to look up data from
+other fields.
+
+Finally, let's just print the component again in the REPL:
+```@repl basics
+retrieved_component
+```
+
+Notice that at the bottom it says: `has_time_series: false`. Let's also directly check
+whether this solar generator currently has any time series data:
+```@repl basics
+retrieved_component
 ```
 
 ### Next Steps

@@ -1,23 +1,20 @@
-# Get component data
+# Getting Components and Their Data
+
+In this tutorial, we will explore the data in a `System`, including looking at a summary of
+the system and getting both its components and their data. We will also start checking for
+time-series data, which we will explore more in the tutorial on
+[Working with Time Series Data](@ref).
+
+In [Creating Your First System](@ref), we created a basic `System` with nodes, a transmission
+line, and a few generators. Let's recreate that system if you don't have it already: 
+
 
 ```@setup get_component_data
-using PowerSystems #hide
-BASE_DIR = abspath(joinpath(dirname(Base.find_package("PowerSystems")), "..")); #hide
-include(joinpath(BASE_DIR, "test", "data_5bus_pu.jl")); #.jl file containing 5-bus system data
-nodes_5 = nodes5(); # function to create 5-bus buses 
-thermal_generators5(nodes_5); # function to create thermal generators in 5-bus buses 
-renewable_generators5(nodes_5); # function to create renewable generators in 5-bus buses
-loads5(nodes_5); # function to create the loads
-branches5(nodes_5); # function to create the branches
-sys = System(
-           100.0,
-           nodes_5,
-           vcat(
-             thermal_generators5(nodes_5),
-             renewable_generators5(nodes_5)),
-             loads5(nodes_5),
-             branches5(nodes_5),
-       ); #hide
+using PowerSystems;
+sys = System(100.0);
+bus1 = ACBus(1, "bus1", ACBusTypes.REF, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0);
+bus2 = ACBus(2, "bus2", ACBusTypes.PV, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0);
+
 ```
 
 PowerSystems provides functional interfaces to all data. The following examples outline

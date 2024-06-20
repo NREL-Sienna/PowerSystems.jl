@@ -493,6 +493,9 @@ function set_units_base_system!(system::System, settings::UnitSystem)
     return
 end
 
+"""
+Get the system's [unit base](@ref per_unit))
+"""
 function get_units_base(system::System)
     return string(system.units_settings.unit_system)
 end
