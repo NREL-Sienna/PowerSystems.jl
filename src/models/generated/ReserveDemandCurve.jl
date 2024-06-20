@@ -6,7 +6,7 @@ This file is auto-generated. Do not edit.
 
 """
     mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
-        variable::Union{Nothing, TimeSeriesKey}
+        variable::Union{Nothing, TimeSeriesKey, CostCurve{PiecewiseIncrementalCurve}}
         name::String
         available::Bool
         time_frame::Float64
@@ -24,7 +24,7 @@ The ORDC is modeled as a discretized set of `(Reserve capacity (MW), Price (\$/M
 When defining the reserve, the `ReserveDirection` must be specified to define this as a [`ReserveUp`](@ref), [`ReserveDown`](@ref), or [`ReserveSymmetric`](@ref)
 
 # Arguments
-- `variable::Union{Nothing, TimeSeriesKey}`: Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter
+- `variable::Union{Nothing, TimeSeriesKey, CostCurve{PiecewiseIncrementalCurve}}`: Create this object with `variable` = `nothing`, then add assign a cost curve or time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
@@ -35,8 +35,8 @@ When defining the reserve, the `ReserveDirection` must be specified to define th
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ReserveDemandCurve{T <: ReserveDirection} <: Reserve{T}
-    "Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter"
-    variable::Union{Nothing, TimeSeriesKey}
+    "Create this object with `variable` = `nothing`, then add assign a cost curve or time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter"
+    variable::Union{Nothing, TimeSeriesKey, CostCurve{PiecewiseIncrementalCurve}}
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"

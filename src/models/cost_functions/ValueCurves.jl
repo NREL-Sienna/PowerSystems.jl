@@ -1,4 +1,8 @@
-"Type that represents an abstract cost curve without units on the cost"
+"""
+Supertype that represents a unitless cost curve
+
+Concrete options are [listed here.](@ref value_curve_library)
+"""
 abstract type ValueCurve{T <: FunctionData} end
 
 # JSON SERIALIZATION
@@ -11,8 +15,8 @@ get_function_data(curve::ValueCurve) = curve.function_data
 """
 An input-output curve, directly relating the production quantity to the cost: `y = f(x)`.
 Can be used, for instance, in the representation of a [`CostCurve`](@ref) where `x` is MW
-and `y` is \$/hr, or in the representation of a [`FuelCurve`](@ref) where `x` is MW and `y`
-is fuel/hr.
+and `y` is currency/hr, or in the representation of a [`FuelCurve`](@ref) where `x` is MW
+and `y` is fuel/hr.
 """
 @kwdef struct InputOutputCurve{
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData},
@@ -24,8 +28,8 @@ end
 """
 An incremental (or 'marginal') curve, relating the production quantity to the derivative of
 cost: `y = f'(x)`. Can be used, for instance, in the representation of a [`CostCurve`](@ref)
-where `x` is MW and `y` is \$/MWh, or in the representation of a [`FuelCurve`](@ref) where
-`x` is MW and `y` is fuel/MWh.
+where `x` is MW and `y` is currency/MWh, or in the representation of a [`FuelCurve`](@ref)
+where `x` is MW and `y` is fuel/MWh.
 """
 @kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
               ValueCurve{T}
@@ -38,7 +42,7 @@ end
 """
 An average rate curve, relating the production quantity to the average cost rate from the
 origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
-[`CostCurve`](@ref) where `x` is MW and `y` is \$/MWh, or in the representation of a
+[`CostCurve`](@ref) where `x` is MW and `y` is currency/MWh, or in the representation of a
 [`FuelCurve`](@ref) where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
@@ -169,3 +173,29 @@ IncrementalCurve(data::AverageRateCurve) = IncrementalCurve(InputOutputCurve(dat
 is_convex(curve::InputOutputCurve) = is_convex(get_function_data(curve))
 "Calculate the convexity of the underlying data"
 is_convex(curve::ValueCurve) = is_convex(InputOutputCurve(curve))
+
+# PRINTING
+# For cost aliases, return the alias name; otherwise, return the type name without the parameter
+simple_type_name(curve::ValueCurve) =
+    string(is_cost_alias(curve) ? typeof(curve) : nameof(typeof(curve)))
+
+function Base.show(io::IO, ::MIME"text/plain", curve::InputOutputCurve)
+    print(io, simple_type_name(curve))
+    is_cost_alias(curve) && print(io, " (a type of $InputOutputCurve)")
+    print(io, " with function: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end
+
+function Base.show(io::IO, ::MIME"text/plain", curve::IncrementalCurve)
+    print(io, simple_type_name(curve))
+    print(io, " where initial value is $(get_initial_input(curve))")
+    print(io, " and derivative function f is: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end
+
+function Base.show(io::IO, ::MIME"text/plain", curve::AverageRateCurve)
+    print(io, simple_type_name(curve))
+    print(io, " where initial value is $(get_initial_input(curve))")
+    print(io, " and average rate function f is: ")
+    show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
+end

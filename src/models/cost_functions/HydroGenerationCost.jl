@@ -1,24 +1,23 @@
 """
-    mutable struct HydroGenerationCost <: OperationalCost
-        variable::ProductionVariableCostCurve
-        fixed::Float64
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
 
-Data Structure for the Operational Cost of Hydro Power Plants which includes fixed and
-variable cost. Variable Costs can be used to represent the cost of curtailment if negative
+    HydroGenerationCost(variable, fixed)
+    HydroGenerationCost(; variable, fixed)
+
+An operational cost of a hydropower generator which includes fixed and
+variable cost. Variable costs can be used to represent the cost of curtailment if negative
 values are used or the opportunity cost of water if the costs are positive. It also supports
-fuel curves to model specific water intake.
+fuel curves to model specific water intake. 
 
-# Arguments
-- `variable::ProductionVariableCostCurve`: Production variable cost represented by a `FuelCurve`,
-  where the fuel is water, or a `CostCurve` in currency.
-- `fixed::Union{Nothing, Float64}`: Fixed cost of keeping the unit online. For some cost
-  represenations this field can be duplicative.
+The `variable` cost is a required parameter, but `zero(CostCurve)` can be used to set it to 0.
 """
 @kwdef mutable struct HydroGenerationCost <: OperationalCost
-    "variable cost"
+    "Production variable cost represented by a `FuelCurve`, where the fuel is water,
+    or a `CostCurve` in currency."
     variable::ProductionVariableCostCurve
-    "fixed cost"
+    "(default: 0) Fixed cost of keeping the unit online. For some cost represenations this
+    field can be duplicative"
     fixed::Float64
 end
 

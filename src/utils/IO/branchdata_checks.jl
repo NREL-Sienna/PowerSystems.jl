@@ -83,24 +83,23 @@ end
 
 function calculate_thermal_limits!(branch, basemva::Float64)
     is_valid = true
-    if get_rate(branch) < 0.0
+    if get_rating(branch) < 0.0
         @error "PowerSystems does not support negative line rates"
         is_valid = false
-
-    elseif get_rate(branch) == 0.0
-        @warn "Data for line rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
+    elseif get_rating(branch) == 0.0
+        @warn "Data for branch $(summary(branch)) rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
             PS_MAX_LOG
         if get_angle_limits(branch) == get_angle_limits(Line(nothing))
-            branch.rate =
+            branch.rating =
                 min(calculate_sil(branch, basemva), linerate_calculation(branch)) / basemva
         else
-            branch.rate = linerate_calculation(branch) / basemva
+            branch.rating = linerate_calculation(branch) / basemva
         end
 
-    elseif get_rate(branch) > linerate_calculation(branch)
-        mult = get_rate(branch) / linerate_calculation(branch)
+    elseif get_rating(branch) > linerate_calculation(branch)
+        mult = get_rating(branch) / linerate_calculation(branch)
         if mult > 50
-            @warn "Data for line rating is $(mult) times larger than the base MVA for the system" maxlog =
+            @warn "Data for branch $(summary(branch)) rating is $(mult) times larger than the base MVA for the system" maxlog =
                 PS_MAX_LOG
         end
     end
@@ -137,16 +136,16 @@ function check_sil_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     SIL_levels = collect(keys(SIL_STANDARDS))
-    rate = get_rate(line)
+    rating = get_rating(line)
     closestV = findmin(abs.(SIL_levels .- vrated))
     closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
     is_valid = true
 
     # Assuming that the rate is in pu
-    if (rate >= closestSIL.max / basemva)
+    if (rating >= closestSIL.max / basemva)
         # rate outside of expected SIL range
         sil = calculate_sil(line, basemva)
-        @warn "Rate $(round(rate*basemva; digits=2)) MW for $(line.name) is larger than the max expected in the range of $(closestSIL)." maxlog =
+        @warn "Rating $(round(rating*basemva; digits=2)) MW for $(line.name) is larger than the max expected in the range of $(closestSIL)." maxlog =
             PS_MAX_LOG
         is_valid = false
     end

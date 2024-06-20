@@ -90,26 +90,6 @@ function handle_component_removal_from_subsystem!(
     end
 end
 
-function handle_component_addition_to_subsystem!(
-    sys::System,
-    subsystem_name::AbstractString,
-    component::RegulationDevice,
-)
-    if !is_assigned_to_subsystem(sys, component.device, subsystem_name)
-        add_component_to_subsystem!(sys, subsystem_name, component.device)
-    end
-end
-
-function handle_component_removal_from_subsystem!(
-    sys::System,
-    subsystem_name::AbstractString,
-    component::RegulationDevice,
-)
-    if is_assigned_to_subsystem(sys, component.device, subsystem_name)
-        remove_component_from_subsystem!(sys, subsystem_name, component.device)
-    end
-end
-
 """
 Return a Generator of all components in the subsystem.
 
@@ -215,11 +195,17 @@ function _check_branch_consistency(sys::System, branch::AreaInterchange)
     _check_subsystem_assignments(
         sys,
         branch,
-        get_area_from(arc),
+        get_from_area(branch),
         msg;
         symmetric_diff = false,
     )
-    _check_subsystem_assignments(sys, branch, get_area_to(arc), msg; symmetric_diff = false)
+    _check_subsystem_assignments(
+        sys,
+        branch,
+        get_to_area(branch),
+        msg;
+        symmetric_diff = false,
+    )
 end
 
 function _check_subcomponent_consistency(sys::System, component::StaticInjectionSubsystem)
@@ -232,16 +218,6 @@ function _check_subcomponent_consistency(sys::System, component::StaticInjection
             symmetric_diff = true,
         )
     end
-end
-
-function _check_subcomponent_consistency(sys::System, component::RegulationDevice)
-    _check_subsystem_assignments(
-        sys,
-        component,
-        component.device,
-        "RegulationDevice and its device must be assigned to the same subsystems.";
-        symmetric_diff = true,
-    )
 end
 
 function _check_topological_consistency(sys::System, component::Component)

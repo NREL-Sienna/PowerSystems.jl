@@ -381,7 +381,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 b = (from = b, to = b),
-                rate = branch.rate,
+                rating = branch.rate,
                 angle_limits = (
                     min = branch.min_angle_limits,
                     max = branch.max_angle_limits,
@@ -397,7 +397,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                rate = branch.rate,
+                rating = branch.rate,
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(;
@@ -410,7 +410,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
-                rate = branch.rate,
+                rating = branch.rate,
             )
         elseif branch_type == PhaseShiftingTransformer
             # TODO create PhaseShiftingTransformer
@@ -1320,8 +1320,6 @@ end
 
 function make_storage(data::PowerSystemTableData, gen, bus, storage)
     @debug "Making Storage" _group = IS.LOG_GROUP_PARSING storage.name
-    state_of_charge_limits =
-        (min = storage.min_storage_capacity, max = storage.storage_capacity)
     input_active_power_limits = (
         min = storage.input_active_power_limit_min,
         max = storage.input_active_power_limit_max,
@@ -1342,8 +1340,12 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         bus = bus,
         prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
         storage_technology_type = StorageTech.OTHER_CHEM,
-        initial_energy = storage.energy_level,
-        state_of_charge_limits = state_of_charge_limits,
+        storage_capacity = storage.storage_capacity,
+        storage_level_limits = (
+            min = storage.min_storage_capacity / storage.storage_capacity,
+            max = 1.0,
+        ),
+        initial_storage_capacity_level = storage.energy_level / storage.storage_capacity,
         rating = storage.rating,
         active_power = storage.active_power,
         input_active_power_limits = input_active_power_limits,

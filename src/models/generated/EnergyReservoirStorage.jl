@@ -22,8 +22,8 @@ This file is auto-generated. Do not edit.
         reactive_power::Float64
         reactive_power_limits::Union{Nothing, MinMax}
         base_power::Float64
-        conversion_factor::Float64
         operation_cost::StorageCost
+        conversion_factor::Float64
         storage_target::Float64
         cycle_limits::Int
         services::Vector{Service}
@@ -53,8 +53,8 @@ This is suitable for modeling storage charging and discharging with average effi
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `operation_cost::StorageCost`: (default: `StorageCost(nothing)`) [`OperationalCost`](@ref) of storage
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen
-- `operation_cost::StorageCost`: (default: `StorageCost(nothing)`) [Operating cost](@ref cost_library) of storage
 - `storage_target::Float64`: (default: `0.0`) Storage target at the end of simulation as ratio of storage capacity
 - `cycle_limits::Int`: (default: `1e4`) Storage Maximum number of cycles per year
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -95,10 +95,10 @@ mutable struct EnergyReservoirStorage <: Storage
     reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
+    "[`OperationalCost`](@ref) of storage"
+    operation_cost::StorageCost
     "Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen"
     conversion_factor::Float64
-    "[Operating cost](@ref cost_library) of storage"
-    operation_cost::StorageCost
     "Storage target at the end of simulation as ratio of storage capacity"
     storage_target::Float64
     "Storage Maximum number of cycles per year"
@@ -113,12 +113,12 @@ mutable struct EnergyReservoirStorage <: Storage
     internal::InfrastructureSystemsInternal
 end
 
-function EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, conversion_factor=1.0, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, conversion_factor, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function EnergyReservoirStorage(; name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, conversion_factor=1.0, operation_cost=StorageCost(nothing), storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, conversion_factor, operation_cost, storage_target, cycle_limits, services, dynamic_injector, ext, internal, )
+function EnergyReservoirStorage(; name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost=StorageCost(nothing), conversion_factor=1.0, storage_target=0.0, cycle_limits=1e4, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    EnergyReservoirStorage(name, available, bus, prime_mover_type, storage_technology_type, storage_capacity, storage_level_limits, initial_storage_capacity_level, rating, active_power, input_active_power_limits, output_active_power_limits, efficiency, reactive_power, reactive_power_limits, base_power, operation_cost, conversion_factor, storage_target, cycle_limits, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -140,8 +140,8 @@ function EnergyReservoirStorage(::Nothing)
         reactive_power=0.0,
         reactive_power_limits=(min=0.0, max=0.0),
         base_power=0.0,
-        conversion_factor=0.0,
         operation_cost=StorageCost(nothing),
+        conversion_factor=0.0,
         storage_target=0.0,
         cycle_limits=0,
         services=Device[],
@@ -165,7 +165,7 @@ get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, value.sto
 """Get [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::EnergyReservoirStorage) = value.storage_level_limits
 """Get [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
-get_initial_storage_capacity_level(value::EnergyReservoirStorage) = get_value(value, value.initial_storage_capacity_level)
+get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initial_storage_capacity_level
 """Get [`EnergyReservoirStorage`](@ref) `rating`."""
 get_rating(value::EnergyReservoirStorage) = get_value(value, value.rating)
 """Get [`EnergyReservoirStorage`](@ref) `active_power`."""
@@ -182,10 +182,10 @@ get_reactive_power(value::EnergyReservoirStorage) = get_value(value, value.react
 get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, value.reactive_power_limits)
 """Get [`EnergyReservoirStorage`](@ref) `base_power`."""
 get_base_power(value::EnergyReservoirStorage) = value.base_power
-"""Get [`EnergyReservoirStorage`](@ref) `conversion_factor`."""
-get_conversion_factor(value::EnergyReservoirStorage) = value.conversion_factor
 """Get [`EnergyReservoirStorage`](@ref) `operation_cost`."""
 get_operation_cost(value::EnergyReservoirStorage) = value.operation_cost
+"""Get [`EnergyReservoirStorage`](@ref) `conversion_factor`."""
+get_conversion_factor(value::EnergyReservoirStorage) = value.conversion_factor
 """Get [`EnergyReservoirStorage`](@ref) `storage_target`."""
 get_storage_target(value::EnergyReservoirStorage) = value.storage_target
 """Get [`EnergyReservoirStorage`](@ref) `cycle_limits`."""
@@ -212,7 +212,7 @@ set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capaci
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
-set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = set_value(value, val)
+set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
 """Set [`EnergyReservoirStorage`](@ref) `rating`."""
 set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, val)
 """Set [`EnergyReservoirStorage`](@ref) `active_power`."""
@@ -229,10 +229,10 @@ set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power =
 set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`EnergyReservoirStorage`](@ref) `base_power`."""
 set_base_power!(value::EnergyReservoirStorage, val) = value.base_power = val
-"""Set [`EnergyReservoirStorage`](@ref) `conversion_factor`."""
-set_conversion_factor!(value::EnergyReservoirStorage, val) = value.conversion_factor = val
 """Set [`EnergyReservoirStorage`](@ref) `operation_cost`."""
 set_operation_cost!(value::EnergyReservoirStorage, val) = value.operation_cost = val
+"""Set [`EnergyReservoirStorage`](@ref) `conversion_factor`."""
+set_conversion_factor!(value::EnergyReservoirStorage, val) = value.conversion_factor = val
 """Set [`EnergyReservoirStorage`](@ref) `storage_target`."""
 set_storage_target!(value::EnergyReservoirStorage, val) = value.storage_target = val
 """Set [`EnergyReservoirStorage`](@ref) `cycle_limits`."""

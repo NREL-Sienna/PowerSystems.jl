@@ -1316,7 +1316,7 @@
                     "name": "operation_cost",
                     "null_value": "LoadCost(nothing)",
                     "data_type": "Union{LoadCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of interrupting load"
+                    "comment": "[`OperationalCost`](@ref) of interrupting load"
                 },
                 {
                     "name": "services",
@@ -2926,7 +2926,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "storage_target",
@@ -3104,7 +3104,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "services",
@@ -3354,7 +3354,7 @@
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "pump_efficiency",
@@ -3497,7 +3497,7 @@
                     "name": "operation_cost",
                     "null_value": "RenewableGenerationCost(nothing)",
                     "data_type": "Union{RenewableGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -3744,7 +3744,7 @@
                     "name": "operation_cost",
                     "null_value": "ThermalGenerationCost(nothing)",
                     "data_type": "Union{ThermalGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -3969,7 +3969,7 @@
                     "name": "operation_cost",
                     "null_value": "ThermalGenerationCost(nothing)",
                     "data_type": "Union{ThermalGenerationCost, MarketBidCost}",
-                    "comment": "[Operating cost](@ref cost_library) of generation"
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "base_power",
@@ -4095,8 +4095,7 @@
                         "min": 0,
                         "max": 1
                     },
-                    "validation_action": "error",
-                    "needs_conversion": true
+                    "validation_action": "error"
                 },
                 {
                     "name": "rating",
@@ -4175,18 +4174,18 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "operation_cost",
+                    "comment": "[`OperationalCost`](@ref) of storage",
+                    "null_value": "StorageCost(nothing)",
+                    "data_type": "StorageCost",
+                    "default": "StorageCost(nothing)"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"
-                },
-                {
-                    "name": "operation_cost",
-                    "comment": "[Operating cost](@ref cost_library) of storage",
-                    "null_value": "StorageCost(nothing)",
-                    "data_type": "StorageCost",
-                    "default": "StorageCost(nothing)"
                 },
                 {
                     "name": "storage_target",
@@ -4507,9 +4506,9 @@
             "fields": [
                 {
                     "name": "variable",
-                    "comment": "Create this object with `variable` = `nothing`, then add assign a time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter",
+                    "comment": "Create this object with `variable` = `nothing`, then add assign a cost curve or time-series of `variable_cost` using the [`set_variable_cost!`](@ref) function, which will automatically update this parameter",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, TimeSeriesKey}"
+                    "data_type": "Union{Nothing, TimeSeriesKey, CostCurve{PiecewiseIncrementalCurve}}"
                 },
                 {
                     "null_value": "init",
@@ -16233,61 +16232,5 @@
         }
     ],
     "struct_validation_descriptors": [
-        {
-            "struct_name": "RegulationDevice",
-            "fields": [
-                {
-                    "name": "device"
-                },
-                {
-                    "name": "droop",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    }
-                },
-                {
-                    "name": "participation_factor",
-                    "data_type": "UpDown"
-                },
-                {
-                    "name": "reserve_limit_dn",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    }
-                },
-                {
-                    "name": "reserve_limit_up",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    }
-                },
-                {
-                    "name": "inertia",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    }
-                },
-                {
-                    "name": "cost",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    }
-                },
-                {
-                    "name": "internal",
-                    "data_type": "InfrastructureSystems.InfrastructureSystemsInternal"
-                }
-            ]
-        }
     ]
 }

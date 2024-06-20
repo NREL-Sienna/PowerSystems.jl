@@ -51,7 +51,7 @@ generation and/or energy storage.
 - `interconnection_efficiency::Union{Nothing, NamedTuple{(:in, :out), Tuple{Float64, Float64}},}`: Efficiency [0, 1.0] at the grid interconnection to model losses `in` and `out` of the common DC-side conversion
 - `services::Vector{Service}`: (optional) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (optional) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct HybridSystem <: StaticInjectionSubsystem
@@ -200,7 +200,7 @@ get_electric_load(value::HybridSystem) = value.electric_load
 get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
 get_renewable_unit(value::HybridSystem) = value.renewable_unit
-"""Get [`HybridSystem`](@ref) `rating`."""
+"""Get [`HybridSystem`](@ref) `interconnection_rating`."""
 get_interconnection_rating(value::HybridSystem) =
     get_value(value, value.interconnection_rating)
 """get [`HybridSystem`](@ref) interconnection impedance"""
@@ -236,7 +236,7 @@ set_available!(value::HybridSystem, val) = value.available = val
 set_status!(value::HybridSystem, val) = value.status = val
 """Set [`HybridSystem`](@ref) `bus`."""
 set_bus!(value::HybridSystem, val) = value.bus = val
-"""Set [`HybridSystem`](@ref) `rating`."""
+"""Set [`HybridSystem`](@ref) `interconnection_rating`."""
 set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `active_power`."""
 set_active_power!(value::HybridSystem, val) = value.active_power = val

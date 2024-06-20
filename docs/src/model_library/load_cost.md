@@ -1,8 +1,8 @@
-# Variable Cost Curves
+# LoadCost
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["cost_functions/variable_cost.jl"]
+Pages   = ["cost_functions/LoadCost.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

@@ -52,7 +52,7 @@ For hydro generators with pumped storage, see [`HydroPumpedStorage`](@ref)
 - `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
 - `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
-- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [Operating cost](@ref cost_library) of generation
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `storage_target::Float64`: (default: `1.0`) Storage target at the end of simulation as a fraction of storage capacity
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `status::Bool`: (default: `false`) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
@@ -93,7 +93,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     inflow::Float64
     "Initial storage capacity in the reservoir (units can be p.u-hr or m^3)"
     initial_storage::Float64
-    "[Operating cost](@ref cost_library) of generation"
+    "[`OperationalCost`](@ref) of generation"
     operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
     "Storage target at the end of simulation as a fraction of storage capacity"
     storage_target::Float64

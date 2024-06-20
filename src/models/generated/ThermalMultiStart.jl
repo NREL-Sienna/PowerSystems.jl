@@ -53,7 +53,7 @@ A thermal generator, such as a fossil fuel or nuclear generator, that can start-
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
 - `start_time_limits::Union{Nothing, StartUpStages}`: Time limits for start-up based on turbine temperature in hours
 - `start_types::Int`: Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*, validation range: `(1, 3)`
-- `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`: [Operating cost](@ref cost_library) of generation
+- `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`: [`OperationalCost`](@ref) of generation
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
@@ -94,7 +94,7 @@ mutable struct ThermalMultiStart <: ThermalGen
     start_time_limits::Union{Nothing, StartUpStages}
     "Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*"
     start_types::Int
-    "[Operating cost](@ref cost_library) of generation"
+    "[`OperationalCost`](@ref) of generation"
     operation_cost::Union{ThermalGenerationCost, MarketBidCost}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64

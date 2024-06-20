@@ -1,8 +1,8 @@
-# Regulation Device
+# StorageCost
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["models/regulation_device.jl"]
+Pages   = ["cost_functions/StorageCost.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

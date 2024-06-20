@@ -9,6 +9,11 @@
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test zero(io_quadratic) == InputOutputCurve(LinearFunctionData(0, 0))
     @test zero(InputOutputCurve) == InputOutputCurve(LinearFunctionData(0, 0))
+    @test PSY.is_cost_alias(io_quadratic) == PSY.is_cost_alias(typeof(io_quadratic)) == true
+    @test repr(io_quadratic) == sprint(show, io_quadratic) ==
+          "QuadraticCurve(3.0, 2.0, 1.0)"
+    @test sprint(show, "text/plain", io_quadratic) ==
+          "QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 3.0 x^2 + 2.0 x + 1.0"
 
     io_linear = InputOutputCurve(LinearFunctionData(2, 1))
     @test io_linear isa InputOutputCurve{LinearFunctionData}
@@ -19,6 +24,11 @@
           IncrementalCurve(LinearFunctionData(0, 2), 1.0)
     @test AverageRateCurve(io_linear) ==
           AverageRateCurve(LinearFunctionData(0, 2), 1.0)
+    @test PSY.is_cost_alias(io_linear) == PSY.is_cost_alias(typeof(io_linear)) == true
+    @test repr(io_linear) == sprint(show, io_linear) ==
+          "LinearCurve(2.0, 1.0)"
+    @test sprint(show, "text/plain", io_linear) ==
+          "LinearCurve (a type of InputOutputCurve) with function: f(x) = 2.0 x + 1.0"
 
     io_piecewise = InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test io_piecewise isa InputOutputCurve{PiecewiseLinearData}
@@ -28,6 +38,11 @@
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test AverageRateCurve(io_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    @test PSY.is_cost_alias(io_piecewise) == PSY.is_cost_alias(typeof(io_piecewise)) == true
+    @test repr(io_piecewise) == sprint(show, io_piecewise) ==
+          "PiecewisePointCurve([(x = 1.0, y = 6.0), (x = 3.0, y = 9.0), (x = 5.0, y = 13.0)])"
+    @test sprint(show, "text/plain", io_piecewise) ==
+          "PiecewisePointCurve (a type of InputOutputCurve) with function: piecewise linear y = f(x) connecting points:\n  (x = 1.0, y = 6.0)\n  (x = 3.0, y = 9.0)\n  (x = 5.0, y = 13.0)"
 
     # IncrementalCurve
     inc_linear = IncrementalCurve(LinearFunctionData(6, 2), 1.0)
@@ -42,6 +57,11 @@
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test zero(inc_linear) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(IncrementalCurve) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
+    @test PSY.is_cost_alias(inc_linear) == PSY.is_cost_alias(typeof(inc_linear)) == false
+    @test repr(inc_linear) == sprint(show, inc_linear) ==
+          "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0)"
+    @test sprint(show, "text/plain", inc_linear) ==
+          "IncrementalCurve where initial value is 1.0 and derivative function f is: f(x) = 6.0 x + 2.0"
 
     inc_piecewise = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test inc_piecewise isa IncrementalCurve{PiecewiseStepData}
@@ -51,6 +71,12 @@
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test AverageRateCurve(inc_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    @test PSY.is_cost_alias(inc_piecewise) == PSY.is_cost_alias(typeof(inc_piecewise)) ==
+          true
+    @test repr(inc_piecewise) == sprint(show, inc_piecewise) ==
+          "PiecewiseIncrementalCurve(6.0, [1.0, 3.0, 5.0], [1.5, 2.0])"
+    @test sprint(show, "text/plain", inc_piecewise) ==
+          "PiecewiseIncrementalCurve where initial value is 6.0 and derivative function f is: f(x) =\n  1.5 for x in [1.0, 3.0)\n  2.0 for x in [3.0, 5.0)"
 
     # AverageRateCurve
     ar_linear = AverageRateCurve(LinearFunctionData(3, 2), 1.0)
@@ -65,6 +91,11 @@
           IncrementalCurve(LinearFunctionData(6, 2), 1.0)
     @test zero(ar_linear) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
+    @test PSY.is_cost_alias(ar_linear) == PSY.is_cost_alias(typeof(ar_linear)) == false
+    @test repr(ar_linear) == sprint(show, ar_linear) ==
+          "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0)"
+    @test sprint(show, "text/plain", ar_linear) ==
+          "AverageRateCurve where initial value is 1.0 and average rate function f is: f(x) = 3.0 x + 2.0"
 
     ar_piecewise = AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
     @test get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
@@ -73,6 +104,11 @@
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test IncrementalCurve(ar_piecewise) ==
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
+    @test PSY.is_cost_alias(ar_piecewise) == PSY.is_cost_alias(typeof(ar_piecewise)) == true
+    @test repr(ar_piecewise) == sprint(show, ar_piecewise) ==
+          "PiecewiseAverageCurve(6.0, [1.0, 3.0, 5.0], [3.0, 2.6])"
+    @test sprint(show, "text/plain", ar_piecewise) ==
+          "PiecewiseAverageCurve where initial value is 6.0 and average rate function f is: f(x) =\n  3.0 for x in [1.0, 3.0)\n  2.6 for x in [3.0, 5.0)"
 
     # Serialization round trip
     curves_by_type = [  # typeof() gives parameterized types
@@ -126,12 +162,34 @@ end
     @test zero(FuelCurve) ==
           FuelCurve(InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
 
+    @test repr(cc) == sprint(show, cc) ==
+          "CostCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 0.0)"
+    @test repr(fc) == sprint(show, fc) ==
+          "FuelCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 4.0, 0.0)"
+    @test sprint(show, "text/plain", cc) ==
+          sprint(show, "text/plain", cc; context = :compact => false) ==
+          "CostCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  vom_cost: 0.0"
+    @test sprint(show, "text/plain", fc) ==
+          sprint(show, "text/plain", fc; context = :compact => false) ==
+          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: 0.0"
+    @test sprint(show, "text/plain", cc; context = :compact => true) ==
+          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost 0.0, and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+    @test sprint(show, "text/plain", fc; context = :compact => true) ==
+          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost 0.0, and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+
     @test get_power_units(cc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(fc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(CostCurve(zero(InputOutputCurve), UnitSystem.SYSTEM_BASE)) ==
           UnitSystem.SYSTEM_BASE
     @test get_power_units(FuelCurve(zero(InputOutputCurve), UnitSystem.DEVICE_BASE, 1.0)) ==
           UnitSystem.DEVICE_BASE
+
+    @test get_vom_cost(cc) == LinearCurve(0.0)
+    @test get_vom_cost(fc) == LinearCurve(0.0)
+    @test get_vom_cost(CostCurve(zero(InputOutputCurve), LinearCurve(1.0, 2.0))) ==
+          LinearCurve(1.0, 2.0)
+    @test get_vom_cost(FuelCurve(zero(InputOutputCurve), 1.0, LinearCurve(3.0, 4.0))) ==
+          LinearCurve(3.0, 4.0)
 end
 
 @testset "Test market bid cost interface" begin
