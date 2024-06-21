@@ -129,16 +129,35 @@
 end
 
 @testset "Test cost aliases" begin
+    lc = LinearCurve(3.0, 5.0)
+    @test lc == InputOutputCurve(LinearFunctionData(3.0, 5.0))
     @test LinearCurve(3.0) == InputOutputCurve(LinearFunctionData(3.0, 0.0))
-    @test LinearCurve(3.0, 5.0) == InputOutputCurve(LinearFunctionData(3.0, 5.0))
-    @test QuadraticCurve(1.0, 1.0, 18.0) ==
-          InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
-    @test PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]) ==
+    @test get_proportional_term(lc) == 3.0
+    @test get_constant_term(lc) == 5.0
+
+    qc = QuadraticCurve(1.0, 2.0, 18.0)
+    @test qc == InputOutputCurve(QuadraticFunctionData(1.0, 2.0, 18.0))
+    @test get_quadratic_term(qc) == 1.0
+    @test get_proportional_term(qc) == 2.0
+    @test get_constant_term(qc) == 18.0
+
+    ppc = PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)])
+    @test ppc ==
           InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
-    @test PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]) ==
-          IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
-    @test PiecewiseAverageCurve(20.0, [1.0, 2.0, 3.0], [12.0, 10.0]) ==
-          AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
+    @test get_points(ppc) == [(x = 1.0, y = 20.0), (x = 2.0, y = 24.0), (x = 3.0, y = 30.0)]
+    @test get_x_coords(ppc) == [1.0, 2.0, 3.0]
+    @test get_y_coords(ppc) == [20.0, 24.0, 30.0]
+    @test get_slopes(ppc) == [4.0, 6.0]
+
+    pic = PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0])
+    @test pic == IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
+    @test get_x_coords(pic) == [1.0, 2.0, 3.0]
+    @test get_slopes(pic) == [4.0, 6.0]
+
+    pac = PiecewiseAverageCurve(20.0, [1.0, 2.0, 3.0], [12.0, 10.0])
+    @test pac == AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
+    @test get_x_coords(pac) == [1.0, 2.0, 3.0]
+    @test get_average_rates(pac) == [12.0, 10.0]
 end
 
 @testset "Test CostCurve and FuelCurve" begin
