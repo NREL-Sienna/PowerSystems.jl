@@ -49,13 +49,15 @@ export get_proportional_term
 export get_quadratic_term
 export get_constant_term
 export get_slopes
+export get_average_rates
 export get_x_lengths
 export is_convex
 export get_points
 export get_x_coords
 export get_y_coords
 
-export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export ValueCurve
+export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCostCurve, CostCurve, FuelCurve

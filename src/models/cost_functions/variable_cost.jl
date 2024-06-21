@@ -31,7 +31,7 @@ Base.hash(a::ProductionVariableCostCurve) = IS.hash_from_fields(a)
     @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
         value_curve::T
         power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-        vom_cost::Float64 = 0.0
+        vom_cost::LinearCurve = LinearCurve(0.0)
     end
 
 Direct representation of the variable operation cost of a power plant in currency. Composed
@@ -44,8 +44,8 @@ data. The default units for the x-axis are megawatts and can be specified with
     `ProductionVariableCostCurve`
   - `power_units::UnitSystem = UnitSystem.NATURAL_UNITS`: The units for the x-axis of the
     curve; defaults to natural units (megawatts)
-  - `vom_cost::Float64 = 0.0`: Additional proportional Variable Operation and Maintenance
-    cost in currency/(power_unit h)
+  - `vom_cost::LinearCurve = LinearCurve(0.0)`: Additional proportional Variable Operation
+    and Maintenance cost in currency/(power_unit h)
 """
 @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
@@ -75,7 +75,7 @@ Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
         value_curve::T
         power_units::UnitSystem = UnitSystem.NATURAL_UNITS
         fuel_cost::Union{Float64, TimeSeriesKey}
-        vom_cost::Float64 = 0.0
+        vom_cost::LinearCurve = LinearCurve(0.0)
     end
 
 Representation of the variable operation cost of a power plant in terms of fuel (MBTU,
@@ -90,8 +90,8 @@ The default units for the x-axis are megawatts and can be specified with `power_
     curve; defaults to natural units (megawatts)
   - `fuel_cost::Union{Float64, TimeSeriesKey}`: Either a fixed value for fuel cost or the
     key to a fuel cost time series
-  - `vom_cost::Float64 = 0.0`: Additional proportional Variable Operation and Maintenance
-    cost in currency/(power_unit h)
+  - `vom_cost::LinearCurve = LinearCurve(0.0)`: Additional proportional Variable Operation
+    and Maintenance cost in currency/(power_unit h)
 """
 @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
