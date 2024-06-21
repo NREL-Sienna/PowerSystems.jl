@@ -81,6 +81,24 @@ _convert_op_cost(::Val{:ThermalStandard}, ::Val{:ThreePartCost}, op_cost::Dict) 
         op_cost["shut_down"],
     )
 
+function _convert_op_cost(::Val{:RenewableDispatch}, ::Val{:TwoPartCost}, op_cost::Dict)
+    (op_cost["fixed"] != 0) && throw(
+        ArgumentError("Not implemented for nonzero fixed cost, got $(op_cost["fixed"])"),
+    )
+    return RenewableGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])))
+end
+
+_convert_op_cost(::Val{:GenericBattery}, ::Val{:StorageManagementCost}, op_cost::Dict) =
+    StorageCost(;
+        charge_variable_cost = CostCurve(InputOutputCurve(op_cost["variable"])),
+        discharge_variable_cost = CostCurve(InputOutputCurve(op_cost["variable"])),
+        fixed = op_cost["fixed"],
+        start_up = float(op_cost["start_up"]),
+        shut_down = float(op_cost["shut_down"]),
+        energy_shortage_cost = op_cost["energy_shortage_cost"],
+        energy_surplus_cost = op_cost["energy_surplus_cost"],
+    )
+
 # TODO implement remaining _convert_op_cost methods
 
 function _convert_data!(
@@ -107,7 +125,19 @@ function _convert_data!(
         end
         if component["__metadata__"]["type"] ∈ ["BatteryEMS", "GenericBattery"]
             component["__metadata__"]["type"] = "EnergyReservoirStorage"
-            component["storage_technology_type"] = "StorageTech.OTHER_CHEM"
+            component["storage_technology_type"] = IS.serialize(StorageTech.OTHER_CHEM)
+            soc_min = component["state_of_charge_limits"]["min"]
+            soc_max = component["state_of_charge_limits"]["max"]
+            # Derive storage_capacity from old state of charge limits and normalize new
+            # state of charge limits, initial capacity accordingly
+            component["storage_capacity"] = soc_max
+            component["storage_level_limits"] =
+                Dict("min" => soc_min / soc_max, "max" => 1.0)
+            component["initial_storage_capacity_level"] =
+                component["initial_energy"] / soc_max
+        end
+        if haskey(component, "rate")  # Line, TapTransformer, etc.
+            component["rating"] = component["rate"]
         end
     end
     return
