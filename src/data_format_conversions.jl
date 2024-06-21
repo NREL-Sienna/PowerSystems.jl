@@ -128,13 +128,24 @@ function _convert_data!(
             component["storage_technology_type"] = IS.serialize(StorageTech.OTHER_CHEM)
             soc_min = component["state_of_charge_limits"]["min"]
             soc_max = component["state_of_charge_limits"]["max"]
-            # Derive storage_capacity from old state of charge limits and normalize new
-            # state of charge limits, initial capacity accordingly
-            component["storage_capacity"] = soc_max
-            component["storage_level_limits"] =
-                Dict("min" => soc_min / soc_max, "max" => 1.0)
-            component["initial_storage_capacity_level"] =
-                component["initial_energy"] / soc_max
+            if soc_max == 0.0
+                component["storage_capacity"] = 0.0
+                component["storage_level_limits"] = Dict("min" => 0.0, "max" => 1.0)
+                (component["initial_energy"] != 0.0) && throw(
+                    ArgumentError(
+                        "Maximum state of charge is zero but initial energy is not; cannot parse",
+                    ),
+                )
+                component["initial_storage_capacity_level"] = 0.0
+            else
+                # Derive storage_capacity from old state of charge limits and normalize new
+                # state of charge limits, initial capacity accordingly
+                component["storage_capacity"] = soc_max
+                component["storage_level_limits"] =
+                    Dict("min" => soc_min / soc_max, "max" => 1.0)
+                component["initial_storage_capacity_level"] =
+                    component["initial_energy"] / soc_max
+            end
         end
         if haskey(component, "rate")  # Line, TapTransformer, etc.
             component["rating"] = component["rate"]
