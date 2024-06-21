@@ -264,6 +264,7 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 
+export TimeSeriesAssociation
 export TimeSeriesData
 export StaticTimeSeries
 export Forecast
@@ -287,6 +288,7 @@ export get_dynamic_components
 export parse_file
 export open_time_series_store!
 export add_time_series!
+export bulk_add_time_series!
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -486,6 +488,7 @@ import InfrastructureSystems:
     StaticTimeSeriesCache,
     TimeSeriesKey,
     TimeSeriesCounts,
+    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,

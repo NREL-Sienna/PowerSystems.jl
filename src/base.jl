@@ -1242,8 +1242,34 @@ Add time series data to a component.
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_time_series!(sys::System, component::Component, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, component, time_series)
+function add_time_series!(
+    sys::System,
+    component::Component,
+    time_series::TimeSeriesData;
+    features...,
+)
+    return IS.add_time_series!(sys.data, component, time_series; features...)
+end
+
+"""
+Add many time series in bulk. This method is advantageous when adding thousands of time
+series arrays because of the overhead in writing the time series to the underlying storage.
+
+# Arguments
+- `sys::System`: system
+- `associations`: Iterable of TimeSeriesAssociation instances. Using a Vector is not
+  recommended. Pass a Generator or Iterator to avoid loading all time series data into
+  system memory at once.
+- `batch_size::Int`: Number of time series to add per batch.
+```
+
+"""
+function bulk_add_time_series!(
+    sys::System,
+    associations;
+    batch_size::Int = IS.ADD_TIME_SERIES_BATCH_SIZE,
+)
+    return IS.bulk_add_time_series!(sys.data, associations; batch_size = batch_size)
 end
 
 """
@@ -1254,8 +1280,8 @@ individually with the same data because in this case, only one time series array
 
 Throws ArgumentError if a component is not stored in the system.
 """
-function add_time_series!(sys::System, components, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, components, time_series)
+function add_time_series!(sys::System, components, time_series::TimeSeriesData; features...)
+    return IS.add_time_series!(sys.data, components, time_series; features...)
 end
 
 #=
