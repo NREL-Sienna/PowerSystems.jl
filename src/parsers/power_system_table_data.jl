@@ -949,19 +949,19 @@ function create_pwinc_cost(
     if length(cost_pairs) > 1
         x_points = getfield.(cost_pairs, :x)
         y_points = getfield.(cost_pairs, :y)
-        b = y_points[1] - y_points[2] * x_points[1]
-        fixed = (y_points[1] - y_points[2]) * x_points[1]
-
-        var_cost = PiecewiseIncrementalCurve(first(y_points) - b, x_points, y_points[2:end])
+        var_cost = PiecewiseIncrementalCurve(
+            first(y_points) * first(x_points),
+            x_points,
+            y_points[2:end],
+            )
     elseif length(cost_pairs) == 1
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = LinearCurve(cost_pairs[1].y)
-        fixed = 0.0
     else
         @warn "Unable to calculate variable cost for $(gen.name)" cost_pairs maxlog = 5
     end
 
-    return var_cost, fixed
+    return var_cost, 0.0
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
