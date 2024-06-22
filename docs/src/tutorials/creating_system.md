@@ -1,12 +1,13 @@
-# Creating Your First System
+# Create and Explore a Power `System`
 
 Welcome to PowerSystems.jl!
 
 In this tutorial, we will create a power system and add some components to it,
 including some nodes, a transmission line, load, and both renewable
-and fossil fuel generators. 
+and fossil fuel generators. Then we will retrieve data from the system and explore the
+system settings.
 
-### Setup 
+## Setup
 
 To get started, ensure you have followed the [installation instructions](@ref install).
 
@@ -20,7 +21,7 @@ Load the PowerSystems.jl package:
 using PowerSystems
 ```
 
-### Creating a Power `System`
+## Creating a Power `System`
 
 In PowerSystems.jl, data is held in a [`System`](@ref) that holds all of the individual components
 along with some metadata about the power system itself.
@@ -36,7 +37,7 @@ Notice that this system is a 60 Hz system with a base power of 100 MVA.
 
 Now, let's add some components to our system.
 
-### Adding Buses
+## Adding Buses
 
 We'll start by creating some buses. By referring to the documentation for
 [ACBus](@ref), notice that we need define some basic data, including the bus's
@@ -46,52 +47,77 @@ or reference bus](@ref acbustypes_list).
 Let's start with a reference bus:
 
 ```@repl basics
-bus1 = ACBus(1, "bus1", ACBusTypes.REF, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0)
+bus1 = ACBus(
+        number = 1,
+        name = "bus1",
+        bustype = ACBusTypes.REF,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.05),
+        base_voltage = 230.0
+        );
 ```
 This bus is on a 230 kV AC transmission network, with an allowable voltage range of
 0.9 to 1.05 p.u. We are assuming it is currently operating at 1.0 p.u. voltage and
 an angle of 0 radians. 
 
-Let's add this bus to our `System` with [`add_component!`](@ref):
+Let's add this bus to our `System` with [`add_component!`](@ref add_component!(::System, ::Component)):
 ```@repl basics
 add_component!(sys, bus1)
+```
+
+We can see the impact this has on the `System` simply by printing it:
+```@repl basics
 sys
 ```
 Notice that `System` now shows a summary of components in the system.
 
 Let's create a second bus:
 ```@repl basics
-bus2 = ACBus(2, "bus2", ACBusTypes.PV, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0)
+bus2 = ACBus(
+        number = 2,
+        name = "bus2",
+        bustype = ACBusTypes.PV,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.05),
+        base_voltage = 230.0
+        );
 ```
-Notice that we've defined this bus with [power and voltage variables,](@ref acbustypes_list)
-in case we do a power flow.
+Notice that we've defined this bus with [power and voltage variables](@ref acbustypes_list),
+suitable for power flow studies.
 
 Let's also add this to our `System`:
 ```@repl basics
 add_component!(sys, bus2)
 ```
 
-Now, let's use [`show_components`](@ref) to verify some basic information about
-the buses:
+Now, let's use [`show_components`](@ref) to quickly see some basic information about the buses:
 ```@repl basics
 show_components(sys, ACBus)
 ```
 
-### Adding a Transmission Line
-Let's connect our buses. We'll add a transmission [`Line`](@ref) between `bus1` and `bus2`: 
+## Adding a Transmission Line
+Let's connect our buses. We'll add a transmission [`Line`](@ref) between `bus1` and `bus2`. 
+
+!!! warning
+    When defining a line that isn't attached to a `System` yet, you must define the
+    thermal rating of the transmission line in per-unit using the base power of the
+    `System` you plan to connect it to -- in this case, 100 MVA.
+
 ```@repl basics
 line = Line(
-        "line1",
-        true,
-        0.0,
-        0.0,
-        Arc(from = bus1, to = bus2),
-        0.00281,
-        0.0281,
-        (from = 0.00356, to = 0.00356),
-        200.0,
-        (min = -0.7, max = 0.7),
-    )
+        name = "line1",
+        available = true,
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
+        arc = Arc(from = bus1, to = bus2),
+        r = 0.00281, # Per-unit
+        x = 0.0281, # Per-unit
+        b = (from = 0.00356, to = 0.00356), # Per-unit
+        rating = 2.0, # Line rating of 200 MVA / System base of 100 MVA
+        angle_limits = (min = -0.7, max = 0.7),
+    );
 ```
 Note that we also had to define an [`Arc`](@ref) in the process to define the connection between
 the two buses.
@@ -107,26 +133,55 @@ are attached:
 sys
 ```
 
-### Adding a Load
+## Adding Loads and Generators
 
 Now that our network topology is complete, we'll start adding components that [inject](@ref I) or
-withdraw power from the network.
+withdraw power from the network. 
+
+!!! warning
+    When you define components that aren't attached to a `System` yet, you must define
+    all fields related to power (with units such as MW, MVA, MVAR, or MW/min) in
+    per-unit using the `base_power` of the component.
 
 We'll start with defining a 10 MW [load](@ref PowerLoad) to `bus1`:
 ```@repl basics
-load = PowerLoad("load1", true, bus1, 0.0, 0.0, 10.0, 10.0, 0.0)
+load = PowerLoad(
+        name = "load1",
+        available = true,
+        bus = bus1,
+        active_power = 0.0, # Per-unitized by device base_power
+        reactive_power = 0.0, # Per-unitized by device base_power
+        base_power = 10.0, # MVA
+        max_active_power = 1.0, # Per-unitized by device base_power
+        max_reactive_power = 0.0
+        );
 ```
-And add it to the system:
+Notice that we defined the `max_active_power`, which is 10 MW, as 1.0 in per-unit using the
+`base_power` of 10 MVA. We've also used the `bus1` component itself to define where this
+load is located in the network.
+
+Now add the load to the system:
 ```@repl basics
 add_component!(sys, load)
 ```
 
-### Adding Generators
 Finally, we'll add two generators: one renewable and one thermal.
 
 We'll add a 5 MW solar power plant to `bus2`:
 ```@repl basics
-solar = RenewableDispatch("solar1", true, bus2, 0.0, 0.0, 5.0, PrimeMovers.PVe, (min=0.0, max=0.25), 1.0, RenewableGenerationCost(nothing), 5.0)
+solar = RenewableDispatch(
+        name = "solar1",
+        available = true,
+        bus = bus2,
+        active_power = 0.0, # Per-unitized by device base_power
+        reactive_power = 0.0, # Per-unitized by device base_power
+        rating = 1.0, # Per-unitized by device base_power
+        prime_mover_type = PrimeMovers.PVe,
+        reactive_power_limits = (min=0.0, max=0.05), # Per-unitized by device base_power
+        power_factor = 1.0,
+        operation_cost = RenewableGenerationCost(nothing),
+        base_power = 5.0 # MVA
+        );
 ```
 Note that we've used a generic [renewable generator](@ref RenewableDispatch) to model
 solar, but we can specify that it is solar through the [prime mover](@ref pm_list). 
@@ -134,22 +189,23 @@ solar, but we can specify that it is solar through the [prime mover](@ref pm_lis
 Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard):
 ```@repl basics
 gas = ThermalStandard(
-        "gas1",
-        true,
-        true,
-        bus2,
-        0.0,
-        0.0,
-        30.0,
-        (min=10.0, max=30.0),
-        nothing,
-        (up=5.0, down=5.0),
-        ThermalGenerationCost(nothing),
-        30.0,
-        (up=8.0, down=8.0),
-        false,
-        PrimeMovers.CC,
-        ThermalFuels.NATURAL_GAS)
+        name = "gas1",
+        available = true,
+        status = true,
+        bus = bus2,
+        active_power = 0.0, # Per-unitized by device base_power
+        reactive_power = 0.0, # Per-unitized by device base_power
+        rating = 1.0, # Per-unitized by device base_power
+        active_power_limits = (min=10.0, max=30.0), # Per-unitized by device base_power
+        reactive_power_limits = nothing, # Per-unitized by device base_power
+        ramp_limits = (up=5.0, down=5.0), # Per-unitized by device base_power
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = 30.0, # MVA
+        time_limits = (up=8.0, down=8.0),
+        must_run = false,
+        prime_mover_type = PrimeMovers.CC,
+        fuel = ThermalFuels.NATURAL_GAS
+        );
 ```
 
 This time, let's add these components to our `System` using [`add_components!`](@ref)
@@ -158,10 +214,10 @@ to add them both at the same time:
 add_components!(sys, [solar, gas])
 ```
 
-### Exploring the System
+## Explore the System and its Components
 
-You have built a power system including buses, a transmission line, a load, and different
-types of generators. 
+Congratulations! You have built a power system including buses, a transmission line, a
+load, and different types of generators. Now let's take a look around. 
 
 Remember that we can see a summary of our `System` using the print statement:
 ```@repl basics
@@ -169,7 +225,7 @@ sys
 ```
 
 Now, let's double-check some of our data by retrieving it from the `System`.
-Let's use [`show_components`](@ref) to get an overview of our renewable generators:
+Let's use [`show_components`](@ref) again to get an overview of our renewable generators:
 ```@repl basics
 show_components(sys, RenewableDispatch)
 ```
@@ -182,32 +238,89 @@ retrieved_component = get_component(RenewableDispatch, sys, "solar1");
 
 Let's double-check what type of renewable generator this is using a `get_` function:
 ```@repl basics
-get_prime_mover(retrieved_component)
+get_prime_mover_type(retrieved_component)
 ```
 Verify that this a `PVe`, or solar photovoltaic, generator.
 
-Let's also use a `get_` function to double-check its rating is 5.0 MW:
+Let's also use a `get_` function to double-check where this generator is connected in the
+transmission network:
 ```@repl basics
-get_rating(retrieved_component)
+get_bus(retrieved_component)
 ```
+See that the generator's bus is linked to the actual `bus2` component in our `System`.
 
 What other data can you retrieve? Try changing the `get_` function to look up data from
 other fields.
 
-Finally, let's just print the component again in the REPL:
+## Changing `System` Per-Unit Settings
+
+Let's use a `get_` function to look up the solar generator's `rating`:
 ```@repl basics
-retrieved_component
+get_rating(retrieved_component)
 ```
 
-Notice that at the bottom it says: `has_time_series: false`. Let's also directly check
-whether this solar generator currently has any time series data:
+!!! tip "Important"
+    When we defined the solar generator, we defined the rating
+    as 1.0 per-unit with a device `base_power` of 5.0 MVA. Notice that the rating now reads
+    0.05. After we attached this component to our `System`, its power data is being
+    returned to us in the `System`'s `units_base`.
+
+Let's double-check the `System`'s `units_base`: 
 ```@repl basics
-retrieved_component
+get_units_base(sys)
 ```
 
-### Next Steps
+`SYSTEM_BASE` means all power-related (MW, MVA, MVAR, MW/min) component data in
+the `System`, except for each component's `base_power`, is per-unitized by the
+system base power for consistency. 
+
+Check the `System`'s base_power again:
+```@repl basics
+get_base_power(sys)
+```
+Notice that when we called `get_rating` above, the solar generator's rating, 5.0 MW,
+is being returned as 0.05 = 5.0/100.0 using the system base power.
+
+Instead of using the `System` base power, let's view everything in MW -- or what we call
+"NATURAL_UNITS" in PowerSystems.
+
+Change the `System`'s unit system:
+```@repl basics
+set_units_base_system!(sys, "NATURAL_UNITS")
+```
+
+Now retrieve the solar generator's rating again:
+```@repl basics
+get_rating(retrieved_component)
+```
+Notice that the value is now its "natural" value, 5.0 MW.
+
+Finally, let's change the `System`'s unit system to the final option, "DEVICE_BASE":
+```@repl basics
+set_units_base_system!(sys, "DEVICE_BASE")
+```
+
+And retrieve the solar generator's rating once more:
+```@repl basics
+get_rating(retrieved_component)
+```
+See that now the data is now 1.0 (5.0 MW per-unitized by the generator (i.e., the device's)
+`base_power` of 5.0 MVA), which is the format we used to originally define the device.   
+
+Recall that if you ever need to check a `System`'s settings, including the unit system being
+used by all the getter functions, you can always just print the `System`:
+```@repl basics
+sys
+```
+
+## Next Steps
+
+In this tutorial, you manually created a power `System`, added and then retrieved its components,
+and modified the `System` settings. 
 
 Next, you might want to:
-- [Learn how to add time series data to components](@ref tutorial_time_series)
+- [Learn more about how to retrieve components and their data from a `System`](@ref get_components_tutorial)
 - [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parse_files)
 - [Create your own `System` from .csv files instead of creating it manually](@ref tabular_parser)
+- [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
+
