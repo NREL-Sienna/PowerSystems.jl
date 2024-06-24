@@ -124,6 +124,7 @@ function _convert_data!(
             component["operation_cost"] = new_op_cost
         end
         if component["__metadata__"]["type"] ∈ ["BatteryEMS", "GenericBattery"]
+            old_type = component["__metadata__"]["type"]
             component["__metadata__"]["type"] = "EnergyReservoirStorage"
             component["storage_technology_type"] = IS.serialize(StorageTech.OTHER_CHEM)
             soc_min = component["state_of_charge_limits"]["min"]
@@ -140,6 +141,7 @@ function _convert_data!(
             else
                 # Derive storage_capacity from old state of charge limits and normalize new
                 # state of charge limits, initial capacity accordingly
+                @warn "Parsing $PowerSystems 3.0.0 $old_type as $PowerSystems 4.0.0 $(component["__metadata__"]["type"]), accuracy of conversion not guaranteed"
                 component["storage_capacity"] = soc_max
                 component["storage_level_limits"] =
                     Dict("min" => soc_min / soc_max, "max" => 1.0)
