@@ -953,7 +953,7 @@ function create_pwinc_cost(
             first(y_points) * first(x_points),
             x_points,
             y_points[2:end],
-            )
+        )
     elseif length(cost_pairs) == 1
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = LinearCurve(cost_pairs[1].y)
