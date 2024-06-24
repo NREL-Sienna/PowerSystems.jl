@@ -263,9 +263,9 @@ get_rating(retrieved_component)
     When we defined the solar generator, we defined the rating
     as 1.0 per-unit with a device `base_power` of 5.0 MVA. Notice that the rating now reads
     0.05. After we attached this component to our `System`, its power data is being
-    returned to us in the `System`'s `units_base`.
+    returned to us in the `System`'s units base.
 
-Let's double-check the `System`'s `units_base`: 
+Let's double-check the `System`'s units base: 
 ```@repl basics
 get_units_base(sys)
 ```
