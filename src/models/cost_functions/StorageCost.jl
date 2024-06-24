@@ -56,7 +56,7 @@ end
 
 """Get [`StorageCost`](@ref) `charge_variable_cost`."""
 get_charge_variable_cost(value::StorageCost) = value.charge_variable_cost
-"""Get [`StorageCost`](@ref) `charge_variable_cost`."""
+"""Get [`StorageCost`](@ref) `discharge_variable_cost`."""
 get_discharge_variable_cost(value::StorageCost) = value.discharge_variable_cost
 """Get [`StorageCost`](@ref) `fixed`."""
 get_fixed(value::StorageCost) = value.fixed
@@ -69,8 +69,10 @@ get_energy_shortage_cost(value::StorageCost) = value.energy_shortage_cost
 """Get [`StorageCost`](@ref) `energy_surplus_cost`."""
 get_energy_surplus_cost(value::StorageCost) = value.energy_surplus_cost
 
-"""Set [`StorageCost`](@ref) `variable`."""
-set_variable!(value::StorageCost, val) = value.variable = val
+"""Set [`StorageCost`](@ref) `charge_variable_cost`."""
+set_charge_variable_cost!(value::StorageCost, val) = value.charge_variable_cost = val
+"""Set [`StorageCost`](@ref) `discharge_variable_cost`."""
+set_discharge_variable_cost!(value::StorageCost, val) = value.discharge_variable_cost = val
 """Set [`StorageCost`](@ref) `fixed`."""
 set_fixed!(value::StorageCost, val) = value.fixed = val
 """Set [`StorageCost`](@ref) `start_up`."""
