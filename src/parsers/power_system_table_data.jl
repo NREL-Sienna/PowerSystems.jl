@@ -1051,7 +1051,12 @@ function make_reactive_params(
     return reactive_power, reactive_power_limits
 end
 
-function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames::_CostPointColumns, bus)
+function make_thermal_generator(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames::_CostPointColumns,
+    bus,
+)
     @debug "Making ThermaStandard" _group = IS.LOG_GROUP_PARSING gen.name
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
