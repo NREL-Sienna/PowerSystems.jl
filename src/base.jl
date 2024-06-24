@@ -1272,9 +1272,23 @@ series arrays because of the overhead in writing the time series to the underlyi
 - `associations`: Iterable of TimeSeriesAssociation instances. Using a Vector is not
   recommended. Pass a Generator or Iterator to avoid loading all time series data into
   system memory at once.
-- `batch_size::Int`: Number of time series to add per batch.
-```
+- `batch_size::Int`: Number of time series to add per batch. Defaults to 100.
 
+# Examples
+```julia
+resolution = Dates.Hour(1)
+associations = (
+    IS.TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series(get_name(gen) * ".csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
+    )
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
+```
 """
 function bulk_add_time_series!(
     sys::System,

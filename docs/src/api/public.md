@@ -92,11 +92,12 @@ Private = false
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["time_series_interface.jl"]
+Pages   = ["time_series_interface.jl", "time_series_structs.jl"]
 Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
                    InfrastructureSystems.get_time_series_array,
                    InfrastructureSystems.get_time_series_timestamps,
                    InfrastructureSystems.get_time_series_values,
+                   InfrastructureSystems.TimeSeriesAssociation,
                    ]
 ```
 

@@ -266,19 +266,18 @@ only load 100 arrays into memory at a time, by default.
 
 
 ```julia
-    resolution = Dates.Hour(1)
-    associations = (
-        IS.TimeSeriesAssociation(
-            component,
-            Deterministic(
-                data = read_time_series("$(get_name(gen)).csv"),
-                name = "get_max_active_power",
-                resolution=resolution),
-        )
-        for gen in get_components(ThermalStandard, sys)
+resolution = Dates.Hour(1)
+associations = (
+    TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series("$(get_name(gen)).csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
     )
-    PSY.bulk_add_time_series!(sys, associations)
-
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
 ```
 
 If you must add time series arrays one at a time, you can minimize HDF5 file handle overhead, as
