@@ -16,64 +16,72 @@ This file is auto-generated. Do not edit.
         primary_shunt::Float64
         tap::Float64
         α::Float64
-        rate::Union{Nothing, Float64}
+        rating::Union{Nothing, Float64}
         phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
+A phase-shifting transformer regulating the phase angle between two buses to control active power flow in the system.
 
+The model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
-- `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(0, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`, validation range: `(0, 2)`, action if invalid: `warn`
-- `tap::Float64`, validation range: `(0, 2)`, action if invalid: `error`
-- `α::Float64`, validation range: `(-1.571, 1.571)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `phase_angle_limits::MinMax`, validation range: `(-1.571, 1.571)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
+- `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
+- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
+- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
+- `primary_shunt::Float64`:, validation range: `(0, 2)`
+- `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
+- `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`
+- `phase_angle_limits::MinMax`: (default: `(min=-1.571, max=1.571)`) Minimum and maximum phase angle limits (radians), validation range: `(-1.571, 1.571)`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Initial condition of active power flow through the transformer (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow through the transformer (MVAR)"
     reactive_power_flow::Float64
+    "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus"
     arc::Arc
-    "System per-unit value"
+    "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     r::Float64
-    "System per-unit value"
+    "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
     primary_shunt::Float64
+    "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
+    "Initial condition of phase shift (radians) between the `from` and `to` buses "
     α::Float64
-    rate::Union{Nothing, Float64}
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    rating::Union{Nothing, Float64}
+    "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rate, phase_angle_limits, services, ext, time_series_container, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,11 +97,10 @@ function PhaseShiftingTransformer(::Nothing)
         primary_shunt=0.0,
         tap=1.0,
         α=0.0,
-        rate=0.0,
+        rating=0.0,
         phase_angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -117,16 +124,14 @@ get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
 get_α(value::PhaseShiftingTransformer) = value.α
-"""Get [`PhaseShiftingTransformer`](@ref) `rate`."""
-get_rate(value::PhaseShiftingTransformer) = get_value(value, value.rate)
+"""Get [`PhaseShiftingTransformer`](@ref) `rating`."""
+get_rating(value::PhaseShiftingTransformer) = get_value(value, value.rating)
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
 get_ext(value::PhaseShiftingTransformer) = value.ext
-"""Get [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
-get_time_series_container(value::PhaseShiftingTransformer) = value.time_series_container
 """Get [`PhaseShiftingTransformer`](@ref) `internal`."""
 get_internal(value::PhaseShiftingTransformer) = value.internal
 
@@ -148,13 +153,11 @@ set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt =
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
-"""Set [`PhaseShiftingTransformer`](@ref) `rate`."""
-set_rate!(value::PhaseShiftingTransformer, val) = value.rate = set_value(value, val)
+"""Set [`PhaseShiftingTransformer`](@ref) `rating`."""
+set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""
 set_ext!(value::PhaseShiftingTransformer, val) = value.ext = val
-"""Set [`PhaseShiftingTransformer`](@ref) `time_series_container`."""
-set_time_series_container!(value::PhaseShiftingTransformer, val) = value.time_series_container = val

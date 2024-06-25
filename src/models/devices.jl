@@ -18,14 +18,6 @@ function add_service_internal!(device::Device, service::Service)
 end
 
 function add_service_internal!(device::Device, service::AGC)
-    if !isa(device, RegulationDevice)
-        throw(
-            IS.ConflictingInputsError(
-                "AGC service can only accept contributing devices of type RegulationDevice",
-            ),
-        )
-    end
-
     device_bus_area = get_area(get_bus(device))
     service_area = get_area(service)
     if isnothing(device_bus_area) ||
@@ -92,6 +84,8 @@ function has_service(device::Device, ::Type{T}) where {T <: Service}
 
     return false
 end
+
+has_service(T::Type{<:Service}, device::Device) = has_service(device, T)
 
 """
 Remove service from device if it is attached.

@@ -12,13 +12,18 @@ Pages   = ["PowerSystems.jl",
            "loads.jl",
            "supplemental_constructors",
            "generation.jl",
+           "reserves.jl",
            "storage.jl",
            "services.jl",
+           "outages.jl",
            "topological_elements.jl",
            "dynamic_models.jl",
            "static_models.jl",
+           "static_injection_subsystem.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
+           "cost_functions/ValueCurves.jl",
+           "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
 Private = false
@@ -87,33 +92,13 @@ Private = false
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["component.jl", "components.jl"]
+Pages   = ["time_series_interface.jl", "time_series_structs.jl"]
 Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
                    InfrastructureSystems.get_time_series_array,
                    InfrastructureSystems.get_time_series_timestamps,
                    InfrastructureSystems.get_time_series_values,
+                   InfrastructureSystems.TimeSeriesAssociation,
                    ]
-```
-
-## [Network Matrices](@id net_mat)
-
-```@autodocs
-Modules = [PowerSystems]
-Pages   = ["utils/network_calculations/ybus_calculations.jl",
-           "utils/network_calculations/ptdf_calculations.jl",
-           "utils/network_calculations/lodf_calculations.jl",
-           "utils/network_calculations/common.jl"]
-Private = false
-Public = true
-```
-
-## [Power Flow](@id pf)
-
-```@autodocs
-Modules = [PowerSystems]
-Pages = ["power_flow.jl"]
-Public = true
-Private = false
 ```
 
 ## Parsing

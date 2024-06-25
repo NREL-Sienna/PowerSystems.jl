@@ -30,15 +30,7 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
 
         # Account for the fact that type may be abstract.
         actual_type = typeof(val)
-        if actual_type <: IS.TimeSeriesContainer
-            ts = collect(IS.get_time_series_keys(obj))
-            if isempty(ts)
-                continue
-            end
-            key = first(ts)
-            expected = key.name
-        elseif actual_type <: IS.InfrastructureSystemsType ||
-               actual_type <: Vector{<:Service}
+        if actual_type <: IS.InfrastructureSystemsType || actual_type <: Vector{<:Service}
             expected = string(actual_type)
         else
             expected = string(val)
@@ -60,6 +52,15 @@ end
     @test are_type_and_fields_in_output(iterate(get_components(ThermalGen, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(Branch, sys))[1])
     @test are_type_and_fields_in_output(iterate(get_components(ElectricLoad, sys))[1])
+
+    io = IOBuffer()
+    component = first(get_components(ThermalGen, sys))
+    show(io, "text/plain", component)
+    text = String(take!(io))
+    expected_sa = string(has_supplemental_attributes(component))
+    expected_ts = string(has_time_series(component))
+    @test occursin("has_supplemental_attributes: $expected_sa", text)
+    @test occursin("has_time_series: $expected_ts", text)
 
     # Just make sure nothing blows up.
     for component in iterate_components(sys)
@@ -85,13 +86,13 @@ end
 
     @test isnothing(show(IOBuffer(), "text/plain", sys))
     @test isnothing(show(IOBuffer(), "text/html", sys))
-    @test isnothing(show_components(IOBuffer(), sys, RenewableFix))
-    @test isnothing(show_components(IOBuffer(), sys, RenewableFix, [:rating]))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableNonDispatch))
+    @test isnothing(show_components(IOBuffer(), sys, RenewableNonDispatch, [:rating]))
     @test isnothing(
         show_components(
             IOBuffer(),
             sys,
-            RenewableFix,
+            RenewableNonDispatch,
             Dict("ts" => x -> has_time_series(x)),
         ),
     )

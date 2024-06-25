@@ -409,7 +409,7 @@ function read_gen!(
             rating = gens.mbase[ix],
             ramp_limits = nothing,
             time_limits = nothing,
-            operation_cost = TwoPartCost(0.0, 0.0),
+            operation_cost = ThermalGenerationCost(nothing),
             ext = Dict(
                 "IREG" => ireg_bus_num,
                 "WMOD" => gens.wmod[ix],
@@ -464,7 +464,7 @@ function read_branch!(
             x = branches.x[ix],
             b = (from = branches.bi[ix], to = branches.bj[ix]),
             angle_limits = (min = -π / 2, max = π / 2),
-            rate = max_rate,
+            rating = max_rate,
         )
 
         add_component!(sys, branch; skip_validation = SKIP_PM_VALIDATION)
@@ -508,7 +508,7 @@ function read_branch!(
                 r = branches.r[ix],
                 x = branches.x[ix],
                 primary_shunt = 0.0,
-                rate = max_rate,
+                rating = max_rate,
                 ext = Dict(
                     "line_to_xfr" => true,
                 ),
@@ -533,7 +533,7 @@ function read_branch!(
             x = branches.x[ix],
             b = (from = branches.bi[ix], to = branches.bj[ix]),
             angle_limits = (min = -π / 2, max = π / 2),
-            rate = max_rate,
+            rating = max_rate,
             ext = Dict(
                 "length" => branches.len[ix],
                 "rated_current(A)" => rated_current,
@@ -679,7 +679,7 @@ function read_branch!(
             x = br_x,
             tap = tap_value,
             primary_shunt = transformers.mag2[ix],
-            rate = max_rate,
+            rating = max_rate,
         )
         add_component!(sys, transformer; skip_validation = SKIP_PM_VALIDATION)
     end

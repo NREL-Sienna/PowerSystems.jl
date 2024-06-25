@@ -654,7 +654,12 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = 0.0, max = 0.1),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((430.292599, 2000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThermalGenerationCost(
+            CostCurve(QuadraticCurve(430.292599, 2000.0, 0.0)),
+            0.0,
+            0.0,
+            0.0,
+        ),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -671,7 +676,12 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.4, max = 0.5),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((2500.0, 2000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThermalGenerationCost(
+            CostCurve(QuadraticCurve(2500.0, 2000.0, 0.0)),
+            0.0,
+            0.0,
+            0.0,
+        ),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -688,7 +698,12 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = 0.0, max = 0.4),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThermalGenerationCost(
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
+            0.0,
+            0.0,
+            0.0,
+        ),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -705,7 +720,12 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.06, max = 0.24),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThermalGenerationCost(
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
+            0.0,
+            0.0,
+            0.0,
+        ),
         base_power = 100.0,
     ),
     ThermalStandard(;
@@ -722,7 +742,12 @@ thermal_generators14(nodes14) = [
         reactive_power_limits = (min = -0.06, max = 0.24),
         time_limits = nothing,
         ramp_limits = nothing,
-        operation_cost = ThreePartCost((100.0, 4000.0), 0.0, 0.0, 0.0),
+        operation_cost = ThermalGenerationCost(
+            CostCurve(QuadraticCurve(100.0, 4000.0, 0.0)),
+            0.0,
+            0.0,
+            0.0,
+        ),
         base_power = 100.0,
     ),
 ]
@@ -837,13 +862,15 @@ timeseries_DA14 = [
 ];
 
 battery14(nodes14) = [
-    GenericBattery(;
+    EnergyReservoirStorage(;
         name = "Bat",
         prime_mover_type = PrimeMovers.BA,
+        storage_technology_type = StorageTech.OTHER_CHEM,
         available = true,
         bus = nodes14[1],
-        initial_energy = 5.0,
-        state_of_charge_limits = (min = 5.0, max = 100.0),
+        storage_capacity = 100.0,
+        storage_level_limits = (min = 5.0 / 100.0, max = 100.0 / 100.0),
+        initial_storage_capacity_level = 5.0 / 100.0,
         rating = 70,
         active_power = 10.0,
         input_active_power_limits = (min = 0.0, max = 50.0),

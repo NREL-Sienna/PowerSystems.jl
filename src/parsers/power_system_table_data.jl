@@ -381,7 +381,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 b = (from = b, to = b),
-                rate = branch.rate,
+                rating = branch.rate,
                 angle_limits = (
                     min = branch.min_angle_limits,
                     max = branch.max_angle_limits,
@@ -397,7 +397,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                rate = branch.rate,
+                rating = branch.rate,
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(;
@@ -410,7 +410,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
-                rate = branch.rate,
+                rating = branch.rate,
             )
         elseif branch_type == PhaseShiftingTransformer
             # TODO create PhaseShiftingTransformer
@@ -752,7 +752,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 
         direction = get_reserve_direction(reserve.direction)
         if isnothing(requirement)
-            service = StaticReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
+            service = ConstantReserve{direction}(reserve.name, true, reserve.timeframe, 0.0)
         else
             service = VariableReserve{direction}(
                 reserve.name,
@@ -793,7 +793,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
             make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
-    elseif gen_type == GenericBattery
+    elseif gen_type == EnergyReservoirStorage
         head_dict, _ = gen_storage
         if !haskey(head_dict, gen.name)
             throw(DataFormatError("Cannot find storage for $(gen.name) in storage.csv"))
@@ -855,10 +855,11 @@ function calculate_variable_cost(
         for i in 2:length(var_cost)
             var_cost[i] = (var_cost[i - 1][1] + var_cost[i][1], var_cost[i][2])
         end
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
 
     elseif length(var_cost) == 1
         # if there is only one point, use it to determine the constant $/MW cost
-        var_cost = var_cost[1][1] * fuel_cost + vom
+        var_cost = LinearFunctionData(var_cost[1][1] * fuel_cost + vom)
         fixed = 0.0
     end
     return var_cost, fixed, fuel_cost
@@ -892,8 +893,9 @@ function calculate_variable_cost(
             (var_cost[2][1] + vom / (var_cost[2][2] - var_cost[1][2]) * var_cost[1][2]),
         )
         var_cost = [(var_cost[i][1] - fixed, var_cost[i][2]) for i in 1:length(var_cost)]
+        var_cost = PiecewiseLinearData([(x, y) for (y, x) in var_cost])
     elseif length(var_cost) == 1
-        var_cost = var_cost[1][1]
+        var_cost = LinearFunctionData(var_cost[1][1])
         fixed = 0.0
     end
 
@@ -1002,7 +1004,12 @@ function make_thermal_generator(data::PowerSystemTableData, gen, cost_colnames, 
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_cost)
-    op_cost = ThreePartCost(var_cost, fixed, startup_cost, shutdown_cost)
+    op_cost = ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed,
+        startup_cost,
+        shutdown_cost,
+    )
 
     gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
     if !isa(gen_must_run, Bool)
@@ -1041,13 +1048,15 @@ function make_thermal_generator_multistart(
     base_power = get_base_power(thermal_gen)
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
-    if var_cost isa Float64
+    if var_cost isa LinearFunctionData
         no_load_cost = 0.0
-        var_cost = VariableCost(var_cost)
     else
-        no_load_cost = var_cost[1][1]
+        (no_load_x, no_load_cost) = first(var_cost)
+        @warn "Strange math occurring here (part 1)"
         var_cost =
-            VariableCost([(c - no_load_cost, pp - var_cost[1][2]) for (c, pp) in var_cost])
+            PiecewiseLinearData([
+                (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
+            ])
     end
     lag_hot =
         if isnothing(gen.hot_start_time)
@@ -1082,7 +1091,13 @@ function make_thermal_generator_multistart(
         shutdown_cost = 0.0
     end
 
-    op_cost = MultiStartCost(var_cost, no_load_cost, fixed, startup_cost, shutdown_cost)
+    @warn "Strange math occurring here (part 2)"
+    ThermalGenerationCost(
+        CostCurve(InputOutputCurve(var_cost)),
+        fixed + no_load_cost,
+        startup_cost,
+        shutdown_cost,
+    )
 
     return ThermalMultiStart(;
         name = get_name(thermal_gen),
@@ -1142,7 +1157,8 @@ function make_hydro_generator(
 
         var_cost, fixed, fuel_cost =
             calculate_variable_cost(data, gen, cost_colnames, base_power)
-        operation_cost = TwoPartCost(var_cost, fixed)
+        operation_cost =
+            HydroGenerationCost(CostCurve(InputOutputCurve(var_cost)), fixed)
 
         if gen_type == HydroEnergyReservoir
             @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
@@ -1264,7 +1280,8 @@ function make_renewable_generator(
     base_power = gen.base_mva
     var_cost, fixed, fuel_cost =
         calculate_variable_cost(data, gen, cost_colnames, base_power)
-    operation_cost = TwoPartCost(var_cost, fixed)
+    @assert fixed == 0 "RenewableGenerationCost cannot have a fixed cost, got $fixed with variable cost $varcost"
+    operation_cost = RenewableGenerationCost(CostCurve(InputOutputCurve(var_cost)))
 
     if gen_type == RenewableDispatch
         @debug "Creating $(gen.name) as RenewableDispatch" _group = IS.LOG_GROUP_PARSING
@@ -1281,9 +1298,9 @@ function make_renewable_generator(
             operation_cost = operation_cost,
             base_power = base_power,
         )
-    elseif gen_type == RenewableFix
-        @debug "Creating $(gen.name) as RenewableFix" _group = IS.LOG_GROUP_PARSING
-        generator = RenewableFix(;
+    elseif gen_type == RenewableNonDispatch
+        @debug "Creating $(gen.name) as RenewableNonDispatch" _group = IS.LOG_GROUP_PARSING
+        generator = RenewableNonDispatch(;
             name = gen.name,
             available = gen.available,
             bus = bus,
@@ -1303,8 +1320,6 @@ end
 
 function make_storage(data::PowerSystemTableData, gen, bus, storage)
     @debug "Making Storage" _group = IS.LOG_GROUP_PARSING storage.name
-    state_of_charge_limits =
-        (min = storage.min_storage_capacity, max = storage.storage_capacity)
     input_active_power_limits = (
         min = storage.input_active_power_limit_min,
         max = storage.input_active_power_limit_max,
@@ -1319,13 +1334,18 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
     )
     efficiency = (in = storage.input_efficiency, out = storage.output_efficiency)
     (reactive_power, reactive_power_limits) = make_reactive_params(storage)
-    battery = GenericBattery(;
+    battery = EnergyReservoirStorage(;
         name = gen.name,
         available = storage.available,
         bus = bus,
         prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
-        initial_energy = storage.energy_level,
-        state_of_charge_limits = state_of_charge_limits,
+        storage_technology_type = StorageTech.OTHER_CHEM,
+        storage_capacity = storage.storage_capacity,
+        storage_level_limits = (
+            min = storage.min_storage_capacity / storage.storage_capacity,
+            max = 1.0,
+        ),
+        initial_storage_capacity_level = storage.energy_level / storage.storage_capacity,
         rating = storage.rating,
         active_power = storage.active_power,
         input_active_power_limits = input_active_power_limits,
@@ -1334,7 +1354,7 @@ function make_storage(data::PowerSystemTableData, gen, bus, storage)
         reactive_power = reactive_power,
         reactive_power_limits = reactive_power_limits,
         base_power = storage.base_power,
-        operation_cost = nothing,
+        operation_cost = StorageCost(),
     )
 
     return battery

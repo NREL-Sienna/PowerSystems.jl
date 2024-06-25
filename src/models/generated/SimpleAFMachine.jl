@@ -23,11 +23,11 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
+Parameters of 4-[states](@ref S) simplified Anderson-Fouad (SimpleAFMachine) model.
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network
  dynamics is neglected.
- If transmission dynamics is considered use the full order Anderson Fouad model.
+ If transmission dynamics is considered use the full order Anderson Fouad model
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
@@ -41,14 +41,14 @@ Parameters of 4-states simplified Anderson-Fouad (SimpleAFMachine) model.
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
-- `n_states::Int`: SimpleAFMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) SimpleAFMachine has 4 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SimpleAFMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -73,16 +73,17 @@ mutable struct SimpleAFMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
-    "SimpleAFMachine has 4 states"
+    "(**Do not modify.**) SimpleAFMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

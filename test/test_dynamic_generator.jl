@@ -27,7 +27,12 @@ static_gen = ThermalStandard(;
     reactive_power_limits = (min = -0.30, max = 0.30),
     time_limits = nothing,
     ramp_limits = nothing,
-    operation_cost = ThreePartCost((0.0, 1400.0), 0.0, 4.0, 2.0),
+    operation_cost = ThermalGenerationCost(
+        CostCurve(LinearCurve(1400.0)),
+        0.0,
+        4.0,
+        2.0,
+    ),
     base_power = 1.0,
 )
 
@@ -616,6 +621,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, derd, static_injector)
     DERDs = collect(get_components(GenericDER, sys))
@@ -718,6 +724,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_injector = ThermalStandard(nothing)
+    static_injector.bus = bus
     add_component!(sys, static_injector)
     add_component!(sys, dera, static_injector)
     DERAs = collect(get_components(AggregateDistributedGenerationA, sys))

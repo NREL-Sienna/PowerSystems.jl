@@ -1,4 +1,3 @@
-
 import PowerSystems: LazyDictFromIterator
 
 @testset "PowerSystemTableData parsing" begin
@@ -86,14 +85,26 @@ end
                     @test cdmgen_val == mpgen_val
                 end
 
-                if length(mpgen.operation_cost.variable) == 4
-                    @test [
-                        isapprox(
-                            cdmgen.operation_cost.variable[i][1],
-                            mpgen.operation_cost.variable[i][1];
-                            atol = 0.1,
-                        ) for i in 1:4
-                    ] == [true, true, true, true]
+                mpgen_cost = get_operation_cost(mpgen)
+                # Currently true; this is likely to change in the future and then we'd have to change the test
+                @assert get_variable(mpgen_cost) isa
+                        CostCurve{InputOutputCurve{PiecewiseLinearData}}
+                mp_points = get_points(
+                    get_function_data(get_value_curve(
+                        get_variable(mpgen_cost))),
+                )
+                if length(mp_points) == 4
+                    cdm_points = get_points(
+                        get_function_data(
+                            get_value_curve(
+                                get_variable(get_operation_cost(cdmgen))),
+                        ),
+                    )
+                    @test all(
+                        isapprox.(
+                            [p.y for p in cdm_points], [p.y for p in mp_points],
+                            atol = 0.1),
+                    )
                     #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
                 end
             end
@@ -119,12 +130,12 @@ end
             end
 
             cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
-            @test get_rate(cdm_ac_branches[2]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[2]))
-            @test get_rate(cdm_ac_branches[6]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[6]))
-            @test get_rate(cdm_ac_branches[120]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+            @test get_rating(cdm_ac_branches[2]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[2]))
+            @test get_rating(cdm_ac_branches[6]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[6]))
+            @test get_rating(cdm_ac_branches[120]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
             cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==

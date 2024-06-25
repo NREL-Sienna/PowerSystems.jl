@@ -34,33 +34,33 @@ In these excitation systems, voltage (and also current in compounded systems) is
 Parameters of IEEE Std 421.5 Type ST4B Excitacion System. ESST4B in PSSE and PSLF
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`, action if invalid: `warn`
-- `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`, action if invalid: `warn`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `K_pr::Float64`: Regulator propotional gain, validation range: `(0, 75)`
+- `K_ir::Float64`: Regulator integral gain, validation range: `(0, 75)`
 - `Vr_lim::MinMax`: Voltage regulator limits (Vi_min, Vi_max)
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`, action if invalid: `warn`
-- `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`, action if invalid: `warn`
-- `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`, action if invalid: `warn`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 1)`
+- `K_pm::Float64`: Voltage regulator proportional gain output, validation range: `(0, 1.2)`
+- `K_im::Float64`: Voltage regulator integral gain output, validation range: `(0, 18)`
 - `Vm_lim::MinMax`: Limits for inner loop output `(Vm_min, Vm_max)`
-- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`, action if invalid: `warn`
-- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`, action if invalid: `warn`
-- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`, action if invalid: `warn`
-- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(1, 20)`, action if invalid: `warn`
-- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`, action if invalid: `warn`
-- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`, action if invalid: `error`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `θp_rad::Float64`: Potential circuit phase angle (radians)
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, 1.1)`
+- `Kp::Float64`: Potential circuit (voltage) gain coefficient, validation range: `(0, 10)`
+- `Ki::Float64`: Compound circuit (current) gain coefficient, validation range: `(0, 1.1)`
+- `VB_max::Float64`: Maximum available exciter voltage, validation range: `(1, 20)`
+- `Kc::Float64`: Rectifier loading factor proportional to commutating reactance, validation range: `(0, 1)`
+- `Xl::Float64`: Reactance associated with potential source, validation range: `(0, 0.5)`
+- `θp::Float64`: Potential circuit phase angle (degrees), validation range: `(-90, 90)`
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `θp_rad::Float64`: (default: `θp*π*inv(180)`) (**Do not modify.**) Potential circuit phase angle (radians)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vt: Sensed Terminal Voltage,
 	Vr1: Regulator Integrator,
 	Vr2: Regulator Output,
 	Vm: Output integrator
-- `n_states::Int`: ST4B has 4 states
-- `states_types::Vector{StateTypes}`: ST4B has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) ST4B has 4 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) ST4B has 4 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ESST4B <: AVR
     "Regulator input filter time constant in s"
@@ -93,23 +93,24 @@ mutable struct ESST4B <: AVR
     Xl::Float64
     "Potential circuit phase angle (degrees)"
     θp::Float64
-    "Reference Voltage Set-point"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "Potential circuit phase angle (radians)"
+    "(**Do not modify.**) Potential circuit phase angle (radians)"
     θp_rad::Float64
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vt: Sensed Terminal Voltage,
 	Vr1: Regulator Integrator,
 	Vr2: Regulator Output,
 	Vm: Output integrator"
     states::Vector{Symbol}
-    "ST4B has 4 states"
+    "(**Do not modify.**) ST4B has 4 states"
     n_states::Int
-    "ST4B has 4 states"
+    "(**Do not modify.**) ST4B has 4 states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

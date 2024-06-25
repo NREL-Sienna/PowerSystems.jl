@@ -1,8 +1,8 @@
-# Regulation Device
+### Hybrid System
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["models/regulation_device.jl"]
+Pages   = ["HybridSystem.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

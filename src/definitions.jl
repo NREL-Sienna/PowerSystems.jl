@@ -4,6 +4,7 @@ const StartUpShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64
 const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
 # Exception to CamelCase convention for aliases due to confusssing reading of FromToToFrom
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
+const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 
 "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
 
@@ -61,6 +62,28 @@ IS.@scoped_enum(
     WOOD_WASTE = 12,  # WWW     # Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
     GEOTHERMAL = 13,  # GEO     # Geothermal
     OTHER = 14,  # OTH     # Other
+)
+
+IS.@scoped_enum(
+    StorageTech,
+    PTES = 1, # Pumped thermal energy storage
+    LIB = 2, # LiON Battery
+    LAB = 3, # Lead Acid Battery
+    FLWB = 4, # Redox Flow Battery
+    SIB = 5, # Sodium Ion Battery
+    ZIB = 6, # Zinc Ion Battery,
+    HGS = 7, # Hydrogen Gas Storage,
+    LAES = 8, # Liquid Air Storage
+    OTHER_CHEM = 9, # Chemmical Storage
+    OTHER_MECH = 10, # Mechanical Storage
+    OTHER_THERM = 11, # Thermal Storage
+)
+
+IS.@scoped_enum(
+    PumpHydroStatus,
+    OFF = 0,
+    GEN = 1,
+    PUMP = -1,
 )
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)

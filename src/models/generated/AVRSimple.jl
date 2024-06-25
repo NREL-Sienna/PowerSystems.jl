@@ -20,28 +20,29 @@ i.e. an integrator controller on EMF
 
 # Arguments
 - `Kv::Float64`: Proportional Gain, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vf: field voltage
-- `n_states::Int`: Fixed AVR has 1 states
-- `states_types::Vector{StateTypes}`: Simple AVR has 1 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) Fixed AVR has 1 [state](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) Simple AVR has 1 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AVRSimple <: AVR
     "Proportional Gain"
     Kv::Float64
-    "Reference Voltage Set-point"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vf: field voltage"
     states::Vector{Symbol}
-    "Fixed AVR has 1 states"
+    "(**Do not modify.**) Fixed AVR has 1 [state](@ref S)"
     n_states::Int
-    "Simple AVR has 1 differential states"
+    "(**Do not modify.**) Simple AVR has 1 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

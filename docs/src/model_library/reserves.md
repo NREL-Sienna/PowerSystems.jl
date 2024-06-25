@@ -1,19 +1,19 @@
 # Reserves
 
-## Static Reserve
+## Constant Reserve
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["generated/StaticReserve.jl"]
+Pages   = ["generated/ConstantReserve.jl"]
 Public = true
 Private = false
 ```
 
-## Static Reserve Group
+## Constant Reserve Group
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["generated/StaticReserveGroup.jl"]
+Pages   = ["generated/ConstantReserveGroup.jl"]
 Public = true
 Private = false
 ```

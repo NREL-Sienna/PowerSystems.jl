@@ -1,13 +1,58 @@
 """
-Representation of a Hybrid System that collects renewable generation, load, thermal generation
-and storage.
+    mutable struct HybridSystem <: StaticInjectionSubsystem
+        name::String
+        available::Bool
+        status::Bool
+        bus::ACBus
+        active_power::Float64
+        reactive_power::Float64
+        base_power::Float64
+        operation_cost::MarketBidCost
+        thermal_unit::Union{Nothing, ThermalGen}
+        electric_load::Union{Nothing, ElectricLoad}
+        storage::Union{Nothing, Storage}
+        renewable_unit::Union{Nothing, RenewableGen}
+        interconnection_impedance::ComplexF64
+        interconnection_rating::Union{Nothing, Float64}
+        input_active_power_limits::Union{Nothing, MinMax}
+        output_active_power_limits::Union{Nothing, MinMax}
+        reactive_power_limits::Union{Nothing, MinMax}
+        interconnection_efficiency::Union{
+            Nothing,
+            NamedTuple{(:in, :out), Tuple{Float64, Float64}},
+        }
+        services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
+        ext::Dict{String, Any}
+        internal::InfrastructureSystemsInternal
+    end
 
-Each generator is a data structure that is defined by the following components:
+A Hybrid System that includes a combination of renewable generation, load, thermal
+generation and/or energy storage.
 
-- [ThermalGen](@ref PowerSystems.ThermalGen)
-- [Load](@ref PowerSystems.ElectricLoad)
-- [Storage](@ref PowerSystems.Storage)
-- [RenewableGen](@ref PowerSystems.RenewableGen)
+# Arguments
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `status::Bool`: Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
+- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`
+- `operation_cost::MarketBidCost`: Market bid cost to operate, [`MarketBidCost`](@ref)
+- `thermal_unit::Union{Nothing, ThermalGen}`: A thermal generator with supertype [`ThermalGen`](@ref)
+- `electric_load::Union{Nothing, ElectricLoad}`: A load with supertype [`ElectricLoad`](@ref)
+- `storage::Union{Nothing, Storage}`: An energy storage system with supertype [`Storage`](@ref)
+- `renewable_unit::Union{Nothing, RenewableGen}`: A renewable generator with supertype [`RenewableGen`](@ref)
+- `interconnection_impedance::ComplexF64`: Impedance (typically in p.u.) between the hybrid system and the grid interconnection
+- `interconnection_rating::Union{Nothing, Float64}`: Maximum rating of the hybrid system's interconnection with the transmission network (MVA)
+- `input_active_power_limits::MinMax`: Minimum and maximum stable input active power levels (MW)
+- `output_active_power_limits::MinMax`: Minimum and maximum stable output active power levels (MW)
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits (MVAR). Set to `Nothing` if not applicable.
+- `interconnection_efficiency::Union{Nothing, NamedTuple{(:in, :out), Tuple{Float64, Float64}},}`: Efficiency [0, 1.0] at the grid interconnection to model losses `in` and `out` of the common DC-side conversion
+- `services::Vector{Service}`: (optional) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (optional) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (optional) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref).
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference.
 """
 mutable struct HybridSystem <: StaticInjectionSubsystem
     name::String
@@ -17,7 +62,7 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     active_power::Float64
     reactive_power::Float64
     base_power::Float64
-    operation_cost::OperationalCost
+    operation_cost::MarketBidCost
     thermal_unit::Union{Nothing, ThermalGen}
     electric_load::Union{Nothing, ElectricLoad}
     storage::Union{Nothing, Storage}
@@ -29,12 +74,15 @@ mutable struct HybridSystem <: StaticInjectionSubsystem
     input_active_power_limits::Union{Nothing, MinMax}
     output_active_power_limits::Union{Nothing, MinMax}
     reactive_power_limits::Union{Nothing, MinMax}
+    interconnection_efficiency::Union{
+        Nothing,
+        NamedTuple{(:in, :out), Tuple{Float64, Float64}},
+    }
     "corresponding dynamic injection device"
     services::Vector{Service}
     dynamic_injector::Union{Nothing, DynamicInjection}
     ext::Dict{String, Any}
     "internal forecast storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
     "power system internal reference, do not modify"
     internal::InfrastructureSystemsInternal
 end
@@ -47,7 +95,7 @@ function HybridSystem(;
     active_power = 0.0,
     reactive_power = 0.0,
     base_power = 100.0,
-    operation_cost = TwoPartCost(nothing),
+    operation_cost = MarketBidCost(nothing),
     thermal_unit = nothing,
     electric_load = nothing,
     storage = nothing,
@@ -57,10 +105,10 @@ function HybridSystem(;
     input_active_power_limits = nothing,
     output_active_power_limits = nothing,
     reactive_power_limits = nothing,
+    interconnection_efficiency = nothing,
     services = Service[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     return HybridSystem(
@@ -81,10 +129,10 @@ function HybridSystem(;
         input_active_power_limits,
         output_active_power_limits,
         reactive_power_limits,
+        interconnection_efficiency,
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
@@ -99,20 +147,20 @@ function HybridSystem(::Nothing)
         active_power = 0.0,
         reactive_power = 0.0,
         base_power = 100.0,
-        operation_cost = TwoPartCost(nothing),
+        operation_cost = MarketBidCost(nothing),
         thermal_unit = ThermalStandard(nothing),
         electric_load = PowerLoad(nothing),
-        storage = GenericBattery(nothing),
+        storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
         interconnection_impedance = 0.0,
         interconnection_rating = nothing,
         input_active_power_limits = nothing,
         output_active_power_limits = nothing,
         reactive_power_limits = nothing,
+        interconnection_efficiency = nothing,
         services = Service[],
         dynamic_injector = nothing,
         ext = Dict{String, Any}(),
-        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
         internal = InfrastructureSystemsInternal(),
     )
 end
@@ -166,6 +214,8 @@ get_output_active_power_limits(value::HybridSystem) =
 """Get [`HybridSystem`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HybridSystem) =
     get_value(value, value.reactive_power_limits)
+"""get [`HybridSystem`](@ref) interconnection efficiency"""
+get_interconnection_efficiency(value::HybridSystem) = value.interconnection_efficiency
 """Get [`HybridSystem`](@ref) `base_power`."""
 get_base_power(value::HybridSystem) = value.base_power
 """Get [`HybridSystem`](@ref) `operation_cost`."""
@@ -177,8 +227,6 @@ get_dynamic_injector(value::HybridSystem) = value.dynamic_injector
 """Get [`HybridSystem`](@ref) `ext`."""
 get_ext(value::HybridSystem) = value.ext
 
-InfrastructureSystems.get_time_series_container(value::HybridSystem) =
-    value.time_series_container
 """Get [`HybridSystem`](@ref) `internal`."""
 get_internal(value::HybridSystem) = value.internal
 
@@ -205,6 +253,9 @@ set_output_active_power_limits!(value::HybridSystem, val) =
     value.output_active_power_limits = val
 """Set [`HybridSystem`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limits = val
+"""Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
+set_interconnection_efficiency!(value::HybridSystem, val) =
+    value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `base_power`."""
 set_base_power!(value::HybridSystem, val) = value.base_power = val
 """Set [`HybridSystem`](@ref) `operation_cost`."""
@@ -213,9 +264,6 @@ set_operation_cost!(value::HybridSystem, val) = value.operation_cost = val
 set_services!(value::HybridSystem, val) = value.services = val
 """Set [`HybridSystem`](@ref) `ext`."""
 set_ext!(value::HybridSystem, val) = value.ext = val
-
-InfrastructureSystems.set_time_series_container!(value::HybridSystem, val) =
-    value.time_series_container = val
 
 """
 Return an iterator over the subcomponents in the HybridSystem.
@@ -268,7 +316,7 @@ function set_renewable_unit!(hybrid::HybridSystem, val::RenewableGen)
 end
 
 function _raise_if_attached_to_system(hybrid::HybridSystem)
-    if hybrid.time_series_container.time_series_storage !== nothing
+    if !isnothing(IS.get_time_series_manager(hybrid))
         throw(
             ArgumentError(
                 "Operation not allowed because the HybridSystem is attached to a system",

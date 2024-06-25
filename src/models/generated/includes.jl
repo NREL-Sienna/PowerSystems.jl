@@ -1,9 +1,5 @@
-include("TwoPartCost.jl")
-include("ThreePartCost.jl")
-include("StorageManagementCost.jl")
-include("MarketBidCost.jl")
-include("MultiStartCost.jl")
 include("Area.jl")
+include("AreaInterchange.jl")
 include("LoadZone.jl")
 include("TransmissionInterface.jl")
 include("ACBus.jl")
@@ -33,19 +29,17 @@ include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
-include("RenewableFix.jl")
+include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
 include("ThermalMultiStart.jl")
-include("GenericBattery.jl")
-include("BatteryEMS.jl")
-include("StaticReserve.jl")
-include("StaticReserveNonSpinning.jl")
-include("StaticReserveGroup.jl")
+include("EnergyReservoirStorage.jl")
+include("ConstantReserve.jl")
+include("ConstantReserveNonSpinning.jl")
+include("ConstantReserveGroup.jl")
 include("ReserveDemandCurve.jl")
 include("VariableReserve.jl")
 include("VariableReserveNonSpinning.jl")
 include("AGC.jl")
-include("Transfer.jl")
 include("AVRFixed.jl")
 include("AVRSimple.jl")
 include("SEXS.jl")
@@ -117,9 +111,11 @@ include("ReactiveVirtualOscillator.jl")
 include("VoltageModeControl.jl")
 include("CurrentModeControl.jl")
 include("RECurrentControlB.jl")
-include("MagnitudeCurrentLimiter.jl")
-include("InstantaneousCurrentLimiter.jl")
-include("PriorityCurrentLimiter.jl")
+include("MagnitudeOutputCurrentLimiter.jl")
+include("InstantaneousOutputCurrentLimiter.jl")
+include("PriorityOutputCurrentLimiter.jl")
+include("SaturationOutputCurrentLimiter.jl")
+include("HybridOutputCurrentLimiter.jl")
 include("AggregateDistributedGenerationA.jl")
 include("Source.jl")
 include("PeriodicVariableSource.jl")
@@ -436,14 +432,12 @@ export get_Y_increase
 export get_Zerox
 export get_a
 export get_active_power
-export get_active_power_coefficient
 export get_active_power_flow
 export get_active_power_flow_limits
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
 export get_active_power_limits_to
-export get_ancillary_services
 export get_angle
 export get_angle_limits
 export get_arc
@@ -482,19 +476,17 @@ export get_direction_mapping
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
-export get_energy_shortage_cost
-export get_energy_surplus_cost
 export get_eq_p
 export get_ext
 export get_f
 export get_fdbd_pnts
 export get_fe_lim
 export get_fh
-export get_fixed
 export get_fl
 export get_flow_limits
 export get_frequency
 export get_from
+export get_from_area
 export get_from_branch_control
 export get_fs
 export get_fuel
@@ -505,8 +497,8 @@ export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
-export get_initial_energy
 export get_initial_storage
+export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
 export get_input_code_1
@@ -521,7 +513,7 @@ export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
-export get_inverter_firing_angle
+export get_inverter_extinction_angle
 export get_inverter_tap_limits
 export get_inverter_xrc
 export get_is_filter_differential
@@ -541,6 +533,7 @@ export get_kpc
 export get_kpi
 export get_kpv
 export get_kq
+export get_kw
 export get_kω
 export get_l
 export get_lf
@@ -548,6 +541,7 @@ export get_lg
 export get_load_response
 export get_load_zone
 export get_loss
+export get_loss_function
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -563,7 +557,6 @@ export get_max_reactive_power
 export get_must_run
 export get_n_states
 export get_name
-export get_no_load
 export get_number
 export get_number_of_steps
 export get_operation_cost
@@ -582,14 +575,12 @@ export get_r
 export get_r_load
 export get_ramp_limits
 export get_ramp_limits_pump
-export get_rate
 export get_rated_current
 export get_rated_voltage
 export get_rating
 export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
-export get_reactive_power_coefficient
 export get_reactive_power_flow
 export get_reactive_power_limits
 export get_reactive_power_limits_from
@@ -608,17 +599,16 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_services
-export get_shut_down
 export get_speed_error_signal
 export get_start_time_limits
 export get_start_types
-export get_start_up
-export get_state_of_charge_limits
 export get_states
 export get_states_types
 export get_status
 export get_storage_capacity
+export get_storage_level_limits
 export get_storage_target
+export get_storage_technology_type
 export get_sustained_time
 export get_switch
 export get_tF_delay
@@ -630,8 +620,8 @@ export get_time_at_status
 export get_time_frame
 export get_time_limits
 export get_time_limits_pump
-export get_time_series_container
 export get_to
+export get_to_area
 export get_to_branch_control
 export get_valve_position_limits
 export get_variable
@@ -972,14 +962,12 @@ export set_Y_increase!
 export set_Zerox!
 export set_a!
 export set_active_power!
-export set_active_power_coefficient!
 export set_active_power_flow!
 export set_active_power_flow_limits!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
 export set_active_power_limits_to!
-export set_ancillary_services!
 export set_angle!
 export set_angle_limits!
 export set_arc!
@@ -1018,19 +1006,17 @@ export set_direction_mapping!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!
-export set_energy_shortage_cost!
-export set_energy_surplus_cost!
 export set_eq_p!
 export set_ext!
 export set_f!
 export set_fdbd_pnts!
 export set_fe_lim!
 export set_fh!
-export set_fixed!
 export set_fl!
 export set_flow_limits!
 export set_frequency!
 export set_from!
+export set_from_area!
 export set_from_branch_control!
 export set_fs!
 export set_fuel!
@@ -1041,8 +1027,8 @@ export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
-export set_initial_energy!
 export set_initial_storage!
+export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
 export set_input_code_1!
@@ -1057,7 +1043,7 @@ export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
-export set_inverter_firing_angle!
+export set_inverter_extinction_angle!
 export set_inverter_tap_limits!
 export set_inverter_xrc!
 export set_is_filter_differential!
@@ -1077,6 +1063,7 @@ export set_kpc!
 export set_kpi!
 export set_kpv!
 export set_kq!
+export set_kw!
 export set_kω!
 export set_l!
 export set_lf!
@@ -1084,6 +1071,7 @@ export set_lg!
 export set_load_response!
 export set_load_zone!
 export set_loss!
+export set_loss_function!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
@@ -1099,7 +1087,6 @@ export set_max_reactive_power!
 export set_must_run!
 export set_n_states!
 export set_name!
-export set_no_load!
 export set_number!
 export set_number_of_steps!
 export set_operation_cost!
@@ -1118,14 +1105,12 @@ export set_r!
 export set_r_load!
 export set_ramp_limits!
 export set_ramp_limits_pump!
-export set_rate!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
 export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
-export set_reactive_power_coefficient!
 export set_reactive_power_flow!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
@@ -1144,17 +1129,16 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_services!
-export set_shut_down!
 export set_speed_error_signal!
 export set_start_time_limits!
 export set_start_types!
-export set_start_up!
-export set_state_of_charge_limits!
 export set_states!
 export set_states_types!
 export set_status!
 export set_storage_capacity!
+export set_storage_level_limits!
 export set_storage_target!
+export set_storage_technology_type!
 export set_sustained_time!
 export set_switch!
 export set_tF_delay!
@@ -1166,8 +1150,8 @@ export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
 export set_time_limits_pump!
-export set_time_series_container!
 export set_to!
+export set_to_area!
 export set_to_branch_control!
 export set_valve_position_limits!
 export set_variable!

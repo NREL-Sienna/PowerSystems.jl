@@ -5,12 +5,12 @@ function arrays_to_dicts!(data::Dict{String, <:Any})
     for (k, v) in data
         if isa(v, Array) && length(v) > 0 && isa(v[1], Dict)
             #println("updating $(k)")
-            dict = Dict{String, Any}()
+            dict = Dict{Int, Any}()
             for (i, item) in enumerate(v)
                 if haskey(item, "index")
-                    key = string(item["index"])
+                    key = item["index"]
                 else
-                    key = string(i)
+                    key = i
                 end
 
                 if !(haskey(dict, key))

@@ -10,37 +10,43 @@ This file is auto-generated. Do not edit.
         peak_active_power::Float64
         peak_reactive_power::Float64
         load_response::Float64
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
+        ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
 A collection of buses for control purposes.
 
+The `Area` can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@ref) in the area
+
 # Arguments
-- `name::String`
-- `peak_active_power::Float64`
-- `peak_reactive_power::Float64`
-- `load_response::Float64`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `peak_active_power::Float64`: (default: `0.0`) Peak active power in the area
+- `peak_reactive_power::Float64`: (default: `0.0`) Peak reactive power in the area
+- `load_response::Float64`: (default: `0.0`) Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [Example here.](https://doi.org/10.1109/NAPS50074.2021.9449687)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Area <: AggregationTopology
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Peak active power in the area"
     peak_active_power::Float64
+    "Peak reactive power in the area"
     peak_reactive_power::Float64
+    "Load-frequency damping parameter modeling how much the load in the area changes due to changes in frequency (MW/Hz). [Example here.](https://doi.org/10.1109/NAPS50074.2021.9449687)"
     load_response::Float64
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    ext::Dict{String, Any}
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, time_series_container, InfrastructureSystemsInternal(), )
+function Area(name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, ext, InfrastructureSystemsInternal(), )
 end
 
-function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Area(name, peak_active_power, peak_reactive_power, load_response, time_series_container, internal, )
+function Area(; name, peak_active_power=0.0, peak_reactive_power=0.0, load_response=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Area(name, peak_active_power, peak_reactive_power, load_response, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -50,7 +56,7 @@ function Area(::Nothing)
         peak_active_power=0.0,
         peak_reactive_power=0.0,
         load_response=0.0,
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
+        ext=Dict{String, Any}(),
     )
 end
 
@@ -62,8 +68,8 @@ get_peak_active_power(value::Area) = get_value(value, value.peak_active_power)
 get_peak_reactive_power(value::Area) = get_value(value, value.peak_reactive_power)
 """Get [`Area`](@ref) `load_response`."""
 get_load_response(value::Area) = value.load_response
-"""Get [`Area`](@ref) `time_series_container`."""
-get_time_series_container(value::Area) = value.time_series_container
+"""Get [`Area`](@ref) `ext`."""
+get_ext(value::Area) = value.ext
 """Get [`Area`](@ref) `internal`."""
 get_internal(value::Area) = value.internal
 
@@ -73,5 +79,5 @@ set_peak_active_power!(value::Area, val) = value.peak_active_power = set_value(v
 set_peak_reactive_power!(value::Area, val) = value.peak_reactive_power = set_value(value, val)
 """Set [`Area`](@ref) `load_response`."""
 set_load_response!(value::Area, val) = value.load_response = val
-"""Set [`Area`](@ref) `time_series_container`."""
-set_time_series_container!(value::Area, val) = value.time_series_container = val
+"""Set [`Area`](@ref) `ext`."""
+set_ext!(value::Area, val) = value.ext = val

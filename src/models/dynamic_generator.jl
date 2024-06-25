@@ -21,7 +21,8 @@
     end
 
 A dynamic generator is composed by 5 components, namely a Machine, a Shaft, an Automatic Voltage Regulator (AVR),
-a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a Static Injection device that is attached to it.
+a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a [`StaticInjection`](@ref) device
+that is attached to it.
 
 # Arguments
 - `name::String`: Name of generator.

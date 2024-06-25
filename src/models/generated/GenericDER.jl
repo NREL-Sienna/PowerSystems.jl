@@ -54,10 +54,10 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of a Generic Distributed Energy Resource Model. Based on https://scholarspace.manoa.hawaii.edu/bitstream/10125/70994/0304.pdf
+Parameters of a Generic Distributed Energy Resource Model. Based on ["Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision."](http://hdl.handle.net/10125/70994)
 
 # Arguments
-- `name::String`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `Qref_Flag::Int`: Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control, validation range: `(1, 3)`
 - `PQ_Flag::Int`: Active and reactive power priority mode. 0 for Q priority, 1 for P priority, validation range: `(0, 1)`
 - `Gen_Flag::Int`: Define generator or storage system. 0 unit is a storage device, 1 unit is a generator, validation range: `(0, 1)`
@@ -95,16 +95,17 @@ Parameters of a Generic Distributed Energy Resource Model. Based on https://scho
 - `TFRT_pnts::NamedTuple{(:tfrt1, :tfrt2), Tuple{Float64, Float64}}`: Frequency ride through time points (tfrt1,tfrt2)
 - `tF_delay::Float64`: Time delay for reconnection after frequency ride-through disconnection, validation range: `(0, nothing)`
 - `FES_lim::MinMax`: Min and max frequency for entering service (FES_min,FES_max)
-- `Pfa_ref::Float64`: Reference power factor, validation range: `(0, nothing)`
-- `Q_ref::Float64`: Reference reactive power, in pu, validation range: `(0, nothing)`
-- `P_ref::Float64`: Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power
-- `states::Vector{Symbol}`: The states of GenericDER depend on the Flags
-- `n_states::Int`: The states of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `Pfa_ref::Float64`: (default: `0.0`) Reference power factor, validation range: `(0, nothing)`
+- `Q_ref::Float64`: (default: `0.0`) Reference reactive power, in pu, validation range: `(0, nothing)`
+- `P_ref::Float64`: (default: `1.0`) Reference active power, in pu, validation range: `(0, nothing)`
+- `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for per unitization
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
+- `n_states::Int`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct GenericDER <: DynamicInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Reactive Power Control Mode. 1 VoltVar Control, 2 Constant Q Control, 3 Constant PF Control"
     Qref_Flag::Int
@@ -186,14 +187,15 @@ mutable struct GenericDER <: DynamicInjection
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    "Base power"
+    "Base power of the unit (MVA) for per unitization"
     base_power::Float64
-    "The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     states::Vector{Symbol}
-    "The states of GenericDER depend on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     n_states::Int
+    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

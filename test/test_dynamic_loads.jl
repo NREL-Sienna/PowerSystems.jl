@@ -32,6 +32,7 @@
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
+    static_load.bus = bus
     add_component!(sys, static_load)
     add_component!(sys, im, static_load)
     IMs = collect(get_components(SingleCageInductionMachine, sys))
@@ -69,6 +70,7 @@
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
+    static_load.bus = bus
     add_component!(sys, static_load)
     add_component!(sys, im, static_load)
     IMs = collect(get_components(SimplifiedSingleCageInductionMachine, sys))
@@ -100,6 +102,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
+    static_load.bus = bus
     add_component!(sys, static_load)
     add_component!(sys, al, static_load)
     ALs = collect(get_components(ActiveConstantPowerLoad, sys))
@@ -123,6 +126,7 @@ end
     bus = ACBus(nothing)
     add_component!(sys, bus)
     static_load = PowerLoad(nothing)
+    static_load.bus = bus
     add_component!(sys, static_load)
     add_component!(sys, al, static_load)
     ALs = collect(get_components(DynamicExponentialLoad, sys))
