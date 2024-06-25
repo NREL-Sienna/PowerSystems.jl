@@ -541,6 +541,7 @@ export get_lg
 export get_load_response
 export get_load_zone
 export get_loss
+export get_loss_function
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -1070,6 +1071,7 @@ export set_lg!
 export set_load_response!
 export set_load_zone!
 export set_loss!
+export set_loss_function!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
