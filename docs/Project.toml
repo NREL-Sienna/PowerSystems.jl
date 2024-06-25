@@ -16,5 +16,5 @@ TypeTree = "04da0e3b-1cad-4b2c-a963-fc1602baf1af"
 [compat]
 CSV = "~0.10"
 Documenter = "^0.27"
-InfrastructureSystems = "1"
+InfrastructureSystems = "2"
 julia = "^1.6"
