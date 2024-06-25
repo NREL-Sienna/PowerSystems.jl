@@ -2577,11 +2577,11 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "efficiency",
-                    "comment": "Conversion efficiency [0, 1.0] from AC Power to DC Power",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
+                    "name": "loss_function",
+                    "comment": "Linear or quadratic loss function with respect to its converter current",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, QuadraticCurve}",
+                    "default": "LinearCurve(0.0)"
                 },
                 {
                     "name": "services",
