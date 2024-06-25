@@ -2578,7 +2578,7 @@
                 },
                 {
                     "name": "loss_function",
-                    "comment": "Linear or quadratic loss function with respect to its converter current",
+                    "comment": "Linear or quadratic loss function with respect to the converter current",
                     "null_value": "LinearCurve(0.0)",
                     "data_type": "Union{LinearCurve, QuadraticCurve}",
                     "default": "LinearCurve(0.0)"

@@ -32,7 +32,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`
-- `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to its converter current
+- `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to the converter current
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
@@ -55,7 +55,7 @@ mutable struct InterconnectingConverter <: StaticInjection
     active_power_limits::MinMax
     "Base power of the converter in MVA"
     base_power::Float64
-    "Linear or quadratic loss function with respect to its converter current"
+    "Linear or quadratic loss function with respect to the converter current"
     loss_function::Union{LinearCurve, QuadraticCurve}
     "Services that this device contributes to"
     services::Vector{Service}
