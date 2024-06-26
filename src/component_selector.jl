@@ -4,14 +4,14 @@
 """
 Get the components of the System that make up the ComponentSelector.
 """
-get_components(e::ComponentSelector, sys::System) =
-    IS.get_components(e, sys.data)
+get_components(e::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_components(e, sys.data; filterby = filterby)
 
 """
 Get the sub-selectors that make up the ComponentSelectorSet.
 """
-get_subselectors(e::ComponentSelectorSet, sys::System) =
-    IS.get_subselectors(e, sys.data)
+get_subselectors(e::ComponentSelectorSet, sys::System; filterby = nothing) =
+    IS.get_subselectors(e, sys.data; filterby = filterby)
 
 # SingleComponentSelector
 # Construction
@@ -97,15 +97,19 @@ IS.default_name(e::TopologyComponentSelector) =
     subtype_to_string(e.component_subtype)
 
 # Contents
-function get_subselectors(e::TopologyComponentSelector, sys::System)
-    return Iterators.map(select_components, get_components(e, sys))
+function get_subselectors(e::TopologyComponentSelector, sys::System; filterby = nothing)
+    return Iterators.map(select_components, get_components(e, sys; filterby = filterby))
 end
 
-function get_components(e::TopologyComponentSelector, sys::System)
+function get_components(e::TopologyComponentSelector, sys::System; filterby = nothing)
     agg_topology = get_component(e.topology_subtype, sys, e.topology_name)
-    return get_components_in_aggregation_topology(
+    isnothing(agg_topology) &&
+        (return Iterators.filter(x -> false, get_components(e.component_subtype, sys)))
+    components = get_components_in_aggregation_topology(
         e.component_subtype,
         sys,
         agg_topology,
     )
+    isnothing(filterby) && (return components)
+    return Iterators.filter(filterby, components)
 end

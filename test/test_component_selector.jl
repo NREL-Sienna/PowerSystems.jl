@@ -1,15 +1,19 @@
 test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys5_all_components")
-test_sys2 = PSB.build_system(PSB.PSISystems, "5_bus_hydro_uc_sys")
+gen_solitude = PSY.get_component(ThermalStandard, test_sys, "Solitude")::Component  # Error if `nothing`
+gen_sundance = get_component(ThermalStandard, test_sys, "Sundance")::Component
+set_available!(gen_sundance, false)
 
-sort_name(x) = sort(collect(x); by = get_name)
+test_sys2 = PSB.build_system(PSB.PSISystems, "5_bus_hydro_uc_sys")
+gen_sundance2 = get_component(ThermalStandard, test_sys2, "Sundance")::Component
+set_available!(gen_sundance2, false)
+
+sort_name!(x) = sort!(collect(x); by = get_name)
 
 @testset "Test helper functions" begin
     @test subtype_to_string(ThermalStandard) == "ThermalStandard"
     @test component_to_qualified_string(ThermalStandard, "Solitude") ==
           "ThermalStandard__Solitude"
-    @test component_to_qualified_string(
-        PSY.get_component(ThermalStandard, test_sys, "Solitude")) ==
-          "ThermalStandard__Solitude"
+    @test component_to_qualified_string(gen_solitude) == "ThermalStandard__Solitude"
 end
 
 @testset "Test SingleComponentSelector" begin
@@ -24,8 +28,7 @@ end
     # Construction
     @test select_components(ThermalStandard, "Solitude") == test_gen_ent
     @test select_components(ThermalStandard, "Solitude", "SolGen") == named_test_gen_ent
-    @test select_components(get_component(ThermalStandard, test_sys, "Solitude")) ==
-          test_gen_ent
+    @test select_components(gen_solitude) == test_gen_ent
 
     # Naming
     @test get_name(test_gen_ent) == "ThermalStandard__Solitude"
@@ -39,6 +42,10 @@ end
     @test length(the_components) == 1
     @test typeof(first(the_components)) == ThermalStandard
     @test get_name(first(the_components)) == "Solitude"
+    @test collect(
+        get_components(select_components(gen_sundance), test_sys; filterby = get_available),
+    ) ==
+          Vector{Component}()
 end
 
 @testset "Test ListComponentSelector" begin
@@ -66,8 +73,11 @@ end
     @test collect(get_components(select_components(), test_sys)) == Vector{Component}()
     the_components = collect(get_components(test_list_ent, test_sys))
     @test length(the_components) == 2
-    @test get_component(ThermalStandard, test_sys, "Solitude") in the_components
+    @test gen_solitude in the_components
     @test get_component(RenewableDispatch, test_sys, "WindBusA") in the_components
+    @test !(
+        gen_sundance in
+        collect(get_components(test_list_ent, test_sys; filterby = get_available)))
 
     @test collect(get_subselectors(select_components(), test_sys)) ==
           Vector{ComponentSelector}()
@@ -95,17 +105,23 @@ end
     @test IS.default_name(test_sub_ent) == "ThermalStandard"
 
     # Contents
-    answer = sort_name(get_components(ThermalStandard, test_sys))
+    answer = sort_name!(get_components(ThermalStandard, test_sys))
 
     @test collect(get_components(select_components(NonexistentComponent), test_sys)) ==
           Vector{Component}()
-    the_components = sort_name(get_components(test_sub_ent, test_sys))
+    the_components = sort_name!(get_components(test_sub_ent, test_sys))
     @test all(the_components .== answer)
+    @test !(
+        gen_sundance in
+        collect(get_components(test_sub_ent, test_sys; filterby = get_available)))
 
     @test collect(get_subselectors(select_components(NonexistentComponent), test_sys)) ==
           Vector{ComponentSelectorElement}()
-    the_subselectors = sort_name(get_subselectors(test_sub_ent, test_sys))
+    the_subselectors = sort_name!(get_subselectors(test_sub_ent, test_sys))
     @test all(the_subselectors .== select_components.(answer))
+    @test !(
+        gen_sundance in
+        collect(get_subselectors(test_sub_ent, test_sys; filterby = get_available)))
 end
 
 @testset "Test TopologyComponentSelector" begin
@@ -135,8 +151,13 @@ end
     @test collect(get_subselectors(empty_topo_ent, test_sys2)) ==
           Vector{ComponentSelectorElement}()
 
+    nonexistent_topo_ent = select_components(Area, "NonexistentArea", ThermalStandard)
+    @test collect(get_components(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
+    @test collect(get_subselectors(nonexistent_topo_ent, test_sys2)) ==
+          Vector{ComponentSelectorElement}()
+
     answers =
-        sort_name.((
+        sort_name!.((
             get_components_in_aggregation_topology(
                 ThermalStandard,
                 test_sys2,
@@ -150,12 +171,25 @@ end
     for (ent, ans) in zip((test_topo_ent1, test_topo_ent2), answers)
         @assert length(ans) > 0 "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
 
-        the_components = sort_name(get_components(ent, test_sys2))
-        @test all(the_components .== ans)
+        the_components = get_components(ent, test_sys2)
+        @test all(sort_name!(the_components) .== ans)
+        @test Set(collect(get_components(ent, test_sys2; filterby = x -> true))) ==
+              Set(the_components)
+        @test length(collect(get_components(ent, test_sys2; filterby = x -> false))) == 0
 
-        the_subselectors = sort_name(get_subselectors(ent, test_sys2))
-        @test all(the_subselectors .== sort_name(select_components.(ans)))
+        the_subselectors = get_subselectors(ent, test_sys2)
+        @test all(sort_name!(the_subselectors) .== sort_name!(select_components.(ans)))
+        @test Set(collect(get_subselectors(ent, test_sys2; filterby = x -> true))) ==
+              Set(the_subselectors)
+        @test length(collect(get_subselectors(ent, test_sys2; filterby = x -> false))) == 0
     end
+
+    @test !(
+        gen_sundance2 in
+        collect(get_components(test_topo_ent1, test_sys2; filterby = get_available)))
+    @test !(
+        select_components(gen_sundance2) in
+        collect(get_subselectors(test_topo_ent1, test_sys2; filterby = get_available)))
 end
 
 @testset "Test FilterComponentSelector" begin
@@ -195,6 +229,9 @@ end
     @test collect(get_components(select_components(x -> false, Component), test_sys)) ==
           Vector{Component}()
     @test all(collect(get_components(test_filter_ent, test_sys)) .== answer)
+    @test !(
+        gen_sundance in
+        collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
 
     @test collect(
         get_subselectors(select_components(x -> true, NonexistentComponent), test_sys),
@@ -204,4 +241,10 @@ end
     @test all(
         collect(get_subselectors(test_filter_ent, test_sys)) .== select_components.(answer),
     )
+    @test !(
+        gen_sundance in
+        collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
+    @test !(
+        select_components(gen_sundance) in
+        collect(get_subselectors(test_filter_ent, test_sys; filterby = get_available)))
 end
