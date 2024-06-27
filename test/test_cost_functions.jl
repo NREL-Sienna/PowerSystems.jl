@@ -129,16 +129,35 @@
 end
 
 @testset "Test cost aliases" begin
+    lc = LinearCurve(3.0, 5.0)
+    @test lc == InputOutputCurve(LinearFunctionData(3.0, 5.0))
     @test LinearCurve(3.0) == InputOutputCurve(LinearFunctionData(3.0, 0.0))
-    @test LinearCurve(3.0, 5.0) == InputOutputCurve(LinearFunctionData(3.0, 5.0))
-    @test QuadraticCurve(1.0, 1.0, 18.0) ==
-          InputOutputCurve(QuadraticFunctionData(1.0, 1.0, 18.0))
-    @test PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]) ==
+    @test get_proportional_term(lc) == 3.0
+    @test get_constant_term(lc) == 5.0
+
+    qc = QuadraticCurve(1.0, 2.0, 18.0)
+    @test qc == InputOutputCurve(QuadraticFunctionData(1.0, 2.0, 18.0))
+    @test get_quadratic_term(qc) == 1.0
+    @test get_proportional_term(qc) == 2.0
+    @test get_constant_term(qc) == 18.0
+
+    ppc = PiecewisePointCurve([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)])
+    @test ppc ==
           InputOutputCurve(PiecewiseLinearData([(1.0, 20.0), (2.0, 24.0), (3.0, 30.0)]))
-    @test PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0]) ==
-          IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
-    @test PiecewiseAverageCurve(20.0, [1.0, 2.0, 3.0], [12.0, 10.0]) ==
-          AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
+    @test get_points(ppc) == [(x = 1.0, y = 20.0), (x = 2.0, y = 24.0), (x = 3.0, y = 30.0)]
+    @test get_x_coords(ppc) == [1.0, 2.0, 3.0]
+    @test get_y_coords(ppc) == [20.0, 24.0, 30.0]
+    @test get_slopes(ppc) == [4.0, 6.0]
+
+    pic = PiecewiseIncrementalCurve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0])
+    @test pic == IncrementalCurve(PiecewiseStepData([1.0, 2.0, 3.0], [4.0, 6.0]), 20.0)
+    @test get_x_coords(pic) == [1.0, 2.0, 3.0]
+    @test get_slopes(pic) == [4.0, 6.0]
+
+    pac = PiecewiseAverageCurve(20.0, [1.0, 2.0, 3.0], [12.0, 10.0])
+    @test pac == AverageRateCurve(PiecewiseStepData([1.0, 2.0, 3.0], [12.0, 10.0]), 20.0)
+    @test get_x_coords(pac) == [1.0, 2.0, 3.0]
+    @test get_average_rates(pac) == [12.0, 10.0]
 end
 
 @testset "Test CostCurve and FuelCurve" begin
@@ -163,19 +182,19 @@ end
           FuelCurve(InputOutputCurve(PSY.LinearFunctionData(0.0, 0.0)), 0.0)
 
     @test repr(cc) == sprint(show, cc) ==
-          "CostCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 0.0)"
+          "CostCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, LinearCurve(0.0, 0.0))"
     @test repr(fc) == sprint(show, fc) ==
-          "FuelCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 4.0, 0.0)"
+          "FuelCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 4.0, LinearCurve(0.0, 0.0))"
     @test sprint(show, "text/plain", cc) ==
           sprint(show, "text/plain", cc; context = :compact => false) ==
-          "CostCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  vom_cost: 0.0"
+          "CostCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  vom_cost: LinearCurve (a type of InputOutputCurve) with function: f(x) = 0.0 x + 0.0"
     @test sprint(show, "text/plain", fc) ==
           sprint(show, "text/plain", fc; context = :compact => false) ==
-          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: 0.0"
+          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: LinearCurve (a type of InputOutputCurve) with function: f(x) = 0.0 x + 0.0"
     @test sprint(show, "text/plain", cc; context = :compact => true) ==
-          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost 0.0, and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
     @test sprint(show, "text/plain", fc; context = :compact => true) ==
-          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost 0.0, and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
 
     @test get_power_units(cc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(fc) == UnitSystem.NATURAL_UNITS

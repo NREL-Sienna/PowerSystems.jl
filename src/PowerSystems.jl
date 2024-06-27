@@ -49,14 +49,15 @@ export get_proportional_term
 export get_quadratic_term
 export get_constant_term
 export get_slopes
+export get_average_rates
 export get_x_lengths
 export is_convex
 export get_points
 export get_x_coords
 export get_y_coords
 
-# Costs
-export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export ValueCurve
+export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCostCurve, CostCurve, FuelCurve
@@ -272,6 +273,7 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 
+export TimeSeriesAssociation
 export TimeSeriesData
 export StaticTimeSeries
 export Forecast
@@ -295,6 +297,7 @@ export get_dynamic_components
 export parse_file
 export open_time_series_store!
 export add_time_series!
+export bulk_add_time_series!
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -494,6 +497,7 @@ import InfrastructureSystems:
     StaticTimeSeriesCache,
     TimeSeriesKey,
     TimeSeriesCounts,
+    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,

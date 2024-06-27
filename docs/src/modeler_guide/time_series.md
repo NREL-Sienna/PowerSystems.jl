@@ -231,9 +231,35 @@ data as shown in this example.
 ### Adding time series in bulk
 
 By default, the call to `add_time_series!` will open the HDF5 file, write the data to the file,
-and close the file. Opening and closing the file has overhead. If you will add thousands of time
-series arrays, consider using `open_time_series_store!`as shown in the example below. All arrays
-will be written with one file handle.
+and close the file. It will also add a row to an SQLite database. These operations have overhead.
+If you will add thousands of time series arrays, consider using `bulk_add_time_series!`as shown
+in the example below. All arrays will be written with one file handle. The bulk SQLite operations
+are much more efficient.
+
+This example assumes that the function `read_time_series` will return data appropriate for
+Deterministic forecasts based on the generator name.
+
+The filenames match the component and time series names. The `bulk_add_time_series!` function will
+only load 100 arrays into memory at a time, by default.
+
+
+```julia
+resolution = Dates.Hour(1)
+associations = (
+    TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series("$(get_name(gen)).csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
+    )
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
+```
+
+If you must add time series arrays one at a time, you can minimize HDF5 file handle overhead, as
+shown in the example below.
 
 This example assumes that there are arrays of components and time series stored in the variables
 `components` and `single_time_series`, respectively.
