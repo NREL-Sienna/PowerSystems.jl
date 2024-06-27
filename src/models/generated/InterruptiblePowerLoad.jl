@@ -34,7 +34,7 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
-- `operation_cost::Union{LoadCost, MarketBidCost}`: [Operating cost](@ref cost_library) of interrupting load
+- `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
@@ -57,7 +57,7 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     max_reactive_power::Float64
     "Base power (MVA) for per unitization"
     base_power::Float64
-    "[Operating cost](@ref cost_library) of interrupting load"
+    "[`OperationalCost`](@ref) of interrupting load"
     operation_cost::Union{LoadCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
