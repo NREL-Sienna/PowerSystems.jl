@@ -21,5 +21,5 @@ lies in providing the abstraction without an implicit mathematical representatio
 In the [Basics](@ref) tutorial, you can find a more detailed introduction to the type system and how to manipulate data.
 
 ```@raw html
-<img src="../../assets/AbstractTree.png" width="75%"/>
+<img src="../assets/AbstractTree.png" width="75%"/>
 ``` ⠀

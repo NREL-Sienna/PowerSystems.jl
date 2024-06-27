@@ -200,7 +200,7 @@ get_electric_load(value::HybridSystem) = value.electric_load
 get_storage(value::HybridSystem) = value.storage
 """Get [`HybridSystem`](@ref) renewable unit"""
 get_renewable_unit(value::HybridSystem) = value.renewable_unit
-"""Get [`HybridSystem`](@ref) `rating`."""
+"""Get [`HybridSystem`](@ref) `interconnection_rating`."""
 get_interconnection_rating(value::HybridSystem) =
     get_value(value, value.interconnection_rating)
 """get [`HybridSystem`](@ref) interconnection impedance"""
@@ -236,7 +236,7 @@ set_available!(value::HybridSystem, val) = value.available = val
 set_status!(value::HybridSystem, val) = value.status = val
 """Set [`HybridSystem`](@ref) `bus`."""
 set_bus!(value::HybridSystem, val) = value.bus = val
-"""Set [`HybridSystem`](@ref) `rating`."""
+"""Set [`HybridSystem`](@ref) `interconnection_rating`."""
 set_interconnection_rating!(value::HybridSystem, val) = value.interconnection_rating = val
 """Set [`HybridSystem`](@ref) `active_power`."""
 set_active_power!(value::HybridSystem, val) = value.active_power = val

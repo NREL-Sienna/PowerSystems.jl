@@ -28,31 +28,24 @@ Base.isequal(a::T, b::T) where {T <: ProductionVariableCostCurve} =
 Base.hash(a::ProductionVariableCostCurve) = IS.hash_from_fields(a)
 
 """
-    @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
-        value_curve::T
-        power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-        vom_cost::LinearCurve = LinearCurve(0.0)
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
+
+    CostCurve(value_curve, power_units, vom_cost)
+    CostCurve(; value_curve, power_units, vom_cost)
 
 Direct representation of the variable operation cost of a power plant in currency. Composed
 of a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate
-data. The default units for the x-axis are megawatts and can be specified with
+data. The default units for the x-axis are MW and can be specified with
 `power_units`.
-
-# Arguments
-  - `value_curve::T`: The underlying `ValueCurve` representation of this
-    `ProductionVariableCostCurve`
-  - `power_units::UnitSystem = UnitSystem.NATURAL_UNITS`: The units for the x-axis of the
-    curve; defaults to natural units (megawatts)
-  - `vom_cost::LinearCurve = LinearCurve(0.0)`: Additional proportional Variable Operation
-    and Maintenance cost in currency/(power_unit h)
 """
 @kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
     value_curve::T
-    "The units for the x-axis of the curve; defaults to natural units (megawatts)"
+    "(default: natural units (MW)) The units for the x-axis of the curve"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    "(default of 0) Additional proportional Variable Operation and Maintenance Cost in
+    \$/(power_unit h), represented as a [`LinearCurve`](@ref)"
     vom_cost::LinearCurve = LinearCurve(0.0)
 end
 
@@ -71,36 +64,29 @@ Base.:(==)(a::CostCurve, b::CostCurve) =
 Base.zero(::Union{CostCurve, Type{CostCurve}}) = CostCurve(zero(ValueCurve))
 
 """
-    @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
-        value_curve::T
-        power_units::UnitSystem = UnitSystem.NATURAL_UNITS
-        fuel_cost::Union{Float64, TimeSeriesKey}
-        vom_cost::LinearCurve = LinearCurve(0.0)
-    end
+$(TYPEDEF)
+$(TYPEDFIELDS)
+
+    FuelCurve(value_curve, power_units, fuel_cost, vom_cost)
+    FuelCurve(value_curve, fuel_cost)
+    FuelCurve(value_curve, fuel_cost, vom_cost)
+    FuelCurve(value_curve, power_units, fuel_cost)
+    FuelCurve(; value_curve, power_units, fuel_cost, vom_cost)
 
 Representation of the variable operation cost of a power plant in terms of fuel (MBTU,
 liters, m^3, etc.), coupled with a conversion factor between fuel and currency. Composed of
 a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate data.
-The default units for the x-axis are megawatts and can be specified with `power_units`.
-
-# Arguments
-  - `value_curve::T`: The underlying `ValueCurve` representation of this
-    `ProductionVariableCostCurve`
-  - `power_units::UnitSystem = UnitSystem.NATURAL_UNITS`: The units for the x-axis of the
-    curve; defaults to natural units (megawatts)
-  - `fuel_cost::Union{Float64, TimeSeriesKey}`: Either a fixed value for fuel cost or the
-    key to a fuel cost time series
-  - `vom_cost::LinearCurve = LinearCurve(0.0)`: Additional proportional Variable Operation
-    and Maintenance cost in currency/(power_unit h)
+The default units for the x-axis are MW and can be specified with `power_units`.
 """
 @kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
     value_curve::T
-    "The units for the x-axis of the curve; defaults to natural units (megawatts)"
+    "(default: natural units (MW)) The units for the x-axis of the curve"
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS
     "Either a fixed value for fuel cost or the key to a fuel cost time series"
     fuel_cost::Union{Float64, TimeSeriesKey}
-    "Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)"
+    "(default of 0) Additional proportional Variable Operation and Maintenance Cost in \$/(power_unit h)
+    represented as a [`LinearCurve`](@ref)"
     vom_cost::LinearCurve = LinearCurve(0.0)
 end
 
