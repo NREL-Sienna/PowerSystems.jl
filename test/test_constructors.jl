@@ -18,7 +18,7 @@
 end
 
 @testset "Generation Constructors" begin
-    for T in subtypes(PSY.OperationalCost)
+    for T in InteractiveUtils.subtypes(PSY.OperationalCost)
         isabstracttype(T) || (@test T(nothing) isa IS.InfrastructureSystemsType)
     end
     # TODO add concrete subtypes of ProductionVariableCostCurve?
