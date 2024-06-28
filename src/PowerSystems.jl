@@ -428,6 +428,8 @@ export get_interconnection_rating
 export get_interconnection_impedance
 export get_from_to_flow_limit
 export get_to_from_flow_limit
+export get_min_active_power_flow_limit
+export get_max_active_power_flow_limit
 
 # Subsystems
 export add_subsystem!
