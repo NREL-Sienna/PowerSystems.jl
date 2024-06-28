@@ -113,7 +113,10 @@ Base.zero(::Union{ValueCurve, Type{ValueCurve}}) =
 
 # CONVERSIONS: InputOutputCurve{LinearFunctionData} to InputOutputCurve{QuadraticFunctionData}
 InputOutputCurve{QuadraticFunctionData}(data::InputOutputCurve{LinearFunctionData}) =
-    InputOutputCurve{QuadraticFunctionData}(get_function_data(data))
+    InputOutputCurve{QuadraticFunctionData}(
+        get_function_data(data),
+        get_input_at_zero(data),
+    )
 
 Base.convert(
     ::Type{InputOutputCurve{QuadraticFunctionData}},
@@ -124,13 +127,13 @@ Base.convert(
 function IncrementalCurve(data::InputOutputCurve{QuadraticFunctionData})
     fd = get_function_data(data)
     q, p, c = get_quadratic_term(fd), get_proportional_term(fd), get_constant_term(fd)
-    return IncrementalCurve(LinearFunctionData(2q, p), c)
+    return IncrementalCurve(LinearFunctionData(2q, p), c, get_input_at_zero(data))
 end
 
 function AverageRateCurve(data::InputOutputCurve{QuadraticFunctionData})
     fd = get_function_data(data)
     q, p, c = get_quadratic_term(fd), get_proportional_term(fd), get_constant_term(fd)
-    return AverageRateCurve(LinearFunctionData(q, p), c)
+    return AverageRateCurve(LinearFunctionData(q, p), c, get_input_at_zero(data))
 end
 
 IncrementalCurve(data::InputOutputCurve{LinearFunctionData}) =
@@ -143,7 +146,7 @@ function IncrementalCurve(data::InputOutputCurve{PiecewiseLinearData})
     fd = get_function_data(data)
     return IncrementalCurve(
         PiecewiseStepData(get_x_coords(fd), get_slopes(fd)),
-        first(get_points(fd)).y,
+        first(get_points(fd)).y, get_input_at_zero(data),
     )
 end
 
@@ -153,7 +156,7 @@ function AverageRateCurve(data::InputOutputCurve{PiecewiseLinearData})
     slopes_from_origin = [p.y / p.x for p in points[2:end]]
     return AverageRateCurve(
         PiecewiseStepData(get_x_coords(fd), slopes_from_origin),
-        first(points).y,
+        first(points).y, get_input_at_zero(data),
     )
 end
 
@@ -166,6 +169,7 @@ function InputOutputCurve(data::IncrementalCurve{LinearFunctionData})
     )
     return InputOutputCurve(
         QuadraticFunctionData(p / 2, get_constant_term(fd), get_initial_input(data)),
+        get_input_at_zero(data),
     )
 end
 
@@ -173,7 +177,10 @@ function InputOutputCurve(data::IncrementalCurve{PiecewiseStepData})
     fd = get_function_data(data)
     c = get_initial_input(data)
     points = running_sum(fd)
-    return InputOutputCurve(PiecewiseLinearData([(p.x, p.y + c) for p in points]))
+    return InputOutputCurve(
+        PiecewiseLinearData([(p.x, p.y + c) for p in points]),
+        get_input_at_zero(data),
+    )
 end
 
 AverageRateCurve(data::IncrementalCurve) = AverageRateCurve(InputOutputCurve(data))
@@ -184,9 +191,11 @@ function InputOutputCurve(data::AverageRateCurve{LinearFunctionData})
     p = get_proportional_term(fd)
     (p == 0) && return InputOutputCurve(
         LinearFunctionData(get_constant_term(fd), get_initial_input(data)),
+        get_input_at_zero(data),
     )
     return InputOutputCurve(
         QuadraticFunctionData(p, get_constant_term(fd), get_initial_input(data)),
+        get_input_at_zero(data),
     )
 end
 
@@ -195,7 +204,10 @@ function InputOutputCurve(data::AverageRateCurve{PiecewiseStepData})
     c = get_initial_input(data)
     xs = get_x_coords(fd)
     ys = xs[2:end] .* get_y_coords(fd)
-    return InputOutputCurve(PiecewiseLinearData(collect(zip(xs, vcat(c, ys)))))
+    return InputOutputCurve(
+        PiecewiseLinearData(collect(zip(xs, vcat(c, ys)))),
+        get_input_at_zero(data),
+    )
 end
 
 IncrementalCurve(data::AverageRateCurve) = IncrementalCurve(InputOutputCurve(data))

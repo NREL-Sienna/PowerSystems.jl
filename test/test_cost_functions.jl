@@ -1,3 +1,14 @@
+# Get all possible isomorphic representations of the given `ValueCurve`
+function all_conversions(vc::ValueCurve;
+    universe = (InputOutputCurve, IncrementalCurve, AverageRateCurve),
+)
+    convert_to = filter(!=(nameof(typeof(vc))) ∘ nameof, universe)  # x -> nameof(x) != nameof(typeof(vc))
+    result = Set{ValueCurve}(constructor(vc) for constructor in convert_to)
+    (vc isa InputOutputCurve{LinearFunctionData}) &&
+        push!(result, InputOutputCurve{QuadraticFunctionData}(vc))
+    return result
+end
+
 @testset "Test ValueCurves" begin
     # InputOutputCurve
     io_quadratic = InputOutputCurve(QuadraticFunctionData(3, 2, 1))
@@ -203,7 +214,13 @@ end
     @test sprint(show, "text/plain", pwinc_with_iaz) ==
           "PiecewiseIncrementalCurve where value at zero is 1234.5, initial value is 6.0, derivative function f is: f(x) =\n  1.5 for x in [1.0, 3.0)\n  2.0 for x in [3.0, 5.0)"
 
-    # TODO preserved under conversion
+    # Preserved under conversion
+    for without_iaz in Iterators.flatten(all_conversions.(all_without_iaz))
+        @test get_input_at_zero(without_iaz) === nothing
+    end
+    for with_iaz in Iterators.flatten(all_conversions.(all_with_iaz))
+        @test get_input_at_zero(with_iaz) == iaz
+    end
 end
 
 @testset "Test CostCurve and FuelCurve" begin
