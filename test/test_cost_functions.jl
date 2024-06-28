@@ -13,7 +13,7 @@
     @test repr(io_quadratic) == sprint(show, io_quadratic) ==
           "QuadraticCurve(3.0, 2.0, 1.0)"
     @test sprint(show, "text/plain", io_quadratic) ==
-          "QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 3.0 x^2 + 2.0 x + 1.0"
+          "QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 3.0 x^2 + 2.0 x + 1.0"
 
     io_linear = InputOutputCurve(LinearFunctionData(2, 1))
     @test io_linear isa InputOutputCurve{LinearFunctionData}
@@ -28,7 +28,7 @@
     @test repr(io_linear) == sprint(show, io_linear) ==
           "LinearCurve(2.0, 1.0)"
     @test sprint(show, "text/plain", io_linear) ==
-          "LinearCurve (a type of InputOutputCurve) with function: f(x) = 2.0 x + 1.0"
+          "LinearCurve (a type of InputOutputCurve) where function is: f(x) = 2.0 x + 1.0"
 
     io_piecewise = InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test io_piecewise isa InputOutputCurve{PiecewiseLinearData}
@@ -42,7 +42,7 @@
     @test repr(io_piecewise) == sprint(show, io_piecewise) ==
           "PiecewisePointCurve([(x = 1.0, y = 6.0), (x = 3.0, y = 9.0), (x = 5.0, y = 13.0)])"
     @test sprint(show, "text/plain", io_piecewise) ==
-          "PiecewisePointCurve (a type of InputOutputCurve) with function: piecewise linear y = f(x) connecting points:\n  (x = 1.0, y = 6.0)\n  (x = 3.0, y = 9.0)\n  (x = 5.0, y = 13.0)"
+          "PiecewisePointCurve (a type of InputOutputCurve) where function is: piecewise linear y = f(x) connecting points:\n  (x = 1.0, y = 6.0)\n  (x = 3.0, y = 9.0)\n  (x = 5.0, y = 13.0)"
 
     # IncrementalCurve
     inc_linear = IncrementalCurve(LinearFunctionData(6, 2), 1.0)
@@ -61,7 +61,7 @@
     @test repr(inc_linear) == sprint(show, inc_linear) ==
           "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", inc_linear) ==
-          "IncrementalCurve where initial value is 1.0 and derivative function f is: f(x) = 6.0 x + 2.0"
+          "IncrementalCurve where initial value is 1.0, derivative function f is: f(x) = 6.0 x + 2.0"
 
     inc_piecewise = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test inc_piecewise isa IncrementalCurve{PiecewiseStepData}
@@ -76,7 +76,7 @@
     @test repr(inc_piecewise) == sprint(show, inc_piecewise) ==
           "PiecewiseIncrementalCurve(6.0, [1.0, 3.0, 5.0], [1.5, 2.0])"
     @test sprint(show, "text/plain", inc_piecewise) ==
-          "PiecewiseIncrementalCurve where initial value is 6.0 and derivative function f is: f(x) =\n  1.5 for x in [1.0, 3.0)\n  2.0 for x in [3.0, 5.0)"
+          "PiecewiseIncrementalCurve where initial value is 6.0, derivative function f is: f(x) =\n  1.5 for x in [1.0, 3.0)\n  2.0 for x in [3.0, 5.0)"
 
     # AverageRateCurve
     ar_linear = AverageRateCurve(LinearFunctionData(3, 2), 1.0)
@@ -95,7 +95,7 @@
     @test repr(ar_linear) == sprint(show, ar_linear) ==
           "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", ar_linear) ==
-          "AverageRateCurve where initial value is 1.0 and average rate function f is: f(x) = 3.0 x + 2.0"
+          "AverageRateCurve where initial value is 1.0, average rate function f is: f(x) = 3.0 x + 2.0"
 
     ar_piecewise = AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
     @test get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
@@ -108,7 +108,7 @@
     @test repr(ar_piecewise) == sprint(show, ar_piecewise) ==
           "PiecewiseAverageCurve(6.0, [1.0, 3.0, 5.0], [3.0, 2.6])"
     @test sprint(show, "text/plain", ar_piecewise) ==
-          "PiecewiseAverageCurve where initial value is 6.0 and average rate function f is: f(x) =\n  3.0 for x in [1.0, 3.0)\n  2.6 for x in [3.0, 5.0)"
+          "PiecewiseAverageCurve where initial value is 6.0, average rate function f is: f(x) =\n  3.0 for x in [1.0, 3.0)\n  2.6 for x in [3.0, 5.0)"
 
     # Serialization round trip
     curves_by_type = [  # typeof() gives parameterized types
@@ -160,6 +160,52 @@ end
     @test get_average_rates(pac) == [12.0, 10.0]
 end
 
+@testset "Test input_at_zero" begin
+    iaz = 1234.5
+    pwinc_without_iaz =
+        IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, nothing)
+    pwinc_with_iaz = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, iaz)
+    others_without_iaz = [
+        InputOutputCurve(QuadraticFunctionData(3, 2, 1), nothing),
+        InputOutputCurve(LinearFunctionData(2, 1), nothing),
+        InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]), nothing),
+        IncrementalCurve(LinearFunctionData(6, 2), 1.0, nothing),
+        AverageRateCurve(LinearFunctionData(3, 2), 1.0, nothing),
+        AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0, nothing),
+    ]
+    others_with_iaz = [
+        InputOutputCurve(QuadraticFunctionData(3, 2, 1), iaz),
+        InputOutputCurve(LinearFunctionData(2, 1), iaz),
+        InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]), iaz),
+        IncrementalCurve(LinearFunctionData(6, 2), 1.0, iaz),
+        IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, iaz),
+        AverageRateCurve(LinearFunctionData(3, 2), 1.0, iaz),
+        AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0, iaz),
+    ]
+    all_without_iaz = vcat(pwinc_without_iaz, others_without_iaz)
+    all_with_iaz = vcat(pwinc_with_iaz, others_with_iaz)
+
+    # Alias constructors
+    @test PiecewiseIncrementalCurve(1234.5, 6.0, [1.0, 3.0, 5.0], [1.5, 2.0]) ==
+          pwinc_with_iaz
+
+    # Getters and printouts
+    for (without_iaz, with_iaz) in zip(all_without_iaz, all_with_iaz)
+        @test get_input_at_zero(without_iaz) === nothing
+        @test get_input_at_zero(with_iaz) == iaz
+        @test occursin(string(iaz), repr(with_iaz))
+        @test sprint(show, with_iaz) == repr(with_iaz)
+        @test occursin(string(iaz), sprint(show, "text/plain", with_iaz))
+    end
+
+    @test repr(pwinc_with_iaz) == sprint(show, pwinc_with_iaz) ==
+          "PiecewiseIncrementalCurve(1234.5, 6.0, [1.0, 3.0, 5.0], [1.5, 2.0])"
+    @test sprint(show, "text/plain", pwinc_with_iaz) ==
+          "PiecewiseIncrementalCurve where value at zero is 1234.5, initial value is 6.0, derivative function f is: f(x) =\n  1.5 for x in [1.0, 3.0)\n  2.0 for x in [3.0, 5.0)"
+
+    # TODO preserved under conversion
+end
+
 @testset "Test CostCurve and FuelCurve" begin
     cc = CostCurve(InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)))
     fc = FuelCurve(InputOutputCurve(PSY.QuadraticFunctionData(1, 2, 3)), 4.0)
@@ -187,14 +233,14 @@ end
           "FuelCurve{QuadraticCurve}(QuadraticCurve(1.0, 2.0, 3.0), UnitSystem.NATURAL_UNITS = 2, 4.0, LinearCurve(0.0, 0.0))"
     @test sprint(show, "text/plain", cc) ==
           sprint(show, "text/plain", cc; context = :compact => false) ==
-          "CostCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  vom_cost: LinearCurve (a type of InputOutputCurve) with function: f(x) = 0.0 x + 0.0"
+          "CostCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  vom_cost: LinearCurve (a type of InputOutputCurve) where function is: f(x) = 0.0 x + 0.0"
     @test sprint(show, "text/plain", fc) ==
           sprint(show, "text/plain", fc; context = :compact => false) ==
-          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: LinearCurve (a type of InputOutputCurve) with function: f(x) = 0.0 x + 0.0"
+          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: LinearCurve (a type of InputOutputCurve) where function is: f(x) = 0.0 x + 0.0"
     @test sprint(show, "text/plain", cc; context = :compact => true) ==
-          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+          "CostCurve with power_units UnitSystem.NATURAL_UNITS = 2, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0"
     @test sprint(show, "text/plain", fc; context = :compact => true) ==
-          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) with function: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0"
 
     @test get_power_units(cc) == UnitSystem.NATURAL_UNITS
     @test get_power_units(fc) == UnitSystem.NATURAL_UNITS

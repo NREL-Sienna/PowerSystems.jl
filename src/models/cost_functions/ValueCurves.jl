@@ -12,6 +12,9 @@ IS.deserialize(T::Type{<:ValueCurve}, val::Dict) = IS.deserialize_struct(T, val)
 "Get the underlying `FunctionData` representation of this `ValueCurve`"
 get_function_data(curve::ValueCurve) = curve.function_data
 
+"Get the `input_at_zero` field of this `ValueCurve`"
+get_input_at_zero(curve::ValueCurve) = curve.input_at_zero
+
 """
 An input-output curve, directly relating the production quantity to the cost: `y = f(x)`.
 Can be used, for instance, in the representation of a [`CostCurve`](@ref) where `x` is MW
@@ -28,7 +31,10 @@ and `y` is fuel/hr.
 end
 
 InputOutputCurve(function_data) = InputOutputCurve(function_data, nothing)
-InputOutputCurve{T}(function_data) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = InputOutputCurve{T}(function_data, nothing)
+InputOutputCurve{T}(
+    function_data,
+) where {(T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData})} =
+    InputOutputCurve{T}(function_data, nothing)
 
 """
 An incremental (or 'marginal') curve, relating the production quantity to the derivative of
@@ -46,8 +52,13 @@ where `x` is MW and `y` is fuel/MWh.
     input_at_zero::Union{Nothing, Float64} = nothing
 end
 
-IncrementalCurve(function_data, initial_input) = IncrementalCurve(function_data, initial_input, nothing)
-IncrementalCurve{T}(function_data, initial_input) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = IncrementalCurve{T}(function_data, initial_input, nothing)
+IncrementalCurve(function_data, initial_input) =
+    IncrementalCurve(function_data, initial_input, nothing)
+IncrementalCurve{T}(
+    function_data,
+    initial_input,
+) where {(T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData})} =
+    IncrementalCurve{T}(function_data, initial_input, nothing)
 
 """
 An average rate curve, relating the production quantity to the average cost rate from the
@@ -66,8 +77,13 @@ absolute values of cost rate or fuel input rate by absolute values of electric p
     input_at_zero::Union{Nothing, Float64} = nothing
 end
 
-AverageRateCurve(function_data, initial_input) = AverageRateCurve(function_data, initial_input, nothing)
-AverageRateCurve{T}(function_data, initial_input) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = AverageRateCurve{T}(function_data, initial_input, nothing)
+AverageRateCurve(function_data, initial_input) =
+    AverageRateCurve(function_data, initial_input, nothing)
+AverageRateCurve{T}(
+    function_data,
+    initial_input,
+) where {(T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData})} =
+    AverageRateCurve{T}(function_data, initial_input, nothing)
 
 "Get the `initial_input` field of this `ValueCurve` (not defined for `InputOutputCurve`)"
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
@@ -197,20 +213,29 @@ simple_type_name(curve::ValueCurve) =
 function Base.show(io::IO, ::MIME"text/plain", curve::InputOutputCurve)
     print(io, simple_type_name(curve))
     is_cost_alias(curve) && print(io, " (a type of $InputOutputCurve)")
-    print(io, " with function: ")
+    print(io, " where ")
+    !isnothing(get_input_at_zero(curve)) &&
+        print(io, "value at zero is $(get_input_at_zero(curve)), ")
+    print(io, "function is: ")
     show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
 end
 
 function Base.show(io::IO, ::MIME"text/plain", curve::IncrementalCurve)
     print(io, simple_type_name(curve))
-    print(io, " where initial value is $(get_initial_input(curve))")
-    print(io, " and derivative function f is: ")
+    print(io, " where ")
+    !isnothing(get_input_at_zero(curve)) &&
+        print(io, "value at zero is $(get_input_at_zero(curve)), ")
+    print(io, "initial value is $(get_initial_input(curve))")
+    print(io, ", derivative function f is: ")
     show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
 end
 
 function Base.show(io::IO, ::MIME"text/plain", curve::AverageRateCurve)
     print(io, simple_type_name(curve))
-    print(io, " where initial value is $(get_initial_input(curve))")
-    print(io, " and average rate function f is: ")
+    print(io, " where ")
+    !isnothing(get_input_at_zero(curve)) &&
+        print(io, "value at zero is $(get_input_at_zero(curve)), ")
+    print(io, "initial value is $(get_initial_input(curve))")
+    print(io, ", average rate function f is: ")
     show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
 end

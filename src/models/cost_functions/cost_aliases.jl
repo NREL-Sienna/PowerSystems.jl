@@ -37,8 +37,11 @@ get_proportional_term(vc::LinearCurve) = get_proportional_term(get_function_data
 "Get the constant term (i.e., intercept) of the `LinearCurve`"
 get_constant_term(vc::LinearCurve) = get_constant_term(get_function_data(vc))
 
-Base.show(io::IO, vc::LinearCurve) =
+Base.show(io::IO, vc::LinearCurve) = if isnothing(get_input_at_zero(vc))
     print(io, "$(typeof(vc))($(get_proportional_term(vc)), $(get_constant_term(vc)))")
+else
+    Base.show_default(io, vc)
+end
 
 """
     QuadraticCurve(quadratic_term::Float64, proportional_term::Float64, constant_term::Float64)
@@ -68,11 +71,14 @@ get_proportional_term(vc::QuadraticCurve) = get_proportional_term(get_function_d
 "Get the constant term of the `QuadraticCurve`"
 get_constant_term(vc::QuadraticCurve) = get_constant_term(get_function_data(vc))
 
-Base.show(io::IO, vc::QuadraticCurve) =
+Base.show(io::IO, vc::QuadraticCurve) = if isnothing(get_input_at_zero(vc))
     print(
-        io,
-        "$(typeof(vc))($(get_quadratic_term(vc)), $(get_proportional_term(vc)), $(get_constant_term(vc)))",
-    )
+    io,
+    "$(typeof(vc))($(get_quadratic_term(vc)), $(get_proportional_term(vc)), $(get_constant_term(vc)))",
+)
+else
+    Base.show_default(io, vc)
+end
 
 """
     PiecewisePointCurve(points::Vector{Tuple{Float64, Float64}})
@@ -102,8 +108,11 @@ get_y_coords(vc::PiecewisePointCurve) = get_y_coords(get_function_data(vc))
 get_slopes(vc::PiecewisePointCurve) = get_slopes(get_function_data(vc))
 
 # Here we manually circumvent the @NamedTuple{x::Float64, y::Float64} type annotation, but we keep things looking like named tuples
-Base.show(io::IO, vc::PiecewisePointCurve) =
+Base.show(io::IO, vc::PiecewisePointCurve) = if isnothing(get_input_at_zero(vc))
     print(io, "$(typeof(vc))([$(join(get_points(vc), ", "))])")
+else
+    Base.show_default(io, vc)
+end
 
 """
     PiecewiseIncrementalCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
@@ -112,6 +121,7 @@ A piecewise linear curve specified by marginal rates (slopes) between production
 have nonzero initial value.
 
 # Arguments
+- `input_at_zero::Float64`: (optional) cost at zero production
 - `initial_input::Float64`: cost at minimum production point
 - `x_coords::Vector{Float64}`: vector of `n` production points
 - `slopes::Vector{Float64}`: vector of `n-1` marginal rates/slopes of the curve segments between
@@ -124,6 +134,14 @@ is_cost_alias(::Union{PiecewiseIncrementalCurve, Type{PiecewiseIncrementalCurve}
 IncrementalCurve{PiecewiseStepData}(initial_input, x_coords::Vector, slopes::Vector) =
     IncrementalCurve(PiecewiseStepData(x_coords, slopes), initial_input)
 
+IncrementalCurve{PiecewiseStepData}(
+    input_at_zero,
+    initial_input,
+    x_coords::Vector,
+    slopes::Vector,
+) =
+    IncrementalCurve(PiecewiseStepData(x_coords, slopes), initial_input, input_at_zero)
+
 "Get the x-coordinates that define the `PiecewiseIncrementalCurve`"
 get_x_coords(vc::PiecewiseIncrementalCurve) = get_x_coords(get_function_data(vc))
 
@@ -133,7 +151,11 @@ get_slopes(vc::PiecewiseIncrementalCurve) = get_y_coords(get_function_data(vc))
 Base.show(io::IO, vc::PiecewiseIncrementalCurve) =
     print(
         io,
-        "$(typeof(vc))($(get_initial_input(vc)), $(get_x_coords(vc)), $(get_slopes(vc)))",
+        if isnothing(get_input_at_zero(vc))
+            "$(typeof(vc))($(get_initial_input(vc)), $(get_x_coords(vc)), $(get_slopes(vc)))"
+        else
+            "$(typeof(vc))($(get_input_at_zero(vc)), $(get_initial_input(vc)), $(get_x_coords(vc)), $(get_slopes(vc)))"
+        end,
     )
 
 """
@@ -161,8 +183,11 @@ get_x_coords(vc::PiecewiseAverageCurve) = get_x_coords(get_function_data(vc))
 "Get the average rates that define the `PiecewiseAverageCurve`"
 get_average_rates(vc::PiecewiseAverageCurve) = get_y_coords(get_function_data(vc))
 
-Base.show(io::IO, vc::PiecewiseAverageCurve) =
+Base.show(io::IO, vc::PiecewiseAverageCurve) = if isnothing(get_input_at_zero(vc))
     print(
-        io,
-        "$(typeof(vc))($(get_initial_input(vc)), $(get_x_coords(vc)), $(get_average_rates(vc)))",
-    )
+    io,
+    "$(typeof(vc))($(get_initial_input(vc)), $(get_x_coords(vc)), $(get_average_rates(vc)))",
+)
+else
+    Base.show_default(io, vc)
+end
