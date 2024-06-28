@@ -59,7 +59,7 @@
     @test zero(IncrementalCurve) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test PSY.is_cost_alias(inc_linear) == PSY.is_cost_alias(typeof(inc_linear)) == false
     @test repr(inc_linear) == sprint(show, inc_linear) ==
-          "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0)"
+          "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", inc_linear) ==
           "IncrementalCurve where initial value is 1.0 and derivative function f is: f(x) = 6.0 x + 2.0"
 
@@ -93,7 +93,7 @@
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test PSY.is_cost_alias(ar_linear) == PSY.is_cost_alias(typeof(ar_linear)) == false
     @test repr(ar_linear) == sprint(show, ar_linear) ==
-          "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0)"
+          "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", ar_linear) ==
           "AverageRateCurve where initial value is 1.0 and average rate function f is: f(x) = 3.0 x + 2.0"
 

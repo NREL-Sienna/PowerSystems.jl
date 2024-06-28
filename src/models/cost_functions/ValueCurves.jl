@@ -23,7 +23,12 @@ and `y` is fuel/hr.
 } <: ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
+    "Optional, an explicit representation of the input value at zero output."
+    input_at_zero::Union{Nothing, Float64} = nothing
 end
+
+InputOutputCurve(function_data) = InputOutputCurve(function_data, nothing)
+InputOutputCurve{T}(function_data) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = InputOutputCurve{T}(function_data, nothing)
 
 """
 An incremental (or 'marginal') curve, relating the production quantity to the derivative of
@@ -37,7 +42,12 @@ where `x` is MW and `y` is fuel/MWh.
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
     initial_input::Float64
+    "Optional, an explicit representation of the input value at zero output."
+    input_at_zero::Union{Nothing, Float64} = nothing
 end
+
+IncrementalCurve(function_data, initial_input) = IncrementalCurve(function_data, initial_input, nothing)
+IncrementalCurve{T}(function_data, initial_input) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = IncrementalCurve{T}(function_data, initial_input, nothing)
 
 """
 An average rate curve, relating the production quantity to the average cost rate from the
@@ -52,7 +62,12 @@ absolute values of cost rate or fuel input rate by absolute values of electric p
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
     initial_input::Float64
+    "Optional, an explicit representation of the input value at zero output."
+    input_at_zero::Union{Nothing, Float64} = nothing
 end
+
+AverageRateCurve(function_data, initial_input) = AverageRateCurve(function_data, initial_input, nothing)
+AverageRateCurve{T}(function_data, initial_input) where (T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData}) = AverageRateCurve{T}(function_data, initial_input, nothing)
 
 "Get the `initial_input` field of this `ValueCurve` (not defined for `InputOutputCurve`)"
 get_initial_input(curve::Union{IncrementalCurve, AverageRateCurve}) = curve.initial_input
