@@ -12,6 +12,7 @@
 is_cost_alias(::Union{ValueCurve, Type{<:ValueCurve}}) = false
 
 """
+    LinearCurve(proportional_term::Float64)
     LinearCurve(proportional_term::Float64, constant_term::Float64)
 
 A linear input-output curve, representing a constant marginal rate. May have zero no-load
@@ -119,13 +120,14 @@ Base.show(io::IO, vc::PiecewisePointCurve) =
 
 """
     PiecewiseIncrementalCurve(initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
+    PiecewiseIncrementalCurve(input_at_zero::Float64, initial_input::Float64, x_coords::Vector{Float64}, slopes::Vector{Float64})
 
 A piecewise linear curve specified by marginal rates (slopes) between production points. May
 have nonzero initial value.
 
 # Arguments
-- `input_at_zero::Float64`: (optional) cost at zero production
-- `initial_input::Float64`: cost at minimum production point
+- `input_at_zero::Union{Nothing, Float64}`: (optional, defaults to `nothing`) cost at zero production, does NOT represent a part of the curve
+- `initial_input::Float64`: cost at minimum production point `first(x_coords)` (NOT at zero production), defines the start of the curve
 - `x_coords::Vector{Float64}`: vector of `n` production points
 - `slopes::Vector{Float64}`: vector of `n-1` marginal rates/slopes of the curve segments between
   the points
@@ -168,7 +170,7 @@ A piecewise linear curve specified by average rates between production points. M
 nonzero initial value.
 
 # Arguments
-- `initial_input::Float64`: cost at minimum production point
+- `initial_input::Float64`: cost at minimum production point `first(x_coords)` (NOT at zero production), defines the start of the curve
 - `x_coords::Vector{Float64}`: vector of `n` production points
 - `slopes::Vector{Float64}`: vector of `n-1` average rates/slopes of the curve segments between
   the points
