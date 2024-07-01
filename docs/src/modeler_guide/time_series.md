@@ -1,21 +1,25 @@
 # [Time Series Data](@id ts_data)
 
-## Introduction
+## Categories of Time Series
 
 The bulk of the data in many power system models is time series data. Given the potential
-inherent complexity, `PowerSystems.jl` has a set of definitions to organize this data and
+complexity, `PowerSystems.jl` has a set of definitions to organize this data and
 enable consistent modeling.
 
-- **Resolution**: The period of time between each discrete value in the data, all resolutions
-  are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
-  has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`.
+`PowerSystems.jl` supports two categories of time series data depending on the
+process to obtain the data and its interpretation:
 
-- **Static data**: a single column of time series values for a component field
-  (such as active power) where each time period is represented by a single value.
-  This data commonly is obtained from historical information or the realization of
-  a time-varying quantity.
+- [Static Time Series Data](@ref)
+- [Forecasts](@ref)
 
-This category of Time Series data usually comes in the following format:
+### Static Time Series Data
+
+A static time series data is a single column of data where each time period has a single
+value assigned to a component field, such as its maximum active power. This data commonly
+is obtained from historical information or the realization of a time-varying quantity.
+
+Static time series usually comes in the following format, with a set [resolution](@ref R)
+between the time-stamps:
 
 | DateTime            | Value |
 |---------------------|:-----:|
@@ -23,15 +27,24 @@ This category of Time Series data usually comes in the following format:
 | 2020-09-01T01:00:00 | 101.0 |
 | 2020-09-01T02:00:00 |  99.0 |
 
-Where a column (or several columns) represent the timestamp associated with the value and
-a column stores the values of interest.
+This example is a 1-hour resolution static time-series.
 
-- **Forecasts**: Predicted values of a time-varying quantity that commonly features
-  a look-ahead and can have multiple data values representing each time period.
-  This data is used in simulation with receding horizons or data generated from
-  forecasting algorithms.
+In PowerSystems, a static time series is represented using [`SingleTimeSeries`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries).
 
-Forecast data usually comes in the following format:
+### Forecasts
+
+A forecast time series includes predicted values of a time-varying quantity that commonly
+includes a look-ahead window and can have multiple data values representing each time
+period. This data is used in simulation with receding horizons or data generated from
+forecasting algorithms.
+
+Key forecast format parameters are the forecast [resolution](@ref R), the
+[interval](@ref I) of time between forecast [initial times](@ref I), and the number of
+[forecast windows](@ref F) (or forecasted values) in the forecast [horizon](@ref H).
+
+Forecast data usually comes in the following format, where a column represents the time
+stamp associated with the [initial time](@ref I) of the forecast, and the remaining columns
+represent the forecasted values at each step in the forecast [horizon](@ref H).
 
 | DateTime            |   0   | 1     | 2     | 3    | 4     | 5     | 6     | 7     |
 |---------------------|:-----:|:-----:|:-----:|:----:|:-----:|:-----:|:-----:|:------|
@@ -39,42 +52,7 @@ Forecast data usually comes in the following format:
 | 2020-09-01T01:00:00 | 101.0 | 101.3 | 99.0  | 98.0 | 88.9  | 88.3  | 67.1  | 89.4  |
 | 2020-09-01T02:00:00 |  99.0 | 67.0  | 89.0  | 99.9 | 100.0 | 101.0 | 112.0 | 101.3 |
 
-Where a column (or several columns) represent the time stamp associated with the initial
-time of the forecast, and the columns represent the forecasted values.
-
-- **Interval**: The period of time between forecasts initial times. In `PowerSystems.jl` all
-  intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
-  simulation, the interval of the time series is usually `Hour(24)`, in the example above, the
-  interval is `Hour(1)`.
-
-- **Horizon**: Is the count of discrete forecasted values, all horizons in `PowerSystems.jl`
-  are represented with `Dates.Period`. For instance, many Day-ahead markets will have a
-  forecast with a horizon of Dates.Hour(24).
-
-- **Forecast window**: Represents the forecasted value starting at a particular initial time.
-
-**Currently `PowerSystems.jl` does not support Forecasts or SingleTimeSeries with dissimilar
-intervals or resolution.**
-
-## Types
-
-`PowerSystems.jl` supports two categories of time series data depending on the
-process to obtain the data:
-
-- Static data: a single column of time series values for a component field
-  (such as active power) where each time period is represented by a single value.
-  This data commonly is obtained from historical information or the realization of
-  a time-varying quantity.
-- Forecasts: Predicted values of a time-varying quantity that commonly features
-  a look-ahead and can have multiple data values representing each time period.
-  This data is used in simulation with receding horizons or data generated from
-  forecasting algorithms.
-
-### Static Time Series Data
-
-PowerSystems defines the Julia struct [`SingleTimeSeries`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/InfrastructureSystems/#InfrastructureSystems.SingleTimeSeries) to represent this data.
-
-### Forecasts
+This example forecast has a [interval](@ref I) of 1 hour and a [horizon](@ref H) of 8.
 
 PowerSystems defines the following Julia structs to represent forecasts:
 
@@ -253,9 +231,35 @@ data as shown in this example.
 ### Adding time series in bulk
 
 By default, the call to `add_time_series!` will open the HDF5 file, write the data to the file,
-and close the file. Opening and closing the file has overhead. If you will add thousands of time
-series arrays, consider using `open_time_series_store!`as shown in the example below. All arrays
-will be written with one file handle.
+and close the file. It will also add a row to an SQLite database. These operations have overhead.
+If you will add thousands of time series arrays, consider using `bulk_add_time_series!`as shown
+in the example below. All arrays will be written with one file handle. The bulk SQLite operations
+are much more efficient.
+
+This example assumes that the function `read_time_series` will return data appropriate for
+Deterministic forecasts based on the generator name.
+
+The filenames match the component and time series names. The `bulk_add_time_series!` function will
+only load 100 arrays into memory at a time, by default.
+
+
+```julia
+resolution = Dates.Hour(1)
+associations = (
+    TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series("$(get_name(gen)).csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
+    )
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
+```
+
+If you must add time series arrays one at a time, you can minimize HDF5 file handle overhead, as
+shown in the example below.
 
 This example assumes that there are arrays of components and time series stored in the variables
 `components` and `single_time_series`, respectively.

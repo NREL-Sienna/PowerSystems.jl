@@ -49,13 +49,15 @@ export get_proportional_term
 export get_quadratic_term
 export get_constant_term
 export get_slopes
+export get_average_rates
 export get_x_lengths
 export is_convex
 export get_points
 export get_x_coords
 export get_y_coords
 
-export ValueCurve, InputOutputCurve, IncrementalCurve, AverageRateCurve
+export ValueCurve
+export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCostCurve, CostCurve, FuelCurve
@@ -65,6 +67,15 @@ export get_function_data, get_initial_input, get_value_curve, get_power_units
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
+export set_shut_down!
+export get_curtailment_cost
+export set_curtailment_cost!
+export get_fixed
+export set_fixed!
+export get_charge_variable_cost, set_charge_variable_cost!
+export get_discharge_variable_cost, set_discharge_variable_cost!
+export get_energy_shortage_cost, set_energy_shortage_cost!
+export get_energy_surplus_cost, set_energy_surplus_cost!
 
 export Generator
 export HydroGen
@@ -262,6 +273,7 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 
+export TimeSeriesAssociation
 export TimeSeriesData
 export StaticTimeSeries
 export Forecast
@@ -285,6 +297,7 @@ export get_dynamic_components
 export parse_file
 export open_time_series_store!
 export add_time_series!
+export bulk_add_time_series!
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -353,9 +366,9 @@ export get_variable_cost
 export get_no_load_cost
 export get_start_up
 export get_shut_down
-export get_incremental_offer_curves
-export get_decremental_offer_curves
-export get_ancillary_service_offers
+export get_incremental_offer_curves, set_incremental_offer_curves!
+export get_decremental_offer_curves, set_decremental_offer_curves!
+export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_services_bid
 export set_variable_cost!
 export set_service_bid!
@@ -413,6 +426,10 @@ export get_storage
 export get_renewable_unit
 export get_interconnection_rating
 export get_interconnection_impedance
+export get_from_to_flow_limit
+export get_to_from_flow_limit
+export get_min_active_power_flow_limit
+export get_max_active_power_flow_limit
 
 # Subsystems
 export add_subsystem!
@@ -484,6 +501,7 @@ import InfrastructureSystems:
     StaticTimeSeriesCache,
     TimeSeriesKey,
     TimeSeriesCounts,
+    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,

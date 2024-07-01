@@ -7,7 +7,7 @@ in an HDF5 file. This design loads into memory the portions of the data that are
 at time of the query, and so avoids overwhelming the memory resources.
 
 ```@raw html
-<img src="../../assets/System.png" width="50%"/>
+<img src="../assets/System.png" width="50%"/>
 ```
 
 ## Accessing components stored in the system

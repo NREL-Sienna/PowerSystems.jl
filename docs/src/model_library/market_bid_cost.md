@@ -1,8 +1,8 @@
-# Variable Cost Curves
+# MarketBidCost
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["cost_functions/variable_cost.jl"]
+Pages   = ["cost_functions/MarketBidCost.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

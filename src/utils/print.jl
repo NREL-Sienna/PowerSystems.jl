@@ -119,15 +119,32 @@ function show_components_table(io::IO, sys::System; kwargs...)
     end
 end
 
-function Base.summary(tech::DeviceParameter)
-    return "$(typeof(tech))"
+function Base.summary(io::IO, tech::DeviceParameter)
+    print(io, "$(typeof(tech))")
+end
+
+function Base.summary(io::IO, data::OperationalCost)
+    field_msgs = []
+    for field_name in fieldnames(typeof(data))
+        val = getproperty(data, field_name)
+        # Only the most important fields
+        (val isa ProductionVariableCostCurve) &&
+            push!(field_msgs, "$(field_name): $(typeof(val))")
+        (val isa TimeSeriesKey) &&
+            push!(field_msgs, "$(field_name): time series \"$(get_name(val))\"")
+    end
+    isempty(field_msgs) && return
+    print(io, "$(typeof(data)) composed of ")
+    join(io, field_msgs, ", ")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", data::OperationalCost)
-    println(io, "$(typeof(data)): ")
+    print(io, "$(typeof(data)): ")
     for field_name in fieldnames(typeof(data))
         val = getproperty(data, field_name)
-        print(io, "    $(field_name): $val\n")
+        val_printout =
+            replace(sprint(show, "text/plain", val; context = io), "\n" => "\n  ")
+        print(io, "\n  $(field_name): $val_printout")
     end
 end
 

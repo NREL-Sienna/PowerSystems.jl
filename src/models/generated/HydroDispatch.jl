@@ -42,7 +42,7 @@ For hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref)
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
-- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [Operating cost](@ref cost_library) of generation
+- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
@@ -73,7 +73,7 @@ mutable struct HydroDispatch <: HydroGen
     time_limits::Union{Nothing, UpDown}
     "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
     base_power::Float64
-    "[Operating cost](@ref cost_library) of generation"
+    "[`OperationalCost`](@ref) of generation"
     operation_cost::Union{HydroGenerationCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
