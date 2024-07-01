@@ -57,7 +57,9 @@ end
 
     # IncrementalCurve
     inc_linear = IncrementalCurve(LinearFunctionData(6, 2), 1.0)
+    inc_linear_no_initial = IncrementalCurve(LinearFunctionData(6, 2), nothing)
     @test inc_linear isa IncrementalCurve{LinearFunctionData}
+    @test inc_linear_no_initial isa IncrementalCurve{LinearFunctionData}
     @test get_function_data(inc_linear) == LinearFunctionData(6, 2)
     @test get_initial_input(inc_linear) == 1
     @test InputOutputCurve(inc_linear) ==
@@ -66,6 +68,8 @@ end
           InputOutputCurve(LinearFunctionData(2, 1))
     @test AverageRateCurve(inc_linear) ==
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
+    @test_throws ArgumentError InputOutputCurve(inc_linear_no_initial)
+    @test_throws ArgumentError AverageRateCurve(inc_linear_no_initial)
     @test zero(inc_linear) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(IncrementalCurve) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test PSY.is_cost_alias(inc_linear) == PSY.is_cost_alias(typeof(inc_linear)) == false
@@ -75,13 +79,18 @@ end
           "IncrementalCurve where initial value is 1.0, derivative function f is: f(x) = 6.0 x + 2.0"
 
     inc_piecewise = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
+    inc_piecewise_no_initial =
+        IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), nothing)
     @test inc_piecewise isa IncrementalCurve{PiecewiseStepData}
+    @test inc_piecewise_no_initial isa IncrementalCurve{PiecewiseStepData}
     @test get_function_data(inc_piecewise) == PiecewiseStepData([1, 3, 5], [1.5, 2])
     @test get_initial_input(inc_piecewise) == 6
     @test InputOutputCurve(inc_piecewise) ==
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test AverageRateCurve(inc_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    @test_throws ArgumentError InputOutputCurve(inc_piecewise_no_initial)
+    @test_throws ArgumentError AverageRateCurve(inc_piecewise_no_initial)
     @test PSY.is_cost_alias(inc_piecewise) == PSY.is_cost_alias(typeof(inc_piecewise)) ==
           true
     @test repr(inc_piecewise) == sprint(show, inc_piecewise) ==
@@ -91,7 +100,9 @@ end
 
     # AverageRateCurve
     ar_linear = AverageRateCurve(LinearFunctionData(3, 2), 1.0)
+    ar_linear_no_initial = AverageRateCurve(LinearFunctionData(3, 2), nothing)
     @test ar_linear isa AverageRateCurve{LinearFunctionData}
+    @test ar_linear_no_initial isa AverageRateCurve{LinearFunctionData}
     @test get_function_data(ar_linear) == LinearFunctionData(3, 2)
     @test get_initial_input(ar_linear) == 1
     @test InputOutputCurve(ar_linear) ==
@@ -100,6 +111,8 @@ end
           InputOutputCurve(LinearFunctionData(2, 1))
     @test IncrementalCurve(ar_linear) ==
           IncrementalCurve(LinearFunctionData(6, 2), 1.0)
+    @test_throws ArgumentError InputOutputCurve(ar_linear_no_initial)
+    @test_throws ArgumentError IncrementalCurve(ar_linear_no_initial)
     @test zero(ar_linear) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test PSY.is_cost_alias(ar_linear) == PSY.is_cost_alias(typeof(ar_linear)) == false
@@ -109,12 +122,18 @@ end
           "AverageRateCurve where initial value is 1.0, average rate function f is: f(x) = 3.0 x + 2.0"
 
     ar_piecewise = AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
+    ar_piecewise_no_initial =
+        AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), nothing)
+    @test ar_piecewise isa AverageRateCurve{PiecewiseStepData}
+    @test ar_piecewise_no_initial isa AverageRateCurve{PiecewiseStepData}
     @test get_function_data(ar_piecewise) == PiecewiseStepData([1, 3, 5], [3, 2.6])
     @test get_initial_input(ar_piecewise) == 6
     @test InputOutputCurve(ar_piecewise) ==
           InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]))
     @test IncrementalCurve(ar_piecewise) ==
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
+    @test_throws ArgumentError InputOutputCurve(ar_piecewise_no_initial)
+    @test_throws ArgumentError IncrementalCurve(ar_piecewise_no_initial)
     @test PSY.is_cost_alias(ar_piecewise) == PSY.is_cost_alias(typeof(ar_piecewise)) == true
     @test repr(ar_piecewise) == sprint(show, ar_piecewise) ==
           "PiecewiseAverageCurve(6.0, [1.0, 3.0, 5.0], [3.0, 2.6])"
@@ -130,6 +149,10 @@ end
         (inc_piecewise, IncrementalCurve),
         (ar_linear, AverageRateCurve),
         (ar_piecewise, AverageRateCurve),
+        (inc_linear_no_initial, IncrementalCurve),
+        (inc_piecewise_no_initial, IncrementalCurve),
+        (ar_linear_no_initial, AverageRateCurve),
+        (ar_piecewise_no_initial, AverageRateCurve),
     ]
     for (curve, curve_type) in curves_by_type
         @test IS.serialize(curve) isa AbstractDict
@@ -176,25 +199,24 @@ end
     pwinc_without_iaz =
         IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, nothing)
     pwinc_with_iaz = IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, iaz)
-    others_without_iaz = [
+    all_without_iaz = [
         InputOutputCurve(QuadraticFunctionData(3, 2, 1), nothing),
         InputOutputCurve(LinearFunctionData(2, 1), nothing),
         InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]), nothing),
         IncrementalCurve(LinearFunctionData(6, 2), 1.0, nothing),
+        pwinc_without_iaz,
         AverageRateCurve(LinearFunctionData(3, 2), 1.0, nothing),
         AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0, nothing),
     ]
-    others_with_iaz = [
+    all_with_iaz = [
         InputOutputCurve(QuadraticFunctionData(3, 2, 1), iaz),
         InputOutputCurve(LinearFunctionData(2, 1), iaz),
         InputOutputCurve(PiecewiseLinearData([(1, 6), (3, 9), (5, 13)]), iaz),
         IncrementalCurve(LinearFunctionData(6, 2), 1.0, iaz),
-        IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0, iaz),
+        pwinc_with_iaz,
         AverageRateCurve(LinearFunctionData(3, 2), 1.0, iaz),
         AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0, iaz),
     ]
-    all_without_iaz = vcat(pwinc_without_iaz, others_without_iaz)
-    all_with_iaz = vcat(pwinc_with_iaz, others_with_iaz)
 
     # Alias constructors
     @test PiecewiseIncrementalCurve(1234.5, 6.0, [1.0, 3.0, 5.0], [1.5, 2.0]) ==

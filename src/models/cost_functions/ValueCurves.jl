@@ -47,7 +47,7 @@ where `x` is MW and `y` is fuel/MWh.
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
-    initial_input::Float64
+    initial_input::Union{Float64, Nothing}
     "Optional, an explicit representation of the input value at zero output."
     input_at_zero::Union{Nothing, Float64} = nothing
 end
@@ -72,7 +72,7 @@ absolute values of cost rate or fuel input rate by absolute values of electric p
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
     function_data::T
     "The value of f(x) at the least x for which the function is defined, or the origin for functions with no left endpoint, used for conversion to `InputOutputCurve`"
-    initial_input::Float64
+    initial_input::Union{Float64, Nothing}
     "Optional, an explicit representation of the input value at zero output."
     input_at_zero::Union{Nothing, Float64} = nothing
 end
@@ -164,11 +164,15 @@ end
 function InputOutputCurve(data::IncrementalCurve{LinearFunctionData})
     fd = get_function_data(data)
     p = get_proportional_term(fd)
+    c = get_initial_input(data)
+    isnothing(c) && throw(
+        ArgumentError("Cannot convert `IncrementalCurve` with undefined `initial_input`"),
+    )
     (p == 0) && return InputOutputCurve(
-        LinearFunctionData(get_constant_term(fd), get_initial_input(data)),
+        LinearFunctionData(get_constant_term(fd), c),
     )
     return InputOutputCurve(
-        QuadraticFunctionData(p / 2, get_constant_term(fd), get_initial_input(data)),
+        QuadraticFunctionData(p / 2, get_constant_term(fd), c),
         get_input_at_zero(data),
     )
 end
@@ -176,6 +180,9 @@ end
 function InputOutputCurve(data::IncrementalCurve{PiecewiseStepData})
     fd = get_function_data(data)
     c = get_initial_input(data)
+    isnothing(c) && throw(
+        ArgumentError("Cannot convert `IncrementalCurve` with undefined `initial_input`"),
+    )
     points = running_sum(fd)
     return InputOutputCurve(
         PiecewiseLinearData([(p.x, p.y + c) for p in points]),
@@ -189,12 +196,16 @@ AverageRateCurve(data::IncrementalCurve) = AverageRateCurve(InputOutputCurve(dat
 function InputOutputCurve(data::AverageRateCurve{LinearFunctionData})
     fd = get_function_data(data)
     p = get_proportional_term(fd)
+    c = get_initial_input(data)
+    isnothing(c) && throw(
+        ArgumentError("Cannot convert `AverageRateCurve` with undefined `initial_input`"),
+    )
     (p == 0) && return InputOutputCurve(
-        LinearFunctionData(get_constant_term(fd), get_initial_input(data)),
+        LinearFunctionData(get_constant_term(fd), c),
         get_input_at_zero(data),
     )
     return InputOutputCurve(
-        QuadraticFunctionData(p, get_constant_term(fd), get_initial_input(data)),
+        QuadraticFunctionData(p, get_constant_term(fd), c),
         get_input_at_zero(data),
     )
 end
@@ -202,6 +213,9 @@ end
 function InputOutputCurve(data::AverageRateCurve{PiecewiseStepData})
     fd = get_function_data(data)
     c = get_initial_input(data)
+    isnothing(c) && throw(
+        ArgumentError("Cannot convert `AverageRateCurve` with undefined `initial_input`"),
+    )
     xs = get_x_coords(fd)
     ys = xs[2:end] .* get_y_coords(fd)
     return InputOutputCurve(
