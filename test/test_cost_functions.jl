@@ -162,6 +162,15 @@ end
     @test zero(PSY.ValueCurve) == InputOutputCurve(LinearFunctionData(0, 0))
 end
 
+@testset "Test ValueCurve type conversion constructors" begin
+    @test InputOutputCurve(QuadraticFunctionData(3, 2, 1), 1) ==
+          InputOutputCurve(QuadraticFunctionData(3, 2, 1), 1.0)
+    @test IncrementalCurve(LinearFunctionData(6, 2), 1) ==
+          IncrementalCurve(LinearFunctionData(6, 2), 1.0)
+    @test AverageRateCurve(LinearFunctionData(3, 2), 1) ==
+          AverageRateCurve(LinearFunctionData(3, 2), 1.0)
+end
+
 @testset "Test cost aliases" begin
     lc = LinearCurve(3.0, 5.0)
     @test lc == InputOutputCurve(LinearFunctionData(3.0, 5.0))

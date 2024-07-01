@@ -265,3 +265,23 @@ function Base.show(io::IO, ::MIME"text/plain", curve::AverageRateCurve)
     print(io, ", average rate function f is: ")
     show(IOContext(io, :compact => true), "text/plain", get_function_data(curve))
 end
+
+# MORE GENERIC CONSTRUCTORS
+# These manually do what https://github.com/JuliaLang/julia/issues/35053 (open at time of writing) proposes to automatically provide
+InputOutputCurve(
+    function_data::T,
+    input_at_zero,
+) where {T <: Union{LinearFunctionData, QuadraticFunctionData, PiecewiseLinearData}} =
+    InputOutputCurve{T}(function_data, input_at_zero)
+IncrementalCurve(
+    function_data::T,
+    initial_input,
+    input_at_zero,
+) where {T <: Union{LinearFunctionData, PiecewiseStepData}} =
+    IncrementalCurve{T}(function_data, initial_input, input_at_zero)
+AverageRateCurve(
+    function_data::T,
+    initial_input,
+    input_at_zero,
+) where {T <: Union{LinearFunctionData, PiecewiseStepData}} =
+    AverageRateCurve{T}(function_data, initial_input, input_at_zero)
