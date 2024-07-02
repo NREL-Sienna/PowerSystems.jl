@@ -835,6 +835,7 @@ function make_cost(
     gen,
     cost_colnames::_CostPointColumns,
 ) where {T <: ThermalGen}
+    fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
     var_cost = create_pwl_cost(cost_pairs)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
@@ -887,7 +888,11 @@ function make_cost(
     var_cost = CostCurve(;
         value_curve = LinearCurve(0.0),
         power_units = UnitSystem.NATURAL_UNITS,
-        vom_cost = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost,
+        vom_cost = if isnothing(gen.variable_cost)
+            LinearCurve(0.0)
+        else
+            LinearCurve(gen.variable_cost)
+        end,
     )
     op_cost = RenewableGenerationCost(var_cost)
     return op_cost
@@ -1054,7 +1059,7 @@ end
 function make_thermal_generator(
     data::PowerSystemTableData,
     gen,
-    cost_colnames::_CostPointColumns,
+    cost_colnames::Union{_CostPointColumns, _HeatRateColumns},
     bus,
 )
     @debug "Making ThermaStandard" _group = IS.LOG_GROUP_PARSING gen.name
