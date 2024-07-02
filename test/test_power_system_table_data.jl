@@ -94,18 +94,25 @@ end
                         get_variable(mpgen_cost))),
                 )
                 if length(mp_points) == 4
-                    cdm_points = get_points(
-                        get_function_data(
-                            get_value_curve(
-                                get_variable(get_operation_cost(cdmgen))),
-                        ),
+                    cdm_op_cost = get_operation_cost(cdmgen)
+                    @test get_fixed(cdm_op_cost) == 0.0
+                    fuel_curve = get_variable(cdm_op_cost)
+                    fuel_cost = get_fuel_cost(fuel_curve)
+                    mp_fixed = get_fixed(mpgen_cost)
+                    io_curve = InputOutputCurve(get_value_curve(fuel_curve))
+                    cdm_points = get_points(io_curve)
+                    @test all(
+                        isapprox.(
+                            [p.y * fuel_cost for p in cdm_points],
+                            [p.y + mp_fixed for p in mp_points],
+                            atol = 0.1),
                     )
                     @test all(
                         isapprox.(
-                            [p.y for p in cdm_points], [p.y for p in mp_points],
+                            [p.x for p in cdm_points],
+                            [p.x * get_base_power(mpgen) for p in mp_points],
                             atol = 0.1),
                     )
-                    #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
                 end
             end
 

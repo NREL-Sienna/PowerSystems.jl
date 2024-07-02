@@ -629,7 +629,7 @@
             "unit": "$/MW",
             "name": "fixed_cost",
             "description": "Fixed Cost of Generation",
-            "default_value": null
+            "default_value": 0.0
         },
         {
             "unit": "$/start",
