@@ -832,16 +832,17 @@ function IS.add_time_series_from_file_metadata_internal!(
     cache::IS.TimeSeriesParsingCache,
     file_metadata::IS.TimeSeriesFileMetadata,
 )
+    associations = TimeSeriesAssociation[]
     IS.set_component!(file_metadata, data, PowerSystems)
     component = file_metadata.component
     if isnothing(component)
-        return
+        return associations
     end
 
     ts = IS.make_time_series!(cache, file_metadata)
     if component isa AggregationTopology && file_metadata.scaling_factor_multiplier in
        ["get_max_active_power", "get_max_reactive_power"]
-        uuids = Set{UUIDs.UUID}()
+        uuids = Set{Base.UUID}()
         for bus in _get_buses(data, component)
             push!(uuids, IS.get_uuid(bus))
         end
@@ -849,16 +850,27 @@ function IS.add_time_series_from_file_metadata_internal!(
             load for load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_time_series!(data, _component, ts; skip_if_present = true)
+            file_metadata.component = _component
+            if !IS.has_assignment(cache, file_metadata)
+                IS.add_assignment!(cache, file_metadata)
+                push!(associations, TimeSeriesAssociation(_component, ts))
+            end
         end
-        file_metadata.scaling_factor_multiplier =
-            replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
-        area_ts = IS.make_time_series!(cache, file_metadata)
-        key = IS.add_time_series!(data, component, area_ts; skip_if_present = true)
+        file_metadata.component = component
+        orig_sf = file_metadata.scaling_factor_multiplier
+        try
+            file_metadata.scaling_factor_multiplier = replace(orig_sf, "max" => "peak")
+            area_ts = IS.make_time_series!(cache, file_metadata)
+            IS.add_assignment!(cache, file_metadata)
+            push!(associations, TimeSeriesAssociation(component, area_ts))
+        finally
+            file_metadata.scaling_factor_multiplier = orig_sf
+        end
     else
-        key = IS.add_time_series!(data, component, ts)
+        push!(associations, TimeSeriesAssociation(component, ts))
+        IS.add_assignment!(cache, file_metadata)
     end
-    return key
+    return associations
 end
 
 """
@@ -1245,8 +1257,48 @@ Add time series data to a component.
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_time_series!(sys::System, component::Component, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, component, time_series)
+function add_time_series!(
+    sys::System,
+    component::Component,
+    time_series::TimeSeriesData;
+    features...,
+)
+    return IS.add_time_series!(sys.data, component, time_series; features...)
+end
+
+"""
+Add many time series in bulk. This method is advantageous when adding thousands of time
+series arrays because of the overhead in writing the time series to the underlying storage.
+
+# Arguments
+- `sys::System`: system
+- `associations`: Iterable of TimeSeriesAssociation instances. Using a Vector is not
+  recommended. Pass a Generator or Iterator to avoid loading all time series data into
+  system memory at once.
+- `batch_size::Int`: Number of time series to add per batch. Defaults to 100.
+
+# Examples
+```julia
+resolution = Dates.Hour(1)
+associations = (
+    IS.TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series(get_name(gen) * ".csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
+    )
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
+```
+"""
+function bulk_add_time_series!(
+    sys::System,
+    associations;
+    batch_size::Int = IS.ADD_TIME_SERIES_BATCH_SIZE,
+)
+    return IS.bulk_add_time_series!(sys.data, associations; batch_size = batch_size)
 end
 
 """
@@ -1257,8 +1309,8 @@ individually with the same data because in this case, only one time series array
 
 Throws ArgumentError if a component is not stored in the system.
 """
-function add_time_series!(sys::System, components, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, components, time_series)
+function add_time_series!(sys::System, components, time_series::TimeSeriesData; features...)
+    return IS.add_time_series!(sys.data, components, time_series; features...)
 end
 
 #=

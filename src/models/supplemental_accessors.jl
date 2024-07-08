@@ -76,3 +76,18 @@ function get_max_active_power(d::StandardLoad)
 end
 
 get_reactive_power_limits(::Source) = (min = -Inf, max = Inf)
+
+function get_from_to_flow_limit(a::AreaInterchange)
+    return get_flow_limits(a).from_to
+end
+function get_to_from_flow_limit(a::AreaInterchange)
+    return get_flow_limits(a).to_from
+end
+
+function get_min_active_power_flow_limit(tx::TransmissionInterface)
+    return get_active_power_flow_limits(tx).min
+end
+
+function get_max_active_power_flow_limit(tx::TransmissionInterface)
+    return get_active_power_flow_limits(tx).max
+end
