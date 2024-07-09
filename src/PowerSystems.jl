@@ -316,6 +316,7 @@ export get_services
 export has_service
 export has_time_series
 export get_buses
+export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
