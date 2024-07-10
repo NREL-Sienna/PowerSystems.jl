@@ -61,7 +61,7 @@ This bus is on a 230 kV AC transmission network, with an allowable voltage range
 0.9 to 1.05 p.u. We are assuming it is currently operating at 1.0 p.u. voltage and
 an angle of 0 radians. 
 
-Let's add this bus to our `System` with [`add_component!`](@ref add_component!(::System, ::Component)):
+Let's add this bus to our `System` with `add_component!`:
 ```@repl basics
 add_component!(sys, bus1)
 ```
@@ -152,7 +152,7 @@ load = PowerLoad(
         active_power = 0.0, # Per-unitized by device base_power
         reactive_power = 0.0, # Per-unitized by device base_power
         base_power = 10.0, # MVA
-        max_active_power = 1.0, # Per-unitized by device base_power
+        max_active_power = 1.0, # 10 MW per-unitized by device base_power
         max_reactive_power = 0.0
         );
 ```
@@ -175,9 +175,9 @@ solar = RenewableDispatch(
         bus = bus2,
         active_power = 0.0, # Per-unitized by device base_power
         reactive_power = 0.0, # Per-unitized by device base_power
-        rating = 1.0, # Per-unitized by device base_power
+        rating = 1.0, # 5 MW per-unitized by device base_power
         prime_mover_type = PrimeMovers.PVe,
-        reactive_power_limits = (min=0.0, max=0.05), # Per-unitized by device base_power
+        reactive_power_limits = (min=0.0, max=0.05), # 0 MVAR to 0.25 MVAR per-unitized by device base_power
         power_factor = 1.0,
         operation_cost = RenewableGenerationCost(nothing),
         base_power = 5.0 # MVA
@@ -195,13 +195,13 @@ gas = ThermalStandard(
         bus = bus2,
         active_power = 0.0, # Per-unitized by device base_power
         reactive_power = 0.0, # Per-unitized by device base_power
-        rating = 1.0, # Per-unitized by device base_power
-        active_power_limits = (min=10.0, max=30.0), # Per-unitized by device base_power
+        rating = 1.0, # 30 MW per-unitized by device base_power
+        active_power_limits = (min=0.2, max=1.0), # 6 MW to 30 MW per-unitized by device base_power
         reactive_power_limits = nothing, # Per-unitized by device base_power
-        ramp_limits = (up=5.0, down=5.0), # Per-unitized by device base_power
+        ramp_limits = (up=0.2, down=0.2), # 6 MW/min up or down, per-unitized by device base_power
         operation_cost = ThermalGenerationCost(nothing),
         base_power = 30.0, # MVA
-        time_limits = (up=8.0, down=8.0),
+        time_limits = (up=8.0, down=8.0), # Hours
         must_run = false,
         prime_mover_type = PrimeMovers.CC,
         fuel = ThermalFuels.NATURAL_GAS
@@ -230,7 +230,7 @@ Let's use [`show_components`](@ref) again to get an overview of our renewable ge
 show_components(sys, RenewableDispatch)
 ```
 
-We just have the one renewable generator named `solar1`. Use [`get_component`](@ref) to
+We just have the one renewable generator named `solar1`. Use `get_component` to
 retrieve it by name:
 ```@repl basics
 retrieved_component = get_component(RenewableDispatch, sys, "solar1");
@@ -249,12 +249,11 @@ get_bus(retrieved_component)
 ```
 See that the generator's bus is linked to the actual `bus2` component in our `System`.
 
-What other data can you retrieve? Try changing the `get_` function to look up data from
-other fields.
+These "getter" functions are available for all the data fields in a component.
 
 ## Changing `System` Per-Unit Settings
 
-Let's use a `get_` function to look up the solar generator's `rating`:
+Now, let's use a getter function to look up the solar generator's `rating`:
 ```@repl basics
 get_rating(retrieved_component)
 ```
@@ -279,10 +278,10 @@ Check the `System`'s base_power again:
 get_base_power(sys)
 ```
 Notice that when we called `get_rating` above, the solar generator's rating, 5.0 MW,
-is being returned as 0.05 = 5.0/100.0 using the system base power.
+is being returned as 0.05 = (5 MVA)/(100 MVA) using the system base power.
 
-Instead of using the `System` base power, let's view everything in MW -- or what we call
-"NATURAL_UNITS" in PowerSystems.
+Instead of using the `System` base power, let's view everything in MW or MVA -- or what we
+call "NATURAL_UNITS" in PowerSystems.
 
 Change the `System`'s unit system:
 ```@repl basics
@@ -293,7 +292,7 @@ Now retrieve the solar generator's rating again:
 ```@repl basics
 get_rating(retrieved_component)
 ```
-Notice that the value is now its "natural" value, 5.0 MW.
+Notice that the value is now its "natural" value, 5.0 MVA.
 
 Finally, let's change the `System`'s unit system to the final option, "DEVICE_BASE":
 ```@repl basics
@@ -304,7 +303,7 @@ And retrieve the solar generator's rating once more:
 ```@repl basics
 get_rating(retrieved_component)
 ```
-See that now the data is now 1.0 (5.0 MW per-unitized by the generator (i.e., the device's)
+See that now the data is now 1.0 (5.0 MVA per-unitized by the generator (i.e., the device's)
 `base_power` of 5.0 MVA), which is the format we used to originally define the device.   
 
 Recall that if you ever need to check a `System`'s settings, including the unit system being
@@ -312,11 +311,12 @@ used by all the getter functions, you can always just print the `System`:
 ```@repl basics
 sys
 ```
+See the units base is printed as one of the `System` properties.
 
 ## Next Steps
 
 In this tutorial, you manually created a power `System`, added and then retrieved its components,
-and modified the `System` settings. 
+and modified the `System` per-unit settings.
 
 Next, you might want to:
 - [Learn more about how to retrieve components and their data from a `System`](@ref get_components_tutorial)
