@@ -3453,7 +3453,7 @@
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -3478,13 +3478,14 @@
                 },
                 {
                     "name": "reactive_power_limits",
-                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
+                    "comment": "Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref acbustypes_list) bus. Set to `nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
                 },
                 {
                     "name": "power_factor",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3574,7 +3575,7 @@
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -3599,6 +3600,7 @@
                 },
                 {
                     "name": "power_factor",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
