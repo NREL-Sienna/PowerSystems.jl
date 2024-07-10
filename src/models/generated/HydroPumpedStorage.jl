@@ -48,7 +48,7 @@ A hydropower generator with pumped storage and upper and lower reservoirs.
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
 - `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
@@ -87,7 +87,7 @@ mutable struct HydroPumpedStorage <: HydroGen
     reactive_power::Float64
     "Maximum output power rating of the unit (MVA)"
     rating::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers

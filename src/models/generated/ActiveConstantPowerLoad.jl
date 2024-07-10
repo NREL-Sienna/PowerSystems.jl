@@ -49,7 +49,7 @@ Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynami
 - `kiv::Float64`: Integral constant for Voltage Control block, validation range: `(0, nothing)`
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `P_ref::Float64`: Reference active power (pu)
 - `Q_ref::Float64`: Reference reactive power (pu)
@@ -101,7 +101,7 @@ mutable struct ActiveConstantPowerLoad <: DynamicInjection
     kpc::Float64
     "Integral constant for Current Control block"
     kic::Float64
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}

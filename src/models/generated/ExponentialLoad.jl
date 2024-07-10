@@ -34,7 +34,7 @@ An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as 
 - `reactive_power::Float64`: Reactive power coefficient, Q0 (MVAR)
 - `α::Float64`: Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`
 - `β::Float64`: Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -57,7 +57,7 @@ mutable struct ExponentialLoad <: StaticLoad
     α::Float64
     "Exponent relating voltage dependency for reactive power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only"
     β::Float64
-    "Base power (MVA) for per unitization"
+    "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Maximum active power (MW) that this load can demand"
     max_active_power::Float64

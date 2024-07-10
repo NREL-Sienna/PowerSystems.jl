@@ -31,7 +31,7 @@ Parameters of 2-states of a generic dynamic load model based on ["Voltage stabil
 - `T_p::Float64`: Active Power Time Constant, validation range: `(0, nothing)`
 - `T_q::Float64`: Reactive Power Time Constant, validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
-- `base_power::Float64`: Base power of the load (MVA) for per unitization
+- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p: Integrator state of the active power,
 	x_q: Integrator state of the reactive power,
@@ -55,7 +55,7 @@ mutable struct DynamicExponentialLoad <: DynamicInjection
     T_q::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "Base power of the load (MVA) for per unitization"
+    "Base power of the load (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "(**Do not modify.**) The [states](@ref S) are:
 	x_p: Integrator state of the active power,

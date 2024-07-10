@@ -30,7 +30,7 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW)
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR)
-- `base_power::Float64`: Base power (MVA) for per unitization, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -49,7 +49,7 @@ mutable struct PowerLoad <: StaticLoad
     active_power::Float64
     "Initial steady-state reactive power demand (MVAR)"
     reactive_power::Float64
-    "Base power (MVA) for per unitization"
+    "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Maximum active power (MW) that this load can demand"
     max_active_power::Float64

@@ -1303,7 +1303,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1525,7 +1525,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1605,7 +1605,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the load (MVA) for per unitization",
+                    "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1803,7 +1803,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1951,7 +1951,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2113,7 +2113,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2268,7 +2268,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the load (MVA) for per unitization",
+                    "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "internal_default": "100.0",
                     "data_type": "Float64"
                 },
@@ -2439,7 +2439,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0.0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2728,7 +2728,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2876,7 +2876,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3090,7 +3090,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3189,7 +3189,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3502,7 +3502,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3611,7 +3611,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3750,7 +3750,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3975,7 +3975,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4166,7 +4166,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -15583,7 +15583,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -15803,7 +15803,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the source (MVA) for per unitization",
+                    "comment": "Base power of the source (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16196,7 +16196,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"

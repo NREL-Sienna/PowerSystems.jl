@@ -34,7 +34,7 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 - `internal_angle_bias::Float64`: (default: `0.0`) a0 term of the Fourier Series for the angle
 - `internal_angle_frequencies::Vector{Float64}`: (default: `[0.0]`) Frequencies in radians/s
 - `internal_angle_coefficients::Vector{Tuple{Float64,Float64}}`: (default: `[(0.0, 0.0)]`) Coefficients for terms n > 1. First component corresponds to sin and second component to cos
-- `base_power::Float64`: (default: `100.0`) Base power of the source (MVA) for per unitization
+- `base_power::Float64`: (default: `100.0`) Base power of the source (MVA) for [per unitization](@ref per_unit)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) for time, voltage and angle
 - `n_states::Int`: (**Do not modify.**) PeriodicVariableSource has 2 states
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -59,7 +59,7 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     internal_angle_frequencies::Vector{Float64}
     "Coefficients for terms n > 1. First component corresponds to sin and second component to cos"
     internal_angle_coefficients::Vector{Tuple{Float64,Float64}}
-    "Base power of the source (MVA) for per unitization"
+    "Base power of the source (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "(**Do not modify.**) The [states](@ref S) for time, voltage and angle"
     states::Vector{Symbol}
