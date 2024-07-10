@@ -109,28 +109,6 @@ it is recommended that you set this flag to generate new UUIDs.
 system2 = System("system.json", assign_new_uuids = true)
 ```
 
-## Reducing REPL printing
-
-By default `PowerSystems.jl` outputs to the REPL all Logging values, this can be overwhelming
-in some cases. Use [`configure_logging`](@ref) to create a logger with your preferences
-(console and/or file, levels, etc.). For more detail refer to [Logging](@ref logging).
-
-**Example**: Set log output to only error messages
-
-```julia
-using PowerSystems
-using Logging
-configure_logging(console_level = Logging.Error)
-```
-
-**Note:** log messages are not automatically flushed to files. Call
-`flush(logger)` to make this happen.
-
-Refer to this
-[page](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/logging/#Use-Cases)
-for more logging configuration options. Note that it describes how to enable
-debug logging for some log messages but not others.
-
 ## Viewing PowerSystems Data in JSON Format
 
 PowerSystems data can be serialized and deserialized in JSON. This section shows how to

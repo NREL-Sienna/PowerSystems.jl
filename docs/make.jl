@@ -27,6 +27,7 @@ pages = OrderedDict(
             "...add a new Type" => "how_to/add_new_types.md",
             "...serialize data to a JSON" => "how_to/serialize_data.md",
             "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
+            "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
         ],
         "Explanation" =>
             Any[
