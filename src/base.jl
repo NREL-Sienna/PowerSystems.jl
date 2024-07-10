@@ -532,6 +532,7 @@ get_description(sys::System) = sys.metadata.description
 """
 Add a component to the system.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -549,6 +550,8 @@ buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
 foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
+
+See also [`add_components!`](@ref).
 """
 function add_component!(
     sys::System,
@@ -595,6 +598,7 @@ end
 """
 Add many components to the system at once.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -606,7 +610,7 @@ sys = System(100.0)
 
 buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
-foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
+add_components!(sys, Iterators.flatten((buses, generators))
 ```
 """
 function add_components!(sys::System, components)
@@ -617,10 +621,11 @@ end
 """
 Add a dynamic injector to the system.
 
-Throws ArgumentError if the name does not match the static_injector name.
-Throws ArgumentError if the static_injector is not attached to the system.
+A component cannot be added to more than one `System`.
+Throws ArgumentError if the name does not match the `static_injector` name.
+Throws ArgumentError if the `static_injector` is not attached to the system.
 
-All rules for the generic add_component! method also apply.
+All rules for the generic `add_component!` method also apply.
 """
 function add_component!(
     sys::System,
