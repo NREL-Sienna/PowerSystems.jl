@@ -4,6 +4,11 @@
 CurrentModule = PowerSystems
 ```
 
+!!! tip "Announcement"
+    PowerSystems.jl upgraded to version 4.0 in June 2024, which included breaking changes.
+    Visit the [v4.0 migration guide](@ref psy4_migration) for information on
+    how to update your existing code.
+
 ## Overview
 
 `PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous

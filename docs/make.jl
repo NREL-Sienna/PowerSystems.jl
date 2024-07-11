@@ -19,6 +19,7 @@ pages = OrderedDict(
             "Use Dynamic Data" => "tutorials/dynamic_data.md",
             "PowerSystemCaseBuilder" => "tutorials/powersystembuilder.md",
             "Add an Operating Cost" => "tutorials/add_cost_curve.md",
+            "Migrating from version 3.0 to 4.0" => "tutorials/migrating_to_psy4.md"
         ],
         "Modeler Guide" =>
             Any[

@@ -1,0 +1,68 @@
+# [Migrating from version 3.0 to 4.0](@id psy4_migration)
+
+This guide outlines the code updates required to upgrade from PowerSystems.jl version 3.0
+to 4.0, which was released in June 2024 and includes breaking changes. These are:
+
+- [Renamed Types and Parameters](@ref)
+- [Updates to Energy Storage Parameters](@ref esr_migration)
+- [New Cost Functions](@ref)
+- [New Time Series Horizon Format](@ref)
+- [Minor Type Hierarchy Change](@ref)
+
+## Renamed Types and Parameters
+Some `Types` and fields were renamed, which should require a trivial search and replace:
+
+Renamed `Types`:
+- `RenewableFix` is now named [`RenewableNonDispatch`](@ref)
+- `StaticReserve` is now named [`ConstantReserve`](@ref)
+- `StaticReserveGroup` is now named [`ConstantReserveGroup`](@ref)
+- `StaticReserveNonSpinning` is now named [`ConstantReserveNonSpinning`](@ref)
+- `GenericBattery` has been replaced by [`EnergyReservoirStorage`](@ref) including 
+    **significant parameter changes** ([see below](@ref esr_migration))
+
+Renamed parameters:
+- The `rate` parameter is now named `rating` for subtypes of [`Branch`](@ref), for
+    consistency with other Types. Affected Types are:
+    - [`Line`](@ref)
+    - [`MonitoredLine`](@ref)
+    - [`PhaseShiftingTransformer`](@ref)
+    - [`TapTransformer`](@ref)
+    - [`Transformer2W`](@ref)
+
+## [Updates to Energy Storage Parameters](@id esr_migration)
+[`EnergyReservoirStorage`](@ref) is now the default battery and energy storage model,
+replacing `GenericBattery`.
+
+There are also changes to the data fields compared to `GenericBattery` to improve clarity
+and modeling flexibility.
+
+New data fields:
+- `storage_capacity` for the maximum storage capacity (can be in units of,
+    e.g., MWh for batteries or liters for hydrogen)
+    - Example: 10000.0 for 10,000 liters hydrogen
+- `storage_level_limits` for the minimum and maximum allowable storage levels
+    on [0, 1], which can be used to model derates or other restrictions, such as
+    state-of-charge restrictions on battery cycling
+    - Example: Minimum of 0.2 and maximum of 1.0 to restrict the storage from dropping below
+        20% capacity to keep some reserve margin available at all times
+- `initial_storage_capacity_level` for the initial storage capacity level as
+    a ratio [0, 1.0] of `storage_capacity`
+    - Example: 0.5 to start the storage at 50% full
+- `conversion_factor` is the (optional) conversion factor of `storage_capacity` to MWh, if
+    different than 1.0 (i.e., no conversion is needed if the `storage_capacity` is in MWh)
+    - Example: 0.0005 for 0.5 kWh/l hydrogen
+
+Removed data fields:
+- `state_of_charge_limits` with units of p.u.-hr
+- `initial_energy` with units of p.u.-hr
+
+## New Cost Functions
+
+## New Time Series Horizon Format
+
+## Minor Type Hierarchy Change
+
+- [`ControllableLoad`](@ref) is now a subtype of [`StaticLoad`](@ref) rather than
+    `ElectricLoad`
+
+The vast majority of users are not expected to be impacted by this change.
