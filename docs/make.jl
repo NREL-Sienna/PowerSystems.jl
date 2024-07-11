@@ -19,14 +19,15 @@ pages = OrderedDict(
         ],
         "How to..." =>  Any[
             "...install PowerSystems.jl" => "how_to/install.md",
-            "...add an Operating Cost" => "how_to/add_cost_curve.md",
+            "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "...load a Matpower or PSSE file" => "how_to/parse_powerflow_cases.md",
             "...parse tabular data" => "how_to/parse_tabular_data.md",
-            "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
+            "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
+            "...get all the buses in a system" => "how_to/get_buses.md",
+            "...add an Operating Cost" => "how_to/add_cost_curve.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add a new Type" => "how_to/add_new_types.md",
             "...serialize data to a JSON" => "how_to/serialize_data.md",
-            "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
         ],
         "Explanation" =>
