@@ -669,7 +669,15 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
     bus_area_column = get_user_field(data, InputCategory.BUS, "area")
 
     # Shortcut for data that looks like "(val1,val2,val3)"
-    make_array(x) = isnothing(x) ? x : split(strip(x, ['(', ')']), ",")
+    function make_array(x)
+        if isnothing(x)
+            return x
+        else
+            y = split(strip(x, ['(', ')']), ",")
+            # Remove extra space at the beginning if needed
+            return replace.(y, r"^ *" => "")
+        end
+    end
 
     function _add_device!(contributing_devices, device_categories, name)
         component = []
@@ -1425,6 +1433,7 @@ const CATEGORY_STR_TO_COMPONENT = Dict{String, DataType}(
     "Reserve" => Service,
     "LoadZone" => LoadZone,
     "ElectricLoad" => ElectricLoad,
+    "Storage" => Storage,
 )
 
 function _get_component_type_from_category(category::AbstractString)
