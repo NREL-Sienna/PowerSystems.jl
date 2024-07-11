@@ -1122,7 +1122,6 @@ end
 """
 Gets components availability. Requires type T to have the method get_available implemented.
 """
-
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(get_available, T, sys)
 end
