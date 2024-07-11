@@ -251,6 +251,14 @@ See that the generator's bus is linked to the actual `bus2` component in our `Sy
 
 These "getter" functions are available for all the data fields in a component.
 
+!!! tip
+    **Always use the `get_*` functions to retrieve the data within a component.**
+    While in Julia a user can use `.` to access the fields of a component, we make no
+    guarantees on the stability of field names and locations. We do however promise to
+    keep the getter functions stable. PowerSystems.jl also does many internal data
+    calculations that the getter functions will properly handle for you, as you'll see
+    below.
+
 ## Changing `System` Per-Unit Settings
 
 Now, let's use a getter function to look up the solar generator's `rating`:
