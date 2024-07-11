@@ -35,8 +35,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     } = nothing
     "If using a time series for incremental_offer_curves, this is a time series of `Float64` representing the `initial_input`"
     incremental_initial_input::Union{Nothing, TimeSeriesKey} = nothing
-    "If using a time series for decremental_offer_curves, this is a time series of `Float64` representing the `initial_input`"
-    decremental_initial_input::Union{Nothing, TimeSeriesKey} = nothing
+    # TODO decremental
     "Bids for the ancillary services"
     ancillary_service_offers::Vector{Service} = Vector{Service}()
 end
@@ -72,13 +71,13 @@ MarketBidCost(
         shut_down = shut_down,
         incremental_offer_curves = incremental_offer_curves,
         decremental_offer_curves = decremental_offer_curves,
-        ancillary_service_offers = ancillary_service_offers
+        ancillary_service_offers = ancillary_service_offers,
     )
 
 # Constructor for demo purposes; non-functional.
 function MarketBidCost(::Nothing)
     MarketBidCost(;
-        no_load_cost = 0.0,
+        no_load_cost = nothing,
         start_up = (hot = START_COST, warm = START_COST, cold = START_COST),
         shut_down = 0.0,
     )
@@ -95,7 +94,6 @@ function MarketBidCost(
     incremental_offer_curves = nothing,
     decremental_offer_curves = nothing,
     incremental_initial_input = nothing,
-    decremental_initial_input = nothing,
     ancillary_service_offers = Vector{Service}(),
 )
     # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
@@ -108,7 +106,6 @@ function MarketBidCost(
         incremental_offer_curves = incremental_offer_curves,
         decremental_offer_curves = decremental_offer_curves,
         incremental_initial_input = incremental_initial_input,
-        decremental_initial_input = decremental_initial_input,
         ancillary_service_offers = ancillary_service_offers,
     )
 end
@@ -121,8 +118,11 @@ get_start_up(value::MarketBidCost) = value.start_up
 get_shut_down(value::MarketBidCost) = value.shut_down
 """Get [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 get_incremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
-"""Get [`MarketBidCost`](@ref) `incremental_offer_curves`."""
+"""Get [`MarketBidCost`](@ref) `decremental_offer_curves`."""
 get_decremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
+"""Get [`MarketBidCost`](@ref) `incremental_initial_input`."""
+get_incremental_initial_input(value::MarketBidCost) = value.incremental_initial_input
+# TODO decremental
 """Get [`MarketBidCost`](@ref) `ancillary_service_offers`."""
 get_ancillary_service_offers(value::MarketBidCost) = value.ancillary_service_offers
 
@@ -135,6 +135,10 @@ set_shut_down!(value::MarketBidCost, val) = value.shut_down = val
 """Set [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 set_incremental_offer_curves!(value::MarketBidCost, val) =
     value.incremental_offer_curves = val
+"""Set [`MarketBidCost`](@ref) `incremental_initial_input`."""
+set_incremental_initial_input!(value::MarketBidCost, val) =
+    value.incremental_initial_input = val
+# TODO decremental
 """Set [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 set_decremental_offer_curves!(value::MarketBidCost, val) =
     value.decremental_offer_curves = val
@@ -146,10 +150,7 @@ set_ancillary_service_offers!(value::MarketBidCost, val) =
 # curves in MarketBidCost) is a CostCurve{PiecewiseIncrementalCurve} with NaN initial input
 # and first x-coordinate
 function is_market_bid_curve(curve::ProductionVariableCostCurve)
-    (curve isa CostCurve{PiecewiseIncrementalCurve}) || return false
-    value_curve = get_value_curve(curve)
-    return isnan(get_initial_input(value_curve)) &&
-           isnan(first(get_x_coords(get_function_data(value_curve))))
+    return (curve isa CostCurve{PiecewiseIncrementalCurve})
 end
 
 """
@@ -166,6 +167,18 @@ function make_market_bid_curve(powers::Vector{Float64},
     return make_market_bid_curve(fd; power_units = power_units)
 end
 
+make_market_bid_curve(initial_input::Union{Nothing, Real}, x_coords::Vector, slopes::Vector;
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS) =
+    CostCurve(PiecewiseIncrementalCurve(initial_input, x_coords, slopes), power_units)
+
+make_market_bid_curve(input_at_zero::Union{Nothing, Real},
+    initial_input::Union{Nothing, Real}, x_coords::Vector, slopes::Vector;
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS) =
+    CostCurve(
+        PiecewiseIncrementalCurve(input_at_zero, initial_input, x_coords, slopes),
+        power_units,
+    )
+
 """
 Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a MarketBidCost from
 the FunctionData that might be used to store such a cost curve in a time series.
@@ -177,7 +190,16 @@ function make_market_bid_curve(data::PiecewiseStepData;
             "The first x-coordinate in the PiecewiseStepData representation must be NaN",
         ),
     )
-    cc = CostCurve(IncrementalCurve(data, NaN), power_units)
+    cc = CostCurve(IncrementalCurve(data, nothing), power_units)
     @assert is_market_bid_curve(cc)
     return cc
 end
+
+make_market_bid_curve(fd::PiecewiseStepData, initial_input::Union{Nothing, Real};
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS) =
+    CostCurve(IncrementalCurve(fd, initial_input), power_units)
+
+make_market_bid_curve(fd::PiecewiseStepData, initial_input::Union{Nothing, Real},
+    input_at_zero::Union{Nothing, Real};
+    power_units::UnitSystem = UnitSystem.NATURAL_UNITS) =
+    CostCurve(IncrementalCurve(fd, initial_input, input_at_zero), power_units)
