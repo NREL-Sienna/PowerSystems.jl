@@ -24,6 +24,7 @@ pages = OrderedDict(
             "...parse tabular data" => "how_to/parse_tabular_data.md",
             "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
             "...get all the buses in a system" => "how_to/get_buses.md",
+            "...get the available generators in a system" => "how_to/get_available_generators.md",
             "...add an Operating Cost" => "how_to/add_cost_curve.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add a new Type" => "how_to/add_new_types.md",

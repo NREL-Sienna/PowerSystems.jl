@@ -66,3 +66,6 @@ buses_by_ID = get_buses(system, Set(101:110))
     ```@repl get_buses
     get_number.(get_components(ACBus, system))
     ```
+
+#### See Also
+- How to: [Get the available generators in a System](@ref)
