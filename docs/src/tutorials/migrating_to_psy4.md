@@ -25,7 +25,7 @@ Renamed `Types`:
 - `InstantaneousCurrentLimiter` is now named [`InstantaneousOutputCurrentLimiter`](@ref)
 
 Renamed parameters:
-- The `rate` parameter is now named `rating` for subtypes of [`Branch`](@ref), for
+- The `rate` parameter is now named `rating` for subtypes of `Branch`, for
     consistency with other Types. Affected Types are:
     - [`Line`](@ref)
     - [`MonitoredLine`](@ref)
