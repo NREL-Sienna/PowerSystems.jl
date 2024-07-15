@@ -4,6 +4,7 @@ This guide outlines the code updates required to upgrade from PowerSystems.jl ve
 to 4.0, which was released in June 2024 and includes breaking changes. These are:
 
 - [Renamed Types and Parameters](@ref)
+- [New and Eliminated Types](@ref)
 - [Updates to Energy Storage Parameters](@ref esr_migration)
 - [New Cost Functions](@ref)
 - [New Time Series Horizon Format](@ref)
@@ -18,8 +19,9 @@ Renamed `Types`:
 - `StaticReserve` is now named [`ConstantReserve`](@ref)
 - `StaticReserveGroup` is now named [`ConstantReserveGroup`](@ref)
 - `StaticReserveNonSpinning` is now named [`ConstantReserveNonSpinning`](@ref)
-- `GenericBattery` has been replaced by [`EnergyReservoirStorage`](@ref) including 
-    **significant parameter changes** ([see below](@ref esr_migration))
+- `PriorityCurrentLimiter` is now named [`PriorityOutputCurrentLimiter`](@ref)
+- `MagnitudeCurrentLimiter` is now named [`MagnitudeOutputCurrentLimiter`](@ref)
+- `InstantaneousCurrentLimiter` is now named [`InstantaneousOutputCurrentLimiter`](@ref)
 
 Renamed parameters:
 - The `rate` parameter is now named `rating` for subtypes of [`Branch`](@ref), for
@@ -29,6 +31,20 @@ Renamed parameters:
     - [`PhaseShiftingTransformer`](@ref)
     - [`TapTransformer`](@ref)
     - [`Transformer2W`](@ref)
+
+## New and Eliminated Types
+In addition to cost-related types detailed in [New Cost Functions](@ref), these new types
+have been added:
+- [`AreaInterchange`](@ref)
+- [`HybridOutputCurrentLimiter`](@ref)
+- [`SaturationOutputCurrentLimiter`](@ref)
+
+These types are no longer part of PowerSystems.jl, although there are future plans to rework
+some of them:
+- `RegulationDevice`
+- `Transfer`
+- `BatteryEMS`
+- `GenericBattery` (see [Updates to Energy Storage Parameters](@ref esr_migration))
 
 ## [Updates to Energy Storage Parameters](@id esr_migration)
 [`EnergyReservoirStorage`](@ref) is now the default battery and energy storage model,
