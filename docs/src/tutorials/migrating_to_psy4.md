@@ -8,6 +8,7 @@ to 4.0, which was released in June 2024 and includes breaking changes. These are
 - [New Cost Functions](@ref)
 - [New Time Series Horizon Format](@ref)
 - [Minor Type Hierarchy Change](@ref)
+- [(Temporary) Use Version 3.0 for `HybridSystem` (+ new parameter)](@ref)
 
 ## Renamed Types and Parameters
 Some `Types` and fields were renamed, which should require a trivial search and replace:
@@ -81,3 +82,10 @@ The [horizon](@ref H) for a forecast has changed from a **count** of time steps 
     `ElectricLoad`
 
 The vast majority of users are not expected to be impacted by this change.
+
+## (Temporary) Use Version 3.0 for `HybridSystem` (+ new parameter)
+The [`HybridSystem`](@ref) is currently not supported in the rest of the Sienna ecosystem,
+such as PowerSimulations.jl. To use `HybridSystem` in simulation, revert to version 3.0.
+There are plans to update `HybridSystem` for version 4.0, but they have not been completed.
+
+In addition, `HybridSystem` has a new required parameter: `interconnection_efficiency`
