@@ -6,6 +6,7 @@ to 4.0, which was released in June 2024 and includes breaking changes. These are
 - [Renamed Types and Parameters](@ref)
 - [New and Eliminated Types](@ref)
 - [Updates to Energy Storage Parameters](@ref esr_migration)
+- [Hydropower `status` added](@ref)
 - [New Cost Functions](@ref)
 - [New Time Series Horizon Format](@ref)
 - [Minor Type Hierarchy Change](@ref)
@@ -72,6 +73,13 @@ New data fields:
 Removed data fields:
 - `state_of_charge_limits` with units of p.u.-hr
 - `initial_energy` with units of p.u.-hr
+
+## Hydropower `status` added
+A new required parameter, `status`, was added to [`HydroEnergyReservoir`](@ref) and
+[`HydroPumpedStorage`](@ref), for the initial condition of the generator.
+- For [`HydroEnergyReservoir`](@ref), `status` can be `true` = on or `false` = off.
+- For [`HydroPumpedStorage`](@ref), `status` can be `PumpHydroStatus.PUMP`,
+    `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`
 
 ## New Cost Functions
 
