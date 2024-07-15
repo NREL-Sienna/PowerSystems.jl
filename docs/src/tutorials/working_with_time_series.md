@@ -1,10 +1,19 @@
 # [Working with Time Series Data](@id tutorial_time_series)
 
+In this tutorial, we will create a few different time-series data sets, add them to
+generators and loads in a power `System`, then retrieve, inspect, and analyze the
+time-series data.
+
+
+
 ### `TimeSeriesData`
 
 ```@setup timeseries
 using PowerSystems #hide
 import TypeTree: tt #hide
+
+
+
 docs_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "utils"); #hide
 include(joinpath(docs_dir, "docs_utils.jl")); #hide
 

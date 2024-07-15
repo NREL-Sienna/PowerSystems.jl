@@ -12,8 +12,8 @@ pages = OrderedDict(
         "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  Any[
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
-            "Getting Components and Their Data" => "tutorials/get_component_data.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
+            "Getting, Setting, and Viewing Data" => "tutorials/get_component_data.md",
             "Add Forecasts" => "tutorials/add_forecasts.md",
             "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
         ],

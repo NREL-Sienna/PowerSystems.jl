@@ -1,4 +1,4 @@
-# Getting Components and Their Data
+# [Getting, Setting, and Viewing Data](@id get_components_tutorial )
 
 In this tutorial, we will explore the data in a `System`, including looking at a summary of
 the system and getting both its components and their data. We will also start checking for
