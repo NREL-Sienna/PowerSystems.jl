@@ -59,6 +59,21 @@ Removed data fields:
 ## New Cost Functions
 
 ## New Time Series Horizon Format
+The [horizon](@ref H) for a forecast has changed from a **count** of time steps (as an
+    `Int`) to a **duration**, as a 
+    [`Dates.Period`](https://docs.julialang.org/en/v1/stdlib/Dates/#Period-Types)
+
+**Example day-ahead forecast:** A forecast with hourly [resolution](@ref R) for the next
+24 hours, with a new forecast available every 24 hours (i.e., 24-hour [interval](@ref I))
+- The horizon is now `Dates.Hour(24)` or `Dates.Day(1)`
+- Previously in version 3.0, the horizon would have been `24` for the 24 1-hour time-steps
+    in each forecast
+
+**Example hour-ahead forecast:** A forecast with 5-minute [resolution](@ref R) for the next
+1 hour, with a new forecast available every hour (i.e., 1-hour [interval](@ref I))
+- The horizon is now `Dates.Hour(1)`
+- Previously in version 3.0, the horizon would have been `12` for the 12 5-minute time-steps
+    in each forecast
 
 ## Minor Type Hierarchy Change
 

@@ -52,9 +52,12 @@
 
 ## H
 
-* *Horizon*: Is the count of discrete values in a forecast, all horizons in `PowerSystems.jl`
-  are represented with `Int`. For instance, many Day-ahead markets will have a forecast with a
-  horizon 24. See the article on [`Time Series Data`](@ref ts_data).
+* *Horizon*: Is the duration of all time steps in one forecast. As of PowerSystems.jl
+  version 4.0, all horizons in `PowerSystems.jl` are represented as a `Dates.Period`.
+  For instance, many Day-ahead markets will have an hourly-[resolution](@ref R) forecast
+  for the next day, which would have a horizon of `Dates.Hour(24)` or `Dates.Day(1)`. If the
+  forecast included the next day plus a 24-hour lookahead window, the horizon would be
+  `Dates.Hour(48)` or `Dates.Day(2)`. See the article on [`Time Series Data`](@ref ts_data).
 
 * *HVDC*: High-voltage DC
 
