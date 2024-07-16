@@ -7140,6 +7140,182 @@
             "supertype": "AVR"
         },
         {
+            "struct_name": "ESAC8B",
+            "docstring": "Excitation System AC8B. Used to represent the Basler Digital Excitation Control System (DECS) with PID controller in PSSE.",
+            "fields": [
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Regulator proportional PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Regulator integral PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Regulator derivative PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Td",
+                    "comment": "Regulator derivative PID time constant.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ka",
+                    "comment": "Regulator output gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1000
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Regulator output lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Limits for exciter field voltage `(Vr_min, Vr_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Te",
+                    "comment": "Exciter field time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 2
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Ke",
+                    "comment": "Exciter field proportional constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "E_sat",
+                    "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Se",
+                    "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "saturation_coeffs",
+                    "comment": "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+                    "data_type": "Tuple{Float64, Float64}",
+                    "null_value": "(0.0, 0.0)",
+                    "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Internal PI-block state,\n\tx_d: Internal Derivative-block state,\n\tVr: Voltage regulator state,\n\tEfd: Exciter output state",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vr, :Efd]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential, StateTypes.Hybrid, StateTypes.Differential]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
             "struct_name": "ESST1A",
             "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
             "fields": [

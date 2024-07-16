@@ -132,6 +132,7 @@ export ESDC1A
 export ESDC2A
 export ESAC1A
 export ESAC6A
+export ESAC8B
 export EXAC1
 export EXAC1A
 export EXAC2
