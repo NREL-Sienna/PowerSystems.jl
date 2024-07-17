@@ -2,6 +2,7 @@ test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys5_all_components")
 gen_solitude = PSY.get_component(ThermalStandard, test_sys, "Solitude")::Component  # Error if `nothing`
 gen_sundance = get_component(ThermalStandard, test_sys, "Sundance")::Component
 set_available!(gen_sundance, false)
+gen_wind = get_component(RenewableDispatch, test_sys, "WindBusA")::Component
 
 test_sys2 = PSB.build_system(PSB.PSISystems, "5_bus_hydro_uc_sys")
 gen_sundance2 = get_component(ThermalStandard, test_sys2, "Sundance")::Component
@@ -46,10 +47,14 @@ end
         get_components(select_components(gen_sundance), test_sys; filterby = get_available),
     ) ==
           Vector{Component}()
+
+    @test gen_solitude in test_gen_ent
+    @test !(gen_sundance in test_gen_ent)
+    @test !in(gen_sundance, select_components(gen_sundance); filterby = get_available)
 end
 
 @testset "Test ListComponentSelector" begin
-    comp_ent_1 = select_components(ThermalStandard, "Solitude")
+    comp_ent_1 = select_components(ThermalStandard, "Sundance")
     comp_ent_2 = select_components(RenewableDispatch, "WindBusA")
     test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
     named_test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
@@ -66,14 +71,14 @@ end
 
     # Naming
     @test get_name(test_list_ent) ==
-          "[ThermalStandard__Solitude, RenewableDispatch__WindBusA]"
+          "[ThermalStandard__Sundance, RenewableDispatch__WindBusA]"
     @test get_name(named_test_list_ent) == "TwoComps"
 
     # Contents
     @test collect(get_components(select_components(), test_sys)) == Vector{Component}()
     the_components = collect(get_components(test_list_ent, test_sys))
     @test length(the_components) == 2
-    @test gen_solitude in the_components
+    @test gen_sundance in the_components
     @test get_component(RenewableDispatch, test_sys, "WindBusA") in the_components
     @test !(
         gen_sundance in
@@ -85,6 +90,10 @@ end
     @test length(the_subselectors) == 2
     @test comp_ent_1 in the_subselectors
     @test comp_ent_2 in the_subselectors
+
+    @test gen_sundance in test_list_ent
+    @test !(gen_solitude in test_list_ent)
+    @test !in(gen_sundance, test_list_ent; filterby = get_available)
 end
 
 @testset "Test SubtypeComponentSelector" begin
@@ -122,6 +131,10 @@ end
     @test !(
         gen_sundance in
         collect(get_subselectors(test_sub_ent, test_sys; filterby = get_available)))
+
+    @test gen_sundance in test_sub_ent
+    @test !(gen_wind in test_sub_ent)
+    @test !in(gen_sundance, test_sub_ent; filterby = get_available)
 end
 
 @testset "Test TopologyComponentSelector" begin
@@ -182,6 +195,8 @@ end
         @test Set(collect(get_subselectors(ent, test_sys2; filterby = x -> true))) ==
               Set(the_subselectors)
         @test length(collect(get_subselectors(ent, test_sys2; filterby = x -> false))) == 0
+
+        @test all(in(comp, ent, test_sys2) for comp in ans)
     end
 
     @test !(
@@ -190,6 +205,10 @@ end
     @test !(
         select_components(gen_sundance2) in
         collect(get_subselectors(test_topo_ent1, test_sys2; filterby = get_available)))
+
+    @test in(gen_sundance2, test_topo_ent1, test_sys2)
+    @test !in(gen_sundance2, test_topo_ent1, test_sys2; filterby = get_available)
+    @test !in(gen_sundance2, test_topo_ent2, test_sys2)
 end
 
 @testset "Test FilterComponentSelector" begin
