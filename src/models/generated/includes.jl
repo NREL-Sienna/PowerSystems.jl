@@ -84,6 +84,7 @@ include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("GasTG.jl")
 include("DEGOV.jl")
+include("DEGOV1.jl")
 include("GeneralGovModel.jl")
 include("SteamTurbineGov1.jl")
 include("HydroTurbineGov.jl")
@@ -336,6 +337,7 @@ export get_T_ft
 export get_T_fv
 export get_T_g
 export get_T_iq
+export get_T_lim
 export get_T_p
 export get_T_pord
 export get_T_q
@@ -483,6 +485,7 @@ export get_dc_link_capacitance
 export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
+export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
@@ -874,6 +877,7 @@ export set_T_ft!
 export set_T_fv!
 export set_T_g!
 export set_T_iq!
+export set_T_lim!
 export set_T_p!
 export set_T_pord!
 export set_T_q!
@@ -1021,6 +1025,7 @@ export set_dc_link_capacitance!
 export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
+export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!

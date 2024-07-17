@@ -377,6 +377,7 @@ function _parse_dyr_generator_components!(
         else
             struct_args = _populate_args(params_ix, componentValues)
         end
+        _convert_argument_types_for_gen!(struct_as_str, struct_args)
         temp[GEN_COMPONENT_TABLE[gen_field]] = component_constructor(struct_args...)
     end
     return
@@ -457,6 +458,18 @@ function _convert_argument_types!(str::AbstractString, struct_args::Vector)
     else
         error("$str not defined for dynamic component arguments")
     end
+end
+
+"""
+Convert specific parameters to types that are not Float64 for
+specific generator components
+
+"""
+function _convert_argument_types_for_gen!(str::AbstractString, struct_args::Vector)
+    if str == "DEGOV1"
+        struct_args[1] = Int(struct_args[1])
+    end
+    return
 end
 
 """

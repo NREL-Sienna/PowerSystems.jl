@@ -12108,6 +12108,169 @@
             "supertype": "TurbineGov"
         },
         {
+            "struct_name": "DEGOV1",
+            "docstring": "Parameters Woodward Diesel Governor Model. DEGOV1 in PSSE",
+            "fields": [
+                {
+                    "name": "droop_flag",
+                    "comment": "Droop control Flag. 0 for throttle feedback and 1 for electric power feedback",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "T1",
+                    "comment": "Governor mechanism time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T2",
+                    "comment": "Turbine power time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T3",
+                    "comment": "Turbine exhaust temperature time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "K",
+                    "comment": "Governor gain for actuator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T4",
+                    "comment": "Governor lead time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T5",
+                    "comment": "Governor lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T6",
+                    "comment": "Actuator time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Td",
+                    "comment": "Engine time delay in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T_lim",
+                    "comment": "Operational control limits on actuator (T_min, T_max)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "R",
+                    "comment": "Steady state droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Te",
+                    "comment": "Power transducer time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Load Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[1]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The number of [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[2]",
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
             "struct_name": "GeneralGovModel",
             "docstring": "GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines",
             "fields": [
