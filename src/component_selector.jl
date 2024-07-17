@@ -113,3 +113,18 @@ function get_components(e::TopologyComponentSelector, sys::System; filterby = no
     isnothing(filterby) && (return components)
     return Iterators.filter(filterby, components)
 end
+
+# Unfortunately, there is no way to implement `in` for TopologyComponentSelector without a
+# System reference, since the aggregation topology reference is System-dependent
+function Base.in(
+    c::IS.InfrastructureSystemsComponent,
+    e::TopologyComponentSelector,
+    sys::System;
+    filterby = nothing,
+)
+    (!isnothing(filterby) && !filterby(c)) && return false
+    agg_topology = get_component(e.topology_subtype, sys, e.topology_name)
+    isnothing(agg_topology) && return false
+    return (c isa e.component_subtype) &&
+           is_component_in_aggregation_topology(c, agg_topology)
+end
