@@ -139,6 +139,7 @@ export EXAC2
 export EXPIC1
 export ESST1A
 export ESST4B
+export ST6B
 export SCRX
 export SEXS
 

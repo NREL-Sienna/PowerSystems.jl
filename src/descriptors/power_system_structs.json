@@ -7993,6 +7993,212 @@
             "supertype": "AVR"
         },
         {
+            "struct_name": "ST6B",
+            "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST6B Excitacion System. ST6B in PSSE and PSLF",
+            "fields": [
+                {
+                    "name": "OEL_Flag",
+                    "comment": "OEL Flag for ST6B: 1: before HV gate, 2: after HV gate",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_pa",
+                    "comment": "Regulator proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ia",
+                    "comment": "Regulator integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_da",
+                    "comment": "Regulator derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_da",
+                    "comment": "Voltage regulator derivative channel time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Va_lim",
+                    "comment": "Regulator output limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_ff",
+                    "comment": "Pre-control gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_m",
+                    "comment": "Forward gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ci",
+                    "comment": "Exciter output current limit adjustment gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_lr",
+                    "comment": "Exciter output current limiter gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "I_lr",
+                    "comment": "Exciter current limiter reference",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Voltage regulator limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Kg",
+                    "comment": "Feedback gain constant of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tg",
+                    "comment": "Feedback time constant of the inner loop field voltage regulator in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Regulator Integrator,\n\tx_d: Regulator Derivative,\n\tVg: Regulator Feedback",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vg]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
+                    "internal_default": 4,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
             "struct_name": "EXST1",
             "docstring": "IEEE Type ST1 Excitation System (PTI version)",
             "fields": [

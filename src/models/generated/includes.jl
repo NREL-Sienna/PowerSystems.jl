@@ -58,6 +58,7 @@ include("ESAC8B.jl")
 include("ESST1A.jl")
 include("EXPIC1.jl")
 include("ESST4B.jl")
+include("ST6B.jl")
 include("EXST1.jl")
 include("EX4VSA.jl")
 include("BaseMachine.jl")
@@ -193,18 +194,24 @@ export get_K7
 export get_K8
 export get_KT
 export get_K_c
+export get_K_ci
 export get_K_d
+export get_K_da
 export get_K_ex
+export get_K_ff
 export get_K_hp
 export get_K_hv
 export get_K_i
+export get_K_ia
 export get_K_ig
 export get_K_im
 export get_K_ip
 export get_K_ir
 export get_K_lp
 export get_K_lr
+export get_K_m
 export get_K_p
+export get_K_pa
 export get_K_pg
 export get_K_pm
 export get_K_pr
@@ -263,6 +270,7 @@ export get_Lvpl1
 export get_Lvpl_sw
 export get_M_rtf
 export get_N_rtf
+export get_OEL_Flag
 export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
@@ -321,6 +329,7 @@ export get_TFRT_pnts
 export get_TVRT_pnts
 export get_T_AA
 export get_T_act
+export get_T_da
 export get_T_eng
 export get_T_fltr
 export get_T_ft
@@ -723,18 +732,24 @@ export set_K7!
 export set_K8!
 export set_KT!
 export set_K_c!
+export set_K_ci!
 export set_K_d!
+export set_K_da!
 export set_K_ex!
+export set_K_ff!
 export set_K_hp!
 export set_K_hv!
 export set_K_i!
+export set_K_ia!
 export set_K_ig!
 export set_K_im!
 export set_K_ip!
 export set_K_ir!
 export set_K_lp!
 export set_K_lr!
+export set_K_m!
 export set_K_p!
+export set_K_pa!
 export set_K_pg!
 export set_K_pm!
 export set_K_pr!
@@ -793,6 +808,7 @@ export set_Lvpl1!
 export set_Lvpl_sw!
 export set_M_rtf!
 export set_N_rtf!
+export set_OEL_Flag!
 export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
@@ -851,6 +867,7 @@ export set_TFRT_pnts!
 export set_TVRT_pnts!
 export set_T_AA!
 export set_T_act!
+export set_T_da!
 export set_T_eng!
 export set_T_fltr!
 export set_T_ft!
