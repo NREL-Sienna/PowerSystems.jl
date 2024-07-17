@@ -86,6 +86,7 @@ include("GasTG.jl")
 include("DEGOV.jl")
 include("DEGOV1.jl")
 include("GeneralGovModel.jl")
+include("PIDGOV.jl")
 include("SteamTurbineGov1.jl")
 include("HydroTurbineGov.jl")
 include("IEEETurbineGov1.jl")
@@ -133,6 +134,7 @@ export get_A5
 export get_A6
 export get_AT
 export get_A_set
+export get_A_tw
 export get_Accel
 export get_Ae
 export get_At
@@ -166,6 +168,7 @@ export get_FRT_pnts
 export get_Freq_Flag
 export get_Ftrip_Flag
 export get_G
+export get_G_lim
 export get_Gen_Flag
 export get_H
 export get_H_ex
@@ -304,6 +307,7 @@ export get_Recon_Flag
 export get_Ref_Flag
 export get_Rmin
 export get_Rp
+export get_Rperm
 export get_Rrpwr
 export get_Rselect
 export get_SOC_ini
@@ -342,6 +346,7 @@ export get_T_p
 export get_T_pord
 export get_T_q
 export get_T_rate
+export get_T_reg
 export get_T_rv
 export get_Ta
 export get_Ta_2
@@ -494,6 +499,7 @@ export get_ext
 export get_f
 export get_fdbd_pnts
 export get_fe_lim
+export get_feedback_flag
 export get_fh
 export get_fl
 export get_flow_limits
@@ -504,6 +510,7 @@ export get_from_branch_control
 export get_fs
 export get_fuel
 export get_fuel_flag
+export get_gate_openings
 export get_gate_position_limits
 export get_hysteresis_binary_logic
 export get_impedance_active_power
@@ -579,6 +586,7 @@ export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
 export get_power_factor
+export get_power_gate_openings
 export get_power_trajectory
 export get_primary_shunt
 export get_prime_mover_type
@@ -673,6 +681,7 @@ export set_A5!
 export set_A6!
 export set_AT!
 export set_A_set!
+export set_A_tw!
 export set_Accel!
 export set_Ae!
 export set_At!
@@ -706,6 +715,7 @@ export set_FRT_pnts!
 export set_Freq_Flag!
 export set_Ftrip_Flag!
 export set_G!
+export set_G_lim!
 export set_Gen_Flag!
 export set_H!
 export set_H_ex!
@@ -844,6 +854,7 @@ export set_Recon_Flag!
 export set_Ref_Flag!
 export set_Rmin!
 export set_Rp!
+export set_Rperm!
 export set_Rrpwr!
 export set_Rselect!
 export set_SOC_ini!
@@ -882,6 +893,7 @@ export set_T_p!
 export set_T_pord!
 export set_T_q!
 export set_T_rate!
+export set_T_reg!
 export set_T_rv!
 export set_Ta!
 export set_Ta_2!
@@ -1034,6 +1046,7 @@ export set_ext!
 export set_f!
 export set_fdbd_pnts!
 export set_fe_lim!
+export set_feedback_flag!
 export set_fh!
 export set_fl!
 export set_flow_limits!
@@ -1044,6 +1057,7 @@ export set_from_branch_control!
 export set_fs!
 export set_fuel!
 export set_fuel_flag!
+export set_gate_openings!
 export set_gate_position_limits!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
@@ -1119,6 +1133,7 @@ export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
 export set_power_factor!
+export set_power_gate_openings!
 export set_power_trajectory!
 export set_primary_shunt!
 export set_prime_mover_type!

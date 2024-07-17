@@ -189,6 +189,7 @@ export IEEETurbineGov1
 export SteamTurbineGov1
 export DEGOV
 export DEGOV1
+export PIDGOV
 
 # Converter Exports
 export Converter

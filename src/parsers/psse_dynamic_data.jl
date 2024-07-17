@@ -61,9 +61,14 @@ function _parse_input_types(_v, val)
         return NaN
         # If the parameter is a tuple (as a string), then construct the tuple directly.
     elseif isa(_v, String)
+        #TODO: Generalize n-length tuple
         m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
+        m2 = match(r"^\((\d+)\s*,\s*(\d+),\s*(\d+)\)$", _v)
         if m !== nothing
             _tuple_ix = parse.(Int, m.captures)
+            return Tuple(val[_tuple_ix])
+        elseif m2 !== nothing
+            _tuple_ix = parse.(Int, m2.captures)
             return Tuple(val[_tuple_ix])
         else
             error("String $(_v) not recognized for parsing")
@@ -466,7 +471,7 @@ specific generator components
 
 """
 function _convert_argument_types_for_gen!(str::AbstractString, struct_args::Vector)
-    if str == "DEGOV1"
+    if (str == "DEGOV1") || (str == "PIDGOV")
         struct_args[1] = Int(struct_args[1])
     end
     return
