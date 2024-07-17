@@ -12661,7 +12661,7 @@
         },
         {
             "struct_name": "PIDGOV",
-            "docstring": "Hydro Turbine-Governor with PID controller. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines",
+            "docstring": "Hydro Turbine-Governor with PID controller.",
             "fields": [
                 {
                     "name": "feedback_flag",
@@ -12807,6 +12807,187 @@
                     "comment": "Gate opening velocity limits `(G_min, G_max)`.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:\n\tx_g1: Filtered input measurement,\n\tx_g2: PI block internal state,\n\tx_g3: First regulator state, \n\tx_g4: Derivative block internal state, \n\tx_g5: Second regulator state, \n\tx_g6: Gate position state, \n\tx_g7: Water inertia state",
+                    "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) PIDGOV has 7 states",
+                    "internal_default": 7,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) PIDGOV has 7 [differential](@ref states_list) [states](@ref S)",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "WPIDHY",
+            "docstring": "Woodward PID Hydro Governor",
+            "fields": [
+                {
+                    "name": "T_reg",
+                    "comment": "Input time constant of the governor in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "reg",
+                    "comment": "Input governor gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Governor proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Governor integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Governor derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Governor derivative/high-frequency time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tb",
+                    "comment": "Gate-servo time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_lim",
+                    "comment": "Gate opening velocity limits `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "G_lim",
+                    "comment": "Minimum/Maximum Gate velocity `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Tw",
+                    "comment": "Water inertia time constant, sec",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "P_lim",
+                    "comment": "Minimum/Maximum Gate openings `(P_min, P_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "D",
+                    "comment": "Turbine damping coefficient",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "gate_openings",
+                    "comment": "Gate-opening speed at different loads",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "power_gate_openings",
+                    "comment": "Power at gate_openings",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
                 },
                 {
                     "name": "P_ref",

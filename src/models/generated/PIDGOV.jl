@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Hydro Turbine-Governor with PID controller. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines
+Hydro Turbine-Governor with PID controller.
 
 # Arguments
 - `feedback_flag::Int`: Feedback signal for governor droop: 0 for electrical power, and 1 for gate position., validation range: `(0, 1)`

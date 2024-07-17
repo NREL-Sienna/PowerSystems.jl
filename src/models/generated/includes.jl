@@ -87,6 +87,7 @@ include("DEGOV.jl")
 include("DEGOV1.jl")
 include("GeneralGovModel.jl")
 include("PIDGOV.jl")
+include("WPIDHY.jl")
 include("SteamTurbineGov1.jl")
 include("HydroTurbineGov.jl")
 include("IEEETurbineGov1.jl")
@@ -610,6 +611,7 @@ export get_reactive_power_limits_to
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
+export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
@@ -1157,6 +1159,7 @@ export set_reactive_power_limits_to!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!
+export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!

@@ -190,6 +190,7 @@ export SteamTurbineGov1
 export DEGOV
 export DEGOV1
 export PIDGOV
+export WPIDHY
 
 # Converter Exports
 export Converter
