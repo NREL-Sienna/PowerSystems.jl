@@ -153,3 +153,13 @@ function _calc_states(machine, shaft, avr, prime_mover, pss)
         get_states(pss),
     )
 end
+
+function get_degov1_states(droop_flag::Int)
+    if droop_flag == 0
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5], 5
+    elseif droop_flag == 1
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6
+    else
+        error("Unsupported value of droop_flag on DEGOV1")
+    end
+end
