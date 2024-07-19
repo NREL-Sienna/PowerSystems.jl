@@ -2346,6 +2346,7 @@ function IS.compare_values(
     y::T;
     compare_uuids = false,
     exclude = Set{Symbol}(),
+    match_fn = IS.isequivalent,
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
     # reference to its counterpart, and vice versa, and so infinite recursion will occur
@@ -2359,7 +2360,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if name1 != name2
+                if !match_fn(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -2377,6 +2378,7 @@ function IS.compare_values(
                 val2;
                 compare_uuids = compare_uuids,
                 exclude = exclude,
+                match_fn = match_fn,
             )
                 @error "values do not match" T name val1 val2
                 match = false
@@ -2387,11 +2389,12 @@ function IS.compare_values(
                 val2;
                 compare_uuids = compare_uuids,
                 exclude = exclude,
+                match_fn = match_fn,
             )
                 match = false
             end
         else
-            if val1 != val2
+            if !match_fn(val1, val2)
                 @error "values do not match" T name val1 val2
                 match = false
             end

@@ -431,6 +431,12 @@ end
             !IS.compare_values(sys1, sys2)
         )
     )
+
+    my_match_fn(a::Float64, b::Float64) =
+        isapprox(a, b; atol = 0.2) || IS.isequivalent(a, b)
+    my_match_fn(a, b) = IS.isequivalent(a, b)
+    @test IS.compare_values(gen1, gen2; match_fn = my_match_fn)
+    @test IS.compare_values(sys1, sys2; match_fn = my_match_fn)
 end
 
 @testset "Test check_components" begin
