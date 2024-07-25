@@ -3,9 +3,9 @@
 It is often useful to express power systems data in relative terms using per-unit conventions.
 `PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
 
- 1. Natural Units: The naturally defined units of each parameter (typically MW).
- 2. System Base: Parameter values are divided by the system `base_power`.
- 3. Device Base: Parameter values are divided by the device `base_mva`.
+ 1. `"NATURAL_UNITS"`: The naturally defined units of each parameter (typically MW).
+ 2. `"SYSTEM_BASE"`: Parameter values are divided by the system `base_power`.
+ 3. `"DEVICE_BASE"`: Parameter values are divided by the device `base_mva`.
 
 To see the unit system setting of a `System`:
 

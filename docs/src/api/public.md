@@ -112,6 +112,7 @@ Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
                    InfrastructureSystems.TimeSeriesAssociation,
                    InfrastructureSystems.ForecastCache,
                    InfrastructureSystems.StaticTimeSeriesCache,
+                   InfrastructureSystems.CompressionSettings
                    ]
 ```
 
