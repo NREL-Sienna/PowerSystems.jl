@@ -28,6 +28,7 @@ pages = OrderedDict(
             "...add an Operating Cost" => "how_to/add_cost_curve.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add a new Type" => "how_to/add_new_types.md",
+            "...improve performance with time series data" => "how_to/improve_ts_performance.md",
             "...serialize data to a JSON" => "how_to/serialize_data.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
         ],
