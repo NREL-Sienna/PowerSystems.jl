@@ -189,8 +189,9 @@ get_time_series_array(
 
 # Add A Time Series Using Scaling Factors
 
-Now, let's add the load time series. Recall that this data is normalized to the peak load
-power, so the available data are scaling factors.
+Let's add the load time series. Recall that this data is normalized to the peak system
+power, so we'll use it to scale both of our loads. We call normalized time series data
+*scaling factors*.
 
 First, let's create our input data `TimeSeries.TimeArray` with the example data and the same
 time stamps we used in the wind time series:
@@ -213,7 +214,7 @@ load_time_series = SingleTimeSeries(
 Notice that we assigned the
 [`get_max_active_power`](@ref get_max_active_power(value::PowerLoad)) *function*
 to scale the time series, rather than a value, making the time series reusable for multiple
-components.
+components or multiple fields in a component.
 
 Now, add the scaling factor time series to both loads to save memory and avoid data
 duplication:
