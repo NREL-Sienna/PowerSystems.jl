@@ -1,7 +1,7 @@
 # Glossary and Acronyms
 
 [A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) | 
-[S](@ref) | [V](@ref) | [Z](@ref)
+[S](@ref) | [V](@ref) | [W](@ref) | [Z](@ref)
 
 ### A
 
@@ -71,7 +71,8 @@
   intervals are represented using `Dates.Period` types. For instance, in a Day-Ahead market
   simulation, the interval is usually `Hour(24)`.
 
-* *Initial time*: The first time-stamp in a forecast. See the article on [`Time Series Data`](@ref ts_data).
+* *Initial time*: The first time-stamp in a forecast window. See the article on
+  [`Time Series Data`](@ref ts_data).
 
 * *IPC*: Interconnecting power converter
 
@@ -134,6 +135,13 @@
 * *VSCDCLine*: Voltage-Source Converter Direct Current Line
 
 * *VSM*:
+
+### W
+
+* *Window*: A forecast window is one forecast run that starts at one [initial time](@ref I)
+  and extends through the forecast [horizon](@ref H). Typically, a forecast data set
+  contains multiple forecast windows, with sequential initial times. For example, a
+  year-long data set of day-ahead forecasts contains 365 forecast windows
 
 ### Z
 
