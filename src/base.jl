@@ -1253,6 +1253,15 @@ function get_components_in_aggregation_topology(
     return components
 end
 
+"Return whether the given component's bus is in the AggregationTopology."
+function is_component_in_aggregation_topology(
+    comp::Component,
+    aggregator::T,
+) where {T <: AggregationTopology}
+    accessor = get_aggregation_topology_accessor(T)
+    return IS.get_uuid(accessor(get_bus(comp))) == IS.get_uuid(aggregator)
+end
+
 """
 Return a mapping of AggregationTopology name to vector of buses within it.
 """

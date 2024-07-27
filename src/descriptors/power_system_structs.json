@@ -7142,6 +7142,182 @@
             "supertype": "AVR"
         },
         {
+            "struct_name": "ESAC8B",
+            "docstring": "Excitation System AC8B. Used to represent the Basler Digital Excitation Control System (DECS) with PID controller in PSSE.",
+            "fields": [
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Regulator proportional PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Regulator integral PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Regulator derivative PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Td",
+                    "comment": "Regulator derivative PID time constant.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ka",
+                    "comment": "Regulator output gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1000
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Regulator output lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Limits for exciter field voltage `(Vr_min, Vr_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Te",
+                    "comment": "Exciter field time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 2
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Ke",
+                    "comment": "Exciter field proportional constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "E_sat",
+                    "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Se",
+                    "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "saturation_coeffs",
+                    "comment": "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+                    "data_type": "Tuple{Float64, Float64}",
+                    "null_value": "(0.0, 0.0)",
+                    "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Internal PI-block state,\n\tx_d: Internal Derivative-block state,\n\tVr: Voltage regulator state,\n\tEfd: Exciter output state",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vr, :Efd]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential, StateTypes.Hybrid, StateTypes.Differential]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
             "struct_name": "ESST1A",
             "docstring": "This excitation system supplies power through a transformer from the generator terminals and its regulated by a controlled rectifier (via thyristors).\nParameters of IEEE Std 421.5 Type ST1A Excitacion System. ESST1A in PSSE and PSLF",
             "fields": [
@@ -7805,6 +7981,212 @@
                 {
                     "name": "states_types",
                     "comment": "(**Do not modify.**) ST4B has 4 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
+            "struct_name": "ST6B",
+            "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST6B Excitacion System. ST6B in PSSE and PSLF",
+            "fields": [
+                {
+                    "name": "OEL_Flag",
+                    "comment": "OEL Flag for ST6B: 1: before HV gate, 2: after HV gate",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_pa",
+                    "comment": "Regulator proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ia",
+                    "comment": "Regulator integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_da",
+                    "comment": "Regulator derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_da",
+                    "comment": "Voltage regulator derivative channel time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Va_lim",
+                    "comment": "Regulator output limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_ff",
+                    "comment": "Pre-control gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_m",
+                    "comment": "Forward gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ci",
+                    "comment": "Exciter output current limit adjustment gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_lr",
+                    "comment": "Exciter output current limiter gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "I_lr",
+                    "comment": "Exciter current limiter reference",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Voltage regulator limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Kg",
+                    "comment": "Feedback gain constant of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tg",
+                    "comment": "Feedback time constant of the inner loop field voltage regulator in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Regulator Integrator,\n\tx_d: Regulator Derivative,\n\tVg: Regulator Feedback",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vg]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
+                    "internal_default": 4,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
@@ -11728,6 +12110,169 @@
             "supertype": "TurbineGov"
         },
         {
+            "struct_name": "DEGOV1",
+            "docstring": "Parameters Woodward Diesel Governor Model. DEGOV1 in PSSE",
+            "fields": [
+                {
+                    "name": "droop_flag",
+                    "comment": "Droop control Flag. 0 for throttle feedback and 1 for electric power feedback",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "T1",
+                    "comment": "Governor mechanism time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T2",
+                    "comment": "Turbine power time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T3",
+                    "comment": "Turbine exhaust temperature time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "K",
+                    "comment": "Governor gain for actuator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T4",
+                    "comment": "Governor lead time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T5",
+                    "comment": "Governor lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T6",
+                    "comment": "Actuator time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Td",
+                    "comment": "Engine time delay in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T_lim",
+                    "comment": "Operational control limits on actuator (T_min, T_max)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "R",
+                    "comment": "Steady state droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Te",
+                    "comment": "Power transducer time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Load Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[1]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The number of [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[2]",
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
             "struct_name": "GeneralGovModel",
             "docstring": "GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a general purpose governor model used for a variety of prime movers controlled by proportional-integral-derivative (PID) governors including gas turbines",
             "fields": [
@@ -12104,6 +12649,384 @@
                     "name": "states_types",
                     "comment": "(**Do not modify.**) GGOV1 has 10 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "PIDGOV",
+            "docstring": "Hydro Turbine-Governor with PID controller.",
+            "fields": [
+                {
+                    "name": "feedback_flag",
+                    "comment": "Feedback signal for governor droop: 0 for electrical power, and 1 for gate position.",
+                    "null_value": 1,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Rperm",
+                    "comment": "Speed permanent droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_reg",
+                    "comment": "Speed detector time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Governor proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Governor integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Governor derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Governor derivative time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tb",
+                    "comment": "Gate-servo time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "D_turb",
+                    "comment": "Turbine damping factor",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "gate_openings",
+                    "comment": "Gate-opening speed at different loads",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "power_gate_openings",
+                    "comment": "Power at gate_openings",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "G_lim",
+                    "comment": "Minimum/Maximum Gate openings `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "A_tw",
+                    "comment": "Factor multiplying Tw",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tw",
+                    "comment": "Water inertia time constant, sec",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_lim",
+                    "comment": "Gate opening velocity limits `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:\n\tx_g1: Filtered input measurement,\n\tx_g2: PI block internal state,\n\tx_g3: First regulator state, \n\tx_g4: Derivative block internal state, \n\tx_g5: Second regulator state, \n\tx_g6: Gate position state, \n\tx_g7: Water inertia state",
+                    "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) PIDGOV has 7 states",
+                    "internal_default": 7,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) PIDGOV has 7 [differential](@ref states_list) [states](@ref S)",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "WPIDHY",
+            "docstring": "Woodward PID Hydro Governor",
+            "fields": [
+                {
+                    "name": "T_reg",
+                    "comment": "Input time constant of the governor in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "reg",
+                    "comment": "Input governor gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Governor proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Governor integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Governor derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Governor derivative/high-frequency time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tb",
+                    "comment": "Gate-servo time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_lim",
+                    "comment": "Gate opening velocity limits `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "G_lim",
+                    "comment": "Minimum/Maximum Gate velocity `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Tw",
+                    "comment": "Water inertia time constant, sec",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "P_lim",
+                    "comment": "Minimum/Maximum Gate openings `(P_min, P_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "D",
+                    "comment": "Turbine damping coefficient",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "gate_openings",
+                    "comment": "Gate-opening speed at different loads",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "power_gate_openings",
+                    "comment": "Power at gate_openings",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:\n\tx_g1: Filtered input measurement,\n\tx_g2: PI block internal state,\n\tx_g3: First regulator state, \n\tx_g4: Derivative block internal state, \n\tx_g5: Second regulator state, \n\tx_g6: Gate position state, \n\tx_g7: Water inertia state",
+                    "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) PIDGOV has 7 states",
+                    "internal_default": 7,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) PIDGOV has 7 [differential](@ref states_list) [states](@ref S)",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
                 {

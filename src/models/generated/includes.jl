@@ -54,9 +54,11 @@ include("EXAC1A.jl")
 include("EXAC1.jl")
 include("EXAC2.jl")
 include("ESAC6A.jl")
+include("ESAC8B.jl")
 include("ESST1A.jl")
 include("EXPIC1.jl")
 include("ESST4B.jl")
+include("ST6B.jl")
 include("EXST1.jl")
 include("EX4VSA.jl")
 include("BaseMachine.jl")
@@ -82,7 +84,10 @@ include("FiveMassShaft.jl")
 include("TGFixed.jl")
 include("GasTG.jl")
 include("DEGOV.jl")
+include("DEGOV1.jl")
 include("GeneralGovModel.jl")
+include("PIDGOV.jl")
+include("WPIDHY.jl")
 include("SteamTurbineGov1.jl")
 include("HydroTurbineGov.jl")
 include("IEEETurbineGov1.jl")
@@ -130,6 +135,7 @@ export get_A5
 export get_A6
 export get_AT
 export get_A_set
+export get_A_tw
 export get_Accel
 export get_Ae
 export get_At
@@ -163,6 +169,7 @@ export get_FRT_pnts
 export get_Freq_Flag
 export get_Ftrip_Flag
 export get_G
+export get_G_lim
 export get_Gen_Flag
 export get_H
 export get_H_ex
@@ -192,18 +199,24 @@ export get_K7
 export get_K8
 export get_KT
 export get_K_c
+export get_K_ci
 export get_K_d
+export get_K_da
 export get_K_ex
+export get_K_ff
 export get_K_hp
 export get_K_hv
 export get_K_i
+export get_K_ia
 export get_K_ig
 export get_K_im
 export get_K_ip
 export get_K_ir
 export get_K_lp
 export get_K_lr
+export get_K_m
 export get_K_p
+export get_K_pa
 export get_K_pg
 export get_K_pm
 export get_K_pr
@@ -262,6 +275,7 @@ export get_Lvpl1
 export get_Lvpl_sw
 export get_M_rtf
 export get_N_rtf
+export get_OEL_Flag
 export get_Oel_lim
 export get_PF_Flag
 export get_PQ_Flag
@@ -294,6 +308,7 @@ export get_Recon_Flag
 export get_Ref_Flag
 export get_Rmin
 export get_Rp
+export get_Rperm
 export get_Rrpwr
 export get_Rselect
 export get_SOC_ini
@@ -320,16 +335,19 @@ export get_TFRT_pnts
 export get_TVRT_pnts
 export get_T_AA
 export get_T_act
+export get_T_da
 export get_T_eng
 export get_T_fltr
 export get_T_ft
 export get_T_fv
 export get_T_g
 export get_T_iq
+export get_T_lim
 export get_T_p
 export get_T_pord
 export get_T_q
 export get_T_rate
+export get_T_reg
 export get_T_rv
 export get_Ta
 export get_Ta_2
@@ -473,6 +491,7 @@ export get_dc_link_capacitance
 export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
+export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
@@ -481,6 +500,7 @@ export get_ext
 export get_f
 export get_fdbd_pnts
 export get_fe_lim
+export get_feedback_flag
 export get_fh
 export get_fl
 export get_flow_limits
@@ -491,6 +511,7 @@ export get_from_branch_control
 export get_fs
 export get_fuel
 export get_fuel_flag
+export get_gate_openings
 export get_gate_position_limits
 export get_hysteresis_binary_logic
 export get_impedance_active_power
@@ -566,6 +587,7 @@ export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
 export get_power_factor
+export get_power_gate_openings
 export get_power_trajectory
 export get_primary_shunt
 export get_prime_mover_type
@@ -589,6 +611,7 @@ export get_reactive_power_limits_to
 export get_rectifier_firing_angle
 export get_rectifier_tap_limits
 export get_rectifier_xrc
+export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
@@ -660,6 +683,7 @@ export set_A5!
 export set_A6!
 export set_AT!
 export set_A_set!
+export set_A_tw!
 export set_Accel!
 export set_Ae!
 export set_At!
@@ -693,6 +717,7 @@ export set_FRT_pnts!
 export set_Freq_Flag!
 export set_Ftrip_Flag!
 export set_G!
+export set_G_lim!
 export set_Gen_Flag!
 export set_H!
 export set_H_ex!
@@ -722,18 +747,24 @@ export set_K7!
 export set_K8!
 export set_KT!
 export set_K_c!
+export set_K_ci!
 export set_K_d!
+export set_K_da!
 export set_K_ex!
+export set_K_ff!
 export set_K_hp!
 export set_K_hv!
 export set_K_i!
+export set_K_ia!
 export set_K_ig!
 export set_K_im!
 export set_K_ip!
 export set_K_ir!
 export set_K_lp!
 export set_K_lr!
+export set_K_m!
 export set_K_p!
+export set_K_pa!
 export set_K_pg!
 export set_K_pm!
 export set_K_pr!
@@ -792,6 +823,7 @@ export set_Lvpl1!
 export set_Lvpl_sw!
 export set_M_rtf!
 export set_N_rtf!
+export set_OEL_Flag!
 export set_Oel_lim!
 export set_PF_Flag!
 export set_PQ_Flag!
@@ -824,6 +856,7 @@ export set_Recon_Flag!
 export set_Ref_Flag!
 export set_Rmin!
 export set_Rp!
+export set_Rperm!
 export set_Rrpwr!
 export set_Rselect!
 export set_SOC_ini!
@@ -850,16 +883,19 @@ export set_TFRT_pnts!
 export set_TVRT_pnts!
 export set_T_AA!
 export set_T_act!
+export set_T_da!
 export set_T_eng!
 export set_T_fltr!
 export set_T_ft!
 export set_T_fv!
 export set_T_g!
 export set_T_iq!
+export set_T_lim!
 export set_T_p!
 export set_T_pord!
 export set_T_q!
 export set_T_rate!
+export set_T_reg!
 export set_T_rv!
 export set_Ta!
 export set_Ta_2!
@@ -1003,6 +1039,7 @@ export set_dc_link_capacitance!
 export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
+export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!
@@ -1011,6 +1048,7 @@ export set_ext!
 export set_f!
 export set_fdbd_pnts!
 export set_fe_lim!
+export set_feedback_flag!
 export set_fh!
 export set_fl!
 export set_flow_limits!
@@ -1021,6 +1059,7 @@ export set_from_branch_control!
 export set_fs!
 export set_fuel!
 export set_fuel_flag!
+export set_gate_openings!
 export set_gate_position_limits!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
@@ -1096,6 +1135,7 @@ export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
 export set_power_factor!
+export set_power_gate_openings!
 export set_power_trajectory!
 export set_primary_shunt!
 export set_prime_mover_type!
@@ -1119,6 +1159,7 @@ export set_reactive_power_limits_to!
 export set_rectifier_firing_angle!
 export set_rectifier_tap_limits!
 export set_rectifier_xrc!
+export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!

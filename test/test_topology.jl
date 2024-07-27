@@ -48,15 +48,30 @@ end
     test_aggregation_topologies(sys, 3, 21)
 end
 
-@testset "Test get_components_in_aggregation_topology" begin
+@testset "Test get_components_in_aggregation_topology and is_component_in_aggregation_topology" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
     areas = collect(get_components(Area, sys))
     @test !isempty(areas)
-    area = areas[1]
-    generators = get_components_in_aggregation_topology(ThermalStandard, sys, area)
+    zones = collect(get_components(LoadZone, sys))
+    @test !isempty(zones)
 
-    for gen in generators
-        bus = get_bus(gen)
-        @test IS.get_uuid(get_area(bus)) == IS.get_uuid(area)
+    for (agg, accessor) in [(first(areas), get_area), (first(zones), get_load_zone)]
+        all_generators = get_components(ThermalStandard, sys)
+        in_generators = get_components_in_aggregation_topology(ThermalStandard, sys, agg)
+        covered_in = covered_out = false  # Invalid test if agg is empty or includes everything
+
+        for gen in all_generators
+            bus = get_bus(gen)
+            if gen in in_generators
+                @test IS.get_uuid(accessor(bus)) == IS.get_uuid(agg)
+                @test is_component_in_aggregation_topology(gen, agg)
+                covered_in = true
+            else
+                @test IS.get_uuid(accessor(bus)) != IS.get_uuid(agg)
+                @test !is_component_in_aggregation_topology(gen, agg)
+                covered_out = true
+            end
+        end
+        @test covered_in && covered_out
     end
 end

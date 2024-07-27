@@ -132,12 +132,14 @@ export ESDC1A
 export ESDC2A
 export ESAC1A
 export ESAC6A
+export ESAC8B
 export EXAC1
 export EXAC1A
 export EXAC2
 export EXPIC1
 export ESST1A
 export ESST4B
+export ST6B
 export SCRX
 export SEXS
 
@@ -186,6 +188,9 @@ export HydroTurbineGov
 export IEEETurbineGov1
 export SteamTurbineGov1
 export DEGOV
+export DEGOV1
+export PIDGOV
+export WPIDHY
 
 # Converter Exports
 export Converter
@@ -316,6 +321,7 @@ export get_services
 export has_service
 export has_time_series
 export get_buses
+export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
