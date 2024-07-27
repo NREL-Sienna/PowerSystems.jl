@@ -76,12 +76,12 @@ forecast_max_reactive_power = Deterministic(
 add_time_series!(sys, generator, forecast_max_reactive_power)
 ```
 
-By default, the call to `add_time_series!` will open the HDF5 file, write the data to the file,
+By default, the call to [`add_time_series!`](@ref) will open the HDF5 file, write the data to the file,
 and close the file. It will also add a row to an SQLite database. These operations have overhead.
 If you will add thousands of time series arrays, consider using [`bulk_add_time_series!`](@ref).
 All arrays will be written with one file handle. The
 bulk SQLite operations are much more efficient. As a fallback option, use
-[`open_time_series_store!`](ref) if timeseries must be added one at a time.
+[`open_time_series_store!`](@ref) if timeseries must be added one at a time.
 
 ```julia
 # Assumes `read_time_series` will return data appropriate for Deterministic forecasts
