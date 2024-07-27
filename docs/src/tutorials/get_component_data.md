@@ -3,9 +3,9 @@
 In this tutorial, we will explore the data in a `System`, including looking at a summary of
 the system and getting both its components and their data. We will also start checking for
 time-series data, which we will explore more in the tutorial on
-[Working with Time Series Data](@ref).
+[Working with Time Series Data](@@ref tutorial_time_series).
 
-In [Creating Your First System](@ref), we created a basic `System` with nodes, a transmission
+In [Create and Explore a Power `System`](@ref), we created a basic `System` with nodes, a transmission
 line, and a few generators. Let's recreate that system if you don't have it already: 
 
 
