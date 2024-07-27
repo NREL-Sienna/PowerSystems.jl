@@ -46,7 +46,7 @@ Woodward PID Hydro Governor
 - `gate_openings::Tuple{Float64, Float64, Float64}`: Gate-opening speed at different loads
 - `power_gate_openings::Tuple{Float64, Float64, Float64}`: Power at gate_openings
 - `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the PIDGOV model are:
 	x_g1: Filtered input measurement,
 	x_g2: PI block internal state,
@@ -90,7 +90,7 @@ mutable struct WPIDHY <: TurbineGov
     power_gate_openings::Tuple{Float64, Float64, Float64}
     "Reference Power Set-point (pu)"
     P_ref::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:
 	x_g1: Filtered input measurement,
