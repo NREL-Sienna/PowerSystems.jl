@@ -465,7 +465,7 @@
                 {
                     "null_value": "0.0",
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
@@ -585,7 +585,7 @@
                     "null_value": "0.0",
                     "name": "rating",
                     "data_type": "Float64",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to",
                     "needs_conversion": true
                 },
                 {
@@ -717,7 +717,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -846,7 +846,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -952,7 +952,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {

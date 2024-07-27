@@ -35,7 +35,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `x::Float64`: Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `primary_shunt::Float64`: Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
-- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -59,7 +59,7 @@ mutable struct TapTransformer <: ACBranch
     primary_shunt::Float64
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
-    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to"
     rating::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
