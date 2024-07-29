@@ -23,6 +23,7 @@ pages = OrderedDict(
             "...get all the buses in a system" => "how_to/get_buses.md",
             "...get the available generators in a system" => "how_to/get_available_generators.md",
             "...add an Operating Cost" => "how_to/add_cost_curve.md",
+            "...add a market bid" => "how_to/market_bid_cost.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add a new Type" => "how_to/add_new_types.md",
             "...improve performance with time series data" => "how_to/improve_ts_performance.md",
@@ -38,7 +39,6 @@ pages = OrderedDict(
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
             "explanation/cost_functions.md",
-            "explanation/market_bid_cost.md"
             ],
         "Model Library" => Any[],
         "Reference" =>

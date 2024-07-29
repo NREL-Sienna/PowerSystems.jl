@@ -1,6 +1,6 @@
-# PowerSystems [`MarketBidCost`](@ref)
+# Add a Market Bid
 
-Is an `OperationalCost` data structure that allows the user to run a production
+A [`MarketBidCost`](@ref) is an `OperationalCost` data structure that allows the user to run a production
 cost model that is very similar to most US electricity market auctions with bids for energy
 and ancillary services jointly. This page showcases how to create data for this cost function.
 
