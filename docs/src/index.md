@@ -1,12 +1,34 @@
-# PowerSystems.jl
+# Welcome to PowerSystems.jl
 
 ```@meta
 CurrentModule = PowerSystems
 ```
 
-## Overview
+!!! warning "Under Construction"
+    The PowerSystems.jl is being actively being rewritten for version 4.0 using the new
+    format described in [How To Use This Documentation](@ref). Your patience is appreciated
+    as we make this change! For now, some documentation is not located in its final home.
+    Please reach out with questions and suggestions.
 
-`PowerSystems.jl` is a [`Julia`](http://www.julialang.org) package that provides a rigorous
+## About
+
+`PowerSystems.jl` is part of the National Renewable Energy Laboratory's
+[Sienna ecosystem](https://www.nrel.gov/analysis/sienna.html), an open source framework for
+scheduling problems and dynamic simulations for power systems. The Sienna ecosystem can be
+[found on github](https://github.com/NREL-Sienna/Sienna). It contains three applications:
+- [Sienna\Data](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennadata) enables
+    efficient data input, analysis, and transformation
+- [Sienna\Ops](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennaops) enables
+    enables system scheduling simulations by formulating and solving optimization problems
+- [Sienna\Dyn](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennadyn) enables
+    system transient analysis including small signal stability and full system dynamic
+    simulations
+
+Each application uses multiple packages in the [`Julia`](http://www.julialang.org)
+programming language.
+
+`PowerSystems.jl` is the foundation of Sienna\Data, and it is used with all three
+applications. It provides a rigorous
 data model using Julia structures to enable power systems modeling. `PowerSystems.jl` is
 agnostic to a specific mathematical model and can be used for many model categories.
 
@@ -25,19 +47,33 @@ The main features include:
 - Optimized container for component data and time series supporting serialization to
   portable file formats and configurable validation routines.
 
-`PowerSystems.jl` documentation and code are organized according to the needs of different
-users depending on their skillset and requirements. In broad terms there are three categories:
+## How To Use This Documentation
 
-- **Modeler**: Users that want to run a particular analysis or experiment and use `PowerSystems.jl` to develop data sets.
+There are five main sections containing different information:
 
-- **Model Developer**: Users that want to develop custom components and structs in order to exploit `PowerSystems.jl` features to produce custom data sets.
+- **Tutorials** - Detailed walk-throughs to help you *learn* how to use
+    `PowerSystems.jl`
+- **How to...** - Directions to help *guide* your work for a particular task
+- **Explanation** - Additional details and background information to help you *understand*
+    `PowerSystems.jl`, its structure, and how it works behind the scenes
+- **Reference** - Technical references and API for a quick *look-up* during your work
+- **Model Library** - Technical references of the data types and their functions that
+    `PowerSystems.jl` uses to model power system components
 
-- **Code Base Developers**: Users that want to add new core functionalities or fix bugs in the core capabilities of `PowerSystems.jl`.
+`PowerSystems.jl` strives to follow the [Diataxis](https://diataxis.fr/) documentation
+framework.
 
-`PowerSystems.jl` is an active project under development, and we welcome your feedback,
-suggestions, and bug reports.
+## Getting Started
 
-**Note**: `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://github.com/NREL-Sienna/InfrastructureSystems.jl)
-as a utility library. Several methods are re-exported from `InfrastructureSystems.jl`.
-For most users there is no need to import `InfrastructureSystems.jl`.
-
+If you are new to `PowerSystems.jl`, here's how we suggest getting started:
+1. [Install](@ref install)
+2. Work through the introductory tutorial: [Create and Explore a Power `System`](@ref) to
+    familiarize yourself with how `PowerSystems.jl` works
+3. Work through the other basic tutorials based on your interests
+  - See [Working with Time Series Data](@ref tutorial_time_series) if you will be doing
+      production cost modeling or working with time series
+  - See [Creating a System with Dynamic devices](@ref) and the
+      [tutorial in PowerSimulationsDynamics](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/tutorials/tutorial_dynamic_data/)
+      if you are interested in [dynamic](@ref D) simulations
+4. Then, see the how-to's on parsing [Matpower or PSS/e files](@ref parse_files) or
+    [CSV files](@ref tabular_parser) to begin loading your own data into `PowerSystems.jl`

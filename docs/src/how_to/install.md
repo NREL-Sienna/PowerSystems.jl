@@ -44,3 +44,8 @@ Install is complete!
     ```julia
     ] add PowerSystems#main
     ```
+
+!!! note
+    `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/)
+    as a utility library. Many methods are re-exported from `InfrastructureSystems.jl`.
+    For most users there is no need to import `InfrastructureSystems.jl`.
