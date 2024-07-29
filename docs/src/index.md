@@ -80,5 +80,5 @@ If you are new to `PowerSystems.jl`, here's how we suggest getting started:
   - See [Creating a System with Dynamic devices](@ref) and the
       [tutorial in PowerSimulationsDynamics](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/tutorials/tutorial_dynamic_data/)
       if you are interested in [dynamic](@ref D) simulations
-4. Then, see the how-to's on parsing [Matpower or PSS/e files](@ref parse_files) or
-    [CSV files](@ref tabular_parser) to begin loading your own data into `PowerSystems.jl`
+4. Then, see the how-to's on parsing [Matpower](@ref pm_data) or [PSS/e files](@ref dyr_data) or
+    [CSV files](@ref table_data) to begin loading your own data into `PowerSystems.jl`

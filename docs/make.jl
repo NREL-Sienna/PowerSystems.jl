@@ -17,8 +17,7 @@ pages = OrderedDict(
         "How to..." =>  Any[
             "...install PowerSystems.jl" => "how_to/install.md",
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
-            "...load a Matpower or PSSE file" => "how_to/parse_powerflow_cases.md",
-            "...parse tabular data" => "how_to/parse_tabular_data.md",
+            "...parse data from Matpower, PSSE, or CSV files" => "how_to/parsing.md",
             "...add time series data from CSVs" => "how_to/add_ts_from_csvs.md",
             "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
             "...get all the buses in a system" => "how_to/get_buses.md",
@@ -39,8 +38,7 @@ pages = OrderedDict(
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
             "explanation/cost_functions.md",
-            "explanation/market_bid_cost.md",
-            "explanation/parsing.md",
+            "explanation/market_bid_cost.md"
             ],
         "Model Library" => Any[],
         "Reference" =>

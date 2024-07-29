@@ -329,7 +329,7 @@ and modified the `System` per-unit settings.
 Next, you might want to:
 - [Add time series data to components in the `System`](@ref tutorial_time_series)
 - [Learn more about how to retrieve components and their data from a `System`](@ref get_components_tutorial)
-- [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parse_files)
-- [Create your own `System` from .csv files instead of creating it manually](@ref tabular_parser)
+- [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parsing)
+- [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
 - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
 
