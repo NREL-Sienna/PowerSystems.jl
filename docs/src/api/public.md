@@ -23,7 +23,6 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_functions/ValueCurves.jl",
-           "cost_functions/cost_aliases.jl",
            "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
