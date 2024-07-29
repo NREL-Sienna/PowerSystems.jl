@@ -1,4 +1,4 @@
-# [Variable Costs](@id curve_table)
+# [`ValueCurve` Options](@id curve_table)
 Operating cost data typically includes both fixed and variable costs. See the how-to on [Adding an Operating Cost](@ref cost_how_to) for a demonstration of defining an operating cost.
 
 In PowerSystems.jl, the *variable* portion of the operating cost can be represented as linear, quadratic, or piecewise input-output curves; potentially piecewise marginal heat rates; average heat rates; and more, as best fits the input data. This is done by constructing various subtypes of [`ValueCurve`](@ref).
