@@ -9,7 +9,6 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 
 pages = OrderedDict(
         "Welcome Page" => "index.md",
-        "Quick Start Guide" => "quick_start_guide.md",
         "Tutorials" =>  Any[
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
