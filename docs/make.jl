@@ -40,7 +40,6 @@ pages = OrderedDict(
             "explanation/example_dynamic_data.md",
             "explanation/cost_functions.md",
             "explanation/market_bid_cost.md",
-            "explanation/modeling_with_JuMP.md",
             "explanation/parsing.md",
             ],
         "Model Library" => Any[],
