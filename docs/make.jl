@@ -12,8 +12,6 @@ pages = OrderedDict(
         "Tutorials" =>  Any[
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
-            "Getting, Setting, and Viewing Data" => "tutorials/get_component_data.md",
-            "Add Forecasts" => "tutorials/add_forecasts.md",
             "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
         ],
         "How to..." =>  Any[
@@ -21,6 +19,7 @@ pages = OrderedDict(
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "...load a Matpower or PSSE file" => "how_to/parse_powerflow_cases.md",
             "...parse tabular data" => "how_to/parse_tabular_data.md",
+            "...add time series data from CSVs" => "how_to/add_ts_from_csvs.md",
             "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
             "...get all the buses in a system" => "how_to/get_buses.md",
             "...get the available generators in a system" => "how_to/get_available_generators.md",

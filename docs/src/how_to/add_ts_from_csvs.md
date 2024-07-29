@@ -1,4 +1,4 @@
-# Add time series to `System`
+# Add time series data from CSVs
 
 **Originally Contributed by**: Clayton Barrows
 
