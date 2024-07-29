@@ -4061,7 +4061,7 @@
                 },
                 {
                     "name": "storage_technology_type",
-                    "comment": "Storage Technology Complementary to EIA 923",
+                    "comment": "Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)",
                     "null_value": "StorageTech.OTHER_CHEM",
                     "data_type": "StorageTech"
                 },

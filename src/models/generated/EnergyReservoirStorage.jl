@@ -41,7 +41,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
-- `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923
+- `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)
 - `storage_capacity::Float64`: Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen), validation range: `(0, nothing)`
 - `storage_level_limits::MinMax`: Minimum and maximum allowable storage levels [0, 1], which can be used to model derates or other restrictions, such as state-of-charge restrictions on battery cycling, validation range: `(0, 1)`
 - `initial_storage_capacity_level::Float64`: Initial storage capacity level as a ratio [0, 1.0] of `storage_capacity`, validation range: `(0, 1)`
@@ -71,7 +71,7 @@ mutable struct EnergyReservoirStorage <: Storage
     bus::ACBus
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
-    "Storage Technology Complementary to EIA 923"
+    "Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)"
     storage_technology_type::StorageTech
     "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen)"
     storage_capacity::Float64
