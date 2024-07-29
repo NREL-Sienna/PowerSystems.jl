@@ -38,13 +38,14 @@ pages = OrderedDict(
             "explanation/per_unit.md",
             "explanation/time_series.md",
             "explanation/example_dynamic_data.md",
-            "explanation/cost_functions.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
             Any["Public API" => "api/public.md",
             "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
+            "Type Hierarchy" => "api/type_tree.md",
+            "Variable Cost Options" => "api/variable_costs.md",
             "Specifying the category of..." => "api/enumerated_types.md",
             "Developer Guidelines" => "api/developer_guidelines.md",
             "Citation" => "api/citation.md"

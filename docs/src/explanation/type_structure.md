@@ -57,9 +57,3 @@ implemented in the package.
 ```@raw html
 <img src="../assets/AbstractTree.png" width="75%"/>
 ``` ⠀
-
-The following code displays the hierarchy, but concrete types are omitted for brevity:
-
-```@repl types
-print(join(tt(PowerSystems.IS.InfrastructureSystemsType, concrete = false), ""))
-```
