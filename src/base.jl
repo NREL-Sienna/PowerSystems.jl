@@ -1526,11 +1526,21 @@ function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
 end
 
 """
-Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
-If all SingleTimeSeries instances cannot be transformed then none will be.
+Transform all instances of [`SingleTimeSeries`](@ref) in a `System` to
+[`DeterministicSingleTimeSeries`](@ref)
 
-Any existing DeterministicSingleTimeSeries forecasts will be deleted even if the inputs are
+This can be used to generate a perfect forecast from historical measurements or realizations
+when actual forecasts are unavailable, without unnecessarily duplicating data.
+
+If all `SingleTimeSeries` instances cannot be transformed then none will be.
+
+Any existing `DeterministicSingleTimeSeries` forecasts will be deleted even if the inputs are
 invalid.
+
+# Arguments
+- `sys::System`: System containing the components.
+- `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
+- `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
 """
 function transform_single_time_series!(
     sys::System,
