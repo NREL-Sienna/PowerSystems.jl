@@ -13,7 +13,7 @@ or discharge.
 This data structure is not intended to represent market storage systems market operations
 like the submission of buy/sell bids -- see [`MarketBidCost`](@ref) instead.
 """
-@kwdef mutable struct StorageCost <: OperationalCost
+Base.@kwdef mutable struct StorageCost <: OperationalCost
     "(default of 0) Variable cost of charging represented as a [`CostCurve`](@ref)"
     charge_variable_cost::CostCurve = zero(CostCurve)
     "(default of 0) Variable cost of discharging represented as a [`CostCurve`](@ref)"

@@ -39,7 +39,7 @@ of a [`ValueCurve`](@ref) that may represent input-output, incremental, or avera
 data. The default units for the x-axis are MW and can be specified with
 `power_units`.
 """
-@kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
+Base.@kwdef struct CostCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
     value_curve::T
     "(default: natural units (MW)) The units for the x-axis of the curve"
@@ -78,7 +78,7 @@ liters, m^3, etc.), coupled with a conversion factor between fuel and currency. 
 a [`ValueCurve`](@ref) that may represent input-output, incremental, or average rate data.
 The default units for the x-axis are MW and can be specified with `power_units`.
 """
-@kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
+Base.@kwdef struct FuelCurve{T <: ValueCurve} <: ProductionVariableCostCurve{T}
     "The underlying `ValueCurve` representation of this `ProductionVariableCostCurve`"
     value_curve::T
     "(default: natural units (MW)) The units for the x-axis of the curve"

@@ -12,7 +12,7 @@ fuel curves to model specific water intake.
 
 The `variable` cost is a required parameter, but `zero(CostCurve)` can be used to set it to 0.
 """
-@kwdef mutable struct HydroGenerationCost <: OperationalCost
+Base.@kwdef mutable struct HydroGenerationCost <: OperationalCost
     "Production variable cost represented by a `FuelCurve`, where the fuel is water,
     or a `CostCurve` in currency."
     variable::ProductionVariableCostCurve

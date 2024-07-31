@@ -21,7 +21,7 @@ Can be used, for instance, in the representation of a [`CostCurve`](@ref) where 
 and `y` is currency/hr, or in the representation of a [`FuelCurve`](@ref) where `x` is MW
 and `y` is fuel/hr.
 """
-@kwdef struct InputOutputCurve{
+Base.@kwdef struct InputOutputCurve{
     T <: Union{QuadraticFunctionData, LinearFunctionData, PiecewiseLinearData},
 } <: ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`"
@@ -42,7 +42,7 @@ cost: `y = f'(x)`. Can be used, for instance, in the representation of a [`CostC
 where `x` is MW and `y` is currency/MWh, or in the representation of a [`FuelCurve`](@ref)
 where `x` is MW and `y` is fuel/MWh.
 """
-@kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
+Base.@kwdef struct IncrementalCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
               ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`"
     function_data::T
@@ -67,7 +67,7 @@ origin: `y = f(x)/x`. Can be used, for instance, in the representation of a
 [`FuelCurve`](@ref) where `x` is MW and `y` is fuel/MWh. Typically calculated by dividing
 absolute values of cost rate or fuel input rate by absolute values of electric power.
 """
-@kwdef struct AverageRateCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
+Base.@kwdef struct AverageRateCurve{T <: Union{LinearFunctionData, PiecewiseStepData}} <:
               ValueCurve{T}
     "The underlying `FunctionData` representation of this `ValueCurve`, in the case of `AverageRateCurve{LinearFunctionData}` representing only the oblique asymptote"
     function_data::T

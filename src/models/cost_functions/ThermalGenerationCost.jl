@@ -8,7 +8,7 @@ $(TYPEDFIELDS)
 An operational cost for thermal generators which includes fixed cost, variable cost, shut-down
 cost, and  multiple options for start up costs.
 """
-@kwdef mutable struct ThermalGenerationCost <: OperationalCost
+Base.@kwdef mutable struct ThermalGenerationCost <: OperationalCost
     "Variable production cost. Can take a [`CostCurve`](@ref) or [`FuelCurve`](@ref)"
     variable::ProductionVariableCostCurve
     "Fixed cost of keeping the unit online. For some cost represenations this field can be
