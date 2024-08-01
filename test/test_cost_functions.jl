@@ -20,7 +20,7 @@ end
           AverageRateCurve(LinearFunctionData(3, 2), 1.0)
     @test zero(io_quadratic) == InputOutputCurve(LinearFunctionData(0, 0))
     @test zero(InputOutputCurve) == InputOutputCurve(LinearFunctionData(0, 0))
-    @test PSY.is_cost_alias(io_quadratic) == PSY.is_cost_alias(typeof(io_quadratic)) == true
+    @test IS.is_cost_alias(io_quadratic) == IS.is_cost_alias(typeof(io_quadratic)) == true
     @test repr(io_quadratic) == sprint(show, io_quadratic) ==
           "QuadraticCurve(3.0, 2.0, 1.0)"
     @test sprint(show, "text/plain", io_quadratic) ==
@@ -35,7 +35,7 @@ end
           IncrementalCurve(LinearFunctionData(0, 2), 1.0)
     @test AverageRateCurve(io_linear) ==
           AverageRateCurve(LinearFunctionData(0, 2), 1.0)
-    @test PSY.is_cost_alias(io_linear) == PSY.is_cost_alias(typeof(io_linear)) == true
+    @test IS.is_cost_alias(io_linear) == IS.is_cost_alias(typeof(io_linear)) == true
     @test repr(io_linear) == sprint(show, io_linear) ==
           "LinearCurve(2.0, 1.0)"
     @test sprint(show, "text/plain", io_linear) ==
@@ -49,7 +49,7 @@ end
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test AverageRateCurve(io_piecewise) ==
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
-    @test PSY.is_cost_alias(io_piecewise) == PSY.is_cost_alias(typeof(io_piecewise)) == true
+    @test IS.is_cost_alias(io_piecewise) == IS.is_cost_alias(typeof(io_piecewise)) == true
     @test repr(io_piecewise) == sprint(show, io_piecewise) ==
           "PiecewisePointCurve([(x = 1.0, y = 6.0), (x = 3.0, y = 9.0), (x = 5.0, y = 13.0)])"
     @test sprint(show, "text/plain", io_piecewise) ==
@@ -72,7 +72,7 @@ end
     @test_throws ArgumentError AverageRateCurve(inc_linear_no_initial)
     @test zero(inc_linear) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(IncrementalCurve) == IncrementalCurve(LinearFunctionData(0, 0), 0.0)
-    @test PSY.is_cost_alias(inc_linear) == PSY.is_cost_alias(typeof(inc_linear)) == false
+    @test IS.is_cost_alias(inc_linear) == IS.is_cost_alias(typeof(inc_linear)) == false
     @test repr(inc_linear) == sprint(show, inc_linear) ==
           "IncrementalCurve{LinearFunctionData}(LinearFunctionData(6.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", inc_linear) ==
@@ -91,7 +91,7 @@ end
           AverageRateCurve(PiecewiseStepData([1, 3, 5], [3, 2.6]), 6.0)
     @test_throws ArgumentError InputOutputCurve(inc_piecewise_no_initial)
     @test_throws ArgumentError AverageRateCurve(inc_piecewise_no_initial)
-    @test PSY.is_cost_alias(inc_piecewise) == PSY.is_cost_alias(typeof(inc_piecewise)) ==
+    @test IS.is_cost_alias(inc_piecewise) == IS.is_cost_alias(typeof(inc_piecewise)) ==
           true
     @test repr(inc_piecewise) == sprint(show, inc_piecewise) ==
           "PiecewiseIncrementalCurve(6.0, [1.0, 3.0, 5.0], [1.5, 2.0])"
@@ -115,7 +115,7 @@ end
     @test_throws ArgumentError IncrementalCurve(ar_linear_no_initial)
     @test zero(ar_linear) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
     @test zero(AverageRateCurve) == AverageRateCurve(LinearFunctionData(0, 0), 0.0)
-    @test PSY.is_cost_alias(ar_linear) == PSY.is_cost_alias(typeof(ar_linear)) == false
+    @test IS.is_cost_alias(ar_linear) == IS.is_cost_alias(typeof(ar_linear)) == false
     @test repr(ar_linear) == sprint(show, ar_linear) ==
           "AverageRateCurve{LinearFunctionData}(LinearFunctionData(3.0, 2.0), 1.0, nothing)"
     @test sprint(show, "text/plain", ar_linear) ==
@@ -134,7 +134,7 @@ end
           IncrementalCurve(PiecewiseStepData([1, 3, 5], [1.5, 2]), 6.0)
     @test_throws ArgumentError InputOutputCurve(ar_piecewise_no_initial)
     @test_throws ArgumentError IncrementalCurve(ar_piecewise_no_initial)
-    @test PSY.is_cost_alias(ar_piecewise) == PSY.is_cost_alias(typeof(ar_piecewise)) == true
+    @test IS.is_cost_alias(ar_piecewise) == IS.is_cost_alias(typeof(ar_piecewise)) == true
     @test repr(ar_piecewise) == sprint(show, ar_piecewise) ==
           "PiecewiseAverageCurve(6.0, [1.0, 3.0, 5.0], [3.0, 2.6])"
     @test sprint(show, "text/plain", ar_piecewise) ==
