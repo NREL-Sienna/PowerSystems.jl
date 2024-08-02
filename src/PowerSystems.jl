@@ -475,6 +475,7 @@ export generate_struct_files
 #################################################################################
 # Imports
 
+import Base: @kwdef
 import LinearAlgebra
 import Unicode: normalize
 import Logging
