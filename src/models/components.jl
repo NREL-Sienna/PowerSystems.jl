@@ -3,7 +3,7 @@ function get_system_base_power(c::Component)
 end
 
 """
-    Default behavior of a component. If there is no base_power field, assume is in the system's base power.
+Default behavior of a component. If there is no base_power field, assume is in the system's base power.
 """
 get_base_power(c::Component) = get_system_base_power(c)
 

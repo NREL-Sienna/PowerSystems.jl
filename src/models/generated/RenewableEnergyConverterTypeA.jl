@@ -46,7 +46,7 @@ Parameters of a renewable energy generator/converter model, this model correspon
 - `Q_ref::Float64`: (default: `1.0`) Initial condition of reactive power from power flow, validation range: `(0, nothing)`
 - `R_source::Float64`: (default: `0.0`) Output resistor used for the Thevenin Equivalent, validation range: `(0, nothing)`
 - `X_source::Float64`: (default: `1.0e5`) Output reactance used for the Thevenin Equivalent, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management
 - `n_states::Int`: (**Do not modify.**) RenewableEnergyConverterTypeA has 3 states
 """
@@ -83,7 +83,7 @@ mutable struct RenewableEnergyConverterTypeA <: Converter
     R_source::Float64
     "Output reactance used for the Thevenin Equivalent"
     X_source::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:	Ip: Converter lag for Ipcmd,	Iq: Converter lag for Iqcmd,	Vmeas: Voltage filter for low voltage active current management"
     states::Vector{Symbol}

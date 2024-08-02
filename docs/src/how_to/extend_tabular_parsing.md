@@ -1,6 +1,4 @@
-# Extending Parsing Capabilities
-
-## Extending PowerSystemTableData parsing
+# customize the tabular data parser
 
 This page describes how developers should read columns from raw data files.
 
@@ -41,7 +39,3 @@ end
 
 `iterate_rows` returns a NamedTuple where each `name` defined in
 `src/descriptors/power_system_inputs.json` is a field.
-
-## Extending PSS/e Dynamic Parsing Capabilities
-
-**UNDER CONSTRUCTION**

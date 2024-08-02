@@ -361,6 +361,7 @@ export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
 export get_next_time
+export reset!
 export get_horizon
 export get_forecast_initial_times
 export get_time_series_keys
@@ -547,6 +548,7 @@ import InfrastructureSystems:
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
     get_next_time,
+    reset!,
     has_supplemental_attributes,
     get_units_info,
     set_units_info!,

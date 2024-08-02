@@ -68,7 +68,7 @@ Parameters of Reactive Power Controller including REPCA1 and REECB1
 - `K_qi::Float64`: Reactive power regulator integral gain (used when V_Flag = 1), validation range: `(0, nothing)`
 - `Q_ref::Float64`: (default: `1.0`) Reference Reactive Power Set-point (pu), validation range: `(0, nothing)`
 - `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactiveRenewableControllerAB model depends on the Flag
 - `n_states::Int`: (**Do not modify.**) The states of the ReactiveRenewableControllerAB model depends on the Flag
 """
@@ -127,7 +127,7 @@ mutable struct ReactiveRenewableControllerAB <: ReactivePowerControl
     Q_ref::Float64
     "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ReactiveRenewableControllerAB model depends on the Flag"
     states::Vector{Symbol}

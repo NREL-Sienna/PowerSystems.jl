@@ -1,4 +1,6 @@
-# Creating a custom `Component`
+# Add a New or Custom Type
+
+This page describes how developers should add types to `PowerSystems.jl`
 
 ## Type Hierarchy
 
@@ -136,9 +138,49 @@ PSY.get_name(val::MyDevice) = val.name
 end
 ```
 
-### Auto-Generating Custom Structs
-It is possible to use an advanced future to auto-generate structs in Julia source code files.
-It is not mandatory to use these tools, but it can be useful if you need to generate multiple
-custom structs for your model. Please refer to the docstrings for the functions `generate_struct`
+## [Auto-generating Structs](@id autogen)
+
+Most `PowerSystems.jl` structs are auto-generated from the JSON descriptor file
+`src/descriptors/power_system_structs.json`. 
+You can add your new struct
+here or write it manually when contributing code to the repository. 
+
+If all you need is the basic struct definition and getter/setter functions then
+you will likely find the auto-generation helpful.
+
+If you will need to write specialized functions for the type then you will
+probably want to write it manually.
+
+Please refer to the docstrings for the functions `generate_struct`
 and `generate_structs`. Full details are in the InfrastructureSystems documentation at
-[https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/)
+[https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/auto_generation/).
+
+### Testing the addition of new struct to the code base
+
+In order to merge new structs to the code base, your struct needs to pass several tests.
+
+1. addition to `System`
+2. retrieval from `System`
+3. serialization/de-serialization
+
+The following code block is an example of the code that the new struct needs to pass
+
+```julia
+using PowerSystems
+
+sys = System(100.0)
+device = NewType(data)
+
+# add your component to the system
+add_component!(sys, device)
+retrived_device = get_component(NewType, sys, "component_name")
+
+# Serialize
+to_json(sys, "sys.json")
+
+# Re-create the system and find your component.
+sys2 = System("sys.json")
+serialized_device = get_component(NewType, sys, "component_name")
+
+@test get_name(retrieved_device) == get_name(serialized_device)
+```

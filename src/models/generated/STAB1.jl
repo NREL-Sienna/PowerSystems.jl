@@ -30,7 +30,7 @@ Speed-Sensitive Stabilizing Model
 - `T2T4::Float64`: Time constant division T2/T4, validation range: `(0, nothing)`
 - `T4::Float64`: Time constant, validation range: `(0.01, nothing)`
 - `H_lim::Float64`: PSS output limit, validation range: `(0, 0.5)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: washout filter,
 	x_p2: T1/T3 lead-lag block, 
@@ -54,7 +54,7 @@ mutable struct STAB1 <: PSS
     T4::Float64
     "PSS output limit"
     H_lim::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: washout filter,

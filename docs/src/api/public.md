@@ -23,7 +23,6 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_functions/ValueCurves.jl",
-           "cost_functions/cost_aliases.jl",
            "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
@@ -82,6 +81,14 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["utils/print.jl"]
+Public = true
+Private = false
+Filter = t -> t ∉ [System]
+```
+
 ## Additional Component Methods
 
 ```@autodocs
@@ -93,14 +100,20 @@ Private = false
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["time_series_interface.jl", "time_series_structs.jl", "utils/print.jl"]
+Pages   = ["time_series_interface.jl", "time_series_structs.jl",
+            "time_series_storage.jl", "utils/print.jl",
+            "time_series_cache.jl"]
 Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
                    InfrastructureSystems.get_time_series_array,
+                   InfrastructureSystems.reset!,
                    InfrastructureSystems.get_time_series_timestamps,
                    InfrastructureSystems.get_time_series_values,
                    InfrastructureSystems.show_time_series,
                    InfrastructureSystems.get_time_series_keys,
-                   InfrastructureSystems.TimeSeriesAssociation
+                   InfrastructureSystems.TimeSeriesAssociation,
+                   InfrastructureSystems.ForecastCache,
+                   InfrastructureSystems.StaticTimeSeriesCache,
+                   InfrastructureSystems.CompressionSettings
                    ]
 ```
 

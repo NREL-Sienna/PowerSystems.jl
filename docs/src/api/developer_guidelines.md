@@ -1,4 +1,4 @@
-# Guidelines for Developers
+# Developer Guidelines
 
 In order to contribute to `PowerSystems.jl` repository please read the following sections of
 [`InfrastructureSystems.jl`](https://github.com/NREL-Sienna/InfrastructureSystems.jl)

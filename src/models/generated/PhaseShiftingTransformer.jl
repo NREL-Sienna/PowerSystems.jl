@@ -38,10 +38,10 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `primary_shunt::Float64`:, validation range: `(0, 2)`
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
-- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`, validation range: `(0, nothing)`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `phase_angle_limits::MinMax`: (default: `(min=-1.571, max=1.571)`) Minimum and maximum phase angle limits (radians), validation range: `(-1.571, 1.571)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PhaseShiftingTransformer <: ACBranch
@@ -64,13 +64,13 @@ mutable struct PhaseShiftingTransformer <: ACBranch
     tap::Float64
     "Initial condition of phase shift (radians) between the `from` and `to` buses "
     α::Float64
-    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`"
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to"
     rating::Union{Nothing, Float64}
     "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

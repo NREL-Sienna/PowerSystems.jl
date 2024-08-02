@@ -25,7 +25,7 @@ Parameters of a Turbine Governor Type II
 - `T2::Float64`: Power fraction time constant, validation range: `(0, nothing)`
 - `τ_limits::MinMax`: Power into the governor limits
 - `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: lead-lag state
 - `n_states::Int`: (**Do not modify.**) TGTypeII has 1 state
@@ -42,7 +42,7 @@ mutable struct TGTypeII <: TurbineGov
     τ_limits::MinMax
     "Reference Power Set-point (pu)"
     P_ref::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the TGTypeI model are:
 	x_g1: lead-lag state"

@@ -75,34 +75,6 @@ show_components(system, ThermalStandard, Dict("has_time_series" => x -> has_time
 show_components(system, ThermalStandard, [:active_power, :reactive_power])
 ```
 
-## [Per-unit conventions and data conversions](@id per_unit)
-
-It is often useful to express power systems data in relative terms using per-unit conventions.
-`PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
-
- 1. Natural Units: The naturally defined units of each parameter (typically MW).
- 2. System Base: Parameter values are divided by the system `base_power`.
- 3. Device Base: Parameter values are divided by the device `base_mva`.
-
-To see the unit system setting of a `System`:
-
-```@repl system
-get_units_base(system)
-```
-
-To change the unit system setting of a `System`:
-
-```@repl system
-set_units_base_system!(system, "DEVICE_BASE")
-```
-
-The units of the parameter values stored in each struct are defined in
-`src/descriptors/power_system_structs.json`. Conversion between unit systems does not change
-the stored parameter values. Instead, unit system conversions are made when accessing
-parameters using the accessor functions ([see above](@ref dot_access)), thus making it
-imperative to utilize the accessor functions instead of the "dot" accessor methods to
-ensure the return of the correct values.
-
 ## JSON Serialization
 
 `PowerSystems.jl` provides functionality to serialize an entire system to a JSON
@@ -136,28 +108,6 @@ it is recommended that you set this flag to generate new UUIDs.
 ```julia
 system2 = System("system.json", assign_new_uuids = true)
 ```
-
-## Reducing REPL printing
-
-By default `PowerSystems.jl` outputs to the REPL all Logging values, this can be overwhelming
-in some cases. Use [`configure_logging`](@ref) to create a logger with your preferences
-(console and/or file, levels, etc.). For more detail refer to [Logging](@ref logging).
-
-**Example**: Set log output to only error messages
-
-```julia
-using PowerSystems
-using Logging
-configure_logging(console_level = Logging.Error)
-```
-
-**Note:** log messages are not automatically flushed to files. Call
-`flush(logger)` to make this happen.
-
-Refer to this
-[page](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/dev_guide/logging/#Use-Cases)
-for more logging configuration options. Note that it describes how to enable
-debug logging for some log messages but not others.
 
 ## Viewing PowerSystems Data in JSON Format
 

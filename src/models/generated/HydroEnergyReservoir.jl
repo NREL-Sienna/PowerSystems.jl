@@ -48,7 +48,7 @@ For hydro generators with pumped storage, see [`HydroPumpedStorage`](@ref)
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `storage_capacity::Float64`: Maximum storage capacity in the reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
 - `initial_storage::Float64`: Initial storage capacity in the reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
@@ -59,7 +59,7 @@ For hydro generators with pumped storage, see [`HydroPumpedStorage`](@ref)
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct HydroEnergyReservoir <: HydroGen
@@ -85,7 +85,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
-    "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`"
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)"
     storage_capacity::Float64
@@ -107,7 +107,7 @@ mutable struct HydroEnergyReservoir <: HydroGen
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

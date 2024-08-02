@@ -28,7 +28,7 @@ Parameters of Simplified Excitation System Model - SEXS in PSSE
 - `Te::Float64`: Field circuit time constant in s, validation range: `(0, nothing)`
 - `V_lim::MinMax`: Field voltage limits
 - `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state
 - `n_states::Int`: (**Do not modify.**) SEXS has 2 states
 - `states_types::Vector{StateTypes}`: (**Do not modify.**) SEXS has 2 [differential](@ref states_list) [states](@ref S)
@@ -47,7 +47,7 @@ mutable struct SEXS <: AVR
     V_lim::MinMax
     "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state"
     states::Vector{Symbol}

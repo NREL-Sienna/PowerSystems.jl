@@ -35,9 +35,11 @@ mutable struct SystemMetadata <: IS.InfrastructureSystemsType
 end
 
 """
-System
+A power system
 
-A power system defined by fields for base_power, components, and time series.
+`System` is the main data container in PowerSystems.jl, including basic metadata (base
+power, frequency), components (network topology, loads, generators, and services), and
+time series data.
 
 ```julia
 System(base_power)
@@ -52,16 +54,50 @@ System(; kwargs...)
 # Arguments
 - `base_power::Float64`: the base power value for the system
 - `buses::Vector{ACBus}`: an array of buses
-- `components...`: Each element must be an iterable containing subtypes of Component.
+- `components...`: Each element (e.g., `buses`, `generators`, ...) must be an iterable
+    containing subtypes of `Component`.
 
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+- `frequency::Float64`: (default = 60.0) Operating frequency (Hz)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
+    Defaults to the tmp file system
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
+- `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
+    [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
+        `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
+
+By default, time series data is stored in an HDF5 file in the tmp file system to prevent
+large datasets from overwhelming system memory (see [Data Storage](@ref)). 
+**If the system's time series
+data will be larger than the amount of tmp space available**, use the
+`time_series_directory` parameter to change its location.
+You can also override the location by setting the environment
+variable `SIENNA_TIME_SERIES_DIRECTORY` to another directory.
+
+HDF5 compression is not enabled by default, but you can enable
+it with `enable_compression` to get significant storage savings at the cost of CPU time.
+[`CompressionSettings`](@ref) can be used to customize the HDF5 compression.
+
+If you know that your dataset will fit in your computer's memory, then you can increase
+performance by storing it in memory with `time_series_in_memory`.
+
+# Examples
+```julia
+sys = System(100.0; enable_compression = true)
+sys = System(100.0; compression = CompressionSettings(
+    enabled = true,
+    type = CompressionTypes.DEFLATE,  # BLOSC is also supported
+    level = 3,
+    shuffle = true)
+)
+sys = System(100.0; time_series_in_memory = true)
+```
 """
 struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
@@ -493,6 +529,9 @@ function set_units_base_system!(system::System, settings::UnitSystem)
     return
 end
 
+"""
+Get the system's [unit base](@ref per_unit))
+"""
 function get_units_base(system::System)
     return string(system.units_settings.unit_system)
 end
@@ -529,6 +568,7 @@ get_description(sys::System) = sys.metadata.description
 """
 Add a component to the system.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -546,6 +586,8 @@ buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
 foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
+
+See also [`add_components!`](@ref).
 """
 function add_component!(
     sys::System,
@@ -592,6 +634,7 @@ end
 """
 Add many components to the system at once.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -603,7 +646,7 @@ sys = System(100.0)
 
 buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
-foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
+add_components!(sys, Iterators.flatten((buses, generators))
 ```
 """
 function add_components!(sys::System, components)
@@ -614,10 +657,11 @@ end
 """
 Add a dynamic injector to the system.
 
-Throws ArgumentError if the name does not match the static_injector name.
-Throws ArgumentError if the static_injector is not attached to the system.
+A component cannot be added to more than one `System`.
+Throws ArgumentError if the name does not match the `static_injector` name.
+Throws ArgumentError if the `static_injector` is not attached to the system.
 
-All rules for the generic add_component! method also apply.
+All rules for the generic `add_component!` method also apply.
 """
 function add_component!(
     sys::System,
@@ -757,22 +801,27 @@ function add_service!(
 end
 
 """
-Open the time series store for bulk additions or reads. This is recommended before calling
-add_time_series! many times because of the overhead associated with opening and closing an
-HDF5 file.
+Open the time series store for bulk additions or reads
+
+This is recommended before calling `add_time_series!` many times because of the overhead
+associated with opening and closing an HDF5 file.
 
 This is not necessary for an in-memory time series store.
 
 # Examples
 ```julia
-# Assume there is a system with an array of components and SingleTimeSeries
+# Assume there is a system with an array of Components and SingleTimeSeries
+# stored in the variables components and single_time_series, respectively
 open_time_series_store!(sys, "r+") do
     for (component, ts) in zip(components, single_time_series)
         add_time_series!(sys, component, ts)
     end
 end
 ```
-julia>
+You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
+the file read-only.
+
+See also: [`bulk_add_time_series!`](@ref)
 """
 function open_time_series_store!(
     func::Function,
@@ -1114,7 +1163,6 @@ end
 """
 Gets components availability. Requires type T to have the method get_available implemented.
 """
-
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(get_available, T, sys)
 end
@@ -1273,18 +1321,22 @@ function add_time_series!(
 end
 
 """
-Add many time series in bulk. This method is advantageous when adding thousands of time
+Add many time series in bulk
+
+This method is advantageous when adding thousands of time
 series arrays because of the overhead in writing the time series to the underlying storage.
 
 # Arguments
 - `sys::System`: system
-- `associations`: Iterable of TimeSeriesAssociation instances. Using a Vector is not
+- `associations`: Iterable of [`TimeSeriesAssociation`](@ref) instances. Using a Vector is not
   recommended. Pass a Generator or Iterator to avoid loading all time series data into
   system memory at once.
-- `batch_size::Int`: Number of time series to add per batch. Defaults to 100.
+- `batch_size::Int`: (Default = 100) Number of time series to add per batch.
 
 # Examples
 ```julia
+# Assumes `read_time_series` will return data appropriate for Deterministic forecasts
+# based on the generator name and the filenames match the component and time series names.
 resolution = Dates.Hour(1)
 associations = (
     IS.TimeSeriesAssociation(
@@ -1298,6 +1350,9 @@ associations = (
 )
 bulk_add_time_series!(sys, associations)
 ```
+
+See also: [`open_time_series_store!`](@ref) to minimize HDF5 file handle overhead if you
+must add time series arrays one at a time
 """
 function bulk_add_time_series!(
     sys::System,
@@ -1310,8 +1365,10 @@ end
 """
 Add the same time series data to multiple components.
 
-This is significantly more efficent than calling `add_time_series!` for each component
-individually with the same data because in this case, only one time series array is stored.
+This function stores a single copy of the data. Each component will store a reference to
+that data. This is significantly more efficent than calling `add_time_series!` for each
+component individually with the same data because in this case, only one time series
+array is stored.
 
 Throws ArgumentError if a component is not stored in the system.
 """
@@ -1430,7 +1487,12 @@ function IS.get_time_series_multiple(
 end
 
 """
-Remove all time series data from the system.
+Clear all time series data from the system.
+
+If you are storing time series data in an HDF5 file, this will
+will delete the HDF5 file and create a new one.
+
+See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData})
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
@@ -1450,17 +1512,35 @@ end
 
 """
 Remove all the time series data for a time series type.
+
+See also: [`clear_time_series!`](@ref)
+
+If you are storing time series data in an HDF5 file, `remove_time_series!` does
+not actually free up file space (HDF5 behavior). If you want to remove all or
+most time series instances then consider using `clear_time_series!`. It
+will delete the HDF5 file and create a new one. PowerSystems has plans to
+automate this type of workflow.
 """
 function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.remove_time_series!(sys.data, T)
 end
 
 """
-Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
-If all SingleTimeSeries instances cannot be transformed then none will be.
+Transform all instances of [`SingleTimeSeries`](@ref) in a `System` to
+[`DeterministicSingleTimeSeries`](@ref)
 
-Any existing DeterministicSingleTimeSeries forecasts will be deleted even if the inputs are
+This can be used to generate a perfect forecast from historical measurements or realizations
+when actual forecasts are unavailable, without unnecessarily duplicating data.
+
+If all `SingleTimeSeries` instances cannot be transformed then none will be.
+
+Any existing `DeterministicSingleTimeSeries` forecasts will be deleted even if the inputs are
 invalid.
+
+# Arguments
+- `sys::System`: System containing the components.
+- `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
+- `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
 """
 function transform_single_time_series!(
     sys::System,

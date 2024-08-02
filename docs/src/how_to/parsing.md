@@ -175,7 +175,7 @@ If the time series data is stored in HDF5 then PowerSystems will use the tmp fil
 default. You can change this by passing `time_series_directory = X` when you create the
 System. This is required if the time series data is larger than the amount of tmp space
 available. You can also override the location by setting the environment variable
-SIIP_TIME_SERIES_DIRECTORY to another directory.
+SIENNA_TIME_SERIES_DIRECTORY to another directory.
 
 ### Customization
 
