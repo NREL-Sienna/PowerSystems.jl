@@ -9,7 +9,7 @@ $(TYPEDFIELDS)
 An operating cost for market bids of energy and ancilliary services for any asset.
 Compatible with most US Market bidding mechanisms that support demand and generation side.
 """
-Base.@kwdef mutable struct MarketBidCost <: OperationalCost
+@kwdef mutable struct MarketBidCost <: OperationalCost
     "No load cost"
     no_load_cost::Union{TimeSeriesKey, Float64}
     "Start-up cost at different stages of the thermal cycle as the unit cools after a 

@@ -12,7 +12,7 @@ can be used to represent the loss of tax incentives.
 
 The `variable` cost is a required parameter, but `zero(CostCurve)` can be used to set it to 0.
 """
-Base.@kwdef mutable struct RenewableGenerationCost <: OperationalCost
+@kwdef mutable struct RenewableGenerationCost <: OperationalCost
     "Variable cost represented as a [`CostCurve`](@ref)"
     variable::CostCurve
     "(default of 0) Cost of curtailing power represented as a [`CostCurve`](@ref)"
