@@ -589,6 +589,27 @@ import InfrastructureSystems:
     get_raw_data_type,
     supports_time_series,
     supports_supplemental_attributes
+import InfrastructureSystems:
+    ValueCurve,
+    InputOutputCurve,
+    IncrementalCurve,
+    AverageRateCurve,
+    LinearCurve,
+    QuadraticCurve,
+    PiecewisePointCurve,
+    PiecewiseIncrementalCurve,
+    PiecewiseAverageCurve,
+    get_function_data,
+    get_initial_input,
+    get_input_at_zero,
+    get_average_rates,
+    ProductionVariableCostCurve,
+    CostCurve,
+    FuelCurve,
+    get_value_curve,
+    get_vom_cost,
+    get_power_units,
+    get_fuel_cost
 
 const IS = InfrastructureSystems
 
@@ -645,9 +666,6 @@ include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
 
 # Costs
-include("models/cost_functions/ValueCurves.jl")
-include("models/cost_functions/cost_aliases.jl")
-include("models/cost_functions/variable_cost.jl")
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
