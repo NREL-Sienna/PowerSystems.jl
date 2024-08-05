@@ -55,5 +55,5 @@ types and create generic code to support modeling technologies that are not yet
 implemented in the package.
 
 ```@raw html
-<img src="../assets/AbstractTree.png" width="75%"/>
+<img src="../../assets/AbstractTree.png" width="75%"/>
 ``` ⠀
