@@ -21,33 +21,33 @@ This summary table shows each way to construct a `ValueCurve` with the user-frie
 Specify the marginal cost of production $M$ and optionally the no-load cost $C$, which defaults to zero. Here is a graphical representation:
 
 ```@raw html
-<img src="../assets/cost_plot_drawings/LinearCurve.png" width="75%"/>
+<img src="../../assets/cost_plot_drawings/LinearCurve.png" width="75%"/>
 ```
 
 ## [`QuadraticCurve`](@ref)
 Specify the quadratic ($Q$), proportional ($M$), and constant ($C$) terms of a function that defines the input-output curve:
 
 ```@raw html
-<img src="../assets/cost_plot_drawings/QuadraticCurve.png" width="75%"/>
+<img src="../../assets/cost_plot_drawings/QuadraticCurve.png" width="75%"/>
 ```
 
 ## [`PiecewisePointCurve`](@ref)
 Specify a vector of $K$ (production, cost) pairs (i.e., $(P_k, C_k)$ for $k = 1, \dots, K$) to define the input-output curve:
 
 ```@raw html
-<img src="../assets/cost_plot_drawings/PiecewisePointCurve.png" width="75%"/>
+<img src="../../assets/cost_plot_drawings/PiecewisePointCurve.png" width="75%"/>
 ```
 
 ## [`PiecewiseIncrementalCurve`](@ref)
 Specify the cost $C_1$ at the least production point given (NOT the cost at zero production), a vector of $K$ production points $P_1, \dots, P_k$, and a vector of $K-1$ marginal rates $M_1, \dots, M_{k-1}$, that represent the slopes of the curve segments between the points. $C_1$ may be `nothing`, which results in a not-fully-defined curve. The no-load cost $C_0$ can optionally be specified as a first argument; it is not part of the representation of the curve, just another piece of data that may be stored:
 
 ```@raw html
-<img src="../assets/cost_plot_drawings/PiecewiseIncrementalCurve.png" width="75%"/>
+<img src="../../assets/cost_plot_drawings/PiecewiseIncrementalCurve.png" width="75%"/>
 ```
 
 ## [`PiecewiseAverageCurve`](@ref)
 Specify the cost $C_1$ at the least production point given (NOT the cost at zero production), a vector of $K$ production points $P_1, \dots, P_k$, and a vector of $K-1$ average rates $R_1, \dots, R_{k-1}$ at the $K-1$ latter production points:
 
 ```@raw html
-<img src="../assets/cost_plot_drawings/PiecewiseAverageCurve.png" width="75%"/>
+<img src="../../assets/cost_plot_drawings/PiecewiseAverageCurve.png" width="75%"/>
 ```
