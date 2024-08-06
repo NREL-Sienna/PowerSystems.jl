@@ -2341,7 +2341,11 @@ function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
 end
 
+_fetch_match_fn(match_fn::Function) = match_fn
+_fetch_match_fn(::Nothing) = IS.isequivalent
+
 function IS.compare_values(
+    match_fn::Union{Function, Nothing},
     x::T,
     y::T;
     compare_uuids = false,
@@ -2359,7 +2363,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if name1 != name2
+                if !match_fn(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -2373,6 +2377,7 @@ function IS.compare_values(
             end
         elseif !isempty(fieldnames(typeof(val1)))
             if !IS.compare_values(
+                match_fn,
                 val1,
                 val2;
                 compare_uuids = compare_uuids,
@@ -2383,6 +2388,7 @@ function IS.compare_values(
             end
         elseif val1 isa AbstractArray
             if !IS.compare_values(
+                match_fn,
                 val1,
                 val2;
                 compare_uuids = compare_uuids,
@@ -2391,7 +2397,7 @@ function IS.compare_values(
                 match = false
             end
         else
-            if val1 != val2
+            if !_fetch_match_fn(match_fn)(val1, val2)
                 @error "values do not match" T name val1 val2
                 match = false
             end
