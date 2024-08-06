@@ -2341,12 +2341,15 @@ function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
 end
 
+_fetch_match_fn(match_fn::Function) = match_fn
+_fetch_match_fn(::Nothing) = IS.isequivalent
+
 function IS.compare_values(
+    match_fn::Union{Function, Nothing},
     x::T,
     y::T;
     compare_uuids = false,
     exclude = Set{Symbol}(),
-    match_fn = IS.isequivalent,
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
     # reference to its counterpart, and vice versa, and so infinite recursion will occur
@@ -2374,27 +2377,27 @@ function IS.compare_values(
             end
         elseif !isempty(fieldnames(typeof(val1)))
             if !IS.compare_values(
+                match_fn,
                 val1,
                 val2;
                 compare_uuids = compare_uuids,
                 exclude = exclude,
-                match_fn = match_fn,
             )
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
             if !IS.compare_values(
+                match_fn,
                 val1,
                 val2;
                 compare_uuids = compare_uuids,
                 exclude = exclude,
-                match_fn = match_fn,
             )
                 match = false
             end
         else
-            if !match_fn(val1, val2)
+            if !_fetch_match_fn(match_fn)(val1, val2)
                 @error "values do not match" T name val1 val2
                 match = false
             end
