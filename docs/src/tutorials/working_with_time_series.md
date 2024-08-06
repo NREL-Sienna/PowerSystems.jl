@@ -12,7 +12,7 @@ add the time series needed to model, for example, the impacts of wind forecast u
 
 Here is the available data:
 ```@raw html
-<img src="../assets/time_series_tutorial.png" width="100%"/>
+<img src="../../assets/time_series_tutorial.png" width="100%"/>
 ```
 For the wind generator, we have the historical point (deterministic) forecasts of power
 output. The forecasts were generated every 30 minutes with a 5-minute [resolution](@ref R)
