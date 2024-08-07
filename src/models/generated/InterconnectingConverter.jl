@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         rating::Float64
         active_power_limits::MinMax
         dc_current::Float64
-        dc_current_limits::MinMax
+        max_dc_current::Float64
         base_power::Float64
         loss_function::Union{LinearCurve, QuadraticCurve}
         services::Vector{Service}
@@ -33,8 +33,8 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
-- `dc_current::Float64`: DC current (A) on the converter, validation range: `dc_current_limits`
-- `dc_current_limits::MinMax`: Minimum and maximum stable dc current limits (A)
+- `dc_current::Float64`: DC current (A) on the converter
+- `max_dc_current::Float64`: Maximum stable dc current limits (A)
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`
 - `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to the converter current
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -59,8 +59,8 @@ mutable struct InterconnectingConverter <: StaticInjection
     active_power_limits::MinMax
     "DC current (A) on the converter"
     dc_current::Float64
-    "Minimum and maximum stable dc current limits (A)"
-    dc_current_limits::MinMax
+    "Maximum stable dc current limits (A)"
+    max_dc_current::Float64
     "Base power of the converter in MVA"
     base_power::Float64
     "Linear or quadratic loss function with respect to the converter current"
@@ -75,12 +75,12 @@ mutable struct InterconnectingConverter <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, dc_current_limits, base_power, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, dc_current_limits, base_power, loss_function, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, max_dc_current, base_power, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, max_dc_current, base_power, loss_function, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, dc_current_limits, base_power, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, dc_current_limits, base_power, loss_function, services, dynamic_injector, ext, internal, )
+function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, max_dc_current, base_power, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, dc_current, max_dc_current, base_power, loss_function, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -94,7 +94,7 @@ function InterconnectingConverter(::Nothing)
         rating=0.0,
         active_power_limits=(min=0.0, max=0.0),
         dc_current=0.0,
-        dc_current_limits=(min=0.0, max=0.0),
+        max_dc_current=0.0,
         base_power=0.0,
         loss_function=LinearCurve(0.0),
         services=Device[],
@@ -119,8 +119,8 @@ get_rating(value::InterconnectingConverter) = get_value(value, value.rating)
 get_active_power_limits(value::InterconnectingConverter) = get_value(value, value.active_power_limits)
 """Get [`InterconnectingConverter`](@ref) `dc_current`."""
 get_dc_current(value::InterconnectingConverter) = value.dc_current
-"""Get [`InterconnectingConverter`](@ref) `dc_current_limits`."""
-get_dc_current_limits(value::InterconnectingConverter) = value.dc_current_limits
+"""Get [`InterconnectingConverter`](@ref) `max_dc_current`."""
+get_max_dc_current(value::InterconnectingConverter) = value.max_dc_current
 """Get [`InterconnectingConverter`](@ref) `base_power`."""
 get_base_power(value::InterconnectingConverter) = value.base_power
 """Get [`InterconnectingConverter`](@ref) `loss_function`."""
@@ -148,8 +148,8 @@ set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(val
 set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, val)
 """Set [`InterconnectingConverter`](@ref) `dc_current`."""
 set_dc_current!(value::InterconnectingConverter, val) = value.dc_current = val
-"""Set [`InterconnectingConverter`](@ref) `dc_current_limits`."""
-set_dc_current_limits!(value::InterconnectingConverter, val) = value.dc_current_limits = val
+"""Set [`InterconnectingConverter`](@ref) `max_dc_current`."""
+set_max_dc_current!(value::InterconnectingConverter, val) = value.max_dc_current = val
 """Set [`InterconnectingConverter`](@ref) `base_power`."""
 set_base_power!(value::InterconnectingConverter, val) = value.base_power = val
 """Set [`InterconnectingConverter`](@ref) `loss_function`."""
