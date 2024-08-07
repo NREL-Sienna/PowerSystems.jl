@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         active_power_limits_to::MinMax
         reactive_power_limits_from::MinMax
         reactive_power_limits_to::MinMax
-        loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
+        loss::Union{LinearCurve, PiecewiseIncrementalCurve}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -33,7 +33,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `reactive_power_limits_from::MinMax`: Minimum and maximum reactive power limits to the FROM node (MVAR)
 - `reactive_power_limits_to::MinMax`: Minimum and maximum reactive power limits to the TO node (MVAR)
-- `loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}`: Linear loss model coefficients, where `l0` = constant loss (MW) and `l1` = linearly proportional loss rate (MW of loss per MW of flow)
+- `loss::Union{LinearCurve, PiecewiseIncrementalCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients. It accepts a linear model with a constant loss (MW) and a proportional loss rate (MW of loss per MW of flow). It also accepts a Piecewise loss, with N segments to specify different proportional losses for different segments.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -55,8 +55,8 @@ mutable struct TwoTerminalHVDCLine <: ACBranch
     reactive_power_limits_from::MinMax
     "Minimum and maximum reactive power limits to the TO node (MVAR)"
     reactive_power_limits_to::MinMax
-    "Linear loss model coefficients, where `l0` = constant loss (MW) and `l1` = linearly proportional loss rate (MW of loss per MW of flow)"
-    loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}
+    "Loss model coefficients. It accepts a linear model with a constant loss (MW) and a proportional loss rate (MW of loss per MW of flow). It also accepts a Piecewise loss, with N segments to specify different proportional losses for different segments."
+    loss::Union{LinearCurve, PiecewiseIncrementalCurve}
     "Services that this device contributes to"
     services::Vector{Service}
     "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
@@ -65,11 +65,11 @@ mutable struct TwoTerminalHVDCLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), )
+function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
     TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
 end
 
@@ -84,7 +84,7 @@ function TwoTerminalHVDCLine(::Nothing)
         active_power_limits_to=(min=0.0, max=0.0),
         reactive_power_limits_from=(min=0.0, max=0.0),
         reactive_power_limits_to=(min=0.0, max=0.0),
-        loss=(l0=0.0, l1=0.0),
+        loss=LinearCurve(0.0),
         services=Device[],
         ext=Dict{String, Any}(),
     )

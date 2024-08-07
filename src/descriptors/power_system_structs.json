@@ -1046,9 +1046,10 @@
                 },
                 {
                     "name": "loss",
-                    "comment": "Linear loss model coefficients, where `l0` = constant loss (MW) and `l1` = linearly proportional loss rate (MW of loss per MW of flow)",
-                    "null_value": "(l0=0.0, l1=0.0)",
-                    "data_type": "NamedTuple{(:l0, :l1), Tuple{Float64, Float64}}"
+                    "comment": "Loss model coefficients. It accepts a linear model with a constant loss (MW) and a proportional loss rate (MW of loss per MW of flow). It also accepts a Piecewise loss, with N segments to specify different proportional losses for different segments.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, PiecewiseIncrementalCurve}",
+                    "default": "LinearCurve(0.0)"
                 },
                 {
                     "name": "services",
