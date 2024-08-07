@@ -784,7 +784,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
         reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
         reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
-        loss = (l0 = d["loss0"], l1 = d["loss1"]),
+        loss = LinearCurve(d["loss1"], d["loss0"]),
     )
 end
 
