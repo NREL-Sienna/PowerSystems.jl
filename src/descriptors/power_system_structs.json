@@ -16616,6 +16616,13 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "Base Power in MVA",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
                     "name": "dynamic_injector",
                     "data_type": "Union{Nothing, DynamicInjection}",
                     "comment": "corresponding dynamic injection device",
