@@ -36,6 +36,7 @@ Pages   = ["abstract_time_series.jl",
            "deterministic.jl",
            "probabilistic.jl",
            "scenarios.jl",
+           "static_time_series.jl",
            "single_time_series.jl",
            "forecasts.jl",
            ]
@@ -52,21 +53,6 @@ Pages   = ["time_series_cache.jl",
             "time_series_storage.jl",
             "utils/print.jl"]
 Order = [:type, :function]
-Filter = t -> t ∈ [InfrastructureSystems.ForecastCache,
-                   InfrastructureSystems.StaticTimeSeriesCache,
-                   InfrastructureSystems.TimeSeriesKey,
-                   InfrastructureSystems.TimeSeriesAssociation,
-                   InfrastructureSystems.CompressionSettings,
-                   InfrastructureSystems.get_next_time_series_array!,
-                   InfrastructureSystems.get_next_time,
-                   InfrastructureSystems.get_time_series,
-                   InfrastructureSystems.get_time_series_array,
-                   InfrastructureSystems.reset!,
-                   InfrastructureSystems.get_time_series_timestamps,
-                   InfrastructureSystems.get_time_series_values,
-                   InfrastructureSystems.show_time_series,
-                   InfrastructureSystems.get_time_series_keys
-                   ]
 ```
 
 ## System
