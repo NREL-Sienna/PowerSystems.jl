@@ -56,9 +56,9 @@ Filter = t -> t ∈ [InfrastructureSystems.ForecastCache,
                    InfrastructureSystems.StaticTimeSeriesCache,
                    InfrastructureSystems.TimeSeriesKey,
                    InfrastructureSystems.TimeSeriesAssociation,
-                   InfrastructureSystems.CompressionSettings
+                   InfrastructureSystems.CompressionSettings,
                    InfrastructureSystems.get_next_time_series_array!,
-                   InfrastructureSystems.get_next_time
+                   InfrastructureSystems.get_next_time,
                    InfrastructureSystems.get_time_series,
                    InfrastructureSystems.get_time_series_array,
                    InfrastructureSystems.reset!,
