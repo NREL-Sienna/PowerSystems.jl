@@ -22,14 +22,13 @@ Pages   = ["PowerSystems.jl",
            "static_injection_subsystem.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
-           "cost_functions/ValueCurves.jl",
            "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
 Private = false
 ```
 
-## TimeSeries
+## Time Series
 
 ```@autodocs
 Modules = [InfrastructureSystems]
@@ -38,7 +37,8 @@ Pages   = ["abstract_time_series.jl",
            "probabilistic.jl",
            "scenarios.jl",
            "single_time_series.jl",
-           "forecasts.jl"]
+           "forecasts.jl",
+           ]
 Order = [:type, :function]
 Filter = t -> t ∉ [InfrastructureSystems.get_internal,
                    InfrastructureSystems.set_internal!]
@@ -46,10 +46,27 @@ Filter = t -> t ∉ [InfrastructureSystems.get_internal,
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["time_series_cache.jl"]
+Pages   = ["time_series_cache.jl",
+            "time_series_interface.jl",
+            "time_series_structs.jl",
+            "time_series_storage.jl",
+            "utils/print.jl"]
 Order = [:type, :function]
-Filter = t -> t ∈ [InfrastructureSystems.get_next_time_series_array!,
-                   InfrastructureSystems.get_next_time]
+Filter = t -> t ∈ [InfrastructureSystems.ForecastCache,
+                   InfrastructureSystems.StaticTimeSeriesCache,
+                   InfrastructureSystems.TimeSeriesKey,
+                   InfrastructureSystems.TimeSeriesAssociation,
+                   InfrastructureSystems.CompressionSettings
+                   InfrastructureSystems.get_next_time_series_array!,
+                   InfrastructureSystems.get_next_time
+                   InfrastructureSystems.get_time_series,
+                   InfrastructureSystems.get_time_series_array,
+                   InfrastructureSystems.reset!,
+                   InfrastructureSystems.get_time_series_timestamps,
+                   InfrastructureSystems.get_time_series_values,
+                   InfrastructureSystems.show_time_series,
+                   InfrastructureSystems.get_time_series_keys
+                   ]
 ```
 
 ## System
@@ -96,25 +113,6 @@ Modules = [PowerSystems]
 Pages   = ["supplemental_accessors.jl"]
 Public = true
 Private = false
-```
-
-```@autodocs
-Modules = [InfrastructureSystems]
-Pages   = ["time_series_interface.jl", "time_series_structs.jl",
-            "time_series_storage.jl", "utils/print.jl",
-            "time_series_cache.jl"]
-Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
-                   InfrastructureSystems.get_time_series_array,
-                   InfrastructureSystems.reset!,
-                   InfrastructureSystems.get_time_series_timestamps,
-                   InfrastructureSystems.get_time_series_values,
-                   InfrastructureSystems.show_time_series,
-                   InfrastructureSystems.get_time_series_keys,
-                   InfrastructureSystems.TimeSeriesAssociation,
-                   InfrastructureSystems.ForecastCache,
-                   InfrastructureSystems.StaticTimeSeriesCache,
-                   InfrastructureSystems.CompressionSettings
-                   ]
 ```
 
 ## Parsing
