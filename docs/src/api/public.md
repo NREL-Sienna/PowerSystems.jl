@@ -28,6 +28,17 @@ Public = true
 Private = false
 ```
 
+## Operating Costs
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["production_variable_cost_curve.jl",
+            "cost_aliases.jl",
+            "value_curve.jl",
+           ]
+Order = [:type, :function]
+```
+
 ## Time Series
 
 ```@autodocs

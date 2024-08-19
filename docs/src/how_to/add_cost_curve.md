@@ -21,7 +21,7 @@ To begin, the user must make 2 or 3 decisions before defining the operating cost
         as a `CostCurve`.
 2. Select a [`ValueCurve`](@ref) to represent the variable cost data by comparing the format
     of your variable cost data to the [Variable Cost Representations table](@ref curve_table)
-    and the [`ValueCurve`](@ref value_curve_library) options.
+    and the [`ValueCurve`](@ref) options.
 
 Then, the user defines the cost by working backwards:
   1. Define the variable cost's `ValueCurve`

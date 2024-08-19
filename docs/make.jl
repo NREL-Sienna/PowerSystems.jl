@@ -81,8 +81,6 @@ pages["Model Library"] = make_model_library(
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
         "MarketBidCost" =>"model_library/market_bid_cost.md"],
-        "Cost Curves" => ["Variable Cost Curves" => "model_library/cost_curves.md",
-        "Value Curves" => "model_library/value_curves.md"]
         )
 )
 
