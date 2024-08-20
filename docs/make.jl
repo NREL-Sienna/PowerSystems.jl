@@ -130,10 +130,26 @@ end
 
 makedocs(
     modules = [PowerSystems, InfrastructureSystems],
-    format = Documenter.HTML(prettyurls = haskey(ENV, "GITHUB_ACTIONS"),),
+    format = Documenter.HTML(
+        prettyurls = haskey(ENV, "GITHUB_ACTIONS"),
+        size_threshold = nothing,),
     sitename = "PowerSystems.jl",
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, and Clayton Barrows",
-    pages = Any[p for p in pages]
+    pages = Any[p for p in pages],
+    warnonly = Documenter.except(
+        :autodocs_block,
+        :cross_references,
+        :docs_block,
+        :doctest,
+        :eval_block,
+        :example_block,
+        :footnote,
+        :linkcheck_remotes,
+        :linkcheck,
+        :meta_block,
+        :parse_error,
+        :setup_block),
+    draft = false,
 )
 
 deploydocs(
