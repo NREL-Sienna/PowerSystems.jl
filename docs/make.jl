@@ -59,14 +59,17 @@ pages["Model Library"] = make_model_library(
         Topology,
         StaticInjection,
         Service,
-        Branch
+        Branch,
+        DynamicInjection,
     ],
     exceptions = [PSY.DynamicComponent,
                   PSY.ActivePowerControl,
                   PSY.ReactivePowerControl,
                   PSY.DynamicBranch,
                   PSY.HybridSystem,
-                  PSY.OperationalCost
+                  PSY.OperationalCost,
+                  PSY.DynamicInverter,
+                  PSY.DynamicGenerator,
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
