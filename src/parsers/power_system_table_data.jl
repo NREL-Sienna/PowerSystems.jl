@@ -545,7 +545,6 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
     elseif length(heat_rate_fields) > 0
         cost_colnames = _HeatRateColumns(zip(heat_rate_fields, output_point_fields))
-        @warn cost_colnames
     elseif length(cost_point_fields) > 0
         cost_colnames = _CostPointColumns(zip(cost_point_fields, output_point_fields))
     else
@@ -825,7 +824,6 @@ function make_cost(
     fuel_price = gen.fuel_price / 1000.0
 
     # We check if there is any Quadratic or Linear Data defined. If not we fall back to create PowerLoad
-    @warn typeof(gen)
     quadratic_fields = (gen.heat_rate_a0, gen.heat_rate_a1, gen.heat_rate_a2)
 
     if any(field -> field != nothing, quadratic_fields)
@@ -978,9 +976,9 @@ function create_poly_cost(
     end
 
     # Three supported cases,
-    #   1. If three values are passed then we have data looking like: a^2 + a + c,
-    #   2. If two then data is looking like: a + c
-    #   3. If two then data is looking like: c
+    #   1. If three values are passed then we have data looking like: a * x^2 + b * x + c,
+    #   2. If two then data is looking like: a * x + b
+    #   3. If two then data is looking like: a * x
     if length(vals) > 3
         throw(
             DataFormatError(
@@ -989,12 +987,13 @@ function create_poly_cost(
         )
     elseif length(vals) == 3
         var_cost = QuadraticCurve(vals[3], vals[2], vals[1])
-        @debug "Quadratic curve created for $(gen.name)"
+        @debug "QuadraticCurve created for $(gen.name)"
     elseif length(vals) == 2
         var_cost = LinearCurve(vals[2], vals[1])
+        @debug "LinearCurve curve created for $(gen.name)"
     else
-        length(vals) == 1
         var_cost = LinearCurve(vals[1])
+        @debug "LinearCurve curve created for $(gen.name)"
     end
 
     return var_cost, 0.0
