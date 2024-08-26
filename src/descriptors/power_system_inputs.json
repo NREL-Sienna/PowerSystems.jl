@@ -367,6 +367,21 @@
             "default_value": null
         },
         {
+            "name": "heat_rate_a0",
+            "description": "Heat rate Average 0 TODO",
+            "default_value": null
+        },
+        {
+            "name": "heat_rate_a1",
+            "description": "Heat rate Average 0 TODO",
+            "default_value": null
+        },
+        {
+            "name": "heat_rate_a2",
+            "description": "Heat rate Average 0 TODO",
+            "default_value": null
+        },
+        {
             "name": "heat_rate_avg_0",
             "description": "Heat rate Average 0 TODO",
             "default_value": null
