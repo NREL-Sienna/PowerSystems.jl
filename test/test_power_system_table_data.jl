@@ -185,7 +185,7 @@ end
 @testset "Test create_poly_cost function" begin
     cost_colnames = ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"]
 
-    # Coefficients for a CC using natura gas
+    # Coefficients for a CC using natural gas
     a2 = -0.000531607
     a1 = 0.060554675
     a0 = 8.951100118
