@@ -368,17 +368,17 @@
         },
         {
             "name": "heat_rate_a0",
-            "description": "Heat rate Average 0 TODO",
+            "description": "Heat rate constant term",
             "default_value": null
         },
         {
             "name": "heat_rate_a1",
-            "description": "Heat rate Average 0 TODO",
+            "description": "Heat rate proportional term",
             "default_value": null
         },
         {
             "name": "heat_rate_a2",
-            "description": "Heat rate Average 0 TODO",
+            "description": "Heat rate quadratic term",
             "default_value": null
         },
         {
