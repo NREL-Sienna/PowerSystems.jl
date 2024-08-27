@@ -823,7 +823,7 @@ function make_cost(
 ) where {T <: ThermalGen}
     fuel_price = gen.fuel_price / 1000.0
 
-    # We check if there is any Quadratic or Linear Data defined. If not we fall back to create PowerLoad
+    # We check if there is any Quadratic or Linear Data defined. If not we fall back to create PiecewiseIncrementalCurve
     quadratic_fields = (gen.heat_rate_a0, gen.heat_rate_a1, gen.heat_rate_a2)
 
     if any(field -> field != nothing, quadratic_fields)
