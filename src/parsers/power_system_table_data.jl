@@ -964,39 +964,43 @@ function create_pwl_cost(
     return var_cost
 end
 
+"""
+    create_poly_cost(gen, cost_colnames)
+
+Return a Polynomial function cost based on the coeffiecients provided on gen.
+
+Three supported cases,
+  1. If three values are passed then we have data looking like: `a2 * x^2 + a1 * x + a0`,
+  2. If `a1` and `a0` are passed then we have data looking like: `a1 * x + a0`,
+  3. If only `a1` is passed then we have data looking like: `a1 * x`.
+"""
 function create_poly_cost(
     gen, cost_colnames,
 )
-    vals = []
-    for coeff in cost_colnames
-        a = getfield(gen, Symbol(coeff))
-        if a != nothing
-            push!(vals, tryparse(Float64, a))
-        end
-    end
+    fixed_cost = 0.0
+    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    a2 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a2")))
+    a1 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a1")))
+    a0 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a0")))
 
-    # Three supported cases,
-    #   1. If three values are passed then we have data looking like: a * x^2 + b * x + c,
-    #   2. If two then data is looking like: a * x + b
-    #   3. If two then data is looking like: a * x
-    if length(vals) > 3
+    if !isnothing(a2) && (isnothing(a1) || isnothing(a0))
         throw(
             DataFormatError(
-                "Higher order polynomial functions currently not supported.",
+                "All coefficients must be passed if quadratic term is passed.",
             ),
         )
-    elseif length(vals) == 3
-        var_cost = QuadraticCurve(vals[3], vals[2], vals[1])
-        @debug "QuadraticCurve created for $(gen.name)"
-    elseif length(vals) == 2
-        var_cost = LinearCurve(vals[2], vals[1])
-        @debug "LinearCurve curve created for $(gen.name)"
-    else
-        var_cost = LinearCurve(vals[1])
-        @debug "LinearCurve curve created for $(gen.name)"
     end
 
-    return var_cost, 0.0
+    if !any(isnothing.([a2, a1, a0]))
+        @debug "QuadraticCurve created for $(gen.name)"
+        return QuadraticCurve(a2, a1, a0), fixed_cost
+    end
+    if all(isnothing.([a2, a0])) && !isnothing(a1)
+        @debug "LinearCurve created for $(gen.name)"
+        return LinearCurve(a1), fixed_cost
+    end
+    @debug "LinearCurve created for $(gen.name)"
+    return LinearCurve(a1, a0), fixed_cost
 end
 
 function create_pwinc_cost(
