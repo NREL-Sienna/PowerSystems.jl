@@ -155,10 +155,10 @@ mutable struct ST8C <: AVR
 end
 
 function ST8C(OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref=1.0, Ifd_ref=1.0, ext=Dict{String, Any}(), )
-    ST8C(OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref, Ifd_ref, ext, [:Vm, :x_a1, :x_a2, :x_a3, :x_a4], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
+    ST8C(OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref, Ifd_ref, ext, [:Vm, :x_a1, :x_a2, :x_a3, :x_a4], 5, [StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], InfrastructureSystemsInternal(), )
 end
 
-function ST8C(; OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref=1.0, Ifd_ref=1.0, ext=Dict{String, Any}(), states=[:Vm, :x_a1, :x_a2, :x_a3, :x_a4], n_states=5, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
+function ST8C(; OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref=1.0, Ifd_ref=1.0, ext=Dict{String, Any}(), states=[:Vm, :x_a1, :x_a2, :x_a3, :x_a4], n_states=5, states_types=[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid], internal=InfrastructureSystemsInternal(), )
     ST8C(OEL_Flag, UEL_Flag, SCL_Flag, SW1_Flag, Tr, K_pr, K_ir, Vpi_lim, K_pa, K_ia, Va_lim, K_a, T_a, Vr_lim, K_f, T_f, K_c1, K_p, K_i1, X_l, θ_p, VB1_max, K_c2, K_i2, VB2_max, V_ref, Ifd_ref, ext, states, n_states, states_types, internal, )
 end
 

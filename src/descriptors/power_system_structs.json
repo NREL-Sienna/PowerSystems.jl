@@ -8506,7 +8506,7 @@
                 {
                     "name": "states_types",
                     "comment": "(**Do not modify.**) ST8C has 5 states",
-                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes, StateTypes.Hybrid]",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
                 {
