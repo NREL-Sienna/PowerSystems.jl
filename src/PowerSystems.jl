@@ -142,6 +142,7 @@ export ESST4B
 export ST6B
 export SCRX
 export SEXS
+export ST8C
 
 #Machine Exports
 export Machine
