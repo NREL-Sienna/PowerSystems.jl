@@ -391,6 +391,9 @@ export get_compression_settings
 export CompressionSettings
 export CompressionTypes
 
+# Parsing functions
+export create_poly_cost
+
 #export make_time_series
 export get_bus_numbers
 export get_name
