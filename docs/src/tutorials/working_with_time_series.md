@@ -400,7 +400,7 @@ or component fields, as well as by referencing a `StaticTimeSeries` to address m
 forecast data.
 
 Next you might like to:
-- Parse many timeseries data sets from CSV's
-- See how to improve performance efficiency with your own time series data
-- Review the available time series data formats
-- Learn more about how times series data is stored
+- [Parse many timeseries data sets from CSV's](@ref parsing_time_series)
+- [See how to improve performance efficiency with your own time series data](@ref "Improve Performance with Time Series Data")
+- [Review the available time series data formats](@ref ts_data)
+- [Learn more about how times series data is stored](@ref "Data Storage")
