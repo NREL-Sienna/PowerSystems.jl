@@ -12,7 +12,7 @@ pages = OrderedDict(
         "Tutorials" =>  Any[
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
-            "Adding dynamic devices" => "tutorials/add_dynamic_device.md",
+            "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
             "...install PowerSystems.jl" => "how_to/install.md",
@@ -37,7 +37,7 @@ pages = OrderedDict(
             "explanation/type_structure.md",
             "explanation/per_unit.md",
             "explanation/time_series.md",
-            "explanation/example_dynamic_data.md",
+            "explanation/dynamic_data.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
