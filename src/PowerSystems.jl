@@ -234,6 +234,7 @@ export CurrentModeControl
 export RECurrentControlB
 
 # OutputCurrentLimiters Export
+export OutputCurrentLimiter
 export MagnitudeOutputCurrentLimiter
 export InstantaneousOutputCurrentLimiter
 export PriorityOutputCurrentLimiter
