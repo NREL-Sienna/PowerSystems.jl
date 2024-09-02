@@ -79,11 +79,10 @@ If you are new to `PowerSystems.jl`, here's how we suggest getting started:
  2. Work through the introductory tutorial: [Create and Explore a Power `System`](@ref) to
     familiarize yourself with how `PowerSystems.jl` works
  3. Work through the other basic tutorials based on your interests
-
-  - See [Working with Time Series Data](@ref tutorial_time_series) if you will be doing
-    production cost modeling or working with time series
-  - See [Adding Data for Dynamic Simulations](@ref)
-    if you are interested in [dynamic](@ref D) simulations
-
+    
+      + See [Working with Time Series Data](@ref tutorial_time_series) if you will be doing
+        production cost modeling or working with time series
+      + See [Adding Data for Dynamic Simulations](@ref)
+        if you are interested in [dynamic](@ref D) simulations
  4. Then, see the how-to's on parsing [Matpower](@ref pm_data) or [PSS/e files](@ref dyr_data) or
     [CSV files](@ref table_data) to begin loading your own data into `PowerSystems.jl`
