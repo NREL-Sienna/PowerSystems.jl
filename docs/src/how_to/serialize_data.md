@@ -9,6 +9,7 @@ dataset from
 simply to illustrate the process.
 
 First, load the dependencies and a `System` from `PowerSystemCaseBuilder`:
+
 ```@repl serialize_data
 using PowerSystems
 using PowerSystemCaseBuilder
@@ -18,12 +19,14 @@ sys = build_system(PSISystems, "c_sys5_pjm")
 ## Write data to a JSON
 
 Set up your target path, for example in a "mysystems" subfolder:
+
 ```@repl serialize_data
 folder = mkdir("mysystems");
 path = joinpath(folder, "system.json")
 ```
 
 Now write the system to JSON:
+
 ```@repl serialize_data
 to_json(sys, path)
 ```
@@ -31,7 +34,8 @@ to_json(sys, path)
 ## Read the JSON file and create a new `System`
 
 Now, you can read the file back in, and verify the new system has the same data as above:
+
 ```@repl serialize_data
 sys2 = System(path)
-rm(folder, recursive=true); #hide
+rm(folder; recursive = true); #hide
 ```

@@ -1,7 +1,7 @@
 # Reduce REPL printing
 
 By default `PowerSystems.jl` outputs to the REPL all Logging statements, which can be
-overwhelming in some cases. 
+overwhelming in some cases.
 
 Use [`configure_logging`](@ref) to create a logger with your preferences for which logging
 statements should be printed to the console or a log file:
@@ -11,7 +11,7 @@ statements should be printed to the console or a log file:
 ```julia
 using PowerSystems
 using Logging
-configure_logging(console_level = Logging.Error)
+configure_logging(; console_level = Logging.Error)
 ```
 
 **Note:** log messages are not automatically flushed to files. Call

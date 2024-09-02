@@ -6,8 +6,7 @@ time-series data, which we will explore more in the tutorial on
 [Working with Time Series Data](@ref tutorial_time_series).
 
 In [Create and Explore a Power `System`](@ref), we created a basic `System` with nodes, a transmission
-line, and a few generators. Let's recreate that system if you don't have it already: 
-
+line, and a few generators. Let's recreate that system if you don't have it already:
 
 ```@setup get_component_data
 using PowerSystems;

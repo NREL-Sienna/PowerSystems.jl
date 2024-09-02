@@ -90,9 +90,9 @@ to_json(system, "system.json")
 
 The serialization process stores 3 files
 
-1. System data file (`*.json` file)
-2. Validation data file (`*.json` file)
-3. Time Series data file (`*.h5` file)
+ 1. System data file (`*.json` file)
+ 2. Validation data file (`*.json` file)
+ 3. Time Series data file (`*.h5` file)
 
 To deserialize:
 
@@ -106,7 +106,7 @@ UUIDs.  If you will modify the System or components after deserialization then
 it is recommended that you set this flag to generate new UUIDs.
 
 ```julia
-system2 = System("system.json", assign_new_uuids = true)
+system2 = System("system.json"; assign_new_uuids = true)
 ```
 
 ## Viewing PowerSystems Data in JSON Format
@@ -127,38 +127,38 @@ online in a browser.
 The command line utility [jq](https://stedolan.github.io/jq/) offers even more
 features. The rest of this document provides example commands.
 
-- View the entire file pretty-printed
+  - View the entire file pretty-printed
 
 ```zsh
 jq . system.json
 ```
 
-- View the PowerSystems component types
+  - View the PowerSystems component types
 
 ```zsh
 jq '.data.components | .[] | .__metadata__ | .type' system.json | sort | uniq
 ```
 
-- View specific components
+  - View specific components
 
 ```zsh
 jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard")' system.json
 ```
 
-- Get the count of a component type
+  - Get the count of a component type
 
 ```zsh
 # There is almost certainly a better way.
 jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard")' system.json | grep -c ThermalStandard
 ```
 
-- View specific component by name
+  - View specific component by name
 
 ```zsh
 jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and .name == "107_CC_1")' system.json
 ```
 
-- Filter on a field value
+  - Filter on a field value
 
 ```zsh
 jq '.data.components | .[] | select(.__metadata__.type == "ThermalStandard" and .active_power > 2.3)' system.json

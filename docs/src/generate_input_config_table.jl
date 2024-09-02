@@ -1,10 +1,12 @@
 @info "Generating Input Configuration Descriptor Table"
 function create_md()
-    descriptor = PowerSystems._read_config_file(joinpath(
-        dirname(pathof(PowerSystems)),
-        "descriptors",
-        "power_system_inputs.json",
-    ))
+    descriptor = PowerSystems._read_config_file(
+        joinpath(
+            dirname(pathof(PowerSystems)),
+            "descriptors",
+            "power_system_inputs.json",
+        ),
+    )
 
     columns = [
         "name",
@@ -25,7 +27,7 @@ function create_md()
     )
     s = string(
         s,
-        "`PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:\n\n"
+        "`PowerSystemeTableData` parser defined by `src/descriptors/power_system_inputs.json`:\n\n",
     )
     for (cat, items) in descriptor
         csv = ""
@@ -64,6 +66,9 @@ end
 
 txt = create_md()
 
-open("/Users/cbarrows/Documents/repos/PowerSystems.jl/docs/src/modeler_guide/markdown.txt", "w") do f
-      write(f, txt)
+open(
+    "/Users/cbarrows/Documents/repos/PowerSystems.jl/docs/src/modeler_guide/markdown.txt",
+    "w",
+) do f
+    write(f, txt)
 end

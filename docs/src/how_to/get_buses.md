@@ -21,6 +21,7 @@ bus_iter = get_components(ACBus, system)
 The iterator avoids unnecessary memory allocations if there are many buses, and it can be
 used to view or update the bus data.
 For example, we can set the base voltage of all buses to 330 kV:
+
 ```@repl get_buses
 for b in bus_iter
     set_base_voltage!(b, 330.0)
@@ -31,6 +32,7 @@ end
 
 Use `collect` to get a vector of the buses instead of an iterator, which could require a lot
 of memory:
+
 ```@repl get_buses
 buses = collect(get_components(ACBus, system))
 ```
@@ -41,31 +43,37 @@ Use [`get_buses`](@ref) to get a vector of buses when you know which [`Area`](@r
 [`LoadZone`](@ref) you are interested in.
 
 First, we select an Area:
+
 ```@repl get_buses
 show_components(Area, system) # See available Areas
 area2 = get_component(Area, system, "2"); # Get Area named 2
 ```
 
 Then call `get_buses` for that Area:
+
 ```@repl get_buses
 area_buses = get_buses(system, area2)
 ```
 
-####  Option 2b: Get buses by ID number
+#### Option 2b: Get buses by ID number
 
 Finally, use [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})) to get a
 vector of buses by their ID numbers.
 
 Example getting buses with ID numbers from 101 to 110:
+
 ```@repl get_buses
 buses_by_ID = get_buses(system, Set(101:110))
 ```
 
 !!! note
+    
     You can combine this with Option 1 to first view all the bus numbers if needed:
+    
     ```@repl get_buses
     get_number.(get_components(ACBus, system))
     ```
 
 #### See Also
-- How to: [Get the available generators in a System](@ref)
+
+  - How to: [Get the available generators in a System](@ref)

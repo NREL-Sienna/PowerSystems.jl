@@ -23,18 +23,21 @@ the data represents. A type hierarchy has been defined with several levels of
 abstract types starting with `InfrastructureSystemsType`. There are a bunch of subtypes of
 `InfrastructureSystemsType`, but the important ones to know about are:
 
-- `System`: overarching `struct` that collects all of the `Component`s
-- `Component`: includes all elements of power system data
-  - `Topology`: includes non physical elements describing network connectivity
-  - `Service`: includes descriptions of system requirements (other than energy balance)
-  - `Device`: includes descriptions of all the physical devices in a power system
-- `InfrastructureSystems.DeviceParameter`: includes structs that hold data describing the
- dynamic, or economic capabilities of `Device`.
-- `TimeSeriesData`: Includes all time series types
-  - `Forecast`: includes structs to define time series of forecasted data where multiple
-values can represent each time stamp
-  - `StaticTimeSeries`: includes structs to define time series with a single value for each
-time stamp
+  - `System`: overarching `struct` that collects all of the `Component`s
+
+  - `Component`: includes all elements of power system data
+    
+      + `Topology`: includes non physical elements describing network connectivity
+      + `Service`: includes descriptions of system requirements (other than energy balance)
+      + `Device`: includes descriptions of all the physical devices in a power system
+  - `InfrastructureSystems.DeviceParameter`: includes structs that hold data describing the
+    dynamic, or economic capabilities of `Device`.
+  - `TimeSeriesData`: Includes all time series types
+    
+      + `Forecast`: includes structs to define time series of forecasted data where multiple
+        values can represent each time stamp
+      + `StaticTimeSeries`: includes structs to define time series with a single value for each
+        time stamp
 
 The abstract hierarchy enables categorization of the devices by their operational
 characteristics and modeling requirements.
@@ -57,3 +60,4 @@ implemented in the package.
 ```@raw html
 <img src="../../assets/AbstractTree.png" width="75%"/>
 ``` ⠀
+```

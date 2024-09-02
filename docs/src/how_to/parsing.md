@@ -1,12 +1,11 @@
-
 # [Parsing Data](@id parsing)
 
 `PowerSystems.jl` supports the creation of a `System` from a variety of common data formats:
 
-- [MATPOWER](@ref pm_data) (code copied with permission from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
-- [PSS/e RAW Files](@ref pm_data) (code copied with permission from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
-- [PSS/e DYR Files](@ref dyr_data)
-- [PowerSystems table data (CSV Files)](@ref table_data)
+  - [MATPOWER](@ref pm_data) (code copied with permission from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
+  - [PSS/e RAW Files](@ref pm_data) (code copied with permission from [`PowerModels.jl`](https://github.com/lanl-ansi/PowerModels.jl))
+  - [PSS/e DYR Files](@ref dyr_data)
+  - [PowerSystems table data (CSV Files)](@ref table_data)
 
 ## [MATPOWER / PSS/e](@id pm_data)
 
@@ -24,7 +23,7 @@ PSS/e's dynamic model library is extensive, we currently support parsing a limit
 of models out of the box.
 
 | Machine models | AVR Models | Prime Movers | PSS models |
-|----------------|------------|--------------|------------|
+|:-------------- |:---------- |:------------ |:---------- |
 | GENSAE         | IEEET1     | HYGOV        | IEEEST     |
 | GENSAL         | ESDC1A     | IEEEG1       |            |
 | GENROE         | ESAC1A     | GGOV1        |            |
@@ -95,16 +94,22 @@ To create the system we can do it passing both files directories:
 ```@repl raw_dyr_system
 RAW_dir = joinpath(file_dir, "ThreeBusNetwork.raw")
 DYR_dir = joinpath(file_dir, "TestGENCLS.dyr")
-dyn_system = System(RAW_dir, DYR_dir, runchecks = false)
+dyn_system = System(RAW_dir, DYR_dir; runchecks = false)
 ```
+
 ### Common Issues
 
 Please note that while PSS/e does not enforce unique bus names, `PowerSystems.jl` does. To reparse bus names to comply with this requirement the `bus_name_formatter` *kwarg  can be used in `System()` as shown in the example below:
 
 ```@repl raw_dyr_system
-dyn_system = System(RAW_dir, DYR_dir; bus_name_formatter = x -> strip(string(x["name"])) * "-" * string(x["index"]))
+dyn_system = System(
+    RAW_dir,
+    DYR_dir;
+    bus_name_formatter = x -> strip(string(x["name"])) * "-" * string(x["index"]),
+)
 ```
-In this example the anonymous function `x -> strip(string(x["name"])) * "-" * string(x["index"])` takes the bus name and index from PSSe and concatenates them to produce the name. 
+
+In this example the anonymous function `x -> strip(string(x["name"])) * "-" * string(x["index"])` takes the bus name and index from PSSe and concatenates them to produce the name.
 
 ## [PowerSystems Table Data](@id table_data)
 
@@ -116,16 +121,18 @@ by category and column with custom names, types, and units.
 Components for each category must be defined in their own CSV file. The
 following categories are currently supported:
 
-- branch.csv
-- bus.csv (required)
-  - columns specifying `area` and `zone` will create a corresponding set of `Area` and `LoadZone` objects.
-  - columns specifying `max_active_power` or `max_reactive_power` will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
-  corresponding `LoadZone` object.
-- dc_branch.csv
-- gen.csv
-- load.csv
-- reserves.csv
-- storage.csv
+  - branch.csv
+
+  - bus.csv (required)
+    
+      + columns specifying `area` and `zone` will create a corresponding set of `Area` and `LoadZone` objects.
+      + columns specifying `max_active_power` or `max_reactive_power` will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
+        corresponding `LoadZone` object.
+  - dc_branch.csv
+  - gen.csv
+  - load.csv
+  - reserves.csv
+  - storage.csv
 
 These must reside in the directory passed when constructing PowerSystemTableData.
 
@@ -135,28 +142,28 @@ PowerSystems requires a metadata file that maps components to their time series
 data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
 
-- `simulation`:  User description of simulation
-- `resolution`:  Resolution of time series in seconds
-- `module`:  Module that defines the abstract type of the component
-- `category`:  Type of component. Must map to abstract types defined by the "module"
-  entry (Bus, ElectricLoad, Generator, LoadZone, Reserve)
-- `component_name`:  Name of component
-- `name`:  User-defined name for the time series data.
-- `normalization_factor`:  Controls normalization of the data. Use 1.0 for
-  pre-normalized data. Use 'Max' to divide the time series by the max value in the
-  column. Use any float for a custom scaling factor.
-- `scaling_factor_multiplier_module`:  Module that defines the accessor function for the
-scaling factor
-- `scaling_factor_multiplier`:  Accessor function of the scaling factor
-- `data_file`:  Path to the time series data file
+  - `simulation`:  User description of simulation
+  - `resolution`:  Resolution of time series in seconds
+  - `module`:  Module that defines the abstract type of the component
+  - `category`:  Type of component. Must map to abstract types defined by the "module"
+    entry (Bus, ElectricLoad, Generator, LoadZone, Reserve)
+  - `component_name`:  Name of component
+  - `name`:  User-defined name for the time series data.
+  - `normalization_factor`:  Controls normalization of the data. Use 1.0 for
+    pre-normalized data. Use 'Max' to divide the time series by the max value in the
+    column. Use any float for a custom scaling factor.
+  - `scaling_factor_multiplier_module`:  Module that defines the accessor function for the
+    scaling factor
+  - `scaling_factor_multiplier`:  Accessor function of the scaling factor
+  - `data_file`:  Path to the time series data file
 
 Notes:
 
-- The "module", "category", and "component_name" entries must be valid arguments to retrieve
-a component using `get_component(${module}.${category}, sys, $name)`.
-- The "scaling_factor_multiplier_module" and the "scaling_factor_multiplier" entries must
-be sufficient to return the scaling factor data using
-`${scaling_factor_multiplier_module}.${scaling_factor_multiplier}(component)`.
+  - The "module", "category", and "component_name" entries must be valid arguments to retrieve
+    a component using `get_component(${module}.${category}, sys, $name)`.
+  - The "scaling_factor_multiplier_module" and the "scaling_factor_multiplier" entries must
+    be sufficient to return the scaling factor data using
+    `${scaling_factor_multiplier_module}.${scaling_factor_multiplier}(component)`.
 
 PowerSystems supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
@@ -182,8 +189,8 @@ SIENNA_TIME_SERIES_DIRECTORY to another directory.
 The tabular data parser in `PowerSystems.jl` can be customized to read a variety of
 datasets by configuring:
 
- - [which type of generator (`<:Generator`) to create based on the fuel and prime mover specifications](@ref csv_genmap)
- - [property names](@ref csv_columns), [units](@ref csv_units), and per units conversions](@ref csv_per_unit) in *.csv files
+  - [which type of generator (`<:Generator`) to create based on the fuel and prime mover specifications](@ref csv_genmap)
+  - [property names](@ref csv_columns), [units](@ref csv_units), and per units conversions](@ref csv_per_unit) in *.csv files
 
 Here is an example of how to construct a System with all customizations listed in this section:
 
@@ -200,13 +207,13 @@ data = PowerSystemTableData(
     timeseries_metadata_file = timeseries_metadata_file,
     generator_mapping_file = generator_mapping_file,
 )
-sys = System(data, time_series_in_memory = true)
+sys = System(data; time_series_in_memory = true)
 ```
 
 Examples configuration files can be found in the [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/) repo:
 
- - [user_descriptors.yaml](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/user_descriptors.yaml)
- - [generator_mapping.yaml](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/generator_mapping.yaml)
+  - [user_descriptors.yaml](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/user_descriptors.yaml)
+  - [generator_mapping.yaml](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/generator_mapping.yaml)
 
 #### [CSV Data Configurations](@id csv_data)
 

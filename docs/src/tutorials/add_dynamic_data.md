@@ -8,9 +8,10 @@ simulations.
 To run a dynamic simulation in Sienna\Dyn using
 [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/),
 two data layers are required:
-1. A base layer of [static](@ref S) components, which includes the data needed to run a
+
+ 1. A base layer of [static](@ref S) components, which includes the data needed to run a
     power flow problem
-2. An additional layer of [dynamic](@ref D) components, which define differential equations
+ 2. An additional layer of [dynamic](@ref D) components, which define differential equations
     to run a transient simulation
 
 We'll define these two layers sequentially.
@@ -31,35 +32,42 @@ const PSY = PowerSystems;
 
 To create the system, load pre-existing data for a 3-bus system using
 `PowerSystemCaseBuilder.jl`:
+
 ```@repl dyn_data
 threebus_sys = build_system(PSIDSystems, "3 Bus Inverter Base")
 ```
-See that there is a table of "Static Components", but no "Dynamic" data yet. 
+
+See that there is a table of "Static Components", but no "Dynamic" data yet.
 
 Let's view the generators in the system with [`show_components`](@ref),
 including which bus they are connected at:
+
 ```@repl dyn_data
 show_components(ThermalStandard, threebus_sys, [:bus])
 ```
+
 Notice that there are generators connected at Buses 2 and 3, but not Bus 1.
 
-Now, we are going to add the data needed to run an EMT simulation. 
+Now, we are going to add the data needed to run an EMT simulation.
 We will add an infinite voltage source to Bus 1, which is the last component we
 need to complete the static data layer. Then, we will a dynamic
-generator or inverter model to the two generators, as well as adding dynamic lines. 
+generator or inverter model to the two generators, as well as adding dynamic lines.
 
 ## Add an Infinite Voltage Source
 
 Add a infinite voltage source with small impedance to Bus 1 (the reference bus).
 First, retrieve the reference bus using [`get_components`](@ref):
+
 ```@repl dyn_data
 slack_bus = first(get_components(x -> get_bustype(x) == ACBusTypes.REF, Bus, threebus_sys))
 ```
+
 Notice we filtered by the [bus type](@ref acbustypes_list) to get the bus(es) we wanted.
 
 Next, manually define a [`Source`](@ref):
+
 ```@repl dyn_data
-inf_source = Source(
+inf_source = Source(;
     name = "InfBus", #name
     available = true, #availability
     active_power = 0.0,
@@ -71,12 +79,13 @@ inf_source = Source(
 ```
 
 And add it to the system:
+
 ```@repl dyn_data
 add_component!(threebus_sys, inf_source)
 ```
 
 This completes the first layer of [static](@ref S) data, using components similar to those
-we added manually in the [Create and Explore a Power `System`](@ref) tutorial. 
+we added manually in the [Create and Explore a Power `System`](@ref) tutorial.
 
 ## Adding a Dynamic Generator
 
@@ -85,7 +94,7 @@ Dynamic generator devices
 are composed by 5 components: a [Machine](@ref Machine),
 [Shaft](@ref Shaft), [Automatic Voltage Regulator](@ref AVR) (AVR),
 [Power System Stabilizer](@ref PSS) (PSS), and
-[Prime Mover and Turbine Governor](@ref TurbineGov). 
+[Prime Mover and Turbine Governor](@ref TurbineGov).
 For each of those 5 components, we will select a specific model that defines the data and
 differential equations for that component,
 and then use those 5 components to define the complete dynamic generator.
@@ -95,13 +104,15 @@ and then use those 5 components to define the complete dynamic generator.
 ```
 
 !!! note
+    
     When defining dynamic data, by convention `PowerSystems.jl` assumes that all data is
     in [`DEVICE_BASE`](@ref per_unit).
 
 First, define a [Machine](@ref Machine) that describes the the stator electro-magnetic dynamics:
+
 ```@repl dyn_data
 # Create the machine
-machine_oneDoneQ = OneDOneQMachine(
+machine_oneDoneQ = OneDOneQMachine(;
     R = 0.0,
     Xd = 1.3125,
     Xq = 1.2578,
@@ -111,14 +122,16 @@ machine_oneDoneQ = OneDOneQMachine(
     Tq0_p = 0.6,
 )
 ```
+
 Notice that we selected a specific model, [`OneDOneQMachine`](@ref), with the parameters
 tailored to a One-d-one-q dynamic machine model.
 
 Next, define a specific [Shaft](@ref Shaft) model, [`SingleMass`](@ref) that describes the
 rotor electro-mechanical dynamics:
+
 ```@repl dyn_data
 # Shaft
-shaft_no_damping = SingleMass(
+shaft_no_damping = SingleMass(;
     H = 3.01, #(M = 6.02 -> H = M/2)
     D = 0.0,
 )
@@ -126,9 +139,10 @@ shaft_no_damping = SingleMass(
 
 Represent the electromotive dynamics of the AVR controller using a specific
 [Automatic Voltage Regulator](@ref AVR) model, [`AVRTypeI`](@ref):
+
 ```@repl dyn_data
 # AVR: Type I: Resembles a DC1 AVR
-avr_type1 = AVRTypeI(
+avr_type1 = AVRTypeI(;
     Ka = 20.0,
     Ke = 0.01,
     Kf = 0.063,
@@ -144,31 +158,37 @@ avr_type1 = AVRTypeI(
 
 Define a fixed efficiency [Prime Mover and Turbine Governor](@ref TurbineGov) with
 [`TGFixed`](@ref):
+
 ```@repl dyn_data
 #No TG
-tg_none = TGFixed(efficiency = 1.0) #efficiency
+tg_none = TGFixed(; efficiency = 1.0) #efficiency
 ```
+
 See that we are modeling a machine that does not include a Turbine Governor
 (or PSS below), but you must define components for them to build a
 complete machine model.
 
 Similarly, define a PSS using [`PSSFixed`](@ref), which is used to describe the stabilization
 signal for the AVR:
+
 ```@repl dyn_data
 #No PSS
-pss_none = PSSFixed(V_pss = 0.0)
+pss_none = PSSFixed(; V_pss = 0.0)
 ```
 
 Now, we are ready to add a dynamic generator to the static
 generator at bus 102. First, let's get that static generator:
+
 ```@repl dyn_data
 static_gen = get_component(Generator, threebus_sys, "generator-102-1")
 ```
+
 Notice that its `dynamic_injector` field is currently `nothing`.
 
 Use its name and the 5 components above to define its [`DynamicGenerator`](@ref) model:
+
 ```@repl dyn_data
-dynamic_gen = DynamicGenerator(
+dynamic_gen = DynamicGenerator(;
     name = get_name(static_gen),
     ω_ref = 1.0, # frequency reference set-point
     machine = machine_oneDoneQ,
@@ -178,53 +198,64 @@ dynamic_gen = DynamicGenerator(
     pss = pss_none,
 )
 ```
+
 See that the specific component models that we selected and defined above were used to
 specify the states needed to model this generator in a dynamic simulation.
 
 Finally, use the dynamic version of [`add_component!`](@ref add_component!(
-    sys::System,
-    dyn_injector::DynamicInjection,
-    static_injector::StaticInjection;
-    kwargs...,
+sys::System,
+dyn_injector::DynamicInjection,
+static_injector::StaticInjection;
+kwargs...,
 )) to add this data to the `System`:
+
 ```@repl dyn_data
 add_component!(threebus_sys, dynamic_gen, static_gen)
 ```
+
 Notice that unlike static components, which are just added to the `System`,
 this dynamic component is added to a specific static component within the `System`.
 
 !!! tip
+    
     To define identical dynamic devices for multiple generators at once, define the pieces of the
-    generator model as *functions*, such as:    
+    generator model as *functions*, such as:
+    
     ```
     avr_type1() = AVRTypeI(...
     ```
+    
     When called in the `DynamicGenerator` constructor, this will create a new AVR for each generator, so
     they are different in memory. Later, if you decide to modify the AVR parameters for
     a specific generator, it will not modify the AVR in another generator.
 
 Recall that you can print the system to see a summary of its data:
+
 ```@repl dyn_data
 threebus_sys
 ```
+
 See that a new table has been added: "Dynamic Components."
 
 Also, print the static generator to double-check the dynamic layer has been added:
+
 ```@repl dyn_data
 static_gen
 ```
+
 Verify that `dynamic_injector` now contains our dynamic generator model.
 
 Up to this point, you have added the dynamic data necessary to do a phaser-type simulation,
 which focuses on machine behavior. Now we will also add dynamic inverters and lines to enable
 EMT simulations.
 
-## Adding a Dynamic Inverter 
+## Adding a Dynamic Inverter
 
 Next we will connect a Virtual Synchronous Generator Inverter at bus 103.
 
 An inverter is composed of [Converter](@ref), [OuterControl](@ref), [InnerControl](@ref),
 [DCSource](@ref), [FrequencyEstimator](@ref), and [Filter](@ref) components:
+
 ```@raw html
 <img src="../../assets/inv_metamodel.png" width="75%"/>
 ```
@@ -234,29 +265,33 @@ model, which defines its differential equations.
 
 First, define an [`AverageConverter`](@ref) as the specific model for the [Converter](@ref)
 component:
+
 ```@repl dyn_data
-converter_high_power() = AverageConverter(
+converter_high_power() = AverageConverter(;
     rated_voltage = 138.0,
-    rated_current = 100.0
-    )
+    rated_current = 100.0,
+)
 ```
+
 Recall from the tip above that we can define these components as *functions* instead of
 objects for reusability across multiple generators, and notice that that is what we have
 done here.
 
 Define [OuterControl](@ref) using [Virtual Inertia](@ref) for the active power control and
 [ReactivePowerDroop](@ref) for the reactive power control:
+
 ```@repl dyn_data
 outer_control() = OuterControl(
-    VirtualInertia(Ta = 2.0, kd = 400.0, kω = 20.0),
-    ReactivePowerDroop(kq = 0.2, ωf = 1000.0),
+    VirtualInertia(; Ta = 2.0, kd = 400.0, kω = 20.0),
+    ReactivePowerDroop(; kq = 0.2, ωf = 1000.0),
 )
 ```
 
 Define an [InnerControl](@ref) as a Voltage+Current Controller with Virtual Impedance,
 using [`VoltageModeControl`](@ref):
+
 ```@repl dyn_data
-inner_control() = VoltageModeControl(
+inner_control() = VoltageModeControl(;
     kpv = 0.59,     #Voltage controller proportional gain
     kiv = 736.0,    #Voltage controller integral gain
     kffv = 0.0,     #Binary variable enabling voltage feed-forward in current controllers
@@ -271,13 +306,15 @@ inner_control() = VoltageModeControl(
 ```
 
 Define a [`FixedDCSource`](@ref) for the [DCSource](@ref):
+
 ```@repl dyn_data
-dc_source_lv() = FixedDCSource(voltage = 600.0)
+dc_source_lv() = FixedDCSource(; voltage = 600.0)
 ```
 
 Define a [FrequencyEstimator](@ref) as a phase-locked loop (PLL) using [`KauraPLL`](@ref):
+
 ```@repl dyn_data
-pll() = KauraPLL(
+pll() = KauraPLL(;
     ω_lp = 500.0, #Cut-off frequency for LowPass filter of PLL filter.
     kp_pll = 0.084,  #PLL proportional gain
     ki_pll = 4.69,   #PLL integral gain
@@ -285,8 +322,9 @@ pll() = KauraPLL(
 ```
 
 Finally, define an [`LCLFilter`](@ref) for the [Filter](@ref):
+
 ```@repl dyn_data
-filt() = LCLFilter(
+filt() = LCLFilter(;
     lf = 0.08,
     rf = 0.003,
     cf = 0.074,
@@ -297,13 +335,15 @@ filt() = LCLFilter(
 
 Now, use those six functions to define a complete dynamic inverter
 by getting the static component at bus 103:
+
 ```@repl dyn_data
 gen_103 = get_component(Generator, threebus_sys, "generator-103-1");
 ```
 
 using it and our six functions to define a [`DynamicInverter`](@ref):
+
 ```@repl dyn_data
-dynamic_inv = DynamicInverter(
+dynamic_inv = DynamicInverter(;
     name = get_name(gen_103),
     ω_ref = 1.0, # frequency reference set-point
     converter = converter_high_power(),
@@ -316,6 +356,7 @@ dynamic_inv = DynamicInverter(
 ```
 
 and adding it to the `System`:
+
 ```@repl dyn_data
 add_component!(threebus_sys, dynamic_inv, gen_103)
 ```
@@ -326,24 +367,30 @@ updates by adding dynamic lines.
 ## Adding Dynamic Lines
 
 !!! warning
-    A `System` must have at least two buses and one branch to run a dynamic simulation in 
+    
+    A `System` must have at least two buses and one branch to run a dynamic simulation in
     [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/).
 
 Let's review the AC branches currently in the system:
+
 ```@repl dyn_data
 get_components(ACBranch, threebus_sys)
 ```
-Notice that we have three static `Line` components. 
 
-Let's also print the first line to review its format: 
+Notice that we have three static `Line` components.
+
+Let's also print the first line to review its format:
+
 ```@repl dyn_data
 first(get_components(Line, threebus_sys))
 ```
+
 See that these components do not have the fields for dynamic modeling, such as fields for
 different [states](@ref S).
 
 Let's update that by cycling through these lines and using [`DynamicBranch`](@ref) to extend
 each static line with the necessary fields:
+
 ```@repl dyn_data
 for l in get_components(Line, threebus_sys)
     # create a dynamic branch
@@ -354,38 +401,45 @@ end
 ```
 
 Take a look at the AC branches in the system again:
+
 ```@repl dyn_data
 branches = get_components(ACBranch, threebus_sys)
 ```
+
 Notice that now there are 3 `DynamicBranch` components instead the `Line` components.
 
 Let's take a look by printing first one:
+
 ```@repl dyn_data
 first(branches)
 ```
+
 Observe that this is a wrapper around the static data, with the additional states
 data for dynamic modeling.
 
 Finally, let's print the `System` again to summarize our additions:
+
 ```@repl dyn_data
 threebus_sys
 ```
+
 Verify that the additions were successful, with an added voltage `Source`, `DynamicBranch`es
 replacing the static `Lines`, and two new dynamic components with the generator and inverter models.
 
 ## Next Steps
 
-In this tutorial, you have updated a static system with a second dynamic data layer. 
+In this tutorial, you have updated a static system with a second dynamic data layer.
 The data you added can enable a phasor-based simulation using the dynamic generator, or
-a more complex EMT simulation with the additional dynamic inverter and dynamic lines. 
+a more complex EMT simulation with the additional dynamic inverter and dynamic lines.
 
 Next, you might like to:
-- Read more about the static and dynamic data layers and the dynamic data format in
+
+  - Read more about the static and dynamic data layers and the dynamic data format in
     [Dynamic Devices](@ref).
-- Review the specific sub-system models available in `PowerSystems.jl` for [Machine](@ref),
+  - Review the specific sub-system models available in `PowerSystems.jl` for [Machine](@ref),
     [Shaft](@ref), [AVR](@ref), [PSS](@ref),
     [Prime Mover and Turbine Governor](@ref TurbineGov), [Converter](@ref),
     [OuterControl](@ref), [InnerControl](@ref), [DCSource](@ref),
     [FrequencyEstimator](@ref), and [Filter](@ref) components
-- Explore [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
+  - Explore [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
     for dynamics modeling in Sienna\Dyn

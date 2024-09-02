@@ -54,10 +54,10 @@ the parent's reference to that child.
 The source file `src/base.jl` provides functions that you can implement for
 your new type to manage these scenarios.
 
-- `check_component_addition(sys::System, component::Component; kwargs...)`
-- `handle_component_addition!(sys::System, component::Component; kwargs...)`
-- `check_component_removal(sys::System, component::Component; kwargs...)`
-- `handle_component_removal!(sys::System, component::Component; kwargs...)`
+  - `check_component_addition(sys::System, component::Component; kwargs...)`
+  - `handle_component_addition!(sys::System, component::Component; kwargs...)`
+  - `check_component_removal(sys::System, component::Component; kwargs...)`
+  - `handle_component_removal!(sys::System, component::Component; kwargs...)`
 
 The functions `add_component!()` and `remove_component!()` call the check
 function before performing actions and then call the handle function
@@ -76,9 +76,9 @@ and `throw_if_not_attached(component, system)`.
 You can implement three methods to perform custom validation or correction for your type.
 PowerSystems calls all of these functions in `add_component!`.
 
-- `sanitize_component!(component::Component, sys::System)`: intended to make standard data corrections (e.g. voltage angle in degrees -> radians)
-- `validate_component(component::Component)`: intended to check component field values for internal consistency
-- `validate_component_with_system(component::Component, sys::System)`: intended to check component field values for consistency with system
+  - `sanitize_component!(component::Component, sys::System)`: intended to make standard data corrections (e.g. voltage angle in degrees -> radians)
+  - `validate_component(component::Component)`: intended to check component field values for internal consistency
+  - `validate_component_with_system(component::Component, sys::System)`: intended to check component field values for consistency with system
 
 ### Struct Requirements for Serialization of custom components
 
@@ -89,23 +89,23 @@ fields become dictionary keys.
 
 The code imposes these requirements:
 
-1. The InfrastructureSystems methods `serialize` and `deserialize` must be
-   implemented for the struct. InfrastructureSystems implements a method that
-   covers all subtypes of `InfrastructureSystemsType`. All PowerSystems
-   components should be subtypes of `PowerSystems.Component` which is a subtype
-   `InfrastructureSystemsType`, so any new structs should be covered as well.
-2. All struct fields must be able to be encoded in JSON format or be covered be
-   covered by `serialize` and `deserialize` methods. Basic types, such as
-   numbers and strings or arrays and dictionaries of numbers and strings,
-   should just work. Complex containers with symbols may not.
-3. Structs relying on the default `deserialize` method must have a kwarg-only
-   constructor. The deserialization code constructs objects by splatting the
-   dictionary key/value pairs into the constructor.
-4. Structs that contain other PowerSystem components (like a generator contains
-   a bus) must serialize those components as UUIDs instead of actual values.
-   The deserialization code uses the UUIDs as a mechanism to restore a
-   reference to the actual object rather a new object with identical values. It
-   also significantly reduces the size of the JSON file.
+ 1. The InfrastructureSystems methods `serialize` and `deserialize` must be
+    implemented for the struct. InfrastructureSystems implements a method that
+    covers all subtypes of `InfrastructureSystemsType`. All PowerSystems
+    components should be subtypes of `PowerSystems.Component` which is a subtype
+    `InfrastructureSystemsType`, so any new structs should be covered as well.
+ 2. All struct fields must be able to be encoded in JSON format or be covered be
+    covered by `serialize` and `deserialize` methods. Basic types, such as
+    numbers and strings or arrays and dictionaries of numbers and strings,
+    should just work. Complex containers with symbols may not.
+ 3. Structs relying on the default `deserialize` method must have a kwarg-only
+    constructor. The deserialization code constructs objects by splatting the
+    dictionary key/value pairs into the constructor.
+ 4. Structs that contain other PowerSystem components (like a generator contains
+    a bus) must serialize those components as UUIDs instead of actual values.
+    The deserialization code uses the UUIDs as a mechanism to restore a
+    reference to the actual object rather a new object with identical values. It
+    also significantly reduces the size of the JSON file.
 
 Refer to `InfrastructureSystems.serialize_struct` for example behavior. New
 structs that are not subtypes of `InfrastructureSystemsType` may be able to
@@ -164,9 +164,9 @@ end
 ## [Auto-generating Structs](@id autogen)
 
 Most `PowerSystems.jl` structs are auto-generated from the JSON descriptor file
-`src/descriptors/power_system_structs.json`. 
+`src/descriptors/power_system_structs.json`.
 You can add your new struct
-here or write it manually when contributing code to the repository. 
+here or write it manually when contributing code to the repository.
 
 If all you need is the basic struct definition and getter/setter functions then
 you will likely find the auto-generation helpful.
@@ -182,9 +182,9 @@ and `generate_structs`. Full details are in the InfrastructureSystems documentat
 
 In order to merge new structs to the code base, your struct needs to pass several tests.
 
-1. addition to `System`
-2. retrieval from `System`
-3. serialization/de-serialization
+ 1. addition to `System`
+ 2. retrieval from `System`
+ 3. serialization/de-serialization
 
 The following code block is an example of the code that the new struct needs to pass
 
