@@ -52,7 +52,7 @@ response.
 - `freq_estimator <: FrequencyEstimator`: a [FrequencyEstimator](@ref) (typically a [PLL](@ref P)) model.
 - `filter <: Filter`: [Filter](@ref) model.
 - `limiter <: Union{nothing, OutputCurrentLimiter}`: (default: nothing) Inner Control [Current Limiter](@ref OutputCurrentLimiter) model
-- `base_power::Float64`: (default: `100.0`) Base power of the `System`
+- `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for [per unitization](@ref per_unit). Although this has a default, in almost all cases `base_power` should be updated to equal the `base_power` field of the [`StaticInjection`](@ref) device that this dynamic generator will be attached to.
 - `n_states::Int`: (**Do not modify.**)  Number of states (will depend on the inputs above).
 - `states::Vector{Symbol}`: (**Do not modify.**) Vector of states (will depend on the inputs above).
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation
