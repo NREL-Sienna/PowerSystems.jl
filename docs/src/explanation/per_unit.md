@@ -7,24 +7,42 @@ It is often useful to express power systems data in relative terms using per-uni
  2. `"SYSTEM_BASE"`: Parameter values are divided by the system `base_power`.
  3. `"DEVICE_BASE"`: Parameter values are divided by the device `base_mva`.
 
-To see the unit system setting of a `System`:
+`PowerSystems.jl` supports these unit systems because different power system tools and data
+sets use different units systems by convention, such as:
 
-```@repl per-unit
-using PowerSystems; #hide
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data") #hide
-system = System(joinpath(file_dir, "RTS_GMLC.m")); #hide
-get_units_base(system)
-```
+  - Dynamics data is often defined in device base
+  - Network data (e.g., reactance, resistance) is often defined in system base
+  - Production cost modeling data is often gathered from variety of data sources,
+    which are typically defined in natural units
 
-To change the unit system setting of a `System`:
+These three unit bases allow easy conversion between unit systems.
+This allows `PowerSystems.jl` users to input data in the formats they have available,
+as well as view data in the unit system that is most intuitive to them.
 
-```@repl per-unit
-set_units_base_system!(system, "DEVICE_BASE")
-```
+You can get and set the unit system setting of a `System` with [`get_units_base`](@ref)
+and [`set_units_base_system!`](@ref).
 
-The units of the parameter values stored in each struct are defined in
-`src/descriptors/power_system_structs.json`. Conversion between unit systems does not change
+Conversion between unit systems does not change
 the stored parameter values. Instead, unit system conversions are made when accessing
 parameters using the [accessor functions](@ref dot_access), thus making it
 imperative to utilize the accessor functions instead of the "dot" accessor methods to
-ensure the return of the correct values.
+ensure the return of the correct values. The units of the parameter values stored in each
+struct are defined in `src/descriptors/power_system_structs.json`.
+
+There are some unit system conventions in `PowerSystems.jl` when defining new components.
+Currently, when you define components that aren't attached to a `System`,
+you must define all fields in `"DEVICE_BASE"`, except for certain components that don't
+have their own `base_power` rating, such as [`Line`](@ref)s, where the `rating` must be
+defined in `"SYSTEM_BASE"`.
+
+In the future, `PowerSystems.jl` hopes to support defining components in natural units.
+For now, if you want to define data in natural units, you must first
+set the system units to `"NATURAL_UNITS"`, define an empty component, and then use the
+[accessor functions](@ref dot_access) (e.g., getters and setters), to define each field
+within the component. The accessor functions will then do the data conversion from your
+input data in natural units (e.g., MW or MVA) to per-unit.
+
+By default, `PowerSystems.jl` uses `"SYSTEM_BASE"` because many optimization problems won't
+converge when using natural units. If you change the unit setting, it's suggested that you
+switch back to `"SYSTEM_BASE"` before solving an optimization problem (for example in
+[`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
