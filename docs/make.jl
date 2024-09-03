@@ -27,7 +27,7 @@ pages = OrderedDict(
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...customize or add a new Type" => "how_to/add_new_types.md",
             "...improve performance with time series data" => "how_to/improve_ts_performance.md",
-            "...serialize data to a JSON" => "how_to/serialize_data.md",
+            "...write and read data with a JSON" => "how_to/serialize_data.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md"
         ],
