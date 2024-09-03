@@ -9,13 +9,9 @@ CurrentModule = PowerSystems
     PowerSystems.jl upgraded to version 4.0 in June 2024, which included breaking changes.
     Visit the [v4.0 migration guide](@ref psy4_migration) for information on
     how to update your existing code.
-
-!!! warning "Under Construction"
     
-    The PowerSystems.jl is being actively being rewritten for version 4.0 using the new
-    format described in [How To Use This Documentation](@ref). Your patience is appreciated
-    as we make this change! For now, some documentation is not located in its final home.
-    Please reach out with questions and suggestions.
+    We also have re-organized and updated this documentation, including new tutorials! Check
+    out [How To Use This Documentation](@ref) below to orient yourself.
 
 ## About
 
