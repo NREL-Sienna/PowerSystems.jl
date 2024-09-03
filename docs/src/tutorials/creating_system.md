@@ -157,7 +157,8 @@ withdraw power from the network.
     
     When you define components that aren't attached to a `System` yet, you must define
     all fields related to power (with units such as MW, MVA, MVAR, or MW/min) in
-    per-unit using the `base_power` of the component.
+    per-unit using the `base_power` of the component (with the exception of `base_power`
+    itself, which is in MVA).
 
 We'll start with defining a 10 MW [load](@ref PowerLoad) to `bus1`:
 

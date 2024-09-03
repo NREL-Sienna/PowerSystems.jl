@@ -19,12 +19,12 @@ retrieve all components of a certain `Type`.
 For example, the most common search function is [`get_components`](@ref), which
 takes a desired device `Type` (concrete or abstract) and retrieves all components in that
 category from the `System`. It also accepts filter functions for a more
-refined search. 
+refined search.
 
 Given the potential size of the return,
 `PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations.
 The container is optimized for iteration over abstract or concrete component
-types as described by the [Type Structure](@ref type_structure). 
+types as described by the [Type Structure](@ref type_structure).
 
 ## [Accessing data stored in a component](@id dot_access)
 

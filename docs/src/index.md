@@ -76,6 +76,7 @@ framework.
 If you are new to `PowerSystems.jl`, here's how we suggest getting started:
 
  1. [Install](@ref install)
+
  2. Work through the introductory tutorial: [Create and Explore a Power `System`](@ref) to
     familiarize yourself with how `PowerSystems.jl` works
  3. Work through the other basic tutorials based on your interests

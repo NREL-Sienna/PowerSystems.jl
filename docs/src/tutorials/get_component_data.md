@@ -58,6 +58,7 @@ nothing #hide
 # copied over from the System
 
 ## Accessing components stored in the system
+
 <!-- 
 `PowerSystems.jl` implements a wide variety of methods to search for components to
 aid in the development of models. The code block shows an example of
@@ -69,7 +70,6 @@ type (concrete or abstract) and the system and it also accepts filter functions 
 refined search. The container is optimized for iteration over abstract or concrete component
 types as described by the [Type Structure](@ref type_structure). Given the potential size of the return,
 `PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations. -->
-
 ```@repl system
 using PowerSystems
 file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
@@ -103,7 +103,6 @@ _this is actively discouraged_ for two reasons:
 
  1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
  2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit section](@ref per_unit) for more details) -->
-
 For example, the `my_thermal_gen.active_power_limits` parameter of a thermal generator should be accessed as follows:
 
 ```@repl system
