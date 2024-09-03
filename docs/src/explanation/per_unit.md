@@ -5,7 +5,7 @@ It is often useful to express power systems data in relative terms using per-uni
 
  1. `"NATURAL_UNITS"`: The naturally defined units of each parameter (typically MW).
  2. `"SYSTEM_BASE"`: Parameter values are divided by the system `base_power`.
- 3. `"DEVICE_BASE"`: Parameter values are divided by the device `base_mva`.
+ 3. `"DEVICE_BASE"`: Parameter values are divided by the device `base_power`.
 
 `PowerSystems.jl` supports these unit systems because different power system tools and data
 sets use different units systems by convention, such as:
