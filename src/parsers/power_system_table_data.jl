@@ -275,7 +275,7 @@ function System(
     )
 
     for (val, parser) in parsers
-        if !isnothing(val)
+        if !isempty(val)
             parser(sys, data)
         end
     end
