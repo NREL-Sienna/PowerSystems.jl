@@ -378,3 +378,4 @@ Next, you might want to:
   - [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parsing)
   - [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
+  - See a workaround for how to [Add a Component in Natural Units](@ref)

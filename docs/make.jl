@@ -18,6 +18,7 @@ pages = OrderedDict(
             "...install PowerSystems.jl" => "how_to/install.md",
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "...parse data from Matpower, PSSE, or CSV files" => "how_to/parsing.md",
+            "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
             "...add time series data from CSVs" => "how_to/add_ts_from_csvs.md",
             "...customize the tabular data parser" => "how_to/extend_tabular_parsing.md",
             "...get all the buses in a system" => "how_to/get_buses.md",
