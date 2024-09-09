@@ -75,6 +75,7 @@ set_active_power_limits!(gas1, (min = 6.0, max = 30.0)) # MW
 set_reactive_power_limits!(gas1, (min = 6.0, max = 30.0)) # MVAR
 set_ramp_limits!(gas1, (up = 6.0, down = 6.0)) #MW/min
 ```
+
 Notice the return values are divided by the `base_power` of 30 MW, showing the setters have
 done the per-unit conversion into `"DEVICE_BASE"` behind the scenes.
 
