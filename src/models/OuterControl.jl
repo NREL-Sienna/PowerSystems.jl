@@ -56,8 +56,13 @@ function OuterControl(;
     return OuterControl(active_power_control, reactive_power_control, ext, states, n_states)
 end
 
+"""Get Active Power Control from OuterControl."""
 get_active_power_control(value::OuterControl) = value.active_power_control
+"""Get Reactive Power Control from OuterControl."""
 get_reactive_power_control(value::OuterControl) = value.reactive_power_control
+"""Get `ext` from OuterControl."""
 get_ext(value::OuterControl) = value.ext
+"""Get `states` from OuterControl."""
 get_states(value::OuterControl) = value.states
+"""Get `n_states` from OuterControl."""
 get_n_states(value::OuterControl) = value.n_states
