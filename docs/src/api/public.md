@@ -65,18 +65,6 @@ Filter = t -> t ∈ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages = ["parsers/power_system_table_data.jl",
-         "parsers/power_models_data.jl",
-         "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl",
-         "pm_io/common.jl"]
-Public = true
-Private = false
-Filter = t -> t ∈ [System]
-```
-
-```@autodocs
-Modules = [PowerSystems]
 Pages   = ["base.jl"]
 Public = true
 Private = false
@@ -127,7 +115,8 @@ Modules = [PowerSystems]
 Pages = ["parsers/power_system_table_data.jl",
          "parsers/power_models_data.jl",
          "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl"]
+         "parsers/psse_dynamic_data.jl",
+         "parsers/pm_io/common.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
