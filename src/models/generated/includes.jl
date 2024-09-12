@@ -528,6 +528,7 @@ export get_from_branch_control
 export get_fs
 export get_fuel
 export get_fuel_flag
+export get_g
 export get_gate_openings
 export get_gate_position_limits
 export get_hysteresis_binary_logic
@@ -1093,6 +1094,7 @@ export set_from_branch_control!
 export set_fs!
 export set_fuel!
 export set_fuel_flag!
+export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
 export set_hysteresis_binary_logic!
