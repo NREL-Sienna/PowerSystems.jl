@@ -10,7 +10,7 @@ const SYSTEM_KWARGS = Set((
     :generator_mapping,
     :internal,
     :load_name_formatter,
-    :load_zone_formatter,
+    :loadzone_name_formatter,
     :runchecks,
     :shunt_name_formatter,
     :time_series_directory,

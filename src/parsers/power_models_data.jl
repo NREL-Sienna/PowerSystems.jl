@@ -326,7 +326,6 @@ function read_loadzones!(
     kwargs...,
 )
     @info "Reading LoadZones data in PowerModels dict to populate System ..."
-    _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
     zones = Set{Int}()
     zone_bus_map = Dict{Int, Vector}()
     for (_, bus) in data["bus"]
@@ -346,9 +345,15 @@ function read_loadzones!(
         load_zone_map[zone]["pd"] += get(load, "py", 0.0)
         load_zone_map[zone]["qd"] += get(load, "qy", 0.0)
     end
+
+    default_loadzone_naming = x -> string(x)
+    # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
+    _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
+
     for zone in zones
+        name = _get_name(zone)
         load_zone = make_loadzone(
-            string(zone),
+            name,
             load_zone_map[zone]["pd"],
             load_zone_map[zone]["qd"];
             kwargs...,
