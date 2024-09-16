@@ -44,7 +44,7 @@ end
         "psse_Benchmark_4ger_33_2015_sys";
         loadzone_name_formatter = x -> string(3 * x),
     )
-    lz_original = first(get_components(LoadZone, sys2))
-    lz_new = first(get_components(LoadZone, sys3))
+    lz_original = only(get_components(LoadZone, sys2))
+    lz_new = only(get_components(LoadZone, sys3))
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
 end
