@@ -36,4 +36,14 @@ end
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
+
+    PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
+    sys3 = build_system(
+        PSYTestSystems,
+        "psse_Benchmark_4ger_33_2015_sys";
+        loadzone_name_formatter = x -> string(3 * x),
+    )
+    lz_original = first(get_components(LoadZone, sys2))
+    lz_new = first(get_components(LoadZone, sys3))
+    @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
 end
