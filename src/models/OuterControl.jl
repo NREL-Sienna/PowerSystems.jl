@@ -56,8 +56,21 @@ function OuterControl(;
     return OuterControl(active_power_control, reactive_power_control, ext, states, n_states)
 end
 
+"""Get `active_power_control` from [`OuterControl`](@ref)."""
 get_active_power_control(value::OuterControl) = value.active_power_control
+"""Get `reactive_power_control` from [`OuterControl`](@ref)."""
 get_reactive_power_control(value::OuterControl) = value.reactive_power_control
+"""Get `ext` from [`OuterControl`](@ref)."""
 get_ext(value::OuterControl) = value.ext
+"""Get `states` from [`OuterControl`](@ref)."""
 get_states(value::OuterControl) = value.states
+"""Get `n_states` from [`OuterControl`](@ref)."""
 get_n_states(value::OuterControl) = value.n_states
+"""Set [`OuterControl`](@ref) `active_power_control`."""
+set_active_power_control!(value::OuterControl, val) =
+    value.active_power_control = val
+"""Set [`OuterControl`](@ref) `reactive_power_control`."""
+set_reactive_power_control!(value::OuterControl, val) =
+    value.reactive_power_control = val
+"""Set [`OuterControl`](@ref) `ext`."""
+set_ext!(value::OuterControl, val) = value.ext = val

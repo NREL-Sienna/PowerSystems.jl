@@ -19,6 +19,7 @@ Pages   = ["PowerSystems.jl",
            "topological_elements.jl",
            "dynamic_models.jl",
            "static_models.jl",
+           "subsystems.jl",
            "static_injection_subsystem.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
@@ -78,17 +79,6 @@ Filter = t -> t ∈ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages = ["parsers/power_system_table_data.jl",
-         "parsers/power_models_data.jl",
-         "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl"]
-Public = true
-Private = false
-Filter = t -> t ∈ [System]
-```
-
-```@autodocs
-Modules = [PowerSystems]
 Pages   = ["base.jl"]
 Public = true
 Private = false
@@ -97,7 +87,8 @@ Filter = t -> t ∉ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["utils/print.jl"]
+Pages   = ["utils/print.jl",
+           "utils/generate_struct_files.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
@@ -119,7 +110,8 @@ Modules = [PowerSystems]
 Pages = ["parsers/power_system_table_data.jl",
          "parsers/power_models_data.jl",
          "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl"]
+         "parsers/psse_dynamic_data.jl",
+         "parsers/pm_io/common.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
