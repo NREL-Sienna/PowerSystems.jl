@@ -88,7 +88,7 @@ Private = false
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["generated/ReactiveVirtualController.jl"]
+Pages   = ["generated/ReactiveVirtualOscillator.jl"]
 Order = [:type, :function]
 Public = true
 Private = false
