@@ -346,7 +346,7 @@ function read_loadzones!(
         load_zone_map[zone]["qd"] += get(load, "qy", 0.0)
     end
 
-    default_loadzone_naming = x -> string(x)
+    default_loadzone_naming = string
     # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
     _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
 
