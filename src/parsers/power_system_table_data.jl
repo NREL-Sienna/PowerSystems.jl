@@ -775,9 +775,9 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 function get_reserve_direction(direction::AbstractString)
-    if direction == "Up"
+    if lowercase(direction) == "up"
         return ReserveUp
-    elseif direction == "Down"
+    elseif lowercase(direction) == "down"
         return ReserveDown
     else
         throw(DataFormatError("invalid reserve direction $direction"))
