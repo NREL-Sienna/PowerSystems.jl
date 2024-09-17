@@ -43,13 +43,13 @@ pages = OrderedDict(
         "Model Library" => Any[],
         "Reference" =>
             Any["Public API" => "api/public.md",
-            "Internal API Reference" => "api/internal.md",
             "Glossary and Acronyms" => "api/glossary.md",
             "Type Hierarchy" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
-            "Developer Guidelines" => "api/developer_guidelines.md",
-            "Citation" => "api/citation.md"
+            "Citation" => "api/citation.md",
+            "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
+            "Internals" => "api/internal.md"]
             ]
 
 
