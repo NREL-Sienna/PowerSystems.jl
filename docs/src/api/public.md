@@ -38,6 +38,7 @@ Pages   = ["production_variable_cost_curve.jl",
             "value_curve.jl",
            ]
 Order = [:type, :function]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ## Time Series
@@ -46,6 +47,7 @@ Order = [:type, :function]
 Modules = [InfrastructureSystems]
 Pages   = ["abstract_time_series.jl",
            "deterministic.jl",
+           "deterministic_single_time_series.jl",
            "probabilistic.jl",
            "scenarios.jl",
            "static_time_series.jl",
@@ -53,8 +55,7 @@ Pages   = ["abstract_time_series.jl",
            "forecasts.jl",
            ]
 Order = [:type, :function]
-Filter = t -> t ∉ [InfrastructureSystems.get_internal,
-                   InfrastructureSystems.set_internal!]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ```@autodocs
@@ -63,8 +64,10 @@ Pages   = ["time_series_cache.jl",
             "time_series_interface.jl",
             "time_series_structs.jl",
             "time_series_storage.jl",
+            "time_series_parser.jl",
             "utils/print.jl"]
 Order = [:type, :function]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ## System
