@@ -192,6 +192,7 @@ export DEGOV
 export DEGOV1
 export PIDGOV
 export WPIDHY
+export TGSimple
 
 # Converter Exports
 export Converter

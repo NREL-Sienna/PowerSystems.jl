@@ -94,6 +94,7 @@ include("HydroTurbineGov.jl")
 include("IEEETurbineGov1.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
+include("TGSimple.jl")
 include("AverageConverter.jl")
 include("RenewableEnergyConverterTypeA.jl")
 include("RenewableEnergyVoltageConverterTypeA.jl")
@@ -384,6 +385,7 @@ export get_Tg
 export get_Th
 export get_Tj
 export get_Tk
+export get_Tm
 export get_Tp
 export get_Tpelec
 export get_Tpord
@@ -500,6 +502,7 @@ export get_current_reactive_power
 export get_cycle_limits
 export get_d
 export get_dP_lim
+export get_d_t
 export get_db
 export get_dbd_pnts
 export get_dc_bus
@@ -950,6 +953,7 @@ export set_Tg!
 export set_Th!
 export set_Tj!
 export set_Tk!
+export set_Tm!
 export set_Tp!
 export set_Tpelec!
 export set_Tpord!
@@ -1066,6 +1070,7 @@ export set_current_reactive_power!
 export set_cycle_limits!
 export set_d!
 export set_dP_lim!
+export set_d_t!
 export set_db!
 export set_dbd_pnts!
 export set_dc_bus!
