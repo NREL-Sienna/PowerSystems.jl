@@ -55,8 +55,6 @@ bus1 = get_component(ACBus, sys, "nodeA")
 nothing #hide
 ```
 
-# copied over from the System
-
 ## Accessing components stored in the system
 
 <!-- 
