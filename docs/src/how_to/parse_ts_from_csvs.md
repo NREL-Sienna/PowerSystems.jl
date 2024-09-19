@@ -65,7 +65,7 @@ DATA_DIR = PowerSystemCaseBuilder.DATA_DIR #hide
 FORECASTS_DIR = joinpath(DATA_DIR, "5-Bus", "5bus_ts"); #hide
 fname = joinpath(FORECASTS_DIR, "timeseries_pointers_da.json"); # hide
 open(fname, "r") do f # hide
-    JSON3.@pretty JSON3.read(f); # hide
+    JSON3.@pretty JSON3.read(f) # hide
 end #hide
 ```
 
