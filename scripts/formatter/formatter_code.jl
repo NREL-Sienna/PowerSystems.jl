@@ -21,7 +21,7 @@ for main_path in main_paths
             join_lines_based_on_source = true,
             separate_kwargs_with_semicolon = true,
             format_markdown = true,
-            ignore = ["how_to/install.md"] # complicated formatting, formatter fails
+            ignore = ["*LICENSE.md", "how_to/install.md"] # install has complicated formatting
 
             # always_use_return = true. # Disabled since it throws a lot of false positives
             )
