@@ -5,7 +5,7 @@
 `PowerSystems.jl` uses two data layers to define data for dynamic simulations:
 
  1. [Static](@ref S) components, which includes the data needed to run a power flow problem
- 2. [Dynamic](@ref D) components are those that define differential equations to run a transient simulation. These dyanamic
+ 2. [Dynamic](@ref D) components are those that define differential equations to run a transient simulation. These dynamic
     data are attached to the static components.
 
 Although `PowerSystems.jl` is not constrained to only PSS/e files, commonly the data for a
