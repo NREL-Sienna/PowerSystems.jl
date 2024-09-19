@@ -24,7 +24,6 @@
 ### E
 
   - *EMF*: Electromotive force
-
   - *ESAC*: IEEE Type AC Excitation System model
   - *ESDC*: IEEE Type DC Excitation System model
   - *EXAC*: IEEE Type AC Excitation System (modified) model
@@ -70,24 +69,25 @@
 
 ### O
 
-  - *OEL*:
+  - *OEL*: Over Excitation Limiter
 
 ### P
 
   - *PLL*: Phase-locked loop
 
   - *PSS*: Power System Stabilizer
-  - *PSSE* or *PSS/E*: Siemen's PSS®E Power Simulator
+  - *PSSE* or *PSS/E*: Siemens' PSS®E Power System Simulator for Engineering
   - *PPA*: Power purchase agreement
-  - *PSID*:
-  - *PSLF*:
+  - *PSI*: [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/latest/)
+  - *PSID*: [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
+  - *PSLF*: GE Vernova's Positive Sequence Load Flow Software
+  - *PSY*: `PowerSystems.jl` (this package)
   - *pu* or *p.u.*: Per-unit
 
 ### R
 
-  - *REECB1*:
-
-  - *REPCA1*:
+  - *REECB1*: Renewable Energy Electric Controller Type B1
+  - *REPCA1*: REPCA1: Renewable Energy Power Controller Type A1
   - *Resolution*: The period of time between each discrete value in a time series. All resolutions
     are represented using `Dates.Period` types. For instance, a Day-ahead market data set usually
     has a resolution of `Hour(1)`, a Real-Time market data set usually has a resolution of `Minute(5)`.
@@ -116,7 +116,7 @@
 
   - *VSCDCLine*: Voltage-Source Converter Direct Current Line
 
-  - *VSM*:
+  - *VSM*: Virtual Synchronous Machine
 
 ### W
 
