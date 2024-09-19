@@ -2,7 +2,7 @@
 
 ## Static and Dynamic Data Layers
 
-`PowerSystems.jl` uses two data layers to define data for dynamic simulations:
+`PowerSystems.jl` uses two categories to define data for dynamic simulations:
 
  1. [Static](@ref S) components, which includes the data needed to run a power flow problem
  2. [Dynamic](@ref D) components are those that define differential equations to run a transient simulation. These dynamic
