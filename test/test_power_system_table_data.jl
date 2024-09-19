@@ -154,8 +154,10 @@ end
 @testset "Test reserve direction" begin
     @test PSY.get_reserve_direction("Up") == ReserveUp
     @test PSY.get_reserve_direction("Down") == ReserveDown
+    @test PSY.get_reserve_direction("up") == ReserveUp
+    @test PSY.get_reserve_direction("down") == ReserveDown
 
-    for invalid in ("up", "down", "right", "left")
+    for invalid in ("right", "left")
         @test_throws PSY.DataFormatError PSY.get_reserve_direction(invalid)
     end
 end
