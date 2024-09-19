@@ -481,6 +481,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "g",
+                    "null_value": "(from=0.0, to=0.0)",
+                    "data_type": "FromTo",
+                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100
+                    },
+                    "validation_action": "warn",
+                    "default": "(from=0.0, to=0.0)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -598,6 +610,18 @@
                         "max": 1.571
                     },
                     "validation_action": "error"
+                },
+                {
+                    "name": "g",
+                    "null_value": "(from=0.0, to=0.0)",
+                    "data_type": "FromTo",
+                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100
+                    },
+                    "validation_action": "warn",
+                    "default": "(from=0.0, to=0.0)"
                 },
                 {
                     "name": "services",
@@ -14109,6 +14133,72 @@
                     "name": "n_states",
                     "exclude_setter": true,
                     "comment": "(**Do not modify.**) TGTypeII has 1 state",
+                    "internal_default": 1,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "TGSimple",
+            "docstring": "Parameters of a Simple one-state Turbine Governor",
+            "fields": [
+                {
+                    "name": "d_t",
+                    "comment": "Inverse Droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Tm",
+                    "comment": "Turbine Governor Low-Pass Time Constant [s]",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the TGSimple model are:\n\tτm: mechanical torque",
+                    "internal_default": "[:τm]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) TGSimple has 1 state",
                     "internal_default": 1,
                     "data_type": "Int"
                 },

@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         b::FromTo
         rating::Float64
         angle_limits::MinMax
+        g::FromTo
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -34,6 +35,7 @@ An AC transmission line
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `rating::Float64`: Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to
 - `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
+- `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -59,6 +61,8 @@ mutable struct Line <: ACBranch
     rating::Float64
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
+    "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value"
+    g::FromTo
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -67,12 +71,12 @@ mutable struct Line <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, services=Device[], ext=Dict{String, Any}(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, services, ext, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,6 +92,7 @@ function Line(::Nothing)
         b=(from=0.0, to=0.0),
         rating=0.0,
         angle_limits=(min=-1.571, max=1.571),
+        g=(from=0.0, to=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -113,6 +118,8 @@ get_b(value::Line) = value.b
 get_rating(value::Line) = get_value(value, value.rating)
 """Get [`Line`](@ref) `angle_limits`."""
 get_angle_limits(value::Line) = value.angle_limits
+"""Get [`Line`](@ref) `g`."""
+get_g(value::Line) = value.g
 """Get [`Line`](@ref) `services`."""
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
@@ -138,6 +145,8 @@ set_b!(value::Line, val) = value.b = val
 set_rating!(value::Line, val) = value.rating = set_value(value, val)
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
+"""Set [`Line`](@ref) `g`."""
+set_g!(value::Line, val) = value.g = val
 """Set [`Line`](@ref) `services`."""
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""
