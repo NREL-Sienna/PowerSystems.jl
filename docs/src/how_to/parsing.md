@@ -138,7 +138,7 @@ These must reside in the directory passed when constructing PowerSystemTableData
 
 ### [Adding Time Series Data](@id parsing_time_series)
 
-PowerSystems requires a metadata file that maps components to their time series
+`PowerSystems` requires a metadata file that maps components to their time series
 data in order to be able to automatically construct time_series from raw data
 files. The following fields are required for each time array:
 
@@ -159,30 +159,30 @@ files. The following fields are required for each time array:
 
 Notes:
 
-  - The "module", "category", and "component_name" entries must be valid arguments to retrieve
+  - The `module`, `category`, and `component_name` entries must be valid arguments to retrieve
     a component using `get_component(${module}.${category}, sys, $name)`.
-  - The "scaling_factor_multiplier_module" and the "scaling_factor_multiplier" entries must
+  - The `scaling_factor_multiplier_module` and the `scaling_factor_multiplier` entries must
     be sufficient to return the scaling factor data using
     `${scaling_factor_multiplier_module}.${scaling_factor_multiplier}(component)`.
 
-PowerSystems supports this metadata in either CSV or JSON formats. Refer to
+`PowerSystems` supports this metadata in either CSV or JSON formats. Refer to
 [RTS_GMLC](https://github.com/GridMod/RTS-GMLC/blob/master/RTS_Data/FormattedData/SIIP/timeseries_pointers.json)
 for an example.
 
 #### Performance considerations
 
-By default PowerSystems stores time series data in HDF5 files. It does not keep
-all of the data in memory. This means that every time you access a time_series
-PowerSystems will have to read the data from storage, which will add latency. If
+By default `PowerSystems` stores time series data in HDF5 files. It does not keep
+all of the data in memory. This means that every time you access a time series
+`PowerSystems` will have to read the data from storage, which will add latency. If
 you know ahead of time that all of your data will fit in memory then you can
 change this behavior by passing `time_series_in_memory = true` when you create
-the System.
+the `System`.
 
-If the time series data is stored in HDF5 then PowerSystems will use the tmp filesystem by
+If the time series data is stored in HDF5 then `PowerSystems` will use the tmp filesystem by
 default. You can change this by passing `time_series_directory = X` when you create the
-System. This is required if the time series data is larger than the amount of tmp space
+`System`. This is required if the time series data is larger than the amount of tmp space
 available. You can also override the location by setting the environment variable
-SIENNA_TIME_SERIES_DIRECTORY to another directory.
+`SIENNA_TIME_SERIES_DIRECTORY` to another directory.
 
 ### Customization
 
@@ -190,7 +190,7 @@ The tabular data parser in `PowerSystems.jl` can be customized to read a variety
 datasets by configuring:
 
   - [which type of generator (`<:Generator`) to create based on the fuel and prime mover specifications](@ref csv_genmap)
-  - [property names](@ref csv_columns), [units](@ref csv_units), and per units conversions](@ref csv_per_unit) in *.csv files
+  - [property names](@ref csv_columns), [units](@ref csv_units), and [per units conversions](@ref csv_per_unit) in *.csv files
 
 Here is an example of how to construct a System with all customizations listed in this section:
 
@@ -219,15 +219,15 @@ Examples configuration files can be found in the [RTS-GMLC](https://github.com/G
 
 ##### [Custom construction of generators](@id csv_genmap)
 
-PowerSystems supports custom construction of subtypes of the abstract type Generator based
+`PowerSystems` supports custom construction of subtypes of the abstract type Generator based
 on `fuel` and `type`. The parsing code detects these fields in the raw data and then
 constructs the concrete type listed in the passed generator mapping file. The default file
 is `src/parsers/generator_mapping.yaml`. You can override this behavior by specifying your
-own file when constructing PowerSystemTableData.
+own file when constructing `PowerSystemTableData`.
 
 ##### [Column names](@id csv_columns)
 
-PowerSystems provides am input mapping capability that allows you to keep your own
+`PowerSystems` provides am input mapping capability that allows you to keep your own
 column names.
 
 For example, when parsing raw data for a generator the code expects a column
@@ -254,13 +254,13 @@ make to this YAML file.  Do not edit the default JSON file.
 For more info on the per-unit conventions in `PowerSystems.jl`, refer to the [per-unit
 section of the system documentation](@ref per_unit).
 
-PowerSystems defines whether it expects a column value to be per-unit system base,
+`PowerSystems` defines whether it expects a column value to be per-unit system base,
 per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
 per-unit convention that differs from your values then you can set the `unit_system` in
-`user_descriptors.yaml` and PowerSystems will automatically convert the values. For
+`user_descriptors.yaml` and `PowerSystems` will automatically convert the values. For
 example, if you have a `max_active_power` value stored in natural units (MW), but
 `power_system_inputs.json` specifies `unit_system: device_base`, you can enter
-`unit_system: natural_units` in `user_descriptors.yaml` and PowerSystems will divide
+`unit_system: natural_units` in `user_descriptors.yaml` and `PowerSystems` will divide
 the value by the value of the corresponding entry in the column identified by the
 `base_reference` field in `power_system_inputs.json`. You can also override the
 `base_reference` setting by adding `base_reference: My Column` to make device base
@@ -270,7 +270,7 @@ instantiated when constructing a `System`.
 
 ##### [Unit conversion](@id csv_units)
 
-PowerSystems provides a limited set of unit conversions. For example, if
+`PowerSystems` provides a limited set of unit conversions. For example, if
 `power_system_inputs.json` indicates that a value's unit is degrees but
 your values are in radians then you can set `unit: radian` in
 your YAML file. Other valid `unit` entries include `GW`, `GWh`, `MW`, `MWh`, `kW`,
