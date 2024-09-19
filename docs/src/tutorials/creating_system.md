@@ -375,7 +375,8 @@ Next, you might want to:
 
   - [Add time series data to components in the `System`](@ref tutorial_time_series)
   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
-  - [Import a `System` from an existing Matpower or PSSE file instead of creating it manually](@ref parsing)
+  - Import a `System` [from an existing Matpower or PSSE file](@ref pm_data) or
+    [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
   - [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
   - See a workaround for how to [Add a Component in Natural Units](@ref)
