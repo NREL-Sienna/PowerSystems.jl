@@ -505,7 +505,7 @@ export subtype_to_string
 export component_to_qualified_string
 export select_components
 export get_components
-export get_subselectors
+export get_groups
 #################################################################################
 # Imports
 
@@ -627,13 +627,15 @@ import InfrastructureSystems:
     ComponentSelector,
     ComponentSelectorElement,
     ComponentSelectorSet,
+    DynamicallyGroupedComponentSelectorSet,
     SingleComponentSelector,
     ListComponentSelector,
     SubtypeComponentSelector,
     FilterComponentSelector,
     component_to_qualified_string,
     subtype_to_string,
-    NAME_DELIMETER
+    NAME_DELIMETER,
+    select_components
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
