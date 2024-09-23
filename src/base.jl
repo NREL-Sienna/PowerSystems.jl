@@ -63,7 +63,7 @@ System(; kwargs...)
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
 """
-struct System <: IS.InfrastructureSystemsType
+mutable struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -2080,4 +2080,20 @@ Throws InfrastructureSystems.InvalidValue if any time series is inconsistent.
 """
 function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.check_time_series_consistency(sys.data, T)
+end
+
+function Base.setproperty!(sys::System, s::Symbol, v)
+    @error(
+        "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system.\\
+        This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
+    )
+    Base.setfield!(sys, s, v)
+end
+
+function Base.setproperty!(sys::System, s::Symbol, v, order::Symbol)
+    @error(
+        "Mutation of System detected. PowerSystems v3.3 has made System temporarily mutable in order to allow for interfacing with EnzymeRules due to a current limitation in the rule system.\\
+        This change is only intended to be temporary and System will return to being a struct in a later non-breaking release. Do not rely on this behavior, use with caution."
+    )
+    Base.setfield!(sys, s, v, order)
 end
