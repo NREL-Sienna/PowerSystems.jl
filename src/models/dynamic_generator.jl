@@ -21,7 +21,8 @@
     end
 
 A dynamic generator is composed by 5 components, namely a Machine, a Shaft, an Automatic Voltage Regulator (AVR),
-a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a Static Injection device that is attached to it.
+a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a [`StaticInjection`](@ref) device
+that is attached to it.
 
 # Arguments
 - `name::String`: Name of generator.
@@ -151,4 +152,14 @@ function _calc_states(machine, shaft, avr, prime_mover, pss)
         get_states(prime_mover),
         get_states(pss),
     )
+end
+
+function get_degov1_states(droop_flag::Int)
+    if droop_flag == 0
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5], 5
+    elseif droop_flag == 1
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6
+    else
+        error("Unsupported value of droop_flag on DEGOV1")
+    end
 end

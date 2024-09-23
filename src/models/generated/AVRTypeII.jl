@@ -37,16 +37,16 @@ Parameters of an Automatic Voltage Regulator Type II -  Typical static exciter m
 - `Va_lim::MinMax`: Limits for pi controler `(Va_min, Va_max)`
 - `Ae::Float64`: 1st ceiling coefficient, validation range: `(0, nothing)`
 - `Be::Float64`: 2nd ceiling coefficient, validation range: `(0, nothing)`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage
-- `n_states::Int`: AVR Type II has 4 states
-- `states_types::Vector{StateTypes}`: AVR Type II has 4 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) AVR Type II has 4 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) AVR Type II has 4 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AVRTypeII <: AVR
     "Regulator Gain"
@@ -69,20 +69,21 @@ mutable struct AVRTypeII <: AVR
     Ae::Float64
     "2nd ceiling coefficient"
     Be::Float64
-    "Reference Voltage Set-point"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vf: Voltage field,
 	Vr1: First Lead-Lag state,
 	Vr2: Second lead-lag state,
 	Vm: Measured voltage"
     states::Vector{Symbol}
-    "AVR Type II has 4 states"
+    "(**Do not modify.**) AVR Type II has 4 states"
     n_states::Int
-    "AVR Type II has 4 differential states"
+    "(**Do not modify.**) AVR Type II has 4 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

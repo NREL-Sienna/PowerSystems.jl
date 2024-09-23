@@ -43,20 +43,20 @@ Parameters of synchronous machine: Sauer Pai model
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `γ_d1::Float64`
-- `γ_q1::Float64`
-- `γ_d2::Float64`
-- `γ_q2::Float64`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `γ_d1::Float64`: (**Do not modify.**) Internal equation
+- `γ_q1::Float64`: (**Do not modify.**) Internal equation
+- `γ_d2::Float64`: (**Do not modify.**) Internal equation
+- `γ_q2::Float64`: (**Do not modify.**) Internal equation
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
 	ψd_pp: subtransient flux linkage in the d-axis
 	ψq_pp: subtransient flux linkage in the q-axis
-- `n_states::Int`: SauerPaiMachine has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) SauerPaiMachine has 6 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SauerPaiMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -83,12 +83,17 @@ mutable struct SauerPaiMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
+    "(**Do not modify.**) Internal equation"
     γ_d1::Float64
+    "(**Do not modify.**) Internal equation"
     γ_q1::Float64
+    "(**Do not modify.**) Internal equation"
     γ_d2::Float64
+    "(**Do not modify.**) Internal equation"
     γ_q2::Float64
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	ψq: q-axis stator flux,
 	ψd: d-axis stator flux,
 	eq_p: q-axis transient voltage,
@@ -96,9 +101,9 @@ mutable struct SauerPaiMachine <: Machine
 	ψd_pp: subtransient flux linkage in the d-axis
 	ψq_pp: subtransient flux linkage in the q-axis"
     states::Vector{Symbol}
-    "SauerPaiMachine has 6 states"
+    "(**Do not modify.**) SauerPaiMachine has 6 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

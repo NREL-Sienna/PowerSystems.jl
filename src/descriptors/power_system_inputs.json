@@ -367,6 +367,21 @@
             "default_value": null
         },
         {
+            "name": "heat_rate_a0",
+            "description": "Heat rate constant term",
+            "default_value": null
+        },
+        {
+            "name": "heat_rate_a1",
+            "description": "Heat rate proportional term",
+            "default_value": null
+        },
+        {
+            "name": "heat_rate_a2",
+            "description": "Heat rate quadratic term",
+            "default_value": null
+        },
+        {
             "name": "heat_rate_avg_0",
             "description": "Heat rate Average 0 TODO",
             "default_value": null
@@ -629,7 +644,7 @@
             "unit": "$/MW",
             "name": "fixed_cost",
             "description": "Fixed Cost of Generation",
-            "default_value": null
+            "default_value": 0.0
         },
         {
             "unit": "$/start",
@@ -804,7 +819,7 @@
             "value_options": [
                 "HydroDispatch",
                 "HydroEnergyReservoir",
-                "RenewableFix",
+                "RenewableNonDispatch",
                 "RenewableDispatch",
                 "ThermalStandard",
                 "ThermalMultiStart"
@@ -853,12 +868,12 @@
         {
             "name": "reserve_category",
             "value_options": [
-                "StaticReserve",
+                "ConstantReserve",
                 "VariableReserve",
                 "Transfer"
             ],
             "description": "Type of Struct",
-            "default_value": "StaticReserve"
+            "default_value": "ConstantReserve"
         },
         {
             "name": "direction",

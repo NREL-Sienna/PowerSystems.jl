@@ -21,29 +21,33 @@ function _init_bus!(bus::Dict{String, Any}, id::Int)
     return
 end
 
+function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Array)
+    for bus in pm_bus_data
+        if bus["index"] == bus_i
+            return bus[field]
+        end
+    end
+    @info("Could not find bus $bus_i, returning 0 for field $field")
+    return 0
+end
+
+function _find_bus_value(bus_i::Int, field::String, pm_bus_data::Dict)
+    if !haskey(pm_bus_data, bus_i)
+        @info("Could not find bus $bus_i, returning 0 for field $field")
+        return 0
+    else
+        return pm_bus_data[bus_i][field]
+    end
+end
+
 """
     _get_bus_value(bus_i, field, pm_data)
 
 Returns the value of `field` of `bus_i` from the PowerModels data. Requires
 "bus" Dict to already be populated.
 """
-function _get_bus_value(bus_i, field, pm_data)
-    if isa(pm_data["bus"], Array)
-        for bus in pm_data["bus"]
-            if bus["index"] == bus_i
-                return bus[field]
-            end
-        end
-    elseif isa(pm_data["bus"], Dict)
-        for (k, bus) in pm_data["bus"]
-            if bus["index"] == bus_i
-                return bus[field]
-            end
-        end
-    end
-
-    @info("Could not find bus $bus_i, returning 0 for field $field")
-    return 0
+function _get_bus_value(bus_i::Int, field::String, pm_data::Dict{String, Any})
+    return _find_bus_value(bus_i, field, pm_data["bus"])
 end
 
 """
@@ -53,7 +57,7 @@ Returns the maximum bus id in `pm_data`
 """
 function _find_max_bus_id(pm_data::Dict)::Int
     max_id = 0
-    for bus in pm_data["bus"]
+    for bus in values(pm_data["bus"])
         if bus["index"] > max_id && !endswith(bus["name"], "starbus")
             max_id = bus["index"]
         end
@@ -221,9 +225,9 @@ given by `["I", "ID"]` in PSS(R)E Generator specification.
 """
 function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Generator data into a PowerModels Dict..."
-    pm_data["gen"] = []
     if haskey(pti_data, "GENERATOR")
-        for gen in pti_data["GENERATOR"]
+        pm_data["gen"] = Vector{Dict{String, Any}}(undef, length(pti_data["GENERATOR"]))
+        for (ix, gen) in enumerate(pti_data["GENERATOR"])
             sub_data = Dict{String, Any}()
 
             sub_data["gen_bus"] = pop!(gen, "I")
@@ -246,15 +250,18 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["ncost"] = 2
             sub_data["cost"] = [1.0, 0.0]
 
-            sub_data["source_id"] = ["generator", sub_data["gen_bus"], pop!(gen, "ID")]
-            sub_data["index"] = length(pm_data["gen"]) + 1
+            sub_data["source_id"] =
+                ["generator", string(sub_data["gen_bus"]), pop!(gen, "ID")]
+            sub_data["index"] = ix
 
             if import_all
                 _import_remaining_keys!(sub_data, gen)
             end
 
-            push!(pm_data["gen"], sub_data)
+            pm_data["gen"][ix] = sub_data
         end
+    else
+        pm_data["gen"] = Vector{Dict{String, Any}}()
     end
 end
 
@@ -266,7 +273,7 @@ by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
-    pm_data["bus"] = []
+    pm_data["bus"] = Dict{Int, Any}()
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
             sub_data = Dict{String, Any}()
@@ -289,7 +296,10 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, bus)
             end
 
-            push!(pm_data["bus"], sub_data)
+            if haskey(pm_data["bus"], sub_data["bus_i"])
+                error("Repeated $(sub_data["bus_i"])")
+            end
+            pm_data["bus"][sub_data["bus_i"]] = sub_data
         end
     end
 end
@@ -487,7 +497,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     error("invalid transformer $(transformer["CW"])")
                 end
 
-                @assert transformer["X1-2"] > 0.0 && br_x > 0.0
+                if transformer["X1-2"] < 0.0 && br_x < 0.0
+                    @warn "Transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) has negative impedance values X1-2: $(transformer["X1-2"]), br_x: $(br_x)"
+                end
+
                 sub_data["br_r"] = br_r
                 sub_data["br_x"] = br_x
 
@@ -604,7 +617,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
-                push!(pm_data["bus"], starbus)
+                pm_data["bus"][starbus_id] = starbus
                 starbus_id += 1
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
@@ -1052,7 +1065,6 @@ function _pti_to_powermodels!(
     # update lookup structure
     for (k, v) in pm_data
         if isa(v, Array)
-            #println("updating $(k)")
             dict = Dict{String, Any}()
             for item in v
                 @assert("index" in keys(item))

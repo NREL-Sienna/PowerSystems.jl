@@ -76,8 +76,8 @@ end
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
         if !branch["transformer"] &&
-           pm_data.data["bus"][string(branch["f_bus"])]["base_kv"] !=
-           pm_data.data["bus"][string(branch["t_bus"])]["base_kv"]
+           pm_data.data["bus"][branch["f_bus"]]["base_kv"] !=
+           pm_data.data["bus"][branch["t_bus"]]["base_kv"]
             branch["transformer"] = true
             @warn "Branch $k endpoints have different voltage levels, converting to transformer."
         end
@@ -87,9 +87,9 @@ end
 """
 Internal component name retreval from pm2ps_dict
 """
-function _get_pm_dict_name(device_dict)
+function _get_pm_dict_name(device_dict::Dict)::String
     if haskey(device_dict, "name")
-        name = device_dict["name"]
+        name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
     else
@@ -98,10 +98,23 @@ function _get_pm_dict_name(device_dict)
     return name
 end
 
+function _get_pm_bus_name(device_dict::Dict, unique_names::Bool)
+    if haskey(device_dict, "name")
+        if unique_names
+            name = strip(device_dict["name"])
+        else
+            name = strip(device_dict["name"]) * "_" * string(device_dict["bus_i"])
+        end
+    else
+        name = strip(join(string.(device_dict["source_id"]), "-"))
+    end
+    return name
+end
+
 """
 Internal branch name retreval from pm2ps_dict
 """
-function _get_pm_branch_name(device_dict, bus_f, bus_t)
+function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
     # Additional if-else are used to catch line id in PSSe parsing cases
     if haskey(device_dict, "name")
         index = device_dict["name"]
@@ -134,7 +147,13 @@ function make_bus(bus_dict::Dict{String, Any})
     return bus
 end
 
-function make_bus(bus_name, bus_number, d, bus_types, area)
+function make_bus(
+    bus_name::Union{String, SubString{String}},
+    bus_number::Int,
+    d,
+    bus_types,
+    area::Area,
+)
     bus = make_bus(
         Dict{String, Any}(
             "name" => bus_name,
@@ -170,17 +189,31 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
-    bus_data = sort!(collect(data["bus"]); by = x -> parse(Int, x[1]))
-
+    unique_bus_names = true
+    bus_data = SortedDict{Int, Any}()
+    # Bus name uniqueness is not enforced by PSSE. This loop avoids forcing the users to have to
+    # pass the bus formatter always for larger datasets.
+    bus_names = Set{String}()
+    for (k, b) in data["bus"]
+        # If buses aren't unique stop searching and growing the set
+        if unique_bus_names && haskey(b, "name")
+            if b["name"] ∈ bus_names
+                unique_bus_names = false
+            end
+            push!(bus_names, b["name"])
+        end
+        bus_data[k] = b
+    end
     if isempty(bus_data)
         @error "No bus data found" # TODO : need for a model without a bus
     end
 
-    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+    default_bus_naming = x -> _get_pm_bus_name(x, unique_bus_names)
+
+    _get_name = get(kwargs, :bus_name_formatter, default_bus_naming)
     for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
-        d["name"] = get(d, "name", string(d["bus_i"]))
         bus_name = strip(_get_name(d))
         bus_number = Int(d["bus_i"])
 
@@ -194,7 +227,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
-                "Found duplicate bus names of $(get_name(bus)), consider formatting names with `bus_name_formatter` kwarg",
+                "Found duplicate bus names for $(get_name(bus)), consider reviewing your `bus_name_formatter` function",
             ),
         )
 
@@ -206,7 +239,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     return bus_number_to_bus
 end
 
-function make_power_load(d, bus, sys_mbase; kwargs...)
+function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
@@ -220,7 +253,7 @@ function make_power_load(d, bus, sys_mbase; kwargs...)
     )
 end
 
-function make_standard_load(d, bus, sys_mbase; kwargs...)
+function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return StandardLoad(;
         name = _get_name(d),
@@ -273,54 +306,73 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     end
 end
 
-function make_loadzone(name, active_power, reactive_power; kwargs...)
-    _get_name = get(kwargs, :loadzone_name_formatter, _get_pm_dict_name)
+function make_loadzone(
+    name::String,
+    active_power::Float64,
+    reactive_power::Float64;
+    kwargs...,
+)
     return LoadZone(;
         name = name,
-        peak_active_power = sum(active_power),
-        peak_reactive_power = sum(reactive_power),
+        peak_active_power = active_power,
+        peak_reactive_power = reactive_power,
     )
 end
 
-function read_loadzones!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwargs...)
+function read_loadzones!(
+    sys::System,
+    data::Dict{String, Any},
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
     @info "Reading LoadZones data in PowerModels dict to populate System ..."
-
     zones = Set{Int}()
-    for (i, bus) in data["bus"]
+    zone_bus_map = Dict{Int, Vector}()
+    for (_, bus) in data["bus"]
         push!(zones, bus["zone"])
+        push!(get!(zone_bus_map, bus["zone"], Vector()), bus)
     end
 
+    load_zone_map =
+        Dict{Int, Dict{String, Float64}}(i => Dict("pd" => 0.0, "qd" => 0.0) for i in zones)
+    for (key, load) in data["load"]
+        zone = data["bus"][load["load_bus"]]["zone"]
+        load_zone_map[zone]["pd"] += load["pd"]
+        load_zone_map[zone]["qd"] += load["qd"]
+        # Use get with defaults because matpower data doesn't have other load representations
+        load_zone_map[zone]["pd"] += get(load, "pi", 0.0)
+        load_zone_map[zone]["qd"] += get(load, "qi", 0.0)
+        load_zone_map[zone]["pd"] += get(load, "py", 0.0)
+        load_zone_map[zone]["qd"] += get(load, "qy", 0.0)
+    end
+
+    default_loadzone_naming = string
+    # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
+    _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
+
     for zone in zones
-        buses = [
-            bus_number_to_bus[b["bus_i"]] for b in values(data["bus"]) if b["zone"] == zone
-        ]
-        bus_names = Set{String}()
-        for bus in buses
-            push!(bus_names, get_name(bus))
-        end
-
-        active_power = Vector{Float64}()
-        reactive_power = Vector{Float64}()
-
-        for (key, load) in data["load"]
-            load_bus = bus_number_to_bus[load["load_bus"]]
-            if get_name(load_bus) in bus_names
-                push!(active_power, load["pd"])
-                push!(reactive_power, load["qd"])
-            end
-        end
-
-        load_zone = make_loadzone(string(zone), active_power, reactive_power; kwargs...)
-        for bus in buses
-            set_load_zone!(bus, load_zone)
-        end
+        name = _get_name(zone)
+        load_zone = make_loadzone(
+            name,
+            load_zone_map[zone]["pd"],
+            load_zone_map[zone]["qd"];
+            kwargs...,
+        )
         add_component!(sys, load_zone; skip_validation = SKIP_PM_VALIDATION)
+        for bus in zone_bus_map[zone]
+            set_load_zone!(bus_number_to_bus[bus["bus_i"]], load_zone)
+        end
     end
 end
 
-function make_hydro_gen(gen_name, d, bus, sys_mbase)
+function make_hydro_gen(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
-    curtailcost = TwoPartCost(0.0, 0.0)
+    curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
     base_conversion = sys_mbase / d["mbase"]
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
@@ -346,8 +398,13 @@ function make_hydro_gen(gen_name, d, bus, sys_mbase)
     )
 end
 
-function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
-    cost = TwoPartCost(0.0, 0.0)
+function make_renewable_dispatch(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    cost = RenewableGenerationCost(zero(CostCurve))
     base_conversion = sys_mbase / d["mbase"]
 
     rating = calculate_rating(d["pmax"], d["qmax"])
@@ -376,9 +433,14 @@ function make_renewable_dispatch(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_renewable_fix(gen_name, d, bus, sys_mbase)
+function make_renewable_fix(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     base_conversion = sys_mbase / d["mbase"]
-    generator = RenewableFix(;
+    generator = RenewableNonDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
         bus = bus,
@@ -393,14 +455,21 @@ function make_renewable_fix(gen_name, d, bus, sys_mbase)
     return generator
 end
 
-function make_generic_battery(storage_name, d, bus)
-    storage = GenericBattery(;
+function make_generic_battery(
+    storage_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+)
+    energy_rating = iszero(d["energy_rating"]) ? d["energy"] : d["energy_rating"]
+    storage = EnergyReservoirStorage(;
         name = storage_name,
         available = Bool(d["status"]),
         bus = bus,
         prime_mover_type = PrimeMovers.BA,
-        initial_energy = d["energy"],
-        state_of_charge_limits = (min = 0.0, max = d["energy_rating"]),
+        storage_technology_type = StorageTech.OTHER_CHEM,
+        storage_capacity = energy_rating,
+        storage_level_limits = (min = 0.0, max = energy_rating),
+        initial_storage_capacity_level = d["energy"] / energy_rating,
         rating = d["thermal_rating"],
         active_power = d["ps"],
         input_active_power_limits = (min = 0.0, max = d["charge_rating"]),
@@ -413,51 +482,58 @@ function make_generic_battery(storage_name, d, bus)
     return storage
 end
 
+# TODO test this more directly?
 """
 The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
     c(p) = c_n*p^n+...+c_1p+c_0
     c_o is stored in the  field in of the Econ Struct
 """
-function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mbase::Number)
+function make_thermal_gen(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
     if haskey(d, "model")
         model = GeneratorCostModels(d["model"])
+        # Input data layout: table B-4 of https://matpower.org/docs/MATPOWER-manual.pdf
         if model == GeneratorCostModels.PIECEWISE_LINEAR
+            # For now, we make the fixed cost the y-intercept of the first segment of the
+            # piecewise curve and the variable cost a PiecewiseLinearData representing
+            # the data minus this fixed cost; in a future update, there will be no
+            # separation between the PiecewiseLinearData and the fixed cost.
             cost_component = d["cost"]
             power_p = [i for (ix, i) in enumerate(cost_component) if isodd(ix)]
             cost_p = [i for (ix, i) in enumerate(cost_component) if iseven(ix)]
-            cost = [(p, c) for (p, c) in zip(cost_p, power_p)]
-            fixed = max(
-                0.0,
-                cost[1][1] -
-                (cost[2][1] - cost[1][1]) / (cost[2][2] - cost[1][2]) * cost[1][2],
+            points = collect(zip(power_p, cost_p))
+            (first_x, first_y) = first(points)
+            fixed = max(0.0,
+                first_y - first(get_slopes(PiecewiseLinearData(points))) * first_x,
             )
-            cost = [(c[1] - fixed, c[2]) for c in cost]
+            cost = PiecewiseLinearData([(x, y - fixed) for (x, y) in points])
         elseif model == GeneratorCostModels.POLYNOMIAL
-            if d["ncost"] == 0
-                cost = (0.0, 0.0)
-                fixed = 0.0
-            elseif d["ncost"] == 1
-                cost = (0.0, 0.0)
-                fixed = d["cost"][1]
-            elseif d["ncost"] == 2
-                cost = (0.0, d["cost"][1]) ./ sys_mbase
-                fixed = d["cost"][2]
-            elseif d["ncost"] == 3
-                cost = (d["cost"][1] / sys_mbase, d["cost"][2]) ./ sys_mbase
-                fixed = d["cost"][3]
-            else
-                throw(
-                    DataFormatError(
-                        "invalid value for ncost: $(d["ncost"]). PowerSystems only supports polynomials up to second degree",
-                    ),
-                )
-            end
+            # For now, we make the variable cost a QuadraticFunctionData with all but the
+            # constant term and make the fixed cost the constant term; in a future update,
+            # there will be no separation between the QuadraticFunctionData and the fixed
+            # cost.
+            # This transforms [3.0, 1.0, 4.0, 2.0] into [(1, 4.0), (2, 1.0), (3, 3.0)]
+            coeffs = enumerate(reverse(d["cost"][1:(end - 1)]))
+            coeffs = Dict((i, c / sys_mbase^i) for (i, c) in coeffs)
+            quadratic_degrees = [2, 1, 0]
+            (keys(coeffs) <= Set(quadratic_degrees)) || throw(
+                ArgumentError(
+                    "Can only handle polynomials up to degree two; given coefficients $coeffs",
+                ),
+            )
+            cost = QuadraticFunctionData(get.(Ref(coeffs), quadratic_degrees, 0)...)
+            fixed = (d["ncost"] >= 1) ? last(d["cost"]) : 0.0
         end
+        cost = CostCurve(InputOutputCurve((cost)), UnitSystem.DEVICE_BASE)
         startup = d["startup"]
         shutdn = d["shutdown"]
     else
         @warn "Generator cost data not included for Generator: $gen_name"
-        tmpcost = ThreePartCost(nothing)
+        tmpcost = ThermalGenerationCost(nothing)
         cost = tmpcost.variable
         fixed = tmpcost.fixed
         startup = tmpcost.start_up
@@ -467,7 +543,7 @@ function make_thermal_gen(gen_name::AbstractString, d::Dict, bus::ACBus, sys_mba
     # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
     ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
 
-    operation_cost = ThreePartCost(;
+    operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
         start_up = startup,
@@ -527,7 +603,6 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     sys_mbase = data["baseMVA"]
 
     _get_name = get(kwargs, :gen_name_formatter, _get_pm_dict_name)
-
     for (name, pm_gen) in data["gen"]
         gen_name = _get_name(pm_gen)
 
@@ -543,10 +618,10 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == RenewableFix
+        elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == GenericBattery
-            @warn "GenericBattery should be defined as a PowerModels storage... Skipping"
+        elseif gen_type == EnergyReservoirStorage
+            @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue
         else
             @error "Skipping unsupported generator" gen_type
@@ -562,7 +637,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_branch(name, d, bus_f, bus_t)
+function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
@@ -586,7 +661,7 @@ function make_branch(name, d, bus_f, bus_t)
     return value
 end
 
-function make_line(name, d, bus_f, bus_t)
+function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -603,12 +678,12 @@ function make_line(name, d, bus_f, bus_t)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rate = d["rate_a"],
+        rating = d["rate_a"],
         angle_limits = (min = d["angmin"], max = d["angmax"]),
     )
 end
 
-function make_transformer_2w(name, d, bus_f, bus_t)
+function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -625,11 +700,11 @@ function make_transformer_2w(name, d, bus_f, bus_t)
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
-function make_tap_transformer(name, d, bus_f, bus_t)
+function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -647,11 +722,17 @@ function make_tap_transformer(name, d, bus_f, bus_t)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
-function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
+function make_phase_shifting_transformer(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    alpha::Float64,
+)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -670,7 +751,7 @@ function make_phase_shifting_transformer(name, d, bus_f, bus_t, alpha)
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rate = d["rate_a"],
+        rating = d["rate_a"],
     )
 end
 
@@ -698,7 +779,7 @@ function read_branch!(
     end
 end
 
-function make_dcline(name, d, bus_f, bus_t)
+function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     return TwoTerminalHVDCLine(;
         name = name,
         available = d["br_status"] == 1,
@@ -736,7 +817,7 @@ function read_dcline!(
     end
 end
 
-function make_shunt(name, d, bus)
+function make_shunt(name::String, d::Dict, bus::ACBus)
     return FixedAdmittance(;
         name = name,
         available = Bool(d["status"]),
@@ -751,7 +832,7 @@ function read_shunt!(
     bus_number_to_bus::Dict{Int, ACBus};
     kwargs...,
 )
-    @info "Reading branch data"
+    @info "Reading shunt data"
     if !haskey(data, "shunt")
         @info "There is no shunt data in this file"
         return

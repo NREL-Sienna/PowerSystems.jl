@@ -16,20 +16,22 @@ This file is auto-generated. Do not edit.
 Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
-- `voltage::Float64`: rated VA, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`
-- `n_states::Int`: FixedDCSource has no states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `voltage::Float64`: Voltage (V), validation range: `(0, nothing)`
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) FixedDCSource has no [states](@ref S)
+- `n_states::Int`: (**Do not modify.**) FixedDCSource has no states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct FixedDCSource <: DCSource
-    "rated VA"
+    "Voltage (V)"
     voltage::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
+    "(**Do not modify.**) FixedDCSource has no [states](@ref S)"
     states::Vector{Symbol}
-    "FixedDCSource has no states"
+    "(**Do not modify.**) FixedDCSource has no states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

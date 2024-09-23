@@ -19,10 +19,10 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states synchronous machine: Simplified Marconato model
+Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when
- transmission network dynamics is neglected.
+ transmission network dynamics is neglected
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
@@ -32,12 +32,12 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Xq_p::Float64`: Transient reactance after EMF in q-axis per unit, validation range: `(0, nothing)`
 - `Td0_p::Float64`: Time constant of transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage
-- `n_states::Int`: OneDOneQMachine has 2 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) OneDOneQMachine has 2 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct OneDOneQMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -54,14 +54,15 @@ mutable struct OneDOneQMachine <: Machine
     Td0_p::Float64
     "Time constant of transient q-axis voltage"
     Tq0_p::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage"
     states::Vector{Symbol}
-    "OneDOneQMachine has 2 states"
+    "(**Do not modify.**) OneDOneQMachine has 2 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

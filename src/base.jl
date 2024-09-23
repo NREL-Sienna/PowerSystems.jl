@@ -10,7 +10,7 @@ const SYSTEM_KWARGS = Set((
     :generator_mapping,
     :internal,
     :load_name_formatter,
-    :load_zone_formatter,
+    :loadzone_name_formatter,
     :runchecks,
     :shunt_name_formatter,
     :time_series_directory,
@@ -27,7 +27,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "3.0.0"
+const DATA_FORMAT_VERSION = "4.0.0"
 
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
@@ -35,9 +35,11 @@ mutable struct SystemMetadata <: IS.InfrastructureSystemsType
 end
 
 """
-System
+A power system
 
-A power system defined by fields for base_power, components, and time series.
+`System` is the main data container in PowerSystems.jl, including basic metadata (base
+power, frequency), components (network topology, loads, generators, and services), and
+time series data.
 
 ```julia
 System(base_power)
@@ -52,16 +54,50 @@ System(; kwargs...)
 # Arguments
 - `base_power::Float64`: the base power value for the system
 - `buses::Vector{ACBus}`: an array of buses
-- `components...`: Each element must be an iterable containing subtypes of Component.
+- `components...`: Each element (e.g., `buses`, `generators`, ...) must be an iterable
+    containing subtypes of `Component`.
 
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+- `frequency::Float64`: (default = 60.0) Operating frequency (Hz)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
+- `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
+    Defaults to the tmp file system
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
+- `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
+    [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
+        `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
+
+By default, time series data is stored in an HDF5 file in the tmp file system to prevent
+large datasets from overwhelming system memory (see [Data Storage](@ref)). 
+**If the system's time series
+data will be larger than the amount of tmp space available**, use the
+`time_series_directory` parameter to change its location.
+You can also override the location by setting the environment
+variable `SIENNA_TIME_SERIES_DIRECTORY` to another directory.
+
+HDF5 compression is not enabled by default, but you can enable
+it with `enable_compression` to get significant storage savings at the cost of CPU time.
+[`CompressionSettings`](@ref) can be used to customize the HDF5 compression.
+
+If you know that your dataset will fit in your computer's memory, then you can increase
+performance by storing it in memory with `time_series_in_memory`.
+
+# Examples
+```julia
+sys = System(100.0; enable_compression = true)
+sys = System(100.0; compression = CompressionSettings(
+    enabled = true,
+    type = CompressionTypes.DEFLATE,  # BLOSC is also supported
+    level = 3,
+    shuffle = true)
+)
+sys = System(100.0; time_series_in_memory = true)
+```
 """
 mutable struct System <: IS.InfrastructureSystemsType
     data::IS.SystemData
@@ -172,7 +208,7 @@ function System(
             ext = Dict{String, Any}(),
         ),
     ],
-    generators = [ThermalStandard(nothing), RenewableFix(nothing)],
+    generators = [ThermalStandard(nothing), RenewableNonDispatch(nothing)],
     loads = [PowerLoad(nothing)],
     branches = nothing,
     storage = nothing,
@@ -180,8 +216,24 @@ function System(
     services = nothing,
     kwargs...,
 )
+    for component in Iterators.flatten((generators, loads))
+        if get_name(component) == "init"
+            set_bus!(component, first(buses))
+        end
+    end
     _services = isnothing(services) ? [] : services
-    return System(base_power, buses, generators, loads, _services; kwargs...)
+    _branches = isnothing(branches) ? [] : branches
+    _storage = isnothing(storage) ? [] : storage
+    return System(
+        base_power,
+        buses,
+        generators,
+        loads,
+        _branches,
+        _storage,
+        _services;
+        kwargs...,
+    )
 end
 
 """Constructs a System from a file path ending with .m, .RAW, or .json
@@ -201,29 +253,63 @@ function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
         runchecks = get(kwargs, :runchecks, true)
         time_series_read_only = get(kwargs, :time_series_read_only, false)
         time_series_directory = get(kwargs, :time_series_directory, nothing)
+        config_path = get(kwargs, :config_path, POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE)
         sys = deserialize(
             System,
             file_path;
             time_series_read_only = time_series_read_only,
             runchecks = runchecks,
             time_series_directory = time_series_directory,
+            config_path = config_path,
         )
-        runchecks && check(sys)
-        if assign_new_uuids
-            IS.assign_new_uuid!(sys)
-            for component in get_components(Component, sys)
-                IS.assign_new_uuid!(component)
-            end
-            for component in
-                IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
-                IS.assign_new_uuid!(component)
-            end
-            # Note: this does not change UUIDs for time series data because they are
-            # shared with components.
-        end
+        _post_deserialize_handling(
+            sys;
+            runchecks = runchecks,
+            assign_new_uuids = assign_new_uuids,
+        )
         return sys
     else
         throw(DataFormatError("$file_path is not a supported file type"))
+    end
+end
+
+"""
+If assign_new_uuids = true, generate new UUIDs for the system and all components.
+
+Warning: time series data is not restored by this method. If that is needed, use the normal
+process to construct the system from a serialized JSON file instead, such as with
+`System("sys.json")`.
+"""
+function IS.from_json(
+    io::Union{IO, String},
+    ::Type{System};
+    runchecks = true,
+    assign_new_uuids = false,
+    kwargs...,
+)
+    data = JSON3.read(io, Dict)
+    sys = from_dict(System, data; kwargs...)
+    _post_deserialize_handling(
+        sys;
+        runchecks = runchecks,
+        assign_new_uuids = assign_new_uuids,
+    )
+    return sys
+end
+
+function _post_deserialize_handling(sys::System; runchecks = true, assign_new_uuids = false)
+    runchecks && check(sys)
+    if assign_new_uuids
+        IS.assign_new_uuid!(sys)
+        for component in get_components(Component, sys)
+            IS.assign_new_uuid!(sys, component)
+        end
+        for component in
+            IS.get_masked_components(InfrastructureSystemsComponent, sys.data)
+            IS.assign_new_uuid!(sys, component)
+        end
+        # Note: this does not change UUIDs for time series data because they are
+        # shared with components.
     end
 end
 
@@ -262,7 +348,61 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
 end
 
 """
-Serializes a system to a JSON string.
+Construct a System from a subsystem of an existing system.
+"""
+function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
+    if !in(subsystem, get_subsystems(sys))
+        error("subsystem = $subsystem is not stored")
+    end
+
+    # It would be faster to create an empty system and then populate it with
+    # deep copies of each component in the subsystem. It would also result in a "clean" HDF5
+    # file (the result here will have deleted entries that need to repacked through
+    # serialization/de-serialization). That is not implemented because
+    # 1. The performance loss should not be too large.
+    # 2. We haven't yet implemented deepcopy(Component).
+    # 3. There is extra code complexity in adding copied components in the correct order
+    #    as well as copying time series data.
+    new_sys = deepcopy(sys)
+    filter_components_by_subsystem!(new_sys, subsystem; runchecks = runchecks)
+
+    IS.assign_new_uuid!(new_sys)
+    for component in get_components(Component, new_sys)
+        IS.assign_new_uuid!(new_sys, component)
+    end
+
+    return new_sys
+end
+
+"""
+Filter out all components that are not part of the subsystem.
+"""
+function filter_components_by_subsystem!(
+    sys::System,
+    subsystem::AbstractString;
+    runchecks = true,
+)
+    component_uuids = get_component_uuids(sys, subsystem)
+    for component in get_components(Component, sys)
+        if !in(IS.get_uuid(component), component_uuids)
+            remove_component!(sys, component)
+        end
+    end
+
+    for component in IS.get_masked_components(Component, sys.data)
+        if !in(IS.get_uuid(component), component_uuids)
+            IS.remove_masked_component!(sys.data, component)
+        end
+    end
+
+    if runchecks
+        check(sys)
+        check_components(sys)
+    end
+end
+
+"""
+Serializes a system to a JSON file and saves time series to an HDF5 file.
 
 # Arguments
 - `sys::System`: system
@@ -289,7 +429,7 @@ function IS.to_json(
         check_components(sys)
     end
 
-    IS.prepare_for_serialization!(sys.data, filename; force = force)
+    IS.prepare_for_serialization_to_file!(sys.data, filename; force = force)
     data = to_json(sys; pretty = pretty)
     open(filename, "w") do io
         write(io, data)
@@ -304,12 +444,12 @@ end
 function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     name = get_name(sys)
     description = get_description(sys)
-    resolution = get_time_series_resolution(sys).value
+    resolutions = [x.value for x in get_time_series_resolutions(sys)]
     metadata = OrderedDict(
         "name" => isnothing(name) ? "" : name,
         "description" => isnothing(description) ? "" : description,
         "frequency" => sys.frequency,
-        "time_series_resolution_milliseconds" => resolution,
+        "time_series_resolutions_milliseconds" => resolutions,
         "component_counts" => IS.get_component_counts_by_type(sys.data),
         "time_series_counts" => IS.get_time_series_counts_by_type(sys.data),
     )
@@ -324,15 +464,7 @@ function _serialize_system_metadata_to_file(sys::System, filename, user_data)
     @info "Serialized System metadata to $filename"
 end
 
-function Base.deepcopy(sys::System)
-    sys2 = Base.deepcopy_internal(sys, IdDict())
-    if sys.data.time_series_storage isa IS.InMemoryTimeSeriesStorage
-        return sys2
-    end
-
-    IS.copy_to_new_file!(sys2.data.time_series_storage, sys.time_series_directory)
-    return sys2
-end
+IS.assign_new_uuid!(sys::System) = IS.assign_new_uuid_internal!(sys)
 
 """
 Return the internal of the system
@@ -397,6 +529,9 @@ function set_units_base_system!(system::System, settings::UnitSystem)
     return
 end
 
+"""
+Get the system's [unit base](@ref per_unit))
+"""
 function get_units_base(system::System)
     return string(system.units_settings.unit_system)
 end
@@ -433,6 +568,7 @@ get_description(sys::System) = sys.metadata.description
 """
 Add a component to the system.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -450,6 +586,8 @@ buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
 foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
 ```
+
+See also [`add_components!`](@ref).
 """
 function add_component!(
     sys::System,
@@ -460,7 +598,7 @@ function add_component!(
     set_units_setting!(component, sys.units_settings)
     @assert has_units_setting(component)
 
-    check_attached_buses(sys, component)
+    check_topology(sys, component)
     check_component_addition(sys, component; kwargs...)
 
     deserialization_in_progress = _is_deserialization_in_progress(sys)
@@ -496,6 +634,7 @@ end
 """
 Add many components to the system at once.
 
+A component cannot be added to more than one `System`.
 Throws ArgumentError if the component's name is already stored for its concrete type.
 Throws ArgumentError if any Component-specific rule is violated.
 Throws InvalidValue if any of the component's field values are outside of defined valid
@@ -507,7 +646,7 @@ sys = System(100.0)
 
 buses = [bus1, bus2, bus3]
 generators = [gen1, gen2, gen3]
-foreach(x -> add_component!(sys, x), Iterators.flatten((buses, generators)))
+add_components!(sys, Iterators.flatten((buses, generators))
 ```
 """
 function add_components!(sys::System, components)
@@ -518,10 +657,11 @@ end
 """
 Add a dynamic injector to the system.
 
-Throws ArgumentError if the name does not match the static_injector name.
-Throws ArgumentError if the static_injector is not attached to the system.
+A component cannot be added to more than one `System`.
+Throws ArgumentError if the name does not match the `static_injector` name.
+Throws ArgumentError if the `static_injector` is not attached to the system.
 
-All rules for the generic add_component! method also apply.
+All rules for the generic `add_component!` method also apply.
 """
 function add_component!(
     sys::System,
@@ -601,15 +741,15 @@ function add_service!(device::Device, service::Service, sys::System)
 end
 
 """
-Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
 - `sys::System`: system
-- `service::StaticReserveGroup`: service to add
+- `service::ConstantReserveGroup`: service to add
 """
 function add_service!(
     sys::System,
-    service::StaticReserveGroup;
+    service::ConstantReserveGroup;
     skip_validation = false,
     kwargs...,
 )
@@ -624,10 +764,10 @@ function add_service!(
     return
 end
 
-"""Set StaticReserveGroup contributing_services with check"""
+"""Set ConstantReserveGroup contributing_services with check"""
 function set_contributing_services!(
     sys::System,
-    service::StaticReserveGroup,
+    service::ConstantReserveGroup,
     val::Vector{<:Service},
 )
     for _service in val
@@ -638,16 +778,16 @@ function set_contributing_services!(
 end
 
 """
-Similar to [`add_component!`](@ref) but for StaticReserveGroup.
+Similar to [`add_component!`](@ref) but for ConstantReserveGroup.
 
 # Arguments
 - `sys::System`: system
-- `service::StaticReserveGroup`: service to add
+- `service::ConstantReserveGroup`: service to add
 - `contributing_services`: contributing services to the group
 """
 function add_service!(
     sys::System,
-    service::StaticReserveGroup,
+    service::ConstantReserveGroup,
     contributing_services::Vector{<:Service};
     skip_validation = false,
     kwargs...,
@@ -658,6 +798,39 @@ function add_service!(
     set_units_setting!(service, sys.units_settings)
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
     return
+end
+
+"""
+Open the time series store for bulk additions or reads
+
+This is recommended before calling `add_time_series!` many times because of the overhead
+associated with opening and closing an HDF5 file.
+
+This is not necessary for an in-memory time series store.
+
+# Examples
+```julia
+# Assume there is a system with an array of Components and SingleTimeSeries
+# stored in the variables components and single_time_series, respectively
+open_time_series_store!(sys, "r+") do
+    for (component, ts) in zip(components, single_time_series)
+        add_time_series!(sys, component, ts)
+    end
+end
+```
+You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
+the file read-only.
+
+See also: [`bulk_add_time_series!`](@ref)
+"""
+function open_time_series_store!(
+    func::Function,
+    sys::System,
+    mode = "r",
+    args...;
+    kwargs...,
+)
+    IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
 end
 
 """
@@ -705,16 +878,17 @@ function IS.add_time_series_from_file_metadata_internal!(
     cache::IS.TimeSeriesParsingCache,
     file_metadata::IS.TimeSeriesFileMetadata,
 )
+    associations = TimeSeriesAssociation[]
     IS.set_component!(file_metadata, data, PowerSystems)
     component = file_metadata.component
     if isnothing(component)
-        return
+        return associations
     end
 
     ts = IS.make_time_series!(cache, file_metadata)
     if component isa AggregationTopology && file_metadata.scaling_factor_multiplier in
        ["get_max_active_power", "get_max_reactive_power"]
-        uuids = Set{UUIDs.UUID}()
+        uuids = Set{Base.UUID}()
         for bus in _get_buses(data, component)
             push!(uuids, IS.get_uuid(bus))
         end
@@ -722,16 +896,27 @@ function IS.add_time_series_from_file_metadata_internal!(
             load for load in IS.get_components(ElectricLoad, data) if
             IS.get_uuid(get_bus(load)) in uuids
         )
-            IS.add_time_series!(data, _component, ts; skip_if_present = true)
+            file_metadata.component = _component
+            if !IS.has_assignment(cache, file_metadata)
+                IS.add_assignment!(cache, file_metadata)
+                push!(associations, TimeSeriesAssociation(_component, ts))
+            end
         end
-        file_metadata.scaling_factor_multiplier =
-            replace(file_metadata.scaling_factor_multiplier, "max" => "peak")
-        area_ts = IS.make_time_series!(cache, file_metadata)
-        IS.add_time_series!(data, component, area_ts; skip_if_present = true)
+        file_metadata.component = component
+        orig_sf = file_metadata.scaling_factor_multiplier
+        try
+            file_metadata.scaling_factor_multiplier = replace(orig_sf, "max" => "peak")
+            area_ts = IS.make_time_series!(cache, file_metadata)
+            IS.add_assignment!(cache, file_metadata)
+            push!(associations, TimeSeriesAssociation(component, area_ts))
+        finally
+            file_metadata.scaling_factor_multiplier = orig_sf
+        end
     else
-        IS.add_time_series!(data, component, ts)
+        push!(associations, TimeSeriesAssociation(component, ts))
+        IS.add_assignment!(cache, file_metadata)
     end
-    return
+    return associations
 end
 
 """
@@ -833,15 +1018,15 @@ end
 Throws ArgumentError if a PowerSystems rule blocks removal from the system.
 """
 function check_component_removal(sys::System, service::T) where {T <: Service}
-    if T == StaticReserveGroup
+    if T == ConstantReserveGroup
         return
     end
-    groupservices = get_components(StaticReserveGroup, sys)
+    groupservices = get_components(ConstantReserveGroup, sys)
     for groupservice in groupservices
         if service ∈ get_contributing_services(groupservice)
             throw(
                 ArgumentError(
-                    "service $(get_name(service)) cannot be removed with an attached StaticReserveGroup",
+                    "service $(get_name(service)) cannot be removed with an attached ConstantReserveGroup",
                 ),
             )
             return
@@ -865,11 +1050,21 @@ function remove_component!(
 end
 
 """
+Check to see if the component of type T exists.
+"""
+function has_component(sys::System, T::Type{<:Component})
+    return IS.has_component(sys.data, T)
+end
+
+"""
 Check to see if the component of type T with name exists.
 """
-function has_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
-    return IS.has_component(T, sys.data.components, name)
+function has_component(sys::System, T::Type{<:Component}, name::AbstractString)
+    return IS.has_component(sys.data, T, name)
 end
+
+has_component(T::Type{<:Component}, sys::System, name::AbstractString) =
+    has_component(sys, T, name)
 
 """
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract
@@ -902,22 +1097,40 @@ generators = collect(PowerSystems.get_components(Generator, sys))
 
 See also: [`iterate_components`](@ref)
 """
-function get_components(::Type{T}, sys::System) where {T <: Component}
-    return IS.get_components(T, sys.data, nothing)
+function get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}
+    return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
 function get_components(
     filter_func::Function,
     ::Type{T},
-    sys::System,
+    sys::System;
+    subsystem_name = nothing,
 ) where {T <: Component}
-    return IS.get_components(T, sys.data, filter_func)
+    return IS.get_components(filter_func, T, sys.data; subsystem_name = subsystem_name)
 end
 
-# These are helper functions for debugging problems.
-# Searches components linearly, and so is slow compared to the other get_component functions
+"""
+Return a vector of components that are attached to the supplemental attribute.
+"""
+function get_components(sys::System, attribute::SupplementalAttribute)
+    return IS.get_components(sys.data, attribute)
+end
+
+"""
+Get the component by UUID.
+"""
 get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
 get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+
+"""
+Change the UUID of a component.
+"""
+IS.assign_new_uuid!(sys::System, x::Component) = IS.assign_new_uuid!(sys.data, x)
 
 function _get_components_by_name(abstract_types, data::IS.SystemData, name::AbstractString)
     _components = []
@@ -950,20 +1163,17 @@ end
 """
 Gets components availability. Requires type T to have the method get_available implemented.
 """
-
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(x -> get_available(x), T, sys)
+    return get_components(get_available, T, sys)
 end
 
 """
 Return true if the component is attached to the system.
 """
 function is_attached(component::T, sys::System) where {T <: Component}
-    return is_attached(T, get_name(component), sys)
-end
-
-function is_attached(::Type{T}, name, sys::System) where {T <: Component}
-    return !isnothing(get_component(T, sys, name))
+    existing_component = get_component(T, sys, get_name(component))
+    isnothing(existing_component) && return false
+    return component === existing_component
 end
 
 """
@@ -1043,6 +1253,15 @@ function get_components_in_aggregation_topology(
     return components
 end
 
+"Return whether the given component's bus is in the AggregationTopology."
+function is_component_in_aggregation_topology(
+    comp::Component,
+    aggregator::T,
+) where {T <: AggregationTopology}
+    accessor = get_aggregation_topology_accessor(T)
+    return IS.get_uuid(accessor(get_bus(comp))) == IS.get_uuid(aggregator)
+end
+
 """
 Return a mapping of AggregationTopology name to vector of buses within it.
 """
@@ -1092,20 +1311,69 @@ Add time series data to a component.
 Throws ArgumentError if the component is not stored in the system.
 
 """
-function add_time_series!(sys::System, component::Component, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, component, time_series)
+function add_time_series!(
+    sys::System,
+    component::Component,
+    time_series::TimeSeriesData;
+    features...,
+)
+    return IS.add_time_series!(sys.data, component, time_series; features...)
+end
+
+"""
+Add many time series in bulk
+
+This method is advantageous when adding thousands of time
+series arrays because of the overhead in writing the time series to the underlying storage.
+
+# Arguments
+- `sys::System`: system
+- `associations`: Iterable of [`TimeSeriesAssociation`](@ref) instances. Using a Vector is not
+  recommended. Pass a Generator or Iterator to avoid loading all time series data into
+  system memory at once.
+- `batch_size::Int`: (Default = 100) Number of time series to add per batch.
+
+# Examples
+```julia
+# Assumes `read_time_series` will return data appropriate for Deterministic forecasts
+# based on the generator name and the filenames match the component and time series names.
+resolution = Dates.Hour(1)
+associations = (
+    IS.TimeSeriesAssociation(
+        gen,
+        Deterministic(
+            data = read_time_series(get_name(gen) * ".csv"),
+            name = "get_max_active_power",
+            resolution=resolution),
+    )
+    for gen in get_components(ThermalStandard, sys)
+)
+bulk_add_time_series!(sys, associations)
+```
+
+See also: [`open_time_series_store!`](@ref) to minimize HDF5 file handle overhead if you
+must add time series arrays one at a time
+"""
+function bulk_add_time_series!(
+    sys::System,
+    associations;
+    batch_size::Int = IS.ADD_TIME_SERIES_BATCH_SIZE,
+)
+    return IS.bulk_add_time_series!(sys.data, associations; batch_size = batch_size)
 end
 
 """
 Add the same time series data to multiple components.
 
-This is significantly more efficent than calling `add_time_series!` for each component
-individually with the same data because in this case, only one time series array is stored.
+This function stores a single copy of the data. Each component will store a reference to
+that data. This is significantly more efficent than calling `add_time_series!` for each
+component individually with the same data because in this case, only one time series
+array is stored.
 
 Throws ArgumentError if a component is not stored in the system.
 """
-function add_time_series!(sys::System, components, time_series::TimeSeriesData)
-    return IS.add_time_series!(sys.data, components, time_series)
+function add_time_series!(sys::System, components, time_series::TimeSeriesData; features...)
+    return IS.add_time_series!(sys.data, components, time_series; features...)
 end
 
 #=
@@ -1158,11 +1426,6 @@ Return the initial times for all forecasts.
 get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
 
 """
-Return the total period covered by all forecasts.
-"""
-get_forecast_total_period(sys::System) = IS.get_forecast_total_period(sys.data)
-
-"""
 Return the window count for all forecasts.
 """
 get_forecast_window_count(sys::System) = IS.get_forecast_window_count(sys.data)
@@ -1183,9 +1446,13 @@ Return the interval for all forecasts.
 get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
 
 """
-Return the resolution for all time series.
+Return a sorted Vector of distinct resolutions for all time series of the given type
+(or all types).
 """
-get_time_series_resolution(sys::System) = IS.get_time_series_resolution(sys.data)
+get_time_series_resolutions(
+    sys::System;
+    time_series_type::Union{Type{<:TimeSeriesData}, Nothing} = nothing,
+) = IS.get_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
 Return an iterator of time series in order of initial time.
@@ -1220,7 +1487,12 @@ function IS.get_time_series_multiple(
 end
 
 """
-Remove all time series data from the system.
+Clear all time series data from the system.
+
+If you are storing time series data in an HDF5 file, this will
+will delete the HDF5 file and create a new one.
+
+See also: [`remove_time_series!`](@ref remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData})
 """
 function clear_time_series!(sys::System)
     return IS.clear_time_series!(sys.data)
@@ -1240,15 +1512,41 @@ end
 
 """
 Remove all the time series data for a time series type.
+
+See also: [`clear_time_series!`](@ref)
+
+If you are storing time series data in an HDF5 file, `remove_time_series!` does
+not actually free up file space (HDF5 behavior). If you want to remove all or
+most time series instances then consider using `clear_time_series!`. It
+will delete the HDF5 file and create a new one. PowerSystems has plans to
+automate this type of workflow.
 """
 function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
     return IS.remove_time_series!(sys.data, T)
 end
 
 """
-Transform all instances of SingleTimeSeries to DeterministicSingleTimeSeries.
+Transform all instances of [`SingleTimeSeries`](@ref) in a `System` to
+[`DeterministicSingleTimeSeries`](@ref)
+
+This can be used to generate a perfect forecast from historical measurements or realizations
+when actual forecasts are unavailable, without unnecessarily duplicating data.
+
+If all `SingleTimeSeries` instances cannot be transformed then none will be.
+
+Any existing `DeterministicSingleTimeSeries` forecasts will be deleted even if the inputs are
+invalid.
+
+# Arguments
+- `sys::System`: System containing the components.
+- `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
+- `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
 """
-function transform_single_time_series!(sys::System, horizon::Int, interval::Dates.Period)
+function transform_single_time_series!(
+    sys::System,
+    horizon::Dates.Period,
+    interval::Dates.Period,
+)
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
@@ -1256,6 +1554,104 @@ function transform_single_time_series!(sys::System, horizon::Int, interval::Date
         interval,
     )
     return
+end
+
+"""
+Add a supplemental attribute to the component. The attribute may already be attached to a
+different component.
+"""
+function add_supplemental_attribute!(
+    sys::System,
+    component::Component,
+    attribute::IS.SupplementalAttribute,
+)
+    return IS.add_supplemental_attribute!(sys.data, component, attribute)
+end
+
+"""
+Remove the supplemental attribute from the component. The attribute will be removed from the
+system if it is not attached to any other component.
+"""
+function remove_supplemental_attribute!(
+    sys::System,
+    component::Component,
+    attribute::IS.SupplementalAttribute,
+)
+    return IS.remove_supplemental_attribute!(sys.data, component, attribute)
+end
+
+"""
+Remove the supplemental attribute from the system and all attached components.
+"""
+function remove_supplemental_attribute!(sys::System, attribute::IS.SupplementalAttribute)
+    return IS.remove_supplemental_attribute!(sys.data, attribute)
+end
+
+"""
+Remove all supplemental attributes with the given type from the system.
+"""
+function remove_supplemental_attributes!(
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.remove_supplemental_attributes!(T, sys.data)
+end
+
+"""
+Returns an iterator of supplemental attributes. T can be concrete or abstract.
+Call collect on the result if an array is desired.
+
+# Examples
+```julia
+iter = get_supplemental_attributes(GeometricDistributionForcedOutage, sys)
+iter = get_supplemental_attributes(Outage, sys)
+iter = get_supplemental_attributes(x -> get_mean_time_to_recovery(x) ==  >= 0.5, GeometricDistributionForcedOutage, sys)
+outages = get_supplemental_attributes(GeometricDistributionForcedOutage, sys) do outage
+    get_mean_time_to_recovery(x) ==  >= 0.5
+end
+outages = collect(get_supplemental_attributes(GeometricDistributionForcedOutage, sys))
+```
+
+See also: [`iterate_supplemental_attributes`](@ref)
+"""
+function get_supplemental_attributes(
+    filter_func::Function,
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.get_supplemental_attributes(filter_func, T, sys.data)
+end
+
+function get_supplemental_attributes(
+    ::Type{T},
+    sys::System,
+) where {T <: IS.SupplementalAttribute}
+    return IS.get_supplemental_attributes(T, sys.data)
+end
+
+"""
+Return the supplemental attribute with the given uuid.
+
+Throws ArgumentError if the attribute is not stored.
+"""
+function get_supplemental_attribute(sys::System, uuid::Base.UUID)
+    return IS.get_supplemental_attribute(sys.data, uuid)
+end
+
+"""
+Iterates over all supplemental_attributes.
+
+# Examples
+```julia
+for supplemental_attribute in iterate_supplemental_attributes(sys)
+    @show supplemental_attribute
+end
+```
+
+See also: [`get_supplemental_attributes`](@ref)
+"""
+function iterate_supplemental_attributes(sys::System)
+    return IS.iterate_supplemental_attributes(sys.data)
 end
 
 """
@@ -1297,14 +1693,48 @@ function check(sys::System)
     buscheck(buses)
     critical_components_check(sys)
     adequacy_check(sys)
+    check_subsystems(sys)
     return
+end
+
+"""
+Check the the consistency of subsystems.
+"""
+function check_subsystems(sys::System)
+    must_be_assigned_to_subsystem = false
+    for (i, component) in enumerate(iterate_components(sys))
+        is_assigned = is_assigned_to_subsystem(sys, component)
+        if i == 1
+            must_be_assigned_to_subsystem = is_assigned
+        elseif is_assigned != must_be_assigned_to_subsystem
+            throw(
+                IS.InvalidValue(
+                    "If any component is assigned to a subsystem then all " *
+                    "components must be assigned to a subsystem.",
+                ),
+            )
+        end
+        check_subsystems(sys, component)
+    end
 end
 
 """
 Check the values of all components. See [`check_component`](@ref) for exceptions thrown.
 """
 function check_components(sys::System; check_masked_components = true)
-    for component in iterate_components(sys)
+    must_be_assigned_to_subsystem = false
+    for (i, component) in enumerate(iterate_components(sys))
+        is_assigned = is_assigned_to_subsystem(sys, component)
+        if i == 1
+            must_be_assigned_to_subsystem = is_assigned
+        elseif is_assigned != must_be_assigned_to_subsystem
+            throw(
+                IS.InvalidValue(
+                    "If any component is assigned to a subsystem then all " *
+                    "components must be assigned to a subsystem.",
+                ),
+            )
+        end
         check_component(sys, component)
     end
 
@@ -1389,22 +1819,35 @@ end
 function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
-    time_series_read_only = false,
-    time_series_directory = nothing,
     kwargs...,
 )
     raw = open(filename) do io
         JSON3.read(io, Dict)
     end
 
+    if raw["data_format_version"] != DATA_FORMAT_VERSION
+        pre_read_conversion!(raw)
+    end
+
     # These file paths are relative to the system file.
     directory = dirname(filename)
-    for file_key in ("time_series_storage_file", "validation_descriptor_file")
+    for file_key in ("time_series_storage_file",)
         if haskey(raw["data"], file_key) && !isabspath(raw["data"][file_key])
             raw["data"][file_key] = joinpath(directory, raw["data"][file_key])
         end
     end
 
+    return from_dict(System, raw; kwargs...)
+end
+
+function from_dict(
+    ::Type{System},
+    raw::Dict{String, Any};
+    time_series_read_only = false,
+    time_series_directory = nothing,
+    config_path = POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE,
+    kwargs...,
+)
     # Read any field that is defined in System but optional for the constructors and not
     # already handled here.
     handled = (
@@ -1433,6 +1876,7 @@ function IS.deserialize(
         raw["data"];
         time_series_read_only = time_series_read_only,
         time_series_directory = time_series_directory,
+        validation_descriptor_file = config_path,
     )
     metadata = get(raw, "metadata", Dict())
     name = get(metadata, "name", nothing)
@@ -1511,6 +1955,7 @@ function deserialize_components!(sys::System, raw)
                 continue
             end
             for component in components
+                handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
                 add_component!(sys, comp)
                 component_cache[IS.get_uuid(comp)] = comp
@@ -1523,18 +1968,20 @@ function deserialize_components!(sys::System, raw)
     end
 
     # Run in order based on type composition.
+    # Bus and AGC instances can have areas and LoadZones.
+    # Most components have buses.
+    # Static injection devices can contain dynamic injection devices.
+    # StaticInjectionSubsystem instances have StaticInjection subcomponents.
     deserialize_and_add!(; include_types = [Area, LoadZone])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
-        skip_types = [StaticReserveGroup],
+        skip_types = [ConstantReserveGroup],
     )
-    deserialize_and_add!(; include_types = [Branch], skip_types = [DynamicBranch])
+    deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
-    # Static injection devices can contain dynamic injection devices.
-    deserialize_and_add!(; include_types = [StaticReserveGroup, DynamicInjection])
-    # StaticInjectionSubsystem instances have StaticInjection subcomponents.
+    deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
     deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
 
@@ -1546,6 +1993,28 @@ function deserialize_components!(sys::System, raw)
         end
     end
 end
+
+"""
+Allow types to implement handling of special cases during deserialization.
+
+# Arguments
+- `component::Dict`: The component serialized as a dictionary.
+- `::Type`: The type of the component.
+"""
+handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = nothing
+
+# TODO DT: Do I need to handle this in the new format upgrade?
+#function handle_deserialization_special_cases!(component::Dict, ::Type{DynamicBranch})
+#    # IS handles deserialization of supplemental attribues in each component.
+#    # In this case the DynamicBranch's composed branch is not part of the system and so
+#    # IS will not handle it. It can never attributes.
+#    if !isempty(component["branch"]["supplemental_attributes_container"])
+#        error(
+#            "Bug: serialized DynamicBranch.branch has supplemental attributes: $component",
+#        )
+#    end
+#    return
+#end
 
 """
 Return bus with name.
@@ -1615,11 +2084,14 @@ function check_for_services_on_addition(sys::System, component::Device)
     return
 end
 
-# Needed because get_services returns the services of the underlying struct
-function check_for_services_on_addition(sys::System, component::RegulationDevice)
-    for d in get_services(component)
-        isa(d, AGC) && throw(ArgumentError("type Device cannot be added with services"))
-    end
+function check_topology(sys::System, component::AreaInterchange)
+    throw_if_not_attached(get_from_area(component), sys)
+    throw_if_not_attached(get_to_area(component), sys)
+    return
+end
+
+function check_topology(sys::System, component::Component)
+    check_attached_buses(sys, component)
     return
 end
 
@@ -1676,6 +2148,12 @@ Refer to docstring for check_component_addition!
 handle_component_addition!(sys::System, component::Component; kwargs...) = nothing
 
 handle_component_removal!(sys::System, component::Component) = nothing
+
+function check_component_addition(sys::System, branch::AreaInterchange; kwargs...)
+    throw_if_not_attached(get_from_area(branch), sys)
+    throw_if_not_attached(get_to_area(branch), sys)
+    return
+end
 
 function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
@@ -1743,17 +2221,6 @@ function handle_component_addition!(sys::System, bus::ACBus; kwargs...)
     return
 end
 
-function handle_component_addition!(sys::System, component::RegulationDevice; kwargs...)
-    copy_time_series!(component, component.device)
-    if !isnothing(get_component(typeof(component.device), sys, get_name(component.device)))
-        # This will not be true during deserialization, and so won't run then.
-        remove_component!(sys, component.device)
-        # The line above removed the component setting so needs to be added back
-        set_units_setting!(component.device, component.internal.units_info)
-    end
-    return
-end
-
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
     _handle_branch_addition_common!(sys, component)
     return
@@ -1798,7 +2265,10 @@ function _handle_branch_addition_common!(sys::System, component::Branch)
     else
         set_arc!(component, _arc)
     end
+    return
 end
+
+_handle_branch_addition_common!(sys::System, component::AreaInterchange) = nothing
 
 """
 Throws ArgumentError if the bus number is not stored in the system.
@@ -1823,6 +2293,14 @@ function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
         _remove_service!(device, service)
+    end
+end
+
+function handle_component_removal!(sys::System, component::StaticInjectionSubsystem)
+    _handle_component_removal_common!(component)
+    subcomponents = collect(get_subcomponents(component))
+    for subcomponent in subcomponents
+        IS.remove_masked_component!(sys.data, subcomponent)
     end
 end
 
@@ -1863,23 +2341,29 @@ function get_bus_numbers(sys::System)
     return sort(collect(sys.bus_numbers))
 end
 
+_fetch_match_fn(match_fn::Function) = match_fn
+_fetch_match_fn(::Nothing) = IS.isequivalent
+
 function IS.compare_values(
+    match_fn::Union{Function, Nothing},
     x::T,
     y::T;
     compare_uuids = false,
+    exclude = Set{Symbol}(),
 ) where {T <: Union{StaticInjection, DynamicInjection}}
     # Must implement this method because a device of one of these subtypes might have a
     # reference to its counterpart, and vice versa, and so infinite recursion will occur
     # in the default function.
     match = true
     for name in fieldnames(T)
+        name in exclude && continue
         val1 = getfield(x, name)
         val2 = getfield(y, name)
         if val1 isa StaticInjection || val2 isa DynamicInjection
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if name1 != name2
+                if !match_fn(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -1892,16 +2376,28 @@ function IS.compare_values(
                 end
             end
         elseif !isempty(fieldnames(typeof(val1)))
-            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
+            if !IS.compare_values(
+                match_fn,
+                val1,
+                val2;
+                compare_uuids = compare_uuids,
+                exclude = exclude,
+            )
                 @error "values do not match" T name val1 val2
                 match = false
             end
         elseif val1 isa AbstractArray
-            if !IS.compare_values(val1, val2; compare_uuids = compare_uuids)
+            if !IS.compare_values(
+                match_fn,
+                val1,
+                val2;
+                compare_uuids = compare_uuids,
+                exclude = exclude,
+            )
                 match = false
             end
         else
-            if val1 != val2
+            if !_fetch_match_fn(match_fn)(val1, val2)
                 @error "values do not match" T name val1 val2
                 match = false
             end
@@ -1950,24 +2446,26 @@ function convert_component!(
         line.r,
         line.x,
         line.b,
-        (from_to = line.rate, to_from = line.rate),
-        line.rate,
+        (from_to = line.rating, to_from = line.rating),
+        line.rating,
         line.angle_limits,
+        line.g,
         line.services,
         line.ext,
-        InfrastructureSystems.TimeSeriesContainer(),
-        deepcopy(line.internal),
+        _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     remove_component!(sys, line)
     return
 end
 
 """
 Converts a MonitoredLine component to a Line component and replaces the original in the
-system
+system.
 """
 function convert_component!(
     sys::System,
@@ -1993,23 +2491,25 @@ function convert_component!(
         line.r,
         line.x,
         line.b,
-        line.rate,
+        line.rating,
         line.angle_limits,
+        line.g,
         line.services,
         line.ext,
-        InfrastructureSystems.TimeSeriesContainer(),
-        deepcopy(line.internal),
+        _copy_internal_for_conversion(line),
     )
-    IS.assign_new_uuid!(line)
+    IS.assign_new_uuid!(sys, line)
     add_component!(sys, new_line)
     copy_time_series!(new_line, line)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     remove_component!(sys, line)
     return
 end
 
 """
 Converts a PowerLoad component to a StandardLoad component and replaces the original in the
-system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent
+system. Does not set any fields in StandardLoad that lack a PowerLoad equivalent.
 """
 function convert_component!(
     sys::System,
@@ -2027,17 +2527,33 @@ function convert_component!(
         max_constant_active_power = get_max_active_power(old_load),
         max_constant_reactive_power = get_max_active_power(old_load),
         dynamic_injector = get_dynamic_injector(old_load),
-        internal = deepcopy(get_internal(old_load)),
+        internal = _copy_internal_for_conversion(old_load),
         services = Device[],
-        time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     )
-    IS.assign_new_uuid!(new_load)
+    IS.assign_new_uuid!(sys, old_load)
     add_component!(sys, new_load)
     copy_time_series!(new_load, old_load)
+    # TODO: PSY4
+    # copy_supplemental_attibutes!(new_line, line)
     for service in get_services(old_load)
         add_service!(new_load, service, sys)
     end
     remove_component!(sys, old_load)
+end
+
+# Use this function to avoid deepcopy of shared_system_references.
+function _copy_internal_for_conversion(component::Component)
+    internal = get_internal(component)
+    refs = internal.shared_system_references
+    return InfrastructureSystemsInternal(;
+        uuid = deepcopy(internal.uuid),
+        units_info = deepcopy(internal.units_info),
+        shared_system_references = IS.SharedSystemReferences(;
+            supplemental_attribute_manager = refs.supplemental_attribute_manager,
+            time_series_manager = refs.time_series_manager,
+        ),
+        ext = deepcopy(internal.ext),
+    )
 end
 
 function _validate_or_skip!(sys, component, skip_validation)
@@ -2064,7 +2580,8 @@ function _validate_or_skip!(sys, component, skip_validation)
 end
 
 """
-Return a tuple of counts of components with time series and total time series and forecasts.
+Returns counts of time series including attachments to components and supplemental
+attributes.
 """
 get_time_series_counts(sys::System) = IS.get_time_series_counts(sys.data)
 
@@ -2097,3 +2614,4 @@ function Base.setproperty!(sys::System, s::Symbol, v, order::Symbol)
     )
     Base.setfield!(sys, s, v, order)
 end
+stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)

@@ -37,29 +37,29 @@ This file is auto-generated. Do not edit.
 Generic Proportional/Integral Excitation System
 
 # Arguments
-- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`, action if invalid: `warn`
-- `Ka::Float64`: Voltage regulator gain, validation range: `(1, 500)`, action if invalid: `warn`
-- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 10)`, action if invalid: `warn`
+- `Tr::Float64`: Regulator input filter time constant in s, validation range: `(0, 0.5)`
+- `Ka::Float64`: Voltage regulator gain, validation range: `(1, 500)`
+- `Ta::Float64`: Voltage regulator time constant in s, validation range: `(0, 10)`
 - `Va_lim::MinMax`: Limits for pi controler `(Vr_min, Vr_max)`
 - `Ta_2::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
-- `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`, action if invalid: `warn`
+- `Ta_3::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
+- `Ta_4::Float64`: Voltage regulator time constant in s, validation range: `(0, nothing)`
 - `Vr_lim::MinMax`: Voltage regulator limits (regulator output) (Vi_min, Vi_max)
-- `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`, action if invalid: `warn`
+- `Kf::Float64`: Rate feedback gain, validation range: `(0, 0.3)`
 - `Tf_1::Float64`: Rate Feedback time constant in s, validation range: `(eps(), 15)`
-- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, 5)`, action if invalid: `warn`
+- `Tf_2::Float64`: Rate Feedback time constant in s, validation range: `(0, 5)`
 - `Efd_lim::MinMax`: Field Voltage regulator limits (regulator output) (Efd_min, Efd_max)
-- `Ke::Float64`: Exciter constant, validation range: `(0, 1)`, action if invalid: `warn`
-- `Te::Float64`: Exciter time constant, validation range: `(0, 2)`, action if invalid: `warn`
+- `Ke::Float64`: Exciter constant, validation range: `(0, 1)`
+- `Te::Float64`: Exciter time constant, validation range: `(0, 2)`
 - `E_sat::Tuple{Float64, Float64}`: Exciter output voltage for saturation factor: (E1, E2)
 - `Se::Tuple{Float64, Float64}`: Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))
-- `Kp::Float64`: Potential source gain, validation range: `(0, 5)`, action if invalid: `warn`
+- `Kp::Float64`: Potential source gain, validation range: `(0, 5)`
 - `Ki::Float64`: current source gain, validation range: `(0, 1.1)`
-- `Kc::Float64`: Exciter regulation factor, validation range: `(0, 2)`, action if invalid: `warn`
-- `V_ref::Float64`: Reference Voltage Set-point, validation range: `(0, nothing)`
-- `saturation_coeffs::Tuple{Float64, Float64}`: Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `Kc::Float64`: Exciter regulation factor, validation range: `(0, 2)`
+- `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
+- `saturation_coeffs::Tuple{Float64, Float64}`: (default: `PowerSystems.get_avr_saturation(E_sat, Se)`) (**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second regulator lead-lag state,
@@ -67,9 +67,9 @@ Generic Proportional/Integral Excitation System
 	Vf: Exciter output 
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator
-- `n_states::Int`: EXPIC1 has 6 states
-- `states_types::Vector{StateTypes}`: EXPIC has 6 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) EXPIC1 has 6 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) EXPIC has 6 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct EXPIC1 <: AVR
     "Regulator input filter time constant in s"
@@ -110,12 +110,13 @@ mutable struct EXPIC1 <: AVR
     Ki::Float64
     "Exciter regulation factor"
     Kc::Float64
-    "Reference Voltage Set-point"
+    "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
+    "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V"
     saturation_coeffs::Tuple{Float64, Float64}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: First Lead-lag state,
 	Vr2: Second regulator lead-lag state,
@@ -124,11 +125,11 @@ mutable struct EXPIC1 <: AVR
 	Vr3: First feedback integrator,
 	Vr4: second feedback integrator"
     states::Vector{Symbol}
-    "EXPIC1 has 6 states"
+    "(**Do not modify.**) EXPIC1 has 6 states"
     n_states::Int
-    "EXPIC has 6 states"
+    "(**Do not modify.**) EXPIC has 6 states"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

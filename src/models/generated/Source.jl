@@ -15,58 +15,70 @@ This file is auto-generated. Do not edit.
         X_th::Float64
         internal_voltage::Float64
         internal_angle::Float64
+        base_power::Float64
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
-This struct acts as an infinity bus.
+An infinite bus with a constant voltage output.
+
+Commonly used in dynamics simulations to represent a very large machine on a single bus
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `active_power::Float64`
-- `reactive_power::Float64`
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
 - `R_th::Float64`: Source Thevenin resistance, validation range: `(0, nothing)`
 - `X_th::Float64`: Source Thevenin reactance, validation range: `(0, nothing)`
-- `internal_voltage::Float64`: Internal Voltage, validation range: `(0, nothing)`
-- `internal_angle::Float64`: Internal Angle
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `internal_voltage::Float64`: (default: `1.0`) Internal Voltage (pu), validation range: `(0, nothing)`
+- `internal_angle::Float64`: (default: `0.0`) Internal Angle
+- `base_power::Float64`: (default: `100.0`) Base Power in MVA
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Source <: StaticInjection
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
     "Source Thevenin resistance"
     R_th::Float64
     "Source Thevenin reactance"
     X_th::Float64
-    "Internal Voltage"
+    "Internal Voltage (pu)"
     internal_voltage::Float64
     "Internal Angle"
     internal_angle::Float64
+    "Base Power in MVA"
+    base_power::Float64
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, base_power, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, dynamic_injector, services, ext, internal, )
+function Source(; name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage=1.0, internal_angle=0.0, base_power=100.0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Source(name, available, bus, active_power, reactive_power, R_th, X_th, internal_voltage, internal_angle, base_power, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -81,6 +93,7 @@ function Source(::Nothing)
         X_th=0,
         internal_voltage=0,
         internal_angle=0,
+        base_power=0,
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -105,6 +118,8 @@ get_X_th(value::Source) = value.X_th
 get_internal_voltage(value::Source) = value.internal_voltage
 """Get [`Source`](@ref) `internal_angle`."""
 get_internal_angle(value::Source) = value.internal_angle
+"""Get [`Source`](@ref) `base_power`."""
+get_base_power(value::Source) = value.base_power
 """Get [`Source`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::Source) = value.dynamic_injector
 """Get [`Source`](@ref) `services`."""
@@ -130,6 +145,8 @@ set_X_th!(value::Source, val) = value.X_th = val
 set_internal_voltage!(value::Source, val) = value.internal_voltage = val
 """Set [`Source`](@ref) `internal_angle`."""
 set_internal_angle!(value::Source, val) = value.internal_angle = val
+"""Set [`Source`](@ref) `base_power`."""
+set_base_power!(value::Source, val) = value.base_power = val
 """Set [`Source`](@ref) `services`."""
 set_services!(value::Source, val) = value.services = val
 """Set [`Source`](@ref) `ext`."""

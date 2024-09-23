@@ -5,14 +5,14 @@
 [![Documentation Build](https://github.com/NREL-Sienna/PowerSystems.jl/workflows/Documentation/badge.svg?)](https://nrel-sienna.github.io/PowerSystems.jl/stable)
 [![DOI](https://zenodo.org/badge/114039584.svg)](https://zenodo.org/badge/latestdoi/114039584)
 [<img src="https://img.shields.io/badge/slack-@Sienna/PSY-sienna.svg?logo=slack">](https://join.slack.com/t/nrel-sienna/shared_invite/zt-glam9vdu-o8A9TwZTZqqNTKHa7q3BpQ)
-[![PowerSystems.jl Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/PowerSystems)](https://pkgs.genieframework.com?packages=PowerSystems)
+[![PowerSystems.jl Downloads](https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2Fjuliapkgstats.com%2Fapi%2Fv1%2Ftotal_downloads%2FPowerSystems&query=total_requests&label=Downloads)](http://juliapkgstats.com/pkg/PowerSystems)
+
 
 The `PowerSystems.jl` package provides a rigorous data model using Julia structures to enable power systems analysis and modeling. In addition to stand-alone system analysis tools and data model building, the `PowerSystems.jl` package is used as the foundational data container for the [PowerSimulations.jl](https://github.com/NREL/PowerSimulations.jl) and [PowerSimulationsDynamics.jl](https://github.com/NREL-Sienna/PowerSimulationsDynamics.jl) packages. `PowerSystems.jl` supports a limited number of data file formats for parsing.
 
 ## Version Advisory
 
 - PowerSystems will work with Julia v1.6+.
-- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 4.0](https://github.com/NREL-Sienna/PowerSystems.jl/projects/4) for upcoming changes
 
 ## Device data enabled in PowerSystems
 

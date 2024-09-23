@@ -48,40 +48,40 @@ This file is auto-generated. Do not edit.
 IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 
 # Arguments
-- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 7)`, action if invalid: `error`
-- `remote_bus_control_1::Int`: First Input Remote Bus number for control.
-- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`, action if invalid: `error`
-- `remote_bus_control_2::Int`: Second Input Remote Bus number for control.
-- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`, action if invalid: `error`
-- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`, action if invalid: `warn`
-- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T10::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T11::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
+- `input_code_1::Int`: First Input Code for stabilizer, validation range: `(1, 7)`
+- `remote_bus_control_1::Int`: First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
+- `input_code_2::Int`: Second Input Code for stabilizer, validation range: `(1, 6)`
+- `remote_bus_control_2::Int`: Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component
+- `M_rtf::Int`: M parameter for ramp tracking filter, validation range: `(0, 8)`
+- `N_rtf::Int`: N parameter for ramp tracking filter, validation range: `(0, 8)`
+- `Tw1::Float64`: Time constant for first washout filter for first input, validation range: `(eps(), nothing)`
+- `Tw2::Float64`: Time constant for second washout filter for first input, validation range: `(0, nothing)`
+- `T6::Float64`: Time constant for low-pass filter for first input, validation range: `(0, nothing)`
+- `Tw3::Float64`: Time constant for first washout filter for second input, validation range: `(eps(), nothing)`
+- `Tw4::Float64`: Time constant for second washout filter for second input, validation range: `(0, nothing)`
+- `T7::Float64`: Time constant for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks2::Float64`: Gain for low-pass filter for second input, validation range: `(0, nothing)`
+- `Ks3::Float64`: Gain for second input, validation range: `(0, nothing)`
+- `T8::Float64`: Time constant for ramp tracking filter, validation range: `(0, nothing)`
+- `T9::Float64`: Time constant for ramp tracking filter, validation range: `(eps(), nothing)`
+- `Ks1::Float64`: Gain before lead-lag blocks, validation range: `(0, nothing)`
+- `T1::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T2::Float64`: Time constant for first lead-lag block, validation range: `(0, nothing)`
+- `T3::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
+- `T4::Float64`: Time constant for second lead-lag block, validation range: `(0, nothing)`
+- `T10::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`
+- `T11::Float64`: Time constant for third lead-lag block, validation range: `(0, nothing)`
 - `Vs1_lim::Tuple{Float64, Float64}`: First input limits `(Vs1_min, Vs1_max)`
 - `Vs2_lim::Tuple{Float64, Float64}`: Second input limits `(Vs2_min, Vs2_max)`
 - `Vst_lim::Tuple{Float64, Float64}`: PSS output limits `(Vst_min, Vst_max)`
-- `T12::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
-- `T13::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`, action if invalid: `warn`
+- `T12::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`
+- `T13::Float64`: Time constant for fourth lead-lag block, validation range: `(0, nothing)`
 - `PSS_Hysteresis_param::Tuple{Float64, Float64}`: PSS output hysteresis parameters `(PSSOFF, PSSON)`
 - `Xcomp::Float64`: Stator Leakage Reactance, validation range: `(0, nothing)`
-- `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`, action if invalid: `error`
-- `hysteresis_binary_logic::Int`: Hysteresis memory variable
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `Tcomp::Float64`: Time measured with compensated frequency, validation range: `(eps(), nothing)`
+- `hysteresis_binary_logic::Int`: (default: `1`) Hysteresis memory variable
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -101,18 +101,18 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 	x_p17: 3rd lead-lag, 
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,
-- `n_states::Int`: IEEEST has 19 states
-- `states_types::Vector{StateTypes}`: IEEEST has 19 differential states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) IEEEST has 19 states
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PSS2C <: PSS
     "First Input Code for stabilizer"
     input_code_1::Int
-    "First Input Remote Bus number for control."
+    "First Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component"
     remote_bus_control_1::Int
     "Second Input Code for stabilizer"
     input_code_2::Int
-    "Second Input Remote Bus number for control."
+    "Second Input remote bus identification [`number`](@ref ACBus) for control. `0` identifies the local bus connected to this component"
     remote_bus_control_2::Int
     "M parameter for ramp tracking filter"
     M_rtf::Int
@@ -170,8 +170,9 @@ mutable struct PSS2C <: PSS
     Tcomp::Float64
     "Hysteresis memory variable"
     hysteresis_binary_logic::Int
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st washout 1st input, 
 	x_p2: 2nd washout 1st input, 
 	x_p3: transducer 1st input, 
@@ -192,11 +193,11 @@ mutable struct PSS2C <: PSS
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,"
     states::Vector{Symbol}
-    "IEEEST has 19 states"
+    "(**Do not modify.**) IEEEST has 19 states"
     n_states::Int
-    "IEEEST has 19 differential states"
+    "(**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)"
     states_types::Vector{StateTypes}
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

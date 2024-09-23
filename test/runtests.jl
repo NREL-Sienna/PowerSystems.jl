@@ -98,8 +98,8 @@ function run_tests()
     else
         config = IS.LoggingConfiguration(;
             filename = LOG_FILE,
-            file_level = Logging.Info,
-            console_level = Logging.Error,
+            file_level = get_logging_level_from_env("SIIP_FILE_LOG_LEVEL", "Info"),
+            console_level = get_logging_level_from_env("SIIP_CONSOLE_LOG_LEVEL", "Error"),
         )
     end
     console_logger = ConsoleLogger(config.console_stream, config.console_level)

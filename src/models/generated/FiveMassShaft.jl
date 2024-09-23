@@ -32,7 +32,7 @@ This file is auto-generated. Do not edit.
 
 Parameters of 5 mass-spring shaft model.
  It contains a High-Pressure (HP) steam turbine, Intermediate-Pressure (IP)
- steam turbine, Low-Pressure (LP) steam turbine, the Rotor and an Exciter (EX) mover.
+ steam turbine, Low-Pressure (LP) steam turbine, the Rotor and an Exciter (EX) mover
 
 # Arguments
 - `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
@@ -53,8 +53,8 @@ Parameters of 5 mass-spring shaft model.
 - `K_ip::Float64`: Intermediate pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_lp::Float64`: Low pressure turbine angle coefficient, validation range: `(0, nothing)`
 - `K_ex::Float64`: Exciter angle coefficient, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	δ: rotor angle,
 	ω: rotor speed,
 	δ_hp: rotor angle of high pressure turbine,
@@ -65,8 +65,8 @@ Parameters of 5 mass-spring shaft model.
 	ω_lp: rotor speed of low pressure turbine,
 	δ_ex: rotor angle of exciter,
 	ω_lp: rotor speed of exciter
-- `n_states::Int`: FiveMassShaft has 10 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) FiveMassShaft has 10 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct FiveMassShaft <: Shaft
     "Rotor inertia constant in MWs/MVA"
@@ -105,8 +105,9 @@ mutable struct FiveMassShaft <: Shaft
     K_lp::Float64
     "Exciter angle coefficient"
     K_ex::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	δ: rotor angle,
 	ω: rotor speed,
 	δ_hp: rotor angle of high pressure turbine,
@@ -118,9 +119,9 @@ mutable struct FiveMassShaft <: Shaft
 	δ_ex: rotor angle of exciter,
 	ω_lp: rotor speed of exciter"
     states::Vector{Symbol}
-    "FiveMassShaft has 10 states"
+    "(**Do not modify.**) FiveMassShaft has 10 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

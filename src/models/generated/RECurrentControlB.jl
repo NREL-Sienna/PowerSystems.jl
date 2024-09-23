@@ -33,14 +33,14 @@ Parameters of the Inner Control part of the REECB model in PSS/E
 - `dbd_pnts::Tuple{Float64, Float64}`: Voltage error deadband thresholds `(dbd1, dbd2)`
 - `K_qv::Float64`: Reactive current injection gain during over and undervoltage conditions, validation range: `(0, nothing)`
 - `Iqinj_lim::MinMax`: Limits for Iqinj `(I_qh1, I_ql1)`
-- `V_ref0::Float64`: User defined reference. If 0, PSID initializes to initial terminal voltage, validation range: `(0, nothing)`
+- `V_ref0::Float64`: User defined reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage, validation range: `(0, nothing)`
 - `K_vp::Float64`: Voltage regulator proportional gain (used when QFlag = 1), validation range: `(0, nothing)`
 - `K_vi::Float64`: Voltage regulator integral gain (used when QFlag = 1), validation range: `(0, nothing)`
 - `T_iq::Float64`: Time constant for low-pass filter for state q_V when QFlag = 0, validation range: `(0, nothing)`
 - `I_max::Float64`: Maximum limit on total converter current, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `states::Vector{Symbol}`: The states of the RECurrentControlB depends on the Flags
-- `n_states::Int`: The states of the RECurrentControlB depends on the Flags
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the RECurrentControlB depends on the Flags
+- `n_states::Int`: (**Do not modify.**) The states of the RECurrentControlB depends on the Flags
 """
 mutable struct RECurrentControlB <: InnerControl
     "Q Flag used for I_qinj"
@@ -57,7 +57,7 @@ mutable struct RECurrentControlB <: InnerControl
     K_qv::Float64
     "Limits for Iqinj `(I_qh1, I_ql1)`"
     Iqinj_lim::MinMax
-    "User defined reference. If 0, PSID initializes to initial terminal voltage"
+    "User defined reference. If 0, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage"
     V_ref0::Float64
     "Voltage regulator proportional gain (used when QFlag = 1)"
     K_vp::Float64
@@ -67,10 +67,11 @@ mutable struct RECurrentControlB <: InnerControl
     T_iq::Float64
     "Maximum limit on total converter current"
     I_max::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "The states of the RECurrentControlB depends on the Flags"
+    "(**Do not modify.**) The [states](@ref S) of the RECurrentControlB depends on the Flags"
     states::Vector{Symbol}
-    "The states of the RECurrentControlB depends on the Flags"
+    "(**Do not modify.**) The states of the RECurrentControlB depends on the Flags"
     n_states::Int
 end
 

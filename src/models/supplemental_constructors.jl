@@ -1,30 +1,3 @@
-"""Accepts rating as a Float64 and then creates a TwoPartCost."""
-function TwoPartCost(variable_cost::T, args...) where {T <: VarCostArgs}
-    return TwoPartCost(VariableCost(variable_cost), args...)
-end
-
-"""Accepts rating as a Float64 and then creates a ThreePartCost."""
-function ThreePartCost(variable_cost::T, args...) where {T <: VarCostArgs}
-    return ThreePartCost(VariableCost(variable_cost), args...)
-end
-
-"""
-Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to
-`0.0`.
-"""
-function MarketBidCost(
-    no_load,
-    start_up::Number,
-    shut_down,
-    variable = nothing,
-    ancillary_services = Vector{Service}(),
-)
-    # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
-    # Operators use `hot` when they don’t have multiple stages.
-    start_up_multi = (hot = start_up, warm = 0.0, cold = 0.0)
-    return MarketBidCost(no_load, start_up_multi, shut_down, variable, ancillary_services)
-end
-
 """Accepts angle_limits as a Float64."""
 function Line(
     name,
@@ -35,7 +8,7 @@ function Line(
     r,
     x,
     b,
-    rate,
+    rating,
     angle_limits::Float64,
 )
     return Line(
@@ -47,7 +20,7 @@ function Line(
         r,
         x,
         b,
-        rate,
+        rating,
         (min = -angle_limits, max = angle_limits),
     )
 end
@@ -81,7 +54,7 @@ function ACBus(
 end
 
 """Allows construction of a reserve from an iterator."""
-function StaticReserve(
+function ConstantReserve(
     name,
     contributingdevices::IS.FlattenIteratorWrapper,
     timeframe,
@@ -89,7 +62,7 @@ function StaticReserve(
     time_series,
     internal,
 )
-    return StaticReserve(
+    return ConstantReserve(
         name,
         collect(contributingdevices),
         timeframe,
@@ -113,7 +86,6 @@ function InterruptibleLoad(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
 )
     @warn(
         "The InterruptibleLoad constructor that accepts a model type has been removed and \\
@@ -132,7 +104,6 @@ function InterruptibleLoad(
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         InfrastructureSystemsInternal(),
     )
 end
@@ -151,7 +122,6 @@ function InterruptibleLoad(;
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
     @warn(
@@ -171,18 +141,19 @@ function InterruptibleLoad(;
         services,
         dynamic_injector,
         ext,
-        time_series_container,
         internal,
     )
 end
 
-function GenericBattery(
+function EnergyReservoirStorage(
     name::AbstractString,
     available::Bool,
     bus,
     prime_mover_type,
-    initial_energy,
-    state_of_charge_limits,
+    storage_technology_type,
+    storage_capacity,
+    storage_level_limits,
+    initial_storage_capacity_level,
     rating,
     active_power,
     input_active_power_limits,
@@ -195,16 +166,17 @@ function GenericBattery(
     services = Device[],
     dynamic_injector = nothing,
     ext = Dict{String, Any}(),
-    time_series_container = InfrastructureSystems.TimeSeriesContainer(),
     internal = InfrastructureSystemsInternal(),
 )
-    GenericBattery(
+    EnergyReservoirStorage(
         name,
         available,
         bus,
         prime_mover_type,
-        initial_energy,
-        state_of_charge_limits,
+        storage_technology_type,
+        storage_capacity,
+        storage_level_limits,
+        initial_storage_capacity_level,
         rating,
         active_power,
         input_active_power_limits,
@@ -213,11 +185,10 @@ function GenericBattery(
         reactive_power,
         reactive_power_limits,
         base_power,
-        StorageManagementCost(),
-        services,
-        dynamic_injector,
-        ext,
-        time_series_container,
-        internal,
+        StorageCost();
+        services = services,
+        dynamic_injector = dynamic_injector,
+        ext = ext,
+        internal = internal,
     )
 end

@@ -17,7 +17,10 @@ export Arc
 export AggregationTopology
 export Area
 export LoadZone
+export AreaInterchange
 export get_aggregation_topology_accessor
+export SupplementalAttribute
+export GeographicInfo
 
 export Component
 export Device
@@ -37,14 +40,43 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
-export ThreePartCost
-export TwoPartCost
-export VariableCost
-export MultiStartCost
-export MarketBidCost
-export StorageManagementCost
+export FunctionData
+export LinearFunctionData
+export QuadraticFunctionData
+export PiecewiseLinearData
+export PiecewiseStepData
+export get_proportional_term
+export get_quadratic_term
+export get_constant_term
 export get_slopes
-export get_breakpoint_upperbounds
+export get_average_rates
+export get_x_lengths
+export is_convex
+export get_points
+export get_x_coords
+export get_y_coords
+
+export ValueCurve
+export InputOutputCurve, IncrementalCurve, AverageRateCurve
+export LinearCurve, QuadraticCurve
+export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
+export ProductionVariableCostCurve, CostCurve, FuelCurve
+export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
+export get_function_data, get_initial_input, get_input_at_zero
+export get_value_curve, get_power_units
+export get_fuel_cost, set_fuel_cost!, get_vom_cost
+export is_market_bid_curve, make_market_bid_curve
+export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
+export set_shut_down!
+export get_curtailment_cost
+export set_curtailment_cost!
+export get_fixed
+export set_fixed!
+export get_charge_variable_cost, set_charge_variable_cost!
+export get_discharge_variable_cost, set_discharge_variable_cost!
+export get_energy_shortage_cost, set_energy_shortage_cost!
+export get_energy_surplus_cost, set_energy_surplus_cost!
 
 export Generator
 export HydroGen
@@ -54,7 +86,7 @@ export HydroPumpedStorage
 export InterconnectingConverter
 
 export RenewableGen
-export RenewableFix
+export RenewableNonDispatch
 export RenewableDispatch
 
 export ThermalGen
@@ -66,12 +98,13 @@ export StaticLoad
 export PowerLoad
 export StandardLoad
 export FixedAdmittance
+export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
+export ExponentialLoad
 
 export Storage
-export GenericBattery
-export BatteryEMS
+export EnergyReservoirStorage
 
 export DynamicComponent
 export DynamicInjection
@@ -80,7 +113,6 @@ export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
-export RegulationDevice
 
 export GenericDER
 export AggregateDistributedGenerationA
@@ -100,14 +132,17 @@ export ESDC1A
 export ESDC2A
 export ESAC1A
 export ESAC6A
+export ESAC8B
 export EXAC1
 export EXAC1A
 export EXAC2
 export EXPIC1
 export ESST1A
 export ESST4B
+export ST6B
 export SCRX
 export SEXS
+export ST8C
 
 #Machine Exports
 export Machine
@@ -154,6 +189,10 @@ export HydroTurbineGov
 export IEEETurbineGov1
 export SteamTurbineGov1
 export DEGOV
+export DEGOV1
+export PIDGOV
+export WPIDHY
+export TGSimple
 
 # Converter Exports
 export Converter
@@ -196,13 +235,27 @@ export VoltageModeControl
 export CurrentModeControl
 export RECurrentControlB
 
-# InverterLimiters Export
-export MagnitudeCurrentLimiter
-export InstantaneousCurrentLimiter
-export PriorityCurrentLimiter
+# OutputCurrentLimiters Export
+export MagnitudeOutputCurrentLimiter
+export InstantaneousOutputCurrentLimiter
+export PriorityOutputCurrentLimiter
+export SaturationOutputCurrentLimiter
+export HybridOutputCurrentLimiter
 
 export Source
 export PeriodicVariableSource
+
+export Contingency
+
+# Outages
+export Outage
+export GeometricDistributionForcedOutage
+export PlannedOutage
+export TimeSeriesForcedOutage
+
+export get_mean_time_to_recovery
+export get_outage_transition_probability
+export get_outage_schedule
 
 export Service
 export AbstractReserve
@@ -212,13 +265,12 @@ export ReserveDirection
 export ReserveUp
 export ReserveDown
 export ReserveSymmetric
-export StaticReserve
+export ConstantReserve
 export VariableReserve
 export AGC
 export ReserveDemandCurve
-export Transfer
-export StaticReserveGroup
-export StaticReserveNonSpinning
+export ConstantReserveGroup
+export ConstantReserveNonSpinning
 export VariableReserveNonSpinning
 export TransmissionInterface
 
@@ -226,8 +278,10 @@ export AngleUnits
 export ACBusTypes
 export PrimeMovers
 export ThermalFuels
+export StorageTech
 export StateTypes
 
+export TimeSeriesAssociation
 export TimeSeriesData
 export StaticTimeSeries
 export Forecast
@@ -236,16 +290,22 @@ export Deterministic
 export Probabilistic
 export SingleTimeSeries
 export DeterministicSingleTimeSeries
+export TimeSeriesKey
+export StaticTimeSeriesKey
+export ForecastKey
 export Scenarios
 export ForecastCache
 export StaticTimeSeriesCache
 export NormalizationFactor
 export NormalizationTypes
+export TimeSeriesCounts
 
 export get_dynamic_components
 
 export parse_file
+export open_time_series_store!
 export add_time_series!
+export bulk_add_time_series!
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -263,6 +323,7 @@ export get_services
 export has_service
 export has_time_series
 export get_buses
+export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
@@ -282,25 +343,42 @@ export get_forecast_horizon
 export get_forecast_initial_timestamp
 export get_forecast_interval
 export get_forecast_window_count
+export add_supplemental_attribute!
+export remove_supplemental_attribute!
+export remove_supplemental_attributes!
+export get_supplemental_attribute
+export get_supplemental_attributes
+export has_supplemental_attributes
+export iterate_supplemental_attributes
 export get_time_series
+export get_time_series_type
 export get_time_series_array
-export get_time_series_resolution
+export get_time_series_resolutions
+export supports_time_series
+export supports_supplemental_attributes
 export get_time_series_timestamps
 export get_time_series_values
-export get_time_series_names
 export get_time_series_counts
 export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
 export get_next_time
+export reset!
 export get_horizon
 export get_forecast_initial_times
-export get_forecast_total_period
+export get_time_series_keys
+export show_time_series
 export get_resolution
 export get_data
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost
+export get_no_load_cost
+export get_start_up
+export get_shut_down
+export get_incremental_offer_curves, set_incremental_offer_curves!
+export get_decremental_offer_curves, set_decremental_offer_curves!
+export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_services_bid
 export set_variable_cost!
 export set_service_bid!
@@ -314,10 +392,14 @@ export get_compression_settings
 export CompressionSettings
 export CompressionTypes
 
+# Parsing functions
+export create_poly_cost
+
 #export make_time_series
 export get_bus_numbers
 export get_name
 export set_name!
+export get_component_uuids
 export get_description
 export set_description!
 export get_base_power
@@ -349,18 +431,6 @@ export get_filter
 export get_V_ref
 export get_P_ref
 export get_saturation_coeffs
-export set_droop!
-export set_participation_factor!
-export set_inertia!
-export set_reserve_limit_up!
-export set_reserve_limit_dn!
-export set_cost!
-export get_droop
-export get_inertia
-export get_reserve_limit_up
-export get_reserve_limit_dn
-export get_participation_factor
-export get_cost
 export get_units_base
 export get_runchecks
 export get_thermal_unit
@@ -369,6 +439,26 @@ export get_storage
 export get_renewable_unit
 export get_interconnection_rating
 export get_interconnection_impedance
+export get_from_to_flow_limit
+export get_to_from_flow_limit
+export get_min_active_power_flow_limit
+export get_max_active_power_flow_limit
+
+# Subsystems
+export add_subsystem!
+export get_subsystems
+export get_num_subsystems
+export remove_subsystem!
+export add_component_to_subsystem!
+export get_subsystem_components
+export remove_component_from_subsystem!
+export remove_component_from_subsystems!
+export has_component
+export get_assigned_subsystems
+export has_subsystems
+export is_assigned_to_subsystem
+export from_subsystem
+export filter_components_by_subsystem!
 
 export set_runchecks!
 export check
@@ -390,13 +480,14 @@ export generate_struct_files
 #################################################################################
 # Imports
 
+import Base: @kwdef
 import LinearAlgebra
 import Unicode: normalize
 import Logging
 import Dates
 import TimeSeries
 import DataFrames
-import DataStructures: OrderedDict
+import DataStructures: OrderedDict, SortedDict
 import JSON3
 import CSV
 import YAML
@@ -416,19 +507,26 @@ import InfrastructureSystems:
     Deterministic,
     Probabilistic,
     SingleTimeSeries,
+    StaticTimeSeriesKey,
     DeterministicSingleTimeSeries,
+    ForecastKey,
     Scenarios,
     ForecastCache,
     StaticTimeSeriesCache,
+    TimeSeriesKey,
+    TimeSeriesCounts,
+    TimeSeriesAssociation,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
+    SupplementalAttribute,
     DeviceParameter,
     FlattenIteratorWrapper,
     LazyDictFromIterator,
     DataFormatError,
     InvalidRange,
     InvalidValue,
+    GeographicInfo,
     copy_time_series!,
     get_count,
     get_data,
@@ -436,21 +534,27 @@ import InfrastructureSystems:
     get_resolution,
     get_window,
     get_name,
+    get_component_uuids,
+    get_supplemental_attribute,
+    get_supplemental_attributes,
     set_name!,
     get_internal,
     set_internal!,
-    get_time_series_container,
     iterate_windows,
     get_time_series,
     has_time_series,
+    get_time_series_type,
     get_time_series_array,
     get_time_series_timestamps,
     get_time_series_values,
-    get_time_series_names,
+    get_time_series_keys,
+    show_time_series,
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
     get_next_time,
+    reset!,
+    has_supplemental_attributes,
     get_units_info,
     set_units_info!,
     to_json,
@@ -471,7 +575,46 @@ import InfrastructureSystems:
     MultiLogger,
     LogEventTracker,
     StructField,
-    StructDefinition
+    StructDefinition,
+    FunctionData,
+    LinearFunctionData,
+    QuadraticFunctionData,
+    PiecewiseLinearData,
+    PiecewiseStepData,
+    get_proportional_term,
+    get_quadratic_term,
+    get_constant_term,
+    get_slopes,
+    running_sum,
+    get_x_lengths,
+    is_convex,
+    get_points,  # TODO possible rename to disambiguate from geographical information
+    get_x_coords,
+    get_y_coords,
+    get_raw_data_type,
+    supports_time_series,
+    supports_supplemental_attributes
+import InfrastructureSystems:
+    ValueCurve,
+    InputOutputCurve,
+    IncrementalCurve,
+    AverageRateCurve,
+    LinearCurve,
+    QuadraticCurve,
+    PiecewisePointCurve,
+    PiecewiseIncrementalCurve,
+    PiecewiseAverageCurve,
+    get_function_data,
+    get_initial_input,
+    get_input_at_zero,
+    get_average_rates,
+    ProductionVariableCostCurve,
+    CostCurve,
+    FuelCurve,
+    get_value_curve,
+    get_vom_cost,
+    get_power_units,
+    get_fuel_cost
 
 const IS = InfrastructureSystems
 
@@ -498,6 +641,9 @@ abstract type Component <: IS.InfrastructureSystemsComponent end
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
 
+supports_time_series(::Device) = true
+supports_supplemental_attributes(::Device) = true
+
 # Include utilities
 include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
@@ -512,7 +658,6 @@ include("models/static_injection_subsystem.jl")
 # PowerSystems models
 include("models/topological_elements.jl")
 include("models/branches.jl")
-include("models/operational_cost.jl")
 #include("models/network.jl")
 
 # Static types
@@ -525,9 +670,17 @@ include("models/dynamic_generator_components.jl")
 include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
 
+# Costs
+include("models/cost_functions/operational_cost.jl")
+include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/HydroGenerationCost.jl")
+include("models/cost_functions/LoadCost.jl")
+include("models/cost_functions/RenewableGenerationCost.jl")
+include("models/cost_functions/StorageCost.jl")
+include("models/cost_functions/ThermalGenerationCost.jl")
+
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
-include("models/regulation_device.jl")
 include("models/HybridSystem.jl")
 
 #Methods for devices
@@ -548,8 +701,13 @@ include("models/dynamic_branch.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
 
+# Supplemental attributes
+include("contingencies.jl")
+include("outages.jl")
+
 # Definitions of PowerSystem
 include("base.jl")
+include("subsystems.jl")
 include("data_format_conversions.jl")
 
 #Data Checks

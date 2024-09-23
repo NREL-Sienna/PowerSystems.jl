@@ -65,8 +65,8 @@ get_r(value::DynamicBranch) = get_r(value.branch)
 get_x(value::DynamicBranch) = get_x(value.branch)
 """Get DynamicBranch b."""
 get_b(value::DynamicBranch) = get_b(value.branch)
-"""Get DynamicBranch rate."""
-get_rate(value::DynamicBranch) = get_rate(value.branch)
+"""Get DynamicBranch rating."""
+get_rating(value::DynamicBranch) = get_rating(value.branch)
 """Get DynamicBranch angle_limits."""
 get_angle_limits(value::DynamicBranch) = get_angle_limits(value.branch)
 """Get DynamicBranch services."""
@@ -90,8 +90,8 @@ set_r!(value::DynamicBranch, val::Float64) = set_r!(value.branch, val)
 set_x!(value::DynamicBranch, val::Float64) = set_x!(value.branch, val)
 """Set DynamicBranch b."""
 set_b!(value::DynamicBranch, val) = set_b!(value.branch, val)
-"""Set DynamicBranch rate."""
-set_rate!(value::DynamicBranch, val::Float64) = set_rate!(value.branch, val)
+"""Set DynamicBranch rating."""
+set_rating!(value::DynamicBranch, val::Float64) = set_rating!(value.branch, val)
 """Set DynamicBranch angle_limits."""
 set_angle_limits!(
     value::DynamicBranch,

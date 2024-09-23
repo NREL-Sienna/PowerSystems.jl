@@ -26,10 +26,10 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-Parameters of 4-states synchronous machine: Simplified Marconato model
+Parameters of 4-[states](@ref S) synchronous machine: Simplified Marconato model
  The derivative of stator fluxes (ψd and ψq) is neglected and ωψd = ψd and
  ωψq = ψq is assumed (i.e. ω=1.0). This is standard when transmission network
- dynamics is neglected.
+ dynamics is neglected
 
 # Arguments
 - `R::Float64`: Resistance after EMF in machine per unit, validation range: `(0, nothing)`
@@ -44,16 +44,16 @@ Parameters of 4-states synchronous machine: Simplified Marconato model
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
 - `T_AA::Float64`: Time constant of d-axis additional leakage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`
-- `γd::Float64`
-- `γq::Float64`
-- `states::Vector{Symbol}`: The states are:
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `γd::Float64`: (**Do not modify.**) Internal equation
+- `γq::Float64`: (**Do not modify.**) Internal equation
+- `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage
-- `n_states::Int`: SimpleMarconatoMachine has 4 states
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `n_states::Int`: (**Do not modify.**) SimpleMarconatoMachine has 4 states
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SimpleMarconatoMachine <: Machine
     "Resistance after EMF in machine per unit"
@@ -80,18 +80,21 @@ mutable struct SimpleMarconatoMachine <: Machine
     Tq0_pp::Float64
     "Time constant of d-axis additional leakage"
     T_AA::Float64
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
+    "(**Do not modify.**) Internal equation"
     γd::Float64
+    "(**Do not modify.**) Internal equation"
     γq::Float64
-    "The states are:
+    "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
 	eq_pp: q-axis subtransient voltage,
 	ed_pp: d-axis subtransient voltage"
     states::Vector{Symbol}
-    "SimpleMarconatoMachine has 4 states"
+    "(**Do not modify.**) SimpleMarconatoMachine has 4 states"
     n_states::Int
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 

@@ -12,13 +12,18 @@ Pages   = ["PowerSystems.jl",
            "loads.jl",
            "supplemental_constructors",
            "generation.jl",
+           "reserves.jl",
            "storage.jl",
            "services.jl",
+           "outages.jl",
            "topological_elements.jl",
            "dynamic_models.jl",
            "static_models.jl",
+           "static_injection_subsystem.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
+           "cost_functions/ValueCurves.jl",
+           "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
 Private = false
@@ -76,6 +81,14 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["utils/print.jl"]
+Public = true
+Private = false
+Filter = t -> t ∉ [System]
+```
+
 ## Additional Component Methods
 
 ```@autodocs
@@ -87,33 +100,21 @@ Private = false
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["component.jl", "components.jl"]
+Pages   = ["time_series_interface.jl", "time_series_structs.jl",
+            "time_series_storage.jl", "utils/print.jl",
+            "time_series_cache.jl"]
 Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
                    InfrastructureSystems.get_time_series_array,
+                   InfrastructureSystems.reset!,
                    InfrastructureSystems.get_time_series_timestamps,
                    InfrastructureSystems.get_time_series_values,
+                   InfrastructureSystems.show_time_series,
+                   InfrastructureSystems.get_time_series_keys,
+                   InfrastructureSystems.TimeSeriesAssociation,
+                   InfrastructureSystems.ForecastCache,
+                   InfrastructureSystems.StaticTimeSeriesCache,
+                   InfrastructureSystems.CompressionSettings
                    ]
-```
-
-## [Network Matrices](@id net_mat)
-
-```@autodocs
-Modules = [PowerSystems]
-Pages   = ["utils/network_calculations/ybus_calculations.jl",
-           "utils/network_calculations/ptdf_calculations.jl",
-           "utils/network_calculations/lodf_calculations.jl",
-           "utils/network_calculations/common.jl"]
-Private = false
-Public = true
-```
-
-## [Power Flow](@id pf)
-
-```@autodocs
-Modules = [PowerSystems]
-Pages = ["power_flow.jl"]
-Public = true
-Private = false
 ```
 
 ## Parsing

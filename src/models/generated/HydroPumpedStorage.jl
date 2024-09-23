@@ -28,112 +28,121 @@ This file is auto-generated. Do not edit.
         outflow::Float64
         initial_storage::UpDown
         storage_target::UpDown
-        operation_cost::OperationalCost
+        operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
         pump_efficiency::Float64
         conversion_factor::Float64
+        status::PumpHydroStatus
         time_at_status::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
-
+A hydropower generator with pumped storage and upper and lower reservoirs. 
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `bus::ACBus`
-- `active_power::Float64`
-- `reactive_power::Float64`
-- `rating::Float64`: Thermal limited MVA Power Output of the unit. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `base_power::Float64`: Base power of the unit in MVA, validation range: `(0, nothing)`, action if invalid: `warn`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923
-- `active_power_limits::MinMax`, validation range: `(0, nothing)`, action if invalid: `warn`
-- `reactive_power_limits::Union{Nothing, MinMax}`, action if invalid: `warn`
-- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `rating_pump::Float64`: Thermal limited MVA Power Withdrawl of the pump. <= Capacity, validation range: `(0, nothing)`, action if invalid: `error`
-- `active_power_limits_pump::MinMax`
-- `reactive_power_limits_pump::Union{Nothing, MinMax}`, action if invalid: `warn`
-- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW (in component base per unit) per minute of pump, validation range: `(0, nothing)`, action if invalid: `error`
-- `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`, action if invalid: `error`
-- `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)., validation range: `(0, nothing)`, action if invalid: `error`
-- `storage_target::UpDown`: Storage target of upper reservoir at the end of simulation as ratio of storage capacity.
-- `operation_cost::OperationalCost`: Operation Cost of Generation [`OperationalCost`](@ref)
-- `pump_efficiency::Float64`: Efficiency of pump, validation range: `(0, 1)`, action if invalid: `warn`
-- `conversion_factor::Float64`: Conversion factor from flow/volume to energy: m^3 -> p.u-hr.
-- `time_at_status::Float64`
-- `services::Vector{Service}`: Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: corresponding dynamic injection device
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR)
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `rating_pump::Float64`: Maximum power withdrawal (MVA) of the pump, validation range: `(0, nothing)`
+- `active_power_limits_pump::MinMax`:
+- `reactive_power_limits_pump::Union{Nothing, MinMax}`:
+- `ramp_limits_pump::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min of pump, validation range: `(0, nothing)`
+- `time_limits_pump::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits of pump in hours, validation range: `(0, nothing)`
+- `storage_capacity::UpDown`: Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3), validation range: `(0, nothing)`
+- `inflow::Float64`: Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
+- `outflow::Float64`: Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
+- `initial_storage::UpDown`: Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3), validation range: `(0, nothing)`
+- `storage_target::UpDown`: (default: `(up=1.0, down=1.0)`) Storage target of upper reservoir at the end of simulation as ratio of storage capacity
+- `operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
+- `pump_efficiency::Float64`: (default: `1.0`) Pumping efficiency [0, 1.0], validation range: `(0, 1)`
+- `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
+- `status::PumpHydroStatus`: (default: `PumpHydroStatus.OFF`) Initial commitment condition at the start of a simulation (`PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`)
+- `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct HydroPumpedStorage <: HydroGen
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Bus that this component is connected to"
     bus::ACBus
+    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Thermal limited MVA Power Output of the unit. <= Capacity"
+    "Maximum output power rating of the unit (MVA)"
     rating::Float64
-    "Base power of the unit in MVA"
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "Prime mover technology according to EIA 923"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
+    "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}
-    "ramp up and ramp down limits in MW (in component base per unit) per minute"
+    "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
     time_limits::Union{Nothing, UpDown}
-    "Thermal limited MVA Power Withdrawl of the pump. <= Capacity"
+    "Maximum power withdrawal (MVA) of the pump"
     rating_pump::Float64
     active_power_limits_pump::MinMax
     reactive_power_limits_pump::Union{Nothing, MinMax}
-    "ramp up and ramp down limits in MW (in component base per unit) per minute of pump"
+    "ramp up and ramp down limits in MW/min of pump"
     ramp_limits_pump::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits of pump in hours"
     time_limits_pump::Union{Nothing, UpDown}
-    "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)."
+    "Maximum storage capacity in the upper and lower reservoirs (units can be p.u-hr or m^3)"
     storage_capacity::UpDown
     "Baseline inflow into the upper reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
     "Baseline outflow from the lower reservoir (units can be p.u. or m^3/hr)"
     outflow::Float64
-    "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)."
+    "Initial storage capacity in the upper and lower reservoir (units can be p.u-hr or m^3)"
     initial_storage::UpDown
-    "Storage target of upper reservoir at the end of simulation as ratio of storage capacity."
+    "Storage target of upper reservoir at the end of simulation as ratio of storage capacity"
     storage_target::UpDown
-    "Operation Cost of Generation [`OperationalCost`](@ref)"
-    operation_cost::OperationalCost
-    "Efficiency of pump"
+    "[`OperationalCost`](@ref) of generation"
+    operation_cost::Union{HydroGenerationCost, StorageCost, MarketBidCost}
+    "Pumping efficiency [0, 1.0]"
     pump_efficiency::Float64
-    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr."
+    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
+    "Initial commitment condition at the start of a simulation (`PumpHydroStatus.PUMP`, `PumpHydroStatus.GEN`, or `PumpHydroStatus.OFF`)"
+    status::PumpHydroStatus
+    "Time (e.g., `Hours(6)`) the generator has been generating, pumping, or off, as indicated by `status`"
     time_at_status::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, InfrastructureSystemsInternal(), )
+function HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, status, time_at_status, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=TwoPartCost(0.0, 0.0), pump_efficiency=1.0, conversion_factor=1.0, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, time_at_status, services, dynamic_injector, ext, time_series_container, internal, )
+function HydroPumpedStorage(; name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target=(up=1.0, down=1.0), operation_cost=HydroGenerationCost(nothing), pump_efficiency=1.0, conversion_factor=1.0, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpedStorage(name, available, bus, active_power, reactive_power, rating, base_power, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, rating_pump, active_power_limits_pump, reactive_power_limits_pump, ramp_limits_pump, time_limits_pump, storage_capacity, inflow, outflow, initial_storage, storage_target, operation_cost, pump_efficiency, conversion_factor, status, time_at_status, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -161,14 +170,14 @@ function HydroPumpedStorage(::Nothing)
         outflow=0.0,
         initial_storage=(up=0.0, down=0.0),
         storage_target=(up=0.0, down=0.0),
-        operation_cost=TwoPartCost(nothing),
+        operation_cost=HydroGenerationCost(nothing),
         pump_efficiency=0.0,
         conversion_factor=0.0,
+        status=PumpHydroStatus.OFF,
         time_at_status=INFINITE_TIME,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -222,6 +231,8 @@ get_operation_cost(value::HydroPumpedStorage) = value.operation_cost
 get_pump_efficiency(value::HydroPumpedStorage) = value.pump_efficiency
 """Get [`HydroPumpedStorage`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroPumpedStorage) = value.conversion_factor
+"""Get [`HydroPumpedStorage`](@ref) `status`."""
+get_status(value::HydroPumpedStorage) = value.status
 """Get [`HydroPumpedStorage`](@ref) `time_at_status`."""
 get_time_at_status(value::HydroPumpedStorage) = value.time_at_status
 """Get [`HydroPumpedStorage`](@ref) `services`."""
@@ -230,8 +241,6 @@ get_services(value::HydroPumpedStorage) = value.services
 get_dynamic_injector(value::HydroPumpedStorage) = value.dynamic_injector
 """Get [`HydroPumpedStorage`](@ref) `ext`."""
 get_ext(value::HydroPumpedStorage) = value.ext
-"""Get [`HydroPumpedStorage`](@ref) `time_series_container`."""
-get_time_series_container(value::HydroPumpedStorage) = value.time_series_container
 """Get [`HydroPumpedStorage`](@ref) `internal`."""
 get_internal(value::HydroPumpedStorage) = value.internal
 
@@ -283,11 +292,11 @@ set_operation_cost!(value::HydroPumpedStorage, val) = value.operation_cost = val
 set_pump_efficiency!(value::HydroPumpedStorage, val) = value.pump_efficiency = val
 """Set [`HydroPumpedStorage`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroPumpedStorage, val) = value.conversion_factor = val
+"""Set [`HydroPumpedStorage`](@ref) `status`."""
+set_status!(value::HydroPumpedStorage, val) = value.status = val
 """Set [`HydroPumpedStorage`](@ref) `time_at_status`."""
 set_time_at_status!(value::HydroPumpedStorage, val) = value.time_at_status = val
 """Set [`HydroPumpedStorage`](@ref) `services`."""
 set_services!(value::HydroPumpedStorage, val) = value.services = val
 """Set [`HydroPumpedStorage`](@ref) `ext`."""
 set_ext!(value::HydroPumpedStorage, val) = value.ext = val
-"""Set [`HydroPumpedStorage`](@ref) `time_series_container`."""
-set_time_series_container!(value::HydroPumpedStorage, val) = value.time_series_container = val

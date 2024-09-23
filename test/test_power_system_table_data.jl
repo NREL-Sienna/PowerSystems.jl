@@ -1,4 +1,3 @@
-
 import PowerSystems: LazyDictFromIterator
 
 @testset "PowerSystemTableData parsing" begin
@@ -86,15 +85,34 @@ end
                     @test cdmgen_val == mpgen_val
                 end
 
-                if length(mpgen.operation_cost.variable) == 4
-                    @test [
-                        isapprox(
-                            cdmgen.operation_cost.variable[i][1],
-                            mpgen.operation_cost.variable[i][1];
-                            atol = 0.1,
-                        ) for i in 1:4
-                    ] == [true, true, true, true]
-                    #@test PSY.compare_values(cdmgen.operation_cost, mpgen.operation_cost, compare_uuids = false)
+                mpgen_cost = get_operation_cost(mpgen)
+                # Currently true; this is likely to change in the future and then we'd have to change the test
+                @assert get_variable(mpgen_cost) isa
+                        CostCurve{InputOutputCurve{PiecewiseLinearData}}
+                mp_points = get_points(
+                    get_function_data(get_value_curve(
+                        get_variable(mpgen_cost))),
+                )
+                if length(mp_points) == 4
+                    cdm_op_cost = get_operation_cost(cdmgen)
+                    @test get_fixed(cdm_op_cost) == 0.0
+                    fuel_curve = get_variable(cdm_op_cost)
+                    fuel_cost = get_fuel_cost(fuel_curve)
+                    mp_fixed = get_fixed(mpgen_cost)
+                    io_curve = InputOutputCurve(get_value_curve(fuel_curve))
+                    cdm_points = get_points(io_curve)
+                    @test all(
+                        isapprox.(
+                            [p.y * fuel_cost for p in cdm_points],
+                            [p.y + mp_fixed for p in mp_points],
+                            atol = 0.1),
+                    )
+                    @test all(
+                        isapprox.(
+                            [p.x for p in cdm_points],
+                            [p.x * get_base_power(mpgen) for p in mp_points],
+                            atol = 0.1),
+                    )
                 end
             end
 
@@ -119,12 +137,12 @@ end
             end
 
             cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
-            @test get_rate(cdm_ac_branches[2]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[2]))
-            @test get_rate(cdm_ac_branches[6]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[6]))
-            @test get_rate(cdm_ac_branches[120]) ==
-                  get_rate(get_branch(mpsys, cdm_ac_branches[120]))
+            @test get_rating(cdm_ac_branches[2]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[2]))
+            @test get_rating(cdm_ac_branches[6]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[6]))
+            @test get_rating(cdm_ac_branches[120]) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
             cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
@@ -136,8 +154,10 @@ end
 @testset "Test reserve direction" begin
     @test PSY.get_reserve_direction("Up") == ReserveUp
     @test PSY.get_reserve_direction("Down") == ReserveDown
+    @test PSY.get_reserve_direction("up") == ReserveUp
+    @test PSY.get_reserve_direction("down") == ReserveDown
 
-    for invalid in ("up", "down", "right", "left")
+    for invalid in ("right", "left")
         @test_throws PSY.DataFormatError PSY.get_reserve_direction(invalid)
     end
 end
@@ -162,4 +182,86 @@ end
     g_hr = get_components(ThermalStandard, sys_hr)
     g = get_components(ThermalStandard, sys)
     @test get_variable.(get_operation_cost.(g)) == get_variable.(get_operation_cost.(g))
+end
+
+@testset "Test create_poly_cost function" begin
+    cost_colnames = ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"]
+
+    # Coefficients for a CC using natural gas
+    a2 = -0.000531607
+    a1 = 0.060554675
+    a0 = 8.951100118
+
+    # First test that return quadratic if all coefficients are provided.
+    # We convert the coefficients to string to mimic parsing from csv
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = string(a0),
+        heat_rate_a1 = string(a1),
+        heat_rate_a2 = string(a2),
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa QuadraticCurve
+    @assert isapprox(get_quadratic_term(cost_curve), a2, atol = 0.01)
+    @assert isapprox(get_proportional_term(cost_curve), a1, atol = 0.01)
+    @assert isapprox(get_constant_term(cost_curve), a0, atol = 0.01)
+
+    # Test return linear with both proportional and constant term
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = string(a0),
+        heat_rate_a1 = string(a1),
+        heat_rate_a2 = nothing,
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa LinearCurve
+    @assert isapprox(get_proportional_term(cost_curve), a1, atol = 0.01)
+    @assert isapprox(get_constant_term(cost_curve), a0, atol = 0.01)
+
+    # Test return linear with just proportional term
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = nothing,
+        heat_rate_a1 = string(a1),
+        heat_rate_a2 = nothing,
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa LinearCurve
+    @assert isapprox(get_proportional_term(cost_curve), a1, atol = 0.01)
+
+    # Test raises error if a2 is passed but other coefficients are nothing
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = nothing,
+        heat_rate_a1 = nothing,
+        heat_rate_a2 = string(a2),
+    )
+    @test_throws IS.DataFormatError create_poly_cost(example_generator, cost_colnames)
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = nothing,
+        heat_rate_a1 = string(a1),
+        heat_rate_a2 = string(a2),
+    )
+    @test_throws IS.DataFormatError create_poly_cost(example_generator, cost_colnames)
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = string(a0),
+        heat_rate_a1 = nothing,
+        heat_rate_a2 = string(a2),
+    )
+    @test_throws IS.DataFormatError create_poly_cost(example_generator, cost_colnames)
+
+    # Test that it works with zero proportional and constant term
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = string(0.0),
+        heat_rate_a1 = string(0.0),
+        heat_rate_a2 = string(a2),
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa QuadraticCurve
+    @assert isapprox(get_quadratic_term(cost_curve), a2, atol = 0.01)
+    @assert isapprox(get_proportional_term(cost_curve), 0.0, atol = 0.01)
+    @assert isapprox(get_constant_term(cost_curve), 0.0, atol = 0.01)
 end

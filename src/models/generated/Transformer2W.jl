@@ -14,58 +14,63 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         primary_shunt::Float64
-        rate::Union{Nothing, Float64}
+        rating::Union{Nothing, Float64}
         services::Vector{Service}
         ext::Dict{String, Any}
-        time_series_container::InfrastructureSystems.TimeSeriesContainer
         internal::InfrastructureSystemsInternal
     end
 
-The 2-W transformer model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side.
+A basic 2-winding transformer.
+
+The model uses an equivalent circuit assuming the impedance is on the High Voltage Side of the transformer. The model allocates the iron losses and magnetizing susceptance to the primary side
 
 # Arguments
-- `name::String`
-- `available::Bool`
-- `active_power_flow::Float64`
-- `reactive_power_flow::Float64`
-- `arc::Arc`
-- `r::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `x::Float64`: System per-unit value, validation range: `(-2, 4)`, action if invalid: `warn`
-- `primary_shunt::Float64`: System per-unit value, validation range: `(0, 2)`, action if invalid: `warn`
-- `rate::Union{Nothing, Float64}`, validation range: `(0, nothing)`, action if invalid: `error`
-- `services::Vector{Service}`: Services that this device contributes to
-- `ext::Dict{String, Any}`
-- `time_series_container::InfrastructureSystems.TimeSeriesContainer`: internal time_series storage
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `active_power_flow::Float64`: Initial condition of active power flow through the transformer (MW)
+- `reactive_power_flow::Float64`: Initial condition of reactive power flow through the transformer (MVAR)
+- `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
+- `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
+- `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
+- `primary_shunt::Float64`: Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`
+- `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to, validation range: `(0, nothing)`
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Transformer2W <: ACBranch
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Initial condition of active power flow through the transformer (MW)"
     active_power_flow::Float64
+    "Initial condition of reactive power flow through the transformer (MVAR)"
     reactive_power_flow::Float64
+    "An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus"
     arc::Arc
-    "System per-unit value"
+    "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     r::Float64
-    "System per-unit value"
+    "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    "System per-unit value"
+    "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Float64
-    rate::Union{Nothing, Float64}
+    "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in per-unit divided by the base power of the `System` it will be attached to"
+    rating::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
-    "internal time_series storage"
-    time_series_container::InfrastructureSystems.TimeSeriesContainer
-    "power system internal reference, do not modify"
+    "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services=Device[], ext=Dict{String, Any}(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services=Device[], ext=Dict{String, Any}(), time_series_container=InfrastructureSystems.TimeSeriesContainer(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rate, services, ext, time_series_container, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -79,10 +84,9 @@ function Transformer2W(::Nothing)
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
-        rate=nothing,
+        rating=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
-        time_series_container=InfrastructureSystems.TimeSeriesContainer(),
     )
 end
 
@@ -102,14 +106,12 @@ get_r(value::Transformer2W) = value.r
 get_x(value::Transformer2W) = value.x
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
 get_primary_shunt(value::Transformer2W) = value.primary_shunt
-"""Get [`Transformer2W`](@ref) `rate`."""
-get_rate(value::Transformer2W) = get_value(value, value.rate)
+"""Get [`Transformer2W`](@ref) `rating`."""
+get_rating(value::Transformer2W) = get_value(value, value.rating)
 """Get [`Transformer2W`](@ref) `services`."""
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
 get_ext(value::Transformer2W) = value.ext
-"""Get [`Transformer2W`](@ref) `time_series_container`."""
-get_time_series_container(value::Transformer2W) = value.time_series_container
 """Get [`Transformer2W`](@ref) `internal`."""
 get_internal(value::Transformer2W) = value.internal
 
@@ -127,11 +129,9 @@ set_r!(value::Transformer2W, val) = value.r = val
 set_x!(value::Transformer2W, val) = value.x = val
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
-"""Set [`Transformer2W`](@ref) `rate`."""
-set_rate!(value::Transformer2W, val) = value.rate = set_value(value, val)
+"""Set [`Transformer2W`](@ref) `rating`."""
+set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val)
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""
 set_ext!(value::Transformer2W, val) = value.ext = val
-"""Set [`Transformer2W`](@ref) `time_series_container`."""
-set_time_series_container!(value::Transformer2W, val) = value.time_series_container = val
