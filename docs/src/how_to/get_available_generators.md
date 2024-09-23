@@ -14,19 +14,23 @@ to access all the available generators in an existing [`system`](@ref System).
 
 Use [`get_available_components`](@ref) to get an iterator of all the available generators in
 an existing [`system`](@ref System), which also prints a summary:
+
 ```@repl get_gens
 gen_iter = get_available_components(Generator, system)
 ```
 
 The iterator avoids unnecessary memory allocations if there are many generators, and it can
 be used to view or update the generator data, such as seeing each of the names:
+
 ```@repl get_gens
 get_name.(gen_iter)
 ```
 
 !!! tip
+    
     Above, we use the abstract supertype [`Generator`](@ref) to get all components that are
     subtypes of it. You can instead get all the components of a concrete type, such as:
+    
     ```@repl get_gens
     gen_iter = get_available_components(RenewableDispatch, system)
     ```
@@ -35,6 +39,7 @@ get_name.(gen_iter)
 
 Use `collect` to get a vector of the generators instead of an iterator, which could require
 a lot of memory:
+
 ```@repl get_gens
 gens = collect(get_available_components(Generator, system));
 ```
@@ -48,7 +53,8 @@ with a filter to check for availability:
 gen_iter = get_components(get_available, Generator, system)
 ```
 
-`collect` can also be used to turn this iterator into a vector. 
+`collect` can also be used to turn this iterator into a vector.
 
 #### See Also
-- How to: [Get the buses in a System](@ref)
+
+  - How to: [Get the buses in a System](@ref)
