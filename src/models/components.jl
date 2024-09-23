@@ -11,12 +11,12 @@ function _get_multiplier(c::T) where {T <: Component}
     setting = get_internal(c).units_info
     if isnothing(setting)
         return 1.0
-    elseif setting.unit_system == IS.UnitSystem.DEVICE_BASE
+    elseif setting.unit_system === IS.UnitSystem.DEVICE_BASE
         return 1.0
-    elseif setting.unit_system == IS.UnitSystem.SYSTEM_BASE
+    elseif setting.unit_system === IS.UnitSystem.SYSTEM_BASE
         numerator = get_base_power(c)
         denominator = setting.base_value
-    elseif setting.unit_system == IS.UnitSystem.NATURAL_UNITS
+    elseif setting.unit_system === IS.UnitSystem.NATURAL_UNITS
         numerator = get_base_power(c)
         denominator = 1.0
     else
