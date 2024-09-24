@@ -503,7 +503,7 @@ export FilterComponentSelector
 export TopologyComponentSelector
 export subtype_to_string
 export component_to_qualified_string
-export select_components
+export make_selector
 export get_components
 export get_groups
 #################################################################################
@@ -635,7 +635,7 @@ import InfrastructureSystems:
     component_to_qualified_string,
     subtype_to_string,
     NAME_DELIMETER,
-    select_components
+    make_selector
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,

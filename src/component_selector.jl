@@ -28,7 +28,7 @@ end
 Make a ComponentSelector from an AggregationTopology and a subtype of Component. Optionally
 provide a name for the ComponentSelector.
 """
-select_components(
+make_selector(
     component_subtype::Type{<:Component},
     topology_subtype::Type{<:AggregationTopology},
     topology_name::AbstractString,
@@ -47,7 +47,7 @@ IS.default_name(e::TopologyComponentSelector) =
 
 # Contents
 function get_subselectors(e::TopologyComponentSelector, sys::System; filterby = nothing)
-    return Iterators.map(select_components, get_components(e, sys; filterby = filterby))
+    return Iterators.map(make_selector, get_components(e, sys; filterby = filterby))
 end
 
 function get_components(e::TopologyComponentSelector, sys::System; filterby = nothing)

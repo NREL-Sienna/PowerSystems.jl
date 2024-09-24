@@ -27,9 +27,9 @@ end
           named_test_gen_ent
 
     # Construction
-    @test select_components(ThermalStandard, "Solitude") == test_gen_ent
-    @test select_components(ThermalStandard, "Solitude", "SolGen") == named_test_gen_ent
-    @test select_components(gen_solitude) == test_gen_ent
+    @test make_selector(ThermalStandard, "Solitude") == test_gen_ent
+    @test make_selector(ThermalStandard, "Solitude", "SolGen") == named_test_gen_ent
+    @test make_selector(gen_solitude) == test_gen_ent
 
     # Naming
     @test get_name(test_gen_ent) == "ThermalStandard__Solitude"
@@ -37,25 +37,25 @@ end
     @test IS.default_name(test_gen_ent) == "ThermalStandard__Solitude"
 
     # Contents
-    @test collect(get_components(select_components(NonexistentComponent, ""), test_sys)) ==
+    @test collect(get_components(make_selector(NonexistentComponent, ""), test_sys)) ==
           Vector{Component}()
     the_components = collect(get_components(test_gen_ent, test_sys))
     @test length(the_components) == 1
     @test typeof(first(the_components)) == ThermalStandard
     @test get_name(first(the_components)) == "Solitude"
     @test collect(
-        get_components(select_components(gen_sundance), test_sys; filterby = get_available),
+        get_components(make_selector(gen_sundance), test_sys; filterby = get_available),
     ) ==
           Vector{Component}()
 
     @test gen_solitude in test_gen_ent
     @test !(gen_sundance in test_gen_ent)
-    @test !in(gen_sundance, select_components(gen_sundance); filterby = get_available)
+    @test !in(gen_sundance, make_selector(gen_sundance); filterby = get_available)
 end
 
 @testset "Test ListComponentSelector" begin
-    comp_ent_1 = select_components(ThermalStandard, "Sundance")
-    comp_ent_2 = select_components(RenewableDispatch, "WindBusA")
+    comp_ent_1 = make_selector(ThermalStandard, "Sundance")
+    comp_ent_2 = make_selector(RenewableDispatch, "WindBusA")
     test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
     named_test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
 
@@ -65,8 +65,8 @@ end
           named_test_list_ent
 
     # Construction
-    @test select_components(comp_ent_1, comp_ent_2;) == test_list_ent
-    @test select_components(comp_ent_1, comp_ent_2; name = "TwoComps") ==
+    @test make_selector(comp_ent_1, comp_ent_2;) == test_list_ent
+    @test make_selector(comp_ent_1, comp_ent_2; name = "TwoComps") ==
           named_test_list_ent
 
     # Naming
@@ -75,7 +75,7 @@ end
     @test get_name(named_test_list_ent) == "TwoComps"
 
     # Contents
-    @test collect(get_components(select_components(), test_sys)) == Vector{Component}()
+    @test collect(get_components(make_selector(), test_sys)) == Vector{Component}()
     the_components = collect(get_components(test_list_ent, test_sys))
     @test length(the_components) == 2
     @test gen_sundance in the_components
@@ -84,7 +84,7 @@ end
         gen_sundance in
         collect(get_components(test_list_ent, test_sys; filterby = get_available)))
 
-    @test collect(get_subselectors(select_components(), test_sys)) ==
+    @test collect(get_subselectors(make_selector(), test_sys)) ==
           Vector{ComponentSelector}()
     the_subselectors = collect(get_subselectors(test_list_ent, test_sys))
     @test length(the_subselectors) == 2
@@ -105,8 +105,8 @@ end
     @test SubtypeComponentSelector(ThermalStandard, "Thermals") == named_test_sub_ent
 
     # Construction
-    @test select_components(ThermalStandard) == test_sub_ent
-    @test select_components(ThermalStandard; name = "Thermals") == named_test_sub_ent
+    @test make_selector(ThermalStandard) == test_sub_ent
+    @test make_selector(ThermalStandard; name = "Thermals") == named_test_sub_ent
 
     # Naming
     @test get_name(test_sub_ent) == "ThermalStandard"
@@ -116,7 +116,7 @@ end
     # Contents
     answer = sort_name!(get_components(ThermalStandard, test_sys))
 
-    @test collect(get_components(select_components(NonexistentComponent), test_sys)) ==
+    @test collect(get_components(make_selector(NonexistentComponent), test_sys)) ==
           Vector{Component}()
     the_components = sort_name!(get_components(test_sub_ent, test_sys))
     @test all(the_components .== answer)
@@ -124,10 +124,10 @@ end
         gen_sundance in
         collect(get_components(test_sub_ent, test_sys; filterby = get_available)))
 
-    @test collect(get_subselectors(select_components(NonexistentComponent), test_sys)) ==
+    @test collect(get_subselectors(make_selector(NonexistentComponent), test_sys)) ==
           Vector{ComponentSelectorElement}()
     the_subselectors = sort_name!(get_subselectors(test_sub_ent, test_sys))
-    @test all(the_subselectors .== select_components.(answer))
+    @test all(the_subselectors .== make_selector.(answer))
     @test !(
         gen_sundance in
         collect(get_subselectors(test_sub_ent, test_sys; filterby = get_available)))
@@ -151,20 +151,20 @@ end
           test_topo_ent2
 
     # Construction
-    @test select_components(Area, "1", ThermalStandard) == test_topo_ent1
-    @test select_components(LoadZone, "2", StaticInjection, "Zone_2") == test_topo_ent2
+    @test make_selector(Area, "1", ThermalStandard) == test_topo_ent1
+    @test make_selector(LoadZone, "2", StaticInjection, "Zone_2") == test_topo_ent2
 
     # Naming
     @test get_name(test_topo_ent1) == "Area__1__ThermalStandard"
     @test get_name(test_topo_ent2) == "Zone_2"
 
     # Contents
-    empty_topo_ent = select_components(Area, "1", NonexistentComponent)
+    empty_topo_ent = make_selector(Area, "1", NonexistentComponent)
     @test collect(get_components(empty_topo_ent, test_sys2)) == Vector{Component}()
     @test collect(get_subselectors(empty_topo_ent, test_sys2)) ==
           Vector{ComponentSelectorElement}()
 
-    nonexistent_topo_ent = select_components(Area, "NonexistentArea", ThermalStandard)
+    nonexistent_topo_ent = make_selector(Area, "NonexistentArea", ThermalStandard)
     @test collect(get_components(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
     @test collect(get_subselectors(nonexistent_topo_ent, test_sys2)) ==
           Vector{ComponentSelectorElement}()
@@ -191,7 +191,7 @@ end
         @test length(collect(get_components(ent, test_sys2; filterby = x -> false))) == 0
 
         the_subselectors = get_subselectors(ent, test_sys2)
-        @test all(sort_name!(the_subselectors) .== sort_name!(select_components.(ans)))
+        @test all(sort_name!(the_subselectors) .== sort_name!(make_selector.(ans)))
         @test Set(collect(get_subselectors(ent, test_sys2; filterby = x -> true))) ==
               Set(the_subselectors)
         @test length(collect(get_subselectors(ent, test_sys2; filterby = x -> false))) == 0
@@ -203,7 +203,7 @@ end
         gen_sundance2 in
         collect(get_components(test_topo_ent1, test_sys2; filterby = get_available)))
     @test !(
-        select_components(gen_sundance2) in
+        make_selector(gen_sundance2) in
         collect(get_subselectors(test_topo_ent1, test_sys2; filterby = get_available)))
 
     @test in(gen_sundance2, test_topo_ent1, test_sys2)
@@ -224,15 +224,15 @@ end
           named_test_filter_ent
 
     # Construction
-    @test select_components(starts_with_s, ThermalStandard) == test_filter_ent
-    @test select_components(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
+    @test make_selector(starts_with_s, ThermalStandard) == test_filter_ent
+    @test make_selector(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
           named_test_filter_ent
     bad_input_fn(x::Integer) = true  # Should always fail to construct
     specific_input_fn(x::RenewableDispatch) = true  # Should require compatible subtype
-    @test_throws ArgumentError select_components(bad_input_fn, ThermalStandard)
-    @test_throws ArgumentError select_components(specific_input_fn, Component)
-    @test_throws ArgumentError select_components(specific_input_fn, ThermalStandard)
-    @test select_components(specific_input_fn, RenewableDispatch) isa Any  # test absence of error
+    @test_throws ArgumentError make_selector(bad_input_fn, ThermalStandard)
+    @test_throws ArgumentError make_selector(specific_input_fn, Component)
+    @test_throws ArgumentError make_selector(specific_input_fn, ThermalStandard)
+    @test make_selector(specific_input_fn, RenewableDispatch) isa Any  # test absence of error
 
     # Naming
     @test get_name(test_filter_ent) == "starts_with_s__ThermalStandard"
@@ -242,10 +242,10 @@ end
     answer = filter(starts_with_s, collect(get_components(ThermalStandard, test_sys)))
 
     @test collect(
-        get_components(select_components(x -> true, NonexistentComponent), test_sys),
+        get_components(make_selector(x -> true, NonexistentComponent), test_sys),
     ) ==
           Vector{Component}()
-    @test collect(get_components(select_components(x -> false, Component), test_sys)) ==
+    @test collect(get_components(make_selector(x -> false, Component), test_sys)) ==
           Vector{Component}()
     @test all(collect(get_components(test_filter_ent, test_sys)) .== answer)
     @test !(
@@ -253,17 +253,17 @@ end
         collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
 
     @test collect(
-        get_subselectors(select_components(x -> true, NonexistentComponent), test_sys),
+        get_subselectors(make_selector(x -> true, NonexistentComponent), test_sys),
     ) == Vector{ComponentSelectorElement}()
-    @test collect(get_subselectors(select_components(x -> false, Component), test_sys)) ==
+    @test collect(get_subselectors(make_selector(x -> false, Component), test_sys)) ==
           Vector{ComponentSelectorElement}()
     @test all(
-        collect(get_subselectors(test_filter_ent, test_sys)) .== select_components.(answer),
+        collect(get_subselectors(test_filter_ent, test_sys)) .== make_selector.(answer),
     )
     @test !(
         gen_sundance in
         collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
     @test !(
-        select_components(gen_sundance) in
+        make_selector(gen_sundance) in
         collect(get_subselectors(test_filter_ent, test_sys; filterby = get_available)))
 end
