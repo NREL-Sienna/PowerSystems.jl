@@ -8,6 +8,13 @@ get_components(e::ComponentSelector, sys::System; filterby = nothing) =
     IS.get_components(e, sys.data; filterby = filterby)
 
 """
+Get the component of the System that makes up the `ComponentSelectorElement`, `nothing` if
+there is none.
+"""
+get_component(e::ComponentSelectorElement, sys::System; filterby = nothing) =
+    IS.get_component(e, sys.data; filterby = filterby)
+
+"""
 Get the sub-selectors that make up the ComponentSelectorSet.
 """
 get_groups(e::ComponentSelectorSet, sys::System; filterby = nothing) =
