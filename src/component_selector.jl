@@ -21,6 +21,7 @@ struct TopologyComponentSelector <: DynamicallyGroupedComponentSelectorSet
     topology_subtype::Type{<:AggregationTopology}
     topology_name::AbstractString
     name::Union{String, Nothing}
+    groupby::Union{Symbol, Function}  # TODO add validation
 end
 
 # Construction
@@ -31,13 +32,15 @@ provide a name for the ComponentSelector.
 make_selector(
     component_subtype::Type{<:Component},
     topology_subtype::Type{<:AggregationTopology},
-    topology_name::AbstractString,
+    topology_name::AbstractString;
     name::Union{String, Nothing} = nothing,
+    groupby::Union{Symbol, Function} = :all
 ) = TopologyComponentSelector(
     component_subtype,
     topology_subtype,
     topology_name,
     name,
+    groupby,
 )
 
 # Naming
