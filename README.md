@@ -13,7 +13,6 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 ## Version Advisory
 
 - PowerSystems will work with Julia v1.6+.
-- If you are planning to use `PowerSystems.jl` in your package, check the [roadmap to version 4.0](https://github.com/NREL-Sienna/PowerSystems.jl/projects/4) for upcoming changes
 
 ## Device data enabled in PowerSystems
 

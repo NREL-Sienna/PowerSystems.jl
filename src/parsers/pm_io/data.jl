@@ -1695,10 +1695,7 @@ function correct_bus_types!(data::Dict{String, <:Any})
             end
 
             if bus_gens_count != 0 && bus["bus_type"] != 2
-                @info "active generators found at bus $(bus["bus_i"]), updating to bus type from $(bus["bus_type"]) to 2" maxlog =
-                    PS_MAX_LOG
-                bus["bus_type"] = 2
-                push!(modified, bus["index"])
+                @warn "active generators found at bus $(bus["bus_i"]) on bus type $(bus["bus_type"]), i.e. different than 2 (PV). Consider checking your data inputs."
             end
         end
     end

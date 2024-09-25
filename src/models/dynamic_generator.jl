@@ -20,23 +20,34 @@
         internal::InfrastructureSystemsInternal
     end
 
-A dynamic generator is composed by 5 components, namely a Machine, a Shaft, an Automatic Voltage Regulator (AVR),
-a Prime Mover (o Turbine Governor) and Power System Stabilizer (PSS). It requires a [`StaticInjection`](@ref) device
-that is attached to it.
+A dynamic generator with the necessary data for modeling the dynamic response of a generator
+in a phasor or electromagnetic transient simulation.
+
+Dynamic generator is composed by 5 components, namely a [Machine](@ref), a [Shaft](@ref),
+an Automatic Voltage Regulator ([AVR](@ref)), a
+[Prime Mover and Turbine Governor](@ref "TurbineGov"),
+and Power System Stabilizer ([PSS](@ref)). It must be attached to a
+[`StaticInjection`](@ref) device using [`add_component!`](@ref add_component!(
+    sys::System,
+    dyn_injector::DynamicInjection,
+    static_injector::StaticInjection;
+    kwargs...,
+)), which contains all the rest of the generator's data that isn't specific to its dynamic
+response.
 
 # Arguments
 - `name::String`: Name of generator.
 - `ω_ref::Float64`: Frequency reference set-point in pu.
-- `machine <: Machine`: Machine model for modeling the electro-magnetic phenomena.
-- `shaft <: Shaft`: Shaft model for modeling the electro-mechanical phenomena.
-- `avr <: AVR`: AVR model of the excitacion system.
-- `prime_mover <: TurbineGov`: Prime Mover and Turbine Governor model for mechanical power.
-- `pss <: PSS`: Power System Stabilizer model.
-- `base_power::Float64`: Base power
-- `n_states::Int`: Number of states (will depend on the components).
-- `states::Vector{Symbol}`: Vector of states (will depend on the components).
-- `ext::Dict{String, Any}`
-- `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
+- `machine <: Machine`: [Machine](@ref) model for modeling the electro-magnetic phenomena.
+- `shaft <: Shaft`: [Shaft](@ref) model for modeling the electro-mechanical phenomena.
+- `avr <: AVR`: [AVR](@ref) model of the excitacion system.
+- `prime_mover <: TurbineGov`: [Prime Mover and Turbine Governor model](@ref "TurbineGov") for mechanical power.
+- `pss <: PSS`: [PSS](@ref) model.
+- `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for [per unitization](@ref per_unit). Although this has a default, in almost all cases `base_power` should be updated to equal the `base_power` field of the [`StaticInjection`](@ref) device that this dynamic generator will be attached to.
+- `n_states::Int`: (**Do not modify.**)  Number of states (will depend on the inputs above).
+- `states::Vector{Symbol}`: (**Do not modify.**) Vector of states (will depend on the inputs above).
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct DynamicGenerator{
     M <: Machine,
@@ -152,4 +163,14 @@ function _calc_states(machine, shaft, avr, prime_mover, pss)
         get_states(prime_mover),
         get_states(pss),
     )
+end
+
+function get_degov1_states(droop_flag::Int)
+    if droop_flag == 0
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5], 5
+    elseif droop_flag == 1
+        return [:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6], 6
+    else
+        error("Unsupported value of droop_flag on DEGOV1")
+    end
 end

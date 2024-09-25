@@ -123,7 +123,7 @@ Sum of system generator and storage ratings.
 function total_capacity_rating(sys::System)
     total = 0
     for component_type in (Generator, Storage)
-        components = get_components(Generator, sys)
+        components = get_components(component_type, sys)
         if !isempty(components)
             component_total = sum(get_rating.(components)) * get_base_power(sys)
             @debug "total rating for $component_type = $component_total" _group =

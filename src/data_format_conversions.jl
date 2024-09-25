@@ -99,6 +99,12 @@ _convert_op_cost(::Val{:GenericBattery}, ::Val{:StorageManagementCost}, op_cost:
         energy_surplus_cost = op_cost["energy_surplus_cost"],
     )
 
+_convert_op_cost(::Val{:HydroPumpedStorage}, ::Val{:TwoPartCost}, op_cost::Dict) =
+    HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
+
+_convert_op_cost(::Val{:HydroDispatch}, ::Val{:TwoPartCost}, op_cost::Dict) =
+    HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
+
 # TODO implement remaining _convert_op_cost methods
 
 function _convert_data!(
@@ -123,6 +129,10 @@ function _convert_data!(
             new_op_cost = IS.serialize(_convert_op_cost(comp_type, op_cost_type, op_cost))
             component["operation_cost"] = new_op_cost
         end
+
+        (component["__metadata__"]["type"] == "RenewableFix") &&
+            (component["__metadata__"]["type"] = "RenewableNonDispatch")
+
         if component["__metadata__"]["type"] ∈ ["BatteryEMS", "GenericBattery"]
             old_type = component["__metadata__"]["type"]
             component["__metadata__"]["type"] = "EnergyReservoirStorage"

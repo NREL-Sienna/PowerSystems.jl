@@ -36,7 +36,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -96,7 +96,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -138,7 +138,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -277,7 +277,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -350,7 +350,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -465,7 +465,7 @@
                 {
                     "null_value": "0.0",
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true
                 },
@@ -481,6 +481,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "g",
+                    "null_value": "(from=0.0, to=0.0)",
+                    "data_type": "FromTo",
+                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100
+                    },
+                    "validation_action": "warn",
+                    "default": "(from=0.0, to=0.0)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -489,7 +501,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -585,7 +597,7 @@
                     "null_value": "0.0",
                     "name": "rating",
                     "data_type": "Float64",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "needs_conversion": true
                 },
                 {
@@ -600,6 +612,18 @@
                     "validation_action": "error"
                 },
                 {
+                    "name": "g",
+                    "null_value": "(from=0.0, to=0.0)",
+                    "data_type": "FromTo",
+                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100
+                    },
+                    "validation_action": "warn",
+                    "default": "(from=0.0, to=0.0)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -608,7 +632,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -717,7 +741,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -748,7 +772,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -846,7 +870,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -865,7 +889,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -952,7 +976,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
@@ -971,7 +995,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1059,7 +1083,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1149,7 +1173,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1235,7 +1259,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1303,7 +1327,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1335,7 +1359,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1396,7 +1420,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1471,7 +1495,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1525,7 +1549,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1565,7 +1589,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1605,7 +1629,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the load (MVA) for per unitization",
+                    "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1727,7 +1751,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1803,7 +1827,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -1843,7 +1867,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -1951,7 +1975,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -1961,7 +1985,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2113,7 +2137,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2123,7 +2147,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2261,14 +2285,14 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the load (MVA) for per unitization",
+                    "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "internal_default": "100.0",
                     "data_type": "Float64"
                 },
@@ -2439,7 +2463,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0.0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2449,7 +2473,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2600,7 +2624,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2728,7 +2752,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
@@ -2738,7 +2762,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -2876,7 +2900,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -2973,7 +2997,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3090,7 +3114,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3123,7 +3147,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3189,7 +3213,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3406,7 +3430,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3453,7 +3477,7 @@
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -3478,13 +3502,14 @@
                 },
                 {
                     "name": "reactive_power_limits",
-                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
+                    "comment": "Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref acbustypes_list) bus. Set to `nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true
                 },
                 {
                     "name": "power_factor",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3501,7 +3526,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3527,7 +3552,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3574,7 +3599,7 @@
                 },
                 {
                     "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
+                    "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
@@ -3599,6 +3624,7 @@
                 },
                 {
                     "name": "power_factor",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3609,7 +3635,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3635,7 +3661,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3748,7 +3774,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3814,7 +3840,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -3973,7 +3999,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4013,7 +4039,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4059,7 +4085,7 @@
                 },
                 {
                     "name": "storage_technology_type",
-                    "comment": "Storage Technology Complementary to EIA 923",
+                    "comment": "Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)",
                     "null_value": "StorageTech.OTHER_CHEM",
                     "data_type": "StorageTech"
                 },
@@ -4164,7 +4190,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization, which is commonly the same as `rating`",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -4218,7 +4244,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4324,7 +4350,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4429,7 +4455,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4476,7 +4502,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4572,7 +4598,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4672,7 +4698,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4772,7 +4798,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4850,7 +4876,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4892,7 +4918,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -4955,7 +4981,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5053,7 +5079,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5239,7 +5265,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5426,7 +5452,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5590,7 +5616,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5738,7 +5764,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -5886,7 +5912,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6010,7 +6036,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6213,7 +6239,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6415,7 +6441,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6611,7 +6637,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -6858,7 +6884,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7104,7 +7130,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7127,6 +7153,182 @@
                     "name": "states_types",
                     "comment": "(**Do not modify.**) ESAC6A has 5 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
+            "struct_name": "ESAC8B",
+            "docstring": "Excitation System AC8B. Used to represent the Basler Digital Excitation Control System (DECS) with PID controller in PSSE.",
+            "fields": [
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Regulator proportional PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Regulator integral PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Regulator derivative PID gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Td",
+                    "comment": "Regulator derivative PID time constant.",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ka",
+                    "comment": "Regulator output gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1000
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Regulator output lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 10
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Limits for exciter field voltage `(Vr_min, Vr_max)`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Te",
+                    "comment": "Exciter field time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": 2
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Ke",
+                    "comment": "Exciter field proportional constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "E_sat",
+                    "comment": "Exciter output voltage for saturation factor: (E1, E2)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "Se",
+                    "comment": "Exciter saturation factor at exciter output voltage: (Se(E1), Se(E2))",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "saturation_coeffs",
+                    "comment": "(**Do not modify.**) Coefficients (A,B) of the function: Se(V) = B(V - A)^2/V",
+                    "data_type": "Tuple{Float64, Float64}",
+                    "null_value": "(0.0, 0.0)",
+                    "default": "PowerSystems.get_avr_saturation(E_sat, Se)"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Internal PI-block state,\n\tx_d: Internal Derivative-block state,\n\tVr: Voltage regulator state,\n\tEfd: Exciter output state",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vr, :Efd]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ESAC8B has 5 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Differential, StateTypes.Differential, StateTypes.Hybrid, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
                 },
                 {
@@ -7326,7 +7528,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7567,7 +7769,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7781,7 +7983,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -7804,6 +8006,531 @@
                     "name": "states_types",
                     "comment": "(**Do not modify.**) ST4B has 4 states",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
+            "struct_name": "ST6B",
+            "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST6B Excitacion System. ST6B in PSSE and PSLF",
+            "fields": [
+                {
+                    "name": "OEL_Flag",
+                    "comment": "OEL Flag for ST6B: 1: before HV gate, 2: after HV gate",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_pa",
+                    "comment": "Regulator proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ia",
+                    "comment": "Regulator integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_da",
+                    "comment": "Regulator derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_da",
+                    "comment": "Voltage regulator derivative channel time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Va_lim",
+                    "comment": "Regulator output limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_ff",
+                    "comment": "Pre-control gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_m",
+                    "comment": "Forward gain of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ci",
+                    "comment": "Exciter output current limit adjustment gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_lr",
+                    "comment": "Exciter output current limiter gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "I_lr",
+                    "comment": "Exciter current limiter reference",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Voltage regulator limits (Vi_min, Vi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Kg",
+                    "comment": "Feedback gain constant of the inner loop field regulator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tg",
+                    "comment": "Feedback time constant of the inner loop field voltage regulator in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_i: Regulator Integrator,\n\tx_d: Regulator Derivative,\n\tVg: Regulator Feedback",
+                    "internal_default": "[:Vm, :x_i, :x_d, :Vg]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
+                    "internal_default": 4,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ST6B has 4 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "AVR"
+        },
+        {
+            "struct_name": "ST8C",
+            "docstring": "In these excitation systems, voltage (and also current in compounded systems) is transformed to an appropriate level. Rectifiers, either controlled or non-controlled, provide the necessary direct current for the generator field.\nParameters of IEEE Std 421.5 Type ST8C Excitacion System. ST8C in PSSE and PSLF",
+            "fields": [
+                {
+                    "name": "OEL_Flag",
+                    "comment": "OEL Flag for ST8C: <2: Summation at Voltage Error, 2: OEL takeover at gate",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "UEL_Flag",
+                    "comment": "UEL Flag for ST8C: <2: Summation at Voltage Error, 2: UEL takeover at gate",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "SCL_Flag",
+                    "comment": "SCL Flag for ST8C: <2: Summation at Voltage Error, 2: SCL Takeover at UEL and OEL gates",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "SW1_Flag",
+                    "comment": "SW1 Flag for Power Source Selector for ST8C: <2: Source from generator terminal voltage, 2: Independent power source",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 2
+                    }
+                },
+                {
+                    "name": "Tr",
+                    "comment": "Regulator input filter time constant in seconds",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_pr",
+                    "comment": "Regulator proportional gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ir",
+                    "comment": "Regulator integral gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vpi_lim",
+                    "comment": "Regulator input limits (Vpi_min, Vpi_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_pa",
+                    "comment": "Field current regulator proportional gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_ia",
+                    "comment": "Field current regulator integral gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Va_lim",
+                    "comment": "Field current regulator output limits (Va_min, Va_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_a",
+                    "comment": "Field current regulator proportional gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_a",
+                    "comment": "Controlled rectifier bridge equivalent time constant in seconds",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Vr_lim",
+                    "comment": "Voltage regulator limits (Vr_min, Vr_max)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "K_f",
+                    "comment": "Exciter field current feedback gain (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_f",
+                    "comment": "Field current feedback time constant in seconds",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_c1",
+                    "comment": "Rectifier loading factor proportional to commutating reactance (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_p",
+                    "comment": "Potential circuit (voltage) gain coefficient (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_i1",
+                    "comment": "Potential circuit (current) gain coefficient (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "X_l",
+                    "comment": "Reactance associated with potential source (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "θ_p",
+                    "comment": "Potential circuit phase angle (degrees)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "VB1_max",
+                    "comment": "Maximum available exciter voltage (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_c2",
+                    "comment": "Rectifier loading factor proportional to commutating reactance (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "K_i2",
+                    "comment": "Potential circuit (current) gain coefficient (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "VB2_max",
+                    "comment": "Maximum available exciter voltage (pu)",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_ref",
+                    "comment": "Reference Voltage Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Ifd_ref",
+                    "comment": "Reference Field Current Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) are:\n\tVm: Sensed terminal voltage,\n\tx_a1: Regulator Integrator state,\n\tx_a2: Field Current regulator state,\n\tx_a3: Controller rectifier bridge state,\n\tx_a4: Regulator Feedback state",
+                    "internal_default": "[:Vm, :x_a1, :x_a2, :x_a3, :x_a4]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) ST8C has 5 states",
+                    "internal_default": 5,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) ST8C has 5 states",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
                 {
@@ -7932,7 +8659,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8100,7 +8827,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8165,7 +8892,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8316,7 +9043,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8477,7 +9204,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8640,7 +9367,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8795,7 +9522,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -8962,7 +9689,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9141,7 +9868,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9258,7 +9985,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9403,7 +10130,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9558,7 +10285,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9725,7 +10452,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9782,7 +10509,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -9837,7 +10564,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10059,7 +10786,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10176,7 +10903,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10444,7 +11171,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -10746,7 +11473,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11104,7 +11831,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11165,7 +11892,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11380,7 +12107,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11436,7 +12163,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11558,7 +12285,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11690,7 +12417,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -11714,6 +12441,169 @@
                     "comment": "(**Do not modify.**) DEGOV has 5 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential, StateTypes.Differential]",
                     "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "DEGOV1",
+            "docstring": "Parameters Woodward Diesel Governor Model. DEGOV1 in PSSE",
+            "fields": [
+                {
+                    "name": "droop_flag",
+                    "comment": "Droop control Flag. 0 for throttle feedback and 1 for electric power feedback",
+                    "null_value": 0,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "T1",
+                    "comment": "Governor mechanism time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T2",
+                    "comment": "Turbine power time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T3",
+                    "comment": "Turbine exhaust temperature time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "K",
+                    "comment": "Governor gain for actuator",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T4",
+                    "comment": "Governor lead time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T5",
+                    "comment": "Governor lag time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T6",
+                    "comment": "Actuator time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Td",
+                    "comment": "Engine time delay in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "T_lim",
+                    "comment": "Operational control limits on actuator (T_min, T_max)",
+                    "null_value": "(0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64}"
+                },
+                {
+                    "name": "R",
+                    "comment": "Steady state droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "Te",
+                    "comment": "Power transducer time constant in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 100.0
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Load Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[1]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The number of [states](@ref S) of the DEGOV1 model depends on the droop flag",
+                    "internal_default": "PowerSystems.get_degov1_states(droop_flag)[2]",
+                    "data_type": "Int"
                 },
                 {
                     "name": "internal",
@@ -12079,7 +12969,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12102,6 +12992,384 @@
                     "name": "states_types",
                     "comment": "(**Do not modify.**) GGOV1 has 10 [differential](@ref states_list) [states](@ref S)",
                     "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Differential, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "PIDGOV",
+            "docstring": "Hydro Turbine-Governor with PID controller.",
+            "fields": [
+                {
+                    "name": "feedback_flag",
+                    "comment": "Feedback signal for governor droop: 0 for electrical power, and 1 for gate position.",
+                    "null_value": 1,
+                    "data_type": "Int",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "Rperm",
+                    "comment": "Speed permanent droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "T_reg",
+                    "comment": "Speed detector time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Governor proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Governor integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Governor derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Governor derivative time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tb",
+                    "comment": "Gate-servo time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "D_turb",
+                    "comment": "Turbine damping factor",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "gate_openings",
+                    "comment": "Gate-opening speed at different loads",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "power_gate_openings",
+                    "comment": "Power at gate_openings",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "G_lim",
+                    "comment": "Minimum/Maximum Gate openings `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "A_tw",
+                    "comment": "Factor multiplying Tw",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tw",
+                    "comment": "Water inertia time constant, sec",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_lim",
+                    "comment": "Gate opening velocity limits `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:\n\tx_g1: Filtered input measurement,\n\tx_g2: PI block internal state,\n\tx_g3: First regulator state, \n\tx_g4: Derivative block internal state, \n\tx_g5: Second regulator state, \n\tx_g6: Gate position state, \n\tx_g7: Water inertia state",
+                    "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) PIDGOV has 7 states",
+                    "internal_default": 7,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) PIDGOV has 7 [differential](@ref states_list) [states](@ref S)",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
+                    "data_type": "Vector{StateTypes}"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "WPIDHY",
+            "docstring": "Woodward PID Hydro Governor",
+            "fields": [
+                {
+                    "name": "T_reg",
+                    "comment": "Input time constant of the governor in s",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "reg",
+                    "comment": "Input governor gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kp",
+                    "comment": "Governor proportional gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ki",
+                    "comment": "Governor integral gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Kd",
+                    "comment": "Governor derivative gain",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Ta",
+                    "comment": "Governor derivative/high-frequency time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "Tb",
+                    "comment": "Gate-servo time constant",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "V_lim",
+                    "comment": "Gate opening velocity limits `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "G_lim",
+                    "comment": "Minimum/Maximum Gate velocity `(G_min, G_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "Tw",
+                    "comment": "Water inertia time constant, sec",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "eps()",
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "P_lim",
+                    "comment": "Minimum/Maximum Gate openings `(P_min, P_max)`.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "D",
+                    "comment": "Turbine damping coefficient",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "gate_openings",
+                    "comment": "Gate-opening speed at different loads",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "power_gate_openings",
+                    "comment": "Power at gate_openings",
+                    "null_value": "(0.0, 0.0, 0.0)",
+                    "data_type": "Tuple{Float64, Float64, Float64}"
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the PIDGOV model are:\n\tx_g1: Filtered input measurement,\n\tx_g2: PI block internal state,\n\tx_g3: First regulator state, \n\tx_g4: Derivative block internal state, \n\tx_g5: Second regulator state, \n\tx_g6: Gate position state, \n\tx_g7: Water inertia state",
+                    "internal_default": "[:x_g1, :x_g2, :x_g3, :x_g4, :x_g5, :x_g6, :x_g7]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) PIDGOV has 7 states",
+                    "internal_default": 7,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "states_types",
+                    "comment": "(**Do not modify.**) PIDGOV has 7 [differential](@ref states_list) [states](@ref S)",
+                    "internal_default": "[StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid, StateTypes.Hybrid]",
                     "data_type": "Vector{StateTypes}"
                 },
                 {
@@ -12225,7 +13493,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12393,7 +13661,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12649,7 +13917,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12767,7 +14035,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12849,7 +14117,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -12865,6 +14133,72 @@
                     "name": "n_states",
                     "exclude_setter": true,
                     "comment": "(**Do not modify.**) TGTypeII has 1 state",
+                    "internal_default": 1,
+                    "data_type": "Int"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TurbineGov"
+        },
+        {
+            "struct_name": "TGSimple",
+            "docstring": "Parameters of a Simple one-state Turbine Governor",
+            "fields": [
+                {
+                    "name": "d_t",
+                    "comment": "Inverse Droop parameter",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "Tm",
+                    "comment": "Turbine Governor Low-Pass Time Constant [s]",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "P_ref",
+                    "comment": "Reference Power Set-point (pu)",
+                    "null_value": 0,
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    }
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) The [states](@ref S) of the TGSimple model are:\n\tτm: mechanical torque",
+                    "internal_default": "[:τm]",
+                    "data_type": "Vector{Symbol}"
+                },
+                {
+                    "name": "n_states",
+                    "exclude_setter": true,
+                    "comment": "(**Do not modify.**) TGSimple has 1 state",
                     "internal_default": 1,
                     "data_type": "Int"
                 },
@@ -12904,7 +14238,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13087,7 +14421,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13248,7 +14582,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13286,7 +14620,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13442,7 +14776,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13520,7 +14854,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13578,7 +14912,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13626,7 +14960,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13684,7 +15018,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13742,7 +15076,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13777,7 +15111,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13846,7 +15180,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13905,7 +15239,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -13974,7 +15308,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14033,7 +15367,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14218,7 +15552,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14494,7 +15828,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14553,7 +15887,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14633,7 +15967,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14693,7 +16027,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14821,7 +16155,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -14879,7 +16213,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15015,7 +16349,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15053,7 +16387,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15087,7 +16421,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15121,7 +16455,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15581,14 +16915,14 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power (MVA) for per unitization",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15691,6 +17025,13 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "base_power",
+                    "comment": "Base Power in MVA",
+                    "null_value": 0,
+                    "data_type": "Float64",
+                    "default": "100.0"
+                },
+                {
                     "name": "dynamic_injector",
                     "data_type": "Union{Nothing, DynamicInjection}",
                     "comment": "corresponding dynamic injection device",
@@ -15707,7 +17048,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -15801,7 +17142,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the source (MVA) for per unitization",
+                    "comment": "Base power of the source (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -15823,7 +17164,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"
@@ -16194,7 +17535,7 @@
                 },
                 {
                     "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for per unitization",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
@@ -16215,7 +17556,7 @@
                 },
                 {
                     "name": "ext",
-                    "comment": "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
                     "null_value": "Dict{String, Any}()",
                     "default": "Dict{String, Any}()"

@@ -52,7 +52,7 @@ IEEE Stabilizing Model PSS.
 - `Ls_lim::Tuple{Float64, Float64}`: PSS output limits for regulator output `(Ls_min, Ls_max)`
 - `Vcu::Float64`: Cutoff limiter upper bound, validation range: `(0, 1.25)`
 - `Vcl::Float64`: Cutoff limiter lower bound, validation range: `(0, 1.0)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
 	x_p2: 2nd filter integration, 
@@ -102,7 +102,7 @@ mutable struct IEEEST <: PSS
     Vcu::Float64
     "Cutoff limiter lower bound"
     Vcl::Float64
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	x_p1: 1st filter integration,
