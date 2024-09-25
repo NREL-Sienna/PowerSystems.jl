@@ -17,13 +17,13 @@ sort_name!(x) = sort!(collect(x); by = get_name)
     @test component_to_qualified_string(gen_solitude) == "ThermalStandard__Solitude"
 end
 
-@testset "Test SingleComponentSelector" begin
-    test_gen_ent = SingleComponentSelector(ThermalStandard, "Solitude", nothing)
-    named_test_gen_ent = SingleComponentSelector(ThermalStandard, "Solitude", "SolGen")
+@testset "Test NameComponentSelector" begin
+    test_gen_ent = NameComponentSelector(ThermalStandard, "Solitude", nothing)
+    named_test_gen_ent = NameComponentSelector(ThermalStandard, "Solitude", "SolGen")
 
     # Equality
-    @test SingleComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
-    @test SingleComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
+    @test NameComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
+    @test NameComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
           named_test_gen_ent
 
     # Construction
@@ -125,7 +125,7 @@ end
         collect(get_components(test_sub_ent, test_sys; filterby = get_available)))
 
     @test collect(get_subselectors(make_selector(NonexistentComponent), test_sys)) ==
-          Vector{ComponentSelectorElement}()
+          Vector{SingularComponentSelector}()
     the_subselectors = sort_name!(get_subselectors(test_sub_ent, test_sys))
     @test all(the_subselectors .== make_selector.(answer))
     @test !(
@@ -162,12 +162,12 @@ end
     empty_topo_ent = make_selector(Area, "1", NonexistentComponent)
     @test collect(get_components(empty_topo_ent, test_sys2)) == Vector{Component}()
     @test collect(get_subselectors(empty_topo_ent, test_sys2)) ==
-          Vector{ComponentSelectorElement}()
+          Vector{SingularComponentSelector}()
 
     nonexistent_topo_ent = make_selector(Area, "NonexistentArea", ThermalStandard)
     @test collect(get_components(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
     @test collect(get_subselectors(nonexistent_topo_ent, test_sys2)) ==
-          Vector{ComponentSelectorElement}()
+          Vector{SingularComponentSelector}()
 
     answers =
         sort_name!.((
@@ -254,9 +254,9 @@ end
 
     @test collect(
         get_subselectors(make_selector(x -> true, NonexistentComponent), test_sys),
-    ) == Vector{ComponentSelectorElement}()
+    ) == Vector{SingularComponentSelector}()
     @test collect(get_subselectors(make_selector(x -> false, Component), test_sys)) ==
-          Vector{ComponentSelectorElement}()
+          Vector{SingularComponentSelector}()
     @test all(
         collect(get_subselectors(test_filter_ent, test_sys)) .== make_selector.(answer),
     )

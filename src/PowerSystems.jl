@@ -494,13 +494,8 @@ export UnitSystem # internal.jl
 
 # ComponentSelector
 export ComponentSelector
-export ComponentSelectorElement
-export ComponentSelectorSet
-export SingleComponentSelector
-export ListComponentSelector
-export SubtypeComponentSelector
-export FilterComponentSelector
-export TopologyComponentSelector
+export SingularComponentSelector
+export PluralComponentSelector
 export subtype_to_string
 export component_to_qualified_string
 export make_selector
@@ -625,10 +620,10 @@ import InfrastructureSystems:
     supports_supplemental_attributes,
     fast_deepcopy_system,
     ComponentSelector,
-    ComponentSelectorElement,
-    ComponentSelectorSet,
-    DynamicallyGroupedComponentSelectorSet,
-    SingleComponentSelector,
+    SingularComponentSelector,
+    PluralComponentSelector,
+    DynamicallyGroupedPluralComponentSelector,
+    NameComponentSelector,
     ListComponentSelector,
     SubtypeComponentSelector,
     FilterComponentSelector,
