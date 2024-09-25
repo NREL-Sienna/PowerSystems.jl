@@ -630,7 +630,8 @@ import InfrastructureSystems:
     component_to_qualified_string,
     subtype_to_string,
     COMPONENT_NAME_DELIMETER,
-    make_selector
+    make_selector,
+    default_name
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,

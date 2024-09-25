@@ -18,23 +18,23 @@ sort_name!(x) = sort!(collect(x); by = get_name)
 end
 
 @testset "Test NameComponentSelector" begin
-    test_gen_ent = NameComponentSelector(ThermalStandard, "Solitude", nothing)
-    named_test_gen_ent = NameComponentSelector(ThermalStandard, "Solitude", "SolGen")
+    test_gen_ent = PSY.NameComponentSelector(ThermalStandard, "Solitude", nothing)
+    named_test_gen_ent = PSY.NameComponentSelector(ThermalStandard, "Solitude", "SolGen")
 
     # Equality
-    @test NameComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
-    @test NameComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
+    @test PSY.NameComponentSelector(ThermalStandard, "Solitude", nothing) == test_gen_ent
+    @test PSY.NameComponentSelector(ThermalStandard, "Solitude", "SolGen") ==
           named_test_gen_ent
 
     # Construction
     @test make_selector(ThermalStandard, "Solitude") == test_gen_ent
-    @test make_selector(ThermalStandard, "Solitude", "SolGen") == named_test_gen_ent
+    @test make_selector(ThermalStandard, "Solitude"; name = "SolGen") == named_test_gen_ent
     @test make_selector(gen_solitude) == test_gen_ent
 
     # Naming
     @test get_name(test_gen_ent) == "ThermalStandard__Solitude"
     @test get_name(named_test_gen_ent) == "SolGen"
-    @test IS.default_name(test_gen_ent) == "ThermalStandard__Solitude"
+    @test PSY.default_name(test_gen_ent) == "ThermalStandard__Solitude"
 
     # Contents
     @test collect(get_components(make_selector(NonexistentComponent, ""), test_sys)) ==
@@ -48,20 +48,18 @@ end
     ) ==
           Vector{Component}()
 
-    @test gen_solitude in test_gen_ent
-    @test !(gen_sundance in test_gen_ent)
-    @test !in(gen_sundance, make_selector(gen_sundance); filterby = get_available)
+    @test only(get_groups(test_gen_ent, test_sys)) == test_gen_ent
 end
 
 @testset "Test ListComponentSelector" begin
     comp_ent_1 = make_selector(ThermalStandard, "Sundance")
     comp_ent_2 = make_selector(RenewableDispatch, "WindBusA")
-    test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
-    named_test_list_ent = ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
+    test_list_ent = PSY.ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
+    named_test_list_ent = PSY.ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps")
 
     # Equality
-    @test ListComponentSelector((comp_ent_1, comp_ent_2), nothing) == test_list_ent
-    @test ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps") ==
+    @test PSY.ListComponentSelector((comp_ent_1, comp_ent_2), nothing) == test_list_ent
+    @test PSY.ListComponentSelector((comp_ent_1, comp_ent_2), "TwoComps") ==
           named_test_list_ent
 
     # Construction
@@ -78,40 +76,31 @@ end
     @test collect(get_components(make_selector(), test_sys)) == Vector{Component}()
     the_components = collect(get_components(test_list_ent, test_sys))
     @test length(the_components) == 2
-    @test gen_sundance in the_components
-    @test get_component(RenewableDispatch, test_sys, "WindBusA") in the_components
-    @test !(
-        gen_sundance in
-        collect(get_components(test_list_ent, test_sys; filterby = get_available)))
 
-    @test collect(get_subselectors(make_selector(), test_sys)) ==
+    @test collect(get_groups(make_selector(), test_sys)) ==
           Vector{ComponentSelector}()
-    the_subselectors = collect(get_subselectors(test_list_ent, test_sys))
-    @test length(the_subselectors) == 2
-    @test comp_ent_1 in the_subselectors
-    @test comp_ent_2 in the_subselectors
-
-    @test gen_sundance in test_list_ent
-    @test !(gen_solitude in test_list_ent)
-    @test !in(gen_sundance, test_list_ent; filterby = get_available)
+    the_groups = collect(get_groups(test_list_ent, test_sys))
+    @test length(the_groups) == 2
 end
 
 @testset "Test SubtypeComponentSelector" begin
-    test_sub_ent = SubtypeComponentSelector(ThermalStandard, nothing)
-    named_test_sub_ent = SubtypeComponentSelector(ThermalStandard, "Thermals")
+    test_sub_ent = PSY.SubtypeComponentSelector(ThermalStandard, nothing, :all)
+    named_test_sub_ent = PSY.SubtypeComponentSelector(ThermalStandard, "Thermals", :all)
 
     # Equality
-    @test SubtypeComponentSelector(ThermalStandard, nothing) == test_sub_ent
-    @test SubtypeComponentSelector(ThermalStandard, "Thermals") == named_test_sub_ent
+    @test PSY.SubtypeComponentSelector(ThermalStandard, nothing, :all) == test_sub_ent
+    @test PSY.SubtypeComponentSelector(ThermalStandard, "Thermals", :all) ==
+          named_test_sub_ent
 
     # Construction
     @test make_selector(ThermalStandard) == test_sub_ent
     @test make_selector(ThermalStandard; name = "Thermals") == named_test_sub_ent
+    @test make_selector(ThermalStandard; groupby = string) isa PSY.SubtypeComponentSelector
 
     # Naming
     @test get_name(test_sub_ent) == "ThermalStandard"
     @test get_name(named_test_sub_ent) == "Thermals"
-    @test IS.default_name(test_sub_ent) == "ThermalStandard"
+    @test PSY.default_name(test_sub_ent) == "ThermalStandard"
 
     # Contents
     answer = sort_name!(get_components(ThermalStandard, test_sys))
@@ -124,50 +113,40 @@ end
         gen_sundance in
         collect(get_components(test_sub_ent, test_sys; filterby = get_available)))
 
-    @test collect(get_subselectors(make_selector(NonexistentComponent), test_sys)) ==
-          Vector{SingularComponentSelector}()
-    the_subselectors = sort_name!(get_subselectors(test_sub_ent, test_sys))
-    @test all(the_subselectors .== make_selector.(answer))
-    @test !(
-        gen_sundance in
-        collect(get_subselectors(test_sub_ent, test_sys; filterby = get_available)))
-
-    @test gen_sundance in test_sub_ent
-    @test !(gen_wind in test_sub_ent)
-    @test !in(gen_sundance, test_sub_ent; filterby = get_available)
+    # Grouping inherits from `DynamicallyGroupedComponentSelector` and is tested elsewhere
 end
 
 @testset "Test TopologyComponentSelector" begin
     topo1 = get_component(Area, test_sys2, "1")
     topo2 = get_component(LoadZone, test_sys2, "2")
-    test_topo_ent1 = TopologyComponentSelector(Area, "1", ThermalStandard, nothing)
-    test_topo_ent2 = TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2")
-    @assert (test_topo_ent1 !== nothing) && (test_topo_ent2 !== nothing) "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
+    @assert !isnothing(topo1) && !isnothing(topo2) "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
+    test_topo_ent1 =
+        PSY.TopologyComponentSelector(ThermalStandard, Area, "1", nothing, :all)
+    test_topo_ent2 =
+        PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", "Zone_2", :all)
 
     # Equality
-    @test TopologyComponentSelector(Area, "1", ThermalStandard, nothing) ==
+    @test PSY.TopologyComponentSelector(ThermalStandard, Area, "1", nothing, :all) ==
           test_topo_ent1
-    @test TopologyComponentSelector(LoadZone, "2", StaticInjection, "Zone_2") ==
+    @test PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", "Zone_2", :all) ==
           test_topo_ent2
 
     # Construction
-    @test make_selector(Area, "1", ThermalStandard) == test_topo_ent1
-    @test make_selector(LoadZone, "2", StaticInjection, "Zone_2") == test_topo_ent2
+    @test make_selector(ThermalStandard, Area, "1") == test_topo_ent1
+    @test make_selector(StaticInjection, LoadZone, "2"; name = "Zone_2") == test_topo_ent2
+    @test make_selector(StaticInjection, LoadZone, "2"; groupby = string) isa
+          PSY.TopologyComponentSelector
 
     # Naming
     @test get_name(test_topo_ent1) == "Area__1__ThermalStandard"
     @test get_name(test_topo_ent2) == "Zone_2"
 
     # Contents
-    empty_topo_ent = make_selector(Area, "1", NonexistentComponent)
+    empty_topo_ent = make_selector(NonexistentComponent, Area, "1")
     @test collect(get_components(empty_topo_ent, test_sys2)) == Vector{Component}()
-    @test collect(get_subselectors(empty_topo_ent, test_sys2)) ==
-          Vector{SingularComponentSelector}()
 
-    nonexistent_topo_ent = make_selector(Area, "NonexistentArea", ThermalStandard)
+    nonexistent_topo_ent = make_selector(ThermalStandard, Area, "NonexistentArea")
     @test collect(get_components(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
-    @test collect(get_subselectors(nonexistent_topo_ent, test_sys2)) ==
-          Vector{SingularComponentSelector}()
 
     answers =
         sort_name!.((
@@ -189,50 +168,28 @@ end
         @test Set(collect(get_components(ent, test_sys2; filterby = x -> true))) ==
               Set(the_components)
         @test length(collect(get_components(ent, test_sys2; filterby = x -> false))) == 0
-
-        the_subselectors = get_subselectors(ent, test_sys2)
-        @test all(sort_name!(the_subselectors) .== sort_name!(make_selector.(ans)))
-        @test Set(collect(get_subselectors(ent, test_sys2; filterby = x -> true))) ==
-              Set(the_subselectors)
-        @test length(collect(get_subselectors(ent, test_sys2; filterby = x -> false))) == 0
-
-        @test all(in(comp, ent, test_sys2) for comp in ans)
     end
-
-    @test !(
-        gen_sundance2 in
-        collect(get_components(test_topo_ent1, test_sys2; filterby = get_available)))
-    @test !(
-        make_selector(gen_sundance2) in
-        collect(get_subselectors(test_topo_ent1, test_sys2; filterby = get_available)))
-
-    @test in(gen_sundance2, test_topo_ent1, test_sys2)
-    @test !in(gen_sundance2, test_topo_ent1, test_sys2; filterby = get_available)
-    @test !in(gen_sundance2, test_topo_ent2, test_sys2)
 end
 
 @testset "Test FilterComponentSelector" begin
     starts_with_s(x) = lowercase(first(get_name(x))) == 's'
-    test_filter_ent = FilterComponentSelector(starts_with_s, ThermalStandard, nothing)
-    named_test_filter_ent =
-        FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS")
+    test_filter_ent =
+        PSY.FilterComponentSelector(ThermalStandard, starts_with_s, nothing, :all)
+    named_test_filter_ent = PSY.FilterComponentSelector(
+        ThermalStandard, starts_with_s, "ThermStartsWithS", :all)
 
     # Equality
-    @test FilterComponentSelector(starts_with_s, ThermalStandard, nothing) ==
+    @test PSY.FilterComponentSelector(ThermalStandard, starts_with_s, nothing, :all) ==
           test_filter_ent
-    @test FilterComponentSelector(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
-          named_test_filter_ent
+    @test PSY.FilterComponentSelector(
+        ThermalStandard, starts_with_s, "ThermStartsWithS", :all) == named_test_filter_ent
 
     # Construction
-    @test make_selector(starts_with_s, ThermalStandard) == test_filter_ent
-    @test make_selector(starts_with_s, ThermalStandard, "ThermStartsWithS") ==
+    @test make_selector(ThermalStandard, starts_with_s) == test_filter_ent
+    @test make_selector(ThermalStandard, starts_with_s; name = "ThermStartsWithS") ==
           named_test_filter_ent
-    bad_input_fn(x::Integer) = true  # Should always fail to construct
-    specific_input_fn(x::RenewableDispatch) = true  # Should require compatible subtype
-    @test_throws ArgumentError make_selector(bad_input_fn, ThermalStandard)
-    @test_throws ArgumentError make_selector(specific_input_fn, Component)
-    @test_throws ArgumentError make_selector(specific_input_fn, ThermalStandard)
-    @test make_selector(specific_input_fn, RenewableDispatch) isa Any  # test absence of error
+    @test make_selector(ThermalStandard, starts_with_s; groupby = string) isa
+          PSY.FilterComponentSelector
 
     # Naming
     @test get_name(test_filter_ent) == "starts_with_s__ThermalStandard"
@@ -242,28 +199,51 @@ end
     answer = filter(starts_with_s, collect(get_components(ThermalStandard, test_sys)))
 
     @test collect(
-        get_components(make_selector(x -> true, NonexistentComponent), test_sys),
+        get_components(make_selector(NonexistentComponent, x -> true), test_sys),
     ) ==
           Vector{Component}()
-    @test collect(get_components(make_selector(x -> false, Component), test_sys)) ==
+    @test collect(get_components(make_selector(Component, x -> false), test_sys)) ==
           Vector{Component}()
     @test all(collect(get_components(test_filter_ent, test_sys)) .== answer)
     @test !(
         gen_sundance in
         collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
 
-    @test collect(
-        get_subselectors(make_selector(x -> true, NonexistentComponent), test_sys),
-    ) == Vector{SingularComponentSelector}()
-    @test collect(get_subselectors(make_selector(x -> false, Component), test_sys)) ==
-          Vector{SingularComponentSelector}()
-    @test all(
-        collect(get_subselectors(test_filter_ent, test_sys)) .== make_selector.(answer),
-    )
     @test !(
         gen_sundance in
         collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
-    @test !(
-        make_selector(gen_sundance) in
-        collect(get_subselectors(test_filter_ent, test_sys; filterby = get_available)))
+end
+
+@testset "Test DynamicallyGroupedComponentSelector grouping" begin
+    # We'll use TopologyComponentSelector as the token example
+    @assert PSY.TopologyComponentSelector <: DynamicallyGroupedComponentSelector
+
+    all_selector = make_selector(ThermalStandard, Area, "1"; groupby = :all)
+    each_selector = make_selector(ThermalStandard, Area, "1"; groupby = :each)
+    @test make_selector(ThermalStandard, Area, "1") == all_selector
+    @test_throws ArgumentError make_selector(ThermalStandard, Area, "1"; groupby = :other)
+    # @show get_name.(get_components(all_selector, test_sys2))
+    partition_selector = make_selector(ThermalStandard, Area, "1";
+        groupby = x -> occursin(" ", get_name(x)))
+
+    @test only(get_groups(all_selector, test_sys2)) == all_selector
+    @test Set(get_name.(get_groups(each_selector, test_sys2))) ==
+          Set((
+        component_to_qualified_string.(Ref(ThermalStandard),
+            get_name.(get_components(each_selector, test_sys2)))
+    ))
+    @test length(
+        collect(
+            get_groups(each_selector, test_sys2;
+                filterby = x -> length(get_name(x)) == 8),
+        ),
+    ) == 2
+    @test Set(get_name.(get_groups(partition_selector, test_sys2))) ==
+          Set(["true", "false"])
+    @test length(
+        collect(
+            get_groups(partition_selector, test_sys2;
+                filterby = x -> length(get_name(x)) == 8),
+        ),
+    ) == 1
 end
