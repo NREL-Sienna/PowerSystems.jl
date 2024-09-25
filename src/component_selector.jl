@@ -26,7 +26,7 @@ get_groups(e::ComponentSelector, sys::System; filterby = nothing) =
 `PluralComponentSelector` represented by an `AggregationTopology` and a subtype of
 `Component`.
 """
-struct TopologyComponentSelector <: DynamicallyGroupedPluralComponentSelector
+struct TopologyComponentSelector <: DynamicallyGroupedComponentSelector
     component_subtype::Type{<:Component}
     topology_subtype::Type{<:AggregationTopology}
     topology_name::AbstractString
@@ -37,7 +37,7 @@ end
 # Construction
 """
 Make a `ComponentSelector` from an `AggregationTopology` and a type of component. Optionally
-provide a name for the `ComponentSelector`.
+provide a name and/or grouping behavior for the `ComponentSelector`.
 """
 make_selector(
     component_subtype::Type{<:Component},
@@ -50,7 +50,7 @@ make_selector(
     topology_subtype,
     topology_name,
     name,
-    groupby,
+    IS.validate_groupby(groupby),
 )
 
 # Naming

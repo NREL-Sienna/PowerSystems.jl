@@ -496,10 +496,10 @@ export UnitSystem # internal.jl
 export ComponentSelector
 export SingularComponentSelector
 export PluralComponentSelector
+export DynamicallyGroupedComponentSelector
 export subtype_to_string
 export component_to_qualified_string
 export make_selector
-export get_components
 export get_groups
 #################################################################################
 # Imports
@@ -622,7 +622,7 @@ import InfrastructureSystems:
     ComponentSelector,
     SingularComponentSelector,
     PluralComponentSelector,
-    DynamicallyGroupedPluralComponentSelector,
+    DynamicallyGroupedComponentSelector,
     NameComponentSelector,
     ListComponentSelector,
     SubtypeComponentSelector,
