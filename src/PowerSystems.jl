@@ -634,7 +634,7 @@ import InfrastructureSystems:
     FilterComponentSelector,
     component_to_qualified_string,
     subtype_to_string,
-    NAME_DELIMETER,
+    COMPONENT_NAME_DELIMETER,
     make_selector
 import InfrastructureSystems:
     ValueCurve,

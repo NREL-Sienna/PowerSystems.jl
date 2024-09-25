@@ -52,8 +52,8 @@ make_selector(
 
 # Naming
 IS.default_name(e::TopologyComponentSelector) =
-    component_to_qualified_string(e.topology_subtype, e.topology_name) * NAME_DELIMETER *
-    subtype_to_string(e.component_subtype)
+    component_to_qualified_string(e.topology_subtype, e.topology_name) *
+    COMPONENT_NAME_DELIMETER * subtype_to_string(e.component_subtype)
 
 # Contents
 function get_subselectors(e::TopologyComponentSelector, sys::System; filterby = nothing)
