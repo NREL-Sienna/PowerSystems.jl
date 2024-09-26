@@ -5,6 +5,11 @@
 Get the components of the `System` that make up the `ComponentSelector`.
 """
 get_components(e::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_components(e, sys; filterby = filterby)
+
+# This would be cleaner if `IS.get_components === PSY.get_components` (see
+# https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388)
+IS.get_components(e::ComponentSelector, sys::System; filterby = nothing) =
     IS.get_components(e, sys.data; filterby = filterby)
 
 """
@@ -60,13 +65,7 @@ IS.default_name(e::TopologyComponentSelector) =
     subtype_to_string(e.component_subtype)
 
 # Contents
-# We need to define `IS.get_components` to fit the interface (in particular, because the
-# common implementation of `get_groups` calls this) even though TopologyComponentSelector
-# won't work with IS system analogues. We also need to define `PSY.get_components` below
-# because the default implementation above won't work for this case. This would all be
-# easier if `IS.get_components === PSY.get_components` (see
-# https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388).
-function IS.get_components(e::TopologyComponentSelector, sys; filterby = nothing)
+function IS.get_components(e::TopologyComponentSelector, sys::System; filterby = nothing)
     agg_topology = get_component(e.topology_subtype, sys, e.topology_name)
     isnothing(agg_topology) &&
         (return Iterators.filter(x -> false, get_components(e.component_subtype, sys)))
@@ -78,6 +77,3 @@ function IS.get_components(e::TopologyComponentSelector, sys; filterby = nothing
     isnothing(filterby) && (return components)
     return Iterators.filter(filterby, components)
 end
-
-get_components(e::TopologyComponentSelector, sys::System; filterby = nothing) =
-    IS.get_components(e, sys; filterby = filterby)

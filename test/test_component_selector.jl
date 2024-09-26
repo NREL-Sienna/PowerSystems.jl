@@ -246,4 +246,13 @@ end
                 filterby = x -> length(get_name(x)) == 8),
         ),
     ) == 1
+
+    # Also test briefly with something from IS
+    @assert PSY.SubtypeComponentSelector <: DynamicallyGroupedComponentSelector
+    @test length(
+        collect(
+            get_groups(make_selector(ThermalStandard;
+                    groupby = x -> length(get_name(x))), test_sys),
+        ),
+    ) == 3
 end
