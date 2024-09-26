@@ -12,33 +12,80 @@
           "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0"
 end
 
-@testset "Test market bid cost interface" begin
-    mbc = make_market_bid_curve([100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0])
+@testset "Test MarketBidCost direct struct creation" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    #Update generator cost to MarketBidCost using Natural Units
+    powers = [22.0, 33.0, 44.0, 55.0] # MW
+    marginal_costs = [25.0, 26.0, 28.0] # $/MWh
+    initial_input = 50.0 # $/h
+    mbc = MarketBidCost(;
+        start_up = 0.0,
+        shut_down = 0.0,
+        incremental_offer_curves = CostCurve(
+            PiecewiseIncrementalCurve(
+                initial_input,
+                powers,
+                marginal_costs,
+            ),
+        ),
+    )
+    set_operation_cost!(generator, mbc)
+    @test get_operation_cost(generator) isa MarketBidCost
+end
+
+@testset "Test Make market bid curve interface" begin
+    mbc = make_market_bid_curve(
+        [0.0, 100.0, 105.0, 120.0, 130.0],
+        [25.0, 26.0, 28.0, 30.0],
+        10.0,
+    )
     @test is_market_bid_curve(mbc)
     @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
     @test_throws ArgumentError make_market_bid_curve(
-        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0])
+        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0, 40.0])
 
-    mbc2 = make_market_bid_curve(20.0, [1.0, 2.0, 3.0], [4.0, 6.0])
+    mbc2 = make_market_bid_curve([1.0, 2.0, 3.0], [4.0, 6.0], 10.0; input_at_zero = 2.0)
     @test is_market_bid_curve(mbc2)
     @test is_market_bid_curve(
         make_market_bid_curve(get_function_data(mbc2), get_initial_input(mbc2)),
     )
 
-    mbc3 = make_market_bid_curve(18.0, 20.0, [1.0, 2.0, 3.0], [4.0, 6.0])
-    @test is_market_bid_curve(mbc3)
-    @test is_market_bid_curve(
-        make_market_bid_curve(get_function_data(mbc2), get_initial_input(mbc3)),
-    )
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    market_bid = MarketBidCost(nothing)
+    mbc3 = make_market_bid_curve([22.0, 33.0, 44.0, 55.0], [25.0, 26.0, 28.0], 50.0)
+    set_incremental_offer_curves!(market_bid, mbc3)
+    set_start_up!(market_bid, 0.0)
+    set_operation_cost!(generator, market_bid)
+    @test get_operation_cost(generator) isa MarketBidCost
 end
 
 test_costs = Dict(
     CostCurve{QuadraticCurve} =>
         repeat([CostCurve(QuadraticCurve(999.0, 2.0, 1.0))], 24),
     PiecewiseStepData =>
-        repeat([make_market_bid_curve([2.0, 3.0], [4.0, 6.0])], 24),
+        repeat(
+            [
+                PSY._make_market_bid_curve(
+                    PiecewiseStepData([0.0, 2.0, 3.0], [4.0, 6.0]),
+                    nothing,
+                ),
+            ],
+            24,
+        ),
     PiecewiseIncrementalCurve =>
-        repeat([make_market_bid_curve(18.0, 20.0, [1.0, 2.0, 3.0], [4.0, 6.0])], 24),
+        repeat(
+            [
+                make_market_bid_curve(
+                    [1.0, 2.0, 3.0],
+                    [4.0, 6.0],
+                    18.0;
+                    input_at_zero = 20.0,
+                ),
+            ],
+            24,
+        ),
     Float64 =>
         collect(11.0:34.0),
     PSY.StartUpStages =>
@@ -64,10 +111,11 @@ test_costs = Dict(
         Dict(k => get_function_data.(v) for (k, v) in pairs(data_quadratic)),
         resolution,
     )
-    @test_throws TypeError set_variable_cost!(sys, generator, forecast_fd)
+    power_units = UnitSystem.NATURAL_UNITS
+    @test_throws TypeError set_variable_cost!(sys, generator, forecast_fd, power_units)
     for s in generator.services
         forecast_fd = IS.Deterministic(get_name(s), service_data, resolution)
-        @test_throws TypeError set_service_bid!(sys, generator, s, forecast_fd)
+        @test_throws TypeError set_service_bid!(sys, generator, s, forecast_fd, power_units)
     end
 end
 
@@ -76,26 +124,40 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
+    power_units = UnitSystem.NATURAL_UNITS
     data_pwl = SortedDict(initial_time => test_costs[PiecewiseStepData])
     service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    forecast_fd = IS.Deterministic(
+    forecast_fd = Deterministic(
         "variable_cost",
         Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
         resolution,
     )
-    set_variable_cost!(sys, generator, forecast_fd)
+    @test_throws ArgumentError set_variable_cost!(
+        sys,
+        generator,
+        forecast_fd,
+        UnitSystem.SYSTEM_BASE,
+    )
+    set_variable_cost!(sys, generator, forecast_fd, power_units)
 
     for s in generator.services
-        forecast_fd = IS.Deterministic(
+        forecast_fd = Deterministic(
             get_name(s),
             Dict(k => get_function_data.(v) for (k, v) in pairs(service_data)),
             resolution,
         )
-        set_service_bid!(sys, generator, s, forecast_fd)
+        @test_throws ArgumentError set_service_bid!(
+            sys,
+            generator,
+            s,
+            forecast_fd,
+            UnitSystem.SYSTEM_BASE,
+        )
+        set_service_bid!(sys, generator, s, forecast_fd, power_units)
     end
 
     iocs = get_incremental_offer_curves(generator, market_bid)
@@ -145,7 +207,6 @@ end
     set_no_load_cost!(sys, generator, forecast_iaz)
 
     iocs = get_incremental_offer_curves(generator, market_bid)
-    @show iocs
     isequal(first(TimeSeries.values(iocs)), first(data_pwl[initial_time]))
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
