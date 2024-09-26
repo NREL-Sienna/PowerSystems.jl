@@ -19,37 +19,55 @@ Pages   = ["PowerSystems.jl",
            "topological_elements.jl",
            "dynamic_models.jl",
            "static_models.jl",
+           "subsystems.jl",
            "static_injection_subsystem.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
-           "cost_functions/ValueCurves.jl",
            "cost_function_timeseries.jl",
            "definitions.jl"]
 Public = true
 Private = false
 ```
 
-## TimeSeries
+## Operating Costs
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["production_variable_cost_curve.jl",
+            "cost_aliases.jl",
+            "value_curve.jl",
+           ]
+Order = [:type, :function]
+Filter = t -> nameof(t) in names(PowerSystems)
+```
+
+## Time Series
 
 ```@autodocs
 Modules = [InfrastructureSystems]
 Pages   = ["abstract_time_series.jl",
            "deterministic.jl",
+           "deterministic_single_time_series.jl",
            "probabilistic.jl",
            "scenarios.jl",
+           "static_time_series.jl",
            "single_time_series.jl",
-           "forecasts.jl"]
+           "forecasts.jl",
+           ]
 Order = [:type, :function]
-Filter = t -> t ∉ [InfrastructureSystems.get_internal,
-                   InfrastructureSystems.set_internal!]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ```@autodocs
 Modules = [InfrastructureSystems]
-Pages   = ["time_series_cache.jl"]
+Pages   = ["time_series_cache.jl",
+            "time_series_interface.jl",
+            "time_series_structs.jl",
+            "time_series_storage.jl",
+            "time_series_parser.jl",
+            "utils/print.jl"]
 Order = [:type, :function]
-Filter = t -> t ∈ [InfrastructureSystems.get_next_time_series_array!,
-                   InfrastructureSystems.get_next_time]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ## System
@@ -64,17 +82,6 @@ Filter = t -> t ∈ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages = ["parsers/power_system_table_data.jl",
-         "parsers/power_models_data.jl",
-         "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl"]
-Public = true
-Private = false
-Filter = t -> t ∈ [System]
-```
-
-```@autodocs
-Modules = [PowerSystems]
 Pages   = ["base.jl"]
 Public = true
 Private = false
@@ -83,7 +90,8 @@ Filter = t -> t ∉ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["utils/print.jl"]
+Pages   = ["utils/print.jl",
+           "utils/generate_struct_files.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
@@ -98,25 +106,6 @@ Public = true
 Private = false
 ```
 
-```@autodocs
-Modules = [InfrastructureSystems]
-Pages   = ["time_series_interface.jl", "time_series_structs.jl",
-            "time_series_storage.jl", "utils/print.jl",
-            "time_series_cache.jl"]
-Filter = t -> t ∈ [InfrastructureSystems.get_time_series,
-                   InfrastructureSystems.get_time_series_array,
-                   InfrastructureSystems.reset!,
-                   InfrastructureSystems.get_time_series_timestamps,
-                   InfrastructureSystems.get_time_series_values,
-                   InfrastructureSystems.show_time_series,
-                   InfrastructureSystems.get_time_series_keys,
-                   InfrastructureSystems.TimeSeriesAssociation,
-                   InfrastructureSystems.ForecastCache,
-                   InfrastructureSystems.StaticTimeSeriesCache,
-                   InfrastructureSystems.CompressionSettings
-                   ]
-```
-
 ## Parsing
 
 ```@autodocs
@@ -124,7 +113,8 @@ Modules = [PowerSystems]
 Pages = ["parsers/power_system_table_data.jl",
          "parsers/power_models_data.jl",
          "parsers/TAMU_data.jl",
-         "parsers/psse_dynamic_data.jl"]
+         "parsers/psse_dynamic_data.jl",
+         "parsers/pm_io/common.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]

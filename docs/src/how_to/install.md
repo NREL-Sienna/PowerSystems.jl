@@ -1,10 +1,14 @@
-### [Install PowerSystems.jl](@id install)
+## [Install PowerSystems.jl](@id install)
 
 PowerSystems.jl is a command line tool written in the Julia programming language. To install:
 
-**Step 1:** [Install Julia](https://julialang.org/downloads/)
+### Step 1: Install Julia
 
-**Step 2:** Start the [Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/) from a command line:
+[Follow the instructions here](https://julialang.org/downloads/)
+
+### Step 2: Open Julia
+
+Start the [Julia REPL](https://docs.julialang.org/en/v1/stdlib/REPL/) from a command line:
 ```
 $ julia
 ```
@@ -25,7 +29,9 @@ julia>
 If not, go back to check the Julia installation steps.
 
 
-**Step 3:** Install the latest stable release of PowerSystems.jl using the
+### Step 3: Install `PowerSystems.jl`
+
+Install the latest stable release of `PowerSystems.jl` using the
 [Julia package manager](https://docs.julialang.org/en/v1/stdlib/Pkg/#Pkg) with:
 
 ```julia

@@ -17,27 +17,27 @@ The code below shows an example how we can create a thermal device with MarketBi
 using PowerSystems, Dates
 bus = ACBus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
-generator = ThermalStandard(
-        name = "Brighton",
-        available = true,
-        status = true,
-        bus = bus,
-        active_power = 6.0,
-        reactive_power = 1.50,
-        rating = 0.75,
-        prime_mover_type = PrimeMovers.ST,
-        fuel = ThermalFuels.COAL,
-        active_power_limits = (min = 0.0, max = 6.0),
-        reactive_power_limits = (min = -4.50, max = 4.50),
-        time_limits = (up = 0.015, down = 0.015),
-        ramp_limits = (up = 5.0, down = 3.0),
-        operation_cost = MarketBidCost(
-            no_load_cost = 0.0,
-            start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
-            shut_down = 0.0,
-        ),
-        base_power = 100.0,
-    )
+generator = ThermalStandard(;
+    name = "Brighton",
+    available = true,
+    status = true,
+    bus = bus,
+    active_power = 6.0,
+    reactive_power = 1.50,
+    rating = 0.75,
+    prime_mover_type = PrimeMovers.ST,
+    fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 6.0),
+    reactive_power_limits = (min = -4.50, max = 4.50),
+    time_limits = (up = 0.015, down = 0.015),
+    ramp_limits = (up = 5.0, down = 3.0),
+    operation_cost = MarketBidCost(;
+        no_load_cost = 0.0,
+        start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
+        shut_down = 0.0,
+    ),
+    base_power = 100.0,
+)
 ```
 
 ### Step 2: Creating the `TimeSeriesData` for the Market Bid
@@ -52,14 +52,15 @@ ThreePartCost. Code below shows an example of how to build a TimeSeriesData.
 
 ```@repl market_bid_cost
 data =
-    Dict(Dates.DateTime("2020-01-01") => [
-        [(0.0, 0.05), (290.1, 0.0733), (582.72, 0.0967), (894.1, 0.120)],
-        [(0.0, 0.05), (300.1, 0.0733), (600.72, 0.0967), (900.1, 0.120)],]
+    Dict(
+        Dates.DateTime("2020-01-01") => [
+            [(0.0, 0.05), (290.1, 0.0733), (582.72, 0.0967), (894.1, 0.120)],
+            [(0.0, 0.05), (300.1, 0.0733), (600.72, 0.0967), (900.1, 0.120)]],
     )
-time_series_data = Deterministic(
+time_series_data = Deterministic(;
     name = "variable_cost",
     data = data,
-    resolution = Dates.Hour(1)
+    resolution = Dates.Hour(1),
 )
 ```
 
@@ -70,11 +71,11 @@ discern the types properly in the constructor and will return `SortedDict{Any,An
 the `Dict` with the data as follows:
 
 ```julia
-    # Very verbose dict definition
-    data = Dict{DateTime,Array{Array{Tuple{Float64,Float64},1},1}}()
-    for t in range(initial_time_sys; step = Hour(1), length = window_count)
-        data[t] = MY_BID_DATA
-    end
+# Very verbose dict definition
+data = Dict{DateTime, Array{Array{Tuple{Float64, Float64}, 1}, 1}}()
+for t in range(initial_time_sys; step = Hour(1), length = window_count)
+    data[t] = MY_BID_DATA
+end
 ```
 
 ### Step 3a: Adding Energy Bid TimeSeriesData to the device
@@ -82,9 +83,9 @@ the `Dict` with the data as follows:
 To add energy market bids time-series to the `MarketBidCost`, use `set_variable_cost!`. The
 arguments for `set_variable_cost!` are:
 
-- `sys::System`: PowerSystem System
-- `component::StaticInjection`: Static injection device
-- `time_series_data::TimeSeriesData`: TimeSeriesData
+  - `sys::System`: PowerSystem System
+  - `component::StaticInjection`: Static injection device
+  - `time_series_data::TimeSeriesData`: TimeSeriesData
 
 ```@repl market_bid_cost
 sys = System(100.0, [bus], [generator])
@@ -101,10 +102,10 @@ service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
 data =
     Dict(Dates.DateTime("2020-01-01") => [650.3, 750.0])
-time_series_data = Deterministic(
+time_series_data = Deterministic(;
     name = get_name(service),
     data = data,
-    resolution = Dates.Hour(1)
+    resolution = Dates.Hour(1),
 )
 set_service_bid!(sys, generator, service, time_series_data)
 ```

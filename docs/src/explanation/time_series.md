@@ -9,9 +9,8 @@ enable consistent modeling.
 `PowerSystems.jl` supports two categories of time series data depending on the
 process to obtain the data and its interpretation:
 
-- [Static Time Series Data](@ref)
-- [Forecasts](@ref)
-
+  - [Static Time Series Data](@ref)
+  - [Forecasts](@ref)
 
 These categories are are all subtypes of `TimeSeriesData` and fall within this time series
 type hierarchy:
@@ -34,10 +33,10 @@ Static time series usually comes in the following format, with a set [resolution
 between the time-stamps:
 
 | DateTime            | Value |
-|---------------------|:-----:|
+|:------------------- |:-----:|
 | 2020-09-01T00:00:00 | 100.0 |
 | 2020-09-01T01:00:00 | 101.0 |
-| 2020-09-01T02:00:00 |  99.0 |
+| 2020-09-01T02:00:00 | 99.0  |
 
 This example is a 1-hour resolution static time-series.
 
@@ -58,22 +57,22 @@ Forecast data usually comes in the following format, where a column represents t
 stamp associated with the [initial time](@ref I) of the forecast, and the remaining columns
 represent the forecasted values at each step in the forecast [horizon](@ref H).
 
-| DateTime            |   0   | 1     | 2     | 3    | 4     | 5     | 6     | 7     |
-|---------------------|:-----:|:-----:|:-----:|:----:|:-----:|:-----:|:-----:|:------|
+| DateTime            | 0     | 1     | 2     | 3    | 4     | 5     | 6     | 7     |
+|:------------------- |:-----:|:-----:|:-----:|:----:|:-----:|:-----:|:-----:|:----- |
 | 2020-09-01T00:00:00 | 100.0 | 101.0 | 101.3 | 90.0 | 98.0  | 87.0  | 88.0  | 67.0  |
 | 2020-09-01T01:00:00 | 101.0 | 101.3 | 99.0  | 98.0 | 88.9  | 88.3  | 67.1  | 89.4  |
-| 2020-09-01T02:00:00 |  99.0 | 67.0  | 89.0  | 99.9 | 100.0 | 101.0 | 112.0 | 101.3 |
+| 2020-09-01T02:00:00 | 99.0  | 67.0  | 89.0  | 99.9 | 100.0 | 101.0 | 112.0 | 101.3 |
 
 This example forecast has a [interval](@ref I) of 1 hour and a [horizon](@ref H) of 8.
 
 PowerSystems defines the following Julia structs to represent forecasts:
 
-- [`Deterministic`](@ref): Point forecast without any uncertainty representation.
-- [`Probabilistic`](@ref): Stores a discretized cumulative distribution functions
-  (CDFs) or probability distribution functions (PDFs) at each time step in the
-  look-ahead window.
-- [`Scenarios`](@ref): Stores a set of probable trajectories for forecasted quantity
-  with equal probability.
+  - [`Deterministic`](@ref): Point forecast without any uncertainty representation.
+  - [`Probabilistic`](@ref): Stores a discretized cumulative distribution functions
+    (CDFs) or probability distribution functions (PDFs) at each time step in the
+    look-ahead window.
+  - [`Scenarios`](@ref): Stores a set of probable trajectories for forecasted quantity
+    with equal probability.
 
 ## Data Storage
 
@@ -99,7 +98,6 @@ can create a `SingleTimeSeries` with a `TimeArray` and an accessor function to t
 maximum active power field in the struct describing the generator. In this way, we can
 store a scaling factor time series that will get multiplied by the maximum active power
 rather than the magnitudes of the maximum active power time series.
-
 
 Examples of how to create and add time series to system can be found in the
 [Add Time Series Example](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/add_forecasts/)

@@ -17,7 +17,6 @@ author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Kris
 keywords = {Power Systems, Julia, Energy},
 ```
 
-------------
-PowerSystems has been developed as part of the [Sienna modeling framework](https://www.nrel.gov/analysis/sienna.html)
+PowerSystems has been developed as part of the [Sienna platform](https://www.nrel.gov/analysis/sienna.html)
 by the U.S. Department of Energy's National Renewable Energy Laboratory
 ([NREL](https://www.nrel.gov/)).
