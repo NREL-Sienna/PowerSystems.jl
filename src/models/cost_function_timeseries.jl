@@ -128,6 +128,9 @@ function get_variable_cost(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 )
+    if typeof(get_incremental_offer_curves(cost)) <: CostCurve
+        return get_incremental_offer_curves(cost)
+    end
     function_data = if (get_incremental_offer_curves(cost) isa TimeSeriesKey)
         get_incremental_offer_curves(device, cost; start_time = start_time, len = len)
     else
@@ -159,15 +162,102 @@ function get_variable_cost(
                     "Time series mismatch between incremental_offer_curves, incremental_initial_input, and no_load_cost",
                 ),
             )
-        @show collect(zip(collect.(TimeSeries.values.(params))...)) |> length
-        @show first(collect(zip(collect.(TimeSeries.values.(params))...)))
+        #@show collect(zip(collect.(TimeSeries.values.(params))...)) |> length
+        #@show first(collect(zip(collect.(TimeSeries.values.(params))...)))
         return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
             [
-                make_market_bid_curve(fd, ii, iaz) for
+                _make_market_bid_curve(fd, ii; input_at_zero = iaz) for
                 (fd, ii, iaz) in collect(zip(collect.(TimeSeries.values.(params))...))
             ])
     end
-    return make_market_bid_curve(input_at_zero, initial_input, function_data)
+    return make_market_bid_curve(
+        function_data,
+        initial_input;
+        input_at_zero = input_at_zero,
+    )
+end
+
+"""
+Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
+of the relevant fields (`incremental_offer_curves`, `initial_input`, `no_load_cost`) are
+time series, the user may specify `start_time` and `len` and the function returns a
+`TimeArray` of `CostCurve`s; if the field is not a time series, the function returns a
+single `CostCurve`.
+"""
+function get_incremental_variable_cost(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+)
+    return get_variable_cost(
+        device,
+        cost;
+        start_time = start_time,
+        len = len,
+    )
+end
+
+"""
+Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
+of the relevant fields (`decremental_offer_curves`, `initial_input`, `no_load_cost`) are
+time series, the user may specify `start_time` and `len` and the function returns a
+`TimeArray` of `CostCurve`s; if the field is not a time series, the function returns a
+single `CostCurve`.
+"""
+function get_decremental_variable_cost(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+)
+    if typeof(get_decremental_offer_curves(cost)) <: CostCurve
+        return get_decremental_offer_curves(cost)
+    end
+    function_data = if (get_decremental_offer_curves(cost) isa TimeSeriesKey)
+        get_decremental_offer_curves(device, cost; start_time = start_time, len = len)
+    else
+        get_decremental_offer_curves(device, cost)
+    end
+    initial_input = if (get_decremental_initial_input(cost) isa TimeSeriesKey)
+        get_decremental_initial_input(device, cost; start_time = start_time, len = len)
+    else
+        get_decremental_initial_input(device, cost)
+    end
+    input_at_zero = if (get_no_load_cost(cost) isa TimeSeriesKey)
+        get_no_load_cost(device, cost; start_time = start_time, len = len)
+    else
+        get_no_load_cost(device, cost)
+    end
+    params::Vector{Any} = [function_data, initial_input, input_at_zero]
+    first_time_series = findfirst(isa.(params, TimeSeries.TimeArray))
+    if !isnothing(first_time_series)
+        timestamps = TimeSeries.timestamp(params[first_time_series])
+        for (i, param) in enumerate(params)
+            if !(param isa TimeSeries.TimeArray)
+                params[i] =
+                    TimeSeries.TimeArray(timestamps, fill(param, length(timestamps)))
+            end
+        end
+        !allequal(TimeSeries.timestamp.(params)) &&
+            throw(
+                ArgumentError(
+                    "Time series mismatch between incremental_offer_curves, incremental_initial_input, and no_load_cost",
+                ),
+            )
+        #@show collect(zip(collect.(TimeSeries.values.(params))...)) |> length
+        #@show first(collect(zip(collect.(TimeSeries.values.(params))...)))
+        return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
+            [
+                _make_market_bid_curve(fd, ii; input_at_zero = iaz) for
+                (fd, ii, iaz) in collect(zip(collect.(TimeSeries.values.(params))...))
+            ])
+    end
+    return make_market_bid_curve(
+        function_data,
+        initial_input;
+        input_at_zero = input_at_zero,
+    )
 end
 
 """
@@ -236,7 +326,19 @@ get_incremental_offer_curves(
 ) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
     device, get_incremental_offer_curves(cost), nothing, start_time, len)
 
-# TODO decremental
+"""
+Retrieve the `decremental_offer_curves` for a `StaticInjection` device with a
+`MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `Nothing`.
+"""
+get_decremental_offer_curves(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_decremental_offer_curves(cost), nothing, start_time, len)
 
 """
 Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If
@@ -263,7 +365,16 @@ get_incremental_initial_input(
 ) = _process_get_cost(Union{Nothing, Float64}, device,
     get_incremental_initial_input(cost), nothing, start_time, len)
 
-# TODO decremental
+"""
+Retrieve the `decremental_initial_input` for a `StaticInjection` device with a `MarketBidCost`.
+"""
+get_decremental_initial_input(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{Nothing, Float64}, device,
+    get_decremental_initial_input(cost), nothing, start_time, len)
 
 """
 Retrieve the startup cost data for a `StaticInjection` device with a `MarketBidCost`. If
@@ -309,7 +420,7 @@ end
 
 # SETTER IMPLEMENTATIONS
 """
-Set the variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
+Set the incremental variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
 
 # Arguments
 - `sys::System`: PowerSystem System
@@ -317,14 +428,27 @@ Set the variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
   CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
   `PiecewiseStepData`.
+- `power_units::UnitSystem`: Units to be used for data. Must be NATURAL_UNITS for 
 """
 function set_variable_cost!(
     sys::System,
     component::StaticInjection,
     data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+    power_units::UnitSystem,
 )
     market_bid_cost = get_operation_cost(component)
     _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+    if (typeof(data) <: CostCurve{PiecewiseIncrementalCurve}) &&
+       (data.power_units != power_units)
+        throw(
+            ArgumentError(
+                "Units specified in CostCurve data differs from the units specified in the set cost.",
+            ),
+        )
+    end
+    if (typeof(data) <: IS.TimeSeriesData) && (power_units != UnitSystem.NATURAL_UNITS)
+        throw(ArgumentError("Time Series data for MarketBidCost must be in NATURAL_UNITS."))
+    end
     to_set = _process_set_cost(
         CostCurve{PiecewiseIncrementalCurve},
         PiecewiseStepData,
@@ -332,7 +456,73 @@ function set_variable_cost!(
         component,
         data,
     )
+
     set_incremental_offer_curves!(market_bid_cost, to_set)
+    return
+end
+
+"""
+Set the incremental variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::Union{Nothing, IS.TimeSeriesData,
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
+  `PiecewiseStepData`.
+- `power_units::UnitSystem`: Units to be used for data.
+"""
+function set_incremental_variable_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+    power_units::UnitSystem,
+)
+    set_variable_cost!(sys, component, data, power_units)
+    return
+end
+
+"""
+Set the decremental variable cost bid for a `StaticInjection` device with a `MarketBidCost`.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::Union{Nothing, IS.TimeSeriesData,
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
+  `PiecewiseStepData`.
+- `power_units::UnitSystem`: Units to be used for data.
+"""
+function set_decremental_variable_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+    power_units::UnitSystem,
+)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+
+    if (typeof(data) <: CostCurve{PiecewiseIncrementalCurve}) &&
+       (data.power_units != power_units)
+        throw(
+            ArgumentError(
+                "Units specified in CostCurve data differs from the units specified in the set cost.",
+            ),
+        )
+    end
+    if (typeof(data) <: IS.TimeSeriesData) && (power_units != UnitSystem.NATURAL_UNITS)
+        throw(ArgumentError("Time Series data for MarketBidCost must be in NATURAL_UNITS."))
+    end
+    to_set = _process_set_cost(
+        CostCurve{PiecewiseIncrementalCurve},
+        PiecewiseStepData,
+        sys,
+        component,
+        data,
+    )
+
+    set_decremental_offer_curves!(market_bid_cost, to_set)
+    return
 end
 
 """
@@ -423,7 +613,24 @@ function set_incremental_initial_input!(
     set_incremental_initial_input!(market_bid_cost, to_set)
 end
 
-# TODO decremental
+"""
+Set the `decremental_initial_input` for a `StaticInjection` device with a `MarketBidCost` to either a scalar or a time series.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `time_series_data::Union{Float64, IS.TimeSeriesData},`: the data. If a time series, must be of eltype `Float64`.
+"""
+function set_decremental_initial_input!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Float64, IS.TimeSeriesData},
+)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+    to_set = _process_set_cost(Union{Float64, Nothing}, Float64, sys, component, data)
+    set_decremental_initial_input!(market_bid_cost, to_set)
+end
 
 """
 Set the startup cost for a `StaticInjection` device with a `MarketBidCost` to either a single `StartUpStages` or a time series.
@@ -458,6 +665,7 @@ function set_service_bid!(
     component::StaticInjection,
     service::Service,
     time_series_data::IS.TimeSeriesData,
+    power_units::UnitSystem,
 )
     data_type = IS.eltype_data(time_series_data)
     !(data_type <: PiecewiseStepData) &&
@@ -469,6 +677,13 @@ function set_service_bid!(
     if get_name(time_series_data) != get_name(service)
         error(
             "Name provided in the TimeSeries Data $(get_name(time_series_data)), doesn't match the Service $(get_name(service)).",
+        )
+    end
+    if power_units != UnitSystem.NATURAL_UNITS
+        throw(
+            ArgumentError(
+                "Power Unit specified for service market bids must be NATURAL_UNITS",
+            ),
         )
     end
     verify_device_eligibility(sys, component, service)
