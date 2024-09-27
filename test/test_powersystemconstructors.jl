@@ -35,6 +35,16 @@ checksys = false
     )
     clear_components!(sys5b)
 
+    sys5f = System(
+        100.0,
+        nodes_5,
+        thermal_generators5(nodes_5),
+        loads5(nodes_5),
+        flexible5(nodes_5);
+        runchecks = checksys,
+    )
+    clear_components!(sys5f)
+
     # GitHub issue #234 - fix time_series5 in data file, use new format
     #_sys5b = PowerSystems._System(nodes_5, thermal_generators5(nodes_5), loads5(nodes_5), nothing, battery5(nodes_5),
     #                              100.0, time_series5, nothing, nothing)

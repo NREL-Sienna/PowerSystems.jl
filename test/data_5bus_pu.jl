@@ -612,6 +612,21 @@ interruptible(nodes5) = [
     ),
 ]
 
+flexible5(nodes5) = [
+    FlexiblePowerLoad(
+        "FlexLoadBus4",
+        true,
+        nodes5[4],
+        0.10,
+        0.0,
+        0.10,
+        0.0,
+        100.0,
+        Dates.Hour(6),
+        LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
+    ),
+]
+
 reserve5(thermal_generators5) = [
     VariableReserve{ReserveUp}(
         "test_reserve",

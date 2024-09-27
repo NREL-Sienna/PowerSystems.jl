@@ -14,6 +14,7 @@ include("TwoTerminalHVDCLine.jl")
 include("TwoTerminalVSCDCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
+include("FlexiblePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
@@ -696,6 +697,7 @@ export get_ωad
 export get_ωf
 export get_ωz
 export get_ϕ_I
+export get_balance_time_period
 export set_A!
 export set_A1!
 export set_A2!
@@ -1264,3 +1266,4 @@ export set_ωad!
 export set_ωf!
 export set_ωz!
 export set_ϕ_I!
+export set_balance_time_period
