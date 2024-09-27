@@ -214,6 +214,46 @@ end
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 end
 
+@testset "Test MarketBidCost with Decremental PiecewiseLinearData Cost Timeseries, initial_input, and no_load_cost" begin
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    name = "test"
+    horizon = 24
+    power_units = UnitSystem.NATURAL_UNITS
+    data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve])
+    service_data = data_pwl
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    market_bid = MarketBidCost(nothing)
+    set_operation_cost!(generator, market_bid)
+    forecast_fd = IS.Deterministic(
+        "decremental_variable_cost_function_data",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
+    set_decremental_variable_cost!(sys, generator, forecast_fd, power_units)
+
+    forecast_ii = IS.Deterministic(
+        "decremental_variable_cost_initial_input",
+        Dict(k => get_initial_input.(get_value_curve.(v)) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
+    PSY.set_decremental_initial_input!(sys, generator, forecast_ii)
+
+    forecast_iaz = IS.Deterministic(
+        "variable_cost_input_at_zero",
+        Dict(k => get_input_at_zero.(get_value_curve.(v)) for (k, v) in pairs(data_pwl)),
+        resolution,
+    )
+    set_no_load_cost!(sys, generator, forecast_iaz)
+
+    iocs = get_decremental_offer_curves(generator, market_bid)
+    isequal(first(TimeSeries.values(iocs)), first(data_pwl[initial_time]))
+    cost_forecast =
+        get_decremental_variable_cost(generator, market_bid; start_time = initial_time)
+    @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
+end
+
 @testset "Test MarketBidCost with single `start_up::Number` value" begin
     expected = (hot = 1.0, warm = 0.0, cold = 0.0)  # should only be used for the `hot` value.
     no_load_cost = rand()
