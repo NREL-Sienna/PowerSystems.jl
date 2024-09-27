@@ -41,6 +41,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     ancillary_service_offers::Vector{Service} = Vector{Service}()
 end
 
+"Auxiliary Constructor for Deserialization with Integer at no load cost"
 MarketBidCost(
     no_load_cost::Integer,
     start_up::Union{TimeSeriesKey, StartUpStages},
@@ -59,6 +60,25 @@ MarketBidCost(
         decremental_offer_curves,
         incremental_initial_input,
         decremental_initial_input,
+        ancillary_service_offers,
+    )
+
+"""Auxiliary Constructor for TestData"""
+MarketBidCost(
+    no_load_cost::Float64,
+    start_up::Union{TimeSeriesKey, StartUpStages},
+    shut_down,
+    incremental_offer_curves,
+    ancillary_service_offers,
+) =
+    MarketBidCost(
+        Float64(no_load_cost),
+        start_up,
+        shut_down,
+        incremental_offer_curves,
+        nothing,
+        nothing,
+        nothing,
         ancillary_service_offers,
     )
 
