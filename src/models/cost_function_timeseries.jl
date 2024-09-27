@@ -166,7 +166,7 @@ function get_variable_cost(
         #@show first(collect(zip(collect.(TimeSeries.values.(params))...)))
         return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
             [
-                _make_market_bid_curve(fd, ii; input_at_zero = iaz) for
+                _make_market_bid_curve(fd; initial_input = ii, input_at_zero = iaz) for
                 (fd, ii, iaz) in collect(zip(collect.(TimeSeries.values.(params))...))
             ])
     end
@@ -249,7 +249,7 @@ function get_decremental_variable_cost(
         #@show first(collect(zip(collect.(TimeSeries.values.(params))...)))
         return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
             [
-                _make_market_bid_curve(fd, ii; input_at_zero = iaz) for
+                _make_market_bid_curve(fd; initial_input = ii, input_at_zero = iaz) for
                 (fd, ii, iaz) in collect(zip(collect.(TimeSeries.values.(params))...))
             ])
     end
@@ -269,7 +269,7 @@ get_variable_cost(
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
 ) = _process_get_cost(CostCurve{PiecewiseIncrementalCurve}, service, get_variable(service),
-    make_market_bid_curve, start_time, len)
+    _make_market_bid_curve, start_time, len)
 
 """
 Return service bid time series data for a `StaticInjection` device with a `MarketBidCost`.
@@ -292,7 +292,7 @@ function get_services_bid(
         len = len,
         count = 1,
     )
-    converted = read_and_convert_ts(ts, service, start_time, len, make_market_bid_curve)
+    converted = read_and_convert_ts(ts, service, start_time, len, _make_market_bid_curve)
     return converted
 end
 
