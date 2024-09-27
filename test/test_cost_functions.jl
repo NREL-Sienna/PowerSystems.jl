@@ -20,7 +20,7 @@ end
     marginal_costs = [25.0, 26.0, 28.0] # $/MWh
     initial_input = 50.0 # $/h
     mbc = MarketBidCost(;
-        start_up = 0.0,
+        start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
         shut_down = 0.0,
         incremental_offer_curves = CostCurve(
             PiecewiseIncrementalCurve(
@@ -41,9 +41,11 @@ end
         10.0,
     )
     @test is_market_bid_curve(mbc)
-    @test is_market_bid_curve(make_market_bid_curve(get_function_data(mbc)))
+    @test is_market_bid_curve(
+        make_market_bid_curve(get_function_data(mbc), get_initial_input(mbc)),
+    )
     @test_throws ArgumentError make_market_bid_curve(
-        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0, 40.0])
+        [100.0, 105.0, 120.0, 130.0], [26.0, 28.0, 30.0, 40.0], 10.0)
 
     mbc2 = make_market_bid_curve([1.0, 2.0, 3.0], [4.0, 6.0], 10.0; input_at_zero = 2.0)
     @test is_market_bid_curve(mbc2)
@@ -69,7 +71,6 @@ test_costs = Dict(
             [
                 PSY._make_market_bid_curve(
                     PiecewiseStepData([0.0, 2.0, 3.0], [4.0, 6.0]),
-                    nothing,
                 ),
             ],
             24,
@@ -179,6 +180,7 @@ end
     resolution = Dates.Hour(1)
     name = "test"
     horizon = 24
+    power_units = UnitSystem.NATURAL_UNITS
     data_pwl = SortedDict(initial_time => test_costs[PiecewiseIncrementalCurve])
     service_data = data_pwl
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
@@ -190,7 +192,7 @@ end
         Dict(k => get_function_data.(v) for (k, v) in pairs(data_pwl)),
         resolution,
     )
-    set_variable_cost!(sys, generator, forecast_fd)
+    set_variable_cost!(sys, generator, forecast_fd, power_units)
 
     forecast_ii = IS.Deterministic(
         "variable_cost_initial_input",
@@ -214,7 +216,10 @@ end
 
 @testset "Test MarketBidCost with single `start_up::Number` value" begin
     expected = (hot = 1.0, warm = 0.0, cold = 0.0)  # should only be used for the `hot` value.
-    cost = MarketBidCost(; start_up = 1, no_load_cost = rand(), shut_down = rand())
+    no_load_cost = rand()
+    start_up = 1.0
+    shut_down = rand()
+    cost = MarketBidCost(no_load_cost, start_up, shut_down)
     @test get_start_up(cost) == expected
 end
 
