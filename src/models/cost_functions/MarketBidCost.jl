@@ -69,6 +69,7 @@ MarketBidCost(
     start_up::Union{TimeSeriesKey, StartUpStages},
     shut_down,
     incremental_offer_curves,
+    decremental_offer_curves,
     ancillary_service_offers,
 ) =
     MarketBidCost(
@@ -76,7 +77,7 @@ MarketBidCost(
         start_up,
         shut_down,
         incremental_offer_curves,
-        nothing,
+        decremental_offer_curves,
         nothing,
         nothing,
         ancillary_service_offers,
