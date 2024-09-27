@@ -62,27 +62,6 @@ MarketBidCost(
         ancillary_service_offers,
     )
 
-MarketBidCost(
-    no_load_cost::Float64,
-    start_up::Union{TimeSeriesKey, StartUpStages},
-    shut_down,
-    incremental_offer_curves,
-    decremental_offer_curves,
-    incremental_initial_input,
-    decremental_initial_input,
-    ancillary_service_offers,
-) =
-    MarketBidCost(;
-        no_load_cost = no_load_cost,
-        start_up = start_up,
-        shut_down = shut_down,
-        incremental_offer_curves = incremental_offer_curves,
-        decremental_offer_curves = decremental_offer_curves,
-        incremental_initial_input = incremental_initial_input,
-        decremental_initial_input = decremental_initial_input,
-        ancillary_service_offers = ancillary_service_offers,
-    )
-
 # Constructor for demo purposes; non-functional.
 function MarketBidCost(::Nothing)
     MarketBidCost(;
