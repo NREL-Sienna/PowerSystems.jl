@@ -91,7 +91,7 @@ Accepts a single `start_up` value to use as the `hot` value, with `warm` and `co
 function MarketBidCost(
     no_load_cost,
     start_up::Real,
-    shut_down,
+    shut_down;
     incremental_offer_curves = nothing,
     decremental_offer_curves = nothing,
     incremental_initial_input = nothing,
@@ -108,7 +108,7 @@ function MarketBidCost(
         incremental_offer_curves = incremental_offer_curves,
         decremental_offer_curves = decremental_offer_curves,
         incremental_initial_input = incremental_initial_input,
-        dencremental_initial_input = decremental_initial_input,
+        decremental_initial_input = decremental_initial_input,
         ancillary_service_offers = ancillary_service_offers,
     )
 end
@@ -211,8 +211,11 @@ function make_market_bid_curve(data::PiecewiseStepData,
     return cc
 end
 
-function _make_market_bid_curve(data::PiecewiseStepData,
-    initial_input::Union{Nothing, Float64};
+"""
+Auxiliary make market bid curve for timeseries with nothing inputs. 
+"""
+function _make_market_bid_curve(data::PiecewiseStepData;
+    initial_input::Union{Nothing, Float64} = nothing,
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS,
     input_at_zero::Union{Nothing, Float64} = nothing)
     cc = CostCurve(IncrementalCurve(data, initial_input, input_at_zero), power_units)
