@@ -385,6 +385,8 @@ export get_start_up
 export get_shut_down
 export get_incremental_offer_curves, set_incremental_offer_curves!
 export get_decremental_offer_curves, set_decremental_offer_curves!
+export get_incremental_initial_input, set_incremental_initial_input!
+export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_services_bid
 export set_variable_cost!
