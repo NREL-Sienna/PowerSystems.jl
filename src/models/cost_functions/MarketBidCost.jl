@@ -19,14 +19,14 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     start_up::Union{TimeSeriesKey, StartUpStages}
     "Shut-down cost"
     shut_down::Float64
-    "Sell Offer Curves data, which can be a time series of [`PiecewiseStepData`](@ref) or a
+    "Sell Offer Curves data, which can be a time series of `PiecewiseStepData` or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     incremental_offer_curves::Union{
         Nothing,
         TimeSeriesKey,  # piecewise step data
         CostCurve{PiecewiseIncrementalCurve},
     } = nothing
-    "Buy Offer Curves data, which can be a time series of [`PiecewiseStepData`](@ref) or a
+    "Buy Offer Curves data, which can be a time series of `PiecewiseStepData` or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     decremental_offer_curves::Union{
         Nothing,
@@ -47,6 +47,8 @@ MarketBidCost(
     shut_down,
     incremental_offer_curves,
     decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
     ancillary_service_offers,
 ) =
     MarketBidCost(
@@ -55,6 +57,8 @@ MarketBidCost(
         shut_down,
         incremental_offer_curves,
         decremental_offer_curves,
+        incremental_initial_input,
+        decremental_initial_input,
         ancillary_service_offers,
     )
 
@@ -64,6 +68,8 @@ MarketBidCost(
     shut_down,
     incremental_offer_curves,
     decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
     ancillary_service_offers,
 ) =
     MarketBidCost(;
@@ -72,6 +78,8 @@ MarketBidCost(
         shut_down = shut_down,
         incremental_offer_curves = incremental_offer_curves,
         decremental_offer_curves = decremental_offer_curves,
+        incremental_initial_input = incremental_initial_input,
+        decremental_initial_input = decremental_initial_input,
         ancillary_service_offers = ancillary_service_offers,
     )
 
@@ -122,7 +130,7 @@ get_shut_down(value::MarketBidCost) = value.shut_down
 """Get [`MarketBidCost`](@ref) `incremental_offer_curves`."""
 get_incremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
 """Get [`MarketBidCost`](@ref) `decremental_offer_curves`."""
-get_decremental_offer_curves(value::MarketBidCost) = value.incremental_offer_curves
+get_decremental_offer_curves(value::MarketBidCost) = value.decremental_offer_curves
 """Get [`MarketBidCost`](@ref) `incremental_initial_input`."""
 get_incremental_initial_input(value::MarketBidCost) = value.incremental_initial_input
 """Get [`MarketBidCost`](@ref) `decremental_initial_input`."""

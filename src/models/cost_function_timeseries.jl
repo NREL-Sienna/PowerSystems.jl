@@ -426,8 +426,9 @@ Set the incremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
-  `PiecewiseStepData`.
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
+  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data. Must be NATURAL_UNITS for 
 """
 function set_variable_cost!(
@@ -468,8 +469,9 @@ Set the incremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
-  `PiecewiseStepData`.
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
+  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
 function set_incremental_variable_cost!(
@@ -489,8 +491,9 @@ Set the decremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If a time series, must be of eltype
-  `PiecewiseStepData`.
+  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
+  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
 function set_decremental_variable_cost!(
