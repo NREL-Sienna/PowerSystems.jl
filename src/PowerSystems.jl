@@ -380,6 +380,7 @@ export get_data
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost
+export get_incremental_variable_cost, get_decremental_variable_cost
 export get_no_load_cost
 export get_start_up
 export get_shut_down
