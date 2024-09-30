@@ -625,11 +625,11 @@ import InfrastructureSystems:
     DynamicallyGroupedComponentSelector,
     NameComponentSelector,
     ListComponentSelector,
-    SubtypeComponentSelector,
+    TypeComponentSelector,
     FilterComponentSelector,
     component_to_qualified_string,
     subtype_to_string,
-    COMPONENT_NAME_DELIMETER,
+    COMPONENT_NAME_DELIMITER,
     make_selector,
     default_name
 import InfrastructureSystems:

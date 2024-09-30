@@ -83,19 +83,18 @@ end
     @test length(the_groups) == 2
 end
 
-@testset "Test SubtypeComponentSelector" begin
-    test_sub_ent = PSY.SubtypeComponentSelector(ThermalStandard, nothing, :all)
-    named_test_sub_ent = PSY.SubtypeComponentSelector(ThermalStandard, "Thermals", :all)
+@testset "Test TypeComponentSelector" begin
+    test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, nothing, :all)
+    named_test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, "Thermals", :all)
 
     # Equality
-    @test PSY.SubtypeComponentSelector(ThermalStandard, nothing, :all) == test_sub_ent
-    @test PSY.SubtypeComponentSelector(ThermalStandard, "Thermals", :all) ==
-          named_test_sub_ent
+    @test PSY.TypeComponentSelector(ThermalStandard, nothing, :all) == test_sub_ent
+    @test PSY.TypeComponentSelector(ThermalStandard, "Thermals", :all) == named_test_sub_ent
 
     # Construction
     @test make_selector(ThermalStandard) == test_sub_ent
     @test make_selector(ThermalStandard; name = "Thermals") == named_test_sub_ent
-    @test make_selector(ThermalStandard; groupby = string) isa PSY.SubtypeComponentSelector
+    @test make_selector(ThermalStandard; groupby = string) isa PSY.TypeComponentSelector
 
     # Naming
     @test get_name(test_sub_ent) == "ThermalStandard"
@@ -248,7 +247,7 @@ end
     ) == 1
 
     # Also test briefly with something from IS
-    @assert PSY.SubtypeComponentSelector <: DynamicallyGroupedComponentSelector
+    @assert PSY.TypeComponentSelector <: DynamicallyGroupedComponentSelector
     @test length(
         collect(
             get_groups(make_selector(ThermalStandard;

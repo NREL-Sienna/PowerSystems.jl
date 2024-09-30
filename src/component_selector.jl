@@ -4,36 +4,35 @@
 """
 Get the components of the `System` that make up the `ComponentSelector`.
 """
-get_components(e::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_components(e, sys; filterby = filterby)
+get_components(selector::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_components(selector, sys; filterby = filterby)
 
 # This would be cleaner if `IS.get_components === PSY.get_components` (see
 # https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388)
-IS.get_components(e::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_components(e, sys.data; filterby = filterby)
+IS.get_components(selector::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_components(selector, sys.data; filterby = filterby)
 
 """
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
 """
-get_component(e::SingularComponentSelector, sys::System; filterby = nothing) =
-    IS.get_component(e, sys.data; filterby = filterby)
+get_component(selector::SingularComponentSelector, sys::System; filterby = nothing) =
+    IS.get_component(selector, sys.data; filterby = filterby)
 
 """
 Get the groups that make up the `ComponentSelector`.
 """
-get_groups(e::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_groups(e, sys; filterby = filterby)
+get_groups(selector::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_groups(selector, sys; filterby = filterby)
 
 # TopologyComponentSelector
 # This one is wholly implemented in PowerSystems rather than in InfrastructureSystems because it depends on `PSY.AggregationTopology`
 """
-`PluralComponentSelector` represented by an `AggregationTopology` and a subtype of
-`Component`.
+`PluralComponentSelector` represented by an `AggregationTopology` and a type of `Component`.
 """
 struct TopologyComponentSelector <: DynamicallyGroupedComponentSelector
-    component_subtype::Type{<:Component}
-    topology_subtype::Type{<:AggregationTopology}
+    component_type::Type{<:Component}
+    topology_type::Type{<:AggregationTopology}
     topology_name::AbstractString
     name::Union{String, Nothing}
     groupby::Union{Symbol, Function}  # TODO add validation
@@ -45,32 +44,36 @@ Make a `ComponentSelector` from an `AggregationTopology` and a type of component
 provide a name and/or grouping behavior for the `ComponentSelector`.
 """
 make_selector(
-    component_subtype::Type{<:Component},
-    topology_subtype::Type{<:AggregationTopology},
+    component_type::Type{<:Component},
+    topology_type::Type{<:AggregationTopology},
     topology_name::AbstractString;
     name::Union{String, Nothing} = nothing,
     groupby::Union{Symbol, Function} = :all,
 ) = TopologyComponentSelector(
-    component_subtype,
-    topology_subtype,
+    component_type,
+    topology_type,
     topology_name,
     name,
     IS.validate_groupby(groupby),
 )
 
 # Naming
-IS.default_name(e::TopologyComponentSelector) =
-    component_to_qualified_string(e.topology_subtype, e.topology_name) *
-    COMPONENT_NAME_DELIMETER *
-    subtype_to_string(e.component_subtype)
+IS.default_name(selector::TopologyComponentSelector) =
+    component_to_qualified_string(selector.topology_type, selector.topology_name) *
+    COMPONENT_NAME_DELIMITER *
+    subtype_to_string(selector.component_type)
 
 # Contents
-function IS.get_components(e::TopologyComponentSelector, sys::System; filterby = nothing)
-    agg_topology = get_component(e.topology_subtype, sys, e.topology_name)
+function IS.get_components(
+    selector::TopologyComponentSelector,
+    sys::System;
+    filterby = nothing,
+)
+    agg_topology = get_component(selector.topology_type, sys, selector.topology_name)
     isnothing(agg_topology) &&
-        (return Iterators.filter(x -> false, get_components(e.component_subtype, sys)))
+        (return Iterators.filter(x -> false, get_components(selector.component_type, sys)))
     components = get_components_in_aggregation_topology(
-        e.component_subtype,
+        selector.component_type,
         sys,
         agg_topology,
     )
