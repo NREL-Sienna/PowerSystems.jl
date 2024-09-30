@@ -2,10 +2,24 @@
 # InfrastructureSystemsComponent with Component and SystemData with System
 
 """
+    get_components(selector, sys; filterby = nothing)
 Get the components of the `System` that make up the `ComponentSelector`.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
 """
 get_components(selector::ComponentSelector, sys::System; filterby = nothing) =
     IS.get_components(selector, sys; filterby = filterby)
+
+"""
+    get_components(filterby, selector, sys)
+Get the components of the `System` that make up the `ComponentSelector`.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+"""
+get_components(
+    filterby::Union{Nothing, Function},
+    selector::ComponentSelector,
+    sys::System,
+) =
+    get_components(selector, sys; filterby = filterby)
 
 # This would be cleaner if `IS.get_components === PSY.get_components` (see
 # https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388)
@@ -13,17 +27,45 @@ IS.get_components(selector::ComponentSelector, sys::System; filterby = nothing) 
     IS.get_components(selector, sys.data; filterby = filterby)
 
 """
+    get_component(selector, sys; filterby = nothing)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
 """
 get_component(selector::SingularComponentSelector, sys::System; filterby = nothing) =
     IS.get_component(selector, sys.data; filterby = filterby)
 
 """
+    get_component(filterby, selector, sys)
+Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
+if there is none.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+"""
+get_component(
+    filterby::Union{Nothing, Function},
+    selector::SingularComponentSelector,
+    sys::System,
+) =
+    get_component(selector, sys; filterby = filterby)
+
+IS.get_component(selector::ComponentSelector, sys::System; filterby = nothing) =
+    IS.get_component(selector, sys.data; filterby = filterby)
+
+"""
+    get_groups(selector, sys; filterby = nothing)
 Get the groups that make up the `ComponentSelector`.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
 """
 get_groups(selector::ComponentSelector, sys::System; filterby = nothing) =
     IS.get_groups(selector, sys; filterby = filterby)
+
+"""
+    get_groups(filterby, selector, sys)
+Get the groups that make up the `ComponentSelector`.
+ - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+"""
+get_groups(filterby::Union{Nothing, Function}, selector::ComponentSelector, sys::System) =
+    get_groups(selector, sys; filterby = filterby)
 
 # TopologyComponentSelector
 # This one is wholly implemented in PowerSystems rather than in InfrastructureSystems because it depends on `PSY.AggregationTopology`

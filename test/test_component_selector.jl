@@ -47,6 +47,9 @@ end
         get_components(make_selector(gen_sundance), test_sys; filterby = get_available),
     ) ==
           Vector{Component}()
+    @test IS.get_component(test_gen_ent, test_sys; filterby = x -> true) ==
+          first(the_components)
+    @test isnothing(IS.get_component(test_gen_ent, test_sys; filterby = x -> false))
 
     @test only(get_groups(test_gen_ent, test_sys)) == test_gen_ent
 end
@@ -185,6 +188,7 @@ end
 
     # Construction
     @test make_selector(ThermalStandard, starts_with_s) == test_filter_ent
+    @test make_selector(starts_with_s, ThermalStandard) == test_filter_ent
     @test make_selector(ThermalStandard, starts_with_s; name = "ThermStartsWithS") ==
           named_test_filter_ent
     @test make_selector(ThermalStandard, starts_with_s; groupby = string) isa
@@ -254,4 +258,14 @@ end
                     groupby = x -> length(get_name(x))), test_sys),
         ),
     ) == 3
+end
+
+@testset "Test alternative interfaces" begin
+    selector = make_selector(ThermalStandard, "Solitude")
+    @test get_components(selector, test_sys; filterby = x -> true) ==
+          get_components(x -> true, selector, test_sys)
+    @test get_component(selector, test_sys; filterby = x -> true) ==
+          get_component(x -> true, selector, test_sys)
+    @test get_groups(selector, test_sys; filterby = x -> true) ==
+          get_groups(x -> true, selector, test_sys)
 end
