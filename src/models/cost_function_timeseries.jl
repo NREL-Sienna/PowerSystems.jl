@@ -429,7 +429,7 @@ Set the incremental variable cost bid for a `StaticInjection` device with a `Mar
   CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
   `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
   not accepted for time series data.
-- `power_units::UnitSystem`: Units to be used for data. Must be NATURAL_UNITS for 
+- `power_units::UnitSystem`: Units to be used for data. Must be NATURAL_UNITS.
 """
 function set_variable_cost!(
     sys::System,
@@ -459,6 +459,16 @@ function set_variable_cost!(
     )
 
     set_incremental_offer_curves!(market_bid_cost, to_set)
+    return
+end
+
+function set_variable_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+)
+    @warn "Variable Cost UnitSystem not specificied for $(get_name(component)). set_variable_cost! assumes data is in UnitSystem.NATURAL_UNITS"
+    set_variable_cost!(sys, component, data, UnitSystem.NATURAL_UNITS)
     return
 end
 
