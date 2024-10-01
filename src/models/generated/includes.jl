@@ -506,6 +506,7 @@ export get_d_t
 export get_db
 export get_dbd_pnts
 export get_dc_bus
+export get_dc_current
 export get_dc_dc_inductor
 export get_dc_link_capacitance
 export get_delta_t
@@ -591,6 +592,7 @@ export get_max_constant_active_power
 export get_max_constant_reactive_power
 export get_max_current_active_power
 export get_max_current_reactive_power
+export get_max_dc_current
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
 export get_max_output_fraction
@@ -1074,6 +1076,7 @@ export set_d_t!
 export set_db!
 export set_dbd_pnts!
 export set_dc_bus!
+export set_dc_current!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
 export set_delta_t!
@@ -1159,6 +1162,7 @@ export set_max_constant_active_power!
 export set_max_constant_reactive_power!
 export set_max_current_active_power!
 export set_max_current_reactive_power!
+export set_max_dc_current!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_output_fraction!

@@ -4,9 +4,61 @@ A [`MarketBidCost`](@ref) is an `OperationalCost` data structure that allows the
 cost model that is very similar to most US electricity market auctions with bids for energy
 and ancillary services jointly. This page showcases how to create data for this cost function.
 
-## Adding Energy bids to MarketBidCost
+## Adding a Single Incremental Energy bids to MarketBidCost
 
-### Step 1: Constructiong device with MarketBidCost
+### Construct directly the MarketBidCost using the `make_market_bid_curve` method.
+
+The `make_market_bid_curve` creates an incremental or decremental offer curve from a vector of `n` power values, a vector of `n-1` marginal costs and single initial input. For example, the following code creates an incremental offer curve:
+
+```@repl market_bid_cost
+using PowerSystems, Dates
+proposed_offer_curve =
+    make_market_bid_curve([0.0, 100.0, 105.0, 120.0, 130.0], [25.0, 26.0, 28.0, 30.0], 10.0)
+```
+
+Then a device with MarketBidCost can be directly instantiated using:
+
+```@repl market_bid_cost
+using PowerSystems, Dates
+bus = ACBus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+
+generator = ThermalStandard(;
+    name = "Brighton",
+    available = true,
+    status = true,
+    bus = bus,
+    active_power = 6.0,
+    reactive_power = 1.50,
+    rating = 0.75,
+    prime_mover_type = PrimeMovers.ST,
+    fuel = ThermalFuels.COAL,
+    active_power_limits = (min = 0.0, max = 6.0),
+    reactive_power_limits = (min = -4.50, max = 4.50),
+    time_limits = (up = 0.015, down = 0.015),
+    ramp_limits = (up = 5.0, down = 3.0),
+    operation_cost = MarketBidCost(;
+        no_load_cost = 0.0,
+        start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
+        shut_down = 0.0,
+        incremental_offer_curves = proposed_offer_curve,
+    ),
+    base_power = 100.0,
+)
+```
+
+Similarly, a decremental offer curve can also be created directly using the same helper method:
+
+```@repl market_bid_cost
+using PowerSystems, Dates
+decremental_offer =
+    make_market_bid_curve([0.0, 100.0, 105.0, 120.0, 130.0], [30.0, 28.0, 26.0, 25.0], 50.0)
+```
+
+and can be added to a `MarketBidCost` using the field `decremental_offer_curves`.
+
+## Adding Time Series Energy bids to MarketBidCost
+
+### Step 1: Constructing device with MarketBidCost
 
 When using [`MarketBidCost`](@ref), the user can add the cost struct to the device specifying
 only certain elements, at this point the actual energy cost bids don't need to be populated/passed.
@@ -43,39 +95,28 @@ generator = ThermalStandard(;
 ### Step 2: Creating the `TimeSeriesData` for the Market Bid
 
 The user is expected to pass the `TimeSeriesData` that holds the energy bid data which can be
-of any type (i.e. `SingleTimeSeries` or `Deterministic`) and data can be `Array{Float64}`,
-`Array{Tuple{Float64, Float64}}` or `Array{Array{Tuple{Float64,Float64}}`. If the data is
-just floats then the cost in the optimization is seen as a constant variable cost, but if
-data is a Tuple or `Array{Tuple}` then the model expects the tuples to be cost & power-point
-pairs (cost in $/p.u-hr & power-point in p.u-hr), which is modeled same as TwoPartCost or
-ThreePartCost. Code below shows an example of how to build a TimeSeriesData.
+of any type (i.e. `SingleTimeSeries` or `Deterministic`) and data must be `PiecewiseStepData`.
+This data type is created by specifying a vector of `n` powers, and `n-1` marginal costs.
+The data must be specified in natural units, that is power in MW and marginal cost in $/MWh
+or it will not be accepted when adding to the system.
+Code below shows an example of how to build a Deterministic TimeSeries.
 
 ```@repl market_bid_cost
+initial_time = Dates.DateTime("2020-01-01")
+psd1 = PiecewiseStepData([5.0, 7.33, 9.67, 12.0], [2.901, 5.8272, 8.941])
+psd2 = PiecewiseStepData([5.0, 7.33, 9.67, 12.0], [3.001, 6.0072, 9.001])
 data =
     Dict(
-        Dates.DateTime("2020-01-01") => [
-            [(0.0, 0.05), (290.1, 0.0733), (582.72, 0.0967), (894.1, 0.120)],
-            [(0.0, 0.05), (300.1, 0.0733), (600.72, 0.0967), (900.1, 0.120)]],
+        initial_time => [
+            psd1,
+            psd2,
+        ],
     )
 time_series_data = Deterministic(;
     name = "variable_cost",
     data = data,
     resolution = Dates.Hour(1),
 )
-```
-
-**NOTE:** Due to [limitations in DataStructures.jl](https://github.com/JuliaCollections/DataStructures.jl/issues/239),
-in `PowerSystems.jl` when creating Forecasts or TimeSeries for your MarketBidCost, you need
-to define your data as in the example or with a very explicit container. Otherwise, it won't
-discern the types properly in the constructor and will return `SortedDict{Any,Any,Base.Order.ForwardOrdering}` which causes the constructor in `PowerSystems.jl` to fail. For instance, you need to define
-the `Dict` with the data as follows:
-
-```julia
-# Very verbose dict definition
-data = Dict{DateTime, Array{Array{Tuple{Float64, Float64}, 1}, 1}}()
-for t in range(initial_time_sys; step = Hour(1), length = window_count)
-    data[t] = MY_BID_DATA
-end
 ```
 
 ### Step 3a: Adding Energy Bid TimeSeriesData to the device
@@ -86,11 +127,19 @@ arguments for `set_variable_cost!` are:
   - `sys::System`: PowerSystem System
   - `component::StaticInjection`: Static injection device
   - `time_series_data::TimeSeriesData`: TimeSeriesData
+  - `power_units::UnitSystem`: UnitSystem
+
+Currently, time series data only supports natural units for time series data, i.e. MW for power and $/MWh for marginal costs.
 
 ```@repl market_bid_cost
 sys = System(100.0, [bus], [generator])
-set_variable_cost!(sys, generator, time_series_data)
+set_variable_cost!(sys, generator, time_series_data, UnitSystem.NATURAL_ITEMS)
 ```
+
+**Note:** `set_variable_cost!` add curves to the `incremental_offer_curves` in the MarketBidCost.
+Similarly, `set_incremental_variable_cost!` can be used to add curves to the `incremental_offer_curves`.
+On the other hand, `set_decremental_variable_cost!` must be used to decremental curves (usually for storage or demand).
+The creation of the TimeSeriesData is similar to Step 2, using `PiecewiseStepData`
 
 ### Step 3b: Adding Service Bid TimeSeriesData to the device
 
