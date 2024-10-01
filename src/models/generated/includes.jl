@@ -482,6 +482,7 @@ export get_arc
 export get_area
 export get_available
 export get_b
+export get_balance_time_period
 export get_base_power
 export get_base_voltage
 export get_battery_resistance
@@ -697,7 +698,6 @@ export get_ωad
 export get_ωf
 export get_ωz
 export get_ϕ_I
-export get_balance_time_period
 export set_A!
 export set_A1!
 export set_A2!
@@ -1051,6 +1051,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
+export set_balance_time_period!
 export set_base_power!
 export set_base_voltage!
 export set_battery_resistance!
@@ -1266,4 +1267,3 @@ export set_ωad!
 export set_ωf!
 export set_ωz!
 export set_ϕ_I!
-export set_balance_time_period
