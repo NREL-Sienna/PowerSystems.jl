@@ -775,9 +775,9 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 function get_reserve_direction(direction::AbstractString)
-    if direction == "Up"
+    if lowercase(direction) == "up"
         return ReserveUp
-    elseif direction == "Down"
+    elseif lowercase(direction) == "down"
         return ReserveDown
     else
         throw(DataFormatError("invalid reserve direction $direction"))
@@ -823,8 +823,16 @@ function make_cost(
 ) where {T <: ThermalGen}
     fuel_price = gen.fuel_price / 1000.0
 
-    cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost, fixed = create_pwinc_cost(cost_pairs)
+    # We check if there is any Quadratic or Linear Data defined. If not we fall back to create PiecewiseIncrementalCurve
+    quadratic_fields = (gen.heat_rate_a0, gen.heat_rate_a1, gen.heat_rate_a2)
+
+    if any(field -> field != nothing, quadratic_fields)
+        var_cost, fixed =
+            create_poly_cost(gen, ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"])
+    else
+        cost_pairs = get_cost_pairs(gen, cost_colnames)
+        var_cost, fixed = create_pwinc_cost(cost_pairs)
+    end
 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
 
@@ -954,6 +962,45 @@ function create_pwl_cost(
     end
 
     return var_cost
+end
+
+"""
+    create_poly_cost(gen, cost_colnames)
+
+Return a Polynomial function cost based on the coeffiecients provided on gen.
+
+Three supported cases,
+  1. If three values are passed then we have data looking like: `a2 * x^2 + a1 * x + a0`,
+  2. If `a1` and `a0` are passed then we have data looking like: `a1 * x + a0`,
+  3. If only `a1` is passed then we have data looking like: `a1 * x`.
+"""
+function create_poly_cost(
+    gen, cost_colnames,
+)
+    fixed_cost = 0.0
+    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    a2 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a2")))
+    a1 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a1")))
+    a0 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a0")))
+
+    if !isnothing(a2) && (isnothing(a1) || isnothing(a0))
+        throw(
+            DataFormatError(
+                "All coefficients must be passed if quadratic term is passed.",
+            ),
+        )
+    end
+
+    if !any(isnothing.([a2, a1, a0]))
+        @debug "QuadraticCurve created for $(gen.name)"
+        return QuadraticCurve(a2, a1, a0), fixed_cost
+    end
+    if all(isnothing.([a2, a0])) && !isnothing(a1)
+        @debug "LinearCurve created for $(gen.name)"
+        return LinearCurve(a1), fixed_cost
+    end
+    @debug "LinearCurve created for $(gen.name)"
+    return LinearCurve(a1, a0), fixed_cost
 end
 
 function create_pwinc_cost(

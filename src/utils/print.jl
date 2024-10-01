@@ -298,3 +298,10 @@ show_components(
     additional_columns::Union{Dict, Vector} = Dict();
     kwargs...,
 ) = show_components(io, sys, component_type, additional_columns; kwargs...)
+
+"""
+Show a table with the summary of time series attached to the system.
+"""
+function show_time_series(sys::System)
+    IS.show_time_series_data(stdout, sys.data)
+end

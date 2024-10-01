@@ -38,7 +38,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the load (MVA) for per unitization, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
 - `constant_reactive_power::Float64`: (default: `0.0`) Constant reactive power demand in MVAR (Q_P)
 - `impedance_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant impedance load (P_Z)
@@ -53,7 +53,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `max_current_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant current load
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct StandardLoad <: StaticLoad
@@ -63,7 +63,7 @@ mutable struct StandardLoad <: StaticLoad
     available::Bool
     "Bus that this component is connected to"
     bus::ACBus
-    "Base power of the load (MVA) for per unitization"
+    "Base power of the load (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "Constant active power demand in MW (P_P)"
     constant_active_power::Float64
@@ -93,7 +93,7 @@ mutable struct StandardLoad <: StaticLoad
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

@@ -98,10 +98,10 @@ Parameters of a Generic Distributed Energy Resource Model. Based on ["Modeling F
 - `Pfa_ref::Float64`: (default: `0.0`) Reference power factor, validation range: `(0, nothing)`
 - `Q_ref::Float64`: (default: `0.0`) Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: (default: `1.0`) Reference active power, in pu, validation range: `(0, nothing)`
-- `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for per unitization
+- `base_power::Float64`: (default: `100.0`) Base power of the unit (MVA) for [per unitization](@ref per_unit)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
 - `n_states::Int`: (**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct GenericDER <: DynamicInjection
@@ -187,13 +187,13 @@ mutable struct GenericDER <: DynamicInjection
     Q_ref::Float64
     "Reference active power, in pu"
     P_ref::Float64
-    "Base power of the unit (MVA) for per unitization"
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
     "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     states::Vector{Symbol}
     "(**Do not modify.**) The [states](@ref S) of GenericDER depend on the Flags"
     n_states::Int
-    "An *ext*ra dictionary for users to add metadata that are not used in simulation, such as latitude and longitude. See [Adding additional fields](@ref)"
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

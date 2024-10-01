@@ -59,6 +59,7 @@ include("ESST1A.jl")
 include("EXPIC1.jl")
 include("ESST4B.jl")
 include("ST6B.jl")
+include("ST8C.jl")
 include("EXST1.jl")
 include("EX4VSA.jl")
 include("BaseMachine.jl")
@@ -93,6 +94,7 @@ include("HydroTurbineGov.jl")
 include("IEEETurbineGov1.jl")
 include("TGTypeI.jl")
 include("TGTypeII.jl")
+include("TGSimple.jl")
 include("AverageConverter.jl")
 include("RenewableEnergyConverterTypeA.jl")
 include("RenewableEnergyVoltageConverterTypeA.jl")
@@ -180,6 +182,7 @@ export get_H_lp
 export get_I_lr
 export get_I_max
 export get_Id_max
+export get_Ifd_ref
 export get_Iflim
 export get_Io_lim
 export get_Iq_lim
@@ -198,15 +201,21 @@ export get_K6
 export get_K7
 export get_K8
 export get_KT
+export get_K_a
 export get_K_c
+export get_K_c1
+export get_K_c2
 export get_K_ci
 export get_K_d
 export get_K_da
 export get_K_ex
+export get_K_f
 export get_K_ff
 export get_K_hp
 export get_K_hv
 export get_K_i
+export get_K_i1
+export get_K_i2
 export get_K_ia
 export get_K_ig
 export get_K_im
@@ -311,8 +320,10 @@ export get_Rp
 export get_Rperm
 export get_Rrpwr
 export get_Rselect
+export get_SCL_Flag
 export get_SOC_ini
 export get_SOC_lim
+export get_SW1_Flag
 export get_Se
 export get_Spar
 export get_T
@@ -334,9 +345,11 @@ export get_T9
 export get_TFRT_pnts
 export get_TVRT_pnts
 export get_T_AA
+export get_T_a
 export get_T_act
 export get_T_da
 export get_T_eng
+export get_T_f
 export get_T_fltr
 export get_T_ft
 export get_T_fv
@@ -372,6 +385,7 @@ export get_Tg
 export get_Th
 export get_Tj
 export get_Tk
+export get_Tm
 export get_Tp
 export get_Tpelec
 export get_Tpord
@@ -390,8 +404,11 @@ export get_Tw2
 export get_Tw3
 export get_Tw4
 export get_U0
+export get_UEL_Flag
 export get_UEL_flags
 export get_U_c
+export get_VB1_max
+export get_VB2_max
 export get_VB_max
 export get_VC_Flag
 export get_VELM
@@ -418,6 +435,7 @@ export get_Vm_lim
 export get_Vmax
 export get_Vmin
 export get_Vo_lim
+export get_Vpi_lim
 export get_Vpr
 export get_Vr_lim
 export get_Vrfrac
@@ -429,6 +447,7 @@ export get_Wf_nl
 export get_X_ad
 export get_X_aq
 export get_X_c
+export get_X_l
 export get_X_lr
 export get_X_ls
 export get_X_m
@@ -483,6 +502,7 @@ export get_current_reactive_power
 export get_cycle_limits
 export get_d
 export get_dP_lim
+export get_d_t
 export get_db
 export get_dbd_pnts
 export get_dc_bus
@@ -512,6 +532,7 @@ export get_from_branch_control
 export get_fs
 export get_fuel
 export get_fuel_flag
+export get_g
 export get_gate_openings
 export get_gate_position_limits
 export get_hysteresis_binary_logic
@@ -665,6 +686,7 @@ export get_γ_q2
 export get_γ_qd
 export get_γd
 export get_γq
+export get_θ_p
 export get_θp
 export get_θp_rad
 export get_τ_limits
@@ -730,6 +752,7 @@ export set_H_lp!
 export set_I_lr!
 export set_I_max!
 export set_Id_max!
+export set_Ifd_ref!
 export set_Iflim!
 export set_Io_lim!
 export set_Iq_lim!
@@ -748,15 +771,21 @@ export set_K6!
 export set_K7!
 export set_K8!
 export set_KT!
+export set_K_a!
 export set_K_c!
+export set_K_c1!
+export set_K_c2!
 export set_K_ci!
 export set_K_d!
 export set_K_da!
 export set_K_ex!
+export set_K_f!
 export set_K_ff!
 export set_K_hp!
 export set_K_hv!
 export set_K_i!
+export set_K_i1!
+export set_K_i2!
 export set_K_ia!
 export set_K_ig!
 export set_K_im!
@@ -861,8 +890,10 @@ export set_Rp!
 export set_Rperm!
 export set_Rrpwr!
 export set_Rselect!
+export set_SCL_Flag!
 export set_SOC_ini!
 export set_SOC_lim!
+export set_SW1_Flag!
 export set_Se!
 export set_Spar!
 export set_T!
@@ -884,9 +915,11 @@ export set_T9!
 export set_TFRT_pnts!
 export set_TVRT_pnts!
 export set_T_AA!
+export set_T_a!
 export set_T_act!
 export set_T_da!
 export set_T_eng!
+export set_T_f!
 export set_T_fltr!
 export set_T_ft!
 export set_T_fv!
@@ -922,6 +955,7 @@ export set_Tg!
 export set_Th!
 export set_Tj!
 export set_Tk!
+export set_Tm!
 export set_Tp!
 export set_Tpelec!
 export set_Tpord!
@@ -940,8 +974,11 @@ export set_Tw2!
 export set_Tw3!
 export set_Tw4!
 export set_U0!
+export set_UEL_Flag!
 export set_UEL_flags!
 export set_U_c!
+export set_VB1_max!
+export set_VB2_max!
 export set_VB_max!
 export set_VC_Flag!
 export set_VELM!
@@ -968,6 +1005,7 @@ export set_Vm_lim!
 export set_Vmax!
 export set_Vmin!
 export set_Vo_lim!
+export set_Vpi_lim!
 export set_Vpr!
 export set_Vr_lim!
 export set_Vrfrac!
@@ -979,6 +1017,7 @@ export set_Wf_nl!
 export set_X_ad!
 export set_X_aq!
 export set_X_c!
+export set_X_l!
 export set_X_lr!
 export set_X_ls!
 export set_X_m!
@@ -1033,6 +1072,7 @@ export set_current_reactive_power!
 export set_cycle_limits!
 export set_d!
 export set_dP_lim!
+export set_d_t!
 export set_db!
 export set_dbd_pnts!
 export set_dc_bus!
@@ -1062,6 +1102,7 @@ export set_from_branch_control!
 export set_fs!
 export set_fuel!
 export set_fuel_flag!
+export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
 export set_hysteresis_binary_logic!
@@ -1215,6 +1256,7 @@ export set_γ_q2!
 export set_γ_qd!
 export set_γd!
 export set_γq!
+export set_θ_p!
 export set_θp!
 export set_θp_rad!
 export set_τ_limits!

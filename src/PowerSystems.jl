@@ -40,6 +40,7 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 
+# from IS function_data.jl
 export FunctionData
 export LinearFunctionData
 export QuadraticFunctionData
@@ -56,15 +57,17 @@ export get_points
 export get_x_coords
 export get_y_coords
 
+# from IS value_curve.jl, cost_aliases.jl, and production_variable_cost_curve.jl
 export ValueCurve
 export InputOutputCurve, IncrementalCurve, AverageRateCurve
 export LinearCurve, QuadraticCurve
 export PiecewisePointCurve, PiecewiseIncrementalCurve, PiecewiseAverageCurve
 export ProductionVariableCostCurve, CostCurve, FuelCurve
-export OperationalCost, MarketBidCost, LoadCost, StorageCost
-export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
+
+export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
@@ -142,6 +145,7 @@ export ESST4B
 export ST6B
 export SCRX
 export SEXS
+export ST8C
 
 #Machine Exports
 export Machine
@@ -191,6 +195,7 @@ export DEGOV
 export DEGOV1
 export PIDGOV
 export WPIDHY
+export TGSimple
 
 # Converter Exports
 export Converter
@@ -234,6 +239,7 @@ export CurrentModeControl
 export RECurrentControlB
 
 # OutputCurrentLimiters Export
+export OutputCurrentLimiter
 export MagnitudeOutputCurrentLimiter
 export InstantaneousOutputCurrentLimiter
 export PriorityOutputCurrentLimiter
@@ -279,24 +285,27 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 
+# from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
-export TimeSeriesData
-export StaticTimeSeries
-export Forecast
-export AbstractDeterministic
-export Deterministic
-export Probabilistic
-export SingleTimeSeries
-export DeterministicSingleTimeSeries
 export TimeSeriesKey
 export StaticTimeSeriesKey
 export ForecastKey
-export Scenarios
+export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
+# from IS time_series_parser.jl
 export NormalizationFactor
 export NormalizationTypes
-export TimeSeriesCounts
+# from IS forecasts.jl
+export Forecast
+export AbstractDeterministic
+export TimeSeriesData # abstract_time_series.jl
+export StaticTimeSeries # static_time_series.jl
+export Deterministic # deterministic.jl
+export Probabilistic # Probabilistic.jl
+export SingleTimeSeries # Single_Time_Series.jl
+export DeterministicSingleTimeSeries # deterministic_single_time_series.jl
+export Scenarios # scenarios.jl
 
 export get_dynamic_components
 
@@ -361,6 +370,7 @@ export get_scenario_count
 export get_percentiles
 export get_next_time_series_array!
 export get_next_time
+export reset!
 export get_horizon
 export get_forecast_initial_times
 export get_time_series_keys
@@ -370,14 +380,18 @@ export get_data
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost
+export get_incremental_variable_cost, get_decremental_variable_cost
 export get_no_load_cost
 export get_start_up
 export get_shut_down
 export get_incremental_offer_curves, set_incremental_offer_curves!
 export get_decremental_offer_curves, set_decremental_offer_curves!
+export get_incremental_initial_input, set_incremental_initial_input!
+export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_services_bid
 export set_variable_cost!
+export set_incremental_variable_cost!, set_decremental_variable_cost!
 export set_service_bid!
 export iterate_windows
 export get_window
@@ -388,6 +402,9 @@ export validate_component_with_system
 export get_compression_settings
 export CompressionSettings
 export CompressionTypes
+
+# Parsing functions
+export create_poly_cost
 
 #export make_time_series
 export get_bus_numbers
@@ -460,20 +477,22 @@ export check_component
 export check_components
 export check_sil_values
 
+# From IS logging.jl, generate_struct_files.jl
 export configure_logging
 export open_file_logger
 export make_logging_config_file
 export MultiLogger
 export LogEventTracker
-export UnitSystem
 export StructField
 export StructDefinition
 export generate_struct_file
 export generate_struct_files
+export UnitSystem # internal.jl
 
 #################################################################################
 # Imports
 
+import Base: @kwdef
 import LinearAlgebra
 import Unicode: normalize
 import Logging
@@ -546,6 +565,7 @@ import InfrastructureSystems:
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
     get_next_time,
+    reset!,
     has_supplemental_attributes,
     get_units_info,
     set_units_info!,
@@ -586,6 +606,27 @@ import InfrastructureSystems:
     get_raw_data_type,
     supports_time_series,
     supports_supplemental_attributes
+import InfrastructureSystems:
+    ValueCurve,
+    InputOutputCurve,
+    IncrementalCurve,
+    AverageRateCurve,
+    LinearCurve,
+    QuadraticCurve,
+    PiecewisePointCurve,
+    PiecewiseIncrementalCurve,
+    PiecewiseAverageCurve,
+    get_function_data,
+    get_initial_input,
+    get_input_at_zero,
+    get_average_rates,
+    ProductionVariableCostCurve,
+    CostCurve,
+    FuelCurve,
+    get_value_curve,
+    get_vom_cost,
+    get_power_units,
+    get_fuel_cost
 
 const IS = InfrastructureSystems
 
@@ -642,9 +683,6 @@ include("models/dynamic_inverter_components.jl")
 include("models/OuterControl.jl")
 
 # Costs
-include("models/cost_functions/ValueCurves.jl")
-include("models/cost_functions/cost_aliases.jl")
-include("models/cost_functions/variable_cost.jl")
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
