@@ -256,30 +256,3 @@ function TwoTerminalHVDCLine(
         InfrastructureSystemsInternal(),
     )
 end
-
-"""
-Deprecated method for Interconnecting Converter
-"""
-function InterconnectingConverter(;
-    name,
-    available,
-    bus,
-    dc_bus,
-    active_power,
-    rating,
-    active_power_limits,
-    base_power,
-)
-    InterconnectingConverter(
-        name,
-        available,
-        bus,
-        dc_bus,
-        active_power,
-        rating,
-        active_power_limits,
-        0.0,
-        0.0,
-        base_power,
-    )
-end

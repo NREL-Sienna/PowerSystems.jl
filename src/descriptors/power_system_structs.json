@@ -2591,18 +2591,6 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "dc_current",
-                    "comment": "DC current (A) on the converter",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
-                    "name": "max_dc_current",
-                    "comment": "Maximum stable dc current limits (A)",
-                    "null_value": "0.0",
-                    "data_type": "Float64"
-                },
-                {
                     "name": "base_power",
                     "comment": "Base power of the converter in MVA",
                     "null_value": "0.0",
@@ -2612,6 +2600,20 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "dc_current",
+                    "comment": "DC current (A) on the converter",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "max_dc_current",
+                    "comment": "Maximum stable dc current limits (A)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "Inf"
                 },
                 {
                     "name": "loss_function",
