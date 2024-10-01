@@ -2613,7 +2613,7 @@
                     "comment": "Maximum stable dc current limits (A)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "Inf"
+                    "default": "1e8"
                 },
                 {
                     "name": "loss_function",

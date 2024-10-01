@@ -35,7 +35,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `base_power::Float64`: Base power of the converter in MVA, validation range: `(0, nothing)`
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter
-- `max_dc_current::Float64`: (default: `Inf`) Maximum stable dc current limits (A)
+- `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A)
 - `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to the converter current
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -75,11 +75,11 @@ mutable struct InterconnectingConverter <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current=0.0, max_dc_current=Inf, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+function InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current=0.0, max_dc_current=1e8, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
     InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current, max_dc_current, loss_function, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current=0.0, max_dc_current=Inf, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function InterconnectingConverter(; name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current=0.0, max_dc_current=1e8, loss_function=LinearCurve(0.0), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     InterconnectingConverter(name, available, bus, dc_bus, active_power, rating, active_power_limits, base_power, dc_current, max_dc_current, loss_function, services, dynamic_injector, ext, internal, )
 end
 
