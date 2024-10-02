@@ -44,12 +44,16 @@ end
     @test typeof(first(the_components)) == ThermalStandard
     @test get_name(first(the_components)) == "Solitude"
     @test collect(
-        get_components(make_selector(gen_sundance), test_sys; filterby = get_available),
+        get_components(
+            make_selector(gen_sundance),
+            test_sys;
+            scope_limiter = get_available,
+        ),
     ) ==
           Vector{Component}()
-    @test IS.get_component(test_gen_ent, test_sys; filterby = x -> true) ==
+    @test IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> true) ==
           first(the_components)
-    @test isnothing(IS.get_component(test_gen_ent, test_sys; filterby = x -> false))
+    @test isnothing(IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> false))
 
     @test only(get_groups(test_gen_ent, test_sys)) == test_gen_ent
 end
@@ -113,7 +117,7 @@ end
     @test all(the_components .== answer)
     @test !(
         gen_sundance in
-        collect(get_components(test_sub_ent, test_sys; filterby = get_available)))
+        collect(get_components(test_sub_ent, test_sys; scope_limiter = get_available)))
 
     # Grouping inherits from `DynamicallyGroupedComponentSelector` and is tested elsewhere
 end
@@ -167,9 +171,10 @@ end
 
         the_components = get_components(ent, test_sys2)
         @test all(sort_name!(the_components) .== ans)
-        @test Set(collect(get_components(ent, test_sys2; filterby = x -> true))) ==
+        @test Set(collect(get_components(ent, test_sys2; scope_limiter = x -> true))) ==
               Set(the_components)
-        @test length(collect(get_components(ent, test_sys2; filterby = x -> false))) == 0
+        @test length(collect(get_components(ent, test_sys2; scope_limiter = x -> false))) ==
+              0
     end
 end
 
@@ -210,11 +215,11 @@ end
     @test all(collect(get_components(test_filter_ent, test_sys)) .== answer)
     @test !(
         gen_sundance in
-        collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
+        collect(get_components(test_filter_ent, test_sys; scope_limiter = get_available)))
 
     @test !(
         gen_sundance in
-        collect(get_components(test_filter_ent, test_sys; filterby = get_available)))
+        collect(get_components(test_filter_ent, test_sys; scope_limiter = get_available)))
 end
 
 @testset "Test DynamicallyGroupedComponentSelector grouping" begin
@@ -238,7 +243,7 @@ end
     @test length(
         collect(
             get_groups(each_selector, test_sys2;
-                filterby = x -> length(get_name(x)) == 8),
+                scope_limiter = x -> length(get_name(x)) == 8),
         ),
     ) == 2
     @test Set(get_name.(get_groups(partition_selector, test_sys2))) ==
@@ -246,7 +251,7 @@ end
     @test length(
         collect(
             get_groups(partition_selector, test_sys2;
-                filterby = x -> length(get_name(x)) == 8),
+                scope_limiter = x -> length(get_name(x)) == 8),
         ),
     ) == 1
 
@@ -262,10 +267,10 @@ end
 
 @testset "Test alternative interfaces" begin
     selector = make_selector(ThermalStandard, "Solitude")
-    @test get_components(selector, test_sys; filterby = x -> true) ==
+    @test get_components(selector, test_sys; scope_limiter = x -> true) ==
           get_components(x -> true, selector, test_sys)
-    @test get_component(selector, test_sys; filterby = x -> true) ==
+    @test get_component(selector, test_sys; scope_limiter = x -> true) ==
           get_component(x -> true, selector, test_sys)
-    @test get_groups(selector, test_sys; filterby = x -> true) ==
+    @test get_groups(selector, test_sys; scope_limiter = x -> true) ==
           get_groups(x -> true, selector, test_sys)
 end

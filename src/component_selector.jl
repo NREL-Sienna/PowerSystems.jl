@@ -2,70 +2,74 @@
 # InfrastructureSystemsComponent with Component and SystemData with System
 
 """
-    get_components(selector, sys; filterby = nothing)
+    get_components(selector, sys; scope_limiter = nothing)
 Get the components of the `System` that make up the `ComponentSelector`.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
-get_components(selector::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_components(selector, sys; filterby = filterby)
+get_components(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
+    IS.get_components(selector, sys; scope_limiter = scope_limiter)
 
 """
-    get_components(filterby, selector, sys)
+    get_components(scope_limiter, selector, sys)
 Get the components of the `System` that make up the `ComponentSelector`.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
 get_components(
-    filterby::Union{Nothing, Function},
+    scope_limiter::Union{Nothing, Function},
     selector::ComponentSelector,
     sys::System,
 ) =
-    get_components(selector, sys; filterby = filterby)
+    get_components(selector, sys; scope_limiter = scope_limiter)
 
 # This would be cleaner if `IS.get_components === PSY.get_components` (see
 # https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388)
-IS.get_components(selector::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_components(selector, sys.data; filterby = filterby)
+IS.get_components(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
+    IS.get_components(selector, sys.data; scope_limiter = scope_limiter)
 
 """
-    get_component(selector, sys; filterby = nothing)
+    get_component(selector, sys; scope_limiter = nothing)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
-get_component(selector::SingularComponentSelector, sys::System; filterby = nothing) =
-    IS.get_component(selector, sys.data; filterby = filterby)
+get_component(selector::SingularComponentSelector, sys::System; scope_limiter = nothing) =
+    IS.get_component(selector, sys.data; scope_limiter = scope_limiter)
 
 """
-    get_component(filterby, selector, sys)
+    get_component(scope_limiter, selector, sys)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
 get_component(
-    filterby::Union{Nothing, Function},
+    scope_limiter::Union{Nothing, Function},
     selector::SingularComponentSelector,
     sys::System,
 ) =
-    get_component(selector, sys; filterby = filterby)
+    get_component(selector, sys; scope_limiter = scope_limiter)
 
-IS.get_component(selector::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_component(selector, sys.data; filterby = filterby)
+IS.get_component(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
+    IS.get_component(selector, sys.data; scope_limiter = scope_limiter)
 
 """
-    get_groups(selector, sys; filterby = nothing)
+    get_groups(selector, sys; scope_limiter = nothing)
 Get the groups that make up the `ComponentSelector`.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
-get_groups(selector::ComponentSelector, sys::System; filterby = nothing) =
-    IS.get_groups(selector, sys; filterby = filterby)
+get_groups(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
+    IS.get_groups(selector, sys; scope_limiter = scope_limiter)
 
 """
-    get_groups(filterby, selector, sys)
+    get_groups(scope_limiter, selector, sys)
 Get the groups that make up the `ComponentSelector`.
- - `filterby`: optional filter function to apply after evaluating the `ComponentSelector`
+ - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
 """
-get_groups(filterby::Union{Nothing, Function}, selector::ComponentSelector, sys::System) =
-    get_groups(selector, sys; filterby = filterby)
+get_groups(
+    scope_limiter::Union{Nothing, Function},
+    selector::ComponentSelector,
+    sys::System,
+) =
+    get_groups(selector, sys; scope_limiter = scope_limiter)
 
 # TopologyComponentSelector
 # This one is wholly implemented in PowerSystems rather than in InfrastructureSystems because it depends on `PSY.AggregationTopology`
@@ -109,7 +113,7 @@ IS.default_name(selector::TopologyComponentSelector) =
 function IS.get_components(
     selector::TopologyComponentSelector,
     sys::System;
-    filterby = nothing,
+    scope_limiter = nothing,
 )
     agg_topology = get_component(selector.topology_type, sys, selector.topology_name)
     isnothing(agg_topology) &&
@@ -119,6 +123,6 @@ function IS.get_components(
         sys,
         agg_topology,
     )
-    isnothing(filterby) && (return components)
-    return Iterators.filter(filterby, components)
+    isnothing(scope_limiter) && (return components)
+    return Iterators.filter(scope_limiter, components)
 end
