@@ -4,7 +4,9 @@
 """
     get_components(selector, sys; scope_limiter = nothing)
 Get the components of the `System` that make up the `ComponentSelector`.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_components(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
     IS.get_components(selector, sys; scope_limiter = scope_limiter)
@@ -12,7 +14,9 @@ get_components(selector::ComponentSelector, sys::System; scope_limiter = nothing
 """
     get_components(scope_limiter, selector, sys)
 Get the components of the `System` that make up the `ComponentSelector`.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_components(
     scope_limiter::Union{Nothing, Function},
@@ -30,7 +34,9 @@ IS.get_components(selector::ComponentSelector, sys::System; scope_limiter = noth
     get_component(selector, sys; scope_limiter = nothing)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_component(selector::SingularComponentSelector, sys::System; scope_limiter = nothing) =
     IS.get_component(selector, sys.data; scope_limiter = scope_limiter)
@@ -39,7 +45,9 @@ get_component(selector::SingularComponentSelector, sys::System; scope_limiter = 
     get_component(scope_limiter, selector, sys)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_component(
     scope_limiter::Union{Nothing, Function},
@@ -54,7 +62,9 @@ IS.get_component(selector::ComponentSelector, sys::System; scope_limiter = nothi
 """
     get_groups(selector, sys; scope_limiter = nothing)
 Get the groups that make up the `ComponentSelector`.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_groups(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
     IS.get_groups(selector, sys; scope_limiter = scope_limiter)
@@ -62,7 +72,9 @@ get_groups(selector::ComponentSelector, sys::System; scope_limiter = nothing) =
 """
     get_groups(scope_limiter, selector, sys)
 Get the groups that make up the `ComponentSelector`.
- - `scope_limiter`: optional filter function to limit the scope of components under consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on components marked available)
+ - `scope_limiter`: optional filter function to limit the scope of components under
+   consideration (e.g., pass `get_available` to only evaluate the `ComponentSelector` on
+   components marked available)
 """
 get_groups(
     scope_limiter::Union{Nothing, Function},
@@ -80,11 +92,42 @@ struct TopologyComponentSelector <: DynamicallyGroupedComponentSelector
     component_type::Type{<:Component}
     topology_type::Type{<:AggregationTopology}
     topology_name::AbstractString
-    name::Union{String, Nothing}
-    groupby::Union{Symbol, Function}  # TODO add validation
+    groupby::Union{Symbol, Function}
+    name::String
+
+    TopologyComponentSelector(
+        component_type::Type{<:InfrastructureSystemsComponent},
+        topology_type::Type{<:AggregationTopology},
+        topology_name::AbstractString,
+        groupby::Union{Symbol, Function},
+        name::String,
+    ) =
+        new(
+            component_type,
+            topology_type,
+            topology_name,
+            IS.validate_groupby(groupby),
+            name,
+        )
 end
 
 # Construction
+TopologyComponentSelector(
+    component_type::Type{<:InfrastructureSystemsComponent},
+    topology_type::Type{<:AggregationTopology},
+    topology_name::AbstractString,
+    groupby::Union{Symbol, Function},
+    name::Nothing = nothing,
+) =
+    TopologyComponentSelector(
+        component_type,
+        topology_type,
+        topology_name,
+        groupby,
+        component_to_qualified_string(topology_type, topology_name) *
+        COMPONENT_NAME_DELIMITER * subtype_to_string(component_type),
+    )
+
 """
 Make a `ComponentSelector` from an `AggregationTopology` and a type of component. Optionally
 provide a name and/or grouping behavior for the `ComponentSelector`.
@@ -93,21 +136,15 @@ make_selector(
     component_type::Type{<:Component},
     topology_type::Type{<:AggregationTopology},
     topology_name::AbstractString;
-    name::Union{String, Nothing} = nothing,
     groupby::Union{Symbol, Function} = :all,
+    name::Union{String, Nothing} = nothing,
 ) = TopologyComponentSelector(
     component_type,
     topology_type,
     topology_name,
+    groupby,
     name,
-    IS.validate_groupby(groupby),
 )
-
-# Naming
-IS.default_name(selector::TopologyComponentSelector) =
-    component_to_qualified_string(selector.topology_type, selector.topology_name) *
-    COMPONENT_NAME_DELIMITER *
-    subtype_to_string(selector.component_type)
 
 # Contents
 function IS.get_components(

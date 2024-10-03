@@ -34,7 +34,6 @@ end
     # Naming
     @test get_name(test_gen_ent) == "ThermalStandard__Solitude"
     @test get_name(named_test_gen_ent) == "SolGen"
-    @test PSY.default_name(test_gen_ent) == "ThermalStandard__Solitude"
 
     # Contents
     @test collect(get_components(make_selector(NonexistentComponent, ""), test_sys)) ==
@@ -91,12 +90,12 @@ end
 end
 
 @testset "Test TypeComponentSelector" begin
-    test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, nothing, :all)
-    named_test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, "Thermals", :all)
+    test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, :all, nothing)
+    named_test_sub_ent = PSY.TypeComponentSelector(ThermalStandard, :all, "Thermals")
 
     # Equality
-    @test PSY.TypeComponentSelector(ThermalStandard, nothing, :all) == test_sub_ent
-    @test PSY.TypeComponentSelector(ThermalStandard, "Thermals", :all) == named_test_sub_ent
+    @test PSY.TypeComponentSelector(ThermalStandard, :all, nothing) == test_sub_ent
+    @test PSY.TypeComponentSelector(ThermalStandard, :all, "Thermals") == named_test_sub_ent
 
     # Construction
     @test make_selector(ThermalStandard) == test_sub_ent
@@ -106,7 +105,6 @@ end
     # Naming
     @test get_name(test_sub_ent) == "ThermalStandard"
     @test get_name(named_test_sub_ent) == "Thermals"
-    @test PSY.default_name(test_sub_ent) == "ThermalStandard"
 
     # Contents
     answer = sort_name!(get_components(ThermalStandard, test_sys))
@@ -127,14 +125,14 @@ end
     topo2 = get_component(LoadZone, test_sys2, "2")
     @assert !isnothing(topo1) && !isnothing(topo2) "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
     test_topo_ent1 =
-        PSY.TopologyComponentSelector(ThermalStandard, Area, "1", nothing, :all)
+        PSY.TopologyComponentSelector(ThermalStandard, Area, "1", :all, nothing)
     test_topo_ent2 =
-        PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", "Zone_2", :all)
+        PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", :all, "Zone_2")
 
     # Equality
-    @test PSY.TopologyComponentSelector(ThermalStandard, Area, "1", nothing, :all) ==
+    @test PSY.TopologyComponentSelector(ThermalStandard, Area, "1", :all, nothing) ==
           test_topo_ent1
-    @test PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", "Zone_2", :all) ==
+    @test PSY.TopologyComponentSelector(StaticInjection, LoadZone, "2", :all, "Zone_2") ==
           test_topo_ent2
 
     # Construction
@@ -181,15 +179,15 @@ end
 @testset "Test FilterComponentSelector" begin
     starts_with_s(x) = lowercase(first(get_name(x))) == 's'
     test_filter_ent =
-        PSY.FilterComponentSelector(ThermalStandard, starts_with_s, nothing, :all)
+        PSY.FilterComponentSelector(ThermalStandard, starts_with_s, :all, nothing)
     named_test_filter_ent = PSY.FilterComponentSelector(
-        ThermalStandard, starts_with_s, "ThermStartsWithS", :all)
+        ThermalStandard, starts_with_s, :all, "ThermStartsWithS")
 
     # Equality
-    @test PSY.FilterComponentSelector(ThermalStandard, starts_with_s, nothing, :all) ==
+    @test PSY.FilterComponentSelector(ThermalStandard, starts_with_s, :all, nothing) ==
           test_filter_ent
     @test PSY.FilterComponentSelector(
-        ThermalStandard, starts_with_s, "ThermStartsWithS", :all) == named_test_filter_ent
+        ThermalStandard, starts_with_s, :all, "ThermStartsWithS") == named_test_filter_ent
 
     # Construction
     @test make_selector(ThermalStandard, starts_with_s) == test_filter_ent
