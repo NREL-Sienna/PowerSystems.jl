@@ -10,6 +10,16 @@ set_available!(gen_sundance2, false)
 
 sort_name!(x) = sort!(collect(x); by = get_name)
 
+# NOTE we are not constraining the second type parameter
+GCReturnType = IS.FlattenIteratorWrapper{<:IS.InfrastructureSystemsComponent, <:Any}
+
+"Helper function to test the return type of `get_components` whenever we call it"
+function get_components_rt(args...; kwargs...)
+    result = get_components(args...; kwargs...)
+    @test result isa GCReturnType
+    return result
+end
+
 @testset "Test helper functions" begin
     @test subtype_to_string(ThermalStandard) == "ThermalStandard"
     @test component_to_qualified_string(ThermalStandard, "Solitude") ==
@@ -36,14 +46,14 @@ end
     @test get_name(named_test_gen_ent) == "SolGen"
 
     # Contents
-    @test collect(get_components(make_selector(NonexistentComponent, ""), test_sys)) ==
+    @test collect(get_components_rt(make_selector(NonexistentComponent, ""), test_sys)) ==
           Vector{Component}()
-    the_components = collect(get_components(test_gen_ent, test_sys))
+    the_components = collect(get_components_rt(test_gen_ent, test_sys))
     @test length(the_components) == 1
     @test typeof(first(the_components)) == ThermalStandard
     @test get_name(first(the_components)) == "Solitude"
     @test collect(
-        get_components(
+        get_components_rt(
             make_selector(gen_sundance),
             test_sys;
             scope_limiter = get_available,
@@ -79,8 +89,8 @@ end
     @test get_name(named_test_list_ent) == "TwoComps"
 
     # Contents
-    @test collect(get_components(make_selector(), test_sys)) == Vector{Component}()
-    the_components = collect(get_components(test_list_ent, test_sys))
+    @test collect(get_components_rt(make_selector(), test_sys)) == Vector{Component}()
+    the_components = collect(get_components_rt(test_list_ent, test_sys))
     @test length(the_components) == 2
 
     @test collect(get_groups(make_selector(), test_sys)) ==
@@ -107,15 +117,15 @@ end
     @test get_name(named_test_sub_ent) == "Thermals"
 
     # Contents
-    answer = sort_name!(get_components(ThermalStandard, test_sys))
+    answer = sort_name!(get_components_rt(ThermalStandard, test_sys))
 
-    @test collect(get_components(make_selector(NonexistentComponent), test_sys)) ==
+    @test collect(get_components_rt(make_selector(NonexistentComponent), test_sys)) ==
           Vector{Component}()
-    the_components = sort_name!(get_components(test_sub_ent, test_sys))
+    the_components = sort_name!(get_components_rt(test_sub_ent, test_sys))
     @test all(the_components .== answer)
     @test !(
         gen_sundance in
-        collect(get_components(test_sub_ent, test_sys; scope_limiter = get_available)))
+        collect(get_components_rt(test_sub_ent, test_sys; scope_limiter = get_available)))
 
     # Grouping inherits from `DynamicallyGroupedComponentSelector` and is tested elsewhere
 end
@@ -147,10 +157,10 @@ end
 
     # Contents
     empty_topo_ent = make_selector(NonexistentComponent, Area, "1")
-    @test collect(get_components(empty_topo_ent, test_sys2)) == Vector{Component}()
+    @test collect(get_components_rt(empty_topo_ent, test_sys2)) == Vector{Component}()
 
     nonexistent_topo_ent = make_selector(ThermalStandard, Area, "NonexistentArea")
-    @test collect(get_components(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
+    @test collect(get_components_rt(nonexistent_topo_ent, test_sys2)) == Vector{Component}()
 
     answers =
         sort_name!.((
@@ -167,11 +177,13 @@ end
     for (ent, ans) in zip((test_topo_ent1, test_topo_ent2), answers)
         @assert length(ans) > 0 "Relies on an out-of-date `5_bus_hydro_uc_sys` definition"
 
-        the_components = get_components(ent, test_sys2)
+        the_components = get_components_rt(ent, test_sys2)
         @test all(sort_name!(the_components) .== ans)
-        @test Set(collect(get_components(ent, test_sys2; scope_limiter = x -> true))) ==
+        @test Set(collect(get_components_rt(ent, test_sys2; scope_limiter = x -> true))) ==
               Set(the_components)
-        @test length(collect(get_components(ent, test_sys2; scope_limiter = x -> false))) ==
+        @test length(
+            collect(get_components_rt(ent, test_sys2; scope_limiter = x -> false)),
+        ) ==
               0
     end
 end
@@ -202,22 +214,26 @@ end
     @test get_name(named_test_filter_ent) == "ThermStartsWithS"
 
     # Contents
-    answer = filter(starts_with_s, collect(get_components(ThermalStandard, test_sys)))
+    answer = filter(starts_with_s, collect(get_components_rt(ThermalStandard, test_sys)))
 
     @test collect(
-        get_components(make_selector(NonexistentComponent, x -> true), test_sys),
+        get_components_rt(make_selector(NonexistentComponent, x -> true), test_sys),
     ) ==
           Vector{Component}()
-    @test collect(get_components(make_selector(Component, x -> false), test_sys)) ==
+    @test collect(get_components_rt(make_selector(Component, x -> false), test_sys)) ==
           Vector{Component}()
-    @test all(collect(get_components(test_filter_ent, test_sys)) .== answer)
+    @test all(collect(get_components_rt(test_filter_ent, test_sys)) .== answer)
     @test !(
         gen_sundance in
-        collect(get_components(test_filter_ent, test_sys; scope_limiter = get_available)))
+        collect(
+            get_components_rt(test_filter_ent, test_sys; scope_limiter = get_available),
+        ))
 
     @test !(
         gen_sundance in
-        collect(get_components(test_filter_ent, test_sys; scope_limiter = get_available)))
+        collect(
+            get_components_rt(test_filter_ent, test_sys; scope_limiter = get_available),
+        ))
 end
 
 @testset "Test DynamicallyGroupedComponentSelector grouping" begin
@@ -228,7 +244,7 @@ end
     each_selector = make_selector(ThermalStandard, Area, "1"; groupby = :each)
     @test make_selector(ThermalStandard, Area, "1") == all_selector
     @test_throws ArgumentError make_selector(ThermalStandard, Area, "1"; groupby = :other)
-    # @show get_name.(get_components(all_selector, test_sys2))
+    # @show get_name.(get_components_rt(all_selector, test_sys2))
     partition_selector = make_selector(ThermalStandard, Area, "1";
         groupby = x -> occursin(" ", get_name(x)))
 
@@ -236,7 +252,7 @@ end
     @test Set(get_name.(get_groups(each_selector, test_sys2))) ==
           Set((
         component_to_qualified_string.(Ref(ThermalStandard),
-            get_name.(get_components(each_selector, test_sys2)))
+            get_name.(get_components_rt(each_selector, test_sys2)))
     ))
     @test length(
         collect(
@@ -265,10 +281,10 @@ end
 
 @testset "Test alternative interfaces" begin
     selector = make_selector(ThermalStandard, "Solitude")
-    @test get_components(selector, test_sys; scope_limiter = x -> true) ==
-          get_components(x -> true, selector, test_sys)
+    @test collect(get_components_rt(selector, test_sys; scope_limiter = x -> true)) ==
+          collect(get_components_rt(x -> true, selector, test_sys))
     @test get_component(selector, test_sys; scope_limiter = x -> true) ==
           get_component(x -> true, selector, test_sys)
-    @test get_groups(selector, test_sys; scope_limiter = x -> true) ==
-          get_groups(x -> true, selector, test_sys)
+    @test collect(get_groups(selector, test_sys; scope_limiter = x -> true)) ==
+          collect(get_groups(x -> true, selector, test_sys))
 end

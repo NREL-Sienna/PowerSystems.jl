@@ -153,13 +153,12 @@ function IS.get_components(
     scope_limiter = nothing,
 )
     agg_topology = get_component(selector.topology_type, sys, selector.topology_name)
-    isnothing(agg_topology) &&
-        (return Iterators.filter(x -> false, get_components(selector.component_type, sys)))
-    components = get_components_in_aggregation_topology(
-        selector.component_type,
-        sys,
-        agg_topology,
-    )
-    isnothing(scope_limiter) && (return components)
-    return Iterators.filter(scope_limiter, components)
+    isnothing(agg_topology) && return IS._make_empty_iterator(selector.component_type)
+
+    combo_filter = if isnothing(scope_limiter)
+        x -> is_component_in_aggregation_topology(x, agg_topology)
+    else
+        x -> scope_limiter(x) && is_component_in_aggregation_topology(x, agg_topology)
+    end
+    return get_components(combo_filter, selector.component_type, sys)
 end
