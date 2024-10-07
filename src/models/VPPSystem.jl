@@ -55,7 +55,6 @@ end
 
 println("HEY HEY HEY")
 
-
 # Constructor for demo purposes; non-functional.
 function VPPSystem(::Nothing)
     return VPPSystem(;
@@ -75,7 +74,6 @@ function VPPSystem(::Nothing)
         internal = IS.InfrastructureSystemsInternal(),
     )
 end
-
 
 # Getter functions for VPPSystem struct
 
@@ -134,7 +132,7 @@ get_ext(value::VPPSystem) = value.ext
 
 """Get [`VPPSystem`](@ref) `internal`."""
 get_internal(value::VPPSystem) = value.internal
- 
+
 # Setter functions for VPPSystem struct
 
 """Set [`VPPSystem`](@ref) `name`."""
@@ -178,7 +176,7 @@ set_ext(value::VPPSystem) = value.ext
 
 """Set [`VPPSystem`](@ref) `internal`."""
 set_internal(value::VPPSystem) = value.internal
- 
+
 function get_subcomponents(vpp::VPPSystem)
     Channel() do channel
         for field in (:storage, :renewable_unit, :flexible_load)
