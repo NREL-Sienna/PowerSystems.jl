@@ -489,6 +489,15 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 
+# ComponentSelector
+export ComponentSelector
+export SingularComponentSelector
+export PluralComponentSelector
+export DynamicallyGroupedComponentSelector
+export subtype_to_string
+export component_to_qualified_string
+export make_selector
+export get_groups
 #################################################################################
 # Imports
 
@@ -605,7 +614,19 @@ import InfrastructureSystems:
     get_y_coords,
     get_raw_data_type,
     supports_time_series,
-    supports_supplemental_attributes
+    supports_supplemental_attributes,
+    ComponentSelector,
+    SingularComponentSelector,
+    PluralComponentSelector,
+    DynamicallyGroupedComponentSelector,
+    NameComponentSelector,
+    ListComponentSelector,
+    TypeComponentSelector,
+    FilterComponentSelector,
+    component_to_qualified_string,
+    subtype_to_string,
+    COMPONENT_NAME_DELIMITER,
+    make_selector
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
@@ -720,6 +741,7 @@ include("outages.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("subsystems.jl")
+include("component_selector.jl")
 include("data_format_conversions.jl")
 
 #Data Checks
