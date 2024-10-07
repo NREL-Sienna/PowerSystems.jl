@@ -53,8 +53,6 @@ function VPPSystem(;
     )
 end
 
-println("HEY HEY HEY")
-
 # Constructor for demo purposes; non-functional.
 function VPPSystem(::Nothing)
     return VPPSystem(;
