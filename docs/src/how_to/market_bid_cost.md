@@ -149,8 +149,10 @@ Similar to adding energy market bids, for adding bids for ancillary services, us
 ```@repl market_bid_cost
 service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
-data =
-    Dict(Dates.DateTime("2020-01-01") => [650.3, 750.0])
+
+psd3 = PiecewiseStepData([0.0, 10.0], [650.3])
+psd4 = PiecewiseStepData([0.0, 10.0], [750.0])
+data = Dict(Dates.DateTime("2020-01-01") => [psd3, psd4])
 time_series_data = Deterministic(;
     name = get_name(service),
     data = data,
