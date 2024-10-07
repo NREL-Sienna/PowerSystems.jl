@@ -1,122 +1,131 @@
-# [Getting, Setting, and Viewing Data](@id get_components_tutorial )
+# Manipulating Static Data Sets using `get_component` and `set_component`
 
-In this tutorial, we will explore the data in a `System`, including looking at a summary of
-the system and getting both its components and their data. We will also start checking for
-time-series data, which we will explore more in the tutorial on
-[Working with Time Series Data](@ref tutorial_time_series).
+PowerSystems provides functional interfaces to all data. In this tutorial we will explore how to manipulate various static data sets using the `get_component` and `set_component` functions. By the end of this tutorial you will be able to access the data stored in your system and be able to manipulate it. 
 
-In [Create and Explore a Power `System`](@ref), we created a basic `System` with nodes, a transmission
-line, and a few generators. Let's recreate that system if you don't have it already:
+We are going to begin by loading in a test case from the `PowerSystemCaseBuilder`.
 
-```@setup get_component_data
+```@repl system
 using PowerSystems;
-sys = System(100.0);
-bus1 = ACBus(1, "bus1", ACBusTypes.REF, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0);
-bus2 = ACBus(2, "bus2", ACBusTypes.PV, 0.0, 1.0, (min = 0.9, max = 1.05), 230.0);
-
+using PowerSystemCaseBuilder;
+sys = build_system(PSISystems, "RTS_GMLC_DA_sys")
 ```
 
-PowerSystems provides functional interfaces to all data. The following examples outline
-the intended approach to accessing data expressed using PowerSystems.
-
-PowerSystems enforces unique `name` fields between components of a particular concrete type.
-So, in order to retrieve a specific component, the user must specify the type of the component
-along with the name and system
-
-#### Accessing components and their data
-
-```@repl get_components
-get_component(ACBus, sys, "nodeA")
-get_component(Line, sys, "1")
+Recall that we can see the components of our system simply by printing it.
+```@repl system
+sys
 ```
 
-Similarly, you can access all the components of a particular type: *note: the return type
-of get_components is a `FlattenIteratorWrapper`, so call `collect` to get an `Array`
-
-```@repl get_components
+#### Accessing types of data stored in our system
+If we are interested in seeing a certain data type stored in our system, for example the thermal generators, we can call them using the `get_components` function. 
+```@repl system
+get_components(ThermalStandard, sys) |> collect
+```
+Here we can see all 76 thermal generators. 
+Similarly, if we were intersted in seeing all of the buses in the system. 
+```@repl system
 get_components(ACBus, sys) |> collect
+
 ```
+Here we can see all 73 buses.
 
-`get_components` also works on abstract types:
+We can also access data that are abstract types. Let's see how we would access the type `Branch`. 
 
-```@repl get_components
+```@repl system
 get_components(Branch, sys) |> collect
+
 ```
+The same way we would access `ThermalStandard` or `Line`, we can access `Branch`.
 
-The fields within a component can be accessed using the `get_*` functions:
-*It's highly recommended that users avoid using the `.` to access fields since we make no
-guarantees on the stability field names and locations. We do however promise to keep the
-accessor functions stable.*
+It is also possible to execute and define types stored in the system using the [`get_components`](@ref) function. In this case, we are collecting all of the renewable generators in the system and defining them as `Renewable_gens`
 
-```@repl get_components
-bus1 = get_component(ACBus, sys, "nodeA")
+```@repl system
+Renewable_gens = get_components(RenewableDispatch, sys)
+```
+## Accessing components stored in the system
+ Now that we have a grasp on accessing different types of data within our system, we are going to access specific components within these types. The most common filtering requirement is by component name and for this case the method [`get_component`](@ref) returns a single component taking the device type, system and name as arguments. PowerSystems enforces unique `name` fields between components of a particular concrete type. So, in order to retrieve a specific component, the user must specify the type of the component along with the name and system. For example, we are going to call generator `322_CT_6` that is of type ThermalStandard, as well as line `C31-2` that is of type Line.
+```@repl system
+get_component(ThermalStandard, sys, "322_CT_6") 
+get_component(Line, sys, "C31-2")
+```
+Notice that in the first line the `name`  is `322_CT_6` and the type is 'ThermalStandard', while in the second line the `name` is `C31-2`, and the type is Line.
+Now let's define `my_thermal_gen` as a single thermal generator within the ThermalStandard type. 
+```@repl system
+my_thermal_gen = get_component(ThermalStandard, sys, "322_CT_6")
+```
+## Accessing data stored in a specific component
+Now, say we are intersted in accessing parameters within a specific component, we can do this using the `get_*` function. In this next case we are going to access the `ACBus` and `magnitude` parameters of the specific thermal generator `Bacon`. 
+bus1 = get_component(ACBus, sys, "Bacon")
 @show get_name(bus1);
 @show get_magnitude(bus1);
-nothing #hide
 ```
-
-## Accessing components stored in the system
-
-<!-- 
-`PowerSystems.jl` implements a wide variety of methods to search for components to
-aid in the development of models. The code block shows an example of
-retrieving components through the type hierarchy with the [`get_components`](@ref)
-function and exploiting the type hierarchy for modeling purposes.
-
-The default implementation of the function [`get_components`](@ref) takes the desired device
-type (concrete or abstract) and the system and it also accepts filter functions for a more
-refined search. The container is optimized for iteration over abstract or concrete component
-types as described by the [Type Structure](@ref type_structure). Given the potential size of the return,
-`PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations. -->
+Let's access the `max_active_power` and `fuel` parameters of our previously defined `my_thermal_gen` genertor. 
 ```@repl system
-using PowerSystems
-file_dir = joinpath(pkgdir(PowerSystems), "docs", "src", "tutorials", "tutorials_data")
-system = System(joinpath(file_dir, "RTS_GMLC.m"));
-thermal_gens = get_components(ThermalStandard, system)
+get_max_active_power(my_thermal_gen)
+get_fuel(my_thermal_gen)
 ```
+We can see that for generator `311_CT_6`, the max active power is 0.859375 and the fuel is Coal. 
 
-It is also possible to execute [`get_components`](@ref) with abstract types from the
-[abstract tree](@ref type_structure). For instance, it is possible to retrieve all renewable
-generators
+You can also view data from all instances of a concrete type in one table with the function `show_components` in three different ways.
+
+The simplest way is to view the standard fields of the component. 
 
 ```@repl system
-thermal_gens = get_components(RenewableGen, system)
+show_components(sys, ThermalStandard)
 ```
+In this example, the default parameter is the component's availability. 
 
-The most common filtering requirement is by component name and for this case the method
-[`get_component`](@ref) returns a single component taking the device type, system and name as arguments.
+Let's see the renewables in the system. 
+```@repl system
+show_components(sys, RenewableDispatch)
+```
+The second option is to pass a dictionary into the function where the names are keys and the values are functions that accept a component as a single arguement.
+```@repl system
+show_components(sys, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
+```
+In this case we can see all of the thermal generators, their availability, and whether or not they have time series attached to them. 
+
+The third option is to pass a vector of symbols into the function that are field names of the type. 
 
 ```@repl system
-my_thermal_gen = get_component(ThermalStandard, system, "323_CC_1")
+show_components(sys, ThermalStandard, [:active_power, :reactive_power])
 ```
+In this example we can see the thermal generators, their availability, and both their active and reactive power. 
 
-## Accessing data stored in a component
+## Using the `set_function`
+There are going to be instances where it is necessary to make changes to our system. This can be done using the `set_component` function. 
 
-__Using the "dot" access to get a parameter value from a component is actively discouraged, use "getter" functions instead__
+For example, if we want to change the fuel type for `my_thermal_generator` you would do so like this.
+```@repl system 
+set_fuel!(my_thermal_gen, ThermalFuels.COAL)
+```
+We can now see that the fuel associated with the thermal generator is no longer natural gas, but coal. 
 
-<!-- Using code autogeneration, `PowerSystems.jl` implements accessor (or "getter") functions to
-enable the retrieval of parameters defined in the component struct fields. Julia syntax enables
-access to this data using the "dot" access (e.g. `component.field`), however
-_this is actively discouraged_ for two reasons:
-
- 1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
- 2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit section](@ref per_unit) for more details) -->
-For example, the `my_thermal_gen.active_power_limits` parameter of a thermal generator should be accessed as follows:
+If we are intersted in changing a parameter for multiple components of a certain type we would approach it like this.
+```@repl system
+thermal_gen = get_components(ThermalStandard, sys) |> collect
+for i in 1:length(thermal_gen)
+    set_fuel!(thermal_gen[i], ThermalFuels.COAL)
+end
+```
+We can see that all of the thermal generators now are coal fueled. 
+```@repl system 
+show_components(sys, ThermalStandard, [:fuel])
+```
+The Julia language makes use of multiple dispatch. Certain function will return different outputs based on the input arguements. For example the `set_max_active_power` function can return different outputs based on which input arguments are passed through it. 
 
 ```@repl system
-get_active_power_limits(my_thermal_gen)
+load = get_components(PowerLoad, sys) |> collect
+for i in 1:length(load)
+    set_max_active_power!(load[i],  0.45)
+end
+show_components(sys, PowerLoad, [:max_active_power])
 ```
+We can see that in this example we have set all of the loads to have a `max_active_power` of 0.45.
 
-You can also view data from all instances of a concrete type in one table with the function `show_components`. It provides a few options:
+## Using `ComponentSelector`
 
- 1. View the standard fields by accepting the defaults.
- 2. Pass a dictionary where the keys are column names and the values are functions that accept a component as a single argument.
- 3. Pass a vector of symbols that are field names of the type.
+Component selector is an additional function that allows you to access a subset of components in your system and group them. 
 
-```@repl system
-show_components(system, ThermalStandard)
-show_components(system, ThermalStandard, Dict("has_time_series" => x -> has_time_series(x)))
-show_components(system, ThermalStandard, [:active_power, :reactive_power])
-```
 
-# to do: add a link in the system that MD explanation to these examples
+
+ 
