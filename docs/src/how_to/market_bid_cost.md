@@ -133,7 +133,7 @@ Currently, time series data only supports natural units for time series data, i.
 
 ```@repl market_bid_cost
 sys = System(100.0, [bus], [generator])
-set_variable_cost!(sys, generator, time_series_data, UnitSystem.NATURAL_ITEMS)
+set_variable_cost!(sys, generator, time_series_data, UnitSystem.NATURAL_UNITS)
 ```
 
 **Note:** `set_variable_cost!` add curves to the `incremental_offer_curves` in the MarketBidCost.
@@ -156,5 +156,5 @@ time_series_data = Deterministic(;
     data = data,
     resolution = Dates.Hour(1),
 )
-set_service_bid!(sys, generator, service, time_series_data)
+set_service_bid!(sys, generator, service, time_series_data, UnitSystem.NATURAL_UNITS)
 ```
