@@ -1441,10 +1441,6 @@
                     "comment": "Time period during which load must be balanced",
                     "null_value": "Dates.Hour(0)",
                     "data_type": "Union{Nothing, Dates.Period}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
                     "validation_action": "warn"
                 },
                 {

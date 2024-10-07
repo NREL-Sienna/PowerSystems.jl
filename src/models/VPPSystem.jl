@@ -33,7 +33,7 @@ function VPPSystem(;
     flexible_load = nothing,
     services = Service[],
     ext = Dict{String, Any}(),
-    internal = InfrastructureSystemsInternal(),
+    internal = IS.InfrastructureSystemsInternal(),
 )
     return VPPSystem(
         name,
@@ -53,7 +53,33 @@ function VPPSystem(;
     )
 end
 
+println("HEY HEY HEY")
+
+
+# Constructor for demo purposes; non-functional.
+function VPPSystem(::Nothing)
+    return VPPSystem(;
+        name = "init",
+        available = false,
+        status = false,
+        bus = ACBus(nothing),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        base_power = 100.0,
+        operation_cost = MarketBidCost(nothing),
+        storage = EnergyReservoirStorage(nothing),
+        renewable_unit = RenewableDispatch(nothing),
+        flexible_load = FlexiblePowerLoad(nothing),
+        services = Service[],
+        ext = Dict{String, Any}(),
+        internal = IS.InfrastructureSystemsInternal(),
+    )
+end
+
+
 # Getter functions for VPPSystem struct
+
+get_name(value::VPPSystem) = value.name
 
 function _get_components(value::VPPSystem)
     components =
@@ -62,16 +88,13 @@ function _get_components(value::VPPSystem)
     return components
 end
 
-function set_units_setting!(value::VPPSystem, settings::SystemUnitsSettings)
+function set_units_setting!(value::VPPSystem, settings::IS.SystemUnitsSettings)
     set_units_info!(get_internal(value), settings)
     for component in _get_components(value)
         set_units_info!(get_internal(component), settings)
     end
     return
 end
-
-"""Get [`VPPSystem`](@ref) `name`."""
-get_name(value::VPPSystem) = value.name
 
 """Get [`VPPSystem`](@ref) `available`."""
 get_available(value::VPPSystem) = value.available

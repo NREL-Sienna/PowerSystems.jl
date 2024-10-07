@@ -34,7 +34,7 @@ A [static](@ref S) power load that can be partially or completed shifted to late
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
-- `balance_time_period::Union{Nothing, Dates.Period}`: Time period during which load must be balanced, validation range: `(0, nothing)`
+- `balance_time_period::Union{Nothing, Dates.Period}`: Time period during which load must be balanced
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.

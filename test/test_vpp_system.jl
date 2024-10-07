@@ -1,6 +1,8 @@
 @testset "VPP System tests" begin
     test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
 
+    #include("/Users/akody/Library/CloudStorage/OneDrive-NREL/Sienna/VPP_Project/PowerSystems.jl/src/models/VPPSystem.jl")
+
     vpp_sys = VPPSystem(;
         name = "Test VPP",
         available = true,
@@ -8,11 +10,11 @@
         bus = get_component(ACBus, test_sys, "Bus 1"),
         active_power = 1.0,
         reactive_power = 1.0,
-        base_power = 100.0,
-        operation_cost = MarketBidCost(nothing),
         storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
         flexible_load = FlexiblePowerLoad(nothing),
+        base_power = 100.0,
+        operation_cost = MarketBidCost(nothing),
     )
     add_component!(test_sys, vpp_sys)
 

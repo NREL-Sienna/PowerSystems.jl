@@ -104,6 +104,7 @@ export FixedAdmittance
 export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
+export FlexiblePowerLoad
 export ExponentialLoad
 
 export Storage
@@ -116,6 +117,7 @@ export DynamicGenerator
 export DynamicInverter
 export DynamicBranch
 export HybridSystem
+export VPPSystem
 
 export GenericDER
 export AggregateDistributedGenerationA
@@ -690,6 +692,7 @@ include("models/cost_functions/ThermalGenerationCost.jl")
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
+include("models/VPPSystem.jl")
 
 #Methods for devices
 include("models/components.jl")
