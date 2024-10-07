@@ -133,7 +133,7 @@ Currently, time series data only supports natural units for time series data, i.
 
 ```@repl market_bid_cost
 sys = System(100.0, [bus], [generator])
-set_variable_cost!(sys, generator, time_series_data, UnitSystem.NATURAL_ITEMS)
+set_variable_cost!(sys, generator, time_series_data, UnitSystem.NATURAL_UNITS)
 ```
 
 **Note:** `set_variable_cost!` add curves to the `incremental_offer_curves` in the MarketBidCost.
@@ -149,12 +149,14 @@ Similar to adding energy market bids, for adding bids for ancillary services, us
 ```@repl market_bid_cost
 service = VariableReserve{ReserveUp}("example_reserve", true, 0.6, 2.0)
 add_service!(sys, service, get_component(ThermalStandard, sys, "Brighton"))
-data =
-    Dict(Dates.DateTime("2020-01-01") => [650.3, 750.0])
+
+psd3 = PiecewiseStepData([0.0, 10.0], [650.3])
+psd4 = PiecewiseStepData([0.0, 10.0], [750.0])
+data = Dict(Dates.DateTime("2020-01-01") => [psd3, psd4])
 time_series_data = Deterministic(;
     name = get_name(service),
     data = data,
     resolution = Dates.Hour(1),
 )
-set_service_bid!(sys, generator, service, time_series_data)
+set_service_bid!(sys, generator, service, time_series_data, UnitSystem.NATURAL_UNITS)
 ```
