@@ -13,7 +13,9 @@ pages = OrderedDict(
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
+            "Manipulating Data Sets" => "tutorials/get_component_data.md"
         ],
+    
         "How to..." =>  Any[
             "...install PowerSystems.jl" => "how_to/install.md",
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
@@ -106,7 +108,8 @@ folders = Dict(
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
     "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
-)
+    "Tutorials" => filter(julia_file_filter, readdir("docs/src/tutorials"))
+) 
 for (section, folder) in folders
     for file in folder
         @show file
