@@ -1,6 +1,6 @@
-# Manipulating Static Data Sets using `get_component` and `set_component`
+# Manipulating Static Data Sets using `get_component` and `set_*`
 
-PowerSystems provides functional interfaces to all data. In this tutorial we will explore how to manipulate various static data sets using the `get_component` and `set_component` functions. By the end of this tutorial you will be able to access the data stored in your system and be able to manipulate it. 
+PowerSystems provides functional interfaces to all data. In this tutorial we will explore how to manipulate various static data sets using the `get_component` and `set_*` functions. By the end of this tutorial you will be able to access the data stored in your system and be able to manipulate it. 
 
 We are going to begin by loading in a test case from the `PowerSystemCaseBuilder`.
 
@@ -21,23 +21,17 @@ If we are interested in seeing a certain data type stored in our system, for exa
 get_components(ThermalStandard, sys) |> collect
 ```
 Here we can see all 76 thermal generators. 
-Similarly, if we were intersted in seeing all of the buses in the system. 
+Similarly, if we were intersted in seeing all of the buses in the system we can call those as well using the `get_componets` function. 
 ```@repl system
 get_components(ACBus, sys) |> collect
-
 ```
 Here we can see all 73 buses.
 
-We can also access data that are abstract types. Let's see how we would access the type `Branch`. 
-
+We can also access data that are abstract types in the same way. Let's access all of the components under the abstract type `Branch`.
 ```@repl system
 get_components(Branch, sys) |> collect
-
 ```
-The same way we would access `ThermalStandard` or `Line`, we can access `Branch`.
-
-It is also possible to execute and define types stored in the system using the [`get_components`](@ref) function. In this case, we are collecting all of the renewable generators in the system and defining them as `Renewable_gens`
-
+It is also possible to execute and define types stored in the system using `get_components` function. In this case, we are collecting all of the renewable generators in the system and defining them as `Renewable_gens`
 ```@repl system
 Renewable_gens = get_components(RenewableDispatch, sys)
 ```
@@ -48,17 +42,19 @@ get_component(ThermalStandard, sys, "322_CT_6")
 get_component(Line, sys, "C31-2")
 ```
 Notice that in the first line the `name`  is `322_CT_6` and the type is 'ThermalStandard', while in the second line the `name` is `C31-2`, and the type is Line.
-Now let's define `my_thermal_gen` as a single thermal generator within the ThermalStandard type. 
+
+Now we can define a specific generator called `my_thermal_gen` within the ThermalStandard type. 
 ```@repl system
 my_thermal_gen = get_component(ThermalStandard, sys, "322_CT_6")
 ```
 ## Accessing data stored in a specific component
-Now, say we are intersted in accessing parameters within a specific component, we can do this using the `get_*` function. In this next case we are going to access the `ACBus` and `magnitude` parameters of the specific thermal generator `Bacon`. 
-bus1 = get_component(ACBus, sys, "Bacon")
+Now, say we are intersted in accessing parameters within a specific component, we can do this using the `get_*` function. In this next case we are going to access the `name` and `base_power` parameters of `my_thermal_gen`
+```@repl system
+bus1 = get_component(ThermalStandard, sys, "322_CT_6")
 @show get_name(bus1);
-@show get_magnitude(bus1);
+@show get_base_power(bus1);
 ```
-Let's access the `max_active_power` and `fuel` parameters of our previously defined `my_thermal_gen` genertor. 
+Now let's access the `max_active_power` and `fuel` parameters of our `my_thermal_gen` genertor. 
 ```@repl system
 get_max_active_power(my_thermal_gen)
 get_fuel(my_thermal_gen)
@@ -72,7 +68,7 @@ The simplest way is to view the standard fields of the component.
 ```@repl system
 show_components(sys, ThermalStandard)
 ```
-In this example, the default parameter is the component's availability. 
+In this example, the standard field shown is the component's availability. 
 
 Let's see the renewables in the system. 
 ```@repl system
@@ -91,14 +87,14 @@ show_components(sys, ThermalStandard, [:active_power, :reactive_power])
 ```
 In this example we can see the thermal generators, their availability, and both their active and reactive power. 
 
-## Using the `set_function`
-There are going to be instances where it is necessary to make changes to our system. This can be done using the `set_component` function. 
+## Using the `set_*` function
+There are going to be instances where it is necessary to make changes to our system. This can be done using the `set_*` function. 
 
-For example, if we want to change the fuel type for `my_thermal_generator` you would do so like this.
+For example, if we want to change the fuel type for `my_thermal_gen` we would do so like this.
 ```@repl system 
-set_fuel!(my_thermal_gen, ThermalFuels.COAL)
+set_fuel!(my_thermal_gen, ThermalFuels.NATURAL_GAS)
 ```
-We can now see that the fuel associated with the thermal generator is no longer natural gas, but coal. 
+We can now see that the fuel associated with the thermal generator is no longer coal, but natural gas. 
 
 If we are intersted in changing a parameter for multiple components of a certain type we would approach it like this.
 ```@repl system
@@ -122,9 +118,6 @@ show_components(sys, PowerLoad, [:max_active_power])
 ```
 We can see that in this example we have set all of the loads to have a `max_active_power` of 0.45.
 
-## Using `ComponentSelector`
-
-Component selector is an additional function that allows you to access a subset of components in your system and group them. 
 
 
 
