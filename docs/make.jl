@@ -13,7 +13,7 @@ pages = OrderedDict(
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
-            "Manipulating Data Sets" => "tutorials/get_component_data.md"
+            "Manipulating Data Sets" => "tutorials/manipulating_datasets.md"
         ],
     
         "How to..." =>  Any[
