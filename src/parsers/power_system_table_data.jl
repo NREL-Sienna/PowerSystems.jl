@@ -831,7 +831,8 @@ function make_cost(
             create_poly_cost(gen, ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"])
     else
         cost_pairs = get_cost_pairs(gen, cost_colnames)
-        var_cost, fixed = create_pwinc_cost(cost_pairs)
+        @debug "Creating Cost representation"
+        var_cost, fixed = create_cost(cost_pairs)
     end
 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
@@ -873,7 +874,7 @@ function make_cost(
 ) where {T <: HydroGen}
     fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost, fixed = create_pwinc_cost(cost_pairs)
+    var_cost, fixed = create_cost(cost_pairs)
     op_cost = HydroGenerationCost(
         FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price),
         fixed * fuel_price)
@@ -1003,17 +1004,23 @@ function create_poly_cost(
     return LinearCurve(a1, a0), fixed_cost
 end
 
-function create_pwinc_cost(
+function create_cost(
     cost_pairs,
 )
     if length(cost_pairs) > 1
         x_points = getfield.(cost_pairs, :x)
         y_points = getfield.(cost_pairs, :y)
-        var_cost = PiecewiseIncrementalCurve(
-            first(y_points) * first(x_points),
-            x_points,
-            y_points[2:end],
-        )
+        if length(x_points) == length(y_points)
+            @debug "Creating PiecewiseLinearData"
+            var_cost = PiecewisePointCurve(PiecewiseLinearData(cost_pairs))
+        else
+            @debug "Creating PiecewiseIncrementalCurve"
+            var_cost = PiecewiseIncrementalCurve(
+                first(y_points) * first(x_points),
+                x_points,
+                y_points[2:end],
+            )
+        end
     elseif length(cost_pairs) == 1
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = LinearCurve(cost_pairs[1].y)
@@ -1025,7 +1032,8 @@ function create_pwinc_cost(
 end
 
 function calculate_uc_cost(data, gen, fuel_cost)
-    startup_cost = gen.startup_cost
+    startup_cost =
+        isnothing(gen.startup_cost) ? nothing : tryparse(Float64, gen.startup_cost)
     if isnothing(startup_cost)
         if !isnothing(gen.startup_heat_cold_cost)
             startup_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
