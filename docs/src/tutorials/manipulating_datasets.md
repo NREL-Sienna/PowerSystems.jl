@@ -1,5 +1,8 @@
 # Manipulating Static Data Sets using `get_component` and `set_*`
 
+!!! note "Static vs Dynamic Data"
+    Static and dynamic data can be manipulated using the `get_*` and `set_*` functions. However, it is important to note their differences. Static data encompassesa all data necessary to run a steady state model. Dyanmic data encompasses the necessary data to run a transient model. 
+
 `PowerSystems` provides function interfaces to all data, and in this tutorial we will explore how to do this using the `get_*`, `set_*`, and `show_components` function. 
 
 !!! note "Understanding the Behavior of getters and setters"
@@ -157,8 +160,10 @@ We can also use a vector to collect all of our AC buses instead of an iterator.
 ```@repl system
 buses = collect(get_components(ACBus, sys))
 ```
+### Using `get_bus` 
+We can also use the `get_bus` function. 
 
 
 
 So far we have seen that we can view different data types in our system using the `show_components` function, we can can access those types using the `get_*` function, and we can manipulate them using `set_*`. 
-
+Follow the next tutorials to learn how to [work with time series](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/working_with_time_series/). 
