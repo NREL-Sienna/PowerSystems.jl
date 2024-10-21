@@ -161,8 +161,50 @@ We can also use a vector to collect all of our AC buses instead of an iterator.
 buses = collect(get_components(ACBus, sys))
 ```
 ### Using `get_bus` 
-We can also use the `get_bus` function. 
+We can also use the `get_bus` function, when we know which `Area` or `LoadZone` we are interested in. However, because this is a small system there are no pre-built Areas, so we are going to begin by building some.
+We are going to begin by grabbing two iterators that will grab all the buses. 
+```@repl system 
+area2_iter = [get_component(ACBus, sys, "nodeA"), get_component(ACBus, sys, "nodeC"), get_component(ACBus, sys, "nodeE")]
+area1_iter = [get_component(ACBus, sys, "nodeB"), get_component(ACBus, sys, "nodeD")]
+```
+Next, we are going to create our `Areas` and at them to the `sys`
+```@repl system 
+area1 = Area(;
+    name = "1"
+)
+add_component!(sys, area1)
+```
+```@repl system 
+area2 = Area(;
+    name = "2"
+)
+add_component!(sys, area2)
 
+```
+Now we are going to use the `set_area!` function to set our `Area` parameter of our nodes to the `Areas` we just created. 
+```@repl system 
+for i in area1_iter
+    set_area!(i, area1)
+end
+```
+```@repl system 
+for i in area2_iter 
+    set_area!(i, area2)
+end
+```
+Now we can use the `get_buses` function. 
+```@repl system 
+area2 = get_component(Area, sys, "2")
+area_buses = get_buses(sys, area2)
+area1 = get_component(Area, sys, "1")
+area_buses1 = get_buses(sys, area1)
+
+```
+
+We can also access all of our buses using their ID numbers. 
+```@repl system 
+buses_by_ID = get_buses(sys, Set(1:5))
+```
 
 
 So far we have seen that we can view different data types in our system using the `show_components` function, we can can access those types using the `get_*` function, and we can manipulate them using `set_*`. 
