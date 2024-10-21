@@ -11,6 +11,7 @@ include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("TwoTerminalHVDCLine.jl")
+include("TwoTerminalHVDCDetailedLine.jl")
 include("TwoTerminalVSCDCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
@@ -497,6 +498,7 @@ export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_conversion_factor
+export get_converter_loss
 export get_current_active_power
 export get_current_reactive_power
 export get_cycle_limits
@@ -1067,6 +1069,7 @@ export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_conversion_factor!
+export set_converter_loss!
 export set_current_active_power!
 export set_current_reactive_power!
 export set_cycle_limits!

@@ -1100,6 +1100,107 @@
             "supertype": "ACBranch"
         },
         {
+            "struct_name": "TwoTerminalHVDCDetailedLine",
+            "docstring": "A High Voltage DC line, which must be connected to an [`ACBus`](@ref) on each end.\n\nThis model is appropriate for operational simulations with a linearized DC power flow approximation with losses using a voltage-current model. For modeling a DC network, see [`TModelHVDCLine`](@ref)",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flowing from the from-bus to the to-bus in DC.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "rating",
+                    "comment": "Maximum output power rating of the converter (MVA)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "name": "converter_loss",
+                    "comment": "Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, PiecewiseIncrementalCurve}",
+                    "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "dc_current",
+                    "comment": "DC current (A) on the converter on the from-bus DC side.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "max_dc_current",
+                    "comment": "Maximum stable dc current limits (A). Includes converter and DC line.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1e8"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "g",
+                    "data_type": "Float64",
+                    "comment": "Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "default": "0.0"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ACBranch"
+        },
+        {
             "struct_name": "TwoTerminalVSCDCLine",
             "docstring": "A Voltage Sourced Converter (VSC)-HVDC transmission line.\n\nAs implemented in [\"Power System Modelling and Scripting\"](https://link.springer.com/book/10.1007/978-3-642-13669-6) by Federico Milano, Chapter 18, Page 397. This model is suitable for dynamic simulations",
             "fields": [
