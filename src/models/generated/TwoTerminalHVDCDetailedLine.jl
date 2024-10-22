@@ -12,7 +12,7 @@ This file is auto-generated. Do not edit.
         rating::Float64
         active_power_limits::MinMax
         arc::Arc
-        converter_loss::Union{LinearCurve, PiecewiseIncrementalCurve}
+        converter_loss::Union{LinearCurve, QuadraticCurve}
         dc_current::Float64
         max_dc_current::Float64
         g::Float64
@@ -33,7 +33,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
-- `converter_loss::Union{LinearCurve, PiecewiseIncrementalCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends.
+- `converter_loss::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends.
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter on the from-bus DC side.
 - `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A). Includes converter and DC line.
 - `g::Float64`: (default: `0.0`) Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))
@@ -56,7 +56,7 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     "An [`Arc`](@ref) defining this line `from` a bus `to` another bus"
     arc::Arc
     "Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends."
-    converter_loss::Union{LinearCurve, PiecewiseIncrementalCurve}
+    converter_loss::Union{LinearCurve, QuadraticCurve}
     "DC current (A) on the converter on the from-bus DC side."
     dc_current::Float64
     "Maximum stable dc current limits (A). Includes converter and DC line."

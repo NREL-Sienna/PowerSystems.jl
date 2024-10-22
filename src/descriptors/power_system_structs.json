@@ -1152,7 +1152,7 @@
                     "name": "converter_loss",
                     "comment": "Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends.",
                     "null_value": "LinearCurve(0.0)",
-                    "data_type": "Union{LinearCurve, PiecewiseIncrementalCurve}",
+                    "data_type": "Union{LinearCurve, QuadraticCurve}",
                     "default": "LinearCurve(0.0)"
                 },
                 {
