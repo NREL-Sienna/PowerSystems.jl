@@ -16,7 +16,7 @@ This file is auto-generated. Do not edit.
         dc_current::Float64
         max_dc_current::Float64
         g::Float64
-        voltage_limits::Float64
+        voltage_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -37,7 +37,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter on the from-bus DC side.
 - `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A). Includes converter and DC line.
 - `g::Float64`: (default: `0.0`) Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))
-- `voltage_limits::Float64`: (default: `(min=0.0, max=999.9)`) Limits on the Voltage at the DC Bus.
+- `voltage_limits::MinMax`: (default: `(min=0.0, max=999.9)`) Limits on the Voltage at the DC Bus.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -64,7 +64,7 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     "Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
     g::Float64
     "Limits on the Voltage at the DC Bus."
-    voltage_limits::Float64
+    voltage_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."

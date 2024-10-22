@@ -1180,7 +1180,7 @@
                     "name": "voltage_limits",
                     "comment": "Limits on the Voltage at the DC Bus.",
                     "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "Float64",
+                    "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
                 },
                 {
