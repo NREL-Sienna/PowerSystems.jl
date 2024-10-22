@@ -1177,6 +1177,13 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "voltage_limits",
+                    "comment": "Limits on the Voltage at the DC Bus.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "Float64",
+                    "default": "(min=0.0, max=999.9)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",

@@ -16,6 +16,7 @@ This file is auto-generated. Do not edit.
         dc_current::Float64
         max_dc_current::Float64
         g::Float64
+        voltage_limits::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -36,6 +37,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter on the from-bus DC side.
 - `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A). Includes converter and DC line.
 - `g::Float64`: (default: `0.0`) Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))
+- `voltage_limits::Float64`: (default: `(min=0.0, max=999.9)`) Limits on the Voltage at the DC Bus.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -61,6 +63,8 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     max_dc_current::Float64
     "Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
     g::Float64
+    "Limits on the Voltage at the DC Bus."
+    voltage_limits::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -69,12 +73,12 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCDetailedLine(; name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, services, ext, internal, )
+function TwoTerminalHVDCDetailedLine(; name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -90,6 +94,7 @@ function TwoTerminalHVDCDetailedLine(::Nothing)
         dc_current=0.0,
         max_dc_current=0.0,
         g=0.0,
+        voltage_limits=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -115,6 +120,8 @@ get_dc_current(value::TwoTerminalHVDCDetailedLine) = value.dc_current
 get_max_dc_current(value::TwoTerminalHVDCDetailedLine) = value.max_dc_current
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `g`."""
 get_g(value::TwoTerminalHVDCDetailedLine) = value.g
+"""Get [`TwoTerminalHVDCDetailedLine`](@ref) `voltage_limits`."""
+get_voltage_limits(value::TwoTerminalHVDCDetailedLine) = value.voltage_limits
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `services`."""
 get_services(value::TwoTerminalHVDCDetailedLine) = value.services
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `ext`."""
@@ -140,6 +147,8 @@ set_dc_current!(value::TwoTerminalHVDCDetailedLine, val) = value.dc_current = va
 set_max_dc_current!(value::TwoTerminalHVDCDetailedLine, val) = value.max_dc_current = val
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `g`."""
 set_g!(value::TwoTerminalHVDCDetailedLine, val) = value.g = val
+"""Set [`TwoTerminalHVDCDetailedLine`](@ref) `voltage_limits`."""
+set_voltage_limits!(value::TwoTerminalHVDCDetailedLine, val) = value.voltage_limits = val
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `services`."""
 set_services!(value::TwoTerminalHVDCDetailedLine, val) = value.services = val
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `ext`."""
