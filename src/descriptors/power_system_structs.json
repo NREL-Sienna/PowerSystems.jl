@@ -1136,8 +1136,15 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "active_power_limits",
-                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "name": "active_power_limits_from",
+                    "comment": "Minimum and maximum active power flows to the FROM node (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits_to",
+                    "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true

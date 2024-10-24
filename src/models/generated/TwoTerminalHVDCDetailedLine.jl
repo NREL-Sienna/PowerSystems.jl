@@ -10,7 +10,8 @@ This file is auto-generated. Do not edit.
         available::Bool
         active_power_flow::Float64
         rating::Float64
-        active_power_limits::MinMax
+        active_power_limits_from::MinMax
+        active_power_limits_to::MinMax
         arc::Arc
         converter_loss::Union{LinearCurve, QuadraticCurve}
         dc_current::Float64
@@ -31,7 +32,8 @@ This model is appropriate for operational simulations with a linearized DC power
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `active_power_flow::Float64`: Initial condition of active power flowing from the from-bus to the to-bus in DC.
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
-- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
+- `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
+- `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
 - `converter_loss::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends.
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter on the from-bus DC side.
@@ -51,8 +53,10 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     active_power_flow::Float64
     "Maximum output power rating of the converter (MVA)"
     rating::Float64
-    "Minimum and maximum stable active power levels (MW)"
-    active_power_limits::MinMax
+    "Minimum and maximum active power flows to the FROM node (MW)"
+    active_power_limits_from::MinMax
+    "Minimum and maximum active power flows to the TO node (MW)"
+    active_power_limits_to::MinMax
     "An [`Arc`](@ref) defining this line `from` a bus `to` another bus"
     arc::Arc
     "Loss model coefficients. It accepts a linear model or quadratic. Same converter data is used in both ends."
@@ -73,12 +77,12 @@ mutable struct TwoTerminalHVDCDetailedLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCDetailedLine(; name, available, active_power_flow, rating, active_power_limits, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, internal, )
+function TwoTerminalHVDCDetailedLine(; name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalHVDCDetailedLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -88,7 +92,8 @@ function TwoTerminalHVDCDetailedLine(::Nothing)
         available=false,
         active_power_flow=0.0,
         rating=0.0,
-        active_power_limits=(min=0.0, max=0.0),
+        active_power_limits_from=(min=0.0, max=0.0),
+        active_power_limits_to=(min=0.0, max=0.0),
         arc=Arc(ACBus(nothing), ACBus(nothing)),
         converter_loss=LinearCurve(0.0),
         dc_current=0.0,
@@ -108,8 +113,10 @@ get_available(value::TwoTerminalHVDCDetailedLine) = value.available
 get_active_power_flow(value::TwoTerminalHVDCDetailedLine) = get_value(value, value.active_power_flow)
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `rating`."""
 get_rating(value::TwoTerminalHVDCDetailedLine) = get_value(value, value.rating)
-"""Get [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits`."""
-get_active_power_limits(value::TwoTerminalHVDCDetailedLine) = get_value(value, value.active_power_limits)
+"""Get [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits_from`."""
+get_active_power_limits_from(value::TwoTerminalHVDCDetailedLine) = get_value(value, value.active_power_limits_from)
+"""Get [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits_to`."""
+get_active_power_limits_to(value::TwoTerminalHVDCDetailedLine) = get_value(value, value.active_power_limits_to)
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `arc`."""
 get_arc(value::TwoTerminalHVDCDetailedLine) = value.arc
 """Get [`TwoTerminalHVDCDetailedLine`](@ref) `converter_loss`."""
@@ -135,8 +142,10 @@ set_available!(value::TwoTerminalHVDCDetailedLine, val) = value.available = val
 set_active_power_flow!(value::TwoTerminalHVDCDetailedLine, val) = value.active_power_flow = set_value(value, val)
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `rating`."""
 set_rating!(value::TwoTerminalHVDCDetailedLine, val) = value.rating = set_value(value, val)
-"""Set [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::TwoTerminalHVDCDetailedLine, val) = value.active_power_limits = set_value(value, val)
+"""Set [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits_from`."""
+set_active_power_limits_from!(value::TwoTerminalHVDCDetailedLine, val) = value.active_power_limits_from = set_value(value, val)
+"""Set [`TwoTerminalHVDCDetailedLine`](@ref) `active_power_limits_to`."""
+set_active_power_limits_to!(value::TwoTerminalHVDCDetailedLine, val) = value.active_power_limits_to = set_value(value, val)
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalHVDCDetailedLine, val) = value.arc = val
 """Set [`TwoTerminalHVDCDetailedLine`](@ref) `converter_loss`."""
