@@ -344,6 +344,7 @@ export get_components
 export show_components
 export get_subcomponents
 export get_components_by_name
+export get_available_component
 export get_available_components
 export get_existing_device_types
 export get_existing_component_types
@@ -674,6 +675,9 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
+
+"Get whether this component is available for simulation or not."
+get_available(::Component) = true
 
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
