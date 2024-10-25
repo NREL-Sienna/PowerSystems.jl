@@ -162,3 +162,10 @@ function IS.get_components(
     end
     return get_components(combo_filter, selector.component_type, sys)
 end
+
+# Alternative functions for only available components
+get_available_components(selector::ComponentSelector, sys::System) =
+    get_components(selector, sys; scope_limiter = get_available)
+
+get_available_groups(selector::ComponentSelector, sys::System) =
+    get_groups(selector, sys; scope_limiter = get_available)

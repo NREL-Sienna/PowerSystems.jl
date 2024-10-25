@@ -1262,9 +1262,6 @@ get_available_components(
         subsystem_name = subsystem_name,
     )
 
-get_available_components(selector::ComponentSelector, sys::System) =
-    filter(get_available, get_components(selector, sys))
-
 """
 Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
 """

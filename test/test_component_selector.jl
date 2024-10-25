@@ -60,6 +60,8 @@ end
         ),
     ) ==
           Vector{Component}()
+    @test collect(get_available_components(make_selector(gen_sundance), test_sys)) ==
+          Vector{Component}()
     @test IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> true) ==
           first(the_components)
     @test isnothing(IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> false))
@@ -126,6 +128,7 @@ end
     @test !(
         gen_sundance in
         collect(get_components_rt(test_sub_ent, test_sys; scope_limiter = get_available)))
+    @test !(gen_sundance in collect(get_available_components(test_sub_ent, test_sys)))
 
     # Grouping inherits from `DynamicallyGroupedComponentSelector` and is tested elsewhere
 end
@@ -228,12 +231,7 @@ end
         collect(
             get_components_rt(test_filter_ent, test_sys; scope_limiter = get_available),
         ))
-
-    @test !(
-        gen_sundance in
-        collect(
-            get_components_rt(test_filter_ent, test_sys; scope_limiter = get_available),
-        ))
+    @test !(gen_sundance in collect(get_available_components(test_filter_ent, test_sys)))
 end
 
 @testset "Test DynamicallyGroupedComponentSelector grouping" begin
@@ -277,6 +275,14 @@ end
                     groupby = x -> length(get_name(x))), test_sys),
         ),
     ) == 3
+
+    # Test proper handling of availability
+    sel = make_selector(ThermalStandard; groupby = :each)
+    @test length(get_groups(sel, test_sys2)) >
+          length(get_available_groups(sel, test_sys2)) ==
+          length(get_available_components(sel, test_sys2)) ==
+          length(get_available_components(ThermalStandard, test_sys2)) ==
+          length(get_components(get_available, ThermalStandard, test_sys2))
 end
 
 @testset "Test alternative interfaces" begin
