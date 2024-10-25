@@ -1161,10 +1161,39 @@ function get_components_by_name(
 end
 
 """
-Gets components availability. Requires type T to have the method get_available implemented.
+Like [`get_components`](@ref) but returns only those components `c` for which `get_available(c)`.
 """
-function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(get_available, T, sys)
+function get_available_components end
+
+get_available_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component} =
+    get_components(get_available, T, sys; subsystem_name = subsystem_name)
+
+get_available_components(
+    filter_func::Function,
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component} =
+    get_components(
+        x -> get_available(x) && filter_func(x),
+        T,
+        sys;
+        subsystem_name = subsystem_name,
+    )
+
+get_available_components(selector::ComponentSelector, sys::System) =
+    filter(get_available, get_components(selector, sys))
+
+"""
+Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
+"""
+function get_available_component(args...; kwargs...)
+    the_component = get_component(args...; kwargs...)
+    return get_available(the_component) ? the_component : nothing
 end
 
 """
