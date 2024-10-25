@@ -1080,22 +1080,25 @@ function get_component(::Type{T}, sys::System, name::AbstractString) where {T <:
 end
 
 """
-Returns an iterator of components. T can be concrete or abstract.
+Return an iterator of components of a given `Type` from a [`System`](@ref).
+
+`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
 Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = PowerSystems.get_components(ThermalStandard, sys)
-iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
-thermal_gens = get_components(ThermalStandard, sys) do gen
-    get_available(gen)
-end
-generators = collect(PowerSystems.get_components(Generator, sys))
-
+iter = get_components(ThermalStandard, sys)
+iter = get_components(Generator, sys)
+generators = collect(get_components(Generator, sys))
 ```
 
-See also: [`iterate_components`](@ref)
+See also: [`iterate_components`](@ref), [`get_components` with a filter](@ref get_components(
+    filter_func::Function,
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}),
+[`get_available_components`](@ref), [`get_buses`](@ref)
 """
 function get_components(
     ::Type{T},
@@ -1105,6 +1108,27 @@ function get_components(
     return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
+"""
+Return an iterator of components of a given `Type` from a [`System`](@ref), using an
+additional filter
+
+`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
+Call collect on the result if an array is desired.
+
+# Examples
+```julia
+iter_coal = get_components(x -> get_fuel(x) == ThermalFuels.COAL, Generator, sys)
+pv_gens =
+    collect(get_components(x -> get_prime_mover_type(x) == PrimeMovers.PVe, Generator, sys))
+```
+
+See also: [`get_components`](@ref get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}), [`get_available_components`](@ref),
+[`get_buses`](@ref)
+"""
 function get_components(
     filter_func::Function,
     ::Type{T},
@@ -1161,7 +1185,11 @@ function get_components_by_name(
 end
 
 """
-Gets components availability. Requires type T to have the method get_available implemented.
+Returns iterator of available components in a [`System`](@ref).
+
+`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref)
+and must have the method `get_available` implemented.
+Call collect on the result if an array is desired.
 """
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(get_available, T, sys)
