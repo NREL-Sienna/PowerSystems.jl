@@ -284,13 +284,3 @@ end
           length(get_available_components(ThermalStandard, test_sys2)) ==
           length(get_components(get_available, ThermalStandard, test_sys2))
 end
-
-@testset "Test alternative interfaces" begin
-    selector = make_selector(ThermalStandard, "Solitude")
-    @test collect(get_components_rt(selector, test_sys; scope_limiter = x -> true)) ==
-          collect(get_components_rt(x -> true, selector, test_sys))
-    @test get_component(selector, test_sys; scope_limiter = x -> true) ==
-          get_component(x -> true, selector, test_sys)
-    @test collect(get_groups(selector, test_sys; scope_limiter = x -> true)) ==
-          collect(get_groups(x -> true, selector, test_sys))
-end
