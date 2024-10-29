@@ -294,3 +294,22 @@ end
           length(get_available_components(ThermalStandard, test_sys2)) ==
           length(get_components(get_available, ThermalStandard, test_sys2))
 end
+
+@testset "Test rebuild_selector" begin
+    @assert !(PSY.NameComponentSelector <: PSY.DynamicallyGroupedComponentSelector)
+    @assert PSY.TopologyComponentSelector <: PSY.DynamicallyGroupedComponentSelector
+
+    sel1::PSY.NameComponentSelector =
+        make_selector(ThermalStandard, "Component1"; name = "oldname")
+    sel2::PSY.TopologyComponentSelector =
+        make_selector(ThermalStandard, Area, "1"; groupby = :all)
+
+    @test rebuild_selector(sel1; name = "newname") ==
+          make_selector(ThermalStandard, "Component1"; name = "newname")
+    @test_throws Exception rebuild_selector(sel1; groupby = :each)
+
+    @test rebuild_selector(sel2; name = "newname") ==
+          make_selector(ThermalStandard, Area, "1"; name = "newname", groupby = :all)
+    @test rebuild_selector(sel2; name = "newname", groupby = :each) ==
+          make_selector(ThermalStandard, Area, "1"; name = "newname", groupby = :each)
+end
