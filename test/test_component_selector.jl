@@ -205,11 +205,10 @@ end
         ThermalStandard, starts_with_s, :all, "ThermStartsWithS") == named_test_filter_ent
 
     # Construction
-    @test make_selector(ThermalStandard, starts_with_s) == test_filter_ent
     @test make_selector(starts_with_s, ThermalStandard) == test_filter_ent
-    @test make_selector(ThermalStandard, starts_with_s; name = "ThermStartsWithS") ==
+    @test make_selector(starts_with_s, ThermalStandard; name = "ThermStartsWithS") ==
           named_test_filter_ent
-    @test make_selector(ThermalStandard, starts_with_s; groupby = string) isa
+    @test make_selector(starts_with_s, ThermalStandard; groupby = string) isa
           PSY.FilterComponentSelector
 
     # Naming
@@ -220,10 +219,10 @@ end
     answer = filter(starts_with_s, collect(get_components_rt(ThermalStandard, test_sys)))
 
     @test collect(
-        get_components_rt(make_selector(NonexistentComponent, x -> true), test_sys),
+        get_components_rt(make_selector(x -> true, NonexistentComponent), test_sys),
     ) ==
           Vector{Component}()
-    @test collect(get_components_rt(make_selector(Component, x -> false), test_sys)) ==
+    @test collect(get_components_rt(make_selector(x -> false, Component), test_sys)) ==
           Vector{Component}()
     @test all(collect(get_components_rt(test_filter_ent, test_sys)) .== answer)
     @test !(
