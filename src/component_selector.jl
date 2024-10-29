@@ -97,7 +97,7 @@ make_selector(
     component_type::Type{<:Component},
     topology_type::Type{<:AggregationTopology},
     topology_name::AbstractString;
-    groupby::Union{Symbol, Function} = :all,
+    groupby::Union{Symbol, Function} = IS.DEFAULT_GROUPBY,
     name::Union{String, Nothing} = nothing,
 ) = TopologyComponentSelector(
     component_type,

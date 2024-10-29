@@ -110,8 +110,10 @@ end
     @test PSY.TypeComponentSelector(ThermalStandard, :all, "Thermals") == named_test_sub_ent
 
     # Construction
-    @test make_selector(ThermalStandard) == test_sub_ent
-    @test make_selector(ThermalStandard; name = "Thermals") == named_test_sub_ent
+    @test make_selector(ThermalStandard) == make_selector(ThermalStandard; groupby = :each)
+    @test make_selector(ThermalStandard; groupby = :all) == test_sub_ent
+    @test make_selector(ThermalStandard; groupby = :all, name = "Thermals") ==
+          named_test_sub_ent
     @test make_selector(ThermalStandard; groupby = string) isa PSY.TypeComponentSelector
 
     # Naming
@@ -149,8 +151,11 @@ end
           test_topo_ent2
 
     # Construction
-    @test make_selector(ThermalStandard, Area, "1") == test_topo_ent1
-    @test make_selector(StaticInjection, LoadZone, "2"; name = "Zone_2") == test_topo_ent2
+    @test make_selector(ThermalStandard, Area, "1") ==
+          make_selector(ThermalStandard, Area, "1"; groupby = :each)
+    @test make_selector(ThermalStandard, Area, "1"; groupby = :all) == test_topo_ent1
+    @test make_selector(StaticInjection, LoadZone, "2"; groupby = :all, name = "Zone_2") ==
+          test_topo_ent2
     @test make_selector(StaticInjection, LoadZone, "2"; groupby = string) isa
           PSY.TopologyComponentSelector
 
@@ -205,9 +210,15 @@ end
         ThermalStandard, starts_with_s, :all, "ThermStartsWithS") == named_test_filter_ent
 
     # Construction
-    @test make_selector(starts_with_s, ThermalStandard) == test_filter_ent
-    @test make_selector(starts_with_s, ThermalStandard; name = "ThermStartsWithS") ==
-          named_test_filter_ent
+    @test make_selector(starts_with_s, ThermalStandard) ==
+          make_selector(starts_with_s, ThermalStandard; groupby = :each)
+    @test make_selector(starts_with_s, ThermalStandard; groupby = :all) == test_filter_ent
+    @test make_selector(
+        starts_with_s,
+        ThermalStandard;
+        groupby = :all,
+        name = "ThermStartsWithS",
+    ) == named_test_filter_ent
     @test make_selector(starts_with_s, ThermalStandard; groupby = string) isa
           PSY.FilterComponentSelector
 
@@ -239,7 +250,7 @@ end
 
     all_selector = make_selector(ThermalStandard, Area, "1"; groupby = :all)
     each_selector = make_selector(ThermalStandard, Area, "1"; groupby = :each)
-    @test make_selector(ThermalStandard, Area, "1") == all_selector
+    @test make_selector(ThermalStandard, Area, "1") == each_selector
     @test_throws ArgumentError make_selector(ThermalStandard, Area, "1"; groupby = :other)
     # @show get_name.(get_components_rt(all_selector, test_sys2))
     partition_selector = make_selector(ThermalStandard, Area, "1";
