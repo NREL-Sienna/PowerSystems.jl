@@ -630,6 +630,7 @@ import InfrastructureSystems:
     ListComponentSelector,
     TypeComponentSelector,
     FilterComponentSelector,
+    RegroupedComponentSelector,
     component_to_qualified_string,
     subtype_to_string,
     COMPONENT_NAME_DELIMITER,

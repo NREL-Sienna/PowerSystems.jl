@@ -244,6 +244,23 @@ end
     @test !(gen_sundance in collect(get_available_components(test_filter_ent, test_sys)))
 end
 
+@testset "Test RegroupedComponentSelector" begin
+    comp_ent_1 = make_selector(ThermalStandard, "Sundance")
+    comp_ent_2 = make_selector(RenewableDispatch, "WindBusA")
+    test_list_ent = PSY.ListComponentSelector((comp_ent_1, comp_ent_2), nothing)
+    test_sel = PSY.RegroupedComponentSelector(test_list_ent, :all)
+
+    # Equality
+    @test PSY.RegroupedComponentSelector(test_list_ent, :all) == test_sel
+
+    # Naming
+    @test get_name(test_sel) == get_name(test_list_ent)
+
+    # Contents
+    @test Set(collect(get_components_rt(test_sel, test_sys))) ==
+          Set(collect(get_components_rt(test_list_ent, test_sys)))
+end
+
 @testset "Test DynamicallyGroupedComponentSelector grouping" begin
     # We'll use TopologyComponentSelector as the token example
     @assert PSY.TopologyComponentSelector <: DynamicallyGroupedComponentSelector
@@ -301,15 +318,37 @@ end
 
     sel1::PSY.NameComponentSelector =
         make_selector(ThermalStandard, "Component1"; name = "oldname")
-    sel2::PSY.TopologyComponentSelector =
+    sel2::PSY.TypeComponentSelector =
+        make_selector(ThermalStandard; groupby = :all)
+    sel3::PSY.TopologyComponentSelector =
         make_selector(ThermalStandard, Area, "1"; groupby = :all)
+    # TODO include sel3 when get_components is fixed -- see below
+    sel4::IS.ListComponentSelector = make_selector(sel1, sel2; name = "oldname")
 
     @test rebuild_selector(sel1; name = "newname") ==
           make_selector(ThermalStandard, "Component1"; name = "newname")
     @test_throws Exception rebuild_selector(sel1; groupby = :each)
 
     @test rebuild_selector(sel2; name = "newname") ==
-          make_selector(ThermalStandard, Area, "1"; name = "newname", groupby = :all)
+          make_selector(ThermalStandard; name = "newname", groupby = :all)
     @test rebuild_selector(sel2; name = "newname", groupby = :each) ==
+          make_selector(ThermalStandard; name = "newname", groupby = :each)
+
+    @test rebuild_selector(sel3; name = "newname") ==
+          make_selector(ThermalStandard, Area, "1"; name = "newname", groupby = :all)
+    @test rebuild_selector(sel3; name = "newname", groupby = :each) ==
           make_selector(ThermalStandard, Area, "1"; name = "newname", groupby = :each)
+
+    @test rebuild_selector(sel4; name = "newname") ==
+          make_selector(sel1, sel2; name = "newname")
+    regrouped = rebuild_selector(sel4; name = "newname", groupby = :all)
+    @test Set(collect(get_components_rt(regrouped, test_sys))) ==
+          Set(collect(get_components_rt(sel4, test_sys)))
+    @test length(get_groups(regrouped, test_sys)) == 1
+end
+
+@testset "Test special cases" begin
+    # https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388 can cause issues here
+    # TODO
+    # get_components_rt(make_selector(make_selector(ThermalStandard, Area, "1")), test_sys)
 end
