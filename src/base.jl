@@ -73,7 +73,7 @@ System(; kwargs...)
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
-large datasets from overwhelming system memory (see [Data Storage](@ref)). 
+large datasets from overwhelming system memory (see [Data Storage](@ref)).
 **If the system's time series
 data will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
@@ -1325,7 +1325,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
     buses = Vector{ACBus}()
     for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
-        if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+        if !isnothing(_aggregator) && IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
             push!(buses, bus)
         end
     end
