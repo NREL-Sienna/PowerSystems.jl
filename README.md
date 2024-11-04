@@ -28,7 +28,7 @@ The `PowerSystems.jl` package provides a rigorous data model using Julia structu
 - Dynamic Generators Models
 - Dynamic Inverter Models
 
-For a more exhaustive list, check the [Documentation](https://nrel-sienna.github.io/PowerSystems.jl/stable).
+For information on using the package and a more extensive list of device data enabled, see the [stable documentation](https://nrel-sienna.github.io/PowerSystems.jl/stable/). Use the [in-development documentation](https://nrel-sienna.github.io/PowerSystems.jl/dev/) for the version of the documentation which contains the unreleased features.
 
 ## Parsing capabilities in PowerSystems
 
