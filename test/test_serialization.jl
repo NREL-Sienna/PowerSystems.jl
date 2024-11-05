@@ -106,7 +106,8 @@ end
         add_component!(sys, gen)
         ta = TimeSeries.TimeArray(dates, data)
         time_series = IS.SingleTimeSeries(; name = "variable_cost", data = ta)
-        set_variable_cost!(sys, gen, time_series)
+        power_units = UnitSystem.NATURAL_UNITS
+        set_variable_cost!(sys, gen, time_series, power_units)
         service = ConstantReserve{ReserveDown}(;
             name = "init_$i",
             available = false,
@@ -125,6 +126,7 @@ end
             gen,
             service,
             IS.SingleTimeSeries(; name = "init_$i", data = ta),
+            power_units,
         )
     end
     _, result = validate_serialization(sys)
