@@ -1100,7 +1100,7 @@
             "supertype": "ACBranch"
         },
         {
-            "struct_name": "TwoTerminalHVDCDetailedLine",
+            "struct_name": "TwoTerminalVSCLine",
             "docstring": "A High Voltage DC line, which must be connected to an [`ACBus`](@ref) on each end.\n\nThis model is appropriate for operational simulations with a linearized DC power flow approximation with losses using a voltage-current model. For modeling a DC network, see [`TModelHVDCLine`](@ref)",
             "fields": [
                 {
