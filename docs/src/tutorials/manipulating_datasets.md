@@ -1,232 +1,206 @@
-# Manipulating Static Data Sets using `get_component` and `set_*`
-
-!!! note "Static vs Dynamic Data"
-    Static and dynamic data can be manipulated using the `get_*` and `set_*` functions. However, it is important to note their differences. Static data encompasses all data necessary to run a steady state model. Dynamic data encompasses the data necessary to run a transient model. 
+# Manipulating Data Sets 
 
 `PowerSystems` provides function interfaces to all data, and in this tutorial we will explore how to do this using the `get_*`, `set_*`, and `show_components` functions.  
 
 !!! note "Understanding the Behavior of Getters and Setters"
-    `PowerSystems` returns Julia iterators in order to avoid unnecessary memory allocations. The `get_*` and `set_*` functions are used as iterators to loop through data fields to access or set specific parameters. However, when using the `get_*` function you can use `collect` to return a vector.
+    `PowerSystems` returns Julia iterators in order to avoid unnecessary memory allocations. The `get_components` function is an iterator that loops through data fields to access specific parameters. The `set_*` function uses an iterator like `get_components` to manipulate specific parameters of components. 
 
-
-We are going to begin by loading in a test case from the `PowerSystemCaseBuilder`, see the reference for [PSCB](https://nrel-sienna.github.io/PowerSystems.jl/stable/how_to/powersystembuilder/#psb). 
+## Viewing Components in the System 
+We are going to begin by loading in a test case from the [`PowerSystemCaseBuilder.jl`](https://nrel-sienna.github.io/PowerSystems.jl/stable/how_to/powersystembuilder/#psb):
 ```@repl system
 using PowerSystems;
 using PowerSystemCaseBuilder;
 sys = build_system(PSISystems, "c_sys5_pjm")
 ```
 
-Recall that we can see the components of our system simply by printing it.
-```@repl system
-sys
+We can use the [`show_components`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.show_components) function to view data in our system. 
+
+Let's start by viewing all of the [`ThermalStandard`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ThermalStandard/#PowerSystems.ThermalStandard) components in the system. 
+
+```@repl system 
+show_components(ThermalStandard, sys)
 ```
-#### Accessing types of data stored in our system
-Let's grab all the thermal generators in our system using the `get_components` function. 
-```@repl system
-get_components(ThermalStandard, sys) 
+We can see there are five thermal generators in the system. 
+Similarly we can see all of the [`ACBus`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ACBus/#PowerSystems.ACBus) components in our system. 
+```@repl system 
+show_components(ACBus, sys)
 ```
+Notice in both the `ACBus` example and `ThermalStandard` example, a table with the name and availability are returned. Availability is the standard parameter returned when using `show_components`.
+
+We can also view specific parameters within components using the `show_components` function. 
+
+For example, we can view the type of `fuel` the thermal generators are using:
+```@repl system 
+show_components(ThermalStandard, sys, [:fuel])
+```
+If we were interested in viewing more than one parameter, like the `active power` and `reactive power` of the thermal generators: 
+```@repl system
+show_components(ThermalStandard, sys, [:active_power, :reactive_power])
+```
+We can see a table is returned of the parameters we were interested in. 
+## Accessing Components in a System
+We can access and manipulate components in our system using the [`get_component`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.get_component-Union{Tuple{T},%20Tuple{Type{T},%20System,%20AbstractString}}%20where%20T%3C:Component) and the [`get_components`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.get_components-Union{Tuple{T},%20Tuple{Type{T},%20System}}%20where%20T%3C:Component) functions. An important note to make is that both `get_component` and `get_components` are iterators that loop through data fields to access specific components and parameters.
+
 !!! warning
     Using the "dot" access to get a parameter value from a component is actively discouraged, use `get_*` functions instead. Julia syntax enables access to this data using the "dot" access, however this is discouraged for two reasons: 
         1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
         2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://nrel-sienna.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details)
-We can see that we have 5 thermal generators in our system, and we can see the names of them using the `get_name` function. 
+
+Let's access a thermal generator in the system. The `get_component` function takes in a [`type`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/type_tree/), the system and a name. 
+
+From above we know the names of the thermal generators.
 ```@repl system 
-get_name.(get_components(ThermalStandard, sys))
+get_component(ThermalStandard, sys, "Solitude")
 ```
-!!! warning 
-    It is important to note that `set_name!` changes the container and not just the field within the component. Therefore, it is important that anytime you use `set_name!` you should do the following: 
+The parameters associated with that generator should be returned.
+
+If we were intersted in accessing multiple components in the system, we can use the `get_components` function. 
 ```@repl system 
-for thermal_gen in collect(get_components(ThermalStandard, sys))
-    @show get_name(thermal_gen)
-    set_name!(sys, thermal_gen, get_name(thermal_gen)*"-renamed")
-end
+get_components(ThermalStandard, sys)
 ```
+We can see the five thermal generators in a system. 
+
+## Updating Data in a Component
+Now that we have learned how to view and access data in the system, we are going to learn how to update it using certain `set_*` functions. The `set_*` function uses iterators to loop through and update parameters and components. 
+
+If we were interested in updating the [`fuel`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/enumerated_types/#tf_list) parameter of the thermal generators we would use the [`set_fuel!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ThermalStandard/#PowerSystems.set_fuel!-Tuple{ThermalStandard,%20Any}) function.
+
+Let's start by grabbing the `Solitude` thermal generator 
 ```@repl system
-get_name.(get_components(ThermalStandard, sys))
+solitude = get_component(ThermalStandard, sys, "Solitude")
 ```
+Now we can update the `fuel` for that thermal generator using the [`set_fuel!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ThermalStandard/#PowerSystems.set_fuel!-Tuple{ThermalStandard,%20Any}) function:
 
+```@repl system 
+set_fuel!(solitude, ThermalFuels.AG_BIPRODUCT)
+```
+We can check that our fuel updated using `show_components`
+```@repl system 
+show_components(ThermalStandard, sys, [:fuel])
+```
+We can see that the `Solitude` fuel has been updated to `ThermalFuels.AG_BIPRODUCT`
 
-Now let's check the availability of these thermal generators using the `show_components` function. 
+## Updating Many Components at Once
+We can also update more than one component at a time using `get_components` and the `set_*` functions. 
+
+Let's say we were interested in updating the `base_voltage` parameter for all of the `ACBus` components. We can see that currently the `base_voltages` are:
 ```@repl system 
-show_components(sys, ThermalStandard)
+show_components(ACBus, sys, [:base_voltage])
 ```
-We can see that all of our thermal generators are available, but let's see how we can manipulate their availability. We will start by getting an iterator of the thermal generators in our system. 
+But what if we are looking to change them to 250.0. Let's start by getting an iterator for all the buses using `get_components`
 ```@repl system 
-thermal_iter = get_components(ThermalStandard, sys)
+buses = get_components(ACBus, sys)
 ```
-Now let's set all of our thermal generators to unavailable. 
+Now using the [`set_base_voltage!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ACBus/#PowerSystems.set_base_voltage!-Tuple{ACBus,%20Any}) function and a `for loop` we can update the voltage. 
 ```@repl system 
-for i in thermal_iter
-    set_available!(i, 0)
+for i in buses
+set_base_voltage!(i, 250.0)
+end 
+```
+We can see that all of the buses now have a `base_voltage` of 250.0:
+```@repl system 
+show_components(ACBus, sys, [:base_voltage])
+```
+If we were interested in updating the fuel in all the thermal generators, we would use a similar approach. We begin by grabbing an iterator for all the components in `ThermalStandard`.
+```@repl system 
+thermal_gens = get_components(ThermalStandard, sys)
+```
+Now, using a the [`set_fuel!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_ThermalStandard/#PowerSystems.set_fuel!-Tuple{ThermalStandard,%20Any}) and a for loop, we will update the fuel to `NATURAL_GAS`.    
+```@repl system 
+for i in thermal_gens
+set_fuel!(i, ThermalFuels.NATURAL_GAS)
 end
 ```
-We can see the changes that we made by using the `show_components` function again. 
+We can see that all the fuel type for all the thermal gens has been updated. 
+```@repl system 
+show_components(ThermalStandard, sys, [:fuel])
+```
+
+## Filtering Specific Data
+We have seen how to update a single component, and all the components of a particular type, but what if we are interested in updating particular components? We can do this using filter functions. For example, let's say we are interested in updating all the `active_power` parameters of the thermal generators except `Solitude`. 
+
+Let's start by seeing the current `active_power` parameters. 
+```@repl system 
+show_components(ThermalStandard, sys, [:active_power])
+```
+Let's grab an iterator for the all the thermal generators except `Solitdue`
+```@repl system 
+thermal_not_solitude = get_components(x -> get_name(x) != "Solitude", ThermalStandard, sys)
+```
+We can see that four `ThermalStandard` components are returned. Now let's update the `active_power` parameter of these 4 thermal generators using the [`set_active_power`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_EnergyReservoirStorage/#PowerSystems.set_active_power!-Tuple{EnergyReservoirStorage,%20Any}) function. 
+```@repl system 
+for i in thermal_not_solitude
+set_active_power!(i, 0.0)
+end
+```
+Let's check the update using `show_components`.
+```@repl system 
+show_components(ThermalStandard, sys, [:active_power])
+```
+We can see that all the `active_power` parameters are 0.0, except sundance. 
+
+## Getting Available Components
+The [`get_available_components`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.get_available_components-Union{Tuple{T},%20Tuple{Type{T},%20System}}%20where%20T%3C:Component) function allows us to grab all the components of a particular type that are available. For example, if we were interested in grabbing all the available renewable generators: 
+```@repl system 
+get_available_components(RenewableDispatch, sys)
+```
+The two `RenewableDispatch` components are returned because they are available. 
+
+We can update the availability of componets using the [`set_available!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_AGC/#PowerSystems.set_available!-Tuple{AGC,%20Any}) function. 
+
+Let's filter all of the thermal generators that have an `active_power` of 0.0, and set their availability to false.
+```@repl system 
+not_available = get_components(x -> get_active_power(x) == 0.0, ThermalStandard, sys)
+```
+```@repl system 
+for i in not_available
+set_available!(i, 0)
+end
+```
+Let's check the availability of our `ThermalStandard` components.
 ```@repl system 
 show_components(ThermalStandard, sys)
 ```
+Recall that the default columns returned when using `show_components` are the name and availability. 
 
-Now, we are going to make all of our thermal generators availble except the Sundance generator. Let's grab an iterator for all of the thermal generators except Sundance. 
+## Getting Buses
+We can access the `ACbus` components in the system using the [`get_buses`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.get_buses-Tuple{System,%20Set{Int64}}) function. There are multiple approaches in using this function, but in this tutorial we are going to focus on using the ID numbers of our buses. 
+
+Let's begin by viewing the ID numbers associated with the `ACBus` components using the [`get_bus_numbers`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#PowerSystems.get_bus_numbers-Tuple{System}) function. 
 ```@repl system 
-avail_gen = [get_component(ThermalStandard, sys, "Solitude-renamed"), get_component(ThermalStandard, sys, "Park City-renamed"), get_component(ThermalStandard, sys, "Alta-renamed"), get_component(ThermalStandard, sys, "Brighton-renamed")]
+get_bus_numbers(sys)
 ```
+We can see that a vector of values 1:5 is returned. Now let's grab the buses using the `get_buses` function. 
 ```@repl system 
-for i in avail_gen 
-    set_available!(i, 1)
+get_buses(sys, Set(1:5))
+```
+The 5 buses in the system are returned. Notice, that this returns a 5-element vector not an iterator. 
+
+## Updating Component Names
+When we are updating a component name using the function [`set_name!`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/public/#InfrastructureSystems.set_name!-Tuple{System,%20AbstractString}) it is important to note that this not only changes the field `name`, but also changes the container itself.
+
+Recall that we created an iterator called `thermal_gens` for all the thermal generators. We can use the [`get_name`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_SimplifiedSingleCageInductionMachine/#InfrastructureSystems.get_name-Tuple{SimplifiedSingleCageInductionMachine}) function to access the `name` parameter for these components. 
+```@repl system
+for i in thermal_gens 
+@show get_name(i)
 end
 ```
-When we use the `get_available` function we can access components in the system that are available. 
+To update the names we will use the `set_name` function. 
 ```@repl system 
-get_available.(get_components(ThermalStandard, sys))
-```
-In this case, we can see that all of the thermal generatos are available except Sundance. 
-
-We can also see others paramenters of our thermal generators including the type of fuel it uses.
-```@repl system
-show_components(ThermalStandard, sys, [:fuel])
-```
-We can see that all of our thermal generators use coal as fuel. Let's change the Park City fuel to biofuel. 
-```@repl system 
-gen_bio = get_component(ThermalStandard, sys, "Park City-renamed")
-```
-```@repl system
-set_fuel!(gen_bio, ThermalFuels.AG_BIPRODUCT)
-```
-```@repl system 
-show_components(ThermalStandard, sys, [:fuel])
-```
-We can see that the Park City thermal generator is now fueled by agricultural crop byproducts. 
-
-## Unit Base System
-If we wanted to evaluate power flow with a different set point for out thermal generators, we can do so by accessing and manipulating the `active_power`, `reactive_power`, and our `base_power` components.
-```@repl system 
-show_components(ThermalStandard, sys, [:active_power, :reactive_power, :base_power])
-```
-Let's check what unit base we are in. 
-```@repl system 
-get_units_base(sys)
-```
-
-We can see that we are in the `SYSTEM_BASE` units. Let's change our system base to `NATURAL_UNITS`, and see how this impacts our `active_power` and `reactive_power`
- 
-```@repl system 
-set_units_base_system!(sys, UnitSystem.NATURAL_UNITS)
-```
-```@repl system  
-show_components(ThermalStandard, sys, [:active_power, :reactive_power])
-```
-We can see that our values have changed, based on the unit base our system is in. 
-
-Changing our unit base back to `SYSTEM_BASE`. 
-
-```@repl system 
-set_units_base_system!(sys, UnitSystem.SYSTEM_BASE)
-```
-Now we are going to change some of the `active_power` and `reactive_power` parameters of our thermal generators. 
-
-```@repl system 
-brighton = get_component(ThermalStandard, sys, "Brighton-renamed")
-set_active_power!(brighton,  7.5 )
-set_reactive_power!(brighton, 4.0)
-
-```
-Now when we look at our `active_power` and `reactive_power` we can see that they have changed.  
-
-```@repl system
-show_components(ThermalStandard, sys, [:active_power, :reactive_power])
-```
-We can use a filter function to group our `ThermalStandard` components based on their `active_power` and `reactive_power` parameters. 
-```@repl system
-my_active_power1 = 7.5
-my_active_power2 = 1.7
-collect(get_components(x -> get_active_power(x) == my_active_power1 || get_active_power(x) == my_active_power2, ThermalStandard, sys))
-```
-We can see that a 2-element vector containing `Brighton-renamed` and `Park City-renamed` is returned.  
-
-
-Now lets focus on accessing all `ACBus` components and adjusting their base voltages. We can access all the buses in the system using two key function, `get_components`, which we have already seen, and `get_buses` which we will dive into now. 
-
-### Iterator Approach
-
-We are going to start by getting an iterator for some of the `ACBus` components. 
-
-```@repl system 
-bus_iter = [get_component(ACBus, sys, "nodeA"), get_component(ACBus, sys, "nodeC")]
-```
-We can set the base voltages for those buses to 250 kV. 
-```@repl system 
-for i in bus_iter 
-    set_base_voltage!(i, 250.0)
+for thermal_gen in collect(get_components(ThermalStandard, sys))
+    set_name!(sys, thermal_gen, get_name(thermal_gen)*"-renamed")
 end
 ```
-Now we can check what the base voltages currently are. 
+Now we can check the names using the `get_name` function again.
 ```@repl system 
-show_components(sys, ACBus, [:base_voltage])
-```
-Additionally, we can use a filter function here to group our buses based on `base_voltage`.
-```@repl system 
-
-my_base_voltage = 250
-collect(get_components(x -> get_base_voltage(x) == my_base_voltage, ACBus, sys))
-```
-A 2-element vector containing the buses with a `base_voltage` of 250.0 is returned. 
-
-### Vector Approach
-We can also use a vector to collect all of our `ACBus` components instead of an iterator. 
-!!! tip "Iterator vs Vector"
-    Depending on system size it can be beneficial to use an iterator over a vector because vectors can require a lot of memory. 
-```@repl system
-buses = collect(get_components(ACBus, sys))
-```
-### Using `get_bus` 
-We can also use the `get_bus` function, when we know which `Area` or `LoadZone` we are interested in. However, because this is a small system there are no pre-built Areas, so we are going to begin by building some.
-We are going to begin by grabbing two iterators that will grab all the buses. 
-```@repl system 
-area2_iter = [get_component(ACBus, sys, "nodeA"), get_component(ACBus, sys, "nodeC"), get_component(ACBus, sys, "nodeE")]
-area1_iter = [get_component(ACBus, sys, "nodeB"), get_component(ACBus, sys, "nodeD")]
-```
-Next, we are going to create our `Areas` and add them to the system.
-```@repl system 
-area1 = Area(;
-    name = "1"
-)
-add_component!(sys, area1)
-```
-```@repl system 
-area2 = Area(;
-    name = "2"
-)
-add_component!(sys, area2)
-
-```
-Now we are going to use the `set_area!` function to set the `Area` parameter of our nodes to the `Areas` we just created. 
-```@repl system 
-for i in area1_iter
-    set_area!(i, area1)
-end
-```
-```@repl system 
-for i in area2_iter 
-    set_area!(i, area2)
-end
-```
-Now we can use the `get_buses` function. 
-```@repl system 
-area2 = get_component(Area, sys, "2")
-area_buses = get_buses(sys, area2)
-area1 = get_component(Area, sys, "1")
-area_buses1 = get_buses(sys, area1)
-
+get_name.(get_components(ThermalStandard,sys))
 ```
 
-We can also access all of our buses using their ID numbers. 
-```@repl system 
-buses_by_ID = get_buses(sys, Set(1:5))
-```
+Notice how we used 
 
-
+## Next Steps & Links
 So far we have seen that we can view different data types in our system using the `show_components` function, we can can access those types using the `get_*` function, and we can manipulate them using `set_*`. 
 Follow the next tutorials to learn how to [work with time series](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/working_with_time_series/). 
-
 
 
 
