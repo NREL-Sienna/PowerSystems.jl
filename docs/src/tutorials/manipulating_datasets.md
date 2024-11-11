@@ -87,7 +87,7 @@ Let's say we were interested in updating the `base_voltage` parameter for all of
 ```@repl system 
 show_components(ACBus, sys, [:base_voltage])
 ```
-But what if we are looking to change them to 250.0. Let's start by getting an iterator for all the buses using `get_components`
+But what if we are looking to change them to 250.0? Let's start by getting an iterator for all the buses using `get_components`
 ```@repl system 
 buses = get_components(ACBus, sys)
 ```
@@ -117,17 +117,17 @@ show_components(ThermalStandard, sys, [:fuel])
 ```
 
 ## Filtering Specific Data
-We have seen how to update a single component, and all the components of a particular type, but what if we are interested in updating particular components? We can do this using filter functions. For example, let's say we are interested in updating all the `active_power` parameters of the thermal generators except `Solitude`. 
+We have seen how to update a single component, and all the components of a specific type, but what if we are interested in updating particular components? We can do this using filter functions. For example, let's say we are interested in updating all the `active_power` parameters of the thermal generators except `Solitude`. 
 
 Let's start by seeing the current `active_power` parameters. 
 ```@repl system 
 show_components(ThermalStandard, sys, [:active_power])
 ```
-Let's grab an iterator for the all the thermal generators except `Solitdue`
+Let's grab an iterator for the all the thermal generators except `Solitdue` using a filter function: 
 ```@repl system 
 thermal_not_solitude = get_components(x -> get_name(x) != "Solitude", ThermalStandard, sys)
 ```
-We can see that four `ThermalStandard` components are returned. Now let's update the `active_power` parameter of these 4 thermal generators using the [`set_active_power`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_EnergyReservoirStorage/#PowerSystems.set_active_power!-Tuple{EnergyReservoirStorage,%20Any}) function. 
+We can see that four `ThermalStandard` components are returned. Now let's update the `active_power` parameter of these four thermal generators using the [`set_active_power`](https://nrel-sienna.github.io/PowerSystems.jl/stable/model_library/generated_EnergyReservoirStorage/#PowerSystems.set_active_power!-Tuple{EnergyReservoirStorage,%20Any}) function. 
 ```@repl system 
 for i in thermal_not_solitude
 set_active_power!(i, 0.0)
@@ -191,11 +191,11 @@ for thermal_gen in collect(get_components(ThermalStandard, sys))
     set_name!(sys, thermal_gen, get_name(thermal_gen)*"-renamed")
 end
 ```
-Now we can check the names using the `get_name` function again.
+Now we can check the names using the `get_name` function again. 
 ```@repl system 
 get_name.(get_components(ThermalStandard,sys))
 ```
-
+Notice that in this example we used a dot operator which 
 Notice how we used 
 
 ## Next Steps & Links
