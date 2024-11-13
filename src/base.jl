@@ -73,7 +73,7 @@ System(; kwargs...)
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
-large datasets from overwhelming system memory (see [Data Storage](@ref)).
+large datasets from overwhelming system memory (see [Data Storage](@ref)). 
 **If the system's time series
 data will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
@@ -1080,25 +1080,22 @@ function get_component(::Type{T}, sys::System, name::AbstractString) where {T <:
 end
 
 """
-Return an iterator of components of a given `Type` from a [`System`](@ref).
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
+Returns an iterator of components. T can be concrete or abstract.
 Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = get_components(ThermalStandard, sys)
-iter = get_components(Generator, sys)
-generators = collect(get_components(Generator, sys))
+iter = PowerSystems.get_components(ThermalStandard, sys)
+iter = PowerSystems.get_components(Generator, sys)
+iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
+thermal_gens = get_components(ThermalStandard, sys) do gen
+    get_available(gen)
+end
+generators = collect(PowerSystems.get_components(Generator, sys))
+
 ```
 
-See also: [`iterate_components`](@ref), [`get_components` with a filter](@ref get_components(
-    filter_func::Function,
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component}),
-[`get_available_components`](@ref), [`get_buses`](@ref)
+See also: [`iterate_components`](@ref)
 """
 function get_components(
     ::Type{T},
@@ -1108,27 +1105,6 @@ function get_components(
     return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
-"""
-Return an iterator of components of a given `Type` from a [`System`](@ref), using an
-additional filter
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
-Call collect on the result if an array is desired.
-
-# Examples
-```julia
-iter_coal = get_components(x -> get_fuel(x) == ThermalFuels.COAL, Generator, sys)
-pv_gens =
-    collect(get_components(x -> get_prime_mover_type(x) == PrimeMovers.PVe, Generator, sys))
-```
-
-See also: [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component}), [`get_available_components`](@ref),
-[`get_buses`](@ref)
-"""
 function get_components(
     filter_func::Function,
     ::Type{T},
@@ -1185,11 +1161,7 @@ function get_components_by_name(
 end
 
 """
-Returns iterator of available components in a [`System`](@ref).
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref)
-and must have the method `get_available` implemented.
-Call collect on the result if an array is desired.
+Gets components availability. Requires type T to have the method get_available implemented.
 """
 function get_available_components(::Type{T}, sys::System) where {T <: Component}
     return get_components(get_available, T, sys)
@@ -1325,7 +1297,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
     buses = Vector{ACBus}()
     for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
-        if !isnothing(_aggregator) && IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+        if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
             push!(buses, bus)
         end
     end

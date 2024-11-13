@@ -275,7 +275,7 @@ function System(
     )
 
     for (val, parser) in parsers
-        if !isempty(val)
+        if !isnothing(val)
             parser(sys, data)
         end
     end
@@ -467,7 +467,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 :max_reactive_power_limit_to,
             )
 
-            loss = LinearCurve(dc_branch.loss) #TODO: Can we infer this from the other data?,
+            loss = (l0 = 0.0, l1 = dc_branch.loss) #TODO: Can we infer this from the other data?,
 
             value = TwoTerminalHVDCLine(;
                 name = dc_branch.name,

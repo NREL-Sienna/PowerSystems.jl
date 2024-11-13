@@ -13,7 +13,9 @@ pages = OrderedDict(
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
+            "Manipulating Data Sets" => "tutorials/manipulating_datasets.md"
         ],
+    
         "How to..." =>  Any[
             "...install PowerSystems.jl" => "how_to/install.md",
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
@@ -45,7 +47,7 @@ pages = OrderedDict(
         "Reference" =>
             Any["Public API" => "api/public.md",
             "Glossary and Acronyms" => "api/glossary.md",
-            "Type Tree" => "api/type_tree.md",
+            "Type Hierarchy" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
             "Citation" => "api/citation.md",
@@ -89,6 +91,7 @@ pages["Model Library"] = make_model_library(
         )
 )
 
+
 # postprocess function to insert md
 function insert_md(content)
     m = match(r"APPEND_MARKDOWN\(\"(.*)\"\)", content)
@@ -106,7 +109,8 @@ folders = Dict(
     "Model Library" => filter(julia_file_filter, readdir("docs/src/model_library")),
     "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
-)
+    "Tutorials" => filter(julia_file_filter, readdir("docs/src/tutorials"))
+) 
 for (section, folder) in folders
     for file in folder
         @show file
