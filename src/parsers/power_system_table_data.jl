@@ -915,13 +915,15 @@ function make_cost(
     cost_colnames::_HeatRateColumns,
 ) where {T <: RenewableGen}
     @warn "Heat rate parsing not valid for RenewableGen replacing with zero cost"
+    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    vom_data = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     var_cost = CostCurve(;
         value_curve = LinearCurve(0.0),
         power_units = UnitSystem.NATURAL_UNITS,
-        vom_cost = if isnothing(gen.variable_cost)
+        vom_cost = if isnothing(vom_data)
             LinearCurve(0.0)
         else
-            LinearCurve(gen.variable_cost)
+            LinearCurve(vom_data)
         end,
     )
     op_cost = RenewableGenerationCost(var_cost)
@@ -935,10 +937,12 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: RenewableGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
+    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    vom_data = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     var_cost = CostCurve(;
         value_curve = cost_pairs,
         power_units = UnitSystem.NATURAL_UNITS,
-        vom_cost = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost,
+        vom_cost = isnothing(vom_data) ? 0.0 : vom_data,
     )
     op_cost = RenewableGenerationCost(var_cost)
     return op_cost
