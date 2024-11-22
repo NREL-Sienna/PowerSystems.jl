@@ -184,7 +184,7 @@ using dot notation again to access the `fuel` fields:
 ```@repl system
 get_fuel.(get_components(ThermalStandard, sys))
 ```
-Notice that the fuel type for all the thermal generators is returned.
+Notice that the `fuel` type for all the thermal generators is returned.
 !!! warning
     Using the "dot" access to get a parameter value from a component is actively discouraged, use `get_*` functions instead. Julia syntax enables access to this data using the "dot" access, however this is discouraged for two reasons: 
         1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
