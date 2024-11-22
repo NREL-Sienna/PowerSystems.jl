@@ -25,7 +25,7 @@ show_components(ACBus, sys)
 ```
 Notice in both the [`ACBus`](@ref) example and [`ThermalStandard`](@ref) example, a table with the name and availability are returned. The availability is the standard parameter returned when using [`show_components`](@ref).
 
-We can also view specific parameters within components using the [`show_components`](@ref) function. For example, we can view the type of [`fuel`](@reftf_list) the thermal generators are using:
+We can also view specific parameters within components using the [`show_components`](@ref) function. For example, we can view the type of [`fuel`](@id tf_list) the thermal generators are using:
 ```@repl system 
 show_components(ThermalStandard, sys, [:fuel])
 ```
@@ -35,7 +35,7 @@ show_components(ThermalStandard, sys, [:active_power, :reactive_power])
 ```
 We can see a table is returned with both `active_power` and `reactive_power`.
 ## Accessing and Updating a Component in a System
-We can access a component in our system using the [`get_component`](@ref) function. For example, if we are interested in accessing a [`ThermalStandard`](@ref) component we can do so using the component [`type`](@id type_structure) and name. From above we know the names of the thermal generators. 
+We can access a component in our system using the [`get_component`](@ref) function. For example, if we are interested in accessing a [`ThermalStandard`](@ref) component we can do so using the component [`type`](https://nrel-sienna.github.io/PowerSystems.jl/stable/api/type_tree/) and name. From above we know the names of the thermal generators. 
 ```@repl system 
 solitude = get_component(ThermalStandard, sys, "Solitude")
 ```
@@ -188,7 +188,7 @@ The 5 buses in the system are returned.
 
 ## Updating Component Names
 
-We can also access and update the component name parameter using the [`get_name](@ref) and [`set_name!`](@ref) functions. 
+We can also access and update the component name parameter using the [`get_name`](@ref) and [`set_name!`](@ref) functions. 
  
 Recall that we created an iterator called `thermal_gens` for all the thermal generators. We can use the [`get_name`](@ref) function to access the `name` parameter for these components. 
 ```@repl system
