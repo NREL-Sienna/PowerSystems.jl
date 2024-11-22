@@ -19,11 +19,13 @@ We can use the [`show_components`](@ref) function to view data in our system. Le
 show_components(ThermalStandard, sys)
 ```
 We can see there are five thermal generators in the system. 
-Similarly, we can see all the [`ACBus`](@ref) components in the system. 
+Similarly, we can see all the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
+ components in the system. 
 ```@repl system 
 show_components(ACBus, sys)
 ```
-Notice in both the [`ACBus`](@ref) example and [`ThermalStandard`](@ref) example, a table with the name and availability are returned. The availability is the standard parameter returned when using [`show_components`](@ref).
+Notice in both the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
+ example and [`ThermalStandard`](@ref) example, a table with the name and availability are returned. The availability is the standard parameter returned when using [`show_components`](@ref).
 
 We can also view specific parameters within components using the [`show_components`](@ref) function. For example, we can view the type of `fuel` the thermal generators are using:
 ```@repl system 
@@ -69,7 +71,8 @@ We can see that our `active_power` parameter has been updated to 4.0.
 ## Accessing and Updating Multiple Components in the System at Once 
 We can also update more than one component at a time using the [`get_components`](@ref) and `set_*` functions. 
 
-Let's say we were interested in updating the `base_voltage` parameter for all of the [`ACBus`](@ref) components. We can see that currently the `base_voltages` are:
+Let's say we were interested in updating the `base_voltage` parameter for all of the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
+ components. We can see that currently the `base_voltages` are:
 ```@repl system 
 show_components(ACBus, sys, [:base_voltage])
 ```
@@ -121,7 +124,7 @@ Let's grab an iterator for the all the thermal generators except `Solitude` usin
 ```@repl system 
 thermal_not_solitude = get_components(x -> get_name(x) != "Solitude", ThermalStandard, sys)
 ```
-We can see that four [`ThermalStandard`](@ref) components are returned. Now let's update the `active_power` parameter of these four thermal generators using the [`set_active_power`](@ref) function. 
+We can see that four [`ThermalStandard`](@ref) components are returned. Now let's update the `active_power` parameter of these four thermal generators using the [`set_active_power!`](@ref) function. 
 ```@repl system 
 for i in thermal_not_solitude
 set_active_power!(i, 0.0)
@@ -175,8 +178,10 @@ show_components(ThermalStandard, sys)
 Recall that the default columns returned when using [`show_components`](@ref) are the name and availability. 
 
 ## Getting Buses
-We can access the [`ACbus`](@ref) components in the system using the [`get_buses`](@ref) function. There are multiple approaches to using this function, but in this tutorial we are going to focus on getting buses using the ID numbers. 
-Let's begin by accessing the ID numbers associated with the [`ACBus`](@ref) components using the [`get_bus_numbers`](@ref) function. 
+We can access the [`ACBus]`(@ref), notice that we need define some basic data, including the bus's
+ components in the system using the [`get_buses`](@ref) function. There are multiple approaches to using this function, but in this tutorial we are going to focus on getting buses using the ID numbers. 
+Let's begin by accessing the ID numbers associated with the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
+ components using the [`get_bus_numbers`](@ref) function. 
 ```@repl system 
 get_bus_numbers(sys)
 ```
@@ -188,7 +193,7 @@ The 5 buses in the system are returned.
 
 ## Updating Component Names
 
-We can also access and update the component name parameter using the [`get_name`](@ref) and [`set_name!`](@ref) functions. 
+We can also access and update the component name parameter using the [`get_name`](@ref) and [set_name!](@ref) functions. 
  
 Recall that we created an iterator called `thermal_gens` for all the thermal generators. We can use the [`get_name`](@ref) function to access the `name` parameter for these components. 
 ```@repl system
@@ -196,7 +201,7 @@ for i in thermal_gens
 @show get_name(i)
 end
 ```
-To update the names we will use the [`set_name`](@ref) function. However, it is important to note that using [`set_name`](@ref) not only changes the field `name`, but also changes the container itself. Therefore, it is crucial to do the following: 
+To update the names we will use the [set_name!](@ref) function. However, it is important to note that using [set_name!](@ref) not only changes the field `name`, but also changes the container itself. Therefore, it is crucial to do the following: 
 ```@repl system 
 for thermal_gen in collect(get_components(ThermalStandard, sys))
     set_name!(sys, thermal_gen, get_name(thermal_gen)*"-renamed")
