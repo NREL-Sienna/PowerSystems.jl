@@ -25,7 +25,7 @@ show_components(ACBus, sys)
 ```
 Notice in both the [`ACBus`](@ref) example and [`ThermalStandard`](@ref) example, a table with the name and availability are returned. The availability is the standard parameter returned when using [`show_components`](@ref).
 
-We can also view specific parameters within components using the [`show_components`](@ref) function. For example, we can view the type of [`fuel`](@id tf_list) the thermal generators are using:
+We can also view specific parameters within components using the [`show_components`](@ref) function. For example, we can view the type of `fuel` the thermal generators are using:
 ```@repl system 
 show_components(ThermalStandard, sys, [:fuel])
 ```
@@ -40,19 +40,19 @@ We can access a component in our system using the [`get_component`](@ref) functi
 solitude = get_component(ThermalStandard, sys, "Solitude")
 ```
 
-Notice, the parameters associated with that generator are returned. If we are interested in accessing a particular parameter of that generator we can use a `get_*` function. For example, if we are interested in the [`fuel`](@reftf_list) we can use [`get_fuel`](@ref)
+Notice, the parameters associated with that generator are returned. If we are interested in accessing a particular parameter of that generator we can use a `get_*` function. For example, if we are interested in the `fuel` we can use [`get_fuel`](@ref)
 ```@repl system 
 get_fuel(solitude)
 ```
-You should see the [`fuel`](@reftf_list) parameter returned. 
+You should see the `fuel` parameter returned. 
 
 To recap, [`get_component`](@ref) will return all parameters of a component, but we can use a specific `get_*` function to return a particular parameter. 
 
-To update a parameter we can use a specific `set_*` function. We can use [`set_fuel!`](@ref) to update the fuel parameter of Solitude to natural gas.  
+To update a parameter we can use a specific `set_*` function. We can use [`set_fuel!`](@ref) to update the `fuel` parameter of Solitude to natural gas.  
 ```@repl system 
 set_fuel!(solitude, ThermalFuels.NATURAL_GAS)
 ```
-We can check that the `Solitude` fuel has been updated to `ThermalFuels.AG_BIPRODUCT`:
+We can check that the `Solitude` `fuel` has been updated to `ThermalFuels.AG_BIPRODUCT`:
 ```@repl system 
 show_components(ThermalStandard, sys, [:fuel])
 ```
@@ -87,17 +87,17 @@ We can see that all of the buses now have a `base_voltage` of 250.0:
 ```@repl system 
 show_components(ACBus, sys, [:base_voltage])
 ```
-If we are interested in updating the fuel in all the thermal generators, we would use a similar approach. We begin by grabbing an iterator for all the components in [`ThermalStandard`](@ref).
+If we are interested in updating the `fuel` in all the thermal generators, we would use a similar approach. We begin by grabbing an iterator for all the components in [`ThermalStandard`](@ref).
 ```@repl system 
 thermal_gens = get_components(ThermalStandard, sys)
 ```
-Now, using the [`set_fuel!`](@ref) and a for loop, we will update the fuel to `NATURAL_GAS`.    
+Now, using the [`set_fuel!`](@ref) and a for loop, we will update the `fuel` to `NATURAL_GAS`.    
 ```@repl system 
 for i in thermal_gens
 set_fuel!(i, ThermalFuels.NATURAL_GAS)
 end
 ```
-We can see that the fuel types for all the thermal generators has been updated. 
+We can see that the `fuel` types for all the thermal generators has been updated. 
 ```@repl system 
 show_components(ThermalStandard, sys, [:fuel])
 ```
@@ -105,7 +105,7 @@ We can also use a dot operator with a specific `get_*` function and the [`get_co
 ```@repl system 
 get_fuel.(get_components(ThermalStandard, sys))
 ```
-Notice that the fuel type for all the thermal generators is returned.
+Notice that the `fuel` type for all the thermal generators is returned.
 !!! warning
     Using the "dot" access to get a parameter value from a component is actively discouraged, use `get_*` functions instead. Julia syntax enables access to this data using the "dot" access, however this is discouraged for two reasons: 
         1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
