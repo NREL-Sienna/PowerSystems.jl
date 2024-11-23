@@ -7,23 +7,38 @@ Default behavior of a component. If there is no base_power field, assume is in t
 """
 get_base_power(c::Component) = get_system_base_power(c)
 
-function _get_multiplier(c::T) where {T <: Component}
-    setting = get_internal(c).units_info
-    if isnothing(setting)
-        return 1.0
-    elseif setting.unit_system == IS.UnitSystem.DEVICE_BASE
-        return 1.0
-    elseif setting.unit_system == IS.UnitSystem.SYSTEM_BASE
-        numerator = get_base_power(c)
-        denominator = setting.base_value
-    elseif setting.unit_system == IS.UnitSystem.NATURAL_UNITS
-        numerator = get_base_power(c)
-        denominator = 1.0
-    else
-        error("Undefined Conditional")
-    end
-    return numerator / denominator
-end
+_get_multiplier(c::T) where {T <: Component} =
+    _get_multiplier(c, get_internal(c).units_info)
+
+_get_multiplier(::T, ::Nothing) where {T <: Component} =
+    1.0
+_get_multiplier(c::T, setting::IS.SystemUnitsSettings) where {T <: Component} =
+    _get_multiplier(c, setting, Val(setting.unit_system))
+
+# PERF: dispatching on the UnitSystem values instead of comparing with if/else avoids the
+# performance hit associated with consulting the dictionary that backs the @scoped_enum --
+# i.e., IS.UnitSystem.NATURAL_UNITS by itself isn't treated as a constant, it's a dictionary
+# lookup each time.
+_get_multiplier(
+    ::T,
+    ::IS.SystemUnitsSettings,
+    ::Val{IS.UnitSystem.DEVICE_BASE},
+) where {T <: Component} =
+    1.0
+_get_multiplier(
+    c::T,
+    setting::IS.SystemUnitsSettings,
+    ::Val{IS.UnitSystem.SYSTEM_BASE},
+) where {T <: Component} =
+    get_base_power(c) / setting.base_value
+_get_multiplier(
+    c::T,
+    ::IS.SystemUnitsSettings,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+) where {T <: Component} =
+    get_base_power(c)
+_get_multiplier(::T, ::IS.SystemUnitsSettings, ::Val) where {T <: Component} =
+    error("Undefined Conditional")
 
 function get_value(c::Component, value::Float64)
     return _get_multiplier(c) * value
