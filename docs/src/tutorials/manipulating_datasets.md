@@ -178,7 +178,7 @@ show_components(ThermalStandard, sys)
 Recall that the default columns returned when using [`show_components`](@ref) are the name and availability. 
 
 ## Getting Buses
-We can access the [`ACBus]`(@ref), notice that we need define some basic data, including the bus's
+We can access the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
  components in the system using the [`get_buses`](@ref) function. There are multiple approaches to using this function, but in this tutorial we are going to focus on getting buses using the ID numbers. 
 Let's begin by accessing the ID numbers associated with the [`ACBus`](@ref), notice that we need define some basic data, including the bus's
  components using the [`get_bus_numbers`](@ref) function. 
@@ -215,4 +215,4 @@ get_name.(get_components(ThermalStandard,sys))
 
 ## Next Steps & Links
 So far we have seen that we can view different data types in our system using the `show_components` function, we can access those types using the `get_*` function, and we can manipulate them using the `set_*` functions. 
-Follow the next tutorials to learn how to [work with time series](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/working_with_time_series/).
+Follow the next tutorials to learn how to [work with time series](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/working_with_time_series/). 
