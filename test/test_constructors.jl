@@ -56,6 +56,8 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
+    tFlexibleLoad = FlexiblePowerLoad(nothing)
+    @test tFlexibleLoad isa PowerSystems.Component
 end
 
 @testset "Branch Constructors" begin
