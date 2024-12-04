@@ -1128,7 +1128,11 @@ See [`get_components_by_name`](@ref) for abstract types with non-unique names ac
 Throws ArgumentError if T is not a concrete type and there is more than one component with
     requested name
 """
-function get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
+function IS.get_component(
+    ::Type{T},
+    sys::System,
+    name::AbstractString,
+) where {T <: Component}
     return IS.get_component(T, sys.data, name)
 end
 
@@ -1153,7 +1157,7 @@ See also: [`iterate_components`](@ref), [`get_components` with a filter](@ref ge
 ) where {T <: Component}),
 [`get_available_components`](@ref), [`get_buses`](@ref)
 """
-function get_components(
+function IS.get_components(
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
@@ -1161,28 +1165,7 @@ function get_components(
     return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
-"""
-Return an iterator of components of a given `Type` from a [`System`](@ref), using an
-additional filter
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
-Call collect on the result if an array is desired.
-
-# Examples
-```julia
-iter_coal = get_components(x -> get_fuel(x) == ThermalFuels.COAL, Generator, sys)
-pv_gens =
-    collect(get_components(x -> get_prime_mover_type(x) == PrimeMovers.PVe, Generator, sys))
-```
-
-See also: [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component}), [`get_available_components`](@ref),
-[`get_buses`](@ref)
-"""
-function get_components(
+function IS.get_components(
     filter_func::Function,
     ::Type{T},
     sys::System;
@@ -1194,15 +1177,15 @@ end
 """
 Return a vector of components that are attached to the supplemental attribute.
 """
-function get_components(sys::System, attribute::SupplementalAttribute)
+function IS.get_components(sys::System, attribute::SupplementalAttribute)
     return IS.get_components(sys.data, attribute)
 end
 
 """
 Get the component by UUID.
 """
-get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
+IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
 
 """
 Change the UUID of a component.
@@ -1238,37 +1221,54 @@ function get_components_by_name(
 end
 
 """
-Like [`get_components`](@ref) but returns only those components `c` for which `get_available(c)`.
+Like `get_components` but returns only those components `c` for which `get_available(c)`.
 """
-function get_available_components end
-
-get_available_components(
+IS.get_available_components(
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
 ) where {T <: Component} =
-    get_components(get_available, T, sys; subsystem_name = subsystem_name)
+    IS.get_components(get_available, T, sys; subsystem_name = subsystem_name)
 
-get_available_components(
+IS.get_available_components(
     filter_func::Function,
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
 ) where {T <: Component} =
-    get_components(
+    IS.get_components(
         x -> get_available(x) && filter_func(x),
         T,
         sys;
         subsystem_name = subsystem_name,
     )
 
-"""
-Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
-"""
-function get_available_component(args...; kwargs...)
-    the_component = get_component(args...; kwargs...)
+function _get_available_component(args...; kwargs...)
+    the_component = IS.get_component(args...; kwargs...)
     return get_available(the_component) ? the_component : nothing
 end
+
+"""
+Like `get_component` but also returns `nothing` if the component is not `get_available`.
+"""
+IS.get_available_component(sys::System, args...; kwargs...) =
+    _get_available_component(sys, args...; kwargs...)
+
+IS.get_available_component(
+    arg1::Union{Base.UUID, String},
+    sys::System,
+    args...;
+    kwargs...,
+) =
+    _get_available_component(arg1, sys, args...; kwargs...)
+
+IS.get_available_component(
+    ::Type{T},
+    sys::System,
+    args...;
+    kwargs...,
+) where {T <: Component} =
+    _get_available_component(T, sys, args...; kwargs...)
 
 """
 Return true if the component is attached to the system.

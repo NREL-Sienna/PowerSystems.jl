@@ -755,6 +755,7 @@ include("base.jl")
 include("subsystems.jl")
 include("component_selector.jl")
 include("data_format_conversions.jl")
+include("get_components_interface.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")

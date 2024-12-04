@@ -62,9 +62,10 @@ end
           Vector{Component}()
     @test collect(get_available_components(make_selector(gen_sundance), test_sys)) ==
           Vector{Component}()
-    @test IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> true) ==
+    @test get_component(test_gen_ent, test_sys; scope_limiter = x -> true) ==
           first(the_components)
-    @test isnothing(IS.get_component(test_gen_ent, test_sys; scope_limiter = x -> false))
+    @test isnothing(get_component(test_gen_ent, test_sys; scope_limiter = x -> false))
+    @test isnothing(get_available_component(make_selector(gen_sundance), test_sys))
 
     @test only(get_groups(test_gen_ent, test_sys)) == test_gen_ent
 end
@@ -348,7 +349,8 @@ end
 end
 
 @testset "Test special cases" begin
-    # https://github.com/NREL-Sienna/InfrastructureSystems.jl/issues/388 can cause issues here
-    # TODO
-    # get_components_rt(make_selector(make_selector(ThermalStandard, Area, "1")), test_sys)
+    # Can error if the `PSY.get_components` vs. `IS.get_components` stuff is not functioning correctly
+    agg_selectors = [make_selector(ThermalStandard, Area, "1"),
+        make_selector(ThermalStandard, Area, "1")]
+    get_components_rt(make_selector(agg_selectors...), test_sys)
 end
