@@ -99,7 +99,7 @@ sys = System(100.0; compression = CompressionSettings(
 sys = System(100.0; time_series_in_memory = true)
 ```
 """
-struct System <: IS.InfrastructureSystemsType
+struct System <: IS.SystemLike
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
