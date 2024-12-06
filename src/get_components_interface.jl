@@ -40,9 +40,9 @@ Call collect on the result if an array is desired.
 ```julia
 iter = PowerSystems.get_components(ThermalStandard, sys)
 iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
+iter = PowerSystems.get_components(x -> PowerSystems.get_status(x), ThermalStandard, sys)
 thermal_gens = get_components(ThermalStandard, sys) do gen
-    get_available(gen)
+    get_status(gen)
 end
 generators = collect(PowerSystems.get_components(Generator, sys))
 
@@ -52,13 +52,6 @@ See also: [`iterate_components`](@ref)
 """
 get_components(::Type{T}, sys::System; subsystem_name = nothing) where {T <: Component} =
     IS.get_components(T, sys; subsystem_name = subsystem_name)
-
-"""
-    get_components(selector, sys)
-Get the components of the `System` that make up the `ComponentSelector`.
-"""
-get_components(selector::ComponentSelector, sys::System; kwargs...) =
-    IS.get_components(selector, sys; kwargs...)
 
 """
 Return a vector of components that are attached to the supplemental attribute.
@@ -74,12 +67,19 @@ get_components(
 ) where {T <: Component} =
     IS.get_components(filter_func, T, sys; subsystem_name = subsystem_name)
 
+"""
+    get_components(selector, sys)
+Get the components of the `System` that make up the `ComponentSelector`.
+"""
+get_components(selector::ComponentSelector, sys::System; kwargs...) =
+    IS.get_components(selector, sys; kwargs...)
+
 # get_component
 """
 Get the component by UUID.
 """
 get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys, uuid)
-get_component(sys::System, uuid::String) = IS.get_component(sys, Base.UUID(uuid))
+get_component(sys::System, uuid::String) = IS.get_component(sys, uuid)
 
 """
 Get the component of type T with name. Returns nothing if no component matches. If T is an abstract
@@ -112,6 +112,9 @@ get_available_components(
 ) where {T <: Component} =
     IS.get_available_components(T, sys; subsystem_name = subsystem_name)
 
+get_available_components(sys::System, attribute::SupplementalAttribute) =
+    IS.get_available_components(sys, attribute)
+
 get_available_components(
     filter_func::Function,
     ::Type{T},
@@ -129,10 +132,11 @@ get_available_components(selector::ComponentSelector, sys::System) =
 
 # get_available_component
 """
-Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
+Get the available component by UUID.
 """
-get_available_component(sys::System, args...; kwargs...) =
-    IS.get_available_component(sys, args...; kwargs...)
+get_available_component(sys::System, uuid::Base.UUID) =
+    IS.get_available_component(sys, uuid)
+get_available_component(sys::System, uuid::String) = IS.get_available_component(sys, uuid)
 
 """
 Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.

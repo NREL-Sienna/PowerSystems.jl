@@ -99,7 +99,7 @@ sys = System(100.0; compression = CompressionSettings(
 sys = System(100.0; time_series_in_memory = true)
 ```
 """
-struct System <: IS.SystemLike
+struct System <: IS.ComponentContainer
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -1220,55 +1220,10 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-"""
-Like `get_components` but returns only those components `c` for which `get_available(c)`.
-"""
-IS.get_available_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component} =
-    IS.get_components(get_available, T, sys; subsystem_name = subsystem_name)
-
-IS.get_available_components(
-    filter_func::Function,
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component} =
-    IS.get_components(
-        x -> get_available(x) && filter_func(x),
-        T,
-        sys;
-        subsystem_name = subsystem_name,
-    )
-
-function _get_available_component(args...; kwargs...)
-    the_component = IS.get_component(args...; kwargs...)
-    return get_available(the_component) ? the_component : nothing
-end
-
-"""
-Like `get_component` but also returns `nothing` if the component is not `get_available`.
-"""
-IS.get_available_component(sys::System, args...; kwargs...) =
-    _get_available_component(sys, args...; kwargs...)
-
-IS.get_available_component(
-    arg1::Union{Base.UUID, String},
-    sys::System,
-    args...;
-    kwargs...,
-) =
-    _get_available_component(arg1, sys, args...; kwargs...)
-
-IS.get_available_component(
-    ::Type{T},
-    sys::System,
-    args...;
-    kwargs...,
-) where {T <: Component} =
-    _get_available_component(T, sys, args...; kwargs...)
+# PSY availability is a pure function of the component and the system is not needed; here we
+# implement the required IS.ComponentContainer interface
+IS.get_available(::System, component::Component) =
+    get_available(component)
 
 """
 Return true if the component is attached to the system.
