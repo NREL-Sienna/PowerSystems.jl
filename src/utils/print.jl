@@ -4,7 +4,7 @@ function Base.summary(sys::System)
     return "System (base power $(get_base_power(sys)))"
 end
 
-function Base.show(io::IO, ::MIME"text/plain", sys::System)
+function Base.show(io::IO, sys::System)
     show_system_table(io, sys; backend = Val(:auto))
 
     if IS.get_num_components(sys.data.components) > 0
@@ -15,6 +15,8 @@ function Base.show(io::IO, ::MIME"text/plain", sys::System)
     IS.show_time_series_data(io, sys.data; backend = Val(:auto))
     return
 end
+
+Base.show(io::IO, ::MIME"text/plain", sys::System) = show(io, sys)
 
 function Base.show(io::IO, ::MIME"text/html", sys::System)
     show_system_table(io, sys; backend = Val(:html), standalone = false)
