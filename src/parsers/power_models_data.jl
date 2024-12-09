@@ -555,7 +555,14 @@ function make_thermal_gen(
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
@@ -577,7 +584,7 @@ function make_thermal_gen(
         ramp_limits = (up = ramp_lim, down = ramp_lim),
         time_limits = nothing,
         operation_cost = operation_cost,
-        base_power = d["mbase"],
+        base_power = mbase,
         ext = ext,
     )
 
