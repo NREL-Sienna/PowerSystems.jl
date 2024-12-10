@@ -374,7 +374,14 @@ function make_hydro_gen(
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
@@ -394,7 +401,7 @@ function make_hydro_gen(
         ramp_limits = (up = ramp_agc, down = ramp_agc),
         time_limits = nothing,
         operation_cost = curtailcost,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 end
 
@@ -405,12 +412,20 @@ function make_renewable_dispatch(
     sys_mbase::Float64,
 )
     cost = RenewableGenerationCost(zero(CostCurve))
-    base_conversion = sys_mbase / d["mbase"]
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
 
     rating = calculate_rating(d["pmax"], d["qmax"])
-    if rating > d["mbase"]
-        @warn "rating is larger than base power for $gen_name, setting to $(d["mbase"])"
-        rating = d["mbase"]
+    if rating > mbase
+        @warn "rating is larger than base power for $gen_name, setting to $mbase"
+        rating = mbase
     end
 
     generator = RenewableDispatch(;
@@ -427,7 +442,7 @@ function make_renewable_dispatch(
         ),
         power_factor = 1.0,
         operation_cost = cost,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 
     return generator
@@ -439,7 +454,14 @@ function make_renewable_fix(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     generator = RenewableNonDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
@@ -449,7 +471,7 @@ function make_renewable_fix(
         rating = float(d["pmax"]) * base_conversion,
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         power_factor = 1.0,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 
     return generator
@@ -555,7 +577,14 @@ function make_thermal_gen(
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
@@ -577,7 +606,7 @@ function make_thermal_gen(
         ramp_limits = (up = ramp_lim, down = ramp_lim),
         time_limits = nothing,
         operation_cost = operation_cost,
-        base_power = d["mbase"],
+        base_power = mbase,
         ext = ext,
     )
 
