@@ -18,6 +18,8 @@ This file is auto-generated. Do not edit.
         max_dc_current::Float64
         g::Float64
         voltage_limits::MinMax
+        reactive_power_limits_from::MinMax
+        reactive_power_limits_to::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -40,6 +42,8 @@ This model is appropriate for operational simulations with a linearized DC power
 - `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A). Includes converter and DC line.
 - `g::Float64`: (default: `0.0`) Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `voltage_limits::MinMax`: (default: `(min=0.0, max=999.9)`) Limits on the Voltage at the DC Bus.
+- `reactive_power_limits_from::MinMax`: (default: `(min=0.0, max=0.0)`) Limits on the Reactive Power at the from side.
+- `reactive_power_limits_to::MinMax`: (default: `(min=0.0, max=0.0)`) Limits on the Reactive Power at the from side.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -69,6 +73,10 @@ mutable struct TwoTerminalVSCLine <: ACBranch
     g::Float64
     "Limits on the Voltage at the DC Bus."
     voltage_limits::MinMax
+    "Limits on the Reactive Power at the from side."
+    reactive_power_limits_from::MinMax
+    "Limits on the Reactive Power at the from side."
+    reactive_power_limits_to::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -77,12 +85,12 @@ mutable struct TwoTerminalVSCLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, reactive_power_limits_from, reactive_power_limits_to, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalVSCLine(; name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, services, ext, internal, )
+function TwoTerminalVSCLine(; name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss=LinearCurve(0.0), dc_current=0.0, max_dc_current=1e8, g=0.0, voltage_limits=(min=0.0, max=999.9), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalVSCLine(name, available, active_power_flow, rating, active_power_limits_from, active_power_limits_to, arc, converter_loss, dc_current, max_dc_current, g, voltage_limits, reactive_power_limits_from, reactive_power_limits_to, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -100,6 +108,8 @@ function TwoTerminalVSCLine(::Nothing)
         max_dc_current=0.0,
         g=0.0,
         voltage_limits=(min=0.0, max=0.0),
+        reactive_power_limits_from=(min=0.0, max=0.0),
+        reactive_power_limits_to=(min=0.0, max=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -129,6 +139,10 @@ get_max_dc_current(value::TwoTerminalVSCLine) = value.max_dc_current
 get_g(value::TwoTerminalVSCLine) = value.g
 """Get [`TwoTerminalVSCLine`](@ref) `voltage_limits`."""
 get_voltage_limits(value::TwoTerminalVSCLine) = value.voltage_limits
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from`."""
+get_reactive_power_limits_from(value::TwoTerminalVSCLine) = value.reactive_power_limits_from
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to`."""
+get_reactive_power_limits_to(value::TwoTerminalVSCLine) = value.reactive_power_limits_to
 """Get [`TwoTerminalVSCLine`](@ref) `services`."""
 get_services(value::TwoTerminalVSCLine) = value.services
 """Get [`TwoTerminalVSCLine`](@ref) `ext`."""
@@ -158,6 +172,10 @@ set_max_dc_current!(value::TwoTerminalVSCLine, val) = value.max_dc_current = val
 set_g!(value::TwoTerminalVSCLine, val) = value.g = val
 """Set [`TwoTerminalVSCLine`](@ref) `voltage_limits`."""
 set_voltage_limits!(value::TwoTerminalVSCLine, val) = value.voltage_limits = val
+"""Set [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from`."""
+set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_limits_from = val
+"""Set [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to`."""
+set_reactive_power_limits_to!(value::TwoTerminalVSCLine, val) = value.reactive_power_limits_to = val
 """Set [`TwoTerminalVSCLine`](@ref) `services`."""
 set_services!(value::TwoTerminalVSCLine, val) = value.services = val
 """Set [`TwoTerminalVSCLine`](@ref) `ext`."""

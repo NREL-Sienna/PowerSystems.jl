@@ -1191,6 +1191,20 @@
                     "default": "(min=0.0, max=999.9)"
                 },
                 {
+                    "name": "reactive_power_limits_from",
+                    "comment": "Limits on the Reactive Power at the from side.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "reactive_power_limits_to",
+                    "comment": "Limits on the Reactive Power at the from side.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
