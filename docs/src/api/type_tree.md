@@ -1,4 +1,4 @@
-# Type Hierarchy
+# Type Tree
 
 Here is the complete `PowerSystems.jl` type hierarchy:
 
