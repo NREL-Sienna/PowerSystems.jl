@@ -786,6 +786,4 @@ include("models/serialization.jl")
 #Deprecated
 include("deprecated.jl")
 
-const GenericBattery = EnergyReservoirStorage
-
 end # module
