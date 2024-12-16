@@ -34,7 +34,9 @@ export Line
 export MonitoredLine
 export DCBranch
 export TwoTerminalHVDCLine
+# TODO: Remove VSCDC Line for PSY 5.0
 export TwoTerminalVSCDCLine
+export TwoTerminalVSCLine
 export TModelHVDCLine
 export Transformer2W
 export TapTransformer
