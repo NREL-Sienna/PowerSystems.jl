@@ -345,49 +345,59 @@ specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
+
     pm_data["shunt"] = []
 
+    pm_data["fixed_shunt"] = []
     if haskey(pti_data, "FIXED SHUNT")
-        for shunt in pti_data["FIXED SHUNT"]
+        for fixed_shunt in pti_data["FIXED SHUNT"]
             sub_data = Dict{String, Any}()
 
-            sub_data["shunt_bus"] = pop!(shunt, "I")
-            sub_data["gs"] = pop!(shunt, "GL")
-            sub_data["bs"] = pop!(shunt, "BL")
-            sub_data["status"] = pop!(shunt, "STATUS")
+            sub_data["shunt_bus"] = pop!(fixed_shunt, "I")
+            sub_data["gs"] = pop!(fixed_shunt, "GL")
+            sub_data["bs"] = pop!(fixed_shunt, "BL")
+            sub_data["status"] = pop!(fixed_shunt, "STATUS")
 
             sub_data["source_id"] =
-                ["fixed shunt", sub_data["shunt_bus"], pop!(shunt, "ID")]
-            sub_data["index"] = length(pm_data["shunt"]) + 1
+                ["fixed shunt", sub_data["shunt_bus"], pop!(fixed_shunt, "ID")]
+            sub_data["index"] = length(pm_data["fixed_shunt"]) + 1
 
             if import_all
-                _import_remaining_keys!(sub_data, shunt)
+                _import_remaining_keys!(sub_data, fixed_shunt)
             end
 
-            push!(pm_data["shunt"], sub_data)
+            push!(pm_data["fixed_shunt"], sub_data)
         end
     end
 
+    pm_data["switched_shunt"] = []
     if haskey(pti_data, "SWITCHED SHUNT")
         @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
 
-        for shunt in pti_data["SWITCHED SHUNT"]
+        for switched_shunt in pti_data["SWITCHED SHUNT"]
             sub_data = Dict{String, Any}()
 
-            sub_data["shunt_bus"] = pop!(shunt, "I")
+            sub_data["shunt_bus"] = pop!(switched_shunt, "I")
             sub_data["gs"] = 0.0
-            sub_data["bs"] = pop!(shunt, "BINIT")
-            sub_data["status"] = pop!(shunt, "STAT")
+            sub_data["bs"] = pop!(switched_shunt, "BINIT")
+            sub_data["status"] = pop!(switched_shunt, "STAT")
+
+            # Add remaining data
+            sub_data["upper_limit"] = pop!(switched_shunt, "VSWHI")
+            sub_data["lower_limit"] = pop!(switched_shunt, "VSWLO")
+            sub_data["step_number"] = Dict(k => v for (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k)))
+            sub_data["b_increment"] = Dict(k => v for (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k)))
+            # ==================
 
             sub_data["source_id"] =
-                ["switched shunt", sub_data["shunt_bus"], pop!(shunt, "SWREM")]
-            sub_data["index"] = length(pm_data["shunt"]) + 1
+                ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
+            sub_data["index"] = length(pm_data["switched_shunt"]) + 1
 
             if import_all
-                _import_remaining_keys!(sub_data, shunt)
+                _import_remaining_keys!(sub_data, switched_shunt)
             end
 
-            push!(pm_data["shunt"], sub_data)
+            push!(pm_data["switched_shunt"], sub_data)
         end
     end
 end
@@ -619,6 +629,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
                 pm_data["bus"][starbus_id] = starbus
                 starbus_id += 1
+
+                ## Warn on adding the dummy bus when exporting to a PSSE file / test it on the function /
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
                 br_r12, br_r23, br_r31 =
