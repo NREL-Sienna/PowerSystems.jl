@@ -368,7 +368,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, fixed_shunt)
             end
 
-            push!(pm_data["shunt"], sub_data)
             push!(pm_data["fixed_shunt"], sub_data)
         end
     end
@@ -400,7 +399,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 _import_remaining_keys!(sub_data, switched_shunt)
             end
 
-            push!(pm_data["shunt"], sub_data)
             push!(pm_data["switched_shunt"], sub_data)
         end
     end
