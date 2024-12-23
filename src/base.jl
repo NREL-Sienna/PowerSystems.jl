@@ -513,36 +513,48 @@ function set_units_setting!(
     return
 end
 
+function _set_units_base!(system::System, settings::UnitSystem)
+    to_change = (system.units_settings.unit_system != settings)
+    to_change && (system.units_settings.unit_system = settings)
+    return (to_change, settings)
+end
+
+_set_units_base!(system::System, settings::String) =
+    _set_units_base!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+
 """
+`set_units_base_system!(system::System, units::Union{UnitSystem, String})`
+
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
+
+# Examples
+```julia
+set_units_base_system!(sys, "NATURAL_UNITS")
+```
+```julia
+set_units_base_system!(sys, UnitSystem.SYSTEM_BASE)
+```
 """
-function set_units_base_system!(system::System, settings::String)
-    set_units_base_system!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+function set_units_base_system!(system::System, units::Union{UnitSystem, String})
+    changed, new_units = _set_units_base!(system::System, units)
+    changed && @info "Unit System changed to $new_units"
     return
 end
 
-function set_units_base_system!(system::System, settings::UnitSystem)
-    if system.units_settings.unit_system != settings
-        system.units_settings.unit_system = settings
-        @info "Unit System changed to $settings"
-    end
-    return
-end
+_get_units_base(system::System) = system.units_settings.unit_system
 
 """
 Get the system's [unit base](@ref per_unit))
 """
 function get_units_base(system::System)
-    return string(system.units_settings.unit_system)
+    return string(_get_units_base(system))
 end
 
 """
-`with_units_base(function, system, units::Union{UnitSystem, String}; suppress_units_info = true)`
+`with_units_base(function, system, units::Union{UnitSystem, String})`
 
-A "context manager" similar to [`Logging.with_logger`](@ref) that sets the system's units
-base to the given value, executes the function, then sets the units base back. If
-`suppress_units_info`, suppresses logging below `Warn` from internal calls made to
-facilitate this. Not thread safe.
+A "context manager" similar to `Logging.with_logger` that sets the system's units base to
+the given value, executes the function, then sets the units base back.
 
 # Examples
 ```julia
@@ -552,23 +564,13 @@ end
 # now active_power_mw is in natural units no matter what units base the system is in
 ```
 """
-function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String};
-    suppress_units_info = true)
-    units_logger = if suppress_units_info
-        x -> Logging.with_logger(x, Logging.SimpleLogger(Logging.Warn))
-    else
-        x -> x()
-    end
-    old_units = get_units_base(sys)
-    units_logger() do
-        set_units_base_system!(sys, units)
-    end
+function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String})
+    old_units = _get_units_base(sys)
+    _set_units_base!(sys, units)
     try
         f()
     finally
-        units_logger() do
-            set_units_base_system!(sys, old_units)
-        end
+        _set_units_base!(sys, old_units)
     end
 end
 
