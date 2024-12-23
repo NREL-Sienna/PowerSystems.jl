@@ -536,6 +536,42 @@ function get_units_base(system::System)
     return string(system.units_settings.unit_system)
 end
 
+"""
+`with_units_base(function, system, units::Union{UnitSystem, String}; suppress_units_info = true)`
+
+A "context manager" similar to [`Logging.with_logger`](@ref) that sets the system's units
+base to the given value, executes the function, then sets the units base back. If
+`suppress_units_info`, suppresses logging below `Warn` from internal calls made to
+facilitate this. Not thread safe.
+
+# Examples
+```julia
+active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+    get_active_power(gen)
+end
+# now active_power_mw is in natural units no matter what units base the system is in
+```
+"""
+function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String};
+    suppress_units_info = true)
+    units_logger = if suppress_units_info
+        x -> Logging.with_logger(x, Logging.SimpleLogger(Logging.Warn))
+    else
+        x -> x()
+    end
+    old_units = get_units_base(sys)
+    units_logger() do
+        set_units_base_system!(sys, units)
+    end
+    try
+        f()
+    finally
+        units_logger() do
+            set_units_base_system!(sys, old_units)
+        end
+    end
+end
+
 function get_units_setting(component::T) where {T <: Component}
     return get_units_info(get_internal(component))
 end
