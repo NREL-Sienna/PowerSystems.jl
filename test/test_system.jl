@@ -215,6 +215,14 @@ end
     @test get_units_base(sys) == "DEVICE_BASE"
     set_units_base_system!(sys, "SYSTEM_BASE")
     @test get_units_base(sys) == "SYSTEM_BASE"
+
+    gen = get_component(ThermalStandard, sys, "322_CT_6")
+    active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+        get_active_power(gen)
+    end
+    @test get_units_base(sys) == "SYSTEM_BASE"
+    set_units_base_system!(sys, UnitSystem.NATURAL_UNITS)
+    @test active_power_mw == get_active_power(gen)
 end
 
 @testset "Test add_time_series multiple components" begin
