@@ -133,7 +133,7 @@ struct System <: IS.InfrastructureSystemsType
                 "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
             )
         end
-        bus_numbers = Set{Int}()
+        bus_numbers = Set(get_number.(IS.get_components(ACBus, data)))
         return new(
             data,
             frequency,
@@ -2710,3 +2710,39 @@ function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeS
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
+
+"""
+Make a `deepcopy` of a [`System`](@ref) more quickly by skipping the copying of time
+series and/or supplemental attributes.
+
+# Arguments
+
+  - `data::System`: the `System` to copy
+  - `skip_time_series::Bool = true`: whether to skip copying time series
+  - `skip_supplemental_attributes::Bool = true`: whether to skip copying supplemental
+    attributes
+
+Note that setting both `skip_time_series` and `skip_supplemental_attributes` to `false`
+results in the same behavior as `deepcopy` with no performance improvement.
+"""
+function fast_deepcopy_system(
+    sys::System;
+    skip_time_series::Bool = true,
+    skip_supplemental_attributes::Bool = true,
+)
+    new_data = IS.fast_deepcopy_system(
+        sys.data;
+        skip_time_series = skip_time_series,
+        skip_supplemental_attributes = skip_supplemental_attributes,
+    )
+    new_sys = System(
+        new_data,
+        deepcopy(sys.units_settings),
+        deepcopy(sys.internal);
+        runchecks = deepcopy(sys.runchecks[]),
+        frequency = deepcopy(sys.frequency),
+        time_series_directory = deepcopy(sys.time_series_directory),
+        name = deepcopy(sys.metadata.name),
+        description = deepcopy(sys.metadata.description))
+    return new_sys
+end
