@@ -407,6 +407,31 @@ end
     end
 end
 
+@testset "Test fast deepcopy of system" begin
+    systems = Dict(
+        in_memory => PSB.build_system(
+            PSITestSystems,
+            "test_RTS_GMLC_sys";
+            time_series_in_memory = in_memory,
+            force_build = true,
+        ) for in_memory in (true, false)
+    )
+    @testset for (in_memory, skip_ts, skip_sa) in  # Iterate over all permutations
+                 Iterators.product(repeat([(true, false)], 3)...)
+        sys = systems[in_memory]
+
+        sys2 = IS.fast_deepcopy_system(sys;
+            skip_time_series = skip_ts, skip_supplemental_attributes = skip_sa)
+        @test IS.compare_values(
+            sys,
+            sys2;
+            exclude = Set(
+                [:time_series_manager, :supplemental_attribute_manager][[skip_ts, skip_sa]],
+            ),
+        )
+    end
+end
+
 @testset "Test with compression enabled" begin
     @test get_compression_settings(System(100.0)) == CompressionSettings(; enabled = false)
 
