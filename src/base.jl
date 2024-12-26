@@ -523,8 +523,6 @@ _set_units_base!(system::System, settings::String) =
     _set_units_base!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
 
 """
-`set_units_base_system!(system::System, units::Union{UnitSystem, String})`
-
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
 
 # Examples
@@ -551,10 +549,8 @@ function get_units_base(system::System)
 end
 
 """
-`with_units_base(function, system, units::Union{UnitSystem, String})`
-
-A "context manager" similar to `Logging.with_logger` that sets the system's units base to
-the given value, executes the function, then sets the units base back.
+A "context manager" that sets the [`System`](@ref)'s [units base](@ref per_unit) to the
+given value, executes the function, then sets the units base back.
 
 # Examples
 ```julia
