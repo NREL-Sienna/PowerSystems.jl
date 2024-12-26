@@ -429,6 +429,10 @@ end
                 [:time_series_manager, :supplemental_attribute_manager][[skip_ts, skip_sa]],
             ),
         )
+
+        # We copy the SystemData separately from the other System fields, so the egal-ity of these references could get broken
+        generator = get_component(ThermalStandard, sys2, "322_CT_6")
+        @test sys2.units_settings === generator.internal.units_info
     end
 end
 

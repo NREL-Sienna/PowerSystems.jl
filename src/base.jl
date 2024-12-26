@@ -2744,5 +2744,9 @@ function fast_deepcopy_system(
         time_series_directory = deepcopy(sys.time_series_directory),
         name = deepcopy(sys.metadata.name),
         description = deepcopy(sys.metadata.description))
+    # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
+    for comp in iterate_components(new_sys)
+        comp.internal.units_info = new_sys.units_settings
+    end
     return new_sys
 end
