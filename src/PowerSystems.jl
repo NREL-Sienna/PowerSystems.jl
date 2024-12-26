@@ -343,6 +343,7 @@ export get_components
 export show_components
 export get_subcomponents
 export get_components_by_name
+export get_available_component
 export get_available_components
 export get_existing_device_types
 export get_existing_component_types
@@ -490,6 +491,17 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 
+# ComponentSelector
+export ComponentSelector
+export SingularComponentSelector
+export PluralComponentSelector
+export DynamicallyGroupedComponentSelector
+export subtype_to_string
+export component_to_qualified_string
+export make_selector
+export rebuild_selector
+export get_groups
+export get_available_groups
 #################################################################################
 # Imports
 
@@ -606,7 +618,21 @@ import InfrastructureSystems:
     get_y_coords,
     get_raw_data_type,
     supports_time_series,
-    supports_supplemental_attributes
+    supports_supplemental_attributes,
+    ComponentSelector,
+    SingularComponentSelector,
+    PluralComponentSelector,
+    DynamicallyGroupedComponentSelector,
+    NameComponentSelector,
+    ListComponentSelector,
+    TypeComponentSelector,
+    FilterComponentSelector,
+    RegroupedComponentSelector,
+    component_to_qualified_string,
+    subtype_to_string,
+    COMPONENT_NAME_DELIMITER,
+    make_selector,
+    rebuild_selector
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
@@ -650,6 +676,9 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
+
+"Get whether this component is available for simulation or not."
+get_available(::Component) = true
 
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
@@ -721,7 +750,9 @@ include("outages.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("subsystems.jl")
+include("component_selector.jl")
 include("data_format_conversions.jl")
+include("get_components_interface.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
