@@ -606,7 +606,8 @@ import InfrastructureSystems:
     get_y_coords,
     get_raw_data_type,
     supports_time_series,
-    supports_supplemental_attributes
+    supports_supplemental_attributes,
+    fast_deepcopy_system
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
