@@ -2425,7 +2425,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if !match_fn(name1, name2)
+                if !_fetch_match_fn(match_fn)(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
