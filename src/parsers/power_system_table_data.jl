@@ -833,11 +833,14 @@ function make_cost(
         cost_pairs = get_cost_pairs(gen, cost_colnames)
         var_cost, fixed = create_pwinc_cost(cost_pairs)
     end
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_data = LinearCurve(vom_cost)
 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
 
     op_cost = ThermalGenerationCost(
-        FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price),
+        FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price, vom_data),
         fixed * fuel_price,
         startup_cost,
         shutdown_cost,
@@ -855,9 +858,12 @@ function make_cost(
     cost_pairs = get_cost_pairs(gen, cost_colnames)
     var_cost = create_pwl_cost(cost_pairs)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_data = LinearCurve(vom_cost)
 
     op_cost = ThermalGenerationCost(
-        CostCurve(var_cost, UnitSystem.NATURAL_UNITS),
+        CostCurve(var_cost, UnitSystem.NATURAL_UNITS, vom_data),
         gen.fixed_cost,
         startup_cost,
         shutdown_cost,
@@ -901,14 +907,13 @@ function make_cost(
     cost_colnames::_HeatRateColumns,
 ) where {T <: RenewableGen}
     @warn "Heat rate parsing not valid for RenewableGen replacing with zero cost"
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    var_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
         value_curve = LinearCurve(0.0),
         power_units = UnitSystem.NATURAL_UNITS,
-        vom_cost = if isnothing(gen.variable_cost)
-            LinearCurve(0.0)
-        else
-            LinearCurve(gen.variable_cost)
-        end,
+        vom_cost = vom_data,
     )
     op_cost = RenewableGenerationCost(var_cost)
     return op_cost
@@ -921,10 +926,13 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: RenewableGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    var_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
         value_curve = cost_pairs,
         power_units = UnitSystem.NATURAL_UNITS,
-        vom_cost = isnothing(gen.variable_cost) ? 0.0 : gen.variable_cost,
+        vom_cost = vom_data,
     )
     op_cost = RenewableGenerationCost(var_cost)
     return op_cost
