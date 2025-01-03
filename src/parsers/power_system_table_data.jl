@@ -908,7 +908,7 @@ function make_cost(
 ) where {T <: RenewableGen}
     @warn "Heat rate parsing not valid for RenewableGen replacing with zero cost"
     parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
-    var_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
         value_curve = LinearCurve(0.0),
@@ -927,7 +927,7 @@ function make_cost(
 ) where {T <: RenewableGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
     parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
-    var_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
+    vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
         value_curve = cost_pairs,
