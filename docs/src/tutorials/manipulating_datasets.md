@@ -45,6 +45,12 @@ From above we know the names of the thermal generators.
 ```@repl system
 solitude = get_component(ThermalStandard, sys, "Solitude")
 ```
+Notice that all of Solitude's fields are pretty-printed with the return statment for
+quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
+manipulate:
+```@repl system 
+typeof(solitude)
+```
 
 Notice that all of Solitude's fields are pretty-printed with the return statment for
 quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
@@ -184,11 +190,6 @@ using dot notation again to access the `fuel` fields:
 ```@repl system
 get_fuel.(get_components(ThermalStandard, sys))
 ```
-Notice that the `fuel` type for all the thermal generators is returned.
-!!! warning
-    Using the "dot" access to get a parameter value from a component is actively discouraged, use `get_*` functions instead. Julia syntax enables access to this data using the "dot" access, however this is discouraged for two reasons: 
-        1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
-        2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://nrel-sienna.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details) 
 
 See that we linked two functions here with Julia's dot notation -- this is a very
 convenient way of quickly getting the data you need.
@@ -260,7 +261,6 @@ show_components(ThermalStandard, sys)
 ```
 
 ## Getting Buses
-
 We can retrieve the [`ACBus`](@ref) components using
 [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
 by [ID number](@ref get_buses(sys::System, bus_numbers::Set{Int})) or
