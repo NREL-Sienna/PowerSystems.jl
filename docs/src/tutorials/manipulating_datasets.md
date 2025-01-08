@@ -45,10 +45,12 @@ From above we know the names of the thermal generators.
 ```@repl system
 solitude = get_component(ThermalStandard, sys, "Solitude")
 ```
+
 Notice that all of Solitude's fields are pretty-printed with the return statment for
 quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
 manipulate:
-```@repl system 
+
+```@repl system
 typeof(solitude)
 ```
 
@@ -261,6 +263,7 @@ show_components(ThermalStandard, sys)
 ```
 
 ## Getting Buses
+
 We can retrieve the [`ACBus`](@ref) components using
 [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
 by [ID number](@ref get_buses(sys::System, bus_numbers::Set{Int})) or
