@@ -10,6 +10,7 @@ include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
+include("Transformer3W.jl")
 include("TwoTerminalHVDCLine.jl")
 include("TwoTerminalVSCDCLine.jl")
 include("TModelHVDCLine.jl")
@@ -471,6 +472,9 @@ export get_a
 export get_active_power
 export get_active_power_flow
 export get_active_power_flow_limits
+export get_active_power_flow_primary
+export get_active_power_flow_secondary
+export get_active_power_flow_tertiary
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
@@ -612,12 +616,21 @@ export get_phase_angle_limits
 export get_power_factor
 export get_power_gate_openings
 export get_power_trajectory
+export get_primary_secondary_arc
 export get_primary_shunt
+export get_primary_tertiary_arc
+export get_primary_turns_ratio
 export get_prime_mover_type
 export get_pump_efficiency
 export get_q_nl
 export get_r
+export get_r_12
+export get_r_13
+export get_r_23
 export get_r_load
+export get_r_primary
+export get_r_secondary
+export get_r_tertiary
 export get_ramp_limits
 export get_ramp_limits_pump
 export get_rated_current
@@ -627,6 +640,9 @@ export get_rating_pump
 export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
+export get_reactive_power_flow_primary
+export get_reactive_power_flow_secondary
+export get_reactive_power_flow_tertiary
 export get_reactive_power_limits
 export get_reactive_power_limits_from
 export get_reactive_power_limits_pump
@@ -644,8 +660,11 @@ export get_rg
 export get_rrpwr
 export get_rv
 export get_saturation_coeffs
+export get_secondary_tertiary_arc
+export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
+export get_star_bus
 export get_start_time_limits
 export get_start_types
 export get_states
@@ -660,6 +679,7 @@ export get_switch
 export get_tF_delay
 export get_tV_delay
 export get_tap
+export get_tertiary_turns_ratio
 export get_tfh
 export get_tfl
 export get_time_at_status
@@ -677,6 +697,12 @@ export get_vl_pnts
 export get_voltage
 export get_voltage_limits
 export get_x
+export get_x_12
+export get_x_13
+export get_x_23
+export get_x_primary
+export get_x_secondary
+export get_x_tertiary
 export get_α
 export get_β
 export get_γ_d1
@@ -1041,6 +1067,9 @@ export set_a!
 export set_active_power!
 export set_active_power_flow!
 export set_active_power_flow_limits!
+export set_active_power_flow_primary!
+export set_active_power_flow_secondary!
+export set_active_power_flow_tertiary!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
@@ -1182,12 +1211,21 @@ export set_phase_angle_limits!
 export set_power_factor!
 export set_power_gate_openings!
 export set_power_trajectory!
+export set_primary_secondary_arc!
 export set_primary_shunt!
+export set_primary_tertiary_arc!
+export set_primary_turns_ratio!
 export set_prime_mover_type!
 export set_pump_efficiency!
 export set_q_nl!
 export set_r!
+export set_r_12!
+export set_r_13!
+export set_r_23!
 export set_r_load!
+export set_r_primary!
+export set_r_secondary!
+export set_r_tertiary!
 export set_ramp_limits!
 export set_ramp_limits_pump!
 export set_rated_current!
@@ -1197,6 +1235,9 @@ export set_rating_pump!
 export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
+export set_reactive_power_flow_primary!
+export set_reactive_power_flow_secondary!
+export set_reactive_power_flow_tertiary!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
 export set_reactive_power_limits_pump!
@@ -1214,8 +1255,11 @@ export set_rg!
 export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
+export set_secondary_tertiary_arc!
+export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
+export set_star_bus!
 export set_start_time_limits!
 export set_start_types!
 export set_states!
@@ -1230,6 +1274,7 @@ export set_switch!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
+export set_tertiary_turns_ratio!
 export set_tfh!
 export set_tfl!
 export set_time_at_status!
@@ -1247,6 +1292,12 @@ export set_vl_pnts!
 export set_voltage!
 export set_voltage_limits!
 export set_x!
+export set_x_12!
+export set_x_13!
+export set_x_23!
+export set_x_primary!
+export set_x_secondary!
+export set_x_tertiary!
 export set_α!
 export set_β!
 export set_γ_d1!

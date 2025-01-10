@@ -39,6 +39,7 @@ export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export Transformer3W
 
 # from IS function_data.jl
 export FunctionData
