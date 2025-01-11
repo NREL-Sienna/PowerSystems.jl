@@ -314,6 +314,7 @@ export parse_file
 export open_time_series_store!
 export add_time_series!
 export bulk_add_time_series!
+export begin_time_series_update
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -358,6 +359,7 @@ export get_supplemental_attribute
 export get_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
+export begin_supplemental_attributes_update
 export get_time_series
 export get_time_series_type
 export get_time_series_array
