@@ -884,7 +884,7 @@ end
 ```
 """
 begin_time_series_update(func::Function, sys::System) =
-    begin_time_series_update(func, sys.data.time_series_manager)
+    IS.begin_time_series_update(func, sys.data.time_series_manager)
 
 """
 Add time series data from a metadata file or metadata descriptors.
@@ -1653,7 +1653,7 @@ end
 ```
 """
 begin_supplemental_attributes_update(func::Function, sys::System) =
-    IS.begin_supplemental_attributes_update(func, sys.data)
+    IS.begin_supplemental_attributes_update(func, sys.data.supplemental_attribute_manager)
 
 """
 Remove the supplemental attribute from the component. The attribute will be removed from the
