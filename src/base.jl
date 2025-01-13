@@ -2658,14 +2658,10 @@ end
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
-    refs = internal.shared_system_references
     return InfrastructureSystemsInternal(;
         uuid = deepcopy(internal.uuid),
         units_info = deepcopy(internal.units_info),
-        shared_system_references = IS.SharedSystemReferences(;
-            supplemental_attribute_manager = refs.supplemental_attribute_manager,
-            time_series_manager = refs.time_series_manager,
-        ),
+        shared_system_references = nothing,
         ext = deepcopy(internal.ext),
     )
 end
