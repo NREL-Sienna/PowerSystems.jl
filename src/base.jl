@@ -855,7 +855,7 @@ end
 You can also use this function to make reads faster.
 Change the mode from `"r+"` to `"r"` to open the file read-only.
 
-See also: [`begin_time_series_update!`](@ref)
+See also: [`begin_time_series_update`](@ref)
 """
 function open_time_series_store!(
     func::Function,
@@ -1404,7 +1404,7 @@ end
 """
 Add time series in bulk.
 
-Prefer use of [`begin_time_series_update!`](@ref).
+Prefer use of [`begin_time_series_update`](@ref).
 
 # Examples
 ```julia
