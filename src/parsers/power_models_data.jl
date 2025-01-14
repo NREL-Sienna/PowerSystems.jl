@@ -847,7 +847,7 @@ function read_dcline!(
 end
 
 function make_shunt(name::String, d::Dict, bus::ACBus)
-    return (;
+    return FixedAdmittance(;
         name = name,
         available = Bool(d["status"]),
         bus = bus,
@@ -871,9 +871,9 @@ function read_shunt!(
 
     for (d_key, d) in data["shunt"]
         d["name"] = get(d, "name", d_key)
-        name = _get_name(d)
+        @show name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_shunt(name, d, bus)
+        @show shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
