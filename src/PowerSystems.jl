@@ -39,6 +39,7 @@ export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export Transformer3W
 
 # from IS function_data.jl
 export FunctionData
@@ -416,6 +417,7 @@ export set_description!
 export get_base_power
 export get_frequency
 export set_units_base_system!
+export with_units_base
 export to_json
 export from_json
 export serialize
