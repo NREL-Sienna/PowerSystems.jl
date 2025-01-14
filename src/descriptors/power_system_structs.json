@@ -1801,15 +1801,21 @@
                     "name": "number_of_steps",
                     "comment": "Number of steps for adjustable shunt",
                     "null_value": "0",
-                    "data_type": "Int",
+                    "data_type": "Union{Int, Vector{Int}}",
                     "default": "0"
                 },
                 {
                     "name": "Y_increase",
                     "comment": "Admittance increment for each of step increase",
                     "null_value": "0",
-                    "data_type": "Complex{Float64}",
+                    "data_type": "Union{Complex{Float64}, Vector{Complex{Float64}}}",
                     "default": "0"
+                },
+                {   "name": "admittance_limits",                    
+                    "comment": "Shunt admittance limits for switched shunt model",                    
+                    "null_value": "(min=0.0, max=0.0)",                    
+                    "data_type": "MinMax",                    
+                    "default": "(min=1.0, max=1.0)"               
                 },
                 {
                     "name": "dynamic_injector",
