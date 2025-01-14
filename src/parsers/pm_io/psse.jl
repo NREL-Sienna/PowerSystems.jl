@@ -675,20 +675,45 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # Add parameters to the 3w-transformer key 
                 sub_data = Dict{String, Any}()
                 sub_data["name"] = transformer["NAME"]
-                if transformer["STAT"] != 0 
+                
+                sub_data["available"] = false
+                if transformer["STAT"] != 0
                     sub_data["available"] = true
                 end
-                # sub_data["primary_secondary_arc"] = 0.0
-                # sub_data["secondary_tertiary_arc"] = 0.0
-                # sub_data["primary_tertiary_arc"] = 0.0
+
+                sub_data["available_primary"] = true
+                sub_data["available_secondary"] = true
+                sub_data["available_tertiary"] = true
+
+                if transformer["STAT"] == 2
+                    sub_data["available_secondary"] = false
+                end
+
+                if transformer["STAT"] == 3
+                    sub_data["available_tertiary"] = false
+                end
+
+                if transformer["STAT"] == 4
+                    sub_data["available_primary"] = false
+                end
+
+                if transformer["STAT"] == 0
+                    sub_data["available_primary"] = false
+                    sub_data["available_secondary"] = false
+                    sub_data["available_tertiary"] = false
+                end
+
+                sub_data["primary_secondary_arc"] = 0.0
+                sub_data["secondary_tertiary_arc"] = 0.0
+                sub_data["primary_tertiary_arc"] = 0.0
                 sub_data["star_bus"] = starbus_id
 
-                # sub_data["active_power_flow_primary"] = 0.0
-                # sub_data["reactive_power_flow_primary"] = 0.0
-                # sub_data["active_power_flow_secondary"] = 0.0
-                # sub_data["reactive_power_flow_secondary"] = 0.0
-                # sub_data["active_power_flow_tertiary"] = 0.0
-                # sub_data["reactive_power_flow_tertiary"] = 0.0
+                sub_data["active_power_flow_primary"] = 0.0
+                sub_data["reactive_power_flow_primary"] = 0.0
+                sub_data["active_power_flow_secondary"] = 0.0
+                sub_data["reactive_power_flow_secondary"] = 0.0
+                sub_data["active_power_flow_tertiary"] = 0.0
+                sub_data["reactive_power_flow_tertiary"] = 0.0
 
                 sub_data["r_primary"] = Zr_p
                 sub_data["x_primary"] = Zx_p
@@ -870,9 +895,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             ],
                         )
                     end
-
-                    # TODO: Delete this line (changes to 3W Transformer)
-                    push!(pm_data["branch"], sub_data)
                 end
             end
         end
