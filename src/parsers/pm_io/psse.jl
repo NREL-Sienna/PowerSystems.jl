@@ -381,14 +381,23 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["gs"] = 0.0
             sub_data["bs"] = pop!(switched_shunt, "BINIT")
             sub_data["status"] = pop!(switched_shunt, "STAT")
-            sub_data["admittance_limits"] = (pop!(switched_shunt, "VSWLO"), pop!(switched_shunt, "VSWHI"))
+            sub_data["admittance_limits"] =
+                (pop!(switched_shunt, "VSWLO"), pop!(switched_shunt, "VSWHI"))
 
-            step_numbers = Dict(k => v for (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k)))
-            step_numbers_sorted = sort(collect(keys(step_numbers)), by = x -> parse(Int, x[2:end]))
+            step_numbers = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k))
+            )
+            step_numbers_sorted =
+                sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
 
-            y_increment = Dict(k => v for (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k)))
-            y_increment_sorted = sort(collect(keys(y_increment)), by = x -> parse(Int, x[2:end]))
+            y_increment = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k))
+            )
+            y_increment_sorted =
+                sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
             sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]
 
             sub_data["source_id"] =
@@ -637,8 +646,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 pm_data["bus"][starbus_id] = starbus
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
-                br_r12, br_r23, br_r31 = transformer["R1-2"], transformer["R2-3"], transformer["R3-1"]
-                br_x12, br_x23, br_x31 = transformer["X1-2"], transformer["X2-3"], transformer["X3-1"]
+                br_r12, br_r23, br_r31 =
+                    transformer["R1-2"], transformer["R2-3"], transformer["R3-1"]
+                br_x12, br_x23, br_x31 =
+                    transformer["X1-2"], transformer["X2-3"], transformer["X3-1"]
 
                 # Unit Transformations
                 if transformer["CZ"] == 3  # "for transformer load loss in watts and impedance magnitude in pu on a specified MVA base and winding voltage base."
@@ -653,13 +664,37 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 # Unit Transformations
                 if transformer["CZ"] != 1  # NOT "for resistance and reactance in pu on system MVA base and winding voltage base"
-                    br_r12 *= (transformer["NOMV1"]/_get_bus_value(bus_id1, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE1-2"])
-                    br_r23 *= (transformer["NOMV2"]/_get_bus_value(bus_id2, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE2-3"])
-                    br_r31 *= (transformer["NOMV3"]/_get_bus_value(bus_id3, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE3-1"])
+                    br_r12 *=
+                        (
+                            transformer["NOMV1"] /
+                            _get_bus_value(bus_id1, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE1-2"])
+                    br_r23 *=
+                        (
+                            transformer["NOMV2"] /
+                            _get_bus_value(bus_id2, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE2-3"])
+                    br_r31 *=
+                        (
+                            transformer["NOMV3"] /
+                            _get_bus_value(bus_id3, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE3-1"])
 
-                    br_x12 *= (transformer["NOMV1"]/_get_bus_value(bus_id1, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE1-2"])
-                    br_x23 *= (transformer["NOMV2"]/_get_bus_value(bus_id2, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE2-3"])
-                    br_x31 *= (transformer["NOMV3"]/_get_bus_value(bus_id3, "base_kv", pm_data))^2 * (pm_data["baseMVA"] / transformer["SBASE3-1"])
+                    br_x12 *=
+                        (
+                            transformer["NOMV1"] /
+                            _get_bus_value(bus_id1, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE1-2"])
+                    br_x23 *=
+                        (
+                            transformer["NOMV2"] /
+                            _get_bus_value(bus_id2, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE2-3"])
+                    br_x31 *=
+                        (
+                            transformer["NOMV3"] /
+                            _get_bus_value(bus_id3, "base_kv", pm_data)
+                        )^2 * (pm_data["baseMVA"] / transformer["SBASE3-1"])
                 end
 
                 # See "Power System Stability and Control", ISBN: 0-07-035958-X, Eq. 6.72
@@ -673,7 +708,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # Add parameters to the 3w-transformer key 
                 sub_data = Dict{String, Any}()
                 sub_data["name"] = transformer["NAME"]
-                
+
                 sub_data["available"] = false
                 if transformer["STAT"] != 0
                     sub_data["available"] = true
@@ -719,11 +754,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["x_secondary"] = Zx_s
                 sub_data["r_tertiary"] = Zr_t
                 sub_data["x_tertiary"] = Zx_t
-                
-                sub_data["rating_primary"] = min(transformer["RATA1"], transformer["RATB1"], transformer["RATC1"])
-                sub_data["rating_secondary"] = min(transformer["RATA2"], transformer["RATB2"], transformer["RATC2"])
-                sub_data["rating_tertiary"] = min(transformer["RATA3"], transformer["RATB3"], transformer["RATC3"])
-                sub_data["rating"] = min(sub_data["rating_primary"], sub_data["rating_secondary"], sub_data["rating_tertiary"])
+
+                sub_data["rating_primary"] =
+                    min(transformer["RATA1"], transformer["RATB1"], transformer["RATC1"])
+                sub_data["rating_secondary"] =
+                    min(transformer["RATA2"], transformer["RATB2"], transformer["RATC2"])
+                sub_data["rating_tertiary"] =
+                    min(transformer["RATA3"], transformer["RATB3"], transformer["RATC3"])
+                sub_data["rating"] = min(
+                    sub_data["rating_primary"],
+                    sub_data["rating_secondary"],
+                    sub_data["rating_tertiary"],
+                )
 
                 sub_data["r_12"] = br_r12
                 sub_data["x_12"] = br_x12
@@ -733,8 +775,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["x_13"] = br_x31
                 sub_data["g"] = transformer["MAG1"]
                 sub_data["b"] = transformer["MAG2"]
-                
-                if transformer["CW"] == 1 
+
+                if transformer["CW"] == 1
                     sub_data["primary_turns_ratio"] = transformer["WINDV1"]
                     sub_data["secondary_turns_ratio"] = transformer["WINDV2"]
                     sub_data["tertiary_turns_ratio"] = transformer["WINDV3"]
@@ -747,7 +789,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["circuit"] = transformer["CKT"]
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
-                
+
                 if import_all
                     _import_remaining_keys!(
                         sub_data,
@@ -759,12 +801,12 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             "MAG2",
                             "WINDV1",
                             "WINDV2",
-                            "WINDV3"
+                            "WINDV3",
                         ],
                     )
                 end
-                
-                push!(pm_data["3w_transformer"], sub_data)                
+
+                push!(pm_data["3w_transformer"], sub_data)
 
                 starbus_id += 1 # after adding the 1st 3WT, increase the counter
 
@@ -1128,7 +1170,7 @@ function _pti_to_powermodels!(
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
     _psse2pm_switch!(pm_data, pti_data, import_all)
-    
+
     if import_all
         _import_remaining_comps!(
             pm_data,
