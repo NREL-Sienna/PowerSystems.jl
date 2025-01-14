@@ -847,7 +847,7 @@ function read_dcline!(
 end
 
 function make_shunt(name::String, d::Dict, bus::ACBus)
-    return FixedAdmittance(;
+    return (;
         name = name,
         available = Bool(d["status"]),
         bus = bus,
