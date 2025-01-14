@@ -1274,6 +1274,51 @@
                     "default": "1.0"
                 },
                 {
+                    "null_value": "false",
+                    "name": "available_primary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available_secondary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available_tertiary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_primary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for primary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_secondary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for secondary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_tertiary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for tertiary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
