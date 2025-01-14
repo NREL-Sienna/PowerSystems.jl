@@ -710,6 +710,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # Add parameters to the 3w-transformer key 
                 sub_data = Dict{String, Any}()
                 sub_data["name"] = transformer["NAME"]
+                sub_data["primary_bus"] = bus_id1
+                sub_data["secondary_bus"] = bus_id2
+                sub_data["tertiary_bus"] = bus_id3
 
                 sub_data["available"] = false
                 if transformer["STAT"] != 0
@@ -738,9 +741,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["available_tertiary"] = false
                 end
 
-                sub_data["primary_secondary_arc"] = 0.0
-                sub_data["secondary_tertiary_arc"] = 0.0
-                sub_data["primary_tertiary_arc"] = 0.0
                 sub_data["star_bus"] = starbus_id
 
                 sub_data["active_power_flow_primary"] = 0.0
