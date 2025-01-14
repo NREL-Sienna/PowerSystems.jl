@@ -36,6 +36,12 @@ This file is auto-generated. Do not edit.
         primary_turns_ratio::Float64
         secondary_turns_ratio::Float64
         tertiary_turns_ratio::Float64
+        available_primary::Bool
+        available_secondary::Bool
+        available_tertiary::Bool
+        rating_primary::Float64
+        rating_secondary::Float64
+        rating_tertiary::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -76,6 +82,12 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `primary_turns_ratio::Float64`: (default: `1.0`) Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).
 - `secondary_turns_ratio::Float64`: (default: `1.0`) Secondary side off-nominal turns ratio in p.u. with respect to connected secondary bus (WINDV2 with CW = 1 in PSS/E).
 - `tertiary_turns_ratio::Float64`: (default: `1.0`) Tertiary side off-nominal turns ratio in p.u. with respect to connected tertiary bus (WINDV3 with CW = 1 in PSS/E).
+- `available_primary::Bool`: (default: `true`) Status if primary winding is available or not.
+- `available_secondary::Bool`: (default: `true`) Status if primary winding is available or not.
+- `available_tertiary::Bool`: (default: `true`) Status if primary winding is available or not.
+- `rating_primary::Float64`: (default: `0.0`) Rating (in MVA) for primary winding.
+- `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
+- `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -141,6 +153,18 @@ mutable struct Transformer3W <: ACBranch
     secondary_turns_ratio::Float64
     "Tertiary side off-nominal turns ratio in p.u. with respect to connected tertiary bus (WINDV3 with CW = 1 in PSS/E)."
     tertiary_turns_ratio::Float64
+    "Status if primary winding is available or not."
+    available_primary::Bool
+    "Status if primary winding is available or not."
+    available_secondary::Bool
+    "Status if primary winding is available or not."
+    available_tertiary::Bool
+    "Rating (in MVA) for primary winding."
+    rating_primary::Float64
+    "Rating (in MVA) for secondary winding."
+    rating_secondary::Float64
+    "Rating (in MVA) for tertiary winding."
+    rating_tertiary::Float64
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -149,12 +173,12 @@ mutable struct Transformer3W <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, services=Device[], ext=Dict{String, Any}(), )
-    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, services, ext, InfrastructureSystemsInternal(), )
+function Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
+    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer3W(; name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, services, ext, internal, )
+function Transformer3W(; name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -190,6 +214,12 @@ function Transformer3W(::Nothing)
         primary_turns_ratio=0.0,
         secondary_turns_ratio=0.0,
         tertiary_turns_ratio=0.0,
+        available_primary=false,
+        available_secondary=false,
+        available_tertiary=false,
+        rating_primary=0.0,
+        rating_secondary=0.0,
+        rating_tertiary=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -255,6 +285,18 @@ get_primary_turns_ratio(value::Transformer3W) = value.primary_turns_ratio
 get_secondary_turns_ratio(value::Transformer3W) = value.secondary_turns_ratio
 """Get [`Transformer3W`](@ref) `tertiary_turns_ratio`."""
 get_tertiary_turns_ratio(value::Transformer3W) = value.tertiary_turns_ratio
+"""Get [`Transformer3W`](@ref) `available_primary`."""
+get_available_primary(value::Transformer3W) = value.available_primary
+"""Get [`Transformer3W`](@ref) `available_secondary`."""
+get_available_secondary(value::Transformer3W) = value.available_secondary
+"""Get [`Transformer3W`](@ref) `available_tertiary`."""
+get_available_tertiary(value::Transformer3W) = value.available_tertiary
+"""Get [`Transformer3W`](@ref) `rating_primary`."""
+get_rating_primary(value::Transformer3W) = get_value(value, value.rating_primary)
+"""Get [`Transformer3W`](@ref) `rating_secondary`."""
+get_rating_secondary(value::Transformer3W) = get_value(value, value.rating_secondary)
+"""Get [`Transformer3W`](@ref) `rating_tertiary`."""
+get_rating_tertiary(value::Transformer3W) = get_value(value, value.rating_tertiary)
 """Get [`Transformer3W`](@ref) `services`."""
 get_services(value::Transformer3W) = value.services
 """Get [`Transformer3W`](@ref) `ext`."""
@@ -320,6 +362,18 @@ set_primary_turns_ratio!(value::Transformer3W, val) = value.primary_turns_ratio 
 set_secondary_turns_ratio!(value::Transformer3W, val) = value.secondary_turns_ratio = val
 """Set [`Transformer3W`](@ref) `tertiary_turns_ratio`."""
 set_tertiary_turns_ratio!(value::Transformer3W, val) = value.tertiary_turns_ratio = val
+"""Set [`Transformer3W`](@ref) `available_primary`."""
+set_available_primary!(value::Transformer3W, val) = value.available_primary = val
+"""Set [`Transformer3W`](@ref) `available_secondary`."""
+set_available_secondary!(value::Transformer3W, val) = value.available_secondary = val
+"""Set [`Transformer3W`](@ref) `available_tertiary`."""
+set_available_tertiary!(value::Transformer3W, val) = value.available_tertiary = val
+"""Set [`Transformer3W`](@ref) `rating_primary`."""
+set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_value(value, val)
+"""Set [`Transformer3W`](@ref) `rating_secondary`."""
+set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, val)
+"""Set [`Transformer3W`](@ref) `rating_tertiary`."""
+set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, val)
 """Set [`Transformer3W`](@ref) `services`."""
 set_services!(value::Transformer3W, val) = value.services = val
 """Set [`Transformer3W`](@ref) `ext`."""

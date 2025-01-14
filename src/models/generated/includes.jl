@@ -484,6 +484,9 @@ export get_angle_limits
 export get_arc
 export get_area
 export get_available
+export get_available_primary
+export get_available_secondary
+export get_available_tertiary
 export get_b
 export get_base_power
 export get_base_voltage
@@ -636,7 +639,10 @@ export get_ramp_limits_pump
 export get_rated_current
 export get_rated_voltage
 export get_rating
+export get_rating_primary
 export get_rating_pump
+export get_rating_secondary
+export get_rating_tertiary
 export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
@@ -1079,6 +1085,9 @@ export set_angle_limits!
 export set_arc!
 export set_area!
 export set_available!
+export set_available_primary!
+export set_available_secondary!
+export set_available_tertiary!
 export set_b!
 export set_base_power!
 export set_base_voltage!
@@ -1231,7 +1240,10 @@ export set_ramp_limits_pump!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
+export set_rating_primary!
 export set_rating_pump!
+export set_rating_secondary!
+export set_rating_tertiary!
 export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
