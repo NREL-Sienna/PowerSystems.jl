@@ -2193,6 +2193,20 @@ function check_attached_buses(sys::System, component::Branch)
     return
 end
 
+function check_attached_buses(sys::System, component::Transformer3W)
+    arc_ps = get_primary_secondary_arc(component)
+    arc_pt = get_primary_tertiary_arc(component)
+    bus_primary = get_from(arc_ps)
+    bus_secondary = get_to(arc_ps)
+    bus_tertiary = get_to(arc_pt)
+    star_bus = get_star_bus(component)
+    throw_if_not_attached(bus_primary, sys)
+    throw_if_not_attached(bus_secondary, sys)
+    throw_if_not_attached(bus_tertiary, sys)
+    throw_if_not_attached(star_bus, sys)
+    return
+end
+
 function check_attached_buses(sys::System, component::DynamicBranch)
     check_attached_buses(sys, get_branch(component))
     return
@@ -2241,6 +2255,20 @@ function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
+    return
+end
+
+function check_component_addition(sys::System, component::Transformer3W; kwargs...)
+    arc_ps = get_primary_secondary_arc(component)
+    arc_pt = get_primary_tertiary_arc(component)
+    bus_primary = get_from(arc_ps)
+    bus_secondary = get_to(arc_ps)
+    bus_tertiary = get_to(arc_pt)
+    star_bus = get_star_bus(component)
+    throw_if_not_attached(bus_primary, sys)
+    throw_if_not_attached(bus_secondary, sys)
+    throw_if_not_attached(bus_tertiary, sys)
+    throw_if_not_attached(star_bus, sys)
     return
 end
 
@@ -2346,6 +2374,25 @@ function _handle_branch_addition_common!(sys::System, component::Branch)
         add_component!(sys, arc)
     else
         set_arc!(component, _arc)
+    end
+    return
+end
+
+function _handle_branch_addition_common!(sys::System, component::Transformer3W)
+    # If this arc is already attached to the system, assign it to the 3W XFRM.
+    # Else, add it to the system.
+    arcs = [
+        get_primary_secondary_arc(component),
+        get_secondary_tertiary_arc(component),
+        get_primary_tertiary_arc(component),
+    ]
+    for arc in arcs
+        _arc = get_component(Arc, sys, get_name(arc))
+        if isnothing(_arc)
+            add_component!(sys, arc)
+        else
+            set_arc!(component, _arc)
+        end
     end
     return
 end
