@@ -584,7 +584,7 @@ function set_fuel_cost!(
     to_set = _process_set_cost(Float64, Float64, sys, component, data)
     op_cost = get_operation_cost(component)
     new_var_cost =
-        FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), to_set)
+        FuelCurve(get_value_curve(var_cost), get_power_units(var_cost), to_set, get_vom_cost(var_cost))
     set_variable!(op_cost, new_var_cost)
 end
 
