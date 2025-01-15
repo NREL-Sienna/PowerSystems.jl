@@ -67,6 +67,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
+    read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
         check(sys)
     end
@@ -127,6 +128,19 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
         index = device_dict["index"]
     end
     return "$(get_name(bus_f))-$(get_name(bus_t))-i_$index"
+end
+
+"""
+Internal branch name retreval from pm2ps_dict
+"""
+function _get_pm_3w_name(
+    device_dict,
+    bus_primary::ACBus,
+    bus_secondary::ACBus,
+    bus_tertiary::ACBus,
+)
+    ckt = device_dict["circuit"]
+    return "$(get_name(bus_primary))-$(get_name(bus_secondary))-$(get_name(bus_tertiary))-i_$ckt"
 end
 
 """
@@ -733,6 +747,56 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     )
 end
 
+function make_3w_transformer(
+    name::String,
+    d::Dict,
+    bus_primary::ACBus,
+    bus_secondary::ACBus,
+    bus_tertiary::ACBus,
+    star_bus::ACBus,
+)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
+    return Transformer3W(;
+        name = name,
+        available = d["available"],
+        primary_secondary_arc = Arc(bus_primary, bus_secondary),
+        secondary_tertiary_arc = Arc(bus_secondary, bus_tertiary),
+        primary_tertiary_arc = Arc(bus_primary, bus_tertiary),
+        star_bus = star_bus,
+        active_power_flow_primary = pf,
+        reactive_power_flow_primary = qf,
+        active_power_flow_secondary = pf,
+        reactive_power_flow_secondary = qf,
+        active_power_flow_tertiary = pf,
+        reactive_power_flow_tertiary = qf,
+        r_primary = d["r_primary"],
+        x_primary = d["x_primary"],
+        r_secondary = d["r_secondary"],
+        x_secondary = d["x_secondary"],
+        r_tertiary = d["r_tertiary"],
+        x_tertiary = d["x_tertiary"],
+        rating = d["rating"],
+        r_12 = d["r_12"],
+        x_12 = d["x_12"],
+        r_23 = d["r_23"],
+        x_23 = d["x_23"],
+        r_13 = d["r_13"],
+        x_13 = d["x_13"],
+        g = d["g"],
+        b = d["b"],
+        primary_turns_ratio = d["primary_turns_ratio"],
+        secondary_turns_ratio = d["secondary_turns_ratio"],
+        tertiary_turns_ratio = d["tertiary_turns_ratio"],
+        available_primary = d["available_primary"],
+        available_secondary = d["available_secondary"],
+        available_tertiary = d["available_tertiary"],
+        rating_primary = d["rating_primary"],
+        rating_secondary = d["rating_secondary"],
+        rating_tertiary = d["rating_tertiary"],
+    )
+end
+
 function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -808,6 +872,33 @@ function read_branch!(
     end
 end
 
+function read_3w_transformer!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading 3W transformer data"
+    if !haskey(data, "3w_transformer")
+        @info "There is no 3W transformer data in this file"
+        return
+    end
+    _get_name = get(kwargs, :xfrm_3w_name_formatter, _get_pm_3w_name)
+
+    for (d_key, d) in data["3w_transformer"]
+        bus_primary = bus_number_to_bus[d["bus_primary"]]
+        bus_secondary = bus_number_to_bus[d["bus_secondary"]]
+        bus_tertiary = bus_number_to_bus[d["bus_tertiary"]]
+        star_bus = bus_number_to_bus[d["star_bus"]]
+
+        name = _get_name(d, bus_primary, bus_secondary, bus_tertiary)
+        value =
+            make_3w_transformer(name, d, bus_primary, bus_secondary, bus_tertiary, star_bus)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
 function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     return TwoTerminalHVDCLine(;
         name = name,
@@ -871,9 +962,9 @@ function read_shunt!(
 
     for (d_key, d) in data["shunt"]
         d["name"] = get(d, "name", d_key)
-        @show name = _get_name(d)
+        name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        @show shunt = make_shunt(name, d, bus)
+        shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
