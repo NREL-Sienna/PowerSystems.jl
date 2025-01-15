@@ -64,6 +64,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
+    read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
@@ -943,6 +944,42 @@ function read_dcline!(
         name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t)
         add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_switched_shunt(name::String, d::Dict, bus::ACBus)
+    return SwitchedAdmittance(;
+        name = name,
+        available = Bool(d["status"]),
+        bus = bus,
+        Y = (d["gs"] + d["bs"]im),
+        number_of_steps = d["step_number"],
+        Y_increase = d["y_increment"],
+        admittance_limits = d["admittance_limits"],
+    )
+end
+
+function read_switched_shunt!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading switched shunt data"
+    if !haskey(data, "switched_shunt")
+        @info "There is no switched shunt data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["switched_shunt"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["shunt_bus"]]
+        shunt = make_switched_shunt(name, d, bus)
+
+        add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
