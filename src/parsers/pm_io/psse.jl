@@ -391,6 +391,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             step_numbers_sorted =
                 sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
+            sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
 
             y_increment = Dict(
                 k => v for
@@ -399,6 +400,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             y_increment_sorted =
                 sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
             sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]im
+            sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
 
             sub_data["source_id"] =
                 ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
