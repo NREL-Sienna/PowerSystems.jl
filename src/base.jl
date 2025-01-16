@@ -852,10 +852,10 @@ open_time_series_store!(sys, "r+") do
     end
 end
 ```
-You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
-the file read-only.
+You can also use this function to make reads faster.
+Change the mode from `"r+"` to `"r"` to open the file read-only.
 
-See also: [`bulk_add_time_series!`](@ref)
+See also: [`begin_time_series_update`](@ref)
 """
 function open_time_series_store!(
     func::Function,
@@ -866,6 +866,25 @@ function open_time_series_store!(
 )
     IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
 end
+
+"""
+Begin an update of time series. Use this function when adding many time series arrays
+in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+Using this function to remove time series is currently not supported.
+
+# Examples
+```julia
+begin_time_series_update(sys) do
+    add_time_series!(sys, component1, time_series1)
+    add_time_series!(sys, component2, time_series2)
+end
+```
+"""
+begin_time_series_update(func::Function, sys::System) =
+    IS.begin_time_series_update(func, sys.data.time_series_manager)
 
 """
 Add time series data from a metadata file or metadata descriptors.
@@ -1383,17 +1402,9 @@ function add_time_series!(
 end
 
 """
-Add many time series in bulk
+Add time series in bulk.
 
-This method is advantageous when adding thousands of time
-series arrays because of the overhead in writing the time series to the underlying storage.
-
-# Arguments
-- `sys::System`: system
-- `associations`: Iterable of [`TimeSeriesAssociation`](@ref) instances. Using a Vector is not
-  recommended. Pass a Generator or Iterator to avoid loading all time series data into
-  system memory at once.
-- `batch_size::Int`: (Default = 100) Number of time series to add per batch.
+Prefer use of [`begin_time_series_update`](@ref).
 
 # Examples
 ```julia
@@ -1412,9 +1423,6 @@ associations = (
 )
 bulk_add_time_series!(sys, associations)
 ```
-
-See also: [`open_time_series_store!`](@ref) to minimize HDF5 file handle overhead if you
-must add time series arrays one at a time
 """
 function bulk_add_time_series!(
     sys::System,
@@ -1629,6 +1637,23 @@ function add_supplemental_attribute!(
 )
     return IS.add_supplemental_attribute!(sys.data, component, attribute)
 end
+
+"""
+Begin an update of supplemental attributes. Use this function when adding
+or removing many supplemental attributes in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+# Examples
+```julia
+begin_supplemental_attributes_update(sys) do
+    add_supplemental_attribute!(sys, component1, attribute1)
+    add_supplemental_attribute!(sys, component2, attribute2)
+end
+```
+"""
+begin_supplemental_attributes_update(func::Function, sys::System) =
+    IS.begin_supplemental_attributes_update(func, sys.data.supplemental_attribute_manager)
 
 """
 Remove the supplemental attribute from the component. The attribute will be removed from the

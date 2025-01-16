@@ -289,6 +289,39 @@ end
     end
 end
 
+@testset "Test begin_time_series_update" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    components = []
+    len = 2
+    component = ThermalStandard(nothing)
+    component.name = "gen"
+    component.bus = bus
+    add_component!(sys, component)
+    initial_time = Dates.DateTime("2020-09-01")
+    resolution = Dates.Hour(1)
+    len = 24
+    timestamps = range(initial_time; length = len, step = resolution)
+    arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
+    ts_name = "test"
+
+    begin_time_series_update(sys) do
+        for (i, ta) in enumerate(arrays)
+            ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
+            add_time_series!(sys, component, ts)
+        end
+    end
+
+    open_time_series_store!(sys, "r") do
+        for (i, expected_array) in enumerate(arrays)
+            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+            @test ts.data == expected_array
+        end
+    end
+end
+
 @testset "Test set_name! of system component" begin
     sys = System(100.0)
     bus = ACBus(nothing)
