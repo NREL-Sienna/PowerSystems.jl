@@ -27,6 +27,7 @@ end
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 223.71
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
           583.546
+    PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
     @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
