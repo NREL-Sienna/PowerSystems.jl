@@ -29,7 +29,7 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
 - `number_of_steps::Union{Int, Vector{Int}}`: (default: `0`) Number of steps for adjustable shunt
-- `Y_increase::Union{Complex{Float64}, Vector{Complex{Float64}}}`: (default: `0`) Admittance increment for each of step increase
+- `Y_increase::Union{Complex{Float64}, Vector{Complex{Float64}}}`: (default: `0.0 + 0.0im`) Admittance increment for each of step increase
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -61,11 +61,11 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0.0 + 0.0im, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
     SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0.0 + 0.0im, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
 end
 
@@ -75,9 +75,9 @@ function SwitchedAdmittance(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        Y=0.0,
+        Y=0.0 + 0.0im,
         number_of_steps=0,
-        Y_increase=0,
+        Y_increase=0.0 + 0.0im,
         admittance_limits=(min=0.0, max=0.0),
         dynamic_injector=nothing,
         services=Device[],
