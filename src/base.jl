@@ -133,7 +133,7 @@ struct System <: IS.InfrastructureSystemsType
                 "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
             )
         end
-        bus_numbers = Set{Int}()
+        bus_numbers = Set(get_number.(IS.get_components(ACBus, data)))
         return new(
             data,
             frequency,
@@ -2425,7 +2425,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if !match_fn(name1, name2)
+                if !_fetch_match_fn(match_fn)(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -2658,3 +2658,43 @@ function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeS
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
+
+"""
+Make a `deepcopy` of a [`System`](@ref) more quickly by skipping the copying of time
+series and/or supplemental attributes.
+
+# Arguments
+
+  - `data::System`: the `System` to copy
+  - `skip_time_series::Bool = true`: whether to skip copying time series
+  - `skip_supplemental_attributes::Bool = true`: whether to skip copying supplemental
+    attributes
+
+Note that setting both `skip_time_series` and `skip_supplemental_attributes` to `false`
+results in the same behavior as `deepcopy` with no performance improvement.
+"""
+function fast_deepcopy_system(
+    sys::System;
+    skip_time_series::Bool = true,
+    skip_supplemental_attributes::Bool = true,
+)
+    new_data = IS.fast_deepcopy_system(
+        sys.data;
+        skip_time_series = skip_time_series,
+        skip_supplemental_attributes = skip_supplemental_attributes,
+    )
+    new_sys = System(
+        new_data,
+        deepcopy(sys.units_settings),
+        deepcopy(sys.internal);
+        runchecks = deepcopy(sys.runchecks[]),
+        frequency = deepcopy(sys.frequency),
+        time_series_directory = deepcopy(sys.time_series_directory),
+        name = deepcopy(sys.metadata.name),
+        description = deepcopy(sys.metadata.description))
+    # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
+    for comp in iterate_components(new_sys)
+        comp.internal.units_info = new_sys.units_settings
+    end
+    return new_sys
+end
