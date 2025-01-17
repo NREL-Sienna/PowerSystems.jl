@@ -59,6 +59,7 @@ Return a vector of components that are attached to the supplemental attribute.
 get_components(sys::System, attribute::SupplementalAttribute) =
     IS.get_components(sys, attribute)
 
+"Variant of `get_components` that applies a filter function."
 get_components(
     filter_func::Function,
     ::Type{T},
@@ -68,7 +69,6 @@ get_components(
     IS.get_components(filter_func, T, sys; subsystem_name = subsystem_name)
 
 """
-    get_components(scope_limiter, selector, sys)
 Get the components of the `System` that make up the `ComponentSelector`.
 """
 get_components(
@@ -79,7 +79,6 @@ get_components(
     IS.get_components(scope_limiter, selector, sys)
 
 """
-    get_components(selector, sys)
 Get the components of the `System` that make up the `ComponentSelector`.
 """
 get_components(selector::ComponentSelector, sys::System) =
@@ -105,7 +104,6 @@ get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Componen
     IS.get_component(T, sys, name)
 
 """
-    get_component(scope_limiter, selector, sys)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
 """
@@ -117,7 +115,6 @@ get_component(
     IS.get_component(scope_limiter, selector, sys)
 
 """
-    get_component(selector, sys)
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
 if there is none.
 """
@@ -147,7 +144,6 @@ get_available_components(
     IS.get_available_components(filter_func, T, sys; subsystem_name = subsystem_name)
 
 """
-    get_available_components(scope_limiter, selector, sys)
 Get the available components of the collection that make up the `ComponentSelector`.
 """
 get_available_components(
@@ -158,7 +154,6 @@ get_available_components(
     IS.get_available_components(scope_limiter, selector::ComponentSelector, sys::System)
 
 """
-    get_available_components(selector, sys)
 Get the available components of the collection that make up the `ComponentSelector`.
 """
 get_available_components(selector::ComponentSelector, sys::System) =
@@ -199,7 +194,6 @@ get_available_component(
 
 # get_groups
 """
-    get_groups(scope_limiter, selector, sys)
 Get the groups that make up the `ComponentSelector`.
 """
 get_groups(
@@ -210,7 +204,6 @@ get_groups(
     IS.get_groups(scope_limiter, selector, sys)
 
 """
-    get_groups(selector, sys)
 Get the groups that make up the `ComponentSelector`.
 """
 get_groups(selector::ComponentSelector, sys::System) =
