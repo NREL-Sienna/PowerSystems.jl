@@ -133,7 +133,7 @@ struct System <: IS.InfrastructureSystemsType
                 "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
             )
         end
-        bus_numbers = Set{Int}()
+        bus_numbers = Set(get_number.(IS.get_components(ACBus, data)))
         return new(
             data,
             frequency,
@@ -852,10 +852,10 @@ open_time_series_store!(sys, "r+") do
     end
 end
 ```
-You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
-the file read-only.
+You can also use this function to make reads faster.
+Change the mode from `"r+"` to `"r"` to open the file read-only.
 
-See also: [`bulk_add_time_series!`](@ref)
+See also: [`begin_time_series_update`](@ref)
 """
 function open_time_series_store!(
     func::Function,
@@ -866,6 +866,25 @@ function open_time_series_store!(
 )
     IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
 end
+
+"""
+Begin an update of time series. Use this function when adding many time series arrays
+in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+Using this function to remove time series is currently not supported.
+
+# Examples
+```julia
+begin_time_series_update(sys) do
+    add_time_series!(sys, component1, time_series1)
+    add_time_series!(sys, component2, time_series2)
+end
+```
+"""
+begin_time_series_update(func::Function, sys::System) =
+    IS.begin_time_series_update(func, sys.data.time_series_manager)
 
 """
 Add time series data from a metadata file or metadata descriptors.
@@ -1383,17 +1402,9 @@ function add_time_series!(
 end
 
 """
-Add many time series in bulk
+Add time series in bulk.
 
-This method is advantageous when adding thousands of time
-series arrays because of the overhead in writing the time series to the underlying storage.
-
-# Arguments
-- `sys::System`: system
-- `associations`: Iterable of [`TimeSeriesAssociation`](@ref) instances. Using a Vector is not
-  recommended. Pass a Generator or Iterator to avoid loading all time series data into
-  system memory at once.
-- `batch_size::Int`: (Default = 100) Number of time series to add per batch.
+Prefer use of [`begin_time_series_update`](@ref).
 
 # Examples
 ```julia
@@ -1412,9 +1423,6 @@ associations = (
 )
 bulk_add_time_series!(sys, associations)
 ```
-
-See also: [`open_time_series_store!`](@ref) to minimize HDF5 file handle overhead if you
-must add time series arrays one at a time
 """
 function bulk_add_time_series!(
     sys::System,
@@ -1629,6 +1637,23 @@ function add_supplemental_attribute!(
 )
     return IS.add_supplemental_attribute!(sys.data, component, attribute)
 end
+
+"""
+Begin an update of supplemental attributes. Use this function when adding
+or removing many supplemental attributes in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+# Examples
+```julia
+begin_supplemental_attributes_update(sys) do
+    add_supplemental_attribute!(sys, component1, attribute1)
+    add_supplemental_attribute!(sys, component2, attribute2)
+end
+```
+"""
+begin_supplemental_attributes_update(func::Function, sys::System) =
+    IS.begin_supplemental_attributes_update(func, sys.data.supplemental_attribute_manager)
 
 """
 Remove the supplemental attribute from the component. The attribute will be removed from the
@@ -2425,7 +2450,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if !match_fn(name1, name2)
+                if !_fetch_match_fn(match_fn)(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -2606,14 +2631,10 @@ end
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
-    refs = internal.shared_system_references
     return InfrastructureSystemsInternal(;
         uuid = deepcopy(internal.uuid),
         units_info = deepcopy(internal.units_info),
-        shared_system_references = IS.SharedSystemReferences(;
-            supplemental_attribute_manager = refs.supplemental_attribute_manager,
-            time_series_manager = refs.time_series_manager,
-        ),
+        shared_system_references = nothing,
         ext = deepcopy(internal.ext),
     )
 end
@@ -2662,3 +2683,43 @@ function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeS
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
+
+"""
+Make a `deepcopy` of a [`System`](@ref) more quickly by skipping the copying of time
+series and/or supplemental attributes.
+
+# Arguments
+
+  - `data::System`: the `System` to copy
+  - `skip_time_series::Bool = true`: whether to skip copying time series
+  - `skip_supplemental_attributes::Bool = true`: whether to skip copying supplemental
+    attributes
+
+Note that setting both `skip_time_series` and `skip_supplemental_attributes` to `false`
+results in the same behavior as `deepcopy` with no performance improvement.
+"""
+function fast_deepcopy_system(
+    sys::System;
+    skip_time_series::Bool = true,
+    skip_supplemental_attributes::Bool = true,
+)
+    new_data = IS.fast_deepcopy_system(
+        sys.data;
+        skip_time_series = skip_time_series,
+        skip_supplemental_attributes = skip_supplemental_attributes,
+    )
+    new_sys = System(
+        new_data,
+        deepcopy(sys.units_settings),
+        deepcopy(sys.internal);
+        runchecks = deepcopy(sys.runchecks[]),
+        frequency = deepcopy(sys.frequency),
+        time_series_directory = deepcopy(sys.time_series_directory),
+        name = deepcopy(sys.metadata.name),
+        description = deepcopy(sys.metadata.description))
+    # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
+    for comp in iterate_components(new_sys)
+        comp.internal.units_info = new_sys.units_settings
+    end
+    return new_sys
+end
