@@ -10,8 +10,8 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         Y::Complex{Float64}
-        number_of_steps::Union{Int, Vector{Int}}
-        Y_increase::Union{Complex{Float64}, Vector{Complex{Float64}}}
+        number_of_steps::Vector{Int}
+        Y_increase::Vector{Complex{Float64}}
         admittance_limits::MinMax
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
@@ -28,8 +28,8 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
-- `number_of_steps::Union{Int, Vector{Int}}`: (default: `0`) Number of steps for adjustable shunt
-- `Y_increase::Union{Complex{Float64}, Vector{Complex{Float64}}}`: (default: `0.0 + 0.0im`) Admittance increment for each of step increase
+- `number_of_steps::Vector{Int}`: (default: `Int[]`) Number of steps for adjustable shunt
+- `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Admittance increment for each of step increase
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -46,9 +46,9 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     "Initial admittance at N = 0"
     Y::Complex{Float64}
     "Number of steps for adjustable shunt"
-    number_of_steps::Union{Int, Vector{Int}}
+    number_of_steps::Vector{Int}
     "Admittance increment for each of step increase"
-    Y_increase::Union{Complex{Float64}, Vector{Complex{Float64}}}
+    Y_increase::Vector{Complex{Float64}}
     "Shunt admittance limits for switched shunt model"
     admittance_limits::MinMax
     "corresponding dynamic injection model for admittance"
@@ -61,11 +61,11 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0.0 + 0.0im, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+function SwitchedAdmittance(name, available, bus, Y, number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
     SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0.0 + 0.0im, admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
 end
 
@@ -76,8 +76,8 @@ function SwitchedAdmittance(::Nothing)
         available=false,
         bus=ACBus(nothing),
         Y=0.0 + 0.0im,
-        number_of_steps=0,
-        Y_increase=0.0 + 0.0im,
+        number_of_steps=Int[],
+        Y_increase=Complex{Float64}[],
         admittance_limits=(min=0.0, max=0.0),
         dynamic_injector=nothing,
         services=Device[],
