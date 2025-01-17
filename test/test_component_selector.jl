@@ -54,17 +54,17 @@ end
     @test get_name(first(the_components)) == "Solitude"
     @test collect(
         get_components_rt(
+            get_available,
             make_selector(gen_sundance),
-            test_sys;
-            scope_limiter = get_available,
+            test_sys,
         ),
     ) ==
           Vector{Component}()
     @test collect(get_available_components(make_selector(gen_sundance), test_sys)) ==
           Vector{Component}()
-    @test get_component(test_gen_ent, test_sys; scope_limiter = x -> true) ==
+    @test get_component(x -> true, test_gen_ent, test_sys) ==
           first(the_components)
-    @test isnothing(get_component(test_gen_ent, test_sys; scope_limiter = x -> false))
+    @test isnothing(get_component(x -> false, test_gen_ent, test_sys))
     @test isnothing(get_available_component(make_selector(gen_sundance), test_sys))
 
     @test only(get_groups(test_gen_ent, test_sys)) == test_gen_ent
@@ -130,7 +130,7 @@ end
     @test all(the_components .== answer)
     @test !(
         gen_sundance in
-        collect(get_components_rt(test_sub_ent, test_sys; scope_limiter = get_available)))
+        collect(get_components_rt(get_available, test_sub_ent, test_sys)))
     @test !(gen_sundance in collect(get_available_components(test_sub_ent, test_sys)))
 
     # Grouping inherits from `DynamicallyGroupedComponentSelector` and is tested elsewhere
@@ -188,10 +188,10 @@ end
 
         the_components = get_components_rt(ent, test_sys2)
         @test all(sort_name!(the_components) .== ans)
-        @test Set(collect(get_components_rt(ent, test_sys2; scope_limiter = x -> true))) ==
+        @test Set(collect(get_components_rt(x -> true, ent, test_sys2))) ==
               Set(the_components)
         @test length(
-            collect(get_components_rt(ent, test_sys2; scope_limiter = x -> false)),
+            collect(get_components_rt(x -> false, ent, test_sys2)),
         ) ==
               0
     end
@@ -240,7 +240,7 @@ end
     @test !(
         gen_sundance in
         collect(
-            get_components_rt(test_filter_ent, test_sys; scope_limiter = get_available),
+            get_components_rt(get_available, test_filter_ent, test_sys),
         ))
     @test !(gen_sundance in collect(get_available_components(test_filter_ent, test_sys)))
 end
@@ -282,16 +282,14 @@ end
     ))
     @test length(
         collect(
-            get_groups(each_selector, test_sys2;
-                scope_limiter = x -> length(get_name(x)) == 8),
+            get_groups(x -> length(get_name(x)) == 8, each_selector, test_sys2),
         ),
     ) == 2
     @test Set(get_name.(get_groups(partition_selector, test_sys2))) ==
           Set(["true", "false"])
     @test length(
         collect(
-            get_groups(partition_selector, test_sys2;
-                scope_limiter = x -> length(get_name(x)) == 8),
+            get_groups(x -> length(get_name(x)) == 8, partition_selector, test_sys2),
         ),
     ) == 1
 

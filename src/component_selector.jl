@@ -1,13 +1,9 @@
-# Most of this is implemented by wrapping the IS versions, replacing
-# InfrastructureSystemsComponent with Component and SystemData with System
+# Most of the `ComponentSelector` functionality in PowerSystems.jl is implemented by
+# wrapping the InfrastructureSystems.jl versions (that wrapping occurs in
+# `get_components_interface.jl`). An exception is `TopologyComponentSelector`, which is
+# wholly implemented in PSY rather than in IS because it depends on
+# `PSY.AggregationTopology`.
 
-#=
-PowerSystems-specific `ComponentSelector` extension notes:
-See InfrastructureSystems.jl for the main interface.
-=#
-
-# TopologyComponentSelector
-# This one is wholly implemented in PowerSystems rather than in InfrastructureSystems because it depends on `PSY.AggregationTopology`
 """
 `PluralComponentSelector` represented by an `AggregationTopology` and a type of `Component`.
 """
@@ -71,28 +67,16 @@ make_selector(
 
 # Contents
 function IS.get_components(
+    scope_limiter::Union{Function, Nothing},
     selector::TopologyComponentSelector,
-    sys::System;
-    kwargs...,
+    sys::System,
 )
     agg_topology = get_component(selector.topology_type, sys, selector.topology_name)
     isnothing(agg_topology) && return IS._make_empty_iterator(selector.component_type)
 
-    scope_limiter = get(kwargs, :scope_limiter, nothing)
-    combo_filter = if isnothing(scope_limiter)
-        x -> is_component_in_aggregation_topology(x, agg_topology)
-    else
-        x -> scope_limiter(x) && is_component_in_aggregation_topology(x, agg_topology)
-    end
+    combo_filter = IS.optional_and_fns(
+        scope_limiter,
+        Base.Fix2(is_component_in_aggregation_topology, agg_topology),
+    )
     return IS.get_components(combo_filter, selector.component_type, sys)
 end
-
-# Alternative functions for only available components
-IS.get_available_components(selector::ComponentSelector, sys::System) =
-    IS.get_components(selector, sys; scope_limiter = get_available)
-
-IS.get_available_component(selector::SingularComponentSelector, sys::System) =
-    IS.get_component(selector, sys; scope_limiter = get_available)
-
-IS.get_available_groups(selector::ComponentSelector, sys::System) =
-    get_groups(selector, sys; scope_limiter = get_available)
