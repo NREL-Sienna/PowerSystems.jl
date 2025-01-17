@@ -1,11 +1,12 @@
 # Manipulating Datasets
 
-`PowerSystems` provides function interfaces to all data, and in this tutorial we will explore how to do this using the `show_components`,
-`get_components`, and getter (`get_*`) and setter (`set_*`) functions.
+`PowerSystems` provides function interfaces to all data, and in this tutorial we will explore how to do this using the [`show_components`](@ref),
+[`get_component`](@ref get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component})/
+[`get_components`](@ref), and getter (`get_*`) and setter (`set_*`) functions for component fields.
 
 ## Viewing Components in the System
 
-We are going to begin by loading in a test case from the [`PowerSystemCaseBuilder.jl`](@ref psb):
+We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](@ref psb):
 
 ```@repl system
 using PowerSystems;
@@ -13,17 +14,19 @@ using PowerSystemCaseBuilder;
 sys = build_system(PSISystems, "c_sys5_pjm")
 ```
 
-We can use the [`show_components`](@ref) function to view data in our system. Let's start by viewing all of the [`ThermalStandard`](@ref) components.
+Notice that the print statement for the [`System`](@ref) already includes a basic
+summary of the components, including 5 [`ThermalStandard`](@ref) components.
+We can use the [`show_components`](@ref) function to get more details:
 
 ```@repl system
 show_components(ThermalStandard, sys)
 ```
 
-We can see there are five thermal generators in the system, and the availability is the standard field returned when using [`show_components`](@ref).
+We can see the names and availability are the standard fields returned when using [`show_components`](@ref).
 
 We can also view specific fields within components using the [`show_components`](@ref)
 function. For example, we can view the type of `fuel` the thermal generators are using,
-and their `active_power` and `reactive_power`:
+and their current `active_power` and `reactive_power` for a power flow case:
 
 ```@repl system
 show_components(ThermalStandard, sys, [:fuel, :active_power, :reactive_power])
@@ -70,7 +73,8 @@ To recap, [`get_component`](@ref) will return a component object, but we can use
      1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
      2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://nrel-sienna.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details)
 
-To update a field we can use a specific `set_*`, or setter, function. We can use [`set_fuel!`](@ref) to update the `fuel` field of Solitude to natural gas.
+To update a field we can use a specific `set_*`, or setter function, which are defined for each component field.
+We can use [`set_fuel!`](@ref set_fuel!(value::ThermalStandard, val)) to update the `fuel` field of Solitude to natural gas.
 
 ```@repl system
 set_fuel!(solitude, ThermalFuels.NATURAL_GAS)
@@ -83,13 +87,14 @@ updated to [`ThermalFuels.NATURAL_GAS`](@ref tf_list):
 show_components(ThermalStandard, sys, [:fuel])
 ```
 
-Similarly, you can updated the `active_power` field using its specific `get_*` and `set_*` functions. We can access this field by using the [`get_active_power`](@ref):
+Similarly, you can updated the `active_power` field using its specific `get_*` and `set_*` functions.
+We can access this field by using [`get_active_power`](@ref get_active_power(value::ThermalStandard)):
 
 ```@repl system
 get_active_power(solitude)
 ```
 
-We can then update it using [`set_active_power!`](@ref):
+We can then update it using [`set_active_power!`](@ref set_active_power!(value::ThermalStandard, val)):
 
 ```@repl system
 set_active_power!(solitude, 4.0)
@@ -100,10 +105,9 @@ We can see that our `active_power` field has been updated to 4.0.
 ## Accessing and Updating Multiple Components in the System at Once
 
 We can also update more than one component at a time using the [`get_components`](@ref get_components(
-filter_func::Function,
-::Type{T},
-sys::System;
-subsystem_name = nothing,
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
 ) where {T <: Component}) and `set_*` functions.
 
 Let's say we were interested in updating the `base_voltage` field for all of the [`ACBus`](@ref).
@@ -113,11 +117,11 @@ We can see that currently the `base_voltages` are:
 show_components(ACBus, sys, [:base_voltage])
 ```
 
-But what if we are looking to change them to 250.0? Let's start by getting an iterator for all the buses using [`get_components`](@ref get_components(
-filter_func::Function,
-::Type{T},
-sys::System;
-subsystem_name = nothing,
+But what if we are looking to correct them to 250.0 kV?
+Let's start by getting an iterator for all the buses using [`get_components`](@ref get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
 ) where {T <: Component}):
 
 ```@repl system
@@ -132,16 +136,15 @@ typeof(buses)
 
 !!! tip
     
-    Notice that `PowerSystems.jl` returns Julia iterators in order to avoid unnecessary memory allocations
-    that might occur for very large data sets. The [`get_components`](@ref get_components(
-    filter_func::Function,
+    Notice that [`get_components`](@ref get_components(
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
-    ) where {T <: Component}) function returns an
-    iterator that allows you to access and manipulate data without a large memory allocation.
+    ) where {T <: Component}) and similar functions return Julia iterators, which allows you to
+    access and manipulate data without a large memory allocation that might occur for very
+    large data sets. 
     Use [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
-    to gather the data to a vector instead.
+    to gather the data to a vector instead, but be aware of your dataset size.
 
 Now using the [`set_base_voltage!`](@ref) function and a `for` loop we can update the voltage:
 
@@ -151,7 +154,7 @@ for i in buses
 end
 ```
 
-We could use [`show_components`](@ref) to verify the results, but we can also use a
+We could use [`show_components`](@ref) to verify the results, but this time let's use a
 `get_*` function and Julia's dot notation over our bus iterator to get the data for
 a specific field from multiple components:
 
@@ -181,10 +184,14 @@ using dot notation again to access the `fuel` fields:
 ```@repl system
 get_fuel.(get_components(ThermalStandard, sys))
 ```
+See that we linked two functions here with Julia's dot notation -- this is a very
+convenient way of quickly getting the data you need. 
 
 ## Filtering Specific Data
 
-We have seen how to update a single component, and all the components of a specific type, but what if we are interested in updating only particular components? We can do this using filter functions. For example, let's say we are interested in updating all the `active_power` values of the thermal generators except `Solitude`.
+We have seen how to update a single component, and all the components of a specific type, but what if we are interested in updating only particular components? We can do this using filter functions.
+
+For example, let's say we are interested in updating all the `active_power` values of the thermal generators except `Solitude`.
 Let's start by seeing the current `active_power` values.
 
 ```@repl system
@@ -192,18 +199,19 @@ show_components(ThermalStandard, sys, [:active_power])
 ```
 
 Let's grab an iterator for the all the thermal generators except `Solitude` by adding a filter function
-to [`get_components`](@ref get_components(
+in another version of the [`get_components`](@ref get_components(
 filter_func::Function,
 ::Type{T},
 sys::System;
 subsystem_name = nothing,
-) where {T <: Component}):
+) where {T <: Component}) function defined with Julia's multiple dispatch:
 
 ```@repl system
 thermal_not_solitude = get_components(x -> get_name(x) != "Solitude", ThermalStandard, sys)
 ```
 
-We can see that four [`ThermalStandard`](@ref) components are returned. Now let's update the `active_power` field of these four thermal generators using the [`set_active_power!`](@ref) function.
+We can see that only four [`ThermalStandard`](@ref) components are returned, as expected.
+Now let's update the `active_power` field of these four thermal generators using the [`set_active_power!`](@ref) function.
 
 ```@repl system
 for i in thermal_not_solitude
@@ -239,7 +247,7 @@ For example, if we are interested in grabbing all the available [`ThermalStandar
 get_available_components(ThermalStandard, sys)
 ```
 
-We only retrieved one component, because the rest have been set to unavailable:
+We only retrieved one component, because we just set the rest to unavailable above:
 
 ```@repl system
 show_components(ThermalStandard, sys)
@@ -277,33 +285,37 @@ end
 As usual, we can review the updated data with [`show_components`](@ref):
 
 ```@repl system
-show_components(ACBus, sys, [:bus_number, :base_voltage])
+show_components(ACBus, sys, [:number, :base_voltage])
 ```
 
 ## Updating Component Names
 
-We can also access and update the component name field using the [`get_name`](@ref) and [set_name!](@ref) functions.
+We can also access and update the component name field using the
+[`get_name`](@ref get_name(value::ThermalStandard)) and
+[set_name!](@ref set_name!(value::ThermalStandard, name::AbstractString)) functions.
 
 Recall that we created an iterator called `thermal_gens` for all the thermal generators.
-We can use the [`get_name`](@ref) function to access the `name` field for these components.
+We can use the [`get_name`](@ref get_name(value::ThermalStandard)) function to access
+the `name` field for these components with dot notation:
 
 ```@repl system
-for i in thermal_gens
-    @show get_name(i)
-end
+get_name.(thermal_gens)
 ```
 
-To update the names we will use the [set_name!](@ref) function.
+To update the names we will use the
+[set_name!](@ref set_name!(value::ThermalStandard, name::AbstractString)) function.
 
 !!! warning
     
-    Specifically when using [set_name!](@ref), it is important to note that using
-    [set_name!](@ref) not only changes the field `name`, but also changes the iterator itself
+    Specifically when using [set_name!](@ref set_name!(value::ThermalStandard, name::AbstractString))
+    to modify multiple components accessed through an iterator, it is important to note that this
+    not only changes the field `name`, but also changes the iterator itself
     as you are iterating over it, which will result in unexpected outcomes and errors.
 
-Therefore, rather than using [set_name!](@ref) on an iterator, only use it on a vector by first
+Therefore, rather than using [set_name!](@ref set_name!(value::ThermalStandard, name::AbstractString))
+on an iterator, only use it after first
 calling [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
-on the iterator:
+on the iterator to get a vector of the components:
 
 ```@repl system
 for thermal_gen in collect(get_components(ThermalStandard, sys))
@@ -316,15 +328,21 @@ Now we can check the names using the [`get_name`](@ref) function again.
 ```@repl system
 get_name.(get_components(ThermalStandard, sys))
 ```
+Be aware again that accessing components through a vector using
+[`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
+might cause large memory allocations, based on your dataset size.
 
 ## Next Steps & Links
 
-So far we have seen that we can view different data types in our system using the
-[`show_components`](@ref) function, access components with [`get_components`](@ref get_components(
-filter_func::Function,
-::Type{T},
-sys::System;
-subsystem_name = nothing,
-) where {T <: Component}), access component field data with the `get_*` functions, and manipulate
-them using the `set_*` functions.
+In this tutorial, we explored a dataset using [`show_components`](@ref) to summarize data
+and accessed particular groups of components with [`get_components`](@ref get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}), [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
+and [`get_available_components`](@ref).
+We used specific `get_*` functions and `set_*` functions to see and update the fields in
+[`ThermalStandard`](@ref) and [`ACBus`](@ref) components, but remember that these getters
+and setters are available for each data field for components of all Types in `PowerSystems.jl`.
+
 Follow the next tutorials to learn how to [work with time series](@ref tutorial_time_series).
