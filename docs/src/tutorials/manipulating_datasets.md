@@ -192,8 +192,9 @@ using dot notation again to access the `fuel` fields:
 ```@repl system
 get_fuel.(get_components(ThermalStandard, sys))
 ```
+
 See that we linked two functions here with Julia's dot notation -- this is a very
-convenient way of quickly getting the data you need. 
+convenient way of quickly getting the data you need.
 
 See that we linked two functions here with Julia's dot notation -- this is a very
 convenient way of quickly getting the data you need.
@@ -339,6 +340,7 @@ Now we can check the names using the [`get_name`](@ref) function again.
 ```@repl system
 get_name.(get_components(ThermalStandard, sys))
 ```
+
 Be aware again that accessing components through a vector using
 [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
 might cause large memory allocations, based on your dataset size.
