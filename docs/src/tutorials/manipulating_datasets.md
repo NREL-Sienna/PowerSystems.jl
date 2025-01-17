@@ -105,9 +105,9 @@ We can see that our `active_power` field has been updated to 4.0.
 ## Accessing and Updating Multiple Components in the System at Once
 
 We can also update more than one component at a time using the [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
+::Type{T},
+sys::System;
+subsystem_name = nothing,
 ) where {T <: Component}) and `set_*` functions.
 
 Let's say we were interested in updating the `base_voltage` field for all of the [`ACBus`](@ref).
@@ -119,9 +119,9 @@ show_components(ACBus, sys, [:base_voltage])
 
 But what if we are looking to correct them to 250.0 kV?
 Let's start by getting an iterator for all the buses using [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
+::Type{T},
+sys::System;
+subsystem_name = nothing,
 ) where {T <: Component}):
 
 ```@repl system
@@ -142,7 +142,7 @@ typeof(buses)
     subsystem_name = nothing,
     ) where {T <: Component}) and similar functions return Julia iterators, which allows you to
     access and manipulate data without a large memory allocation that might occur for very
-    large data sets. 
+    large data sets.
     Use [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
     to gather the data to a vector instead, but be aware of your dataset size.
 
@@ -184,8 +184,9 @@ using dot notation again to access the `fuel` fields:
 ```@repl system
 get_fuel.(get_components(ThermalStandard, sys))
 ```
+
 See that we linked two functions here with Julia's dot notation -- this is a very
-convenient way of quickly getting the data you need. 
+convenient way of quickly getting the data you need.
 
 ## Filtering Specific Data
 
@@ -328,6 +329,7 @@ Now we can check the names using the [`get_name`](@ref) function again.
 ```@repl system
 get_name.(get_components(ThermalStandard, sys))
 ```
+
 Be aware again that accessing components through a vector using
 [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
 might cause large memory allocations, based on your dataset size.
@@ -336,9 +338,9 @@ might cause large memory allocations, based on your dataset size.
 
 In this tutorial, we explored a dataset using [`show_components`](@ref) to summarize data
 and accessed particular groups of components with [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
+::Type{T},
+sys::System;
+subsystem_name = nothing,
 ) where {T <: Component}), [`get_buses`](@ref get_buses(sys::System, bus_numbers::Set{Int})),
 and [`get_available_components`](@ref).
 We used specific `get_*` functions and `set_*` functions to see and update the fields in
