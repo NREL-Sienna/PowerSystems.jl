@@ -66,8 +66,9 @@ To recap, [`get_component`](@ref) will return a component object, but we can use
     
     Using the "dot" access to get a field value from a component is actively discouraged, use `get_*` functions instead.
     Julia syntax enables access to this data using the "dot" access (e.g., `solitude.fuel`), however this is discouraged for two reasons:
-    1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
-    2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://nrel-sienna.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details)
+    
+     1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
+     2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit](https://nrel-sienna.github.io/PowerSystems.jl/stable/explanation/per_unit/#per_unit) section for more details)
 
 To update a field we can use a specific `set_*`, or setter, function. We can use [`set_fuel!`](@ref) to update the `fuel` field of Solitude to natural gas.
 
