@@ -1799,16 +1799,16 @@
                 {
                     "name": "number_of_steps",
                     "comment": "Number of steps for adjustable shunt",
-                    "null_value": "0",
-                    "data_type": "Union{Int, Vector{Int}}",
-                    "default": "0"
+                    "null_value": "Int[]",
+                    "data_type": "Vector{Int}",
+                    "default": "Int[]"
                 },
                 {
                     "name": "Y_increase",
                     "comment": "Admittance increment for each of step increase",
-                    "null_value": "0.0 + 0.0im",
-                    "data_type": "Union{Complex{Float64}, Vector{Complex{Float64}}}",
-                    "default": "0.0 + 0.0im"
+                    "null_value": "Complex{Float64}[]",
+                    "data_type": "Vector{Complex{Float64}}",
+                    "default": "Complex{Float64}[]"
                 },
                 {   "name": "admittance_limits",                    
                     "comment": "Shunt admittance limits for switched shunt model",                    
