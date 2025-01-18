@@ -2386,12 +2386,17 @@ function _handle_branch_addition_common!(sys::System, component::Transformer3W)
         get_secondary_tertiary_arc(component),
         get_primary_tertiary_arc(component),
     ]
-    for arc in arcs
+    set_arc_methods = [
+        set_primary_secondary_arc!,
+        set_secondary_tertiary_arc!,
+        set_primary_tertiary_arc!,
+    ]
+    for (ix, arc) in enumerate(arcs)
         _arc = get_component(Arc, sys, get_name(arc))
         if isnothing(_arc)
             add_component!(sys, arc)
         else
-            set_arc!(component, _arc)
+            set_arc_methods[ix](component, _arc)
         end
     end
     return

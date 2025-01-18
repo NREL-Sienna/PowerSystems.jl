@@ -790,7 +790,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["tertiary_turns_ratio"] = 1.0
                 end
 
-                sub_data["circuit"] = transformer["CKT"]
+                sub_data["circuit"] = strip(transformer["CKT"])
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
 
