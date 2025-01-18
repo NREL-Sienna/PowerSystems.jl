@@ -482,6 +482,7 @@ end
     @test dynamics[1] == Gen1AVR
     @test get_dynamic_injector(static_gen) == Gen1AVR
     @test get_base_power(static_gen) == get_base_power(Gen1AVR)
+    @test PSY.compare_values(static_gen, deepcopy(static_gen))
 
     remove_component!(sys, Gen1AVR)
     @test isnothing(get_dynamic_injector(static_gen))

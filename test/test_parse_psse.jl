@@ -23,10 +23,11 @@ end
 
 @testset "PSSE Component Parsing" begin
     @info "Testing Load Parsing"
-    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
+    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/impedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 223.71
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
           583.546
+    PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
     @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
@@ -36,6 +37,24 @@ end
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
+
+    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
+
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "5circuit_3w.raw")
+    sys5 = System(file_dir)
+
+    @info "Testing  Three-Winding Transformer Parsing"
+    @test isnothing(get_component(Transformer3W, sys3, "1"))
+    @test get_available(
+        get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_A"),
+    ) == false
+    @test length(get_components(Transformer3W, sys5)) == 5
+
+    @info "Testing Switched Shunt Parsing"
+    @test get_available(get_component(SwitchedAdmittance, sys3, "1030_9")) == false
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1003_1")) == true
 
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")

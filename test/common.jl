@@ -175,33 +175,37 @@ function create_system_with_outages()
     gen2 = gens[2]
     geo1 = GeographicInfo(; geo_json = Dict("x" => 1.0, "y" => 2.0))
     geo2 = GeographicInfo(; geo_json = Dict("x" => 3.0, "y" => 4.0))
-    add_supplemental_attribute!(sys, gen1, geo1)
-    add_supplemental_attribute!(sys, gen1.bus, geo1)
-    add_supplemental_attribute!(sys, gen2, geo2)
-    add_supplemental_attribute!(sys, gen2.bus, geo2)
-    initial_time = Dates.DateTime("2020-01-01T00:00:00")
-    end_time = Dates.DateTime("2020-01-01T23:00:00")
-    dates = collect(initial_time:Dates.Hour(1):end_time)
-    fo1 = GeometricDistributionForcedOutage(;
-        mean_time_to_recovery = 1.0,
-        outage_transition_probability = 0.5,
-    )
-    fo2 = GeometricDistributionForcedOutage(;
-        mean_time_to_recovery = 2.0,
-        outage_transition_probability = 0.5,
-    )
-    po1 = PlannedOutage(; outage_schedule = "1")
-    po2 = PlannedOutage(; outage_schedule = "2")
-    add_supplemental_attribute!(sys, gen1, fo1)
-    add_supplemental_attribute!(sys, gen1, po1)
-    add_supplemental_attribute!(sys, gen2, fo2)
-    add_supplemental_attribute!(sys, gen2, po2)
-    for (i, outage) in enumerate((fo1, fo2, po1, po2))
-        data = collect(i:(i + 23))
-        ta = TimeSeries.TimeArray(dates, data, ["1"])
-        name = "ts_$(i)"
-        ts = SingleTimeSeries(; name = name, data = ta)
-        add_time_series!(sys, outage, ts)
+    begin_time_series_update(sys) do
+        begin_supplemental_attributes_update(sys) do
+            add_supplemental_attribute!(sys, gen1, geo1)
+            add_supplemental_attribute!(sys, gen1.bus, geo1)
+            add_supplemental_attribute!(sys, gen2, geo2)
+            add_supplemental_attribute!(sys, gen2.bus, geo2)
+            initial_time = Dates.DateTime("2020-01-01T00:00:00")
+            end_time = Dates.DateTime("2020-01-01T23:00:00")
+            dates = collect(initial_time:Dates.Hour(1):end_time)
+            fo1 = GeometricDistributionForcedOutage(;
+                mean_time_to_recovery = 1.0,
+                outage_transition_probability = 0.5,
+            )
+            fo2 = GeometricDistributionForcedOutage(;
+                mean_time_to_recovery = 2.0,
+                outage_transition_probability = 0.5,
+            )
+            po1 = PlannedOutage(; outage_schedule = "1")
+            po2 = PlannedOutage(; outage_schedule = "2")
+            add_supplemental_attribute!(sys, gen1, fo1)
+            add_supplemental_attribute!(sys, gen1, po1)
+            add_supplemental_attribute!(sys, gen2, fo2)
+            add_supplemental_attribute!(sys, gen2, po2)
+            for (i, outage) in enumerate((fo1, fo2, po1, po2))
+                data = collect(i:(i + 23))
+                ta = TimeSeries.TimeArray(dates, data, ["1"])
+                name = "ts_$(i)"
+                ts = SingleTimeSeries(; name = name, data = ta)
+                add_time_series!(sys, outage, ts)
+            end
+        end
     end
 
     return sys

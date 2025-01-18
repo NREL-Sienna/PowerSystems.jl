@@ -289,6 +289,39 @@ end
     end
 end
 
+@testset "Test begin_time_series_update" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.bustype = ACBusTypes.REF
+    add_component!(sys, bus)
+    components = []
+    len = 2
+    component = ThermalStandard(nothing)
+    component.name = "gen"
+    component.bus = bus
+    add_component!(sys, component)
+    initial_time = Dates.DateTime("2020-09-01")
+    resolution = Dates.Hour(1)
+    len = 24
+    timestamps = range(initial_time; length = len, step = resolution)
+    arrays = [TimeSeries.TimeArray(timestamps, rand(len)) for _ in 1:5]
+    ts_name = "test"
+
+    begin_time_series_update(sys) do
+        for (i, ta) in enumerate(arrays)
+            ts = SingleTimeSeries(; data = ta, name = "$(ts_name)_$(i)")
+            add_time_series!(sys, component, ts)
+        end
+    end
+
+    open_time_series_store!(sys, "r") do
+        for (i, expected_array) in enumerate(arrays)
+            ts = IS.get_time_series(IS.SingleTimeSeries, component, "$(ts_name)_$(i)")
+            @test ts.data == expected_array
+        end
+    end
+end
+
 @testset "Test set_name! of system component" begin
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -404,6 +437,35 @@ end
     for component in get_components(x -> has_time_series(x), Component, sys2)
         @test component.internal.shared_system_references.time_series_manager ===
               sys2.data.time_series_manager
+    end
+end
+
+@testset "Test fast deepcopy of system" begin
+    systems = Dict(
+        in_memory => PSB.build_system(
+            PSITestSystems,
+            "test_RTS_GMLC_sys";
+            time_series_in_memory = in_memory,
+            force_build = true,
+        ) for in_memory in (true, false)
+    )
+    @testset for (in_memory, skip_ts, skip_sa) in  # Iterate over all permutations
+                 Iterators.product(repeat([(true, false)], 3)...)
+        sys = systems[in_memory]
+
+        sys2 = IS.fast_deepcopy_system(sys;
+            skip_time_series = skip_ts, skip_supplemental_attributes = skip_sa)
+        @test IS.compare_values(
+            sys,
+            sys2;
+            exclude = Set(
+                [:time_series_manager, :supplemental_attribute_manager][[skip_ts, skip_sa]],
+            ),
+        )
+
+        # We copy the SystemData separately from the other System fields, so the egal-ity of these references could get broken
+        generator = get_component(ThermalStandard, sys2, "322_CT_6")
+        @test sys2.units_settings === generator.internal.units_info
     end
 end
 
