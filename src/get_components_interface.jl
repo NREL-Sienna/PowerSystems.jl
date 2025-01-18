@@ -92,7 +92,9 @@ get_components(
     IS.get_components(filter_func, T, sys; subsystem_name = subsystem_name)
 
 """
-Get the components of the `System` that make up the `ComponentSelector`.
+Get the components of the `System` that make up the `ComponentSelector`. Optionally specify
+a filter function `scope_limiter` as the first argument to limit the components that should
+be considered.
 """
 get_components(
     scope_limiter::Union{Function, Nothing},
@@ -128,7 +130,8 @@ get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Componen
 
 """
 Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
-if there is none.
+if there is none. Optionally specify a filter function `scope_limiter` as the first argument
+to limit the components that should be considered.
 """
 get_component(
     scope_limiter::Union{Function, Nothing},
@@ -168,6 +171,8 @@ get_available_components(
 
 """
 Get the available components of the collection that make up the `ComponentSelector`.
+Optionally specify a filter function `scope_limiter` as the first argument to further limit
+the components that should be considered.
 """
 get_available_components(
     scope_limiter::Union{Function, Nothing},
@@ -197,7 +202,9 @@ get_available_component(::Type{T}, sys::System, args...; kwargs...) where {T <: 
     IS.get_available_component(T, sys, args...; kwargs...)
 
 """
-Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
+Like [`get_component`](@ref) but also returns `nothing` if the component is not
+`get_available`. Optionally specify a filter function `scope_limiter` as the first argument
+to limit the components that should be considered.
 """
 get_available_component(
     scope_limiter::Union{Function, Nothing},
@@ -217,7 +224,8 @@ get_available_component(
 
 # get_groups
 """
-Get the groups that make up the `ComponentSelector`.
+Get the groups that make up the `ComponentSelector`. Optionally specify a filter function
+`scope_limiter` as the first argument to limit the components that should be considered.
 """
 get_groups(
     scope_limiter::Union{Function, Nothing},
@@ -235,6 +243,8 @@ get_groups(selector::ComponentSelector, sys::System) =
 # get_available_groups
 """
 Like [`get_groups`](@ref) but as if the `System` only contained its available components.
+Optionally specify a filter function `scope_limiter` as the first argument to limit the
+components that should be considered.
 """
 get_available_groups(
     scope_limiter::Union{Function, Nothing},
