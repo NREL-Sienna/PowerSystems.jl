@@ -92,14 +92,14 @@ function get_logging_level_from_env(env_name::String, default)
 end
 
 function run_tests()
-    logging_config_filename = get(ENV, "SIIP_LOGGING_CONFIG", nothing)
+    logging_config_filename = get(ENV, "sienna_LOGGING_CONFIG", nothing)
     if logging_config_filename !== nothing
         config = IS.LoggingConfiguration(logging_config_filename)
     else
         config = IS.LoggingConfiguration(;
             filename = LOG_FILE,
-            file_level = get_logging_level_from_env("SIIP_FILE_LOG_LEVEL", "Info"),
-            console_level = get_logging_level_from_env("SIIP_CONSOLE_LOG_LEVEL", "Error"),
+            file_level = get_logging_level_from_env("sienna_FILE_LOG_LEVEL", "Info"),
+            console_level = get_logging_level_from_env("sienna_CONSOLE_LOG_LEVEL", "Error"),
         )
     end
     console_logger = ConsoleLogger(config.console_stream, config.console_level)
