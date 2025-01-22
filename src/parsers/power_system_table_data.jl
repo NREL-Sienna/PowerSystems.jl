@@ -481,6 +481,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 loss = loss,
             )
         else
+            # TODO: Update this Table Data Parser
             rectifier_taplimits = (
                 min = dc_branch.rectifier_tap_limits_min,
                 max = dc_branch.rectifier_tap_limits_max,
@@ -496,7 +497,8 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 min = dc_branch.inverter_firing_angle_min,
                 max = dc_branch.inverter_firing_angle_max,
             )
-            value = TwoTerminalVSCDCLine(;
+            # TODO: Update this method
+            value = TwoTerminalLCCLine(;
                 name = dc_branch.name,
                 available = true,
                 active_power_flow = pf,

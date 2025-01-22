@@ -175,7 +175,7 @@
         {
             "name": "dc_line_category",
             "value_options": [
-                "TwoTerminalVSCDCLine",
+                "TwoTerminalLCCLine",
                 "TwoTerminalHVDCLine"
             ],
             "description": "Type of Struct",
