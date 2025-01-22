@@ -561,8 +561,8 @@ export get_inv_d_fluxlink
 export get_inv_q_fluxlink
 export get_inverter_base_voltage
 export get_inverter_bridges
-export get_inverter_margin_angle
-export get_inverter_margin_angle_limits
+export get_inverter_extinction_angle
+export get_inverter_extinction_angle_limits
 export get_inverter_rc
 export get_inverter_tap_limits
 export get_inverter_tap_setting
@@ -1152,8 +1152,8 @@ export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
 export set_inverter_base_voltage!
 export set_inverter_bridges!
-export set_inverter_margin_angle!
-export set_inverter_margin_angle_limits!
+export set_inverter_extinction_angle!
+export set_inverter_extinction_angle_limits!
 export set_inverter_rc!
 export set_inverter_tap_limits!
 export set_inverter_tap_setting!

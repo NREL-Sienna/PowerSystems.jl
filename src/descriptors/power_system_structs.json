@@ -1307,8 +1307,8 @@
                     "data_type": "Int"
                 },
                 {
-                    "name": "inverter_margin_angle_limits",
-                    "comment": "Minimum and maximum inverter margin angle (γ) (radians)",
+                    "name": "inverter_extinction_angle_limits",
+                    "comment": "Minimum and maximum inverter extinction angle (γ) (radians)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
@@ -1422,8 +1422,8 @@
                     "default": "0.00625"
                 },
                 {
-                    "name": "inverter_margin_angle",
-                    "comment": "Rectifier margin angle (γ).",
+                    "name": "inverter_extinction_angle",
+                    "comment": "Inverter extinction angle (γ).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
