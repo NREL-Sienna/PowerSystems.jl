@@ -840,15 +840,56 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if dcline["MDC"] == 1
                     abs(dcline["SETVL"])
                 elseif dcline["MDC"] == 2
-                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                    abs(dcline["SETVL"] * pop!(dcline, "VSCHD") / 1000) # Amp * V 
                 else
                     0
                 end
-
+            
+            sub_data["transfer_setpoint"] = dcline["SETVL"]
+            
+            sub_data["name"] = dcline["NAME"]
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
-            sub_data["br_status"] = pop!(dcline, "MDC") == 0 ? 0 : 1
+
+            if dcline["MDC"] == 1
+                sub_data["power_mode"] = true
+            else
+                sub_data["power_mode"] = false
+            end
+            sub_data["available"] = dcline["MDC"] == 0 ? false : true
+            sub_data["br_status"] = sub_data["available"]
+
+            sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
+
+            sub_data["rectifier_bridges"] = dcline["NBR"]
+            sub_data["rectifier_rc"] = dcline["RCR"]
+            sub_data["rectifier_xc"] = dcline["XCR"]
+            sub_data["rectifier_base_voltage"] = dcline["EBASR"]
+
+            sub_data["inverter_bridges"] = dcline["NBI"]
+            sub_data["inverter_rc"] = dcline["RCI"]
+            sub_data["inverter_xc"] = dcline["XCI"]
+            sub_data["inverter_base_voltage"] = dcline["EBASI"]
+
+            sub_data["switch_mode_voltage"] = dcline["VCMOD"]
+            sub_data["compounding_resistance"] = dcline["RCOMP"]
+            sub_data["min_compounding_voltage"] = dcline["DCVMIN"]
+
+            sub_data["rectifier_transformer_ratio"] = dcline["TRR"]
+            sub_data["rectifier_tap_setting"] = dcline["TAPR"]
+            sub_data["rectifier_tap_limits"] = (min=dcline["TMNR"], max=dcline["TMXR"])
+            sub_data["rectifier_tap_step"] = dcline["STPR"]
+
+            sub_data["inverter_transformer_ratio"] = dcline["TRI"]
+            sub_data["inverter_tap_setting"] = dcline["TAPI"]
+            sub_data["inverter_tap_limits"] = (min=dcline["TMNI"], max=dcline["TMXI"])
+            sub_data["inverter_tap_step"] = dcline["STPI"]
+            
+            sub_data["loss0"] = 0.0
+            sub_data["loss1"] = 0.0
+
             sub_data["pf"] = power_demand
+            sub_data["active_power_flow"] = sub_data["pf"]
             sub_data["pt"] = power_demand
             sub_data["qf"] = 0.0
             sub_data["qt"] = 0.0
@@ -856,19 +897,24 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["vt"] = _get_bus_value(pop!(dcline, "IPI"), "vm", pm_data)
 
             sub_data["pminf"] = 0.0
-            sub_data["pmaxf"] = dcline["SETVL"] > 0 ? power_demand : -power_demand
+            sub_data["pmaxf"] = dcline["SETVL"] > 0 ? power_demand : -power_demand  
             sub_data["pmint"] = pop!(dcline, "SETVL") > 0 ? -power_demand : power_demand
             sub_data["pmaxt"] = 0.0
 
             anmn = []
             for key in ["ANMNR", "ANMNI"]
                 if abs(dcline[key]) <= 90.0
-                    push!(anmn, pop!(dcline, key))
+                    push!(anmn, dcline[key])
                 else
                     push!(anmn, 0)
                     @info("$key outside reasonable limits, setting to 0 degress")
                 end
             end
+            sub_data["rectifier_delay_angle_limits"]     = (min=deg2rad(anmn[1]), max=deg2rad(dcline["ANMXR"]))
+            sub_data["inverter_extinction_angle_limits"] = (min=deg2rad(anmn[2]), max=deg2rad(dcline["ANMXI"]))
+
+            sub_data["rectifier_delay_angle"] = deg2rad(anmn[1])
+            sub_data["inverter_extinction_angle"] = deg2rad(anmn[2])
 
             sub_data["qmaxf"] = 0.0
             sub_data["qmaxt"] = 0.0
@@ -877,16 +923,19 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qmint"] =
                 -max(abs(sub_data["pmint"]), abs(sub_data["pmaxt"])) * cosd(anmn[2])
 
-            # Can we use "number of bridges in series (NBR/NBI)" to compute a loss?
-            sub_data["loss0"] = 0.0
-            sub_data["loss1"] = 0.0
+            sub_data["active_power_limits_from"] = (min=sub_data["pminf"], max=sub_data["pmaxf"])
+            sub_data["active_power_limits_to"] = (min=sub_data["pmint"], max=sub_data["pmaxt"])
+            sub_data["reactive_power_limits_from"] = (min=sub_data["qminf"], max=sub_data["qmaxf"])
+            sub_data["reactive_power_limits_to"] = (min=sub_data["qmint"], max=sub_data["qmaxt"])
+
+            sub_data["commutating_capacitor_reactance"] = dcline["XCAPR"]    
 
             # Costs (set to default values)
-            sub_data["startup"] = 0.0
-            sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 0.0, 0.0]
-            sub_data["model"] = 2
+            # sub_data["startup"] = 0.0
+            # sub_data["shutdown"] = 0.0
+            # sub_data["ncost"] = 3
+            # sub_data["cost"] = [0.0, 0.0, 0.0]
+            # sub_data["model"] = 2
 
             sub_data["source_id"] = [
                 "two-terminal dc",
@@ -1105,5 +1154,6 @@ function parse_psse(io::IO; kwargs...)::Dict
     )
     pti_data = parse_pti(io)
     pm = _pti_to_powermodels!(pti_data; kwargs...)
+
     return pm
 end
