@@ -1381,7 +1381,7 @@
                 },
                 {
                     "name": "rectifier_tap_step",
-                    "comment": "Rectifier transformer tap setting.",
+                    "comment": "Rectifier transformer tap step value",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.00625"
@@ -1416,7 +1416,7 @@
                 },
                 {
                     "name": "inverter_tap_step",
-                    "comment": "Inverter transformer tap setting.",
+                    "comment": "Inverter transformer tap step value.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.00625"
@@ -1424,6 +1424,20 @@
                 {
                     "name": "inverter_extinction_angle",
                     "comment": "Inverter extinction angle (γ).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "rectifier_capacitor_reactance",
+                    "comment": "Commutating rectifier capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "inverter_capacitor_reactance",
+                    "comment": "Commutating inverter capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"

@@ -494,7 +494,6 @@ export get_bustype
 export get_c
 export get_c_dc
 export get_cf
-export get_commutating_capacitor_reactance
 export get_compounding_resistance
 export get_constant_active_power
 export get_constant_reactive_power
@@ -562,6 +561,7 @@ export get_inv_d_fluxlink
 export get_inv_q_fluxlink
 export get_inverter_base_voltage
 export get_inverter_bridges
+export get_inverter_capacitor_reactance
 export get_inverter_extinction_angle
 export get_inverter_extinction_angle_limits
 export get_inverter_rc
@@ -646,6 +646,7 @@ export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
 export get_rectifier_base_voltage
 export get_rectifier_bridges
+export get_rectifier_capacitor_reactance
 export get_rectifier_delay_angle
 export get_rectifier_delay_angle_limits
 export get_rectifier_rc
@@ -1086,7 +1087,6 @@ export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
-export set_commutating_capacitor_reactance!
 export set_compounding_resistance!
 export set_constant_active_power!
 export set_constant_reactive_power!
@@ -1154,6 +1154,7 @@ export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
 export set_inverter_base_voltage!
 export set_inverter_bridges!
+export set_inverter_capacitor_reactance!
 export set_inverter_extinction_angle!
 export set_inverter_extinction_angle_limits!
 export set_inverter_rc!
@@ -1238,6 +1239,7 @@ export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
 export set_rectifier_base_voltage!
 export set_rectifier_bridges!
+export set_rectifier_capacitor_reactance!
 export set_rectifier_delay_angle!
 export set_rectifier_delay_angle_limits!
 export set_rectifier_rc!
