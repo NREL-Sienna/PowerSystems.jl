@@ -494,6 +494,7 @@ export get_bustype
 export get_c
 export get_c_dc
 export get_cf
+export get_commutating_capacitor_reactance
 export get_compounding_resistance
 export get_constant_active_power
 export get_constant_reactive_power
@@ -1085,6 +1086,7 @@ export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
+export set_commutating_capacitor_reactance!
 export set_compounding_resistance!
 export set_constant_active_power!
 export set_constant_reactive_power!
