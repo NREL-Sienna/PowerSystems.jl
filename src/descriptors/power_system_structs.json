@@ -1394,6 +1394,13 @@
                     "default": "0.0"
                 },
                 {
+                    "name": "rectifier_capacitor_reactance",
+                    "comment": "Commutating rectifier capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
                     "name": "inverter_transformer_ratio",
                     "comment": "Inverter transformer ratio between the primary and secondary side AC voltages.",
                     "null_value": "0.0",
@@ -1424,13 +1431,6 @@
                 {
                     "name": "inverter_extinction_angle",
                     "comment": "Inverter extinction angle (γ).",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "0.0"
-                },
-                {
-                    "name": "rectifier_capacitor_reactance",
-                    "comment": "Commutating rectifier capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
