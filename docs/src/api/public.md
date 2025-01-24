@@ -74,7 +74,7 @@ Filter = t -> nameof(t) in names(PowerSystems)
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["base.jl"]
+Pages   = ["get_components_interface.jl", "base.jl", "component_selector.jl"]
 Public = true
 Private = false
 Filter = t -> t ∈ [System]
@@ -82,7 +82,7 @@ Filter = t -> t ∈ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["base.jl"]
+Pages   = ["get_components_interface.jl", "base.jl", "component_selector.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]

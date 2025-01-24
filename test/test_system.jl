@@ -7,6 +7,11 @@
     generator = get_component(ThermalStandard, sys, get_name(generators[1]))
     @test IS.get_uuid(generator) == IS.get_uuid(generators[1])
     @test_throws(IS.ArgumentError, add_component!(sys, generator))
+    @test get_available_component(ThermalStandard, sys, get_name(generators[1])) ===
+          generator
+    set_available!(generator, false)
+    @test isnothing(get_available_component(ThermalStandard, sys, get_name(generators[1])))
+    set_available!(generator, true)
 
     generators2 = get_components_by_name(ThermalGen, sys, get_name(generators[1]))
     @test length(generators2) == 1
@@ -21,6 +26,7 @@
     )
     @test isempty(get_components(x -> (!get_available(x)), ThermalStandard, sys))
     @test !isempty(get_available_components(ThermalStandard, sys))
+    @test !isempty(get_available_components(x -> true, ThermalStandard, sys))
     # Test get_bus* functionality.
     bus_numbers = Vector{Int}()
     for bus in get_components(ACBus, sys)

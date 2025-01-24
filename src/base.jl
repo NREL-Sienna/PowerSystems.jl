@@ -99,7 +99,7 @@ sys = System(100.0; compression = CompressionSettings(
 sys = System(100.0; time_series_in_memory = true)
 ```
 """
-struct System <: IS.InfrastructureSystemsType
+struct System <: IS.ComponentContainer
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -1128,7 +1128,11 @@ See [`get_components_by_name`](@ref) for abstract types with non-unique names ac
 Throws ArgumentError if T is not a concrete type and there is more than one component with
     requested name
 """
-function get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
+function IS.get_component(
+    ::Type{T},
+    sys::System,
+    name::AbstractString,
+) where {T <: Component}
     return IS.get_component(T, sys.data, name)
 end
 
@@ -1153,7 +1157,7 @@ See also: [`iterate_components`](@ref), [`get_components` with a filter](@ref ge
 ) where {T <: Component}),
 [`get_available_components`](@ref), [`get_buses`](@ref)
 """
-function get_components(
+function IS.get_components(
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
@@ -1161,28 +1165,7 @@ function get_components(
     return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
-"""
-Return an iterator of components of a given `Type` from a [`System`](@ref), using an
-additional filter
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
-Call collect on the result if an array is desired.
-
-# Examples
-```julia
-iter_coal = get_components(x -> get_fuel(x) == ThermalFuels.COAL, Generator, sys)
-pv_gens =
-    collect(get_components(x -> get_prime_mover_type(x) == PrimeMovers.PVe, Generator, sys))
-```
-
-See also: [`get_components`](@ref get_components(
-    ::Type{T},
-    sys::System;
-    subsystem_name = nothing,
-) where {T <: Component}), [`get_available_components`](@ref),
-[`get_buses`](@ref)
-"""
-function get_components(
+function IS.get_components(
     filter_func::Function,
     ::Type{T},
     sys::System;
@@ -1194,15 +1177,15 @@ end
 """
 Return a vector of components that are attached to the supplemental attribute.
 """
-function get_components(sys::System, attribute::SupplementalAttribute)
+function IS.get_components(sys::System, attribute::SupplementalAttribute)
     return IS.get_components(sys.data, attribute)
 end
 
 """
 Get the component by UUID.
 """
-get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
+IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
 
 """
 Change the UUID of a component.
@@ -1237,16 +1220,10 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-"""
-Returns iterator of available components in a [`System`](@ref).
-
-`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref)
-and must have the method `get_available` implemented.
-Call collect on the result if an array is desired.
-"""
-function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(get_available, T, sys)
-end
+# PSY availability is a pure function of the component and the system is not needed; here we
+# implement the required IS.ComponentContainer interface
+IS.get_available(::System, component::Component) =
+    get_available(component)
 
 """
 Return true if the component is attached to the system.
