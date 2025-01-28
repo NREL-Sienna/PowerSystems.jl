@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         arc::Arc
         active_power_flow::Float64
+        r::Float64
         transfer_setpoint::Float64
         scheduled_dc_voltage::Float64
         rectifier_bridges::Int
@@ -57,6 +58,7 @@ As implemented in PSS/E.
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `arc::Arc`: An [`Arc`](@ref) defining this line `from` a rectifier bus `to` an inverter bus. The rectifier bus must be specified in the `from` bus and inverter bus in the `to` bus.
 - `active_power_flow::Float64`: Initial condition of active power flow on the line (MW)
+- `r::Float64`: Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `transfer_setpoint::Float64`: Desired set-point of power. If `power_mode = true` this value is in MW units, and if `power_mode = false` is in Amperes units. This parameter must not be specified in per-unit. A positive value represents the desired consumed power at the rectifier bus, while a negative value represents the desired power at the inverter bus (i.e. the absolute value of `transfer_setpoint` is the generated power at the inverter bus).
 - `scheduled_dc_voltage::Float64`: Scheduled compounded DC voltage in kV. By default this parameter is the scheduled DC voltage in the inverter bus This parameter must not be specified in per-unit.
 - `rectifier_bridges::Int`: Number of bridges in series in the rectifier side.
@@ -103,6 +105,8 @@ mutable struct TwoTerminalLCCLine <: ACBranch
     arc::Arc
     "Initial condition of active power flow on the line (MW)"
     active_power_flow::Float64
+    "Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
+    r::Float64
     "Desired set-point of power. If `power_mode = true` this value is in MW units, and if `power_mode = false` is in Amperes units. This parameter must not be specified in per-unit. A positive value represents the desired consumed power at the rectifier bus, while a negative value represents the desired power at the inverter bus (i.e. the absolute value of `transfer_setpoint` is the generated power at the inverter bus)."
     transfer_setpoint::Float64
     "Scheduled compounded DC voltage in kV. By default this parameter is the scheduled DC voltage in the inverter bus This parameter must not be specified in per-unit."
@@ -177,12 +181,12 @@ mutable struct TwoTerminalLCCLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalLCCLine(name, available, arc, active_power_flow, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode=true, switch_mode_voltage=0.0, compounding_resistance=0.0, min_compounding_voltage=0.0, rectifier_transformer_ratio=1.0, rectifier_tap_setting=1.0, rectifier_tap_limits=(min=0.51, max=1.5), rectifier_tap_step=0.00625, rectifier_delay_angle=0.0, rectifier_capacitor_reactance=0.0, inverter_transformer_ratio=1.0, inverter_tap_setting=1.0, inverter_tap_limits=(min=0.51, max=1.5), inverter_tap_step=0.00625, inverter_extinction_angle=0.0, inverter_capacitor_reactance=0.0, active_power_limits_from=(min=0.0, max=0.0), active_power_limits_to=(min=0.0, max=0.0), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalLCCLine(name, available, arc, active_power_flow, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode, switch_mode_voltage, compounding_resistance, min_compounding_voltage, rectifier_transformer_ratio, rectifier_tap_setting, rectifier_tap_limits, rectifier_tap_step, rectifier_delay_angle, rectifier_capacitor_reactance, inverter_transformer_ratio, inverter_tap_setting, inverter_tap_limits, inverter_tap_step, inverter_extinction_angle, inverter_capacitor_reactance, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalLCCLine(name, available, arc, active_power_flow, r, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode=true, switch_mode_voltage=0.0, compounding_resistance=0.0, min_compounding_voltage=0.0, rectifier_transformer_ratio=1.0, rectifier_tap_setting=1.0, rectifier_tap_limits=(min=0.51, max=1.5), rectifier_tap_step=0.00625, rectifier_delay_angle=0.0, rectifier_capacitor_reactance=0.0, inverter_transformer_ratio=1.0, inverter_tap_setting=1.0, inverter_tap_limits=(min=0.51, max=1.5), inverter_tap_step=0.00625, inverter_extinction_angle=0.0, inverter_capacitor_reactance=0.0, active_power_limits_from=(min=0.0, max=0.0), active_power_limits_to=(min=0.0, max=0.0), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalLCCLine(name, available, arc, active_power_flow, r, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode, switch_mode_voltage, compounding_resistance, min_compounding_voltage, rectifier_transformer_ratio, rectifier_tap_setting, rectifier_tap_limits, rectifier_tap_step, rectifier_delay_angle, rectifier_capacitor_reactance, inverter_transformer_ratio, inverter_tap_setting, inverter_tap_limits, inverter_tap_step, inverter_extinction_angle, inverter_capacitor_reactance, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalLCCLine(; name, available, arc, active_power_flow, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode=true, switch_mode_voltage=0.0, compounding_resistance=0.0, min_compounding_voltage=0.0, rectifier_transformer_ratio=1.0, rectifier_tap_setting=1.0, rectifier_tap_limits=(min=0.51, max=1.5), rectifier_tap_step=0.00625, rectifier_delay_angle=0.0, rectifier_capacitor_reactance=0.0, inverter_transformer_ratio=1.0, inverter_tap_setting=1.0, inverter_tap_limits=(min=0.51, max=1.5), inverter_tap_step=0.00625, inverter_extinction_angle=0.0, inverter_capacitor_reactance=0.0, active_power_limits_from=(min=0.0, max=0.0), active_power_limits_to=(min=0.0, max=0.0), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalLCCLine(name, available, arc, active_power_flow, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode, switch_mode_voltage, compounding_resistance, min_compounding_voltage, rectifier_transformer_ratio, rectifier_tap_setting, rectifier_tap_limits, rectifier_tap_step, rectifier_delay_angle, rectifier_capacitor_reactance, inverter_transformer_ratio, inverter_tap_setting, inverter_tap_limits, inverter_tap_step, inverter_extinction_angle, inverter_capacitor_reactance, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
+function TwoTerminalLCCLine(; name, available, arc, active_power_flow, r, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode=true, switch_mode_voltage=0.0, compounding_resistance=0.0, min_compounding_voltage=0.0, rectifier_transformer_ratio=1.0, rectifier_tap_setting=1.0, rectifier_tap_limits=(min=0.51, max=1.5), rectifier_tap_step=0.00625, rectifier_delay_angle=0.0, rectifier_capacitor_reactance=0.0, inverter_transformer_ratio=1.0, inverter_tap_setting=1.0, inverter_tap_limits=(min=0.51, max=1.5), inverter_tap_step=0.00625, inverter_extinction_angle=0.0, inverter_capacitor_reactance=0.0, active_power_limits_from=(min=0.0, max=0.0), active_power_limits_to=(min=0.0, max=0.0), reactive_power_limits_from=(min=0.0, max=0.0), reactive_power_limits_to=(min=0.0, max=0.0), loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalLCCLine(name, available, arc, active_power_flow, r, transfer_setpoint, scheduled_dc_voltage, rectifier_bridges, rectifier_delay_angle_limits, rectifier_rc, rectifier_xc, rectifier_base_voltage, inverter_bridges, inverter_extinction_angle_limits, inverter_rc, inverter_xc, inverter_base_voltage, power_mode, switch_mode_voltage, compounding_resistance, min_compounding_voltage, rectifier_transformer_ratio, rectifier_tap_setting, rectifier_tap_limits, rectifier_tap_step, rectifier_delay_angle, rectifier_capacitor_reactance, inverter_transformer_ratio, inverter_tap_setting, inverter_tap_limits, inverter_tap_step, inverter_extinction_angle, inverter_capacitor_reactance, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -192,6 +196,7 @@ function TwoTerminalLCCLine(::Nothing)
         available=false,
         arc=Arc(ACBus(nothing), ACBus(nothing)),
         active_power_flow=0.0,
+        r=0.0,
         transfer_setpoint=0.0,
         scheduled_dc_voltage=0.0,
         rectifier_bridges=0,
@@ -238,6 +243,8 @@ get_available(value::TwoTerminalLCCLine) = value.available
 get_arc(value::TwoTerminalLCCLine) = value.arc
 """Get [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
 get_active_power_flow(value::TwoTerminalLCCLine) = get_value(value, value.active_power_flow)
+"""Get [`TwoTerminalLCCLine`](@ref) `r`."""
+get_r(value::TwoTerminalLCCLine) = value.r
 """Get [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
 get_transfer_setpoint(value::TwoTerminalLCCLine) = value.transfer_setpoint
 """Get [`TwoTerminalLCCLine`](@ref) `scheduled_dc_voltage`."""
@@ -317,6 +324,8 @@ set_available!(value::TwoTerminalLCCLine, val) = value.available = val
 set_arc!(value::TwoTerminalLCCLine, val) = value.arc = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, val)
+"""Set [`TwoTerminalLCCLine`](@ref) `r`."""
+set_r!(value::TwoTerminalLCCLine, val) = value.r = val
 """Set [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
 set_transfer_setpoint!(value::TwoTerminalLCCLine, val) = value.transfer_setpoint = val
 """Set [`TwoTerminalLCCLine`](@ref) `scheduled_dc_voltage`."""

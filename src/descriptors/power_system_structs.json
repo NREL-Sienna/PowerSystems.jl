@@ -1700,6 +1700,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
+                },
+                {
                     "name": "transfer_setpoint",
                     "comment": "Desired set-point of power. If `power_mode = true` this value is in MW units, and if `power_mode = false` is in Amperes units. This parameter must not be specified in per-unit. A positive value represents the desired consumed power at the rectifier bus, while a negative value represents the desired power at the inverter bus (i.e. the absolute value of `transfer_setpoint` is the generated power at the inverter bus).",
                     "null_value": "0.0",
