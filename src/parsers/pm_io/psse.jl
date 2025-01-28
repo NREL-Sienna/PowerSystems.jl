@@ -1084,6 +1084,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["rectifier_capacitor_reactance"] = dcline["XCAPR"] / ZbaseR
             sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
+            sub_data["r"] = dcline["RDC"] / ZbaseR            
 
             sub_data["source_id"] = [
                 "two-terminal dc",

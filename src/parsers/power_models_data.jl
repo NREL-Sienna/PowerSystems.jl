@@ -917,8 +917,9 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
         return TwoTerminalLCCLine(;
             name = name,
             available = d["available"],
-            active_power_flow = get(d, "pf", 0.0),
             arc = Arc(bus_f, bus_t),
+            active_power_flow = get(d, "pf", 0.0),
+            r = d["r"],
             transfer_setpoint = d["transfer_setpoint"],
             scheduled_dc_voltage = d["scheduled_dc_voltage"],
             rectifier_bridges = d["rectifier_bridges"],
