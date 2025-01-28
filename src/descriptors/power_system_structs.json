@@ -4218,7 +4218,7 @@
                     "name": "operation_cost",
                     "comment": "[`OperationalCost`](@ref) of storage",
                     "null_value": "StorageCost(nothing)",
-                    "data_type": "StorageCost",
+                    "data_type": "Union{StorageCost, MarketBidCost}",
                     "default": "StorageCost(nothing)"
                 },
                 {
