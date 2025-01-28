@@ -481,7 +481,9 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 loss = loss,
             )
         else
-            error("Only control mode = Power is supported for DC Branch $(dc_branch.name) in TableData.")
+            error(
+                "Only control mode = Power is supported for DC Branch $(dc_branch.name) in TableData.",
+            )
         end
 
         add_component!(sys, value)
