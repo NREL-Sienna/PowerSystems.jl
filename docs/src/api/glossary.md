@@ -67,6 +67,10 @@
     [`Time Series Data`](@ref ts_data).
   - *IPC*: Interconnecting power converter
 
+### L
+
+  - *LCC*: Line Commutated Converter HVDC line
+
 ### O
 
   - *OEL*: Over Excitation Limiter
@@ -114,7 +118,7 @@
 
 ### V
 
-  - *VSCDCLine*: Voltage-Source Converter Direct Current Line
+  - *VSCLine*: Voltage-Source Converter HVDC Line
 
   - *VSM*: Virtual Synchronous Machine
 
