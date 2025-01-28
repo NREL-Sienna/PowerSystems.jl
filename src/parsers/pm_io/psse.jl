@@ -973,6 +973,7 @@ PSS(R)E Voltage Source Converter specification.
 function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Two-Terminal and VSC DC line data into a PowerModels Dict..."
     pm_data["dcline"] = []
+    baseMVA = pm_data["baseMVA"]
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
@@ -986,7 +987,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if dcline["MDC"] == 1
                     abs(dcline["SETVL"])
                 elseif dcline["MDC"] == 2
-                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                    abs(dcline["SETVL"] * dcline["VSCHD"] / 1000) # Amp * V
                 else
                     0
                 end
