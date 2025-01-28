@@ -1449,6 +1449,12 @@
                     "data_type": "Bool"
                 },
                 {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
+                    "data_type": "Arc"
+                },
+                {
                     "name": "active_power_flow",
                     "comment": "Initial condition of active power flowing from the from-bus to the to-bus in DC.",
                     "null_value": "0.0",
@@ -1480,12 +1486,6 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
-                    "data_type": "Arc"
                 },
                 {
                     "null_value": "0.0",
