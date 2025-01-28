@@ -100,3 +100,18 @@ end
     lz_new = only(get_components(LoadZone, sys3))
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
 end
+
+@testset "PSSE LCC Parsing" begin
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "lcc_test.raw")
+    sys = System(file_dir)
+
+    lccs = get_components(TwoTerminalLCCLine, sys)
+    @test length(lccs) == 1
+    lcc = only(lccs)
+    @test get_transfer_setpoint(lcc) == 20.0
+    @test get_active_power_flow(lcc) == 0.2
+    @test isapprox(get_rectifier_delay_angle_limits(lcc).max, pi / 2)
+    @test isapprox(get_inverter_extinction_angle_limits(lcc).max, pi / 2)
+    @test get_power_mode(lcc)
+end
