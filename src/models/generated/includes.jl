@@ -12,7 +12,8 @@ include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("Transformer3W.jl")
 include("TwoTerminalHVDCLine.jl")
-include("TwoTerminalVSCDCLine.jl")
+include("TwoTerminalVSCLine.jl")
+include("TwoTerminalLCCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
 include("FixedAdmittance.jl")
@@ -501,10 +502,12 @@ export get_bustype
 export get_c
 export get_c_dc
 export get_cf
+export get_compounding_resistance
 export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_conversion_factor
+export get_converter_loss
 export get_current_active_power
 export get_current_reactive_power
 export get_cycle_limits
@@ -564,9 +567,17 @@ export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
+export get_inverter_base_voltage
+export get_inverter_bridges
+export get_inverter_capacitor_reactance
 export get_inverter_extinction_angle
+export get_inverter_extinction_angle_limits
+export get_inverter_rc
 export get_inverter_tap_limits
-export get_inverter_xrc
+export get_inverter_tap_setting
+export get_inverter_tap_step
+export get_inverter_transformer_ratio
+export get_inverter_xc
 export get_is_filter_differential
 export get_k1
 export get_k2
@@ -606,6 +617,7 @@ export get_max_impedance_reactive_power
 export get_max_output_fraction
 export get_max_participation_factor
 export get_max_reactive_power
+export get_min_compounding_voltage
 export get_must_run
 export get_n_states
 export get_name
@@ -619,6 +631,7 @@ export get_peak_reactive_power
 export get_phase_angle_limits
 export get_power_factor
 export get_power_gate_openings
+export get_power_mode
 export get_power_trajectory
 export get_primary_secondary_arc
 export get_primary_shunt
@@ -654,9 +667,17 @@ export get_reactive_power_limits
 export get_reactive_power_limits_from
 export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
-export get_rectifier_firing_angle
+export get_rectifier_base_voltage
+export get_rectifier_bridges
+export get_rectifier_capacitor_reactance
+export get_rectifier_delay_angle
+export get_rectifier_delay_angle_limits
+export get_rectifier_rc
 export get_rectifier_tap_limits
-export get_rectifier_xrc
+export get_rectifier_tap_setting
+export get_rectifier_tap_step
+export get_rectifier_transformer_ratio
+export get_rectifier_xc
 export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
@@ -667,6 +688,7 @@ export get_rg
 export get_rrpwr
 export get_rv
 export get_saturation_coeffs
+export get_scheduled_dc_voltage
 export get_secondary_tertiary_arc
 export get_secondary_turns_ratio
 export get_services
@@ -683,6 +705,7 @@ export get_storage_target
 export get_storage_technology_type
 export get_sustained_time
 export get_switch
+export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
@@ -696,6 +719,7 @@ export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
+export get_transfer_setpoint
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1103,10 +1127,12 @@ export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
+export set_compounding_resistance!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_conversion_factor!
+export set_converter_loss!
 export set_current_active_power!
 export set_current_reactive_power!
 export set_cycle_limits!
@@ -1166,9 +1192,17 @@ export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
+export set_inverter_base_voltage!
+export set_inverter_bridges!
+export set_inverter_capacitor_reactance!
 export set_inverter_extinction_angle!
+export set_inverter_extinction_angle_limits!
+export set_inverter_rc!
 export set_inverter_tap_limits!
-export set_inverter_xrc!
+export set_inverter_tap_setting!
+export set_inverter_tap_step!
+export set_inverter_transformer_ratio!
+export set_inverter_xc!
 export set_is_filter_differential!
 export set_k1!
 export set_k2!
@@ -1208,6 +1242,7 @@ export set_max_impedance_reactive_power!
 export set_max_output_fraction!
 export set_max_participation_factor!
 export set_max_reactive_power!
+export set_min_compounding_voltage!
 export set_must_run!
 export set_n_states!
 export set_name!
@@ -1221,6 +1256,7 @@ export set_peak_reactive_power!
 export set_phase_angle_limits!
 export set_power_factor!
 export set_power_gate_openings!
+export set_power_mode!
 export set_power_trajectory!
 export set_primary_secondary_arc!
 export set_primary_shunt!
@@ -1256,9 +1292,17 @@ export set_reactive_power_limits!
 export set_reactive_power_limits_from!
 export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
-export set_rectifier_firing_angle!
+export set_rectifier_base_voltage!
+export set_rectifier_bridges!
+export set_rectifier_capacitor_reactance!
+export set_rectifier_delay_angle!
+export set_rectifier_delay_angle_limits!
+export set_rectifier_rc!
 export set_rectifier_tap_limits!
-export set_rectifier_xrc!
+export set_rectifier_tap_setting!
+export set_rectifier_tap_step!
+export set_rectifier_transformer_ratio!
+export set_rectifier_xc!
 export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
@@ -1269,6 +1313,7 @@ export set_rg!
 export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
+export set_scheduled_dc_voltage!
 export set_secondary_tertiary_arc!
 export set_secondary_turns_ratio!
 export set_services!
@@ -1285,6 +1330,7 @@ export set_storage_target!
 export set_storage_technology_type!
 export set_sustained_time!
 export set_switch!
+export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
@@ -1298,6 +1344,7 @@ export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
+export set_transfer_setpoint!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
