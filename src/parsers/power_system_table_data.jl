@@ -481,33 +481,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 loss = loss,
             )
         else
-            rectifier_taplimits = (
-                min = dc_branch.rectifier_tap_limits_min,
-                max = dc_branch.rectifier_tap_limits_max,
-            )
-            rectifier_xrc = dc_branch.rectifier_xrc #TODO: What is this?,
-            rectifier_firingangle = dc_branch.rectifier_firingangle
-            inverter_taplimits = (
-                min = dc_branch.inverter_tap_limits_min,
-                max = dc_branch.inverter_tap_limits_max,
-            )
-            inverter_xrc = dc_branch.inverter_xrc #TODO: What is this?
-            inverter_firingangle = (
-                min = dc_branch.inverter_firing_angle_min,
-                max = dc_branch.inverter_firing_angle_max,
-            )
-            value = TwoTerminalVSCDCLine(;
-                name = dc_branch.name,
-                available = true,
-                active_power_flow = pf,
-                arc = connection_points,
-                rectifier_taplimits = rectifier_taplimits,
-                rectifier_xrc = rectifier_xrc,
-                rectifier_firingangle = rectifier_firingangle,
-                inverter_taplimits = inverter_taplimits,
-                inverter_xrc = inverter_xrc,
-                inverter_firingangle = inverter_firingangle,
-            )
+            error("Only control mode = Power is supported for DC Branch $(dc_branch.name) in TableData.")
         end
 
         add_component!(sys, value)

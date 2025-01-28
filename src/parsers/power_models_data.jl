@@ -58,6 +58,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     @info "Constructing System from Power Models" data["name"] data["source_type"]
 
     sys = System(data["baseMVA"]; kwargs...)
+    source_type = data["source_type"]
 
     bus_number_to_bus = read_bus!(sys, data; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
@@ -66,7 +67,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_branch!(sys, data, bus_number_to_bus; kwargs...)
     read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
-    read_dcline!(sys, data, bus_number_to_bus; kwargs...)
+    read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -900,24 +901,69 @@ function read_3w_transformer!(
     end
 end
 
-function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
-    return TwoTerminalHVDCLine(;
-        name = name,
-        available = d["br_status"] == 1,
-        active_power_flow = get(d, "pf", 0.0),
-        arc = Arc(bus_f, bus_t),
-        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
-        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
-        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
-        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
-        loss = LinearCurve(d["loss1"], d["loss0"]),
-    )
+function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_type::String)
+    if source_type == "pti"
+        return TwoTerminalLCCLine(;
+            name = name,
+            available = d["available"],
+            active_power_flow = get(d, "pf", 0.0),
+            arc = Arc(bus_f, bus_t),
+            transfer_setpoint = d["transfer_setpoint"],
+            scheduled_dc_voltage = d["scheduled_dc_voltage"],
+            rectifier_bridges = d["rectifier_bridges"],
+            rectifier_delay_angle_limits = d["rectifier_delay_angle_limits"],
+            rectifier_rc = d["rectifier_rc"],
+            rectifier_xc = d["rectifier_xc"],
+            rectifier_base_voltage = d["rectifier_base_voltage"],
+            inverter_bridges = d["inverter_bridges"],
+            inverter_extinction_angle_limits = d["inverter_extinction_angle_limits"],
+            inverter_rc = d["inverter_rc"],
+            inverter_xc = d["inverter_xc"],
+            inverter_base_voltage = d["inverter_base_voltage"],
+            power_mode = d["power_mode"],
+            switch_mode_voltage = d["switch_mode_voltage"],
+            compounding_resistance = d["compounding_resistance"],
+            min_compounding_voltage = d["min_compounding_voltage"],
+            rectifier_transformer_ratio = d["rectifier_transformer_ratio"],
+            rectifier_tap_setting = d["rectifier_tap_setting"],
+            rectifier_tap_limits = d["rectifier_tap_limits"],
+            rectifier_tap_step = d["rectifier_tap_step"],
+            rectifier_delay_angle = d["rectifier_delay_angle"],
+            rectifier_capacitor_reactance = d["inverter_capacitor_reactance"],
+            inverter_transformer_ratio = d["inverter_transformer_ratio"],
+            inverter_tap_setting = d["inverter_tap_setting"],
+            inverter_tap_limits = d["inverter_tap_limits"],
+            inverter_tap_step = d["inverter_tap_step"],
+            inverter_extinction_angle = d["inverter_extinction_angle"],
+            inverter_capacitor_reactance = d["inverter_capacitor_reactance"],
+            active_power_limits_from = d["active_power_limits_from"],
+            active_power_limits_to = d["active_power_limits_to"],
+            reactive_power_limits_from = d["reactive_power_limits_from"],
+            reactive_power_limits_to = d["reactive_power_limits_to"],
+            loss = LinearCurve(d["loss1"], d["loss0"]),
+        )
+    elseif source_type == "matpower"
+        return TwoTerminalHVDCLine(;
+            name = name,
+            available = d["br_status"] == 1,
+            active_power_flow = get(d, "pf", 0.0),
+            arc = Arc(bus_f, bus_t),
+            active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+            active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+            reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+            reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
+            loss = LinearCurve(d["loss1"], d["loss0"]),
+        )
+    else
+        error("Not supported source type for DC lines: $source_type")
+    end
 end
 
 function read_dcline!(
     sys::System,
     data::Dict,
-    bus_number_to_bus::Dict{Int, ACBus};
+    bus_number_to_bus::Dict{Int, ACBus},
+    source_type::String;
     kwargs...,
 )
     @info "Reading DC Line data"
@@ -933,7 +979,7 @@ function read_dcline!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        dcline = make_dcline(name, d, bus_f, bus_t)
+        dcline = make_dcline(name, d, bus_f, bus_t, source_type)
         add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
     end
 end
