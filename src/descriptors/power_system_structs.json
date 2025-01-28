@@ -1592,7 +1592,7 @@
                 },
                 {
                     "name": "ac_setpoint_to",
-                    "comment": "Converter AC setpoint in the `to`` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.",
+                    "comment": "Converter AC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1.0"

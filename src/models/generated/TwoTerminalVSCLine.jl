@@ -65,7 +65,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `dc_current_to::Float64`: (default: `0.0`) DC current (A) on the converter on the to-bus DC side.
 - `voltage_control_to::Bool`: (default: `true`) Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.
 - `dc_setpoint_to::Float64`: (default: `0.0`) Converter DC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_to = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `to` bus; if negative, the converter is withdrawing power from the AC network at the `to` bus.
-- `ac_setpoint_to::Float64`: (default: `1.0`) Converter AC setpoint in the `to`` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.
+- `ac_setpoint_to::Float64`: (default: `1.0`) Converter AC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.
 - `converter_loss_to::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Loss model coefficients in the `to` bus converter. It accepts a linear model or quadratic. Same converter data is used in both ends.
 - `max_dc_current_to::Float64`: (default: `1e8`) Maximum stable dc current limits (A).
 - `rating_to::Float64`: (default: `1e8`) Converter rating in MVA in the `to` bus.
@@ -119,7 +119,7 @@ mutable struct TwoTerminalVSCLine <: ACBranch
     voltage_control_to::Bool
     "Converter DC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_to = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `to` bus; if negative, the converter is withdrawing power from the AC network at the `to` bus."
     dc_setpoint_to::Float64
-    "Converter AC setpoint in the `to`` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint."
+    "Converter AC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint."
     ac_setpoint_to::Float64
     "Loss model coefficients in the `to` bus converter. It accepts a linear model or quadratic. Same converter data is used in both ends."
     converter_loss_to::Union{LinearCurve, QuadraticCurve}
