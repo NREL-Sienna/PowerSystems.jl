@@ -34,7 +34,8 @@ export Line
 export MonitoredLine
 export DCBranch
 export TwoTerminalHVDCLine
-export TwoTerminalVSCDCLine
+export TwoTerminalVSCLine
+export TwoTerminalLCCLine
 export TModelHVDCLine
 export Transformer2W
 export TapTransformer
