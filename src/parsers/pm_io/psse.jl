@@ -241,6 +241,8 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pmax"] = pop!(gen, "PT")
             sub_data["qmin"] = pop!(gen, "QB")
             sub_data["qmax"] = pop!(gen, "QT")
+            sub_data["rt_source"] = pop!(gen, "RT")
+            sub_data["xt_source"] = pop!(gen, "XT")
             sub_data["r_source"] = pop!(gen, "ZR")
             sub_data["x_source"] = pop!(gen, "ZX")
 
@@ -253,6 +255,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["source_id"] =
                 ["generator", string(sub_data["gen_bus"]), pop!(gen, "ID")]
+
             sub_data["index"] = ix
 
             if import_all
