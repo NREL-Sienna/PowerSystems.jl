@@ -68,6 +68,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
+    read_vscline!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -993,6 +994,65 @@ function read_dcline!(
         name = _get_name(d, bus_f, bus_t)
         dcline = make_dcline(name, d, bus_f, bus_t, source_type)
         add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_vscline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+    return TwoTerminalVSCLine(;
+        name = name,
+        available = d["available"],
+        arc = Arc(bus_f, bus_t),
+        active_power_flow = get(d, "pf", 0.0),
+        rating = d["rating"],
+        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+        g = d["r"] == 0.0 ? 0.0 : 1.0 / d["r"],
+        dc_current = get(d, "if", 0.0),
+        reactive_power_from = get(d, "qf", 0.0),
+        dc_voltage_control_from = d["dc_voltage_control_from"],
+        ac_voltage_control_from = d["ac_voltage_control_from"],
+        dc_setpoint_from = d["dc_setpoint_from"],
+        ac_setpoint_from = d["ac_setpoint_from"],
+        converter_loss_from = d["converter_loss_from"],
+        max_dc_current_from = d["max_dc_current_from"],
+        rating_from = d["rating_from"],
+        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+        power_factor_weighting_fraction_from = d["power_factor_weighting_fraction_from"],
+        reactive_power_to = get(d, "qt", 0.0),
+        dc_voltage_control_to = d["dc_voltage_control_to"],
+        ac_voltage_control_to = d["ac_voltage_control_to"],
+        dc_setpoint_to = d["dc_setpoint_to"],
+        ac_setpoint_to = d["ac_setpoint_to"],
+        converter_loss_to = d["converter_loss_to"],
+        max_dc_current_to = d["max_dc_current_to"],
+        rating_to = d["rating_to"],
+        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
+        power_factor_weighting_fraction_to = d["power_factor_weighting_fraction_to"],
+        ext = d["EXT"],
+    )
+end
+
+function read_vscline!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading VSC Line data"
+    if !haskey(data, "vscline")
+        @info "There is no VSC lines data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    for (d_key, d) in data["vscline"]
+        d["name"] = get(d, "name", d_key)
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        vscline = make_vscline(name, d, bus_f, bus_t)
+        add_component!(sys, vscline; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
