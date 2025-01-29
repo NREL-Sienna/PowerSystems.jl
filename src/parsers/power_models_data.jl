@@ -754,6 +754,7 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         rating = d["rate_a"],
+        ext = d["ext"],
     )
 end
 
@@ -804,6 +805,7 @@ function make_3w_transformer(
         rating_primary = d["rating_primary"],
         rating_secondary = d["rating_secondary"],
         rating_tertiary = d["rating_tertiary"],
+        ext = d["ext"],
     )
 end
 

@@ -604,6 +604,12 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     pop!(transformer, "CKT"),
                     0,
                 ]
+                sub_data["ext"] = Dict{String, Any}(
+                    "CW" => transformer["CW"],
+                    "CZ" => transformer["CZ"],
+                    "CM" => transformer["CM"],
+                )
+
                 sub_data["transformer"] = true
                 sub_data["index"] = length(pm_data["branch"]) + 1
 
@@ -777,8 +783,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["x_23"] = br_x23
                 sub_data["r_13"] = br_r31
                 sub_data["x_13"] = br_x31
-                sub_data["g"] = transformer["MAG1"]
-                sub_data["b"] = transformer["MAG2"]
+                sub_data["g"] = transformer["MAG1"] # M. conductance MAG1 is saved in "g"
+                # If CM = 1 & MAG2 != 0 -> MAG2 < 0
+                # If CM = 2 & MAG2 != 0 -> MAG2 > 0
+                sub_data["b"] = abs(transformer["MAG2"]) # M. susceptance MAG2 is saved in "b"
 
                 if transformer["CW"] == 1
                     sub_data["primary_turns_ratio"] = transformer["WINDV1"]
@@ -791,6 +799,12 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
 
                 sub_data["circuit"] = strip(transformer["CKT"])
+
+                sub_data["ext"] = Dict{String, Any}(
+                    "CW" => transformer["CW"],
+                    "CZ" => transformer["CZ"],
+                    "CM" => transformer["CM"],
+                )
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
 
