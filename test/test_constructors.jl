@@ -67,6 +67,8 @@ end
     @test tTwoTerminalHVDCLine isa PowerSystems.Component
     tTwoTerminalLCCLine = TwoTerminalLCCLine(nothing)
     @test tTwoTerminalLCCLine isa PowerSystems.Component
+    tTwoTerminalVSCLine = TwoTerminalVSCLine(nothing)
+    @test tTwoTerminalVSCLine isa PowerSystems.Component
     tTransformer2W = Transformer2W(nothing)
     @test tTransformer2W isa PowerSystems.Component
     tTapTransformer = TapTransformer(nothing)
