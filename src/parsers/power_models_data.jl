@@ -582,6 +582,10 @@ function make_thermal_gen(
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
+    if haskey(d, "rt_source")
+        ext["zt_source"] = (rt = d["rt_source"], xt = d["xt_source"])
+    end
+
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
