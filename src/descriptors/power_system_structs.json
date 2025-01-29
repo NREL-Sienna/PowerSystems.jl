@@ -1494,15 +1494,30 @@
                     "default": "0.0"
                 },
                 {
-                    "name": "dc_current_from",
-                    "comment": "DC current (A) on the converter on the `from`-bus DC side.",
+                    "name": "dc_current",
+                    "comment": "DC current (A) on the converter flowing in the DC line, from `from` bus to `to` bus.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0"
                 },
                 {
-                    "name": "voltage_control_from",
+                    "name": "reactive_power_from",
+                    "comment": "Initial condition of reactive power flowing into the from-bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "default": "0.0"
+                },
+                {
+                    "name": "dc_voltage_control_from",
                     "comment": "Converter control type in the `from` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "ac_voltage_control_from",
+                    "comment": "Converter control type in the `from` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "true"
@@ -1568,17 +1583,25 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
-                },                
-                {
-                    "name": "dc_current_to",
-                    "comment": "DC current (A) on the converter on the to-bus DC side.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "0.0"
                 },
                 {
-                    "name": "voltage_control_to",
+                    "name": "reactive_power_to",
+                    "comment": "Initial condition of reactive power flowing into the to-bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "default": "0.0"
+                },                
+                {
+                    "name": "dc_voltage_control_to",
                     "comment": "Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "ac_voltage_control_to",
+                    "comment": "Converter control type in the `to` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "true"
