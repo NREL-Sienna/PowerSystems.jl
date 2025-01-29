@@ -89,6 +89,11 @@ end
     @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
           0.95
 
+    @info "Testing VSC Parser"
+    vsc = only(get_components(TwoTerminalVSCLine, sys4))
+    @test get_active_power_flow(vsc) == -0.2
+    @test get_dc_setpoint_to(vsc) == -20.0
+
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
     sys3 = build_system(
