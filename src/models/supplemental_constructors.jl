@@ -286,10 +286,61 @@ function TwoTerminalHVDCLine(
     )
 end
 
-function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss = LinearCurve(0.0),
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    TwoTerminalGenericHVDCLine(
+        name,
+        available,
+        active_power_flow,
+        arc,
+        active_power_limits_from,
+        active_power_limits_to,
+        reactive_power_limits_from,
+        reactive_power_limits_to,
+        loss,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
 end
 
-function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
+function TwoTerminalHVDCLine(;
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss = LinearCurve(0.0),
+    services = Device[],
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    TwoTerminalGenericHVDCLine(
+        name,
+        available,
+        active_power_flow,
+        arc,
+        active_power_limits_from,
+        active_power_limits_to,
+        reactive_power_limits_from,
+        reactive_power_limits_to,
+        loss,
+        services,
+        ext,
+        internal,
+    )
 end

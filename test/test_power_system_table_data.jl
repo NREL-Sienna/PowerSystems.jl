@@ -144,7 +144,8 @@ end
             @test get_rating(cdm_ac_branches[120]) ==
                   get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
-            cdm_dc_branches = collect(get_components(TwoTerminalGenericHVDCLine, cdmsys))
+            cdm_dc_branches =
+                collect(get_components(TwoTerminalGenericHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
                   get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
