@@ -74,9 +74,7 @@ end
 end
 
 @testset "PSSE LCC Parsing" begin
-    base_dir = string(dirname(@__FILE__))
-    file_dir = joinpath(base_dir, "test_data", "lcc_test.raw")
-    sys = System(file_dir)
+    sys = build_system(PSSEParsingTestSystems, "pti_two_terminal_hvdc_test_sys")
 
     lccs = get_components(TwoTerminalLCCLine, sys)
     @test length(lccs) == 1
