@@ -469,7 +469,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
             loss = LinearCurve(dc_branch.loss) #TODO: Can we infer this from the other data?,
 
-            value = TwoTerminalHVDCLine(;
+            value = TwoTerminalGenericHVDCLine(;
                 name = dc_branch.name,
                 available = available,
                 active_power_flow = dc_branch.active_power_flow,

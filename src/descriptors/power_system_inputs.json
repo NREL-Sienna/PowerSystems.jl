@@ -176,10 +176,10 @@
             "name": "dc_line_category",
             "value_options": [
                 "TwoTerminalLCCLine",
-                "TwoTerminalHVDCLine"
+                "TwoTerminalGenericHVDCLine"
             ],
             "description": "Type of Struct",
-            "default_value": "TwoTerminalHVDCLine"
+            "default_value": "TwoTerminalGenericHVDCLine"
         }
     ],
     "branch": [
