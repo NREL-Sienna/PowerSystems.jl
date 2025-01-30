@@ -33,7 +33,7 @@ export ACBranch
 export Line
 export MonitoredLine
 export DCBranch
-export TwoTerminalHVDCLine
+export TwoTerminalGenericHVDCLine
 export TwoTerminalVSCLine
 export TwoTerminalLCCLine
 export TModelHVDCLine

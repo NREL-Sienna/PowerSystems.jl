@@ -32,7 +32,7 @@ branches5_dc(nodes5) = [
         2.0,
         (min = -0.7, max = 0.7),
     ),
-    TwoTerminalHVDCLine(
+    TwoTerminalGenericHVDCLine(
         "DCL2",
         true,
         0.0,

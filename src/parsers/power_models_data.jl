@@ -945,7 +945,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             loss = LinearCurve(d["loss1"], d["loss0"]),
         )
     elseif source_type == "matpower"
-        return TwoTerminalHVDCLine(;
+        return TwoTerminalGenericHVDCLine(;
             name = name,
             available = d["br_status"] == 1,
             active_power_flow = get(d, "pf", 0.0),
