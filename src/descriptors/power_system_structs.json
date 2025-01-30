@@ -16993,13 +16993,15 @@
                     "name": "active_power",
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true
                 },
                 {
                     "name": "R_th",

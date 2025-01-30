@@ -107,9 +107,9 @@ get_available(value::Source) = value.available
 """Get [`Source`](@ref) `bus`."""
 get_bus(value::Source) = value.bus
 """Get [`Source`](@ref) `active_power`."""
-get_active_power(value::Source) = value.active_power
+get_active_power(value::Source) = get_value(value, value.active_power)
 """Get [`Source`](@ref) `reactive_power`."""
-get_reactive_power(value::Source) = value.reactive_power
+get_reactive_power(value::Source) = get_value(value, value.reactive_power)
 """Get [`Source`](@ref) `R_th`."""
 get_R_th(value::Source) = value.R_th
 """Get [`Source`](@ref) `X_th`."""
@@ -134,9 +134,9 @@ set_available!(value::Source, val) = value.available = val
 """Set [`Source`](@ref) `bus`."""
 set_bus!(value::Source, val) = value.bus = val
 """Set [`Source`](@ref) `active_power`."""
-set_active_power!(value::Source, val) = value.active_power = val
+set_active_power!(value::Source, val) = value.active_power = set_value(value, val)
 """Set [`Source`](@ref) `reactive_power`."""
-set_reactive_power!(value::Source, val) = value.reactive_power = val
+set_reactive_power!(value::Source, val) = value.reactive_power = set_value(value, val)
 """Set [`Source`](@ref) `R_th`."""
 set_R_th!(value::Source, val) = value.R_th = val
 """Set [`Source`](@ref) `X_th`."""
