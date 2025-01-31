@@ -777,6 +777,7 @@ include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")
 include("parsers/TAMU_data.jl")
+include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")
