@@ -64,7 +64,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
-    read_branch!(sys, data, bus_number_to_bus; kwargs...)
+    read_branch!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
@@ -683,7 +683,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_type::String)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
@@ -692,7 +692,7 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
         elseif branch_type == Transformer2W
-            value = make_transformer_2w(name, d, bus_f, bus_t)
+            value = make_transformer_2w(name, d, bus_f, bus_t, source_type)
         elseif branch_type == TapTransformer
             value = make_tap_transformer(name, d, bus_f, bus_t)
         elseif branch_type == PhaseShiftingTransformer
@@ -729,7 +729,13 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     )
 end
 
-function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function make_transformer_2w(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    source_type::String,
+)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -737,6 +743,7 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+    ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -747,7 +754,7 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         rating = d["rate_a"],
-        ext = d["ext"],
+        ext = ext,
     )
 end
 
@@ -856,7 +863,8 @@ end
 function read_branch!(
     sys::System,
     data::Dict,
-    bus_number_to_bus::Dict{Int, ACBus};
+    bus_number_to_bus::Dict{Int, ACBus},
+    source_type::String;
     kwargs...,
 )
     @info "Reading branch data"
@@ -871,7 +879,7 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t)
+        value = make_branch(name, d, bus_f, bus_t, source_type)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
