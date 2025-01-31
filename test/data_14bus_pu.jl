@@ -180,7 +180,7 @@ branches14_dc(nodes14) = [
         4.896,
         1.04,
     ),
-    TwoTerminalHVDCLine(
+    TwoTerminalGenericHVDCLine(
         "DCLine3",
         true,
         0.0,
@@ -191,7 +191,7 @@ branches14_dc(nodes14) = [
         (min = -600.0, max = 600),
         LinearCurve(0.001, 0.01),
     ),
-    TwoTerminalHVDCLine(
+    TwoTerminalGenericHVDCLine(
         "DCLine4",
         true,
         0.0,

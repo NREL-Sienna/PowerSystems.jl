@@ -971,6 +971,8 @@ PSS(R)E Voltage Source Converter specification.
 function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Two-Terminal and VSC DC line data into a PowerModels Dict..."
     pm_data["dcline"] = []
+    pm_data["vscline"] = []
+    baseMVA = pm_data["baseMVA"]
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
@@ -984,15 +986,57 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if dcline["MDC"] == 1
                     abs(dcline["SETVL"])
                 elseif dcline["MDC"] == 2
-                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                    abs(dcline["SETVL"] * dcline["VSCHD"] / 1000) # Amp * V 
                 else
                     0
                 end
 
+            sub_data["transfer_setpoint"] = dcline["SETVL"]
+
+            sub_data["name"] = dcline["NAME"]
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
-            sub_data["br_status"] = pop!(dcline, "MDC") == 0 ? 0 : 1
+
+            if dcline["MDC"] == 1
+                sub_data["power_mode"] = true
+            else
+                sub_data["power_mode"] = false
+            end
+            sub_data["available"] = dcline["MDC"] == 0 ? false : true
+            sub_data["br_status"] = sub_data["available"]
+
+            sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
+            ZbaseR = dcline["EBASR"]^2 / baseMVA
+            sub_data["rectifier_bridges"] = dcline["NBR"]
+            sub_data["rectifier_rc"] = dcline["RCR"] / ZbaseR
+            sub_data["rectifier_xc"] = dcline["XCR"] / ZbaseR
+            sub_data["rectifier_base_voltage"] = dcline["EBASR"]
+
+            ZbaseI = dcline["EBASI"]^2 / baseMVA
+            sub_data["inverter_bridges"] = dcline["NBI"]
+            sub_data["inverter_rc"] = dcline["RCI"] / ZbaseI
+            sub_data["inverter_xc"] = dcline["XCI"] / ZbaseI
+            sub_data["inverter_base_voltage"] = dcline["EBASI"]
+
+            sub_data["switch_mode_voltage"] = dcline["VCMOD"]
+            sub_data["compounding_resistance"] = dcline["RCOMP"]
+            sub_data["min_compounding_voltage"] = dcline["DCVMIN"]
+
+            sub_data["rectifier_transformer_ratio"] = dcline["TRR"]
+            sub_data["rectifier_tap_setting"] = dcline["TAPR"]
+            sub_data["rectifier_tap_limits"] = (min = dcline["TMNR"], max = dcline["TMXR"])
+            sub_data["rectifier_tap_step"] = dcline["STPR"]
+
+            sub_data["inverter_transformer_ratio"] = dcline["TRI"]
+            sub_data["inverter_tap_setting"] = dcline["TAPI"]
+            sub_data["inverter_tap_limits"] = (min = dcline["TMNI"], max = dcline["TMXI"])
+            sub_data["inverter_tap_step"] = dcline["STPI"]
+
+            sub_data["loss0"] = 0.0
+            sub_data["loss1"] = 0.0
+
             sub_data["pf"] = power_demand
+            sub_data["active_power_flow"] = sub_data["pf"]
             sub_data["pt"] = power_demand
             sub_data["qf"] = 0.0
             sub_data["qt"] = 0.0
@@ -1007,12 +1051,19 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             anmn = []
             for key in ["ANMNR", "ANMNI"]
                 if abs(dcline[key]) <= 90.0
-                    push!(anmn, pop!(dcline, key))
+                    push!(anmn, dcline[key])
                 else
                     push!(anmn, 0)
                     @info("$key outside reasonable limits, setting to 0 degress")
                 end
             end
+            sub_data["rectifier_delay_angle_limits"] =
+                (min = deg2rad(anmn[1]), max = deg2rad(dcline["ANMXR"]))
+            sub_data["inverter_extinction_angle_limits"] =
+                (min = deg2rad(anmn[2]), max = deg2rad(dcline["ANMXI"]))
+
+            sub_data["rectifier_delay_angle"] = deg2rad(anmn[1])
+            sub_data["inverter_extinction_angle"] = deg2rad(anmn[2])
 
             sub_data["qmaxf"] = 0.0
             sub_data["qmaxt"] = 0.0
@@ -1021,16 +1072,18 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qmint"] =
                 -max(abs(sub_data["pmint"]), abs(sub_data["pmaxt"])) * cosd(anmn[2])
 
-            # Can we use "number of bridges in series (NBR/NBI)" to compute a loss?
-            sub_data["loss0"] = 0.0
-            sub_data["loss1"] = 0.0
+            sub_data["active_power_limits_from"] =
+                (min = sub_data["pminf"], max = sub_data["pmaxf"])
+            sub_data["active_power_limits_to"] =
+                (min = sub_data["pmint"], max = sub_data["pmaxt"])
+            sub_data["reactive_power_limits_from"] =
+                (min = sub_data["qminf"], max = sub_data["qmaxf"])
+            sub_data["reactive_power_limits_to"] =
+                (min = sub_data["qmint"], max = sub_data["qmaxt"])
 
-            # Costs (set to default values)
-            sub_data["startup"] = 0.0
-            sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 0.0, 0.0]
-            sub_data["model"] = 2
+            sub_data["rectifier_capacitor_reactance"] = dcline["XCAPR"] / ZbaseR
+            sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
+            sub_data["r"] = dcline["RDC"] / ZbaseR
 
             sub_data["source_id"] = [
                 "two-terminal dc",
@@ -1054,24 +1107,46 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         )
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
             # Converter buses : is the distinction between ac and dc side meaningful?
-            dcside, acside = dcline["CONVERTER BUSES"]
+            from_bus, to_bus = dcline["CONVERTER BUSES"]
 
             # PowerWorld conversion from PTI to matpower seems to create two
             # artificial generators from a VSC, but it is not clear to me how
             # the value of "pg" is determined and adds shunt to the DC-side bus.
             sub_data = Dict{String, Any}()
+            sub_data["name"] = dcline["NAME"]
 
             # VSC intended to be one or bi-directional?
-            sub_data["f_bus"] = pop!(dcside, "IBUS")
-            sub_data["t_bus"] = pop!(acside, "IBUS")
+            sub_data["f_bus"] = from_bus["IBUS"]
+            sub_data["t_bus"] = to_bus["IBUS"]
             sub_data["br_status"] =
-                if pop!(dcline, "MDC") == 0 ||
-                   pop!(dcside, "TYPE") == 0 ||
-                   pop!(acside, "TYPE") == 0
+                if dcline["MDC"] == 0 ||
+                   from_bus["TYPE"] == 0 ||
+                   to_bus["TYPE"] == 0
                     0
                 else
                     1
                 end
+            sub_data["available"] = sub_data["br_status"] == 0 ? false : true
+
+            sub_data["dc_voltage_control_from"] = from_bus["TYPE"] == 1 ? true : false
+            sub_data["dc_voltage_control_to"] = to_bus["TYPE"] == 1 ? true : false
+            sub_data["ac_voltage_control_from"] = from_bus["MODE"] == 1 ? true : false
+            sub_data["ac_voltage_control_to"] = to_bus["MODE"] == 1 ? true : false
+
+            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
+            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
+            sub_data["ac_setpoint_from"] = from_bus["ACSET"]
+            sub_data["ac_setpoint_to"] = to_bus["ACSET"]
+
+            # ALOSS, MINLOSS in kW, and BLOSS in kW/A. Divide by a 1000 to transform into MW, and divide by baseMVA to normalize to per-unit.
+            sub_data["converter_loss_from"] = LinearCurve(
+                from_bus["BLOSS"] / (1000.0 * baseMVA),
+                (from_bus["ALOSS"] + from_bus["MINLOSS"]) / (1000.0 * baseMVA),
+            )
+            sub_data["converter_loss_to"] = LinearCurve(
+                to_bus["BLOSS"] / (1000.0 * baseMVA),
+                (to_bus["ALOSS"] + to_bus["MINLOSS"]) / (1000.0 * baseMVA),
+            )
 
             sub_data["pf"] = 0.0
             sub_data["pt"] = 0.0
@@ -1079,48 +1154,56 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qf"] = 0.0
             sub_data["qt"] = 0.0
 
-            sub_data["vf"] = pop!(dcside, "MODE") == 1 ? pop!(dcside, "ACSET") : 1.0
-            sub_data["vt"] = pop!(acside, "MODE") == 1 ? pop!(acside, "ACSET") : 1.0
+            sub_data["qminf"] = from_bus["MINQ"] / baseMVA
+            sub_data["qmaxf"] = from_bus["MAXQ"] / baseMVA
+            sub_data["qmint"] = to_bus["MINQ"] / baseMVA
+            sub_data["qmaxt"] = to_bus["MAXQ"] / baseMVA
 
-            sub_data["pmaxf"] =
-                if dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0
-                    max(abs(dcside["MAXQ"]), abs(dcside["MINQ"]))
-                else
-                    min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
-                end
-            sub_data["pmaxt"] =
-                if acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0
-                    max(abs(acside["MAXQ"]), abs(acside["MINQ"]))
-                else
-                    min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
-                end
+            PTI_INF = 9999.0
+
+            sub_data["rating_from"] =
+                from_bus["SMAX"] == 0.0 ? PTI_INF : from_bus["SMAX"] / baseMVA
+            sub_data["rating_to"] =
+                to_bus["SMAX"] == 0.0 ? PTI_INF : to_bus["SMAX"] / baseMVA
+            sub_data["rating"] = min(sub_data["rating_from"], sub_data["rating_to"])
+            sub_data["max_dc_current_from"] =
+                from_bus["IMAX"] == 0.0 ? PTI_INF : from_bus["IMAX"]
+            sub_data["max_dc_current_to"] = to_bus["IMAX"] == 0.0 ? PTI_INF : to_bus["IMAX"]
+            sub_data["power_factor_weighting_fraction_from"] = from_bus["PWF"]
+            sub_data["power_factor_weighting_fraction_to"] = to_bus["PWF"]
+            qmax_from = max(abs(sub_data["qminf"]), abs(sub_data["qmaxf"]))
+            qmax_to = max(abs(sub_data["qmint"]), abs(sub_data["qmaxt"]))
+            sub_data["pmaxf"] = sqrt(sub_data["rating_from"]^2 - qmax_from^2)
+            sub_data["pmaxt"] = sqrt(sub_data["rating_to"]^2 - qmax_to^2)
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
-            sub_data["qminf"] = pop!(dcside, "MINQ")
-            sub_data["qmaxf"] = pop!(dcside, "MAXQ")
-            sub_data["qmint"] = pop!(acside, "MINQ")
-            sub_data["qmaxt"] = pop!(acside, "MAXQ")
+            if sub_data["dc_voltage_control_from"] && !sub_data["dc_voltage_control_to"]
+                base_voltage = sub_data["dc_setpoint_from"]
+                flow_setpoint = sub_data["dc_setpoint_to"]
+            elseif !sub_data["dc_voltage_control_from"] && sub_data["dc_voltage_control_to"]
+                base_voltage = sub_data["dc_setpoint_to"]
+                flow_setpoint = -sub_data["dc_setpoint_from"]
+            else
+                error(
+                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
+                )
+            end
+            Zbase = base_voltage^2 / baseMVA
+            sub_data["r"] = dcline["RDC"] / Zbase
+            sub_data["pf"] = flow_setpoint / baseMVA
+            sub_data["if"] = 1000.0 * (flow_setpoint / base_voltage)
 
-            sub_data["loss0"] =
-                (
-                    pop!(dcside, "ALOSS") +
-                    pop!(acside, "ALOSS") +
-                    pop!(dcside, "MINLOSS") +
-                    pop!(acside, "MINLOSS")
-                ) * 1e-3
-            sub_data["loss1"] = (pop!(dcside, "BLOSS") + pop!(acside, "BLOSS")) * 1e-3 # how to include resistance?
-
-            # Costs (set to default values)
-            sub_data["startup"] = 0.0
-            sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 0.0, 0.0]
-            sub_data["model"] = 2
+            sub_data["EXT"] = Dict{String, Any}(
+                "REMOT_FROM" => from_bus["REMOT"],
+                "REMOT_TO" => to_bus["REMOT"],
+                "RMPCT_FROM" => from_bus["RMPCT"],
+                "RMPCT_TO" => to_bus["RMPCT"],
+            )
 
             sub_data["source_id"] =
-                ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], pop!(dcline, "NAME")]
-            sub_data["index"] = length(pm_data["dcline"]) + 1
+                ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], dcline["NAME"]]
+            sub_data["index"] = length(pm_data["vscline"]) + 1
 
             if import_all
                 _import_remaining_keys!(sub_data, dcline)
@@ -1133,7 +1216,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
             end
 
-            push!(pm_data["dcline"], sub_data)
+            push!(pm_data["vscline"], sub_data)
         end
     end
 end

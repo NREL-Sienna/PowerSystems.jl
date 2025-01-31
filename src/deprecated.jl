@@ -11,3 +11,6 @@ Base.@deprecate convert_component!(
     sys::System;
     kwargs...,
 ) convert_component!(sys, line, linetype; kwargs...)
+
+# BEGIN 4.0.0  deprecations
+export TwoTerminalHVDCLine

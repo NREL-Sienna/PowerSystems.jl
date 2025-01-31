@@ -90,6 +90,11 @@ end
     @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
           0.95
 
+    @info "Testing VSC Parser"
+    vsc = only(get_components(TwoTerminalVSCLine, sys4))
+    @test get_active_power_flow(vsc) == -0.2
+    @test get_dc_setpoint_to(vsc) == -20.0
+
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
     sys3 = build_system(
@@ -100,4 +105,17 @@ end
     lz_original = only(get_components(LoadZone, sys2))
     lz_new = only(get_components(LoadZone, sys3))
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
+end
+
+@testset "PSSE LCC Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_two_terminal_hvdc_test_sys")
+
+    lccs = get_components(TwoTerminalLCCLine, sys)
+    @test length(lccs) == 1
+    lcc = only(lccs)
+    @test get_transfer_setpoint(lcc) == 20.0
+    @test get_active_power_flow(lcc) == 0.2
+    @test isapprox(get_rectifier_delay_angle_limits(lcc).max, pi / 2)
+    @test isapprox(get_inverter_extinction_angle_limits(lcc).max, pi / 2)
+    @test get_power_mode(lcc)
 end
