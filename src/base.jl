@@ -237,18 +237,31 @@ function System(
     )
 end
 
-"""Constructs a System from a file path ending with .m, .RAW, or .json
+function system_via_power_models(file_path::AbstractString; kwargs...)
+    pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
+    sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+    return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
+end
 
-If the file is JSON then assign_new_uuids = true will generate new UUIDs for the system
-and all components.
+"""Constructs a System from a file path ending with .m, .raw, or .json
+
+If the file is JSON, then `assign_new_uuids = true` will generate new UUIDs for the system
+and all components. If the file is .raw, then `try_reimport = false` will skip searching for
+a `<name>_export_metadata.json` file in the same directory.
 """
-function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
-    ext = splitext(file_path)[2]
-    if lowercase(ext) in [".m", ".raw"]
-        pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
-    elseif lowercase(ext) == ".json"
+function System(
+    file_path::AbstractString;
+    assign_new_uuids = false,
+    try_reimport = true,
+    kwargs...,
+)
+    ext = lowercase(splitext(file_path)[2])
+    if ext == ".m"
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".raw"
+        try_reimport && return system_from_psse_reimport(file_path; kwargs...)
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         runchecks = get(kwargs, :runchecks, true)

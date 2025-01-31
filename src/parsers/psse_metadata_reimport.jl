@@ -1,8 +1,9 @@
-# Parse the `*_export_metadata.json` file written alongside PSS/E files by PowerFlows.jl
+# Parse the `<name>_export_metadata.json` file written alongside PSS/E files by PowerFlows.jl
 
 # Currently the following mappings are used here:
 #   area_mapping: maps Sienna name to PSS/E number for all areas
 #   zone_mapping: maps Sienna name to PSS/E number for all load zones
+#   bus_name_mapping: maps Sienna name to PSS/E name for all buses
 #   bus_number_mapping: maps Sienna number to PSS/E number for all buses
 #   load_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all loads
 #   shunt_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all shunts
@@ -13,6 +14,8 @@
 # Mappings are stored in the file in the Sienna -> PSS/E direction, so they need to be
 # reversed for use here. Wherever a tuple is indicated above, the presentation in the file
 # is of the elements joined with underscores to form a single string.
+
+# NOTE for the moment, this feature is mostly tested in the PowerFlows.jl unit tests.
 
 const PSSE_EXPORT_METADATA_EXTENSION = "_export_metadata.json"
 
@@ -67,13 +70,17 @@ function name_formatter_from_component_ids(raw_name_mapping, bus_number_mapping,
 end
 
 function remap_bus_numbers!(sys::System, bus_number_mapping)
-    p_bus_to_s_bus = reverse_dict(bus_number_mapping)
     for bus in collect(get_components(Bus, sys))
-        set_number!(bus, parse(Int, p_bus_to_s_bus[get_number(bus)]))
+        set_number!(bus, parse(Int, bus_number_mapping[get_number(bus)]))
     end
 end
 
-function System(raw_path::AbstractString, md::Dict)
+"""
+Parse an export_metadata dictionary, returning the kwargs that should be passed to the
+System constructor and the bus number remapping that should be used to effect the
+retransformation.
+"""
+function parse_export_metadata_dict(md::Dict)
     bus_name_map = reverse_dict(md["bus_name_mapping"])  # PSS/E bus name -> Sienna bus name
     all_branch_name_map = deserialize_reverse_component_ids(
         merge(md["branch_name_mapping"], md["transformer_ckt_mapping"]),
@@ -112,16 +119,40 @@ function System(raw_path::AbstractString, md::Dict)
     area_name_map = reverse_dict(md["area_mapping"])
     area_name_formatter = name -> area_name_map[name]
 
-    sys =
-        System(raw_path;
-            bus_name_formatter = bus_name_formatter,
-            gen_name_formatter = gen_name_formatter,
-            load_name_formatter = load_name_formatter,
-            branch_name_formatter = branch_name_formatter,
-            shunt_name_formatter = shunt_name_formatter,
-            loadzone_name_formatter = loadzone_name_formatter,
-            area_name_formatter = area_name_formatter)
+    sys_kwargs = Dict(
+        :area_name_formatter => area_name_formatter,
+        :loadzone_name_formatter => loadzone_name_formatter,
+        :bus_name_formatter => bus_name_formatter,
+        :load_name_formatter => load_name_formatter,
+        :shunt_name_formatter => shunt_name_formatter,
+        :gen_name_formatter => gen_name_formatter,
+        :branch_name_formatter => branch_name_formatter,
+    )
+    bus_number_mapping = reverse_dict(md["bus_number_mapping"])  # PSS/E bus name -> Sienna bus name
+
+    return sys_kwargs, bus_number_mapping
+end
+
+"Construct a System from a `.raw` file and a dictionary corresponding to the `<name>_export_metadata.json` file"
+function System(file_path::AbstractString, md::Dict; kwargs...)
+    sys_kwargs, bus_number_mapping = parse_export_metadata_dict(md)
+    sys = system_via_power_models(file_path; merge(sys_kwargs, kwargs)...)
     # Remap bus numbers last because everything has been added to the system using PSS/E bus numbers
-    remap_bus_numbers!(sys, md["bus_number_mapping"])
+    remap_bus_numbers!(sys, bus_number_mapping)
     return sys
+end
+
+function system_from_psse_reimport(file_path::AbstractString; kwargs...)
+    md_path = joinpath(
+        dirname(file_path),
+        splitext(basename(file_path))[1] * PSSE_EXPORT_METADATA_EXTENSION,
+    )
+    if isfile(md_path)
+        @info "Found a PowerFlows.jl PSS/E export metadata file at $md_path, will use it to perform remapping for round trip"
+        md = JSON3.read(md_path, Dict)
+        return System(file_path, md; kwargs...)
+    else
+        @info "Did not find a PowerFlows.jl PSS/E export metadata file at $md_path, will not do any remapping"
+        return system_via_power_models(file_path; kwargs...)
+    end
 end
