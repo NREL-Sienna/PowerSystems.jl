@@ -46,10 +46,26 @@ end
     sys5 = System(file_dir)
 
     @info "Testing Three-Winding Transformer Parsing"
+
     @test isnothing(get_component(Transformer3W, sys3, "1"))
+
+    @test get_available(
+        get_component(Transformer3W, sys4, "FAV PLACE 07-FAV SPOT 06-FAV SPOT 03-i_1"),
+    ) == true
+    tw3s = get_components(Transformer3W, sys4)
+    @test length(tw3s) == 1
+    tw3 = only(tw3s)
+    @test get_b(tw3) == 0.00251
+    @test get_primary_turns_ratio(tw3) == 1.0
+    @test get_rating(tw3) == 0.0
+
     @test get_available(
         get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_A"),
     ) == false
+
+    @test get_r_primary(
+        get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_C"),
+    ) == 0.00225
     @test length(get_components(Transformer3W, sys5)) == 5
 
     @info "Testing Switched Shunt Parsing"
