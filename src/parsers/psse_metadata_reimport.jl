@@ -1,4 +1,20 @@
-# Parse the `*_metadata.json` file written alongside PowerFlows.jl PSS/E files
+# Parse the `*_export_metadata.json` file written alongside PSS/E files by PowerFlows.jl
+
+# Currently the following mappings are used here:
+#   area_mapping: maps Sienna name to PSS/E number for all areas
+#   zone_mapping: maps Sienna name to PSS/E number for all zones
+#   bus_number_mapping: maps Sienna number to PSS/E number for all buses
+#   load_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all loads
+#   shunt_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all shunts
+#   generator_name_mapping: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all generators
+#   branch_name_mapping: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all non-transformer branches
+#   transformer_ckt_mapping: maps (Sienna bus1, Sienna bus2, Sienna name) to PSS/E CKT field for all transformers
+
+# Mappings are stored in the file in the Sienna -> PSS/E direction, so they need to be
+# reversed for use here. Wherever a tuple is indicated above, the presentation in the file
+# is of the elements joined with underscores to form a single string.
+
+const PSSE_EXPORT_METADATA_EXTENSION = "_export_metadata.json"
 
 reverse_dict(d::Dict) = Dict(map(reverse, collect(d)))
 
@@ -52,8 +68,8 @@ end
 # See https://github.com/NREL-Sienna/PowerSystems.jl/issues/1160
 "Rename all the `LoadZone`s in the system according to the `Load_Zone_Name_Mapping` in the metadata"
 function fix_load_zone_names!(sys::System, md::Dict)
-    lz_map = reverse_dict(md["zone_number_mapping"])
-    # `collect` is necessary due to https://github.com/NREL-Sienna/PowerSystems.jl/issues/1161
+    lz_map = reverse_dict(md["zone_mapping"])
+    # `collect` is necessary because we're mutating the dictionary storing the components
     for load_zone in collect(get_components(LoadZone, sys))
         old_name = get_name(load_zone)
         new_name = get(lz_map, parse(Int64, old_name), old_name)
