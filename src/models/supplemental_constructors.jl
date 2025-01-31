@@ -227,6 +227,9 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -257,6 +260,9 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -286,6 +292,9 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -315,6 +324,9 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
 function TwoTerminalHVDCLine(;
     name,
     available,
