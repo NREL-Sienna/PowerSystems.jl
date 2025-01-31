@@ -64,19 +64,6 @@ function fix_nans!(sys::System)
     end
 end
 
-# TODO this should be a System constructor kwarg, like bus_name_formatter
-# See https://github.com/NREL-Sienna/PowerSystems.jl/issues/1160
-"Rename all the `LoadZone`s in the system according to the `Load_Zone_Name_Mapping` in the metadata"
-function fix_load_zone_names!(sys::System, md::Dict)
-    lz_map = reverse_dict(md["zone_mapping"])
-    # `collect` is necessary because we're mutating the dictionary storing the components
-    for load_zone in collect(get_components(LoadZone, sys))
-        old_name = get_name(load_zone)
-        new_name = get(lz_map, parse(Int64, old_name), old_name)
-        (old_name != new_name) && set_name!(sys, load_zone, new_name)
-    end
-end
-
 """
 Use PSS/E exporter metadata to build a function that maps component names back to their
 original Sienna values.
@@ -128,6 +115,8 @@ function System(raw_path::AbstractString, md::Dict)
         md["bus_number_mapping"],
         Int64,
     )
+    loadzone_name_map = reverse_dict(md["zone_mapping"])
+    loadzone_name_formatter = name -> loadzone_name_map[name]
 
     sys =
         System(raw_path;
@@ -135,9 +124,9 @@ function System(raw_path::AbstractString, md::Dict)
             gen_name_formatter = gen_name_formatter,
             load_name_formatter = load_name_formatter,
             branch_name_formatter = branch_name_formatter,
-            shunt_name_formatter = shunt_name_formatter)
+            shunt_name_formatter = shunt_name_formatter,
+            loadzone_name_formatter = loadzone_name_formatter)
     fix_nans!(sys)
-    fix_load_zone_names!(sys, md)
     # TODO remap bus numbers
     # TODO remap areas
     # TODO remap everything else! Should be reading all the keys in `md`
