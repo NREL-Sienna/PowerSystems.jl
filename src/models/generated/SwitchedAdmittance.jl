@@ -28,8 +28,8 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
-- `number_of_steps::Vector{Int}`: (default: `Int[]`) Number of steps for adjustable shunt
-- `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Admittance increment for each of step increase
+- `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
+- `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -45,9 +45,9 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     bus::ACBus
     "Initial admittance at N = 0"
     Y::Complex{Float64}
-    "Number of steps for adjustable shunt"
+    "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2."
     number_of_steps::Vector{Int}
-    "Admittance increment for each of step increase"
+    "Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2."
     Y_increase::Vector{Complex{Float64}}
     "Shunt admittance limits for switched shunt model"
     admittance_limits::MinMax

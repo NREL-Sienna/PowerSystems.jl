@@ -1798,14 +1798,14 @@
                 },
                 {
                     "name": "number_of_steps",
-                    "comment": "Number of steps for adjustable shunt",
+                    "comment": "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.",
                     "null_value": "Int[]",
                     "data_type": "Vector{Int}",
                     "default": "Int[]"
                 },
                 {
                     "name": "Y_increase",
-                    "comment": "Admittance increment for each of step increase",
+                    "comment": "Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.",
                     "null_value": "Complex{Float64}[]",
                     "data_type": "Vector{Complex{Float64}}",
                     "default": "Complex{Float64}[]"

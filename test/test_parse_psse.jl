@@ -45,7 +45,7 @@ end
     file_dir = joinpath(base_dir, "test_data", "5circuit_3w.raw")
     sys5 = System(file_dir)
 
-    @info "Testing  Three-Winding Transformer Parsing"
+    @info "Testing Three-Winding Transformer Parsing"
     @test isnothing(get_component(Transformer3W, sys3, "1"))
     @test get_available(
         get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_A"),
