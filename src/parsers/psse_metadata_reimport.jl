@@ -69,9 +69,26 @@ function name_formatter_from_component_ids(raw_name_mapping, bus_number_mapping,
     return component_id_formatter
 end
 
+# Assumes bus_number_mapping is 1-to-1, given by its coming from reverse_dict
 function remap_bus_numbers!(sys::System, bus_number_mapping)
     for bus in collect(get_components(Bus, sys))
-        set_number!(bus, parse(Int, bus_number_mapping[get_number(bus)]))
+        old_number = get_number(bus)
+        new_number = parse(Int, bus_number_mapping[old_number])
+        if new_number != old_number
+            if new_number in get_bus_numbers(sys)
+                # We would only reach this case if one bus's PSS/E number is another bus's
+                # Sienna number. That never happens because _psse_bus_numbers on the
+                # exporting side guarantees that bus numbers that are already compliant with
+                # the PSS/E spec will not be changed.
+                throw(
+                    ArgumentError(
+                        "Trying to remap bus number $old_number to $new_number, which is already a bus number",
+                    ),
+                )
+            end
+            replace!(sys.bus_numbers, old_number => new_number)
+            set_number!(bus, new_number)
+        end
     end
 end
 
