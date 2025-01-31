@@ -80,9 +80,15 @@ function name_formatter_from_component_ids(raw_name_mapping, bus_number_mapping,
     return component_id_formatter
 end
 
+function remap_bus_numbers!(sys::System, bus_number_mapping)
+    p_bus_to_s_bus = reverse_dict(bus_number_mapping)
+    for bus in collect(get_components(Bus, sys))
+        set_number!(bus, parse(Int, p_bus_to_s_bus[get_number(bus)]))
+    end
+end
+
 function System(raw_path::AbstractString, md::Dict)
     bus_name_map = reverse_dict(md["bus_name_mapping"])  # PSS/E bus name -> Sienna bus name
-    bus_number_map = reverse_dict(md["bus_number_mapping"])  # PSS/E bus number -> Sienna bus number
     all_branch_name_map = deserialize_reverse_component_ids(
         merge(md["branch_name_mapping"], md["transformer_ckt_mapping"]),
         md["bus_number_mapping"],
@@ -129,9 +135,8 @@ function System(raw_path::AbstractString, md::Dict)
             shunt_name_formatter = shunt_name_formatter,
             loadzone_name_formatter = loadzone_name_formatter,
             area_name_formatter = area_name_formatter)
+    # Remap bus numbers last because everything has been added to the system using PSS/E bus numbers
+    remap_bus_numbers!(sys, md["bus_number_mapping"])
     fix_nans!(sys)
-    # TODO remap bus numbers
-    # TODO remap areas
-    # TODO remap everything else! Should be reading all the keys in `md`
     return sys
 end
