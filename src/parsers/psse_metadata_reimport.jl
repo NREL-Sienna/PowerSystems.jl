@@ -115,8 +115,10 @@ function parse_export_metadata_dict(md::Dict)
         Int64,
     )
     loadzone_name_map = reverse_dict(md["zone_mapping"])
+    get!(loadzone_name_map, 1, "1")
     loadzone_name_formatter = name -> loadzone_name_map[name]
     area_name_map = reverse_dict(md["area_mapping"])
+    get!(area_name_map, 1, "1")
     area_name_formatter = name -> area_name_map[name]
 
     sys_kwargs = Dict(
