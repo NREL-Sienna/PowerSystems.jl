@@ -2,6 +2,7 @@
 const SKIP_PM_VALIDATION = false
 
 const SYSTEM_KWARGS = Set((
+    :area_name_formatter,
     :branch_name_formatter,
     :bus_name_formatter,
     :config_path,

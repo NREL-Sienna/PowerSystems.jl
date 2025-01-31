@@ -2,7 +2,7 @@
 
 # Currently the following mappings are used here:
 #   area_mapping: maps Sienna name to PSS/E number for all areas
-#   zone_mapping: maps Sienna name to PSS/E number for all zones
+#   zone_mapping: maps Sienna name to PSS/E number for all load zones
 #   bus_number_mapping: maps Sienna number to PSS/E number for all buses
 #   load_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all loads
 #   shunt_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all shunts
@@ -117,6 +117,8 @@ function System(raw_path::AbstractString, md::Dict)
     )
     loadzone_name_map = reverse_dict(md["zone_mapping"])
     loadzone_name_formatter = name -> loadzone_name_map[name]
+    area_name_map = reverse_dict(md["area_mapping"])
+    area_name_formatter = name -> area_name_map[name]
 
     sys =
         System(raw_path;
@@ -125,7 +127,8 @@ function System(raw_path::AbstractString, md::Dict)
             load_name_formatter = load_name_formatter,
             branch_name_formatter = branch_name_formatter,
             shunt_name_formatter = shunt_name_formatter,
-            loadzone_name_formatter = loadzone_name_formatter)
+            loadzone_name_formatter = loadzone_name_formatter,
+            area_name_formatter = area_name_formatter)
     fix_nans!(sys)
     # TODO remap bus numbers
     # TODO remap areas
