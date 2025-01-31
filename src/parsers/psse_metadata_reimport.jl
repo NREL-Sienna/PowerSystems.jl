@@ -50,20 +50,6 @@ deserialize_reverse_component_ids(
         end
         for (s_buses_s_name, p_name) in mapping)
 
-# TODO figure out where these are coming from and fix at the source
-# I think it has to do with per-unit conversions creating a division by zero, because `set_[re]active_power!(..., 0.0)` doesn't fix it
-"Iterate over all the `Generator`s in the system and, if any `active_power` or `reactive_power` fields are `NaN`, make them `0.0`"
-function fix_nans!(sys::System)
-    for gen in get_components(Generator, sys)
-        isnan(get_active_power(gen)) && (gen.active_power = 0.0)
-        isnan(get_reactive_power(gen)) && (gen.reactive_power = 0.0)
-        all(isnan.(values(get_reactive_power_limits(gen)))) &&
-            (gen.reactive_power_limits = (min = 0.0, max = 0.0))
-        all(isnan.(values(get_active_power_limits(gen)))) &&
-            (gen.active_power_limits = (min = 0.0, max = 0.0))
-    end
-end
-
 """
 Use PSS/E exporter metadata to build a function that maps component names back to their
 original Sienna values.
@@ -137,6 +123,5 @@ function System(raw_path::AbstractString, md::Dict)
             area_name_formatter = area_name_formatter)
     # Remap bus numbers last because everything has been added to the system using PSS/E bus numbers
     remap_bus_numbers!(sys, md["bus_number_mapping"])
-    fix_nans!(sys)
     return sys
 end
