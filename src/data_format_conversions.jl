@@ -21,11 +21,11 @@ function _convert_data!(
             continue
         end
         if component["__metadata__"]["type"] == "HVDCLine"
-            component["__metadata__"]["type"] = "TwoTerminalHVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
             continue
         end
         if component["__metadata__"]["type"] == "VSCDCLine"
-            component["__metadata__"]["type"] = "TwoTerminalVSCDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalLCCLine"
             continue
         end
         if haskey(component, "prime_mover") && haskey(component, "dynamic_injector")

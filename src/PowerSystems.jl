@@ -33,12 +33,14 @@ export ACBranch
 export Line
 export MonitoredLine
 export DCBranch
-export TwoTerminalHVDCLine
-export TwoTerminalVSCDCLine
+export TwoTerminalGenericHVDCLine
+export TwoTerminalVSCLine
+export TwoTerminalLCCLine
 export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export Transformer3W
 
 # from IS function_data.jl
 export FunctionData
@@ -636,6 +638,7 @@ import InfrastructureSystems:
     COMPONENT_NAME_DELIMITER,
     make_selector,
     rebuild_selector
+
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
