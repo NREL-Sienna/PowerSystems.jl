@@ -614,3 +614,16 @@ end
     device2 = first(get_components(ThermalStandard, sys2))
     @test_throws ArgumentError add_service!(device2, service1, sys2)
 end
+
+@testset "Test set_bus_number!" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    buses = collect(get_components(ACBus, sys))
+    bus1 = buses[1]
+    bus2 = buses[2]
+    orig = get_number(bus1)
+    new_number = 9999999
+    @test orig != new_number
+    set_bus_number!(sys, bus1, new_number)
+    @test get_number(bus1) == new_number
+    @test_throws ArgumentError set_bus_number!(sys, bus1, get_number(bus2))
+end

@@ -2619,6 +2619,28 @@ function convert_component!(
     remove_component!(sys, old_load)
 end
 
+"""
+Set the number of a bus.
+"""
+function set_bus_number!(sys::System, bus::ACBus, number::Int)
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+    bus.number = number
+    push!(sys.bus_numbers, number)
+    return
+end
+
+function set_number!(bus::ACBus, number::Int)
+    Base.depwarn(
+        "This method will be removed in v5.0 because its use breaks system consistency" *
+        "checks. Please call `set_bus_number!(::System, bus, number)` instead.",
+        :set_number!,
+    )
+    bus.number = number
+    return
+end
+
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)

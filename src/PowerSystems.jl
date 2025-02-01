@@ -411,6 +411,8 @@ export create_poly_cost
 
 #export make_time_series
 export get_bus_numbers
+export set_bus_number!
+export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
 export get_component_uuids
