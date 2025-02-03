@@ -2623,11 +2623,19 @@ end
 Set the number of a bus.
 """
 function set_bus_number!(sys::System, bus::ACBus, number::Int)
+    throw_if_not_attached(bus, sys)
+
+    orig = get_number(bus)
+    if number == orig
+        return
+    end
+
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
     end
-    bus.number = number
-    push!(sys.bus_numbers, number)
+
+    set_number!(bus, number)
+    replace!(sys.bus_numbers, orig => number)
     return
 end
 
