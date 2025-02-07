@@ -10,7 +10,7 @@ using DataFrames
 ### Build the base of the system with appropriate base power. 
 Begin by building the base system using the base power. 
 
-```@repl system 
+```julia 
 sys = System(100)
 ```
 
@@ -18,7 +18,7 @@ sys = System(100)
 Read in the CSV files that contain the data for building the system. In this
 example, the line, bus, and generator data are found in the following CSV files. 
 
-```@repl system 
+```julia
 bus_params = CSV.read("Scripts-and-Data/Buses.csv", DataFrame)
 line_params = CSV.read("Scripts-and-Data/Lines.csv", DataFrame)
 gen_params = CSV.read("Scripts-and-Data/gen.csv", DataFrame) 
@@ -28,31 +28,31 @@ gen_params = CSV.read("Scripts-and-Data/gen.csv", DataFrame)
 The first building block are the buses in the system. We can define variables
 describing the buses using columns found in the `bus_params.csv` file. 
 
-```@repl system 
+```julia
 min_voltage_col_name = "Voltage-Min (pu)"
 max_voltage_col_name = "Voltage-Max (pu)"
 base_voltage_col_name = "Base Voltage"
 bus_number_col_name = "Number"
 ```
 We can build the buses using the [`ACBus`](@ref) function. 
-```@repl system
+
+```julia
 for row in eachrow(bus_params)
-    num = row[:bus_number_col_name]
-    min_volt = row[:min_voltage_col_name]     
-    max_volt = row[:max_voltage_col_name]
-    base_volt = row[:base_voltage_col_name]
+    num = row[bus_number_col_name]
+    min_volt = row[min_voltage_col_name]        
+    max_volt = row[max_voltage_col_name]
+    base_volt = row[base_voltage_col_name]
     bus = ACBus(;
-           number = row[:number],
+           number = row[number],
            name = "bus$row",
            bustype = ACBusTypes.PQ,
            angle = 0.0,
            magnitude = 1.0,
            voltage_limits = (min = min_volt, max = max_volt),
            base_voltage = base_volt,
-       )
+       )   
     add_component!(sys, bus)
 end
-buses = sort!(get_buses(sys, Set(1:length(bus_params[:, 1]))), by = n -> n.name);
 ```
 
 ### Build the lines and transformers - parsing data from `line_params`
@@ -64,7 +64,7 @@ different base voltages.
 Begin by defining variables describing the lines/transformers using the columns
 found in the `line_params` dataframe. 
 
-```@repl system 
+```julia
 bus_from_col = "Bus from"
 bus_to_col = "Bus to" 
 reactance = "Reactance (p.u.)"
@@ -80,7 +80,7 @@ shunt = "Primary Shunt"
 number = "Number"
 ```
 Build the lines and transformers using the [`Line`](@ref) and [`Transformer2W`](@ref) functions. 
-```@repl system
+```julia
 for row in eachrow(line_params)
     num = row[number]
 	bus_from = parse(Int, row[bus_from_col][4:6])
@@ -134,21 +134,21 @@ end
 In this case loads are definied by region. Add the loads using the [`PowerLoad`](@ref) function according to their regions. 
 
 Read in the load data.
-```@repl system
+```julia
 load_data = sort!(CSV.read("Scripts-and-Data/Loads.csv", DataFrame));
 loads_R1_RT = []
 loads_R2_RT = []
 loads_R3_RT = []
 ```
 Create a file directory, and create variables describing the column names that will be used to build the loads. 
-```@repl system
+```julia
 file_path = "Scripts-and-Data/TimeSeries/RT/Load"
 region = "Region"
 factor = "Load Participation Factor"
 number = "Number"
 ```
 Build the loads using the [`PowerLoad`](@ref) function. 
-```@repl system 
+```julia
 for row in eachrow(load_data)
     num = row[number]
     i = parse(Int, row[region][2])
@@ -175,7 +175,7 @@ for row in eachrow(load_data)
 end
 ```
 Construct a vector containing the loads, and use the [`bulk_add_time_series!`](@ref) function to add the respective loads. 
-```@repl system
+```julia
 loads_RT = [loads_R1_RT, loads_R2_RT, loads_R3_RT]
 for i in 1:3
     associations = (
@@ -191,10 +191,13 @@ end
 # Reading in Time Series Data
 
 ### Establishing resolution of time series
-The following time series are hourly resolution for the year 2023, plus one day into the following year for a total of 366 days. The following steps show how to read in and add time series data to renewable and hydro generators, and powerloads.
+The following time series are hourly resolution for the year 2023, plus one day
+into the following year for a total of 366 days. The following steps show how
+to read in and add time series data to renewable and hydro generators, and
+powerloads.
 
 Begin by defining the resolution and the first time step. 
-```@repl system
+```julia
 resolution = Dates.Hour(1);
 timestamps = range(DateTime("2023-01-01T00:00:00"); step = resolution, length = 8784);
 ```
@@ -202,7 +205,7 @@ timestamps = range(DateTime("2023-01-01T00:00:00"); step = resolution, length = 
 ### Reading in Solar Time Series
 
 Read in the time series data for the solar generators, normalize the data, and create a [`SingleTimeSeriesArray`](@ref) component. 
-```@repl system 
+```julia
 solar_RT_TS = []
 file_dir = "Scripts-and-Data/TimeSeries/RT/Solar"
 for row in eachrow(solar_gens)
@@ -220,7 +223,7 @@ end
 
 ### Reading in Wind Time Series
 Read in the time series data for the wind generators, normalize the data, and create a [`SingleTimeSeriesArray`](@ref) component.
-```@repl system 
+```julia
 wind_RT_TS = []
 file_dir = "Scripts-and-Data/TimeSeries/RT/Wind"
 
@@ -239,7 +242,7 @@ end
 
 ### Reading in Hydro Time Series 
 Read in the time series data for the hydro generators, normalize the data, and create a [`SingleTimeSeriesArray`](@ref) component.
-```@repl system 
+```julia
 hydro_RT_TS = []
 file_path = "Scripts-and-Data/TimeSeries/RT/Hydro"
 for row in eachrow(hydro_gens)
@@ -259,7 +262,7 @@ end
 If your time series data is defined by region as opposed to component, here is how you would create 
 those time series objects. In this case there are 3 regions.
 
-```@repl system
+```julia
 load_RT_TS = []
 for i in 1:3
     local loaddf = CSV.read("Scripts-and-Data/TimeSeries/RT/Load/LoadR$(i)RT.csv", DataFrame)
@@ -280,7 +283,7 @@ The generator data is stored in the `gen_params` dataframe. Create dataframes ch
 generators, hydro generators and renewable generators are different types of
 components, and therefore built differently. 
 
-```@repl system 
+```julia 
 for row in eachrow(gen_params)
     if row["type"] == "Thermal "
         push!(thermal_gens, row, promote=true)
@@ -297,7 +300,7 @@ end
 Now we have four dataframes containing the four types of generation. Build the generators by parsing data from `gen_params`. Define variables describing the generators using columns found in
 `thermal_gens`, `hydro_gens`, `solar_gens`, and `wind_gens`.  
 
-```@repl system 
+```julia 
 name = "Generator Name"
 bus_connection = "bus of connection"
 rate = "Rating"
@@ -314,7 +317,7 @@ prime_move = "PrimeMoveType"
 Build the thermal generator components using the [`ThermalStandard`](@ref) function and data stored in the
 `thermal_gens` dataframe. 
 
-```@repl system 
+```julia 
 for row in eachrow(thermal_gens)
         thermal_bus = row[bus_connection]
         local thermal = ThermalStandard(;
@@ -341,7 +344,7 @@ end
 # Build solar generators - parsing data from the `solar_gens` data frame
 Build the solar generators and
 wind generators using the [`RenewableDispatch`](@ref) function, and attach the respective time series.  
-```@repl system
+```julia
 for row in eachrow(solar_gens)
     solar_bus = row[bus_connection]
     local solar = RenewableDispatch(;
@@ -363,7 +366,7 @@ for row in eachrow(solar_gens)
 
 ### Build wind generators - parsing data from the `wind_gens` data frame
 
-```@repl system
+```julia
 for row in eachrow(wind_gens)
     wind_bus = row[bus_connection]
     local wind = RenewableDispatch(;
@@ -386,7 +389,7 @@ end
 
 ### Build hydro generators - parsing data from the `hydro_gens` data frame 
 Build the hydro generators using the [`HydroDispatch`](@ref) function and attach the respective time series. 
-```@repl system 
+```julia
 for row in eachrow(hydro_gens)
     hydro_bus = row[bus_connection]
     local hydro = HydroDispatch(;
@@ -417,7 +420,7 @@ data frames.
 ### `RenewableGenerationCost`
 For the renewable generators assume zero marginal cost by using [`zero(CostCurve)`](@ref). Use the [`set_operation_cost!`](@ref) function to attach the [`RenewableGenerationCost`](@ref) to the respective generators.
 
-```@repl system 
+```julia
 ren_gens = collect(get_components(RenewableDispatch, sys)) 
 for i in length(ren_gens)
     cost_curve = zero(CostCurve) 
@@ -432,7 +435,7 @@ For more information regarding renewable cost function please reference [`Renewa
 ### `HydroGenerationCost`
 Hydro generation costs are defined by a fixed and variable cost. In this
 example assume both are zero. Use the [`LinearCurve`](@ref) and [`CostCurve`](@ref) function to describe the variable cost. 
-```@repl system 
+```julia
 hydrogens = collect(get_components(HydroDispatch, sys)) #collect hydro generators
 for i in length(hydrogens)
     curve = LinearCurve(0.0)
@@ -451,7 +454,7 @@ For more information regarding hydro cost functions please reference
 Thermal generator cost is defined by [`FuelCuve`](@ref). Import and parse the CSV that describes fuel costs. 
 
 Create a dictionary of fuel types and costs. 
-```@repl system 
+```julia
 fuel_params = CSV.read("Scripts-and-Data\\Fuels and emission rates.csv", DataFrame)
 fuel_cost = Dict(
     "coal" => fuel_params[1, 2],
@@ -464,7 +467,7 @@ fuel_cost = Dict(
 
 Assign a fuel type and price to the generators based on their name.  
 
-```@repl system 
+```julia
 fuel_prices = []
 fuel = []
 for row in eachrow(thermal_gens)
@@ -497,7 +500,7 @@ end
 Heat rates, load points, and heat rate bases are used to construct [`LinearCurve`](@ref) and
 [`PiecewiseIncrementalCurve`](@ref) that describe the operational cost of the thermal units. 
 
-```@repl system 
+```julia
 heat_rate_base = thermal_gens[:, "Heat Rate Base (MMBTU/hr)"]
 heat_rate = thermal_gens[:, "Heat Rate (MMBTU/hr)"]
 load_point = thermal_gen[:, "Load Point Band (MW)"]
@@ -508,7 +511,7 @@ shut_down_cost = thermal_gen[:. "Shut Down Cost"]
 
 Use the heat rate bases, heat rates, load points and fuel costs to
 construct the thermal generation cost functions using the [`FuelCurve`](@ref) and [`PiecewiseIncrementalCurve`](@ref) functions. 
-```@repl system 
+```julia
 thermals = collect(get_components(ThermalStandard, sys)) # collect thermal generators 
 for row in eachrow(thermal_gens) 
    fuel_cost = row[fuel_prices]
