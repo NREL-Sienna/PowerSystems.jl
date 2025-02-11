@@ -33,7 +33,7 @@ pages = OrderedDict(
             "...write and read data with a JSON" => "how_to/serialize_data.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
-            "...build a system using csv files" => "how_to/build_system_with_csv.md"
+            "...build system using csv files" => "how_to/build_system_with_files_NO_CODE.md"
         ],
         "Explanation" =>
             Any[
