@@ -149,7 +149,7 @@ get_component(selector::SingularComponentSelector, sys::System) =
 
 # get_available_components
 """
-Like [`get_components`](@ref) but returns only those components `c` for which `get_available(c)`.
+Like [`get_components`](@ref) but returns only components that are [`get_available`](@ref).
 """
 get_available_components(
     ::Type{T},
@@ -196,15 +196,15 @@ get_available_component(sys::System, uuid::Base.UUID) =
 get_available_component(sys::System, uuid::String) = IS.get_available_component(sys, uuid)
 
 """
-Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
+Like [`get_component`](@ref) but also returns `nothing` if the component is not [`get_available`](@ref).
 """
 get_available_component(::Type{T}, sys::System, args...; kwargs...) where {T <: Component} =
     IS.get_available_component(T, sys, args...; kwargs...)
 
 """
 Like [`get_component`](@ref) but also returns `nothing` if the component is not
-`get_available`. Optionally specify a filter function `scope_limiter` as the first argument
-to limit the components that should be considered.
+[`get_available`](@ref). Optionally specify a filter function `scope_limiter` as the first
+argument to limit the components that should be considered.
 """
 get_available_component(
     scope_limiter::Union{Function, Nothing},
@@ -214,7 +214,7 @@ get_available_component(
     IS.get_available_component(scope_limiter, selector, sys)
 
 """
-Like [`get_component`](@ref) but also returns `nothing` if the component is not `get_available`.
+Like [`get_component`](@ref) but also returns `nothing` if the component is not [`get_available`](@ref).
 """
 get_available_component(
     selector::IS.SingularComponentSelector,
