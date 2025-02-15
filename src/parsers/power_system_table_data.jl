@@ -1624,7 +1624,8 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
                 IS.LOG_GROUP_PARSING maxlog = 1
         end
         if ismissing(value)
-            throw(DataFormatError("$(field_info.custom_name) value missing"))
+            # throw(DataFormatError("$(field_info.custom_name) value missing"))
+            value = nothing
         end
         if na_to_nothing && value == "NA"
             value = nothing
