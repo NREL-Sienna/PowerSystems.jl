@@ -3,9 +3,9 @@
 
 # get_components
 """
-Get the components of the `System` that make up the `ComponentSelector`. Optionally specify
-a filter function `scope_limiter` as the first argument to limit the components that should
-be considered.
+Get the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
+Optionally specify a filter function `scope_limiter` as the first argument to limit the
+components that should be considered.
 
 # Arguments
 
@@ -21,7 +21,7 @@ get_components(
     IS.get_components(scope_limiter, selector, sys)
 
 """
-Get the components of the `System` that make up the `ComponentSelector`.
+Get the components of the [`System`](@ref) that make up the [`ComponentSelector`](@ref).
 
 # Arguments
 
@@ -33,14 +33,16 @@ get_components(selector::ComponentSelector, sys::System) =
 
 # get_component
 """
-Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
-if there is none. Optionally specify a filter function `scope_limiter` as the first argument
-to limit the components that should be considered.
+Get the component of the [`System`](@ref) that makes up the
+[`SingularComponentSelector`](@ref); `nothing` if there is none. Optionally specify a filter
+function `scope_limiter` as the first argument to limit the components that should be
+considered.
 
 # Arguments
 
   - `scope_limiter::Union{Function, Nothing}`: see [`ComponentSelector`](@ref)
-  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component to retrieve
+  - `selector::SingularComponentSelector`: the `SingularComponentSelector` whose component
+    to retrieve
   - `sys::System`: the system from which to draw components
 """
 get_component(
@@ -51,8 +53,8 @@ get_component(
     IS.get_component(scope_limiter, selector, sys)
 
 """
-Get the component of the `System` that makes up the `SingularComponentSelector`; `nothing`
-if there is none.
+Get the component of the [`System`](@ref) that makes up the
+[`SingularComponentSelector`](@ref); `nothing` if there is none.
 
 # Arguments
 
@@ -113,8 +115,9 @@ get_available_component(
 
 # get_groups
 """
-Get the groups that make up the `ComponentSelector`. Optionally specify a filter function
-`scope_limiter` as the first argument to limit the components that should be considered.
+Get the groups that make up the [`ComponentSelector`](@ref). Optionally specify a filter
+function `scope_limiter` as the first argument to limit the components that should be
+considered.
 
 # Arguments
 
@@ -130,7 +133,7 @@ get_groups(
     IS.get_groups(scope_limiter, selector, sys)
 
 """
-Get the groups that make up the `ComponentSelector`.
+Get the groups that make up the [`ComponentSelector`](@ref).
 
 # Arguments
 

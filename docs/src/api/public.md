@@ -97,7 +97,7 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
-## ComponentSelector
+## Advanced Component Selection
 
 ```@autodocs
 Modules = [InfrastructureSystems]
