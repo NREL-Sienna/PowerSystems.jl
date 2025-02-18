@@ -1,6 +1,14 @@
 using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
+using DocumenterInterLinks
+
+links = InterLinks(
+    "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
+    # Sometimes IS docstrings @extref to PSY, and sometimes those IS docstrings are included
+    # in the PSY reference, so we can have PSY @extref-ing to itself:
+    "PowerSystems" => "https://nrel-sienna.github.io/PowerSystems.jl/stable/",
+)
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
@@ -140,6 +148,7 @@ makedocs(
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, Rodrigo Henriquez-Auba, and Clayton Barrows",
     pages = Any[p for p in pages],
     draft = false,
+    plugins = [links]
 )
 
 deploydocs(
