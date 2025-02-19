@@ -62,7 +62,7 @@ bus_number_col_name = "Number"
 ```
 
 We can build the buses using the [`ACBus`](@ref) function.
-
+If the input data you have available in your `bus_params.csv` file does not include all the required parameters of [`ACBus`](@ref), you can hard code in the necessary data in the `for` loop. We have done that here for e.g., the [`bustype`](@ref acbustypes_list) and `angle`.
 ```julia
 for row in eachrow(bus_params)
     num = row[bus_number_col_name]
