@@ -87,7 +87,7 @@ end
 The next step is to build the lines and transformers in the system which are
 both stored in the `line_params` dataframe. In this example, we only have two branch types: is a [`Line`](@ref) if the buses
 being connected have the same base voltage, and a [`Transformer2W`](@ref) if they have
-different base voltages.
+different base voltages. You may need to implement additional logic if you have other branch types as well.
 
 Begin by defining variables describing the lines/transformers using the columns
 found in the `line_params` dataframe.
