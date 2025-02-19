@@ -109,7 +109,7 @@ number = "Number"
 ```
 
 Build the lines and transformers using the [`Line`](@ref) and [`Transformer2W`](@ref) functions.
-
+Again, if you don't have all of these parameters available in your file, customize the `for` loop to hard code whatever parameters you are missing (e.g., `r = 0.0` if no resistance data is available). 
 ```julia
 for row in eachrow(line_params)
     num = row[number]
