@@ -10,7 +10,7 @@ using DataFrames
 
 ### Build the base of the system with appropriate base power.
 
-Begin by building the base system using the base power.
+Begin by building the base [`System`](@ref) using the base power.
 
 ```julia
 sys = System(100)
@@ -63,6 +63,7 @@ bus_number_col_name = "Number"
 
 We can build the buses using the [`ACBus`](@ref) function.
 If the input data you have available in your `bus_params.csv` file does not include all the required parameters of [`ACBus`](@ref), you can hard code in the necessary data in the `for` loop. We have done that here for e.g., the [`bustype`](@ref acbustypes_list) and `angle`.
+
 ```julia
 for row in eachrow(bus_params)
     num = row[bus_number_col_name]
@@ -109,7 +110,8 @@ number = "Number"
 ```
 
 Build the lines and transformers using the [`Line`](@ref) and [`Transformer2W`](@ref) functions.
-Again, if you don't have all of these parameters available in your file, customize the `for` loop to hard code whatever parameters you are missing (e.g., `r = 0.0` if no resistance data is available). 
+Again, if you don't have all of these parameters available in your file, customize the `for` loop to hard code whatever parameters you are missing (e.g., `r = 0.0` if no resistance data is available).
+
 ```julia
 for row in eachrow(line_params)
     num = row[number]
@@ -139,7 +141,7 @@ for row in eachrow(line_params)
             r = row[resistance],
             x = row[reactance],
             primary_shunt = row[shunt],
-            rating = row[max_flow] / 100,
+            rating = row[max_flow] / system_base_mva,
         )
         add_component!(sys, tline)
     end
@@ -364,7 +366,7 @@ end
 ### Building Renewable Generators
 
 Build the solar generators and
-wind generators using the [`RenewableDispatch`](@ref) function, and attach the respective time series.
+wind generators using the [`RenewableDispatch`](@ref) constructor, specifying the two different technologies as different [prime movers](@ref pm_list), and attach their respective time series.
 
 # Build solar generators - parsing data from the `solar_gens` data frame
 
