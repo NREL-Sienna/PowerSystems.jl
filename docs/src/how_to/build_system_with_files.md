@@ -85,7 +85,7 @@ end
 ### Build the lines and transformers - parsing data from `line_params`
 
 The next step is to build the lines and transformers in the system which are
-both stored in the `line_params` dataframe. A branch is a [`Line`](@ref) if the buses
+both stored in the `line_params` dataframe. In this example, we only have two branch types: is a [`Line`](@ref) if the buses
 being connected have the same base voltage, and a [`Transformer2W`](@ref) if they have
 different base voltages.
 
