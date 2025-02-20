@@ -5,10 +5,9 @@
 In this example, we show how to build a [`System`](@ref), assuming you have
 input data on the component specifications and time series data formatted in
 CSV files. Moreover, it is assumed that the CSV files are stored in a directory
-called `MyData`, and are further sorted by component and time series types.
-This will become clear in the respective sections of this how-to where the
-components and time series are built. The organization of the CSV files'
-contents themselves are also specified in these sections.
+called `MyData`. These formatting expectations are more clearly specified in
+the following sections of this how-to, where the components and time series are
+built.
 
 These are the depedencies needed for this how-to:
 
@@ -30,7 +29,7 @@ system_base_mva = 100.0
 sys = System(system_base_mva)
 ```
 
-## Construct each [`ACBus`](@ref) of the [`System`](@ref)
+## Construct each [`Area`](@ref) and [`ACBus`](@ref) of the [`System`](@ref)
 
 The first building block of a system are the buses. In this example, we assume
 that the component data for the buses are contained in a CSV file. Each row is
@@ -58,10 +57,24 @@ bus_number_col = "Number"
 region = "Region"
 ```
 
-We can build the buses using the [`ACBus`](@ref) constructor. If the input
-data you have available in your `Buses.csv` file does not include all the
-required parameters of [`ACBus`](@ref), you can hard code in the necessary data
-in the `for` loop. We have done that here for e.g., the [`bustype`](@ref
+In this example, we assume that the buses are sorted into three [`Area`]s,
+where `area` is an optional parameter in the [`ACBus`] constructor. Because we
+will be sorting our buses into these areas as we construct the buses, we must
+first attach the areas to our [`System`].
+
+```julia
+num_regions = 3
+
+for i in 1:num_regions
+    area = Area("R$i")
+    add_component!(sys, area)
+end
+```
+
+Now, we are ready to build the buses using the [`ACBus`](@ref) constructor. If
+the input data you have available in your `Buses.csv` file does not include all
+the required parameters of [`ACBus`](@ref), you can hard code in the necessary
+data in the `for` loop. We have done that here for e.g., the [`bustype`](@ref
 acbustypes_list) and `angle`.
 
 ```julia
@@ -78,6 +91,7 @@ for row in eachrow(bus_params)
         magnitude = 1.0,
         voltage_limits = (min = min_volt, max = max_volt),
         base_voltage = base_volt,
+        area = get_component(Area, sys, "R$(row[region])")
     )
     add_component!(sys, bus)
 end
@@ -609,8 +623,7 @@ rows of our `Loads.csv`:
 | ...         | ... | ...    | ...                  |
 
 Read in the contents of the CSV file `Loads.csv` to a data frame and customize
-the parameter names based on the column names in your CSV file. Also create a
-variable for the number of regions in the [`System`].
+the parameter names based on the column names in your CSV file.
 
 ```julia
 load_params =  CSV.read("MyData/Loads.csv", DataFrame)
@@ -619,8 +632,6 @@ region = "Region"
 bus_connection = "Bus"
 factor = "Load Participation Factor"
 number = "Load Number"
-
-num_regions = 3
 ```
 
 Before building the loads, we must also set up the loads' time series. In this
@@ -656,13 +667,9 @@ Construct and attach the loads to the system using the [`PowerLoad`](@ref)
 constructor according to their regions.  Because these loads are defined by
 region, the `max_active_power` of each load will depend on the maximum time
 series value of its region, according to the mathematical relationship seen in
-the code block below. While we are creating the loads, we will also be sorting
-them into arrays by region.
+the code block below.
 
 ```julia
-R1 = []; R2 = []; R3 = []
-regional_loads = [R1, R2, R3]
-
 for row in eachrow(load_params)
     num = row[number]
     max = maximum(load_time_series[:, row[region] + 1]) # plus 1 in order to skip time stamp column
@@ -677,7 +684,6 @@ for row in eachrow(load_params)
         max_reactive_power = 0.0,
     )
     add_component!(sys, load)
-    push!(regional_loads[row[region]], load)
 end
 ```
 
@@ -693,9 +699,10 @@ for i in 1:num_regions
         data = load_array,
         scaling_factor_multiplier = get_max_active_power,
     )
+    region = get_component(Area, sys, "R$i")
     begin_time_series_update(sys) do
-        for component in regional_loads[i]
-            add_time_series!(sys, component, loadTS)
+        for component in get_components_in_aggregation_topology(PowerLoad, sys, region)
+            add_time_series!(sys, component, load_TS)
         end 
     end
 end
