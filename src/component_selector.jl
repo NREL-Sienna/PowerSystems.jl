@@ -1,6 +1,6 @@
 # Most of the `ComponentSelector` functionality in PowerSystems.jl is implemented by
 # wrapping the InfrastructureSystems.jl versions (that wrapping occurs in
-# `get_components_interface.jl`). An exception is `TopologyComponentSelector`, which is
+# `component_selector_interface.jl`). An exception is `TopologyComponentSelector`, which is
 # wholly implemented in PSY rather than in IS because it depends on
 # `PSY.AggregationTopology`.
 
