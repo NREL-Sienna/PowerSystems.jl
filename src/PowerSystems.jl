@@ -294,7 +294,8 @@ export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
 # from IS time_series_metadata_store.jl
-export get_time_series_summary_table
+export get_static_time_series_summary_table
+export get_forecast_summary_table
 # from IS time_series_parser.jl
 export NormalizationFactor
 export NormalizationTypes
@@ -580,7 +581,8 @@ import InfrastructureSystems:
     get_time_series_values,
     get_time_series_keys,
     show_time_series,
-    get_time_series_summary_table, # Time Series Summary Export for SPI
+    get_static_time_series_summary_table, # StaticTimeSeries Summary Export for SPI
+    get_forecast_summary_table, # Forecast Summary Export for SPI
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,
