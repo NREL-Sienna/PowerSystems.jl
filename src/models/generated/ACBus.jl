@@ -123,8 +123,6 @@ get_ext(value::ACBus) = value.ext
 """Get [`ACBus`](@ref) `internal`."""
 get_internal(value::ACBus) = value.internal
 
-"""Set [`ACBus`](@ref) `number`."""
-set_number!(value::ACBus, val) = value.number = val
 """Set [`ACBus`](@ref) `bustype`."""
 set_bustype!(value::ACBus, val) = value.bustype = val
 """Set [`ACBus`](@ref) `angle`."""
