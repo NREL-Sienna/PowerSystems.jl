@@ -581,8 +581,6 @@ import InfrastructureSystems:
     get_time_series_values,
     get_time_series_keys,
     show_time_series,
-    get_static_time_series_summary_table, # StaticTimeSeries Summary Export for SPI
-    get_forecast_summary_table, # Forecast Summary Export for SPI
     get_scenario_count, # Scenario Forecast Exports
     get_percentiles, # Probabilistic Forecast Exports
     get_next_time_series_array!,

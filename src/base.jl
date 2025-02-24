@@ -2750,7 +2750,7 @@ Return a DataFrame with the number of static time series for components and supp
 attributes.
 """
 function get_static_time_series_summary_table(sys::System)
-    return get_static_time_series_summary_table(sys.data)
+    return IS.get_static_time_series_summary_table(sys.data)
 end
 
 """
@@ -2758,5 +2758,5 @@ Return a DataFrame with the number of forecasts for components and supplemental
 attributes.
 """
 function get_forecast_summary_table(sys::System)
-    return get_forecast_summary_table(sys.data)
+    return IS.get_forecast_summary_table(sys.data)
 end
