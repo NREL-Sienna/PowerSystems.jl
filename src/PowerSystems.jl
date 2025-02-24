@@ -293,7 +293,7 @@ export ForecastKey
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
-# from IS time_series_metadata_store.jl
+# from IS time_series_metadata_store.jl and defined for System in base.jl
 export get_static_time_series_summary_table
 export get_forecast_summary_table
 # from IS time_series_parser.jl
