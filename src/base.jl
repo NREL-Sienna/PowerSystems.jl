@@ -2744,3 +2744,19 @@ function fast_deepcopy_system(
     end
     return new_sys
 end
+
+"""
+Return a DataFrame with the number of static time series for components and supplemental
+attributes.
+"""
+function get_static_time_series_summary_table(sys::System)
+    return IS.get_static_time_series_summary_table(sys.data)
+end
+
+"""
+Return a DataFrame with the number of forecasts for components and supplemental
+attributes.
+"""
+function get_forecast_summary_table(sys::System)
+    return IS.get_forecast_summary_table(sys.data)
+end
