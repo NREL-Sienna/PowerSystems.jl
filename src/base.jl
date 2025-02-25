@@ -1602,17 +1602,21 @@ invalid.
 - `sys::System`: System containing the components.
 - `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
+- `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
+   with this resolution.
 """
 function transform_single_time_series!(
     sys::System,
     horizon::Dates.Period,
-    interval::Dates.Period,
+    interval::Dates.Period;
+    resolution::Union{Nothing, Dates.Period} = nothing,
 )
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
         interval,
+        resolution = resolution,
     )
     return
 end
