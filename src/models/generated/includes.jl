@@ -14,6 +14,7 @@ include("TwoTerminalHVDCLine.jl")
 include("TwoTerminalVSCDCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
+include("FlexiblePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
@@ -481,6 +482,7 @@ export get_arc
 export get_area
 export get_available
 export get_b
+export get_balance_time_period
 export get_base_power
 export get_base_voltage
 export get_battery_resistance
@@ -1051,6 +1053,7 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
+export set_balance_time_period!
 export set_base_power!
 export set_base_voltage!
 export set_battery_resistance!
