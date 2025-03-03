@@ -1602,17 +1602,21 @@ invalid.
 - `sys::System`: System containing the components.
 - `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
+- `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
+   with this resolution.
 """
 function transform_single_time_series!(
     sys::System,
     horizon::Dates.Period,
-    interval::Dates.Period,
+    interval::Dates.Period;
+    resolution::Union{Nothing, Dates.Period} = nothing,
 )
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
         interval,
+        resolution = resolution,
     )
     return
 end
@@ -2743,4 +2747,20 @@ function fast_deepcopy_system(
         comp.internal.units_info = new_sys.units_settings
     end
     return new_sys
+end
+
+"""
+Return a DataFrame with the number of static time series for components and supplemental
+attributes.
+"""
+function get_static_time_series_summary_table(sys::System)
+    return IS.get_static_time_series_summary_table(sys.data)
+end
+
+"""
+Return a DataFrame with the number of forecasts for components and supplemental
+attributes.
+"""
+function get_forecast_summary_table(sys::System)
+    return IS.get_forecast_summary_table(sys.data)
 end
