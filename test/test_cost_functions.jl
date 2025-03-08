@@ -254,13 +254,12 @@ end
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 end
 
-@testset "Test MarketBidCost with single `start_up::Number` value" begin
-    expected = (hot = 1.0, warm = 0.0, cold = 0.0)  # should only be used for the `hot` value.
-    no_load_cost = rand()
-    start_up = 1.0
-    shut_down = rand()
-    cost = MarketBidCost(no_load_cost, start_up, shut_down)
-    @test get_start_up(cost) == expected
+@testset "Test `MarketBidCost` with single `start_up` value" begin
+    cost = MarketBidCost(0.0, 1.0, 2.0)
+    @test get_start_up(cost) == (hot = 1.0, warm = 0.0, cold = 0.0)
+
+    set_start_up!(cost, 2.0)
+    @test get_start_up(cost) == (hot = 2.0, warm = 0.0, cold = 0.0)
 end
 
 @testset "Test ReserveDemandCurve with Cost Timeseries" begin
@@ -333,7 +332,7 @@ end
           first(data_float[initial_time])
 end
 
-@testset "Test startup cost (tuple and time series)" begin
+@testset "Test startup cost (single number, tuple, and time series)" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, "322_CT_6")
@@ -341,10 +340,17 @@ end
     set_operation_cost!(generator, market_bid)
 
     op_cost = get_operation_cost(generator)
+    @test get_start_up(op_cost) ==
+          (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
     @test get_start_up(generator, op_cost) ==
           (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
 
+    set_start_up!(sys, generator, 3.14)
+    @test get_start_up(op_cost) == (hot = 3.14, warm = 0.0, cold = 0.0)
+    @test get_start_up(generator, op_cost) == (hot = 3.14, warm = 0.0, cold = 0.0)
+
     set_start_up!(sys, generator, (hot = 1.23, warm = 2.34, cold = 3.45))
+    @test get_start_up(op_cost) == (hot = 1.23, warm = 2.34, cold = 3.45)
     @test get_start_up(generator, op_cost) == (hot = 1.23, warm = 2.34, cold = 3.45)
 
     initial_time = Dates.DateTime("2020-01-01")

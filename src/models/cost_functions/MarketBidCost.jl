@@ -108,7 +108,7 @@ function MarketBidCost(
 )
     # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
     # Operators use `hot` when they don’t have multiple stages.
-    start_up_multi = (hot = Float64(start_up), warm = 0.0, cold = 0.0)
+    start_up_multi = single_start_up_to_stages(start_up)
     return MarketBidCost(;
         no_load_cost = no_load_cost,
         start_up = start_up_multi,
@@ -162,7 +162,7 @@ set_ancillary_service_offers!(value::MarketBidCost, val) =
 
 """Auxiliary Method for setting up start up that are not multi-start"""
 function set_start_up!(value::MarketBidCost, val::Real)
-    start_up_multi = (hot = Float64(val), warm = 0.0, cold = 0.0)
+    start_up_multi = single_start_up_to_stages(val)
     set_start_up!(value, start_up_multi)
 end
 

@@ -651,21 +651,30 @@ function set_decremental_initial_input!(
 end
 
 """
-Set the startup cost for a `StaticInjection` device with a `MarketBidCost` to either a single `StartUpStages` or a time series.
+Set the startup cost for a `StaticInjection` device with a `MarketBidCost` to either a
+single number, a single `StartUpStages`, or a time series.
 
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
-- `time_series_data::Union{StartUpStages, IS.TimeSeriesData},`: the data. If a time series, must be of eltype `NTuple{3, Float64}`.
+- `time_series_data::Union{Float64, StartUpStages, IS.TimeSeriesData},`: the data. If a time
+  series, must be of eltype `NTuple{3, Float64}` -- to represent a single value in a time
+  series, use `(value, 0.0, 0.0)`.
 """
 function set_start_up!(
     sys::System,
     component::StaticInjection,
-    data::Union{StartUpStages, IS.TimeSeriesData},
+    data::Union{Float64, StartUpStages, IS.TimeSeriesData},
 )
     market_bid_cost = get_operation_cost(component)
     _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
-    to_set = _process_set_cost(StartUpStages, NTuple{3, Float64}, sys, component, data)
+    to_set = _process_set_cost(
+        Union{Float64, StartUpStages},
+        NTuple{3, Float64},
+        sys,
+        component,
+        data,
+    )
     set_start_up!(market_bid_cost, to_set)
 end
 
