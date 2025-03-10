@@ -37,9 +37,9 @@ an individual bus, and there is a column for each input parameter:
 
 | Bus Number | BusType | Magnitude | Voltage-Max | Voltage-Min | Base Voltage | Region |
 | ---------- | ------- | --------- | ----------- | ----------- | ------------ | ------ |
-| 1          | AC      | 1         | 1.06        | 0.94        | 138          | 1      |
-| 2          | AC      | 1         | 1.06        | 0.94        | 138          | 1      |
-| 3          | AC      | 1         | 1.06        | 0.94        | 345          | 2      |
+| 1          | ref      | 1         | 1.06        | 0.94        | 138          | 1      |
+| 2          | ref      | 1         | 1.06        | 0.94        | 138          | 1      |
+| 3          | ref      | 1         | 1.06        | 0.94        | 345          | 2      |
 | ...        | ...     | ...       | ...         | ...         | ...          | ...    |
 
 Ensure your data follows this format before beginning.
@@ -57,10 +57,10 @@ bus_number_col = "Number"
 region = "Region"
 ```
 
-In this example, we assume that the buses are sorted into three [`Area`]s,
-where `area` is an optional parameter in the [`ACBus`] constructor. Because we
+In this example, we assume that the buses are sorted into three `Areas`,
+where [`area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor. Because we
 will be sorting our buses into these areas as we construct the buses, we must
-first attach the areas to our [`System`].
+first attach the areas to our [`System`](@ref).
 
 ```julia
 num_regions = 3
@@ -74,8 +74,7 @@ end
 Now, we are ready to build the buses using the [`ACBus`](@ref) constructor. If
 the input data you have available in your `Buses.csv` file does not include all
 the required parameters of [`ACBus`](@ref), you can hard code in the necessary
-data in the `for` loop. We have done that here for e.g., the [`bustype`](@ref
-acbustypes_list) and `angle`.
+data in the `for` loop. We have done that here for e.g., the `bustype` and `angle`.
 
 ```julia
 for row in eachrow(bus_params)
@@ -99,13 +98,13 @@ end
 
 ## Build each [`Branch`](@ref) that connects [`ACBus`](@ref)es
 
-The next step is to build the [`Branch`](@ref)es in the system. In this
+The next step is to build the [`Branch`](@ref) components in the system. In this
 example, we only have two branch types: a [`Line`](@ref), if the connecting buses
 have the same base voltage; and a [`Transformer2W`](@ref) if they
 have different base voltages. You may need to implement additional logic if you
 have other branch types as well.
 
-The data for each [`Branch`](@ref) is contained in `Branches.csv` with the following format
+The data for each [`Branch`](@ref) is contained in the `Branches.csv` with the following format
 that your data should follow as well. Each row is a branch, and each column represents an
 input parameter.
 
@@ -175,6 +174,7 @@ end
 
 ## Building Thermal Generators and Adding their Cost Functions
 
+
 ### Build Thermal Generators
 
 The data needed to build each [`ThermalStandard`](@ref) unit is found in the
@@ -239,12 +239,7 @@ end
 
 ### Add [`ThermalGenerationCost`](@ref)
 
-Thermal generator cost is defined by [`FuelCurve`](@ref). The data needed to
-populate each [`FuelCurve`](@ref) is in the CSV file `Thermal_Fuel_Rates.csv`. This CSV
-file requires some parsing in order to more easily set the fuel cost for each thermal unit.
-
-Read in the contents of the CSV file `Thermal_Fuel_Rates.csv` to a data frame,
-and create a dictionary of fuel types and costs.
+In this example the `ThermalGenerationCost` functions are defined by a [`FuelCurve`](@ref). The data needed to build each [`FuelCurve`](@ref) can be found in two separate CSV files. The first, `Thermal_Fuel_Rates.csv` contains information regarding the type of fuel and the cost. The second, `Thermal_Gens.csv` contains the rest of the data and has already been read in. Read in the `Thermal_Fuel_Rates.csv` CSV and create a dictionary of fuel types and associated costs. 
 
 ```julia
 fuel_params = CSV.read("MyData/Thermal_Fuels_Rates.csv", DataFrame)
@@ -257,8 +252,7 @@ fuel_cost = Dict(
     "geo" => fuel_params[5, 2],
 )
 ```
-
-Assign a fuel type and price to the thermal generators based on their name.
+Assign a fuel type and price to the thermal generators based on their [`PrimeMover`](@ref) type which can be found in the thermal_gens dataframe. 
 
 ```julia
 fuel_prices = []
@@ -289,11 +283,8 @@ for row in eachrow(thermal_gens)
     end
 end
 ```
-
-Next, we will parse heat rates, load points and heat rate bases. Heat rates,
-load points, and heat rate bases are used to construct [`LinearCurve`](@ref)
-and [`PiecewiseIncrementalCurve`](@ref) that describe the operational cost of
-the thermal units.
+Next, we will parse heat rate bases, heat rates, load points, fixed, start up, and shut down costs from the thermal_gens dataframe. This data is used to construct [`LinearCurve`](@ref) and[`PiecewiseIncrementalCurve`](@ref), and subsequently [`FuelCurve`](@ref) functions that desribe the operation cost of the thermal units. 
+ 
 
 ```julia
 heat_rate_base = thermal_gens[:, "Heat Rate Base (MMBTU/hr)"]
@@ -303,10 +294,7 @@ fixed_cost = thermal_gens[:, "Fixed Cost"]
 start_up_cost = thermal_gens[:, "Start Up Cost"]
 shut_down_cost = thermal_gens[:, "Shut Down Cost"]
 ```
-
-Use the heat rate bases, heat rates, load points and fuel costs to construct
-the thermal generation cost functions using the [`FuelCurve`](@ref) and
-[`PiecewiseIncrementalCurve`](@ref) functions.
+Use this data to build the [`PiecewiseIncrementalCurve`](@ref) and the [`FuelCurve`](@ref) functions, and add them to their associated thermal generator. 
 
 ```julia
 gen_name = "Generator Name"
@@ -330,7 +318,6 @@ for row in eachrow(thermal_gens)
     set_operation_cost!(thermal, cost_thermal)
 end
 ```
-
 For more information regarding thermal cost functions please visit
 [`ThermalGenerationCost`](@ref).
 
@@ -392,7 +379,7 @@ timestamps = range(DateTime("2023-01-01T00:00:00"); step = resolution, length = 
 In the same `for` loop, we will build the solar generator components using the
 [`RenewableDispatch`](@ref) constructor and data stored in the `solar_gens`
 dataframe, and build and attach each solar generator's time series. In this example,
-we assume that the [`RenewableGenerationCost`](@ref) is at zero marginal cost.
+we assume that the [`RenewableGenerationCost`](@ref) is at zero marginal cost. If the marginal cost is not zero, follow similar steps to building the [`ThermalGenerationCost`](@ref) functions from above. 
 
 ```julia
 for row in eachrow(solar_gens)
