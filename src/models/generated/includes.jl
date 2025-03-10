@@ -29,6 +29,9 @@ include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
+include("HydroTurbine.jl")
+include("HydroReservoir.jl")
+include("HydroTopology.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
@@ -636,6 +639,7 @@ export get_number
 export get_number_of_steps
 export get_operation_cost
 export get_outflow
+export get_outflow_limits
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
@@ -700,6 +704,7 @@ export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
 export get_requirement
+export get_reservoir
 export get_rf
 export get_rg
 export get_rrpwr
@@ -710,6 +715,7 @@ export get_secondary_tertiary_arc
 export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
+export get_spillage_outflow_limits
 export get_star_bus
 export get_start_time_limits
 export get_start_types
@@ -720,6 +726,7 @@ export get_storage_capacity
 export get_storage_level_limits
 export get_storage_target
 export get_storage_technology_type
+export get_storage_volume_limits
 export get_sustained_time
 export get_switch
 export get_switch_mode_voltage
@@ -736,7 +743,9 @@ export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
+export get_topology
 export get_transfer_setpoint
+export get_travel_time
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -746,6 +755,8 @@ export get_voltage
 export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
+export get_volume_target
+export get_volume_to_power_factor
 export get_x
 export get_x_12
 export get_x_13
@@ -1280,6 +1291,7 @@ export set_number!
 export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
+export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
@@ -1344,6 +1356,7 @@ export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
 export set_requirement!
+export set_reservoir!
 export set_rf!
 export set_rg!
 export set_rrpwr!
@@ -1354,6 +1367,7 @@ export set_secondary_tertiary_arc!
 export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
+export set_spillage_outflow_limits!
 export set_star_bus!
 export set_start_time_limits!
 export set_start_types!
@@ -1364,6 +1378,7 @@ export set_storage_capacity!
 export set_storage_level_limits!
 export set_storage_target!
 export set_storage_technology_type!
+export set_storage_volume_limits!
 export set_sustained_time!
 export set_switch!
 export set_switch_mode_voltage!
@@ -1380,7 +1395,9 @@ export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
+export set_topology!
 export set_transfer_setpoint!
+export set_travel_time!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
@@ -1390,6 +1407,8 @@ export set_voltage!
 export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
+export set_volume_target!
+export set_volume_to_power_factor!
 export set_x!
 export set_x_12!
 export set_x_13!
