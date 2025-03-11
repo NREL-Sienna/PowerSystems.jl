@@ -379,8 +379,8 @@ get_decremental_initial_input(
 """
 Retrieve the startup cost data for a `StaticInjection` device with a `MarketBidCost`. If
 this field is a time series, the user may specify `start_time` and `len` and the function
-returns a `TimeArray` of `Float64`s; if the field is not a time series, the function
-returns a single `Float64`.
+returns a `TimeArray` of `StartUpStages`s; if the field is not a time series, the function
+returns a single `StartUpStages`.
 """
 get_start_up(
     device::StaticInjection,
@@ -389,6 +389,20 @@ get_start_up(
     len::Union{Nothing, Int} = nothing,
 ) = _process_get_cost(StartUpStages, device,
     get_start_up(cost), StartUpStages, start_time, len)
+
+"""
+Retrieve the shutdown cost data for a `StaticInjection` device with a `MarketBidCost`. If
+this field is a time series, the user may specify `start_time` and `len` and the function
+returns a `TimeArray` of `Float64`s; if the field is not a time series, the function
+returns a single `Float64`.
+"""
+get_shut_down(
+    device::StaticInjection,
+    cost::MarketBidCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Float64, device,
+    get_shut_down(cost), Float64, start_time, len)
 
 # SETTER HELPER FUNCTIONS
 """
@@ -657,9 +671,9 @@ single number, a single `StartUpStages`, or a time series.
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
-- `time_series_data::Union{Float64, StartUpStages, IS.TimeSeriesData},`: the data. If a time
-  series, must be of eltype `NTuple{3, Float64}` -- to represent a single value in a time
-  series, use `(value, 0.0, 0.0)`.
+- `data::Union{Float64, StartUpStages, IS.TimeSeriesData},`: the data. If a time series,
+  must be of eltype `NTuple{3, Float64}` -- to represent a single value in a time series,
+  use `(value, 0.0, 0.0)`.
 """
 function set_start_up!(
     sys::System,
@@ -676,6 +690,33 @@ function set_start_up!(
         data,
     )
     set_start_up!(market_bid_cost, to_set)
+end
+
+"""
+Set the shutdown cost for a `StaticInjection` device with a `MarketBidCost` to either a
+single number or a time series.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `data::Union{Float64, IS.TimeSeriesData},`: the data. If a time series, must be of eltype
+  `Float64`.
+"""
+function set_shut_down!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Float64, IS.TimeSeriesData},
+)
+    market_bid_cost = get_operation_cost(component)
+    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
+    to_set = _process_set_cost(
+        Float64,
+        Float64,
+        sys,
+        component,
+        data,
+    )
+    set_shut_down!(market_bid_cost, to_set)
 end
 
 """

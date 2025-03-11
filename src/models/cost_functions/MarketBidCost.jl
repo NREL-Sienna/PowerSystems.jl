@@ -18,7 +18,7 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     start-up cost"
     start_up::Union{TimeSeriesKey, StartUpStages}
     "Shut-down cost"
-    shut_down::Float64
+    shut_down::Union{TimeSeriesKey, Float64}
     "Sell Offer Curves data, which can be a time series of `PiecewiseStepData` or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     incremental_offer_curves::Union{
@@ -41,11 +41,32 @@ Compatible with most US Market bidding mechanisms that support demand and genera
     ancillary_service_offers::Vector{Service} = Vector{Service}()
 end
 
-"Auxiliary Constructor for Deserialization with Integer at no load cost"
+"Auxiliary constructor for shut_down::Integer"
+MarketBidCost(
+    no_load_cost::Float64,
+    start_up::Union{TimeSeriesKey, StartUpStages},
+    shut_down::Integer,
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+) = MarketBidCost(
+    no_load_cost,
+    start_up,
+    Float64(shut_down),
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+)
+
+"Auxiliary constructor for no_load_cost::Integer"
 MarketBidCost(
     no_load_cost::Integer,
     start_up::Union{TimeSeriesKey, StartUpStages},
-    shut_down,
+    shut_down::Union{TimeSeriesKey, Float64},
     incremental_offer_curves,
     decremental_offer_curves,
     incremental_initial_input,
@@ -67,7 +88,7 @@ MarketBidCost(
 MarketBidCost(
     no_load_cost::Float64,
     start_up::Union{TimeSeriesKey, StartUpStages},
-    shut_down,
+    shut_down::Union{TimeSeriesKey, Float64},
     incremental_offer_curves,
     decremental_offer_curves,
     ancillary_service_offers,
