@@ -374,22 +374,22 @@ end
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     market_bid = MarketBidCost(nothing)
     set_operation_cost!(generator, market_bid)
-    
+
     op_cost = get_operation_cost(generator)
     @test get_shut_down(op_cost) == 0.0
     @test get_shut_down(generator, op_cost) == 0.0
-    
+
     set_shut_down!(sys, generator, 3.14)
     @test get_shut_down(op_cost) == 3.14
     @test get_shut_down(generator, op_cost) == 3.14
-    
+
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     horizon = 24
     data_float = SortedDict(initial_time => test_costs[Float64])
     forecast_fd = IS.Deterministic("fuel_cost", data_float, resolution)
-    
+
     set_shut_down!(sys, generator, forecast_fd)
     @test first(TimeSeries.values(get_shut_down(generator, op_cost))) ==
-            first(data_float[initial_time])
+          first(data_float[initial_time])
 end
