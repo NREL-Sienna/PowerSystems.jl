@@ -1,7 +1,6 @@
 @testset "VPP System tests" begin
     test_sys = PSB.build_system(PSB.PSITestSystems, "c_sys14"; add_forecasts = false)
 
-    #include("/Users/akody/Library/CloudStorage/OneDrive-NREL/Sienna/VPP_Project/PowerSystems.jl/src/models/VPPSystem.jl")
 
     vpp_sys = VPPSystem(;
         name = "Test VPP",
