@@ -314,6 +314,10 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
         for (i, load) in data["load"]
             _apply_func!(load, "pd", rescale)
             _apply_func!(load, "qd", rescale)
+            _apply_func!(load, "pi", rescale)
+            _apply_func!(load, "qi", rescale)
+            _apply_func!(load, "py", rescale)
+            _apply_func!(load, "qy", rescale)
         end
     end
 

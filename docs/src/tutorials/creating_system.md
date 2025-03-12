@@ -357,6 +357,18 @@ get_rating(retrieved_component)
 See that now the data is now 1.0 (5.0 MVA per-unitized by the generator (i.e., the device's)
 `base_power` of 5.0 MVA), which is the format we used to originally define the device.
 
+As a shortcut to temporarily set the `System`'s unit system to a particular value, perform
+some action, and then automatically set it back to what it was before, we can use
+`with_units_base` and a [`do` block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments):
+
+```@repl basics
+with_units_base(sys, "NATURAL_UNITS") do
+    # Everything inside this block will run as if the unit system were NATURAL_UNITS
+    get_rating(retrieved_component)
+end
+get_units_base(sys)  # Unit system goes back to previous value when the block ends
+```
+
 Recall that if you ever need to check a `System`'s settings, including the unit system being
 used by all the getter functions, you can always just print the `System`:
 

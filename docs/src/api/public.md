@@ -74,7 +74,7 @@ Filter = t -> nameof(t) in names(PowerSystems)
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["base.jl"]
+Pages   = ["get_components_interface.jl", "base.jl"]
 Public = true
 Private = false
 Filter = t -> t ∈ [System]
@@ -82,7 +82,7 @@ Filter = t -> t ∈ [System]
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["base.jl"]
+Pages   = ["get_components_interface.jl", "base.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
@@ -95,6 +95,29 @@ Pages   = ["utils/print.jl",
 Public = true
 Private = false
 Filter = t -> t ∉ [System]
+```
+
+## Advanced Component Selection
+
+The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://nrel-sienna.github.io/PowerAnalytics.jl/stable/).
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["component_selector.jl"]
+Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && !(nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
+```
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["component_selector_interface.jl"]
+Public  = true
+Private = false
+```
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["component_selector.jl"]
+Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && (nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
 ```
 
 ## Additional Component Methods

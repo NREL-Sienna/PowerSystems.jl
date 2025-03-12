@@ -211,13 +211,18 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     default_bus_naming = x -> _get_pm_bus_name(x, unique_bus_names)
 
     _get_name = get(kwargs, :bus_name_formatter, default_bus_naming)
+
+    default_area_naming = string
+    # The formatter for area_name should be a function that transform the Area Int to a String
+    _get_name_area = get(kwargs, :area_name_formatter, default_area_naming)
+
     for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
         bus_name = strip(_get_name(d))
         bus_number = Int(d["bus_i"])
 
-        area_name = string(d["area"])
+        area_name = _get_name_area(d["area"])
         area = get_component(Area, sys, area_name)
         if isnothing(area)
             area = Area(area_name)
@@ -374,7 +379,14 @@ function make_hydro_gen(
     ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
         name = gen_name,
         available = Bool(d["gen_status"]),
@@ -394,7 +406,7 @@ function make_hydro_gen(
         ramp_limits = (up = ramp_agc, down = ramp_agc),
         time_limits = nothing,
         operation_cost = curtailcost,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 end
 
@@ -405,12 +417,20 @@ function make_renewable_dispatch(
     sys_mbase::Float64,
 )
     cost = RenewableGenerationCost(zero(CostCurve))
-    base_conversion = sys_mbase / d["mbase"]
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
 
     rating = calculate_rating(d["pmax"], d["qmax"])
-    if rating > d["mbase"]
-        @warn "rating is larger than base power for $gen_name, setting to $(d["mbase"])"
-        rating = d["mbase"]
+    if rating > mbase
+        @warn "rating is larger than base power for $gen_name, setting to $mbase"
+        rating = mbase
     end
 
     generator = RenewableDispatch(;
@@ -427,7 +447,7 @@ function make_renewable_dispatch(
         ),
         power_factor = 1.0,
         operation_cost = cost,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 
     return generator
@@ -439,7 +459,14 @@ function make_renewable_fix(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     generator = RenewableNonDispatch(;
         name = gen_name,
         available = Bool(d["gen_status"]),
@@ -449,7 +476,7 @@ function make_renewable_fix(
         rating = float(d["pmax"]) * base_conversion,
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         power_factor = 1.0,
-        base_power = d["mbase"],
+        base_power = mbase,
     )
 
     return generator
@@ -555,7 +582,14 @@ function make_thermal_gen(
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
-    base_conversion = sys_mbase / d["mbase"]
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
@@ -577,7 +611,7 @@ function make_thermal_gen(
         ramp_limits = (up = ramp_lim, down = ramp_lim),
         time_limits = nothing,
         operation_cost = operation_cost,
-        base_power = d["mbase"],
+        base_power = mbase,
         ext = ext,
     )
 
@@ -789,7 +823,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
         reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
         reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
-        loss = (l0 = d["loss0"], l1 = d["loss1"]),
+        loss = LinearCurve(d["loss1"], d["loss0"]),
     )
 end
 

@@ -2,6 +2,7 @@
 const SKIP_PM_VALIDATION = false
 
 const SYSTEM_KWARGS = Set((
+    :area_name_formatter,
     :branch_name_formatter,
     :bus_name_formatter,
     :config_path,
@@ -73,7 +74,7 @@ System(; kwargs...)
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
-large datasets from overwhelming system memory (see [Data Storage](@ref)). 
+large datasets from overwhelming system memory (see [Data Storage](@ref)).
 **If the system's time series
 data will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
@@ -99,7 +100,7 @@ sys = System(100.0; compression = CompressionSettings(
 sys = System(100.0; time_series_in_memory = true)
 ```
 """
-struct System <: IS.InfrastructureSystemsType
+struct System <: IS.ComponentContainer
     data::IS.SystemData
     frequency::Float64 # [Hz]
     bus_numbers::Set{Int}
@@ -133,7 +134,7 @@ struct System <: IS.InfrastructureSystemsType
                 "unit_system kwarg ignored. The value in SystemUnitsSetting takes precedence"
             )
         end
-        bus_numbers = Set{Int}()
+        bus_numbers = Set(get_number.(IS.get_components(ACBus, data)))
         return new(
             data,
             frequency,
@@ -236,18 +237,31 @@ function System(
     )
 end
 
-"""Constructs a System from a file path ending with .m, .RAW, or .json
+function system_via_power_models(file_path::AbstractString; kwargs...)
+    pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
+    sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+    return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
+end
 
-If the file is JSON then assign_new_uuids = true will generate new UUIDs for the system
-and all components.
+"""Constructs a System from a file path ending with .m, .raw, or .json
+
+If the file is JSON, then `assign_new_uuids = true` will generate new UUIDs for the system
+and all components. If the file is .raw, then `try_reimport = false` will skip searching for
+a `<name>_export_metadata.json` file in the same directory.
 """
-function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
-    ext = splitext(file_path)[2]
-    if lowercase(ext) in [".m", ".raw"]
-        pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
-    elseif lowercase(ext) == ".json"
+function System(
+    file_path::AbstractString;
+    assign_new_uuids = false,
+    try_reimport = true,
+    kwargs...,
+)
+    ext = lowercase(splitext(file_path)[2])
+    if ext == ".m"
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".raw"
+        try_reimport && return system_from_psse_reimport(file_path; kwargs...)
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         runchecks = get(kwargs, :runchecks, true)
@@ -513,27 +527,61 @@ function set_units_setting!(
     return
 end
 
+function _set_units_base!(system::System, settings::UnitSystem)
+    to_change = (system.units_settings.unit_system != settings)
+    to_change && (system.units_settings.unit_system = settings)
+    return (to_change, settings)
+end
+
+_set_units_base!(system::System, settings::String) =
+    _set_units_base!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+
 """
 Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
+
+# Examples
+```julia
+set_units_base_system!(sys, "NATURAL_UNITS")
+```
+```julia
+set_units_base_system!(sys, UnitSystem.SYSTEM_BASE)
+```
 """
-function set_units_base_system!(system::System, settings::String)
-    set_units_base_system!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+function set_units_base_system!(system::System, units::Union{UnitSystem, String})
+    changed, new_units = _set_units_base!(system::System, units)
+    changed && @info "Unit System changed to $new_units"
     return
 end
 
-function set_units_base_system!(system::System, settings::UnitSystem)
-    if system.units_settings.unit_system != settings
-        system.units_settings.unit_system = settings
-        @info "Unit System changed to $settings"
-    end
-    return
-end
+_get_units_base(system::System) = system.units_settings.unit_system
 
 """
 Get the system's [unit base](@ref per_unit))
 """
 function get_units_base(system::System)
-    return string(system.units_settings.unit_system)
+    return string(_get_units_base(system))
+end
+
+"""
+A "context manager" that sets the [`System`](@ref)'s [units base](@ref per_unit) to the
+given value, executes the function, then sets the units base back.
+
+# Examples
+```julia
+active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+    get_active_power(gen)
+end
+# now active_power_mw is in natural units no matter what units base the system is in
+```
+"""
+function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String})
+    old_units = _get_units_base(sys)
+    _set_units_base!(sys, units)
+    try
+        f()
+    finally
+        _set_units_base!(sys, old_units)
+    end
 end
 
 function get_units_setting(component::T) where {T <: Component}
@@ -818,10 +866,10 @@ open_time_series_store!(sys, "r+") do
     end
 end
 ```
-You can also use this function to make reads faster. Change the mode from `"r+"` to `"r"` to open
-the file read-only.
+You can also use this function to make reads faster.
+Change the mode from `"r+"` to `"r"` to open the file read-only.
 
-See also: [`bulk_add_time_series!`](@ref)
+See also: [`begin_time_series_update`](@ref)
 """
 function open_time_series_store!(
     func::Function,
@@ -832,6 +880,25 @@ function open_time_series_store!(
 )
     IS.open_time_series_store!(func, sys.data, mode, args...; kwargs...)
 end
+
+"""
+Begin an update of time series. Use this function when adding many time series arrays
+in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+Using this function to remove time series is currently not supported.
+
+# Examples
+```julia
+begin_time_series_update(sys) do
+    add_time_series!(sys, component1, time_series1)
+    add_time_series!(sys, component2, time_series2)
+end
+```
+"""
+begin_time_series_update(func::Function, sys::System) =
+    IS.begin_time_series_update(func, sys.data.time_series_manager)
 
 """
 Add time series data from a metadata file or metadata descriptors.
@@ -1075,29 +1142,36 @@ See [`get_components_by_name`](@ref) for abstract types with non-unique names ac
 Throws ArgumentError if T is not a concrete type and there is more than one component with
     requested name
 """
-function get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Component}
+function IS.get_component(
+    ::Type{T},
+    sys::System,
+    name::AbstractString,
+) where {T <: Component}
     return IS.get_component(T, sys.data, name)
 end
 
 """
-Returns an iterator of components. T can be concrete or abstract.
+Return an iterator of components of a given `Type` from a [`System`](@ref).
+
+`T` can be a concrete or abstract [`Component`](@ref) type from the [Type Tree](@ref).
 Call collect on the result if an array is desired.
 
 # Examples
 ```julia
-iter = PowerSystems.get_components(ThermalStandard, sys)
-iter = PowerSystems.get_components(Generator, sys)
-iter = PowerSystems.get_components(x -> PowerSystems.get_available(x), Generator, sys)
-thermal_gens = get_components(ThermalStandard, sys) do gen
-    get_available(gen)
-end
-generators = collect(PowerSystems.get_components(Generator, sys))
-
+iter = get_components(ThermalStandard, sys)
+iter = get_components(Generator, sys)
+generators = collect(get_components(Generator, sys))
 ```
 
-See also: [`iterate_components`](@ref)
+See also: [`iterate_components`](@ref), [`get_components` with a filter](@ref get_components(
+    filter_func::Function,
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+) where {T <: Component}),
+[`get_available_components`](@ref), [`get_buses`](@ref)
 """
-function get_components(
+function IS.get_components(
     ::Type{T},
     sys::System;
     subsystem_name = nothing,
@@ -1105,7 +1179,7 @@ function get_components(
     return IS.get_components(T, sys.data; subsystem_name = subsystem_name)
 end
 
-function get_components(
+function IS.get_components(
     filter_func::Function,
     ::Type{T},
     sys::System;
@@ -1117,15 +1191,15 @@ end
 """
 Return a vector of components that are attached to the supplemental attribute.
 """
-function get_components(sys::System, attribute::SupplementalAttribute)
+function IS.get_components(sys::System, attribute::SupplementalAttribute)
     return IS.get_components(sys.data, attribute)
 end
 
 """
 Get the component by UUID.
 """
-get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
-get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
+IS.get_component(sys::System, uuid::Base.UUID) = IS.get_component(sys.data, uuid)
+IS.get_component(sys::System, uuid::String) = IS.get_component(sys.data, Base.UUID(uuid))
 
 """
 Change the UUID of a component.
@@ -1160,12 +1234,10 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-"""
-Gets components availability. Requires type T to have the method get_available implemented.
-"""
-function get_available_components(::Type{T}, sys::System) where {T <: Component}
-    return get_components(get_available, T, sys)
-end
+# PSY availability is a pure function of the component and the system is not needed; here we
+# implement the required IS.ComponentContainer interface
+IS.get_available(::System, component::Component) =
+    get_available(component)
 
 """
 Return true if the component is attached to the system.
@@ -1297,7 +1369,7 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
     buses = Vector{ACBus}()
     for bus in IS.get_components(ACBus, data)
         _aggregator = accessor_func(bus)
-        if IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
+        if !isnothing(_aggregator) && IS.get_uuid(_aggregator) == IS.get_uuid(aggregator)
             push!(buses, bus)
         end
     end
@@ -1321,17 +1393,9 @@ function add_time_series!(
 end
 
 """
-Add many time series in bulk
+Add time series in bulk.
 
-This method is advantageous when adding thousands of time
-series arrays because of the overhead in writing the time series to the underlying storage.
-
-# Arguments
-- `sys::System`: system
-- `associations`: Iterable of [`TimeSeriesAssociation`](@ref) instances. Using a Vector is not
-  recommended. Pass a Generator or Iterator to avoid loading all time series data into
-  system memory at once.
-- `batch_size::Int`: (Default = 100) Number of time series to add per batch.
+Prefer use of [`begin_time_series_update`](@ref).
 
 # Examples
 ```julia
@@ -1350,9 +1414,6 @@ associations = (
 )
 bulk_add_time_series!(sys, associations)
 ```
-
-See also: [`open_time_series_store!`](@ref) to minimize HDF5 file handle overhead if you
-must add time series arrays one at a time
 """
 function bulk_add_time_series!(
     sys::System,
@@ -1541,17 +1602,21 @@ invalid.
 - `sys::System`: System containing the components.
 - `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
+- `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
+   with this resolution.
 """
 function transform_single_time_series!(
     sys::System,
     horizon::Dates.Period,
-    interval::Dates.Period,
+    interval::Dates.Period;
+    resolution::Union{Nothing, Dates.Period} = nothing,
 )
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
         interval,
+        resolution = resolution,
     )
     return
 end
@@ -1567,6 +1632,23 @@ function add_supplemental_attribute!(
 )
     return IS.add_supplemental_attribute!(sys.data, component, attribute)
 end
+
+"""
+Begin an update of supplemental attributes. Use this function when adding
+or removing many supplemental attributes in order to improve performance.
+
+If an error occurs during the update, changes will be reverted.
+
+# Examples
+```julia
+begin_supplemental_attributes_update(sys) do
+    add_supplemental_attribute!(sys, component1, attribute1)
+    add_supplemental_attribute!(sys, component2, attribute2)
+end
+```
+"""
+begin_supplemental_attributes_update(func::Function, sys::System) =
+    IS.begin_supplemental_attributes_update(func, sys.data.supplemental_attribute_manager)
 
 """
 Remove the supplemental attribute from the component. The attribute will be removed from the
@@ -2363,7 +2445,7 @@ function IS.compare_values(
             if !compare_uuids
                 name1 = get_name(val1)
                 name2 = get_name(val2)
-                if !match_fn(name1, name2)
+                if !_fetch_match_fn(match_fn)(name1, name2)
                     @error "values do not match" T name name1 name2
                     match = false
                 end
@@ -2541,17 +2623,43 @@ function convert_component!(
     remove_component!(sys, old_load)
 end
 
+"""
+Set the number of a bus.
+"""
+function set_bus_number!(sys::System, bus::ACBus, number::Int)
+    throw_if_not_attached(bus, sys)
+
+    orig = get_number(bus)
+    if number == orig
+        return
+    end
+
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+
+    set_number!(bus, number)
+    replace!(sys.bus_numbers, orig => number)
+    return
+end
+
+function set_number!(bus::ACBus, number::Int)
+    Base.depwarn(
+        "This method will be removed in v5.0 because its use breaks system consistency" *
+        "checks. Please call `set_bus_number!(::System, bus, number)` instead.",
+        :set_number!,
+    )
+    bus.number = number
+    return
+end
+
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
-    refs = internal.shared_system_references
     return InfrastructureSystemsInternal(;
         uuid = deepcopy(internal.uuid),
         units_info = deepcopy(internal.units_info),
-        shared_system_references = IS.SharedSystemReferences(;
-            supplemental_attribute_manager = refs.supplemental_attribute_manager,
-            time_series_manager = refs.time_series_manager,
-        ),
+        shared_system_references = nothing,
         ext = deepcopy(internal.ext),
     )
 end
@@ -2600,3 +2708,59 @@ function check_time_series_consistency(sys::System, ::Type{T}) where {T <: TimeS
 end
 
 stores_time_series_in_memory(sys::System) = IS.stores_time_series_in_memory(sys.data)
+
+"""
+Make a `deepcopy` of a [`System`](@ref) more quickly by skipping the copying of time
+series and/or supplemental attributes.
+
+# Arguments
+
+  - `data::System`: the `System` to copy
+  - `skip_time_series::Bool = true`: whether to skip copying time series
+  - `skip_supplemental_attributes::Bool = true`: whether to skip copying supplemental
+    attributes
+
+Note that setting both `skip_time_series` and `skip_supplemental_attributes` to `false`
+results in the same behavior as `deepcopy` with no performance improvement.
+"""
+function fast_deepcopy_system(
+    sys::System;
+    skip_time_series::Bool = true,
+    skip_supplemental_attributes::Bool = true,
+)
+    new_data = IS.fast_deepcopy_system(
+        sys.data;
+        skip_time_series = skip_time_series,
+        skip_supplemental_attributes = skip_supplemental_attributes,
+    )
+    new_sys = System(
+        new_data,
+        deepcopy(sys.units_settings),
+        deepcopy(sys.internal);
+        runchecks = deepcopy(sys.runchecks[]),
+        frequency = deepcopy(sys.frequency),
+        time_series_directory = deepcopy(sys.time_series_directory),
+        name = deepcopy(sys.metadata.name),
+        description = deepcopy(sys.metadata.description))
+    # deepcopying sys.data separately from sys.units_settings broke the shared units references, so we have to fix them here
+    for comp in iterate_components(new_sys)
+        comp.internal.units_info = new_sys.units_settings
+    end
+    return new_sys
+end
+
+"""
+Return a DataFrame with the number of static time series for components and supplemental
+attributes.
+"""
+function get_static_time_series_summary_table(sys::System)
+    return IS.get_static_time_series_summary_table(sys.data)
+end
+
+"""
+Return a DataFrame with the number of forecasts for components and supplemental
+attributes.
+"""
+function get_forecast_summary_table(sys::System)
+    return IS.get_forecast_summary_table(sys.data)
+end

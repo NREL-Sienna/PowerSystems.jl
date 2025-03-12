@@ -295,6 +295,9 @@ export ForecastKey
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
+# from IS time_series_metadata_store.jl and defined for System in base.jl
+export get_static_time_series_summary_table
+export get_forecast_summary_table
 # from IS time_series_parser.jl
 export NormalizationFactor
 export NormalizationTypes
@@ -315,6 +318,7 @@ export parse_file
 export open_time_series_store!
 export add_time_series!
 export bulk_add_time_series!
+export begin_time_series_update
 export remove_time_series!
 export check_time_series_consistency
 export clear_time_series!
@@ -345,6 +349,7 @@ export get_components
 export show_components
 export get_subcomponents
 export get_components_by_name
+export get_available_component
 export get_available_components
 export get_existing_device_types
 export get_existing_component_types
@@ -359,6 +364,7 @@ export get_supplemental_attribute
 export get_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
+export begin_supplemental_attributes_update
 export get_time_series
 export get_time_series_type
 export get_time_series_array
@@ -382,14 +388,18 @@ export get_data
 export iterate_components
 export get_time_series_multiple
 export get_variable_cost
+export get_incremental_variable_cost, get_decremental_variable_cost
 export get_no_load_cost
 export get_start_up
 export get_shut_down
 export get_incremental_offer_curves, set_incremental_offer_curves!
 export get_decremental_offer_curves, set_decremental_offer_curves!
+export get_incremental_initial_input, set_incremental_initial_input!
+export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_services_bid
 export set_variable_cost!
+export set_incremental_variable_cost!, set_decremental_variable_cost!
 export set_service_bid!
 export iterate_windows
 export get_window
@@ -406,6 +416,8 @@ export create_poly_cost
 
 #export make_time_series
 export get_bus_numbers
+export set_bus_number!
+export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
 export get_component_uuids
@@ -414,6 +426,7 @@ export set_description!
 export get_base_power
 export get_frequency
 export set_units_base_system!
+export with_units_base
 export to_json
 export from_json
 export serialize
@@ -487,6 +500,17 @@ export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
 
+# ComponentSelector
+export ComponentSelector
+export SingularComponentSelector
+export PluralComponentSelector
+export DynamicallyGroupedComponentSelector
+export subtype_to_string
+export component_to_qualified_string
+export make_selector
+export rebuild_selector
+export get_groups
+export get_available_groups
 #################################################################################
 # Imports
 
@@ -603,7 +627,22 @@ import InfrastructureSystems:
     get_y_coords,
     get_raw_data_type,
     supports_time_series,
-    supports_supplemental_attributes
+    supports_supplemental_attributes,
+    fast_deepcopy_system,
+    ComponentSelector,
+    SingularComponentSelector,
+    PluralComponentSelector,
+    DynamicallyGroupedComponentSelector,
+    NameComponentSelector,
+    ListComponentSelector,
+    TypeComponentSelector,
+    FilterComponentSelector,
+    RegroupedComponentSelector,
+    component_to_qualified_string,
+    subtype_to_string,
+    COMPONENT_NAME_DELIMITER,
+    make_selector,
+    rebuild_selector
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
@@ -647,6 +686,9 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
+
+"Get whether this component is available for simulation or not."
+get_available(::Component) = true
 
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
@@ -719,7 +761,10 @@ include("outages.jl")
 # Definitions of PowerSystem
 include("base.jl")
 include("subsystems.jl")
+include("component_selector.jl")
 include("data_format_conversions.jl")
+include("get_components_interface.jl")
+include("component_selector_interface.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
@@ -741,6 +786,7 @@ include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")
 include("parsers/TAMU_data.jl")
+include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")

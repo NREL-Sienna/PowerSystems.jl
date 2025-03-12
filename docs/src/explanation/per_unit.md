@@ -19,8 +19,11 @@ These three unit bases allow easy conversion between unit systems.
 This allows `PowerSystems.jl` users to input data in the formats they have available,
 as well as view data in the unit system that is most intuitive to them.
 
-You can get and set the unit system setting of a `System` with [`get_units_base`](@ref)
-and [`set_units_base_system!`](@ref).
+You can get and set the unit system setting of a `System` with [`get_units_base`](@ref) and
+[`set_units_base_system!`](@ref). To support a less stateful style of programming,
+`PowerSystems.jl` provides the `Logging.with_logger`-inspired "context manager"-type
+function [`with_units_base`](@ref), which sets the unit system to a particular value,
+performs some action, then automatically sets the unit system back to its previous value.
 
 Conversion between unit systems does not change
 the stored parameter values. Instead, unit system conversions are made when accessing

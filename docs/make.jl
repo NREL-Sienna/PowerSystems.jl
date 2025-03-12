@@ -1,6 +1,14 @@
 using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
+using DocumenterInterLinks
+
+links = InterLinks(
+    "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
+    # Sometimes IS docstrings @extref to PSY, and sometimes those IS docstrings are included
+    # in the PSY reference, so we can have PSY @extref-ing to itself:
+    "PowerSystems" => "https://nrel-sienna.github.io/PowerSystems.jl/stable/",
+)
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
@@ -11,6 +19,7 @@ pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Tutorials" =>  Any[
             "Create and Explore a Power `System`" => "tutorials/creating_system.md",
+            "Manipulating Data Sets" => "tutorials/manipulating_datasets.md",
             "Working with Time Series" => "tutorials/working_with_time_series.md",
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
@@ -45,7 +54,7 @@ pages = OrderedDict(
         "Reference" =>
             Any["Public API" => "api/public.md",
             "Glossary and Acronyms" => "api/glossary.md",
-            "Type Hierarchy" => "api/type_tree.md",
+            "Type Tree" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
             "Citation" => "api/citation.md",
@@ -139,6 +148,7 @@ makedocs(
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, Rodrigo Henriquez-Auba, and Clayton Barrows",
     pages = Any[p for p in pages],
     draft = false,
+    plugins = [links]
 )
 
 deploydocs(
