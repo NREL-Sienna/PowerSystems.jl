@@ -40,7 +40,7 @@ checksys = false
         nodes_5,
         thermal_generators5(nodes_5),
         loads5(nodes_5),
-        flexible5(nodes_5);
+        shiftable5(nodes_5);
         runchecks = checksys,
     )
     clear_components!(sys5f)

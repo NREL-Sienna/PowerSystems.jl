@@ -11,7 +11,7 @@
         reactive_power = 1.0,
         storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
-        flexible_load = FlexiblePowerLoad(nothing),
+        shiftable_load = ShiftablePowerLoad(nothing),
         base_power = 100.0,
         operation_cost = MarketBidCost(nothing),
     )

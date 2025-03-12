@@ -612,9 +612,9 @@ interruptible(nodes5) = [
     ),
 ]
 
-flexible5(nodes5) = [
-    FlexiblePowerLoad(
-        "FlexLoadBus4",
+shiftable5(nodes5) = [
+    ShiftablePowerLoad(
+        "ShiftableLoadBus4",
         true,
         nodes5[4],
         0.10,
@@ -622,7 +622,7 @@ flexible5(nodes5) = [
         0.10,
         0.0,
         100.0,
-        Dates.Hour(6),
+        6,
         LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
     ),
 ]

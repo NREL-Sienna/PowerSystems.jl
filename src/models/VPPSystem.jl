@@ -11,7 +11,7 @@ mutable struct VPPSystem <: StaticInjectionSubsystem
     operation_cost::MarketBidCost
     storage::Union{Nothing, Storage}
     renewable_unit::Union{Nothing, RenewableGen}
-    flexible_load::Union{Nothing, FlexiblePowerLoad}
+    shiftable_load::Union{Nothing, ShiftablePowerLoad}
     services::Vector{Service}
     ext::Dict{String, Any}
     internal::InfrastructureSystemsInternal
@@ -30,7 +30,7 @@ function VPPSystem(;
     operation_cost = MarketBidCost(nothing),
     storage = nothing,
     renewable_unit = nothing,
-    flexible_load = nothing,
+    shiftable_load = nothing,
     services = Service[],
     ext = Dict{String, Any}(),
     internal = IS.InfrastructureSystemsInternal(),
@@ -46,7 +46,7 @@ function VPPSystem(;
         operation_cost,
         storage,
         renewable_unit,
-        flexible_load,
+        shiftable_load,
         services,
         ext,
         internal,
@@ -66,7 +66,7 @@ function VPPSystem(::Nothing)
         operation_cost = MarketBidCost(nothing),
         storage = EnergyReservoirStorage(nothing),
         renewable_unit = RenewableDispatch(nothing),
-        flexible_load = FlexiblePowerLoad(nothing),
+        shiftable_load = ShiftablePowerLoad(nothing),
         services = Service[],
         ext = Dict{String, Any}(),
         internal = IS.InfrastructureSystemsInternal(),
@@ -79,7 +79,7 @@ get_name(value::VPPSystem) = value.name
 
 function _get_components(value::VPPSystem)
     components =
-        [value.storage, value.renewable_unit, value.flexible_load]
+        [value.storage, value.renewable_unit, value.shiftable_load]
     filter!(x -> !isnothing(x), components)
     return components
 end
@@ -119,8 +119,8 @@ get_storage(value::VPPSystem) = value.storage
 """Get [`VPPSystem`](@ref) renewable unit"""
 get_renewable_unit(value::VPPSystem) = value.renewable_unit
 
-"""Get [`VPPSystem`](@ref) flexible load"""
-get_flexible_load(value::VPPSystem) = value.flexible_load
+"""Get [`VPPSystem`](@ref) shiftable load"""
+get_shiftable_load(value::VPPSystem) = value.shiftable_load
 
 """Get [`VPPSystem`](@ref) `services`."""
 get_services(value::VPPSystem) = value.services
@@ -163,8 +163,8 @@ set_storage(value::VPPSystem) = value.storage
 """Set [`VPPSystem`](@ref) renewable unit"""
 set_renewable_unit(value::VPPSystem) = value.renewable_unit
 
-"""Set [`VPPSystem`](@ref) flexible load"""
-set_flexible_load(value::VPPSystem) = value.flexible_load
+"""Set [`VPPSystem`](@ref) shiftable load"""
+set_shiftable_load(value::VPPSystem) = value.shiftable_load
 
 """Set [`VPPSystem`](@ref) `services`."""
 set_services(value::VPPSystem) = value.services
@@ -177,7 +177,7 @@ set_internal(value::VPPSystem) = value.internal
 
 function get_subcomponents(vpp::VPPSystem)
     Channel() do channel
-        for field in (:storage, :renewable_unit, :flexible_load)
+        for field in (:storage, :renewable_unit, :shiftable_load)
             subcomponent = getfield(vpp, field)
             if subcomponent !== nothing
                 put!(channel, subcomponent)
@@ -200,10 +200,10 @@ function set_renewable_unit!(vpp::VPPSystem, val::RenewableGen)
     return
 end
 
-"""Set [`VPPSystem`](@ref) flexible load"""
-function set_flexible_load!(vpp::VPPSystem, val::FlexiblePowerLoad)
+"""Set [`VPPSystem`](@ref) shiftable load"""
+function set_shiftable_load!(vpp::VPPSystem, val::ShiftablePowerLoad)
     _raise_if_attached_to_system(vpp)
-    value.flexible_load = val
+    value.shiftable_load = val
     return
 end
 

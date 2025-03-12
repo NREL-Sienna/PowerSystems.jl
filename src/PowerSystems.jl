@@ -104,7 +104,7 @@ export FixedAdmittance
 export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
-export FlexiblePowerLoad
+export ShiftablePowerLoad
 export ExponentialLoad
 
 export Storage
