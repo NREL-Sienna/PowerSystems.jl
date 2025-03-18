@@ -612,6 +612,21 @@ interruptible(nodes5) = [
     ),
 ]
 
+shiftable5(nodes5) = [
+    ShiftablePowerLoad(
+        "ShiftableLoadBus4",
+        true,
+        nodes5[4],
+        0.10,
+        0.0,
+        0.10,
+        0.0,
+        100.0,
+        6,
+        LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
+    ),
+]
+
 reserve5(thermal_generators5) = [
     VariableReserve{ReserveUp}(
         "test_reserve",
