@@ -3986,12 +3986,6 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "reservoir",
-                    "comment": "Reservoir that this component is connected to",
-                    "null_value": "HydroReservoir(nothing)",
-                    "data_type": "HydroReservoir"
-                },
-                {
                     "name": "active_power",
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
@@ -4048,25 +4042,6 @@
                     "needs_conversion": true
                 },
                 {
-                    "name": "efficiency",
-                    "comment": "Turbine efficiency [0, 1.0]",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 1
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "conversion_factor",
-                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
                     "name": "ramp_limits",
                     "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
@@ -4106,6 +4081,32 @@
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
                     "comment": "[`OperationalCost`](@ref) of generation"
+                },
+                {
+                    "name": "efficiency",
+                    "comment": "Turbine efficiency [0, 1.0]",
+                    "null_value": "1.0",
+                    "default": "1.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "conversion_factor",
+                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
+                    "null_value": "1.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "reservoirs",
+                    "comment": "Reservoir(s) that this component is connected to",
+                    "data_type": "Vector{HydroReservoir}",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
                 },
                 {
                     "name": "services",
