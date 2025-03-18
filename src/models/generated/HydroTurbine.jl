@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct HydroTurbine <: HydroGen
         name::String
         available::Bool
+        bus::ACBus
         active_power::Float64
         reactive_power::Float64
         rating::Float64
@@ -32,6 +33,7 @@ A hydropower generator that needs to be attached to a reservoir, suitable for mo
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
@@ -55,6 +57,8 @@ mutable struct HydroTurbine <: HydroGen
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Bus that this component is connected to"
+    bus::ACBus
     "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
     "Initial reactive power set point of the unit (MVAR)"
@@ -91,12 +95,12 @@ mutable struct HydroTurbine <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbine(name, available, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroTurbine(name, available, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbine(; name, available, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroTurbine(name, available, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
+function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -104,6 +108,7 @@ function HydroTurbine(::Nothing)
     HydroTurbine(;
         name="init",
         available=false,
+        bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
         rating=0.0,
@@ -127,6 +132,8 @@ end
 get_name(value::HydroTurbine) = value.name
 """Get [`HydroTurbine`](@ref) `available`."""
 get_available(value::HydroTurbine) = value.available
+"""Get [`HydroTurbine`](@ref) `bus`."""
+get_bus(value::HydroTurbine) = value.bus
 """Get [`HydroTurbine`](@ref) `active_power`."""
 get_active_power(value::HydroTurbine) = get_value(value, value.active_power)
 """Get [`HydroTurbine`](@ref) `reactive_power`."""
@@ -164,6 +171,8 @@ get_internal(value::HydroTurbine) = value.internal
 
 """Set [`HydroTurbine`](@ref) `available`."""
 set_available!(value::HydroTurbine, val) = value.available = val
+"""Set [`HydroTurbine`](@ref) `bus`."""
+set_bus!(value::HydroTurbine, val) = value.bus = val
 """Set [`HydroTurbine`](@ref) `active_power`."""
 set_active_power!(value::HydroTurbine, val) = value.active_power = set_value(value, val)
 """Set [`HydroTurbine`](@ref) `reactive_power`."""
