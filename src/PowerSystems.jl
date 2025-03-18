@@ -53,6 +53,7 @@ export get_slopes
 export get_average_rates
 export get_x_lengths
 export is_convex
+export is_concave
 export get_points
 export get_x_coords
 export get_y_coords
@@ -620,6 +621,7 @@ import InfrastructureSystems:
     running_sum,
     get_x_lengths,
     is_convex,
+    is_concave,
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
     get_y_coords,
