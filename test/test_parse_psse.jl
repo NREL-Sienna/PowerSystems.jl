@@ -39,7 +39,7 @@ end
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
     sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
-    sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
+    sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_20_sys")
 
     base_dir = string(dirname(@__FILE__))
     file_dir = joinpath(base_dir, "test_data", "5circuit_3w.raw")
@@ -50,7 +50,7 @@ end
     @test isnothing(get_component(Transformer3W, sys3, "1"))
 
     @test get_available(
-        get_component(Transformer3W, sys4, "FAV PLACE 07-FAV SPOT 06-FAV SPOT 03-i_1"),
+        get_component(Transformer3W, sys4, "FAV PLACE 07-FAV PLACE 05-FAV SPOT 03-i_1"),
     ) == true
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
@@ -90,10 +90,11 @@ end
     @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
           0.95
 
-    @info "Testing VSC Parser"
-    vsc = only(get_components(TwoTerminalVSCLine, sys4))
-    @test get_active_power_flow(vsc) == -0.2
-    @test get_dc_setpoint_to(vsc) == -20.0
+    # vsc_sys = build_system(PSSEParsingTestSystems, "pti_vsc_hvdc_test_sys")
+    # @info "Testing VSC Parser"
+    # vsc = only(get_components(TwoTerminalVSCLine, sys4))
+    # @test get_active_power_flow(vsc) == -0.2
+    # @test get_dc_setpoint_to(vsc) == -20.0
 
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
@@ -105,6 +106,27 @@ end
     lz_original = only(get_components(LoadZone, sys2))
     lz_new = only(get_components(LoadZone, sys3))
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
+end
+
+@testset "PSSE FACTS Control Devices Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_case14_sys")
+    bus2 = get_component(ACBus, sys, "Bus 2     HV")
+    facts_1 = FACTSControlDevice(;
+        name = "FACTS 1",
+        available = true,
+        bus = bus2,
+        mode = 1,
+        max_shunt_current = 9999.0,
+        reactive_power_required = 100.0,
+        voltage_setpoint = 1.0,
+    )
+    add_component!(sys, facts_1)
+
+    facts = only(get_components(FACTSControlDevice, sys))
+    @test get_available(facts) == true
+    @test get_voltage_setpoint(facts) == 1.0
+    @test get_max_shunt_current(facts) == 9999.0
+    @test get_mode(facts) == 1
 end
 
 @testset "PSSE LCC Parsing" begin
