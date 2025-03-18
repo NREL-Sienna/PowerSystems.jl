@@ -730,6 +730,7 @@ include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
+include("models/HydroReservoir.jl")
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
 

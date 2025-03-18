@@ -29,7 +29,6 @@ include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
-include("HydroReservoir.jl")
 include("HydroTurbine.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
@@ -714,7 +713,6 @@ export get_secondary_tertiary_arc
 export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
-export get_spillage_outflow_limits
 export get_star_bus
 export get_start_time_limits
 export get_start_types
@@ -725,7 +723,6 @@ export get_storage_capacity
 export get_storage_level_limits
 export get_storage_target
 export get_storage_technology_type
-export get_storage_volume_limits
 export get_sustained_time
 export get_switch
 export get_switch_mode_voltage
@@ -743,7 +740,6 @@ export get_to
 export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
-export get_travel_time
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -753,7 +749,6 @@ export get_voltage
 export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
-export get_volume_target
 export get_x
 export get_x_12
 export get_x_13
@@ -1364,7 +1359,6 @@ export set_secondary_tertiary_arc!
 export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
-export set_spillage_outflow_limits!
 export set_star_bus!
 export set_start_time_limits!
 export set_start_types!
@@ -1375,7 +1369,6 @@ export set_storage_capacity!
 export set_storage_level_limits!
 export set_storage_target!
 export set_storage_technology_type!
-export set_storage_volume_limits!
 export set_sustained_time!
 export set_switch!
 export set_switch_mode_voltage!
@@ -1393,7 +1386,6 @@ export set_to!
 export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
-export set_travel_time!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
@@ -1403,7 +1395,6 @@ export set_voltage!
 export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
-export set_volume_target!
 export set_x!
 export set_x_12!
 export set_x_13!

@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
     mutable struct HydroReservoir <: DeviceParameter
         name::String
         available::Bool
-        area::Area
         storage_volume_limits::MinMax
         spillage_outflow_limits::Union{Nothing, MinMax}
         travel_time::Float64
@@ -24,7 +23,6 @@ A hydro reservoir representation.
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `area::Area`: Area from which the reservoir is located
 - `storage_volume_limits::MinMax`: Minimum and maximum volume limits (m^3)
 - `spillage_outflow_limits::Union{Nothing, MinMax}`: limits for spillage, validation range: `(0, nothing)`
 - `travel_time::Float64`: Downstream travel time in hours., validation range: `(0, nothing)`
@@ -39,8 +37,6 @@ mutable struct HydroReservoir <: DeviceParameter
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Area from which the reservoir is located"
-    area::Area
     "Minimum and maximum volume limits (m^3)"
     storage_volume_limits::MinMax
     "limits for spillage"
@@ -59,12 +55,12 @@ mutable struct HydroReservoir <: DeviceParameter
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, area, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, internal, )
+function HydroReservoir(; name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -72,7 +68,6 @@ function HydroReservoir(::Nothing)
     HydroReservoir(;
         name="init",
         available=false,
-        area=Area(nothing),
         storage_volume_limits=(min=0.0, max=0.0),
         spillage_outflow_limits=nothing,
         travel_time=0.0,
@@ -87,8 +82,6 @@ end
 get_name(value::HydroReservoir) = value.name
 """Get [`HydroReservoir`](@ref) `available`."""
 get_available(value::HydroReservoir) = value.available
-"""Get [`HydroReservoir`](@ref) `area`."""
-get_area(value::HydroReservoir) = value.area
 """Get [`HydroReservoir`](@ref) `storage_volume_limits`."""
 get_storage_volume_limits(value::HydroReservoir) = get_value(value, value.storage_volume_limits)
 """Get [`HydroReservoir`](@ref) `spillage_outflow_limits`."""
@@ -108,8 +101,6 @@ get_internal(value::HydroReservoir) = value.internal
 
 """Set [`HydroReservoir`](@ref) `available`."""
 set_available!(value::HydroReservoir, val) = value.available = val
-"""Set [`HydroReservoir`](@ref) `area`."""
-set_area!(value::HydroReservoir, val) = value.area = val
 """Set [`HydroReservoir`](@ref) `storage_volume_limits`."""
 set_storage_volume_limits!(value::HydroReservoir, val) = value.storage_volume_limits = set_value(value, val)
 """Set [`HydroReservoir`](@ref) `spillage_outflow_limits`."""
