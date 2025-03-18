@@ -88,6 +88,8 @@ export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
 export HydroPumpedStorage
+export HydroReservoir
+export HydroTurbine
 export InterconnectingConverter
 
 export RenewableGen

@@ -4060,6 +4060,13 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "conversion_factor",
+                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
                     "name": "ramp_limits",
                     "comment": "ramp up and ramp down limits in MW/min",
                     "null_value": "nothing",
@@ -4156,12 +4163,6 @@
                     "data_type": "Area"
                 },
                 {
-                    "null_value": "nothing",
-                    "name": "topology",
-                    "comment": "Hydro network topology",
-                    "data_type": "Union{Nothing, HydroTopology}"
-                },
-                {
                     "name": "storage_volume_limits",
                     "comment": "Minimum and maximum volume limits (m^3)",
                     "null_value": "(min=0.0, max=0.0)",
@@ -4179,17 +4180,6 @@
                     },
                     "validation_action": "warn",
                     "needs_conversion": true
-                },
-                {
-                    "name": "volume_to_power_factor",
-                    "comment": "Conversion factor for [per unitization](@ref per_unit)",
-                    "null_value": "1.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
                 },
                 {
                     "name": "travel_time",
@@ -4228,26 +4218,11 @@
                     "default": "1.0"
                 },
                 {
-                    "name": "conversion_factor",
-                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
                     "null_value": "Device[]",
                     "default": "Device[]"
-                },
-                {
-                    "name": "dynamic_injector",
-                    "data_type": "Union{Nothing, DynamicInjection}",
-                    "comment": "corresponding dynamic injection device",
-                    "null_value": "nothing",
-                    "exclude_setter": true,
-                    "default": "nothing"
                 },
                 {
                     "name": "ext",
@@ -4265,55 +4240,6 @@
                 }
             ],
             "supertype": "DeviceParameter"
-        },
-        {
-            "struct_name": "HydroTopology",
-            "docstring": "A hydro topology representation.",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "topology",
-                    "comment": "Hydro Topology network",
-                    "data_type": "MutableLinkedList{HydroReservoir}"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "dynamic_injector",
-                    "data_type": "Union{Nothing, DynamicInjection}",
-                    "comment": "corresponding dynamic injection device",
-                    "null_value": "nothing",
-                    "exclude_setter": true,
-                    "default": "nothing"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "AggregationTopology"
         },
         {
             "struct_name": "HydroPumpedStorage",

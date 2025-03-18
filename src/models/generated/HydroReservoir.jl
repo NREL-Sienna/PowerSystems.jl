@@ -9,7 +9,6 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         area::Area
-        topology::Union{Nothing, HydroTopology}
         storage_volume_limits::MinMax
         spillage_outflow_limits::Union{Nothing, MinMax}
         volume_to_power_factor::Float64
@@ -18,7 +17,6 @@ This file is auto-generated. Do not edit.
         volume_target::Float64
         conversion_factor::Float64
         services::Vector{Service}
-        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -29,7 +27,6 @@ A hydro reservoir representation.
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `area::Area`: Area from which the reservoir is located
-- `topology::Union{Nothing, HydroTopology}`: Hydro network topology
 - `storage_volume_limits::MinMax`: Minimum and maximum volume limits (m^3)
 - `spillage_outflow_limits::Union{Nothing, MinMax}`: limits for spillage, validation range: `(0, nothing)`
 - `volume_to_power_factor::Float64`: Conversion factor for [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -38,7 +35,6 @@ A hydro reservoir representation.
 - `volume_target::Float64`: (default: `1.0`) Volume target at the end of simulation as a fraction of the total volume, validation range: `(0, 1)`
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -49,8 +45,6 @@ mutable struct HydroReservoir <: DeviceParameter
     available::Bool
     "Area from which the reservoir is located"
     area::Area
-    "Hydro network topology"
-    topology::Union{Nothing, HydroTopology}
     "Minimum and maximum volume limits (m^3)"
     storage_volume_limits::MinMax
     "limits for spillage"
@@ -67,20 +61,18 @@ mutable struct HydroReservoir <: DeviceParameter
     conversion_factor::Float64
     "Services that this device contributes to"
     services::Vector{Service}
-    "corresponding dynamic injection device"
-    dynamic_injector::Union{Nothing, DynamicInjection}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, area, topology, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, area, topology, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target, conversion_factor, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target=1.0, conversion_factor=1.0, services=Device[], ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target, conversion_factor, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, area, topology, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target=1.0, conversion_factor=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, area, topology, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target, conversion_factor, services, dynamic_injector, ext, internal, )
+function HydroReservoir(; name, available, area, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target=1.0, conversion_factor=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, area, storage_volume_limits, spillage_outflow_limits, volume_to_power_factor, travel_time, inflow, volume_target, conversion_factor, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,7 +81,6 @@ function HydroReservoir(::Nothing)
         name="init",
         available=false,
         area=Area(nothing),
-        topology=nothing,
         storage_volume_limits=(min=0.0, max=0.0),
         spillage_outflow_limits=nothing,
         volume_to_power_factor=1.0,
@@ -98,7 +89,6 @@ function HydroReservoir(::Nothing)
         volume_target=0.0,
         conversion_factor=0.0,
         services=Device[],
-        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
     )
 end
@@ -109,8 +99,6 @@ get_name(value::HydroReservoir) = value.name
 get_available(value::HydroReservoir) = value.available
 """Get [`HydroReservoir`](@ref) `area`."""
 get_area(value::HydroReservoir) = value.area
-"""Get [`HydroReservoir`](@ref) `topology`."""
-get_topology(value::HydroReservoir) = value.topology
 """Get [`HydroReservoir`](@ref) `storage_volume_limits`."""
 get_storage_volume_limits(value::HydroReservoir) = get_value(value, value.storage_volume_limits)
 """Get [`HydroReservoir`](@ref) `spillage_outflow_limits`."""
@@ -127,8 +115,6 @@ get_volume_target(value::HydroReservoir) = value.volume_target
 get_conversion_factor(value::HydroReservoir) = value.conversion_factor
 """Get [`HydroReservoir`](@ref) `services`."""
 get_services(value::HydroReservoir) = value.services
-"""Get [`HydroReservoir`](@ref) `dynamic_injector`."""
-get_dynamic_injector(value::HydroReservoir) = value.dynamic_injector
 """Get [`HydroReservoir`](@ref) `ext`."""
 get_ext(value::HydroReservoir) = value.ext
 """Get [`HydroReservoir`](@ref) `internal`."""
@@ -138,8 +124,6 @@ get_internal(value::HydroReservoir) = value.internal
 set_available!(value::HydroReservoir, val) = value.available = val
 """Set [`HydroReservoir`](@ref) `area`."""
 set_area!(value::HydroReservoir, val) = value.area = val
-"""Set [`HydroReservoir`](@ref) `topology`."""
-set_topology!(value::HydroReservoir, val) = value.topology = val
 """Set [`HydroReservoir`](@ref) `storage_volume_limits`."""
 set_storage_volume_limits!(value::HydroReservoir, val) = value.storage_volume_limits = set_value(value, val)
 """Set [`HydroReservoir`](@ref) `spillage_outflow_limits`."""

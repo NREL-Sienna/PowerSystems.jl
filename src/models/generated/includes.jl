@@ -31,7 +31,6 @@ include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroTurbine.jl")
 include("HydroReservoir.jl")
-include("HydroTopology.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
@@ -743,7 +742,6 @@ export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
-export get_topology
 export get_transfer_setpoint
 export get_travel_time
 export get_valve_position_limits
@@ -1395,7 +1393,6 @@ export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
-export set_topology!
 export set_transfer_setpoint!
 export set_travel_time!
 export set_valve_position_limits!
