@@ -16,6 +16,7 @@ include("TwoTerminalVSCLine.jl")
 include("TwoTerminalLCCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
+include("FACTSControlDevice.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
@@ -628,7 +629,9 @@ export get_max_impedance_reactive_power
 export get_max_output_fraction
 export get_max_participation_factor
 export get_max_reactive_power
+export get_max_shunt_current
 export get_min_compounding_voltage
+export get_mode
 export get_must_run
 export get_n_states
 export get_name
@@ -683,6 +686,7 @@ export get_reactive_power_limits
 export get_reactive_power_limits_from
 export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
+export get_reactive_power_required
 export get_reactive_power_to
 export get_rectifier_base_voltage
 export get_rectifier_bridges
@@ -746,6 +750,7 @@ export get_voltage
 export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
+export get_voltage_setpoint
 export get_x
 export get_x_12
 export get_x_13
@@ -1272,7 +1277,9 @@ export set_max_impedance_reactive_power!
 export set_max_output_fraction!
 export set_max_participation_factor!
 export set_max_reactive_power!
+export set_max_shunt_current!
 export set_min_compounding_voltage!
+export set_mode!
 export set_must_run!
 export set_n_states!
 export set_name!
@@ -1327,6 +1334,7 @@ export set_reactive_power_limits!
 export set_reactive_power_limits_from!
 export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
+export set_reactive_power_required!
 export set_reactive_power_to!
 export set_rectifier_base_voltage!
 export set_rectifier_bridges!
@@ -1390,6 +1398,7 @@ export set_voltage!
 export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
+export set_voltage_setpoint!
 export set_x!
 export set_x_12!
 export set_x_13!
