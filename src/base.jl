@@ -1615,7 +1615,7 @@ function transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
-        interval,
+        interval;
         resolution = resolution,
     )
     return
