@@ -252,7 +252,7 @@ fuel_cost = Dict(
     "geo" => fuel_params[5, 2],
 )
 ```
-Assign a fuel type and price to the thermal generators based on their [`PrimeMover`](@ref) type which can be found in the thermal_gens dataframe. 
+Assign a fuel type and price to the thermal generators based on their [`PrimeMover`] type which can be found in the thermal_gens dataframe. 
 
 ```julia
 fuel_prices = []
