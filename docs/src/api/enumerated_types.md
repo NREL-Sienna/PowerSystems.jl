@@ -100,6 +100,17 @@ on the options in [EIA form 923](https://www.eia.gov/survey/form/eia_923/instruc
 | `OTHER_MECH`  | Other Mechanical Storage      |
 | `OTHER_THERM` | Other Thermal Storage         |
 
+## [Facts Control Devices](@id factsmodes_list)
+
+`FACTSOperationModes` define the operation modes the FACTS Control Devices have. 
+`FACTSOperationModes` has the options:
+
+| Name       | Description                                                                                     |
+|:---------- |:----------------------------------------------------------------------------------------------- |
+| `OOS`      | Out-Of-Service (i.e., Series and Shunt links open)                                              |
+| `NML`      | Normal mode of operation, where Series and Shunt links are operating                            |
+| `BYP`      | Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM |
+
 ## [Dynamic States](@id states_list)
 
 `StateTypes` are used to denote the type of dynamic equation a specific [state](@ref S) is subject
