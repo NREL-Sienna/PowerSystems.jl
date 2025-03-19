@@ -27,6 +27,16 @@ function get_series_susceptance(b::Union{PhaseShiftingTransformer, TapTransforme
     return y_a
 end
 
+
+"""
+Returns the series susceptance of a 3 winding transformer as three values 
+(for each of the 3 branches) following the convention
+in power systems to define susceptance as the inverse of the imaginary part of the impedance.
+"""
+function get_series_susceptance(b::Transformer3W)
+    throw(ArgumentError("get_series_susceptance not implemented for Transformer3W"))
+end
+
 get_series_admittance(b::ACBranch) = 1 / (get_r(b) + get_x(b) * 1im)
 
 """
