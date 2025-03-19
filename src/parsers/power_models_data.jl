@@ -228,13 +228,18 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     default_bus_naming = x -> _get_pm_bus_name(x, unique_bus_names)
 
     _get_name = get(kwargs, :bus_name_formatter, default_bus_naming)
+
+    default_area_naming = string
+    # The formatter for area_name should be a function that transform the Area Int to a String
+    _get_name_area = get(kwargs, :area_name_formatter, default_area_naming)
+
     for (i, (d_key, d)) in enumerate(bus_data)
         # d id the data dict for each bus
         # d_key is bus key
         bus_name = strip(_get_name(d))
         bus_number = Int(d["bus_i"])
 
-        area_name = string(d["area"])
+        area_name = _get_name_area(d["area"])
         area = get_component(Area, sys, area_name)
         if isnothing(area)
             area = Area(area_name)

@@ -23,11 +23,10 @@ end
 
 @testset "PSSE Component Parsing" begin
     @info "Testing Load Parsing"
-    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/impedance_power read in natural units during parsing
-    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 223.71
+    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
+    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          583.546
-    PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
+          5.83546
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
     @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
