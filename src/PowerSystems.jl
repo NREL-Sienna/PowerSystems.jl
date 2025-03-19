@@ -283,6 +283,7 @@ export TransmissionInterface
 
 export AngleUnits
 export ACBusTypes
+export FACTSOperationModes
 export PrimeMovers
 export ThermalFuels
 export StorageTech
