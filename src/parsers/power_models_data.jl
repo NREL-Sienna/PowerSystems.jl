@@ -69,6 +69,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_vscline!(sys, data, bus_number_to_bus; kwargs...)
+    read_facts!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -1103,6 +1104,42 @@ function make_shunt(name::String, d::Dict, bus::ACBus)
         bus = bus,
         Y = (d["gs"] + d["bs"]im),
     )
+end
+
+function make_facts(name::String, d::Dict, bus::ACBus)
+    return FACTSControlDevice(;
+        name = name,
+        available = Bool(d["available"]),
+        bus = bus,
+        mode = d["mode"],
+        voltage_setpoint = d["voltage_setpoint"],
+        max_shunt_current = d["max_shunt_current"],
+        reactive_power_required = d["reactive_power_required"],
+    )
+end
+
+function read_facts!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading FACTS data"
+    if !haskey(data, "facts")
+        @info "There is no facts data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["facts"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["bus"]]
+        facts = make_facts(name, d, bus)
+
+        add_component!(sys, facts; skip_validation = SKIP_PM_VALIDATION)
+    end
 end
 
 function read_shunt!(

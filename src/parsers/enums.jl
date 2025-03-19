@@ -9,11 +9,13 @@ IS.@scoped_enum(
     RESERVE = 6,
     SIMULATION_OBJECTS = 7,
     STORAGE = 8,
+    FACTS = 9,
 )
 
 const ENUMS = (
     AngleUnits,
     ACBusTypes,
+    FACTSOperationModes,
     GeneratorCostModels,
     InputCategory,
     PrimeMovers,
@@ -47,6 +49,8 @@ end
 
 Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnits, val)
 Base.convert(::Type{ACBusTypes}, val::AbstractString) = get_enum_value(ACBusTypes, val)
+Base.convert(::Type{FACTSOperationModes}, val::AbstractString) =
+    get_enum_value(FACTSOperationModes, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
