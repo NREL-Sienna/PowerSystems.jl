@@ -335,6 +335,10 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
+export remove_reservoir!
+export clear_reservoirs!
+export get_reservoirs
+export has_reservoir
 export has_time_series
 export get_buses
 export is_component_in_aggregation_topology
@@ -342,9 +346,13 @@ export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
 export get_contributing_device_mapping
+export get_reservoir_contributing_device_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
+export ReservoirContributingDevices
+export ReservoirContributingDevicesKey
+export ReservoirContributingDevicesMapping
 export get_component
 export get_components
 export show_components
