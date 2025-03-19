@@ -58,7 +58,7 @@ region = "Region"
 ```
 
 In this example, we assume that the buses are sorted into three `Areas`,
-where [`area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor. Because we
+where [`Area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor. Because we
 will be sorting our buses into these areas as we construct the buses, we must
 first attach the areas to our [`System`](@ref).
 
@@ -252,7 +252,7 @@ fuel_cost = Dict(
     "geo" => fuel_params[5, 2],
 )
 ```
-Assign a fuel type and price to the thermal generators based on their [`PrimeMover`](@ref) type which can be found in the thermal_gens dataframe. 
+Assign a fuel type and price to the thermal generators based on their [`PrimeMover`] type which can be found in the thermal_gens dataframe. 
 
 ```julia
 fuel_prices = []
