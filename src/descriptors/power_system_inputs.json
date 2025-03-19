@@ -901,8 +901,13 @@
         },
         {
             "name": "mode",
-            "description": "Control mode. Currently supporting 0, 1 & 2 modes.",
-            "default_value": 1
+            "value_options": [
+                "OOS",
+                "NML",
+                "BYP"
+            ],
+            "description": "Control mode of operation",
+            "default_value": null
         },
         {
             "name": "voltage_setpoint",
