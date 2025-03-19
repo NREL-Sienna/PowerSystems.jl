@@ -14,6 +14,7 @@ an import error.
         spillage_outflow_limits::Union{Nothing, MinMax}
         travel_time::Float64
         inflow::Float64
+        outflow:Float64
         volume_target::Float64
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -29,12 +30,13 @@ A hydro reservoir representation.
 - `spillage_outflow_limits::Union{Nothing, MinMax}`: limits for spillage, validation range: `(0, nothing)`
 - `travel_time::Float64`: Downstream travel time in hours., validation range: `(0, nothing)`
 - `inflow::Float64`: Baseline inflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
+- `outflow::Float64`: Baseline outflow into the reservoir (units can be p.u. or m^3/hr), validation range: `(0, nothing)`
 - `volume_target::Float64`: (default: `1.0`) Volume target at the end of simulation as a fraction of the total volume, validation range: `(0, 1)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct HydroReservoir <: DeviceParameter
+mutable struct HydroReservoir <: Component
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -47,6 +49,8 @@ mutable struct HydroReservoir <: DeviceParameter
     travel_time::Float64
     "Baseline inflow into the reservoir (units can be p.u. or m^3/hr)"
     inflow::Float64
+    "Baseline outflow of the reservoir (units can be p.u. or m^3/hr)"
+    outflow::Float64
     "Volume target at the end of simulation as a fraction of the total volume"
     volume_target::Float64
     "Services that this device contributes to"
@@ -57,12 +61,12 @@ mutable struct HydroReservoir <: DeviceParameter
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, outflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, outflow, volume_target, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, volume_target, services, ext, internal, )
+function HydroReservoir(; name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, outflow, volume_target=1.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_volume_limits, spillage_outflow_limits, travel_time, inflow, outflow, volume_target, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -74,6 +78,7 @@ function HydroReservoir(::Nothing)
         spillage_outflow_limits=nothing,
         travel_time=0.0,
         inflow=0.0,
+        outflow=0.0,
         volume_target=0.0,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -92,6 +97,8 @@ get_spillage_outflow_limits(value::HydroReservoir) = get_value(value, value.spil
 get_travel_time(value::HydroReservoir) = get_value(value, value.travel_time)
 """Get [`HydroReservoir`](@ref) `inflow`."""
 get_inflow(value::HydroReservoir) = get_value(value, value.inflow)
+"""Get [`HydroReservoir`](@ref) `inflow`."""
+get_outflow(value::HydroReservoir) = get_value(value, value.outflow)
 """Get [`HydroReservoir`](@ref) `volume_target`."""
 get_volume_target(value::HydroReservoir) = value.volume_target
 """Get [`HydroReservoir`](@ref) `services`."""
@@ -111,6 +118,8 @@ set_spillage_outflow_limits!(value::HydroReservoir, val) = value.spillage_outflo
 set_travel_time!(value::HydroReservoir, val) = value.travel_time = set_value(value, val)
 """Set [`HydroReservoir`](@ref) `inflow`."""
 set_inflow!(value::HydroReservoir, val) = value.inflow = set_value(value, val)
+"""Set [`HydroReservoir`](@ref) `inflow`."""
+set_outflow!(value::HydroReservoir, val) = value.outflow = set_value(value, val)
 """Set [`HydroReservoir`](@ref) `volume_target`."""
 set_volume_target!(value::HydroReservoir, val) = value.volume_target = val
 """Set [`HydroReservoir`](@ref) `services`."""
