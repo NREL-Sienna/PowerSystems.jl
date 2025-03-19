@@ -17,7 +17,7 @@ IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 
 # "From PSSE POM v33 Manual"
 IS.@scoped_enum(
-    FACTSOperationModes, 
+    FACTSOperationModes,
     OOS = 0, # out-of-service (i.e., Series and Shunt links open)
     NML = 1, # Normal mode of operation, where Series and Shunt links are operating.  
     BYP = 2, # Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM.

@@ -62,7 +62,7 @@ function FACTSControlDevice(
     voltage_setpoint,
     max_shunt_current,
     reactive_power_required,
-    services=Device[],
+    services = Device[],
     ext = Dict{String, Any}(),
 )
     return FACTSControlDevice(
