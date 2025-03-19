@@ -126,7 +126,7 @@ end
     @test get_available(facts) == true
     @test get_voltage_setpoint(facts) == 1.0
     @test get_max_shunt_current(facts) == 9999.0
-    @test get_mode(facts) == 1
+    @test get_mode(facts) == FACTSOperationModes.NML
 end
 
 @testset "PSSE LCC Parsing" begin
