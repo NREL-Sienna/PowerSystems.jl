@@ -58,7 +58,7 @@ region = "Region"
 ```
 
 In this example, we assume that the buses are sorted into three `Areas`,
-where [`area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor. Because we
+where [`Area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor. Because we
 will be sorting our buses into these areas as we construct the buses, we must
 first attach the areas to our [`System`](@ref).
 
