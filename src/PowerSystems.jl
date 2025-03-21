@@ -88,6 +88,8 @@ export Generator
 export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
+export HydroTurbine
+export HydroReservoir
 export HydroPumpedStorage
 export InterconnectingConverter
 
@@ -335,6 +337,10 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
+export remove_reservoir!
+export clear_reservoirs!
+export get_reservoirs
+export has_reservoir
 export has_time_series
 export get_buses
 export is_component_in_aggregation_topology
@@ -342,9 +348,13 @@ export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
 export get_contributing_device_mapping
+export get_reservoir_contributing_device_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
+export ReservoirContributingDevices
+export ReservoirContributingDevicesKey
+export ReservoirContributingDevicesMapping
 export get_component
 export get_components
 export show_components
@@ -466,6 +476,7 @@ export get_from_to_flow_limit
 export get_to_from_flow_limit
 export get_min_active_power_flow_limit
 export get_max_active_power_flow_limit
+export get_storage_volume_limits
 
 # Subsystems
 export add_subsystem!
@@ -734,6 +745,7 @@ include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
+include("models/HydroReservoir.jl")
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
 

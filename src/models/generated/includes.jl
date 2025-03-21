@@ -29,6 +29,7 @@ include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
+include("HydroTurbine.jl")
 include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
@@ -636,6 +637,7 @@ export get_number
 export get_number_of_steps
 export get_operation_cost
 export get_outflow
+export get_outflow_limits
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
@@ -700,6 +702,7 @@ export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
 export get_requirement
+export get_reservoirs
 export get_rf
 export get_rg
 export get_rrpwr
@@ -1280,6 +1283,7 @@ export set_number!
 export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
+export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
@@ -1344,6 +1348,7 @@ export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
 export set_requirement!
+export set_reservoirs!
 export set_rf!
 export set_rg!
 export set_rrpwr!
