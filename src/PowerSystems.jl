@@ -88,6 +88,8 @@ export Generator
 export HydroGen
 export HydroDispatch
 export HydroEnergyReservoir
+export HydroTurbine
+export HydroReservoir
 export HydroPumpedStorage
 export InterconnectingConverter
 
@@ -474,6 +476,7 @@ export get_from_to_flow_limit
 export get_to_from_flow_limit
 export get_min_active_power_flow_limit
 export get_max_active_power_flow_limit
+export get_storage_volume_limits
 
 # Subsystems
 export add_subsystem!
@@ -742,6 +745,7 @@ include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
 
 # Include all auto-generated structs.
+include("models/HydroReservoir.jl")
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
 

@@ -18,7 +18,7 @@ end
     reservoir = HydroReservoir(
         name="init",
         available=false,
-        storage_volume_limits=(min=0.1, max=1),
+        storage_volume_limits=(min=0.1, max=1.0),
         spillate_outflow_limits=nothing,
         inflow=0.0,
         outflow=0.0,
@@ -51,6 +51,9 @@ end
     remove_reservoir!(turbine, reservoir)
     @test !has_reservoir(turbine)
     @test length(get_contributing_devices(sys, reservoir)) == 0
+
+    remove_component!(sys, reservoir)
+    @test_throws ArgumentError get_contributing_devices(sys, reservoir)
 end
 
 @testset "Test multiple `HydroTurbine` with single `HydroReservoir`" begin
