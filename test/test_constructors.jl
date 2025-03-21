@@ -35,6 +35,10 @@ end
     @test tRenewableDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
+    tTurbine = HydroTurbine(nothing)
+    @test tTurbine isa PowerSystems.Component
+    tReservoir = HydroReservoir(nothing)
+    @test tReservoir isa PowerSystems.Component
 end
 
 @testset "Source Constructors" begin
