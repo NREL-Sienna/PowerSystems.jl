@@ -2,6 +2,7 @@
 const SKIP_PM_VALIDATION = false
 
 const SYSTEM_KWARGS = Set((
+    :area_name_formatter,
     :branch_name_formatter,
     :bus_name_formatter,
     :config_path,
@@ -236,18 +237,31 @@ function System(
     )
 end
 
-"""Constructs a System from a file path ending with .m, .RAW, or .json
+function system_via_power_models(file_path::AbstractString; kwargs...)
+    pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
+    sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
+    return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
+end
 
-If the file is JSON then assign_new_uuids = true will generate new UUIDs for the system
-and all components.
+"""Constructs a System from a file path ending with .m, .raw, or .json
+
+If the file is JSON, then `assign_new_uuids = true` will generate new UUIDs for the system
+and all components. If the file is .raw, then `try_reimport = false` will skip searching for
+a `<name>_export_metadata.json` file in the same directory.
 """
-function System(file_path::AbstractString; assign_new_uuids = false, kwargs...)
-    ext = splitext(file_path)[2]
-    if lowercase(ext) in [".m", ".raw"]
-        pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
-        return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
-    elseif lowercase(ext) == ".json"
+function System(
+    file_path::AbstractString;
+    assign_new_uuids = false,
+    try_reimport = true,
+    kwargs...,
+)
+    ext = lowercase(splitext(file_path)[2])
+    if ext == ".m"
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".raw"
+        try_reimport && return system_from_psse_reimport(file_path; kwargs...)
+        return system_via_power_models(file_path; kwargs...)
+    elseif ext == ".json"
         unsupported = setdiff(keys(kwargs), SYSTEM_KWARGS)
         !isempty(unsupported) && error("Unsupported kwargs = $unsupported")
         runchecks = get(kwargs, :runchecks, true)
@@ -1588,17 +1602,21 @@ invalid.
 - `sys::System`: System containing the components.
 - `horizon::Dates.Period`: desired [horizon](@ref H) of each forecast [window](@ref W)
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
+- `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
+   with this resolution.
 """
 function transform_single_time_series!(
     sys::System,
     horizon::Dates.Period,
-    interval::Dates.Period,
+    interval::Dates.Period;
+    resolution::Union{Nothing, Dates.Period} = nothing,
 )
     IS.transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
-        interval,
+        interval;
+        resolution = resolution,
     )
     return
 end
@@ -2657,6 +2675,36 @@ function convert_component!(
     remove_component!(sys, old_load)
 end
 
+"""
+Set the number of a bus.
+"""
+function set_bus_number!(sys::System, bus::ACBus, number::Int)
+    throw_if_not_attached(bus, sys)
+
+    orig = get_number(bus)
+    if number == orig
+        return
+    end
+
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored in the system"))
+    end
+
+    set_number!(bus, number)
+    replace!(sys.bus_numbers, orig => number)
+    return
+end
+
+function set_number!(bus::ACBus, number::Int)
+    Base.depwarn(
+        "This method will be removed in v5.0 because its use breaks system consistency" *
+        "checks. Please call `set_bus_number!(::System, bus, number)` instead.",
+        :set_number!,
+    )
+    bus.number = number
+    return
+end
+
 # Use this function to avoid deepcopy of shared_system_references.
 function _copy_internal_for_conversion(component::Component)
     internal = get_internal(component)
@@ -2751,4 +2799,20 @@ function fast_deepcopy_system(
         comp.internal.units_info = new_sys.units_settings
     end
     return new_sys
+end
+
+"""
+Return a DataFrame with the number of static time series for components and supplemental
+attributes.
+"""
+function get_static_time_series_summary_table(sys::System)
+    return IS.get_static_time_series_summary_table(sys.data)
+end
+
+"""
+Return a DataFrame with the number of forecasts for components and supplemental
+attributes.
+"""
+function get_forecast_summary_table(sys::System)
+    return IS.get_forecast_summary_table(sys.data)
 end

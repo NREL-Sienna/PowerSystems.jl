@@ -56,6 +56,7 @@ export get_slopes
 export get_average_rates
 export get_x_lengths
 export is_convex
+export is_concave
 export get_points
 export get_x_coords
 export get_y_coords
@@ -297,6 +298,9 @@ export ForecastKey
 export TimeSeriesCounts
 export ForecastCache
 export StaticTimeSeriesCache
+# from IS time_series_metadata_store.jl and defined for System in base.jl
+export get_static_time_series_summary_table
+export get_forecast_summary_table
 # from IS time_series_parser.jl
 export NormalizationFactor
 export NormalizationTypes
@@ -415,6 +419,8 @@ export create_poly_cost
 
 #export make_time_series
 export get_bus_numbers
+export set_bus_number!
+export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
 export get_component_uuids
@@ -619,6 +625,7 @@ import InfrastructureSystems:
     running_sum,
     get_x_lengths,
     is_convex,
+    is_concave,
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
     get_y_coords,
@@ -761,6 +768,7 @@ include("subsystems.jl")
 include("component_selector.jl")
 include("data_format_conversions.jl")
 include("get_components_interface.jl")
+include("component_selector_interface.jl")
 
 #Data Checks
 include("utils/IO/system_checks.jl")
@@ -782,6 +790,7 @@ include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")
 include("parsers/TAMU_data.jl")
+include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")

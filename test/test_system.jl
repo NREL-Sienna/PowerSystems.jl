@@ -614,3 +614,34 @@ end
     device2 = first(get_components(ThermalStandard, sys2))
     @test_throws ArgumentError add_service!(device2, service1, sys2)
 end
+
+@testset "Test set_bus_number!" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    buses = collect(get_components(ACBus, sys))
+    bus1 = buses[1]
+    bus2 = buses[2]
+    orig = get_number(bus1)
+    new_number = 9999999
+    @test orig != new_number
+    set_bus_number!(sys, bus1, new_number)
+    @test get_number(bus1) == new_number
+    bus_numbers = get_bus_numbers(sys)
+    @test new_number in bus_numbers
+    @test !(orig in bus_numbers)
+
+    # Ensure that the no-op case works.
+    set_bus_number!(sys, bus1, new_number)
+    @test get_number(bus1) == new_number
+    @test new_number in get_bus_numbers(sys)
+
+    # Ensure that duplicate numbers are blocked.
+    @test_throws ArgumentError set_bus_number!(sys, bus1, get_number(bus2))
+
+    # Ensure that you can't change an unattached bus.
+    remove_component!(sys, bus1)
+    @test_throws ArgumentError set_bus_number!(sys, bus1, new_number + 1)
+
+    # Ensure that this is exported. This can be deleted in PSY5.
+    set_number!(bus1, new_number + 2)
+    @test get_number(bus1) == new_number + 2
+end

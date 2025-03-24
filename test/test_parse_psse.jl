@@ -23,11 +23,10 @@ end
 
 @testset "PSSE Component Parsing" begin
     @info "Testing Load Parsing"
-    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/impedance_power read in natural units during parsing
-    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 223.71
+    sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
+    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          583.546
-    PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")
+          5.83546
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
     @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
@@ -39,7 +38,7 @@ end
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
     sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
-    sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_20_sys")
+    sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
     file_dir = joinpath(base_dir, "test_data", "5circuit_3w.raw")
@@ -50,7 +49,7 @@ end
     @test isnothing(get_component(Transformer3W, sys3, "1"))
 
     @test get_available(
-        get_component(Transformer3W, sys4, "FAV PLACE 07-FAV PLACE 05-FAV SPOT 03-i_1"),
+        get_component(Transformer3W, sys4, "FAV PLACE 07-FAV SPOT 06-FAV SPOT 03-i_1"),
     ) == true
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
@@ -90,11 +89,10 @@ end
     @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
           0.95
 
-    # vsc_sys = build_system(PSSEParsingTestSystems, "pti_vsc_hvdc_test_sys")
-    # @info "Testing VSC Parser"
-    # vsc = only(get_components(TwoTerminalVSCLine, sys4))
-    # @test get_active_power_flow(vsc) == -0.2
-    # @test get_dc_setpoint_to(vsc) == -20.0
+    @info "Testing VSC Parser"
+    vsc = only(get_components(TwoTerminalVSCLine, sys4))
+    @test get_active_power_flow(vsc) == -0.2
+    @test get_dc_setpoint_to(vsc) == -20.0
 
     @info "Testing Load Zone Formatter"
     PSB.clear_serialized_systems("psse_Benchmark_4ger_33_2015_sys")

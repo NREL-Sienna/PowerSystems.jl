@@ -6,6 +6,12 @@ const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 
+# Intended for use with generators that are not multi-start (e.g. ThermalStandard).
+# Operators use `hot` when they don’t have multiple stages.
+"Convert a single start-up cost value to a `StartUpStages`"
+single_start_up_to_stages(start_up::Real) =
+    (hot = Float64(start_up), warm = 0.0, cold = 0.0)
+
 "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
 
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
