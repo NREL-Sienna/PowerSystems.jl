@@ -113,7 +113,7 @@ end
         name = "FACTS 1",
         available = true,
         bus = bus2,
-        mode = 1,
+        control_mode = 1,
         max_shunt_current = 9999.0,
         reactive_power_required = 100.0,
         voltage_setpoint = 1.0,
