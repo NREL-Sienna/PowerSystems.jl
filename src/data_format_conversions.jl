@@ -20,7 +20,7 @@ function _convert_data!(
             component["__metadata__"]["type"] = "ACBus"
             continue
         end
-        if component["__metadata__"]["type"] == "HVDCLine"
+        if component["__metadata__"]["type"] ⋹ ("HVDCLine", "TwoTerminalHVDCLine")
             component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
             continue
         end
