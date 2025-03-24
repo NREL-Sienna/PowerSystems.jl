@@ -729,6 +729,9 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
         rating = d["rate_a"],
+        rating_a = d["rate_a"],
+        rating_b = d["rate_b"],
+        rating_c = d["rate_c"],
         angle_limits = (min = d["angmin"], max = d["angmax"]),
     )
 end

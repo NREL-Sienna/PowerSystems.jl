@@ -382,6 +382,9 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 b = (from = b, to = b),
                 rating = branch.rate,
+                rating_a = branch.rate_a,
+                rating_b = branch.rate_b,
+                rating_c = branch.rate_c,
                 angle_limits = (
                     min = branch.min_angle_limits,
                     max = branch.max_angle_limits,

@@ -15,6 +15,9 @@ This file is auto-generated. Do not edit.
         x::Float64
         b::FromTo
         rating::Float64
+        rating_a::Union{Nothing, Float64}
+        rating_b::Union{Nothing, Float64}
+        rating_c::Union{Nothing, Float64}
         angle_limits::MinMax
         g::FromTo
         services::Vector{Service}
@@ -34,6 +37,9 @@ An AC transmission line
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `rating::Float64`: Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
+- `rating_a::Union{Nothing, Float64}`: First current rating; entered in MVA.
+- `rating_b::Union{Nothing, Float64}`: Second current rating; entered in MVA.
+- `rating_c::Union{Nothing, Float64}`: Thrid current rating; entered in MVA.
 - `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -59,6 +65,12 @@ mutable struct Line <: ACBranch
     b::FromTo
     "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
     rating::Float64
+    "First current rating; entered in MVA."
+    rating_a::Union{Nothing, Float64}
+    "Second current rating; entered in MVA."
+    rating_b::Union{Nothing, Float64}
+    "Thrid current rating; entered in MVA."
+    rating_c::Union{Nothing, Float64}
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
     "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value"
@@ -71,12 +83,12 @@ mutable struct Line <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, rating_a, rating_b, rating_c, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, rating_a, rating_b, rating_c, angle_limits, g, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, rating_a, rating_b, rating_c, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, rating_a, rating_b, rating_c, angle_limits, g, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -91,6 +103,9 @@ function Line(::Nothing)
         x=0.0,
         b=(from=0.0, to=0.0),
         rating=0.0,
+        rating_a=0.0,
+        rating_b=0.0,
+        rating_c=0.0,
         angle_limits=(min=-1.571, max=1.571),
         g=(from=0.0, to=0.0),
         services=Device[],
@@ -116,6 +131,12 @@ get_x(value::Line) = value.x
 get_b(value::Line) = value.b
 """Get [`Line`](@ref) `rating`."""
 get_rating(value::Line) = get_value(value, value.rating)
+"""Get [`Line`](@ref) `rating_a`."""
+get_rating_a(value::Line) = get_value(value, value.rating_a)
+"""Get [`Line`](@ref) `rating_b`."""
+get_rating_b(value::Line) = get_value(value, value.rating_b)
+"""Get [`Line`](@ref) `rating_c`."""
+get_rating_c(value::Line) = get_value(value, value.rating_c)
 """Get [`Line`](@ref) `angle_limits`."""
 get_angle_limits(value::Line) = value.angle_limits
 """Get [`Line`](@ref) `g`."""
@@ -143,6 +164,12 @@ set_x!(value::Line, val) = value.x = val
 set_b!(value::Line, val) = value.b = val
 """Set [`Line`](@ref) `rating`."""
 set_rating!(value::Line, val) = value.rating = set_value(value, val)
+"""Set [`Line`](@ref) `rating_a`."""
+set_rating_a!(value::Line, val) = value.rating_a = set_value(value, val)
+"""Set [`Line`](@ref) `rating_b`."""
+set_rating_b!(value::Line, val) = value.rating_b = set_value(value, val)
+"""Set [`Line`](@ref) `rating_c`."""
+set_rating_c!(value::Line, val) = value.rating_c = set_value(value, val)
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
 """Set [`Line`](@ref) `g`."""
