@@ -1235,7 +1235,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data = Dict{String, Any}()
 
             sub_data["name"] = facts["NAME"]
-            sub_data["mode"] = facts["MODE"]
+            sub_data["control_mode"] = facts["MODE"]
 
             # MODE = 0 -> Unavailable
             # MODE = 1 -> Normal mode 

@@ -900,7 +900,7 @@
             "default_value": null
         },
         {
-            "name": "mode",
+            "name": "control_mode",
             "value_options": [
                 "OOS",
                 "NML",

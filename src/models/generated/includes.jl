@@ -511,6 +511,7 @@ export get_compounding_resistance
 export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
+export get_control_mode
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -631,7 +632,6 @@ export get_max_participation_factor
 export get_max_reactive_power
 export get_max_shunt_current
 export get_min_compounding_voltage
-export get_mode
 export get_must_run
 export get_n_states
 export get_name
@@ -1159,6 +1159,7 @@ export set_compounding_resistance!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
+export set_control_mode!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
@@ -1279,7 +1280,6 @@ export set_max_participation_factor!
 export set_max_reactive_power!
 export set_max_shunt_current!
 export set_min_compounding_voltage!
-export set_mode!
 export set_must_run!
 export set_n_states!
 export set_name!

@@ -9,7 +9,7 @@ This file is auto-generated. Do not edit.
         name::String
         available::Bool
         bus::ACBus
-        mode::Union{Nothing, FACTSOperationModes}
+        control_mode::Union{Nothing, FACTSOperationModes}
         voltage_setpoint::Float64
         max_shunt_current::Float64
         reactive_power_required::Float64
@@ -26,7 +26,7 @@ Most often used in AC power flow studies as a control of voltage and, active and
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Sending end bus number
-- `mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)
+- `control_mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)
 - `voltage_setpoint::Float64`: Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
 - `max_shunt_current::Float64`: Maximum shunt current at the sending end bus; entered in MVA at unity voltage.
 - `reactive_power_required::Float64`: Total MVAr required to hold voltage at sending bus, in %.
@@ -42,7 +42,7 @@ mutable struct FACTSControlDevice <: ElectricLoad
     "Sending end bus number"
     bus::ACBus
     "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)"
-    mode::Union{Nothing, FACTSOperationModes}
+    control_mode::Union{Nothing, FACTSOperationModes}
     "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))."
     voltage_setpoint::Float64
     "Maximum shunt current at the sending end bus; entered in MVA at unity voltage."
@@ -57,12 +57,12 @@ mutable struct FACTSControlDevice <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function FACTSControlDevice(name, available, bus, mode, services=Device[], ext=Dict{String, Any}(), )
-    FACTSControlDevice(name, available, bus, mode, services, ext, 1.0, 9999.0, 100.0, InfrastructureSystemsInternal(), )
+function FACTSControlDevice(name, available, bus, control_mode, services=Device[], ext=Dict{String, Any}(), )
+    FACTSControlDevice(name, available, bus, control_mode, services, ext, 1.0, 9999.0, 100.0, InfrastructureSystemsInternal(), )
 end
 
-function FACTSControlDevice(; name, available, bus, mode, voltage_setpoint=1.0, max_shunt_current=9999.0, reactive_power_required=100.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    FACTSControlDevice(name, available, bus, mode, voltage_setpoint, max_shunt_current, reactive_power_required, services, ext, internal, )
+function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, reactive_power_required=100.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, reactive_power_required, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -71,7 +71,7 @@ function FACTSControlDevice(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        mode=nothing,
+        control_mode=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -83,8 +83,8 @@ get_name(value::FACTSControlDevice) = value.name
 get_available(value::FACTSControlDevice) = value.available
 """Get [`FACTSControlDevice`](@ref) `bus`."""
 get_bus(value::FACTSControlDevice) = value.bus
-"""Get [`FACTSControlDevice`](@ref) `mode`."""
-get_mode(value::FACTSControlDevice) = value.mode
+"""Get [`FACTSControlDevice`](@ref) `control_mode`."""
+get_control_mode(value::FACTSControlDevice) = value.control_mode
 """Get [`FACTSControlDevice`](@ref) `voltage_setpoint`."""
 get_voltage_setpoint(value::FACTSControlDevice) = value.voltage_setpoint
 """Get [`FACTSControlDevice`](@ref) `max_shunt_current`."""
@@ -102,8 +102,8 @@ get_internal(value::FACTSControlDevice) = value.internal
 set_available!(value::FACTSControlDevice, val) = value.available = val
 """Set [`FACTSControlDevice`](@ref) `bus`."""
 set_bus!(value::FACTSControlDevice, val) = value.bus = val
-"""Set [`FACTSControlDevice`](@ref) `mode`."""
-set_mode!(value::FACTSControlDevice, val) = value.mode = val
+"""Set [`FACTSControlDevice`](@ref) `control_mode`."""
+set_control_mode!(value::FACTSControlDevice, val) = value.control_mode = val
 """Set [`FACTSControlDevice`](@ref) `voltage_setpoint`."""
 set_voltage_setpoint!(value::FACTSControlDevice, val) = value.voltage_setpoint = val
 """Set [`FACTSControlDevice`](@ref) `max_shunt_current`."""

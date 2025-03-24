@@ -1111,7 +1111,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         name = name,
         available = Bool(d["available"]),
         bus = bus,
-        mode = d["mode"],
+        control_mode = d["mode"],
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
         reactive_power_required = d["reactive_power_required"],

@@ -2184,7 +2184,7 @@
                     "data_type": "ACBus"
                 },
                 {
-                    "name": "mode",
+                    "name": "control_mode",
                     "comment": "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, FACTSOperationModes}"
