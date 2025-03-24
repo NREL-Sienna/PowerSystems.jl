@@ -471,15 +471,22 @@
                 },
                 {
                     "null_value": "0.0",
+                    "name": "rating_a",
+                    "comment": "First current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
                     "name": "rating_b",
-                    "comment": "",
+                    "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true
                 },
                 {
                     "null_value": "0.0",
                     "name": "rating_c",
-                    "comment": "",
+                    "comment": "Thrid current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true
                 },
