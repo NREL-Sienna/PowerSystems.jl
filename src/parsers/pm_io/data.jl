@@ -328,6 +328,14 @@ function _make_per_unit!(data::Dict{String, <:Any}, mva_base::Real)
         end
     end
 
+    if haskey(data, "switched_shunt")
+        for (i, sw_shunt) in data["switched_shunt"]
+            _apply_func!(sw_shunt, "gs", rescale)
+            _apply_func!(sw_shunt, "bs", rescale)
+            _apply_func!(sw_shunt, "y_increment", rescale)
+        end
+    end
+
     if haskey(data, "gen")
         for (i, gen) in data["gen"]
             _apply_func!(gen, "pg", rescale)
