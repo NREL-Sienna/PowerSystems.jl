@@ -68,25 +68,25 @@ end
     @test length(get_components(Transformer3W, sys5)) == 5
 
     @info "Testing Switched Shunt Parsing"
-    @test get_available(get_component(SwitchedAdmittance, sys3, "1030_9")) == false
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "3147_42"))).im == 35
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys3, "3147_42")).min ==
+    @test get_available(get_component(SwitchedAdmittance, sys3, "9")) == false
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "42"))).im == 0.35
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys3, "42")).min ==
           1.03
-    @test only(get_number_of_steps(get_component(SwitchedAdmittance, sys3, "7075_119"))) ==
+    @test only(get_number_of_steps(get_component(SwitchedAdmittance, sys3, "119"))) ==
           1
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "7075_119"))).im ==
-          342.5
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "119"))).im ==
+          3.425
 
-    @test get_available(get_component(SwitchedAdmittance, sys4, "1005_2")) == true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "1005_2")) == 6im
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1005_2")).max ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "2")) == true
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "2")) == 0.06im
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "2")).max ==
           1.045
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys4, "1005_2"))).im == 6
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys4, "2"))).im == 0.06
 
     @test length(get_components(SwitchedAdmittance, sys4)) == 2
-    @test get_available(get_component(SwitchedAdmittance, sys4, "1003_1")) == true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003_1")) == 3.8im
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1")) == true
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1")) == 0.038im
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1")).min ==
           0.95
 
     @info "Testing VSC Parser"
