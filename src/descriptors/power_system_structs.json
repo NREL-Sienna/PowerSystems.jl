@@ -470,6 +470,20 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true
+                },
+                {
                     "name": "angle_limits",
                     "comment": "Minimum and maximum angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
