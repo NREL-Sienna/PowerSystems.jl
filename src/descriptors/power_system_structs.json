@@ -1592,7 +1592,7 @@
                     "data_type": "Float64",
                     "needs_conversion": true,
                     "default": "0.0"
-                },                
+                },
                 {
                     "name": "dc_voltage_control_to",
                     "comment": "Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
@@ -1667,7 +1667,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
-                },  
+                },
                 {
                     "name": "services",
                     "data_type": "Vector{Service}",
@@ -2265,11 +2265,11 @@
                     "data_type": "Vector{Complex{Float64}}",
                     "default": "Complex{Float64}[]"
                 },
-                {   "name": "admittance_limits",                    
-                    "comment": "Shunt admittance limits for switched shunt model",                    
-                    "null_value": "(min=0.0, max=0.0)",                    
-                    "data_type": "MinMax",                    
-                    "default": "(min=1.0, max=1.0)"               
+                {   "name": "admittance_limits",
+                    "comment": "Shunt admittance limits for switched shunt model",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=1.0, max=1.0)"
                 },
                 {
                     "name": "dynamic_injector",
@@ -17760,7 +17760,7 @@
         },
         {
             "struct_name": "Source",
-            "docstring": "An infinite bus with a constant voltage output.\n\nCommonly used in dynamics simulations to represent a very large machine on a single bus",
+            "docstring": "An infinite bus with a constant voltage output.\n\nCommonly used in dynamics simulations to represent a very large machine on a single bus or for the representation of import/exports in operational simulations",
             "fields": [
                 {
                     "null_value": "init",
@@ -17786,6 +17786,7 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "default": "0.0",
                     "needs_conversion": true
                 },
                 {
@@ -17793,6 +17794,24 @@
                     "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
+                    "validation_action": "warn",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}",
+                    "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true
                 },
                 {
@@ -17800,6 +17819,7 @@
                     "comment": "Source Thevenin resistance",
                     "null_value": 0,
                     "data_type": "Float64",
+                    "default": "0.0",
                     "valid_range": {
                         "min": 0,
                         "max": null
@@ -17809,6 +17829,7 @@
                     "name": "X_th",
                     "comment": "Source Thevenin reactance",
                     "null_value": 0,
+                    "default": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -17839,6 +17860,13 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "ImportExportCost(nothing)",
+                    "data_type": "Union{ImportExportCost, MarketBidCost}",
+                    "default": "ImportExportCost(nothing)",
+                    "comment": "[`ImportExportCost`](@ref)"
                 },
                 {
                     "name": "dynamic_injector",
@@ -17987,7 +18015,7 @@
                 }
             ],
             "supertype": "DynamicInjection"
-        }, 
+        },
         {
             "struct_name": "GenericDER",
             "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on [\"Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision.\"](http://hdl.handle.net/10125/70994)",
