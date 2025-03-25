@@ -107,7 +107,6 @@ function ImportExportCost(
     )
 end
 
-
 """Get [`ImportExportCost`](@ref) `incremental_offer_curves`."""
 get_incremental_offer_curves(value::ImportExportCost) = value.incremental_offer_curves
 """Get [`ImportExportCost`](@ref) `decremental_offer_curves`."""
@@ -149,7 +148,7 @@ function make_import_export_curve(
     export_prices::Vector{Float64} = [0.0],
     ;
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS,
-    )
+)
     valid_data = (length(import_powers) == length(import_prices) + 1)
     valid_data = (length(export_powers) == length(export_prices) + 1)
     if valid_data
@@ -187,16 +186,15 @@ function make_import_export_curve(;
     export_max_power::Vector{Float64} = 0.0,
     export_price::Vector{Float64} = 0.0,
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS,
-    )
+)
     return make_market_bid_curve(
         [0.0, import_max_power],
         import_price,
         [0.0, export_max_power],
-        export_price,;
+        export_price, ;
         power_units = power_units,
     )
 end
-
 
 """
 Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a ImportExportCost from
@@ -205,7 +203,7 @@ the FunctionData that might be used to store such a cost curve in a time series.
 function make_import_export_curve(
     curve::Union{PiecewiseStepData, Nothing} = nothing,
     power_units::UnitSystem = UnitSystem.NATURAL_UNITS,
-    )
+)
     cc = CostCurve(IncrementalCurve(curve, 0.0, 0.0), power_units)
     @assert is_market_bid_curve(buy_cc)
     return cc
