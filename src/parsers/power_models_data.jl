@@ -837,9 +837,9 @@ function make_3w_transformer(
         available_primary = d["available_primary"],
         available_secondary = d["available_secondary"],
         available_tertiary = d["available_tertiary"],
-        rating_primary = d["rating_primary"],
-        rating_secondary = d["rating_secondary"],
-        rating_tertiary = d["rating_tertiary"],
+        rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
+        rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
+        rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
         ext = d["ext"],
     )
 end
