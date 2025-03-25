@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct FACTSControlDevice <: ElectricLoad
+    mutable struct FACTSControlDevice <: StaticInjection
         name::String
         available::Bool
         bus::ACBus
@@ -14,6 +14,7 @@ This file is auto-generated. Do not edit.
         max_shunt_current::Float64
         reactive_power_required::Float64
         services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -31,10 +32,11 @@ Most often used in AC power flow studies as a control of voltage and, active and
 - `max_shunt_current::Float64`: Maximum shunt current at the sending end bus; entered in MVA at unity voltage.
 - `reactive_power_required::Float64`: Total MVAr required to hold voltage at sending bus, in %.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) Corresponding dynamic injection model for FACTS control device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct FACTSControlDevice <: ElectricLoad
+mutable struct FACTSControlDevice <: StaticInjection
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -51,18 +53,20 @@ mutable struct FACTSControlDevice <: ElectricLoad
     reactive_power_required::Float64
     "Services that this device contributes to"
     services::Vector{Service}
+    "Corresponding dynamic injection model for FACTS control device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function FACTSControlDevice(name, available, bus, control_mode, services=Device[], ext=Dict{String, Any}(), )
-    FACTSControlDevice(name, available, bus, control_mode, services, ext, 1.0, 9999.0, 100.0, InfrastructureSystemsInternal(), )
+function FACTSControlDevice(name, available, bus, control_mode, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    FACTSControlDevice(name, available, bus, control_mode, services, dynamic_injector, ext, 1.0, 9999.0, 100.0, InfrastructureSystemsInternal(), )
 end
 
-function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, reactive_power_required=100.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, reactive_power_required, services, ext, internal, )
+function FACTSControlDevice(; name, available, bus, control_mode, voltage_setpoint=1.0, max_shunt_current=9999.0, reactive_power_required=100.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    FACTSControlDevice(name, available, bus, control_mode, voltage_setpoint, max_shunt_current, reactive_power_required, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -73,6 +77,7 @@ function FACTSControlDevice(::Nothing)
         bus=ACBus(nothing),
         control_mode=nothing,
         services=Device[],
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
     )
 end
@@ -93,6 +98,8 @@ get_max_shunt_current(value::FACTSControlDevice) = value.max_shunt_current
 get_reactive_power_required(value::FACTSControlDevice) = value.reactive_power_required
 """Get [`FACTSControlDevice`](@ref) `services`."""
 get_services(value::FACTSControlDevice) = value.services
+"""Get [`FACTSControlDevice`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::FACTSControlDevice) = value.dynamic_injector
 """Get [`FACTSControlDevice`](@ref) `ext`."""
 get_ext(value::FACTSControlDevice) = value.ext
 """Get [`FACTSControlDevice`](@ref) `internal`."""

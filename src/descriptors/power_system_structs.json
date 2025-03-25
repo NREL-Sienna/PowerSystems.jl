@@ -2216,6 +2216,14 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "Corresponding dynamic injection model for FACTS control device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
                     "data_type": "Dict{String, Any}",
@@ -2230,7 +2238,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ElectricLoad"
+            "supertype": "StaticInjection"
         },
         {
             "struct_name": "FixedAdmittance",
