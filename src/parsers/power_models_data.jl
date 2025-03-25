@@ -1120,6 +1120,10 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         throw(DataFormatError("Operation mode not supported."))
     end
 
+    if d["reactive_power_required"] < 0
+        throw(DataFormatError("% MVAr required must me positive."))
+    end
+
     return FACTSControlDevice(;
         name = name,
         available = Bool(d["available"]),
@@ -1149,7 +1153,8 @@ function read_facts!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["bus"]]
-        facts = make_facts(name, d, bus)
+        full_name = "$(d["bus"])_$(name)"
+        facts = make_facts(full_name, d, bus)
 
         add_component!(sys, facts; skip_validation = SKIP_PM_VALIDATION)
     end
