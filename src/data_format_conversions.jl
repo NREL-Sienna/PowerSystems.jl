@@ -20,7 +20,7 @@ function _convert_data!(
             component["__metadata__"]["type"] = "ACBus"
             continue
         end
-        if component["__metadata__"]["type"] ⋹ ("HVDCLine", "TwoTerminalHVDCLine")
+        if component["__metadata__"]["type"] == "HVDCLine"
             component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
             continue
         end
@@ -173,6 +173,30 @@ function _convert_data!(
 )
     _convert_data!(raw, from, Val{Symbol("3.0.0")}())
     _convert_data!(raw, Val{Symbol("3.0.0")}(), Val{Symbol("4.0.0")}())
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("4.0.0")},
+    ::Val{Symbol("5.0.0")},
+)
+    for component in raw["data"]["components"]
+        if component["__metadata__"]["type"] == "TwoTerminalHVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
+            continue
+        end
+    end
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    from::Val,
+    ::Val{Symbol("5.0.0")},
+)
+    _convert_data!(raw, from, Val{Symbol("4.0.0")}())
+    _convert_data!(raw, Val{Symbol("4.0.0")}(), Val{Symbol("5.0.0")}())
     return
 end
 
