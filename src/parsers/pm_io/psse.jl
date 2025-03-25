@@ -1246,15 +1246,8 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["available"] = 0
             end
 
-            sub_data["bus"] = facts["I"] # Sending bus number
-
-            if facts["J"] != 0
-                @warn "Series FACTs not supported."
-            end
-
-            if facts["MODE"] > 3
-                throw(DataFormatError("Operation mode not supported."))
-            end
+            sub_data["bus"] = facts["I"]  # Sending end bus number
+            sub_data["tbus"] = facts["J"] # Terminal end bus number
 
             sub_data["voltage_setpoint"] = facts["VSET"] # Voltage setpoint at f_bus
             sub_data["max_shunt_current"] = facts["SHMX"] # Max shunt current at f_bus

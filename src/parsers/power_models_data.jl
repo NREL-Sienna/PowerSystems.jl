@@ -1112,6 +1112,14 @@ function make_shunt(name::String, d::Dict, bus::ACBus)
 end
 
 function make_facts(name::String, d::Dict, bus::ACBus)
+    if d["tbus"] != 0
+        @warn "Series FACTs not supported."
+    end
+
+    if d["control_mode"] > 3
+        throw(DataFormatError("Operation mode not supported."))
+    end
+
     return FACTSControlDevice(;
         name = name,
         available = Bool(d["available"]),
