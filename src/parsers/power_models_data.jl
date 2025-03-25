@@ -724,6 +724,16 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
+    if isapprox(d["rate_a"], 0.0)
+        @warn(
+            "Line $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
+        )
+        rating = INFINITE_BOUND
+    else
+        rating = d["rate_a"]
+    end
+
     return Line(;
         name = name,
         available = available_value,
@@ -733,7 +743,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rating = d["rate_a"],
+        rating = rating,
         angle_limits = (min = d["angmin"], max = d["angmax"]),
         rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
         rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
@@ -755,6 +765,14 @@ function make_transformer_2w(
         available_value = false
     end
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
+    if isapprox(d["rate_a"], 0.0)
+        @warn(
+            "Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
+        )
+        rating = INFINITE_BOUND
+    else
+        rating = d["rate_a"]
+    end
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -764,7 +782,7 @@ function make_transformer_2w(
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = rating,
         rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
         rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
         ext = ext,
@@ -830,6 +848,14 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+    if isapprox(d["rate_a"], 0.0)
+        @warn(
+            "Tap Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
+        )
+        rating = INFINITE_BOUND
+    else
+        rating = d["rate_a"]
+    end
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -840,7 +866,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = rating,
         rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
         rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
     )
@@ -860,6 +886,14 @@ function make_phase_shifting_transformer(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+    if isapprox(d["rate_a"], 0.0)
+        @warn(
+            "Phase Shifting Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
+        )
+        rating = INFINITE_BOUND
+    else
+        rating = d["rate_a"]
+    end
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
@@ -871,7 +905,7 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rating = d["rate_a"],
+        rating = rating,
         rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
         rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
     )
