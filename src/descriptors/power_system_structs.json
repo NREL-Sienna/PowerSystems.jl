@@ -515,7 +515,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "MonitoredLine",
@@ -646,7 +646,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "PhaseShiftingTransformer",
@@ -786,7 +786,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "TapTransformer",
@@ -903,7 +903,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "Transformer2W",
@@ -1009,7 +1009,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "Transformer3W",
@@ -1340,7 +1340,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "TwoTerminalGenericHVDCLine",
@@ -1429,7 +1429,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "TwoTerminalHVDC"
         },
         {
             "struct_name": "TwoTerminalVSCLine",
@@ -1592,7 +1592,7 @@
                     "data_type": "Float64",
                     "needs_conversion": true,
                     "default": "0.0"
-                },                
+                },
                 {
                     "name": "dc_voltage_control_to",
                     "comment": "Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
@@ -1667,7 +1667,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=999.9)"
-                },  
+                },
                 {
                     "name": "services",
                     "data_type": "Vector{Service}",
@@ -1690,7 +1690,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "TwoTerminalHVDC"
         },
         {
             "struct_name": "TwoTerminalLCCLine",
@@ -1973,7 +1973,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "TwoTerminalHVDC"
         },
         {
             "struct_name": "TModelHVDCLine",
@@ -2265,11 +2265,11 @@
                     "data_type": "Vector{Complex{Float64}}",
                     "default": "Complex{Float64}[]"
                 },
-                {   "name": "admittance_limits",                    
-                    "comment": "Shunt admittance limits for switched shunt model",                    
-                    "null_value": "(min=0.0, max=0.0)",                    
-                    "data_type": "MinMax",                    
-                    "default": "(min=1.0, max=1.0)"               
+                {   "name": "admittance_limits",
+                    "comment": "Shunt admittance limits for switched shunt model",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=1.0, max=1.0)"
                 },
                 {
                     "name": "dynamic_injector",
@@ -17987,7 +17987,7 @@
                 }
             ],
             "supertype": "DynamicInjection"
-        }, 
+        },
         {
             "struct_name": "GenericDER",
             "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on [\"Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision.\"](http://hdl.handle.net/10125/70994)",
