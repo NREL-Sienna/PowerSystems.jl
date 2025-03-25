@@ -124,6 +124,7 @@ end
     @test get_available(facts) == true
     @test get_voltage_setpoint(facts) == 1.0
     @test get_max_shunt_current(facts) == 9999.0
+    @test get_reactive_power_required(facts) > 0
     @test get_control_mode(facts) == FACTSOperationModes.NML
 end
 
