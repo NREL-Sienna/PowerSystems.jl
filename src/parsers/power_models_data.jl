@@ -728,7 +728,12 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
     return value
 end
 
-function _get_rating(branch_type::String, name::AbstractString, line_data::Dict, key::String)
+function _get_rating(
+    branch_type::String,
+    name::AbstractString,
+    line_data::Dict,
+    key::String,
+)
     if !haskey(line_data, key)
         return INFINITE_BOUND
     end
