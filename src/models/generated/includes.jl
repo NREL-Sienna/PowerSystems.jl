@@ -672,6 +672,8 @@ export get_ramp_limits_pump
 export get_rated_current
 export get_rated_voltage
 export get_rating
+export get_rating_b
+export get_rating_c
 export get_rating_from
 export get_rating_primary
 export get_rating_pump
@@ -1322,6 +1324,8 @@ export set_ramp_limits_pump!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
+export set_rating_b!
+export set_rating_c!
 export set_rating_from!
 export set_rating_primary!
 export set_rating_pump!

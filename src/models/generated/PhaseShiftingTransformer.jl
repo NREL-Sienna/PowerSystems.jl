@@ -17,6 +17,8 @@ This file is auto-generated. Do not edit.
         tap::Float64
         α::Float64
         rating::Union{Nothing, Float64}
+        rating_b::Union{Nothing, Float64}
+        rating_c::Union{Nothing, Float64}
         phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -39,6 +41,8 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
+- `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
+- `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `phase_angle_limits::MinMax`: (default: `(min=-1.571, max=1.571)`) Minimum and maximum phase angle limits (radians), validation range: `(-1.571, 1.571)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -66,6 +70,10 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     α::Float64
     "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
     rating::Union{Nothing, Float64}
+    "Second current rating; entered in MVA."
+    rating_b::Union{Nothing, Float64}
+    "Third current rating; entered in MVA."
+    rating_c::Union{Nothing, Float64}
     "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
     "Services that this device contributes to"
@@ -76,12 +84,12 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, rating_b, rating_c, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, phase_angle_limits, services, ext, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, rating_b, rating_c, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -98,6 +106,8 @@ function PhaseShiftingTransformer(::Nothing)
         tap=1.0,
         α=0.0,
         rating=0.0,
+        rating_b=0.0,
+        rating_c=0.0,
         phase_angle_limits=(min=-1.571, max=1.571),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -126,6 +136,10 @@ get_tap(value::PhaseShiftingTransformer) = value.tap
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get [`PhaseShiftingTransformer`](@ref) `rating`."""
 get_rating(value::PhaseShiftingTransformer) = get_value(value, value.rating)
+"""Get [`PhaseShiftingTransformer`](@ref) `rating_b`."""
+get_rating_b(value::PhaseShiftingTransformer) = get_value(value, value.rating_b)
+"""Get [`PhaseShiftingTransformer`](@ref) `rating_c`."""
+get_rating_c(value::PhaseShiftingTransformer) = get_value(value, value.rating_c)
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
@@ -155,6 +169,10 @@ set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set [`PhaseShiftingTransformer`](@ref) `rating`."""
 set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, val)
+"""Set [`PhaseShiftingTransformer`](@ref) `rating_b`."""
+set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value(value, val)
+"""Set [`PhaseShiftingTransformer`](@ref) `rating_c`."""
+set_rating_c!(value::PhaseShiftingTransformer, val) = value.rating_c = set_value(value, val)
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""
