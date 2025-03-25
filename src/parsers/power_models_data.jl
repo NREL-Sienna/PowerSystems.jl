@@ -735,6 +735,8 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         b = (from = d["b_fr"], to = d["b_to"]),
         rating = d["rate_a"],
         angle_limits = (min = d["angmin"], max = d["angmax"]),
+        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
+        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
     )
 end
 
@@ -763,6 +765,8 @@ function make_transformer_2w(
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         rating = d["rate_a"],
+        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
+        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
         ext = ext,
     )
 end
@@ -837,6 +841,8 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         rating = d["rate_a"],
+        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
+        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
     )
 end
 
@@ -866,6 +872,8 @@ function make_phase_shifting_transformer(
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
         rating = d["rate_a"],
+        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
+        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
     )
 end
 
