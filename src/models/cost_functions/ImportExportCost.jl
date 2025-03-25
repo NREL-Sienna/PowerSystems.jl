@@ -78,26 +78,24 @@ ImportExportCost(;
     ancillary_service_offers,
 )
 
-"""Get [`ImportExportCost`](@ref) `incremental_offer_curves`."""
-get_incremental_offer_curves(value::ImportExportCost) = value.incremental_offer_curves
-"""Get [`ImportExportCost`](@ref) `decremental_offer_curves`."""
-get_decremental_offer_curves(value::ImportExportCost) = value.decremental_offer_curves
+"""Get [`ImportExportCost`](@ref) `import_offer_curves`."""
+get_import_offer_curves(value::ImportExportCost) = value.import_offer_curves
+"""Get [`ImportExportCost`](@ref) `export_offer_curves`."""
+get_export_offer_curves(value::ImportExportCost) = value.export_offer_curves
 """Get [`ImportExportCost`](@ref) `ancillary_service_offers`."""
 get_ancillary_service_offers(value::ImportExportCost) = value.ancillary_service_offers
 
-"""Set [`ImportExportCost`](@ref) `incremental_offer_curves`."""
-set_incremental_offer_curves!(value::ImportExportCost, val) =
-    value.incremental_offer_curves = val
-"""Set [`ImportExportCost`](@ref) `incremental_offer_curves`."""
-set_decremental_offer_curves!(value::ImportExportCost, val) =
-    value.decremental_offer_curves = val
+"""Set [`ImportExportCost`](@ref) `import_offer_curves`."""
+set_import_offer_curves!(value::ImportExportCost, val) =
+    value.import_offer_curves = val
+"""Set [`ImportExportCost`](@ref) `export_offer_curves`."""
+set_export_offer_curves!(value::ImportExportCost, val) =
+    value.export_offer_curves = val
 """Set [`ImportExportCost`](@ref) `ancillary_service_offers`."""
 set_ancillary_service_offers!(value::ImportExportCost, val) =
     value.ancillary_service_offers = val
 
-# Each market bid curve (the elements that make up the incremental and decremental offer
-# curves in ImportExportCost) is a CostCurve{PiecewiseIncrementalCurve} with NaN initial input
-# and first x-coordinate
+# Not sure if we need this
 function is_import_export_curve(curve::ProductionVariableCostCurve)
     return (curve isa CostCurve{PiecewiseIncrementalCurve})
 end
