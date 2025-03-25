@@ -4551,7 +4551,7 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "warn",
+                    "validation_action": "error",
                     "needs_conversion": true
                 },
                 {
