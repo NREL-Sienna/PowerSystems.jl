@@ -78,35 +78,6 @@ ImportExportCost(;
     ancillary_service_offers,
 )
 
-"""
-Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to
-`0.0`.
-"""
-function ImportExportCost(
-    no_load_cost,
-    start_up::Real,
-    shut_down;
-    incremental_offer_curves = nothing,
-    decremental_offer_curves = nothing,
-    incremental_initial_input = nothing,
-    decremental_initial_input = nothing,
-    ancillary_service_offers = Vector{Service}(),
-)
-    # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
-    # Operators use `hot` when they don’t have multiple stages.
-    start_up_multi = single_start_up_to_stages(start_up)
-    return ImportExportCost(;
-        no_load_cost = no_load_cost,
-        start_up = start_up_multi,
-        shut_down = shut_down,
-        incremental_offer_curves = incremental_offer_curves,
-        decremental_offer_curves = decremental_offer_curves,
-        incremental_initial_input = incremental_initial_input,
-        decremental_initial_input = decremental_initial_input,
-        ancillary_service_offers = ancillary_service_offers,
-    )
-end
-
 """Get [`ImportExportCost`](@ref) `incremental_offer_curves`."""
 get_incremental_offer_curves(value::ImportExportCost) = value.incremental_offer_curves
 """Get [`ImportExportCost`](@ref) `decremental_offer_curves`."""
