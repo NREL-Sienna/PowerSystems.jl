@@ -716,6 +716,21 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
     return value
 end
 
+function _get_rating(branch_type::String, name::AbstractString, line_data::Dict, key::String)
+    if !haskey(line_data, key)
+        return INFINITE_BOUND
+    end
+
+    if isapprox(line_data[key], 0.0)
+        @warn(
+            "$branch_type $name rating value: $(line_data[key]). Unbounded value implied as per PSSe Manual"
+        )
+        return INFINITE_BOUND
+    else
+        return line_data[key]
+    end
+end
+
 function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -723,15 +738,6 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
-    end
-
-    if isapprox(d["rate_a"], 0.0)
-        @warn(
-            "Line $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
-        )
-        rating = INFINITE_BOUND
-    else
-        rating = d["rate_a"]
     end
 
     return Line(;
@@ -743,10 +749,10 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rating = rating,
+        rating = _get_rating("Line", name, d, "rate_a"),
         angle_limits = (min = d["angmin"], max = d["angmax"]),
-        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
-        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
+        rating_b = _get_rating("Line", name, d, "rate_b"),
+        rating_c = _get_rating("Line", name, d, "rate_c"),
     )
 end
 
@@ -765,14 +771,7 @@ function make_transformer_2w(
         available_value = false
     end
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
-    if isapprox(d["rate_a"], 0.0)
-        @warn(
-            "Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
-        )
-        rating = INFINITE_BOUND
-    else
-        rating = d["rate_a"]
-    end
+
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -782,9 +781,9 @@ function make_transformer_2w(
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = rating,
-        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
-        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
+        rating = _get_rating("Transformer2W", name, d, "rate_a"),
+        rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
+        rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
         ext = ext,
     )
 end
@@ -848,14 +847,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
-    if isapprox(d["rate_a"], 0.0)
-        @warn(
-            "Tap Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
-        )
-        rating = INFINITE_BOUND
-    else
-        rating = d["rate_a"]
-    end
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -866,9 +858,9 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = rating,
-        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
-        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
+        rating = _get_rating("TapTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
     )
 end
 
@@ -886,14 +878,7 @@ function make_phase_shifting_transformer(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
-    if isapprox(d["rate_a"], 0.0)
-        @warn(
-            "Phase Shifting Transformer $name rating value: $(d["rate_a"]). Unbounded value implied as per PSSe Manual"
-        )
-        rating = INFINITE_BOUND
-    else
-        rating = d["rate_a"]
-    end
+
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
@@ -905,9 +890,9 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rating = rating,
-        rating_b = haskey(d, "rate_b") ? d["rate_b"] : nothing,
-        rating_c = haskey(d, "rate_c") ? d["rate_c"] : nothing,
+        rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
     )
 end
 
