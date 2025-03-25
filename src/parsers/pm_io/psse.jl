@@ -1249,8 +1249,8 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["bus"] = facts["I"]  # Sending end bus number
             sub_data["tbus"] = facts["J"] # Terminal end bus number
 
-            sub_data["voltage_setpoint"] = facts["VSET"] 
-            sub_data["max_shunt_current"] = facts["SHMX"] 
+            sub_data["voltage_setpoint"] = facts["VSET"]
+            sub_data["max_shunt_current"] = facts["SHMX"]
 
             # % of MVAr required to hold voltage at sending bus
             if facts["RMPCT"] < 0
