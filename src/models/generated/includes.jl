@@ -16,6 +16,7 @@ include("TwoTerminalVSCLine.jl")
 include("TwoTerminalLCCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
+include("ShiftablePowerLoad.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
@@ -494,6 +495,7 @@ export get_available_primary
 export get_available_secondary
 export get_available_tertiary
 export get_b
+export get_balance_time_period
 export get_base_power
 export get_base_voltage
 export get_battery_resistance
@@ -1138,6 +1140,7 @@ export set_available_primary!
 export set_available_secondary!
 export set_available_tertiary!
 export set_b!
+export set_balance_time_period!
 export set_base_power!
 export set_base_voltage!
 export set_battery_resistance!
