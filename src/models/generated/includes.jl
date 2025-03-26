@@ -6,6 +6,7 @@ include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
+include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
@@ -501,6 +502,7 @@ export get_battery_resistance
 export get_battery_voltage
 export get_bias
 export get_branch_id_control
+export get_branch_status
 export get_bus
 export get_bus_control
 export get_bustype
@@ -534,6 +536,7 @@ export get_dc_voltage_control_to
 export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
+export get_discrete_branch_type
 export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
@@ -1149,6 +1152,7 @@ export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
 export set_branch_id_control!
+export set_branch_status!
 export set_bus!
 export set_bus_control!
 export set_bustype!
@@ -1182,6 +1186,7 @@ export set_dc_voltage_control_to!
 export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
+export set_discrete_branch_type!
 export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!

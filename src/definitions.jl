@@ -25,8 +25,21 @@ IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 IS.@scoped_enum(
     FACTSOperationModes,
     OOS = 0, # out-of-service (i.e., Series and Shunt links open)
-    NML = 1, # Normal mode of operation, where Series and Shunt links are operating.  
+    NML = 1, # Normal mode of operation, where Series and Shunt links are operating.
     BYP = 2, # Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM.
+)
+
+IS.@scoped_enum(
+    DiscreteControlledBranchType,
+    SWITCH = 0,
+    BREAKER = 1,
+    OTHER = 2,
+)
+
+IS.@scoped_enum(
+    DiscreteControlledBranchStatus,
+    OPEN = 0,
+    CLOSED = 1,
 )
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
