@@ -106,6 +106,28 @@ end
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
 end
 
+@testset "PSSE FACTS Control Devices Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_case14_sys")
+    bus2 = get_component(ACBus, sys, "Bus 2     HV")
+    facts_1 = FACTSControlDevice(;
+        name = "FACTS 1",
+        available = true,
+        bus = bus2,
+        control_mode = 1,
+        max_shunt_current = 9999.0,
+        reactive_power_required = 100.0,
+        voltage_setpoint = 1.0,
+    )
+    add_component!(sys, facts_1)
+
+    facts = only(get_components(FACTSControlDevice, sys))
+    @test get_available(facts) == true
+    @test get_voltage_setpoint(facts) == 1.0
+    @test get_max_shunt_current(facts) == 9999.0
+    @test get_reactive_power_required(facts) > 0
+    @test get_control_mode(facts) == FACTSOperationModes.NML
+end
+
 @testset "PSSE LCC Parsing" begin
     sys = build_system(PSSEParsingTestSystems, "pti_two_terminal_hvdc_test_sys")
 

@@ -2162,6 +2162,85 @@
             "supertype": "ControllableLoad"
         },
         {
+            "struct_name": "FACTSControlDevice",
+            "docstring": "Facts control devices.\n\nMost often used in AC power flow studies as a control of voltage and, active and reactive power.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "bus",
+                    "comment": "Sending end bus number",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "control_mode",
+                    "comment": "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, FACTSOperationModes}"
+                },
+                {
+                    "name": "voltage_setpoint",
+                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "internal_default": "1.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "max_shunt_current",
+                    "comment": "Maximum shunt current at the sending end bus; entered in MVA at unity voltage.",
+                    "internal_default": "9999.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "reactive_power_required",
+                    "comment": "Total MVAr required to hold voltage at sending bus, in %.",
+                    "internal_default": "100.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "Corresponding dynamic injection model for FACTS control device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "StaticInjection"
+        },
+        {
             "struct_name": "FixedAdmittance",
             "docstring": "A fixed admittance.\n\nMost often used in dynamics or AC power flow studies as a source of reactive power",
             "fields": [

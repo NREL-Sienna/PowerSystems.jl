@@ -53,6 +53,35 @@ function ACBus(
     )
 end
 
+"""Allows construction with bus type specified as a string for legacy code."""
+function FACTSControlDevice(
+    name,
+    available,
+    bus,
+    control_mode::String,
+    voltage_setpoint,
+    max_shunt_current,
+    reactive_power_required,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return FACTSControlDevice(
+        name,
+        available,
+        bus,
+        get_enum_value(FACTSOperationModes, control_mode),
+        voltage_setpoint,
+        max_shunt_current,
+        reactive_power_required,
+        services,
+        dynamic_injector,
+        ext,
+        internal,
+    )
+end
+
 """Allows construction of a reserve from an iterator."""
 function ConstantReserve(
     name,

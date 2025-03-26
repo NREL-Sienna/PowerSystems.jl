@@ -884,6 +884,50 @@
             ]
         }
     ],
+    "facts": [
+        {
+            "name": "name",
+            "description": "FACTS object name"
+        },
+        {
+            "name": "available",
+            "description": "availability",
+            "default_value": true
+        },
+        {
+            "name": "bus",
+            "description": "Sending end bus number",
+            "default_value": null
+        },
+        {
+            "name": "control_mode",
+            "value_options": [
+                "OOS",
+                "NML",
+                "BYP"
+            ],
+            "description": "Control mode of operation",
+            "default_value": null
+        },
+        {
+            "name": "voltage_setpoint",
+            "description": "Voltage setpoint at sending bus in p.u,",
+            "unit_system": "device_base",
+            "default_value": 0.9
+        },
+        {
+            "name": "max_shunt_current",
+            "description": "Maximum shunt current at the sending end bus in MVA.",
+            "unit_system": "device_base",
+            "default_value": 9999.0
+        },
+        {
+            "name": "reactive_power_required",
+            "description": "Total MVAr required to hold voltage at sending bus, in %.",
+            "unit_system": "device_base",
+            "default_value": 100.0
+        }
+    ],
     "storage": [
         {
             "name": "name",
