@@ -93,18 +93,18 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
 
     # Assuming that the rate is in pu
     for field in [:rating, :rating_b, :rating_c]
-        rating = getfield(line, field)
-        if isnothing(rating)
+        rating_value = getfield(line, field)
+        if isnothing(rating_value)
             @assert field ∈ [:rating_b, :rating_c]
             continue
         end
-        if (rating >= 2.0 * closest_rate_range.max / basemva)
-            @error "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+        if (rating_value >= 2.0 * closest_rate_range.max / basemva)
+            @error "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
             return false
-        elseif (rating >= closest_rate_range.max / basemva) ||
-               (rating <= closest_rate_range.min / basemva)
-            @warn "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+        elseif (rating_value >= closest_rate_range.max / basemva) ||
+               (rating_value <= closest_rate_range.min / basemva)
+            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
         end
     end
@@ -135,14 +135,18 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
 end
 
 function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
-    if get_rating(branch) < 0.0
-        @error "PowerSystems does not support negative line rates"
-        return false
-    end
-
     theoretical_line_rate_pu = line_rating_calculation(branch)
     for field in [:rating, :rating_b, :rating_c]
-        if getfield(branch, field) == INFINITE_BOUND
+        rating_value = getfield(branch, field)
+        if isnothing(rating_value)
+            @assert field ∈ [:rating_b, :rating_c]
+            continue
+        end
+        if rating_value < 0.0
+            @error "PowerSystems does not support negative line rates. $(field): $(rating)"
+            return false
+        end
+        if rating_value == INFINITE_BOUND
             @warn "Data for branch $(summary(branch)) $(field) is set to INFINITE_BOUND. \
                 PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" maxlog =
                 PS_MAX_LOG
