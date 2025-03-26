@@ -160,9 +160,14 @@ end
 function check_endpoint_voltages(line::Union{Line, MonitoredLine})
     is_valid = true
     arc = get_arc(line)
-    if get_base_voltage(get_from(arc)) != get_base_voltage(get_to(arc))
+    from_voltage = get_base_voltage(get_from(arc))
+    to_voltage = get_base_voltage(get_to(arc))
+    percent_difference = abs(from_voltage - to_voltage) / ((from_voltage + to_voltage) / 2)
+    if percent_difference > BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL
         is_valid = false
-        @error "Voltage endpoints of $(line.name) are different, cannot create Line"
+        @error "Voltage endpoints of $(get_name(line)) have more than $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% difference, cannot create Line. /
+        Check if the data corresponds to transformer data."
     end
+
     return is_valid
 end
