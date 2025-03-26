@@ -87,8 +87,9 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
     voltage_levels = collect(keys(MVA_LIMITS_LINES))
-    closestV = findmin(abs.(voltage_levels .- vrated))
-    closest_rate_range = MVA_LIMITS_LINES[voltage_levels[closestV[2]]]
+    closestV_ix = findmin(abs.(voltage_levels .- vrated))
+    closest_v_level = voltage_levels[closestV_ix[2]]
+    closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
 
     # Assuming that the rate is in pu
     for field in [:rating, :rating_b, :rating_c]
@@ -98,12 +99,12 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
             continue
         end
         if (rating >= 2.0 * closest_rate_range.max / basemva)
-            @error "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $closestV kV Voltage level." maxlog =
+            @error "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
             return false
         elseif (rating >= closest_rate_range.max / basemva) ||
                (rating <= closest_rate_range.min / basemva)
-            @warn "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $closestV kV Voltage level." maxlog =
+            @warn "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
         end
     end
