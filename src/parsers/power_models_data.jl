@@ -93,7 +93,11 @@ end
 Internal component name retreval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict::Dict)::String
-    if haskey(device_dict, "name")
+    if haskey(device_dict, "shunt_bus")
+        # With shunts, we have FixedAdmittance and SwitchedAdmittance types.
+        # To avoid potential name collision, we add the connected bus number to the name.
+        name = join(strip.(string.((device_dict["shunt_bus"], device_dict["name"]))), "-")
+    elseif haskey(device_dict, "name")
         name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
@@ -1095,8 +1099,7 @@ function read_switched_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        full_name = "$(d["shunt_bus"])_$(name)"
-        shunt = make_switched_shunt(full_name, d, bus)
+        shunt = make_switched_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
@@ -1178,8 +1181,7 @@ function read_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        full_name = "$(d["shunt_bus"])_$(name)"
-        shunt = make_shunt(full_name, d, bus)
+        shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
