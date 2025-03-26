@@ -1270,6 +1270,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             push!(pm_data["facts"], sub_data)
         end
     end
+    return
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
