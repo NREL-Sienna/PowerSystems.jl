@@ -95,7 +95,7 @@ function _get_pm_dict_name(device_dict::Dict)::String
     if haskey(device_dict, "shunt_bus")
         # With shunts, we have FixedAdmittance and SwitchedAdmittance types.
         # To avoid potential name collision, we add the connected bus number to the name.
-        name = strip(join(string.(device_dict["name"], "_bus", device_dict["shunt_bus"])))
+        name = join(strip.(string.((device_dict["shunt_bus"], device_dict["name"]))), "-")
     elseif haskey(device_dict, "name")
         name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
