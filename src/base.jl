@@ -1871,12 +1871,12 @@ function check_component(sys::System, component::Component)
     return
 end
 
-function check_sil_values(sys::System)
+function check_ac_transmission_rate_values(sys::System)
     is_valid = true
     base_power = get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
-        if !check_sil_values(line, base_power)
+        if !check_rating_values(line, base_power)
             is_valid = false
         end
     end

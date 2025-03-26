@@ -492,7 +492,7 @@ export set_runchecks!
 export check
 export check_component
 export check_components
-export check_sil_values
+export check_ac_transmission_rate_rate_values
 
 # From IS logging.jl, generate_struct_files.jl
 export configure_logging
