@@ -14,7 +14,7 @@ function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::S
     return is_valid
 end
 
-function sanitize_angle_limits!(line)
+function sanitize_angle_limits!(line::Union{Line, MonitoredLine})
     max_limit = pi / 2
     min_limit = -pi / 2
 
@@ -88,11 +88,15 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     vrated = get_base_voltage(get_to(arc))
     voltage_levels = collect(keys(MVA_LIMITS_LINES))
     closestV = findmin(abs.(voltage_levels .- vrated))
-    closest_rate_range = MVA_LIMITS_LINES[SIL_levels[closestV[2]]]
+    closest_rate_range = MVA_LIMITS_LINES[voltage_levels[closestV[2]]]
 
     # Assuming that the rate is in pu
     for field in [:rating, :rating_b, :rating_c]
-        rating = get_field(line, field)
+        rating = getfield(line, field)
+        if isnothing(rating)
+            @assert field ∈ [:rating_b, :rating_c]
+            continue
+        end
         if (rating >= 2.0 * closest_rate_range.max / basemva)
             @error "$(field) $(round(rating*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $closestV kV Voltage level." maxlog =
                 PS_MAX_LOG
@@ -124,7 +128,7 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     to_vmin = isnothing(to_voltage_limits) ? 0.9 : from_voltage_limits.min
 
     c_max = sqrt(fr_vmin^2 + to_vmin^2 - 2 * fr_vmin * to_vmin * cos(theta_max))
-    new_rate = y_mag * m_vmax * c_max
+    new_rate = y_mag * max(fr_vmin, to_vmin) * c_max
 
     return new_rate
 end
