@@ -1865,7 +1865,7 @@ range or if the custom validate method for the type fails its check.
 """
 function check_component(sys::System, component::Component)
     if !validate_component_with_system(component, sys)
-        throw(IS.InvalidValue("Invalid value for $component"))
+        throw(IS.InvalidValue("Invalid value for $(summary(component))"))
     end
     IS.check_component(sys.data, component)
     return
@@ -2736,7 +2736,7 @@ function _validate_or_skip!(sys, component, skip_validation)
     if !skip_validation
         sanitize_component!(component, sys)
         if !validate_component_with_system(component, sys)
-            throw(IS.InvalidValue("Invalid value for $component"))
+            throw(IS.InvalidValue("Invalid value for $(summary(component))"))
         end
     end
 
