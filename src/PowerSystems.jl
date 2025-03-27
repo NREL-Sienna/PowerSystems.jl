@@ -352,6 +352,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export get_associated_components
 export show_components
 export get_subcomponents
 export get_components_by_name

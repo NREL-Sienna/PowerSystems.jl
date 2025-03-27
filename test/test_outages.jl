@@ -16,8 +16,14 @@
 
     geos = get_supplemental_attributes(GeographicInfo, sys)
     for geo in geos
+        @test length(get_associated_components(sys, geo)) == 2
+        # This method is deprecated for now...will be deleted later.
         @test length(get_components(sys, geo)) == 2
     end
+
+    associated_components = get_associated_components(sys, GeographicInfo)
+    @test length(associated_components) == 4
+    @test Set([typeof(x) for x in associated_components]) == Set([ACBus, ThermalStandard])
 
     for gen in (gen1, gen2)
         for type in (GeometricDistributionForcedOutage, PlannedOutage, GeographicInfo)
