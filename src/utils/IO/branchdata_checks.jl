@@ -99,12 +99,11 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
             continue
         end
         if (rating_value >= 2.0 * closest_rate_range.max / basemva)
-            @error "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
-            return false
         elseif (rating_value >= closest_rate_range.max / basemva) ||
                (rating_value <= closest_rate_range.min / basemva)
-            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
         end
     end
