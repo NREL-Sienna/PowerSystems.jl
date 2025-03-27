@@ -535,20 +535,6 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "discrete_branch_type",
-                    "comment": "Type of discrete control",
-                    "null_value": "DiscreteControlledBranchType.BREAKER",
-                    "data_type": "DiscreteControlledBranchType",
-                    "default": "DiscreteControlledBranchType.OTHER"
-                },
-                {
-                    "name": "branch_status",
-                    "comment": "Open or Close status",
-                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
-                    "data_type": "DiscreteControlledBranchStatus",
-                    "default": "DiscreteControlledBranchStatus.CLOSED"
-                },
-                {
                     "name": "active_power_flow",
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
@@ -596,6 +582,20 @@
                     "comment": "Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "discrete_branch_type",
+                    "comment": "Type of discrete control",
+                    "null_value": "DiscreteControlledBranchType.BREAKER",
+                    "data_type": "DiscreteControlledBranchType",
+                    "default": "DiscreteControlledBranchType.OTHER"
+                },
+                {
+                    "name": "branch_status",
+                    "comment": "Open or Close status",
+                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
+                    "data_type": "DiscreteControlledBranchStatus",
+                    "default": "DiscreteControlledBranchStatus.CLOSED"
                 },
                 {
                     "name": "ext",
