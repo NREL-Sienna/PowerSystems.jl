@@ -86,7 +86,7 @@ end
 
     @test length(get_components(SwitchedAdmittance, sys4)) == 2
     @test get_available(get_component(SwitchedAdmittance, sys4, "1003_1")) == true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003_1")) == 0.38im
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003_1")) == 0.038im
     @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
           0.95
 
