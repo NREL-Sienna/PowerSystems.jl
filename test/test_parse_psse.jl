@@ -68,26 +68,26 @@ end
     @test length(get_components(Transformer3W, sys5)) == 5
 
     @info "Testing Switched Shunt Parsing"
-    @test get_available(get_component(SwitchedAdmittance, sys3, "1030_9")) == false
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "3147_42"))).im ==
+    @test get_available(get_component(SwitchedAdmittance, sys3, "1030-9")) == false
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "3147-42"))).im ==
           0.35
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys3, "3147_42")).min ==
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys3, "3147-42")).min ==
           1.03
-    @test only(get_number_of_steps(get_component(SwitchedAdmittance, sys3, "7075_119"))) ==
+    @test only(get_number_of_steps(get_component(SwitchedAdmittance, sys3, "7075-119"))) ==
           1
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "7075_119"))).im ==
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys3, "7075-119"))).im ==
           3.425
 
-    @test get_available(get_component(SwitchedAdmittance, sys4, "1005_2")) == true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "1005_2")) == 0.06im
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1005_2")).max ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1005-2")) == true
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1005-2")) == 0.06im
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1005-2")).max ==
           1.045
-    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys4, "1005_2"))).im == 0.06
+    @test only(get_Y_increase(get_component(SwitchedAdmittance, sys4, "1005-2"))).im == 0.06
 
     @test length(get_components(SwitchedAdmittance, sys4)) == 2
-    @test get_available(get_component(SwitchedAdmittance, sys4, "1003_1")) == true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003_1")) == 0.038im
-    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003_1")).min ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1003-1")) == true
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003-1")) == 0.038im
+    @test get_admittance_limits(get_component(SwitchedAdmittance, sys4, "1003-1")).min ==
           0.95
 
     @info "Testing VSC Parser"
@@ -105,6 +105,28 @@ end
     lz_original = only(get_components(LoadZone, sys2))
     lz_new = only(get_components(LoadZone, sys3))
     @test parse(Int, get_name(lz_new)) == 3 * parse(Int, get_name(lz_original))
+end
+
+@testset "PSSE FACTS Control Devices Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_case14_sys")
+    bus2 = get_component(ACBus, sys, "Bus 2     HV")
+    facts_1 = FACTSControlDevice(;
+        name = "FACTS 1",
+        available = true,
+        bus = bus2,
+        control_mode = 1,
+        max_shunt_current = 9999.0,
+        reactive_power_required = 100.0,
+        voltage_setpoint = 1.0,
+    )
+    add_component!(sys, facts_1)
+
+    facts = only(get_components(FACTSControlDevice, sys))
+    @test get_available(facts) == true
+    @test get_voltage_setpoint(facts) == 1.0
+    @test get_max_shunt_current(facts) == 9999.0
+    @test get_reactive_power_required(facts) > 0
+    @test get_control_mode(facts) == FACTSOperationModes.NML
 end
 
 @testset "PSSE LCC Parsing" begin

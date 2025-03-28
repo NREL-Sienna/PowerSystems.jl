@@ -40,6 +40,7 @@ export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export FACTSControlDevice
 export Transformer3W
 
 # from IS function_data.jl
@@ -283,6 +284,7 @@ export TransmissionInterface
 
 export AngleUnits
 export ACBusTypes
+export FACTSOperationModes
 export PrimeMovers
 export ThermalFuels
 export StorageTech
@@ -645,6 +647,7 @@ import InfrastructureSystems:
     COMPONENT_NAME_DELIMITER,
     make_selector,
     rebuild_selector
+
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,

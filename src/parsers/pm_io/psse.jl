@@ -1223,6 +1223,56 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 end
 
+function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E FACTs devices data into a PowerModels Dict..."
+    pm_data["facts"] = []
+
+    if haskey(pti_data, "FACTS CONTROL DEVICE")
+        for facts in pti_data["FACTS CONTROL DEVICE"]
+            @info(
+                """FACTs are supported via a simplification approach for terminal_bus = 0 (STATCOM operation)"""
+            )
+            sub_data = Dict{String, Any}()
+
+            sub_data["name"] = facts["NAME"]
+            sub_data["control_mode"] = facts["MODE"]
+
+            # MODE = 0 -> Unavailable
+            # MODE = 1 -> Normal mode 
+            # MODE = 2 -> Link bypassed
+            if facts["MODE"] != 0
+                sub_data["available"] = 1
+            else
+                sub_data["available"] = 0
+            end
+
+            sub_data["bus"] = facts["I"]  # Sending end bus number
+            sub_data["tbus"] = facts["J"] # Terminal end bus number
+
+            sub_data["voltage_setpoint"] = facts["VSET"]
+            sub_data["max_shunt_current"] = facts["SHMX"]
+
+            # % of MVAr required to hold voltage at sending bus
+            if facts["RMPCT"] < 0
+                @warn "% MVAr required must me positive."
+            end
+
+            sub_data["reactive_power_required"] = facts["RMPCT"]
+
+            sub_data["source_id"] =
+                ["facts", sub_data["bus"], sub_data["name"]]
+            sub_data["index"] = length(pm_data["facts"]) + 1
+
+            if import_all
+                _import_remaining_keys!(sub_data, facts)
+            end
+
+            push!(pm_data["facts"], sub_data)
+        end
+    end
+    return
+end
+
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
@@ -1269,6 +1319,7 @@ function _pti_to_powermodels!(
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
+    _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
     _psse2pm_switch!(pm_data, pti_data, import_all)
 

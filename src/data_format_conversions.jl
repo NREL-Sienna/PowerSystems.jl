@@ -176,6 +176,30 @@ function _convert_data!(
     return
 end
 
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("4.0.0")},
+    ::Val{Symbol("5.0.0")},
+)
+    for component in raw["data"]["components"]
+        if component["__metadata__"]["type"] == "TwoTerminalHVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
+            continue
+        end
+    end
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    from::Val,
+    ::Val{Symbol("5.0.0")},
+)
+    _convert_data!(raw, from, Val{Symbol("4.0.0")}())
+    _convert_data!(raw, Val{Symbol("4.0.0")}(), Val{Symbol("5.0.0")}())
+    return
+end
+
 # Conversions to occur immediately after the data is loaded from disk
 function pre_read_conversion!(raw)
     if VersionNumber(raw["data_format_version"]) < v"4.0.0"

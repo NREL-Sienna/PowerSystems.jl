@@ -69,6 +69,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_vscline!(sys, data, bus_number_to_bus; kwargs...)
+    read_facts!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -92,7 +93,11 @@ end
 Internal component name retreval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict::Dict)::String
-    if haskey(device_dict, "name")
+    if haskey(device_dict, "shunt_bus")
+        # With shunts, we have FixedAdmittance and SwitchedAdmittance types.
+        # To avoid potential name collision, we add the connected bus number to the name.
+        name = join(strip.(string.((device_dict["shunt_bus"], device_dict["name"]))), "-")
+    elseif haskey(device_dict, "name")
         name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
@@ -1126,8 +1131,7 @@ function read_switched_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        full_name = "$(d["shunt_bus"])_$(name)"
-        shunt = make_switched_shunt(full_name, d, bus)
+        shunt = make_switched_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
@@ -1140,6 +1144,55 @@ function make_shunt(name::String, d::Dict, bus::ACBus)
         bus = bus,
         Y = (d["gs"] + d["bs"]im),
     )
+end
+
+function make_facts(name::String, d::Dict, bus::ACBus)
+    if d["tbus"] != 0
+        @warn "Series FACTs not supported."
+    end
+
+    if d["control_mode"] > 3
+        throw(DataFormatError("Operation mode not supported."))
+    end
+
+    if d["reactive_power_required"] < 0
+        throw(DataFormatError("% MVAr required must me positive."))
+    end
+
+    return FACTSControlDevice(;
+        name = name,
+        available = Bool(d["available"]),
+        bus = bus,
+        control_mode = d["control_mode"],
+        voltage_setpoint = d["voltage_setpoint"],
+        max_shunt_current = d["max_shunt_current"],
+        reactive_power_required = d["reactive_power_required"],
+    )
+end
+
+function read_facts!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading FACTS data"
+    if !haskey(data, "facts")
+        @info "There is no facts data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["facts"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["bus"]]
+        full_name = "$(d["bus"])_$(name)"
+        facts = make_facts(full_name, d, bus)
+
+        add_component!(sys, facts; skip_validation = SKIP_PM_VALIDATION)
+    end
 end
 
 function read_shunt!(
@@ -1160,8 +1213,7 @@ function read_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        full_name = "$(d["shunt_bus"])_$(name)"
-        shunt = make_shunt(full_name, d, bus)
+        shunt = make_shunt(name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
