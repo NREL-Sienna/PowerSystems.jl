@@ -29,6 +29,7 @@ export get_max_reactive_power
 export Branch
 export StaticInjection
 export StaticInjectionSubsystem
+export DiscreteControlledACBranch
 export ACBranch
 export Line
 export MonitoredLine

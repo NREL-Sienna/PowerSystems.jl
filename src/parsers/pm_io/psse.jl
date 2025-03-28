@@ -186,9 +186,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     else
                         pop!(branch, "BJ")
                     end
-                sub_data["rate_a"] = branch["RATEA"]
-                sub_data["rate_b"] = branch["RATEB"]
-                sub_data["rate_c"] = branch["RATEC"]
+                sub_data["rate_a"] = pop!(branch, "RATEA")
+                sub_data["rate_b"] = pop!(branch, "RATEB")
+                sub_data["rate_c"] = pop!(branch, "RATEC")
                 sub_data["tap"] = 1.0
                 sub_data["shift"] = 0.0
                 sub_data["br_status"] = pop!(branch, "ST")
@@ -1292,9 +1292,8 @@ function _build_switch_breaker_sub_data(
     sub_data["reactive_power_flow"] = 0.0
     sub_data["rating"] = pop!(branch, "RATEA")
     sub_data["discrete_branch_type"] = discrete_branch_type
-    sub_data["name"] = "$(branch_type == "breaker" ? "BRK" : "SWT")_$(sub_data["f_bus"])_$(sub_data["t_bus"])"
     sub_data["source_id"] =
-        [branch_type, sub_data["f_bus"], sub_data["t_bus"], sub_data["name"]]
+        [branch_type, sub_data["f_bus"], sub_data["t_bus"], branch["CKT"]]
     sub_data["index"] = index
 
     return sub_data
