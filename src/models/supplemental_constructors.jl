@@ -54,6 +54,37 @@ function ACBus(
 end
 
 """Allows construction with bus type specified as a string for legacy code."""
+function DiscreteControlledACBranch(
+    name,
+    available,
+    arc,
+    active_power_flow,
+    reactive_power_flow,
+    r,
+    x,
+    rating,
+    discrete_branch_type::String,
+    branch_status::String,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return DiscreteControlledACBranch(
+        name,
+        available,
+        arc,
+        active_power_flow,
+        reactive_power_flow,
+        r,
+        x,
+        rating,
+        get_enum_value(DiscreteControlledBranchType, discrete_branch_type),
+        get_enum_value(DiscreteControlledBranchStatus, branch_status),
+        ext,
+        internal,
+    )
+end
+
+"""Allows construction with bus type specified as a string for legacy code."""
 function FACTSControlDevice(
     name,
     available,

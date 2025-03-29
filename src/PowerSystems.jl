@@ -286,6 +286,8 @@ export TransmissionInterface
 export AngleUnits
 export ACBusTypes
 export FACTSOperationModes
+export DiscreteControlledBranchStatus
+export DiscreteControlledBranchType
 export PrimeMovers
 export ThermalFuels
 export StorageTech
