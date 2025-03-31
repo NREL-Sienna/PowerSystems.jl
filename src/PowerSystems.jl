@@ -259,7 +259,7 @@ export Contingency
 export Outage
 export GeometricDistributionForcedOutage
 export PlannedOutage
-export TimeSeriesForcedOutage
+export FixedOutage
 
 export get_mean_time_to_recovery
 export get_outage_transition_probability
