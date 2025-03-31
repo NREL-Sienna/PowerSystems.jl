@@ -1,31 +1,32 @@
 @testset "Test Hydro Turbine constructors" begin
-    turbine = HydroTurbine(name="TestTurbine",
-        available=true,
-        bus=ACBus(nothing),
-        active_power=0.0,
-        reactive_power=0.0,
-        rating=1,
-        base_power=100,
-        active_power_limits=(min=0, max=1),
-        reactive_power_limits=nothing,
-        outflow_limits=nothing,
-        ramp_limits=nothing,
-        time_limits=nothing
+    turbine = HydroTurbine(; name = "TestTurbine",
+        available = true,
+        bus = ACBus(nothing),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        rating = 1,
+        base_power = 100,
+        active_power_limits = (min = 0, max = 1),
+        reactive_power_limits = nothing,
+        outflow_limits = nothing,
+        ramp_limits = nothing,
+        time_limits = nothing,
     )
 end
 
 @testset "Test Hydro Reservoir constructors" begin
-    reservoir = HydroReservoir(
-        name="init",
-        available=false,
-        storage_volume_limits=(min=0.1, max=1.0),
-        spillate_outflow_limits=nothing,
-        inflow=0.0,
-        outflow=0.0,
-        volume_targets=0.0,
-        travel_time=0.0,
+    reservoir = HydroReservoir(;
+        name = "init",
+        available = false,
+        initial_volume=0.0,
+        storage_volume_limits = (min = 0.1, max = 1.0),
+        spillage_limits = nothing,
+        inflow=(min=0.0, max=0.0),
+        outflow=(min=0.0, max=0.0),
+        volume_targets=(min=0.0, max=0.0),
+        travel_time = 0.0,
     )
-    @test get_storage_volume_limits(reservoir) == (min=0.1, max=1)
+    @test get_storage_volume_limits(reservoir) == (min = 0.1, max = 1)
 end
 
 @testset "Test single `HydroTurbine` with single `HydroReservoir`" begin
@@ -87,8 +88,8 @@ end
         @test reservoir[1] == hydro_reservoir
     end
 
-    mapping = get_reservoir_contributing_device_mapping(sys)
-    @test mapping isa ReservoirContributingDevicesMapping
+    mapping = get_reservoir_device_mapping(sys)
+    @test mapping isa ReservoirConnectedDevicesMapping
     @test length(get_contributing_devices(sys, hydro_reservoir)) == 5
 end
 

@@ -1312,21 +1312,21 @@ function get_contributing_devices(sys::System, reservoir::T) where {T <: HydroRe
     return [x for x in get_components(Device, sys) if has_reservoir(x, reservoir)]
 end
 
-struct ReservoirContributingDevices
+struct ReservoirConnectedDevices
     reservoir::HydroReservoir
     contributing_devices::Vector{Device}
 end
 
-const ReservoirContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
-const ReservoirContributingDevicesMapping =
-    Dict{ReservoirContributingDevicesKey, ReservoirContributingDevices}
+const ReservoirConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const ReservoirConnectedDevicesMapping =
+    Dict{ReservoirConnectedDevicesKey, ReservoirConnectedDevices}
 
 """
 Returns a ServiceContributingDevices object.
 """
 function _get_contributing_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
     uuid = IS.get_uuid(reservoir)
-    devices = ReservoirContributingDevices(reservoir, Vector{Device}())
+    devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
     for device in get_components(Device, sys)
         for _reservoir in get_reservoirs(device)
             if IS.get_uuid(_reservoir) == uuid
@@ -1341,10 +1341,10 @@ end
 """
 Return an instance of ServiceContributingDevicesMapping.
 """
-function get_reservoir_contributing_device_mapping(sys::System)
-    reservoir_mapping = ReservoirContributingDevicesMapping()
+function get_reservoir_device_mapping(sys::System)
+    reservoir_mapping = ReservoirConnectedDevicesMapping()
     for reservoir in get_components(HydroReservoir, sys)
-        key = ReservoirContributingDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
+        key = ReservoirConnectedDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
         reservoir_mapping[key] = _get_contributing_devices(sys, reservoir)
     end
 
