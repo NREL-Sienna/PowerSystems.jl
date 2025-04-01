@@ -73,17 +73,17 @@ The time series data for fixed outages can be obtained from the simulation of a 
 - `outage_status::String`: The forced outage status in the model. 1 represents outaged and 0 represents available.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-struct FixedOutage <: Outage
+struct FixedForcedOutage <: Outage
     outage_status::Float64
     internal::InfrastructureSystemsInternal
 end
 
-function FixedOutage(;
+function FixedForcedOutage(;
     outage_status,
     internal = InfrastructureSystemsInternal(),
 )
-    return FixedOutage(outage_status, internal)
+    return FixedForcedOutage(outage_status, internal)
 end
 
-"""Get [`FixedOutage`](@ref) `outage_status`."""
-get_outage_status(value::FixedOutage) = value.outage_status
+"""Get [`FixedForcedOutage`](@ref) `outage_status`."""
+get_outage_status(value::FixedForcedOutage) = value.outage_status
