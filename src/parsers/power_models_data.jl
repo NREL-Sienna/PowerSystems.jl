@@ -757,7 +757,7 @@ function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         active_power_flow = d["active_power_flow"],
         reactive_power_flow = d["reactive_power_flow"],
         arc = Arc(bus_f, bus_t),
-        r = abs(d["r"]),
+        r = d["r"],
         x = d["x"],
         rating = d["rating"],
         discrete_branch_type = d["discrete_branch_type"],
