@@ -289,6 +289,7 @@ export PrimeMovers
 export ThermalFuels
 export StorageTech
 export StateTypes
+export ReservoirDataType
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
@@ -422,6 +423,24 @@ export get_compression_settings
 export CompressionSettings
 export CompressionTypes
 
+# Export HydroReservoir functions
+export get_storage_level_limits
+export get_spillage_limits
+export get_inflow
+export get_outflow
+export get_level_targets
+export get_travel_time
+export get_head_to_volume_factor
+export get_level_data_type
+export set_level_targets!
+export set_storage_level_limits!
+export set_outflow!
+export set_inflow!
+export set_travel_time!
+export set_head_to_volume_factor!
+export set_spillage_limits!
+export set_level_data_type!
+
 # Parsing functions
 export create_poly_cost
 
@@ -476,7 +495,6 @@ export get_from_to_flow_limit
 export get_to_from_flow_limit
 export get_min_active_power_flow_limit
 export get_max_active_power_flow_limit
-export get_storage_volume_limits
 
 # Subsystems
 export add_subsystem!
