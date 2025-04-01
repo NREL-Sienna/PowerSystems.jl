@@ -518,6 +518,103 @@
             "supertype": "ACTransmission"
         },
         {
+            "struct_name": "DiscreteControlledACBranch",
+            "docstring": "Used to represent switches and breakers connecting AC Buses",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow on the line (MVAR)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x",
+                    "data_type": "Float64",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "discrete_branch_type",
+                    "comment": "Type of discrete control",
+                    "null_value": "DiscreteControlledBranchType.BREAKER",
+                    "data_type": "DiscreteControlledBranchType",
+                    "default": "DiscreteControlledBranchType.OTHER"
+                },
+                {
+                    "name": "branch_status",
+                    "comment": "Open or Close status",
+                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
+                    "data_type": "DiscreteControlledBranchStatus",
+                    "default": "DiscreteControlledBranchStatus.CLOSED"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ACTransmission"
+        },
+        {
             "struct_name": "MonitoredLine",
             "docstring": "An AC transmission line with additional power flow constraints specified by the system operator, more restrictive than the line's thermal limits.\n\nFor example, monitored lines can be used to restrict line flow following a contingency elsewhere in the network. See the `flow_limits` parameter. If monitoring is not needed, see [`Line`](@ref)",
             "fields": [
