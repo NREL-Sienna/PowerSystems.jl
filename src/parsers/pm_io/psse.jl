@@ -1300,7 +1300,7 @@ function _build_switch_breaker_sub_data(
 end
 
 function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @warn "Parsing PSS(R)E Switches & Breakers data into a PowerModels Dict..."
+    @info "Parsing PSS(R)E Switches & Breakers data into a PowerModels Dict..."
     pm_data["breaker"] = []
     pm_data["switch"] = []
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
