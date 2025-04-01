@@ -10,7 +10,7 @@ an import error.
     mutable struct HydroReservoir <: Component
         name::String
         available::Bool
-        iniitial_volume::Union{Float64}
+        initial_volume::Union{Float64}
         storage_volume_limits::Union{Nothing, MinMax, TimeSeriesKey}
         spillage_limits::Union{Nothing, MinMax, TimeSeriesKey}
         inflow::Union{MinMax, TimeSeriesKey}
@@ -126,3 +126,7 @@ set_volume_targets!(value::HydroReservoir, val) = value.volume_targets = set_val
 set_travel_time!(value::HydroReservoir, val) = value.travel_time = val
 """Set [`HydroReservoir`](@ref) `ext`."""
 set_ext!(value::HydroReservoir, val) = value.ext = val
+
+function supports_services(::HydroReservoir)
+    return true
+end
