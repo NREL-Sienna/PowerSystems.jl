@@ -127,6 +127,6 @@ set_travel_time!(value::HydroReservoir, val) = value.travel_time = val
 """Set [`HydroReservoir`](@ref) `ext`."""
 set_ext!(value::HydroReservoir, val) = value.ext = val
 
-function supports_services(::HydroReservoir)
+function supports_time_series(::HydroReservoir)
     return true
 end
