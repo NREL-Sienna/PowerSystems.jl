@@ -978,6 +978,43 @@ function read_branch!(
     end
 end
 
+function make_multisection_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+    return MultiSectionLine(;
+        name = name,
+        available = Bool(d["state"]),
+        active_power_flow = d["active_power_flow"],
+        reactive_power_flow = d["reactive_power_flow"],
+        arc = Arc(bus_f, bus_t),
+        rating = d["rating"],
+        discrete_branch_type = d["discrete_branch_type"],
+        branch_status = d["state"],
+    )
+end
+
+function read_multisection_line!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading multi-section line data"
+    if !haskey(data, "multisection_line")
+        @info "There is no multi-section line data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    for (_, d) in data[device_type]
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        value = make_multisection_line(name, d, bus_f, bus_t)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
 function read_3w_transformer!(
     sys::System,
     data::Dict,
