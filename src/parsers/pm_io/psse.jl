@@ -1290,6 +1290,8 @@ function _build_switch_breaker_sub_data(
     sub_data["state"] = pop!(branch, "ST")
     sub_data["active_power_flow"] = 0.0
     sub_data["reactive_power_flow"] = 0.0
+    sub_data["psw"] = sub_data["active_power_flow"]
+    sub_data["qsw"] = sub_data["reactive_power_flow"]
     sub_data["rating"] = pop!(branch, "RATEA")
     sub_data["discrete_branch_type"] = discrete_branch_type
     sub_data["source_id"] =
