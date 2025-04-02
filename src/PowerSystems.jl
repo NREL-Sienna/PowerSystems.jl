@@ -348,6 +348,7 @@ export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
+export get_connected_devices
 export get_contributing_device_mapping
 export get_reservoir_device_mapping
 export ServiceContributingDevices
@@ -425,6 +426,7 @@ export CompressionTypes
 
 # Export HydroReservoir functions
 export get_storage_level_limits
+export get_initial_level
 export get_spillage_limits
 export get_inflow
 export get_outflow
@@ -432,6 +434,7 @@ export get_level_targets
 export get_travel_time
 export get_head_to_volume_factor
 export get_level_data_type
+export set_initial_level!
 export set_level_targets!
 export set_storage_level_limits!
 export set_outflow!

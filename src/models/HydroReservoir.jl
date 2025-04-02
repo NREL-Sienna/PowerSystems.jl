@@ -11,6 +11,7 @@ an import error.
         name::String
         available::Bool
         storage_level_limits::Union{Nothing, Float64, TimeSeriesKey}
+        initial_level::Float64
         spillage_limits::Union{Nothing, Float64, TimeSeriesKey}
         inflow::Union{Float64, TimeSeriesKey}
         outflow::Union{Float64, TimeSeriesKey}
@@ -28,6 +29,7 @@ A hydropower reservoir that needs to have `HydroTurbine` attached to generate po
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `storage_level_limits::Union{Nothing, Float64, TimeSeriesKey}`: Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head). If nothing, the reservoir volume is assumed to be infinite.
+- `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits`.
 - `spillage_limits::Union{Nothing, Float64, TimeSeriesKey}`: Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed.
 - `inflow::Union{Float64, TimeSeriesKey}`: Amount of water refilling the reservoir in m^3/h.
 - `outflow::Union{Float64, TimeSeriesKey}`: Amount of water going to the turbine(s) in m^3/h.
@@ -45,6 +47,8 @@ mutable struct HydroReservoir <: Component
     available::Bool
     "Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head). If nothing, the reservoir volume is assumed to be infinite."
     storage_level_limits::Union{Nothing, Float64, TimeSeriesKey}
+    "Initial level of the reservoir relative to the `storage_level_limits`."
+    initial_level::Float64
     "Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed."
     spillage_limits::Union{Nothing, Float64, TimeSeriesKey}
     "Amount of water refilling the reservoir in m^3/h."
@@ -65,19 +69,19 @@ mutable struct HydroReservoir <: Component
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_level_limits, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_level_limits, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type=ReservoirDataType.VOLUME, ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_level_limits, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext, internal, )
+function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type=ReservoirDataType.VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, head_to_volume_factor, level_data_type, ext, internal, )
 end
 
-# Constructor for demo purposes; non-functional.
 function HydroReservoir(::Nothing)
     HydroReservoir(;
         name="init",
         available=false,
+        initial_level=0.0,
         storage_level_limits=nothing,
         spillage_limits=nothing,
         inflow=0.0,
@@ -96,6 +100,8 @@ get_name(value::HydroReservoir) = value.name
 get_available(value::HydroReservoir) = value.available
 """Get [`HydroReservoir`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::HydroReservoir) = value.storage_level_limits
+"""Get [`HydroReservoir`](@ref) `initial_level`."""
+get_initial_level(value::HydroReservoir) = value.initial_level
 """Get [`HydroReservoir`](@ref) `spillage_limits`."""
 get_spillage_limits(value::HydroReservoir) = value.spillage_limits
 """Get [`HydroReservoir`](@ref) `inflow`."""
@@ -119,6 +125,8 @@ get_internal(value::HydroReservoir) = value.internal
 set_available!(value::HydroReservoir, val) = value.available = val
 """Set [`HydroReservoir`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::HydroReservoir, val) = value.storage_level_limits = val
+"""Set [`HydroReservoir`](@ref) `initial_level`."""
+set_initial_level!(value::HydroReservoir, val) = value.initial_level = val
 """Set [`HydroReservoir`](@ref) `spillage_limits`."""
 set_spillage_limits!(value::HydroReservoir, val) = value.spillage_limits = val
 """Set [`HydroReservoir`](@ref) `inflow`."""
