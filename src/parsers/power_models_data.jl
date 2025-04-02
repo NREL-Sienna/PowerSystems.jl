@@ -83,11 +83,12 @@ end
 
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
-        if !branch["transformer"] &&
-           pm_data.data["bus"][branch["f_bus"]]["base_kv"] !=
-           pm_data.data["bus"][branch["t_bus"]]["base_kv"]
+        f_bus_bvolt = pm_data.data["bus"][branch["f_bus"]]["base_kv"]
+        t_bus_bvolt = pm_data.data["bus"][branch["t_bus"]]["base_kv"]
+        if !branch["transformer"] && !isapprox(f_bus_bvolt, t_bus_bvolt; atol = 1.0)
             branch["transformer"] = true
-            @warn "Branch $k endpoints have different voltage levels, converting to transformer."
+            branch["ext"] = Dict{String, Any}()
+            @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) have different voltage levels endpoints: from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV, converting to transformer."
         end
     end
 end
@@ -708,7 +709,6 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
-
     if d["transformer"]
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
@@ -827,7 +827,9 @@ function make_transformer_2w(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+    # println(name)
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
+    # println(d["ext"])
 
     return Transformer2W(;
         name = name,
