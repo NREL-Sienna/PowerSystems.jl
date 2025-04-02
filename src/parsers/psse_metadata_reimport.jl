@@ -114,8 +114,14 @@ function parse_export_metadata_dict(md::Dict)
         bus_t::ACBus,
     )::String
         sid = device_dict["source_id"]
+
         (p_bus_1, p_bus_2, p_name) =
             (length(sid) == 6) ? [sid[2], sid[3], sid[5]] : last(sid, 3)
+
+        if sid[1] in ["switch", "breaker"]
+            p_name = lstrip(p_name, ['@', '*'])
+        end
+
         return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
     end
     shunt_name_formatter = name_formatter_from_component_ids(
