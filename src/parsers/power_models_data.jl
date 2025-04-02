@@ -68,6 +68,7 @@ function System(pm_data::PowerModelsData; kwargs...)
         read_switch_breaker!(sys, data, bus_number_to_bus, component_type; kwargs...)
     end
     read_branch!(sys, data, bus_number_to_bus, source_type; kwargs...)
+    read_multisection_line!(sys, data, bus_number_to_bus; kwargs...)
     read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
@@ -982,12 +983,13 @@ function make_multisection_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBu
     return MultiSectionLine(;
         name = name,
         available = Bool(d["state"]),
+        id = d["id"],
+        arc = Arc(bus_f, bus_t),
         active_power_flow = d["active_power_flow"],
         reactive_power_flow = d["reactive_power_flow"],
-        arc = Arc(bus_f, bus_t),
-        rating = d["rating"],
-        discrete_branch_type = d["discrete_branch_type"],
-        branch_status = d["state"],
+        section_number = d["section_number"],
+        dummy_buses = d["dummy_buses"],
+        ext = Dict{String, Any}(),
     )
 end
 
@@ -1005,7 +1007,7 @@ function read_multisection_line!(
 
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
-    for (_, d) in data[device_type]
+    for (d_key, d) in data[multisection_line]
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
