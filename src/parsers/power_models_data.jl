@@ -1,3 +1,4 @@
+const VOLT_THRESHOLD = 1.0
 
 """Container for data parsed by PowerModels"""
 struct PowerModelsData
@@ -85,7 +86,8 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
         f_bus_bvolt = pm_data.data["bus"][branch["f_bus"]]["base_kv"]
         t_bus_bvolt = pm_data.data["bus"][branch["t_bus"]]["base_kv"]
-        if !branch["transformer"] && !isapprox(f_bus_bvolt, t_bus_bvolt; atol = 1.0)
+        if !branch["transformer"] &&
+           !isapprox(f_bus_bvolt, t_bus_bvolt; atol = VOLT_THRESHOLD)
             branch["transformer"] = true
             branch["ext"] = Dict{String, Any}()
             @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) have different voltage levels endpoints: from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV, converting to transformer."
