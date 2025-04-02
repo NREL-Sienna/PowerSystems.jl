@@ -482,6 +482,22 @@
                     "validation_action": "error"
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "g",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
@@ -710,6 +726,22 @@
                     "validation_action": "error"
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "g",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
@@ -850,6 +882,22 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "phase_angle_limits",
                     "comment": "Minimum and maximum phase angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
@@ -979,6 +1027,22 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1083,6 +1147,22 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
                 },
                 {
                     "name": "services",

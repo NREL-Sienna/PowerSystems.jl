@@ -352,6 +352,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export get_associated_components
 export show_components
 export get_subcomponents
 export get_components_by_name
@@ -492,7 +493,7 @@ export set_runchecks!
 export check
 export check_component
 export check_components
-export check_sil_values
+export check_ac_transmission_rate_values
 
 # From IS logging.jl, generate_struct_files.jl
 export configure_logging

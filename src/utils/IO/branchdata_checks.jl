@@ -8,13 +8,13 @@ function validate_component_with_system(line::Union{MonitoredLine, Line}, sys::S
     is_valid = true
     if !check_endpoint_voltages(line)
         is_valid = false
-    elseif !calculate_thermal_limits!(line, get_base_power(sys))
+    elseif !correct_rate_limits!(line, get_base_power(sys))
         is_valid = false
     end
     return is_valid
 end
 
-function sanitize_angle_limits!(line)
+function sanitize_angle_limits!(line::Union{Line, MonitoredLine})
     max_limit = pi / 2
     min_limit = -pi / 2
 
@@ -59,105 +59,114 @@ function sanitize_angle_limits!(line)
     return
 end
 
-function linerate_calculation(l::Union{Line, MonitoredLine})
-    theta_max = max(abs(l.angle_limits.min), abs(l.angle_limits.max))
-    g = l.r / (l.r^2 + l.x^2)
-    b = -l.x / (l.r^2 + l.x^2)
-    y_mag = sqrt(g^2 + b^2)
-    fr_vmax = isnothing(l.arc.from.voltage_limits) ? nothing : l.arc.from.voltage_limits.max
-    to_vmax = isnothing(l.arc.to.voltage_limits) ? nothing : l.arc.to.voltage_limits.max
+# https://scholarspace.manoa.hawaii.edu/bitstream/10125/50237/paper0350.pdf
+# https://www.mdpi.com/1996-1073/10/8/1233/htm
+const MVA_LIMITS_LINES = Dict(
+    69.0 => (min = 12.0, max = 115.0),
+    115.0 => (min = 92.0, max = 255.0),
+    138.0 => (min = 141.0, max = 344.0),
+    161.0 => (min = 176.0, max = 410.0),
+    230.0 => (min = 327.0, max = 797.0),
+    345.0 => (min = 897.0, max = 1494.0),
+    500.0 => (min = 1732.0, max = 3464.0))
 
-    if isa(fr_vmax, Nothing) || isa(to_vmax, Nothing)
-        fr_vmax = 1.0
-        to_vmax = 0.9
-        diff_angle = abs(l.arc.from.angle - l.arc.to.angle)
-        new_rate = y_mag * fr_vmax * to_vmax * cos(theta_max)
-    else
-        m_vmax = max(fr_vmax, to_vmax)
-        c_max = sqrt(fr_vmax^2 + to_vmax^2 - 2 * fr_vmax * to_vmax * cos(theta_max))
-        new_rate = y_mag * m_vmax * c_max
-    end
+# https://scholarspace.manoa.hawaii.edu/bitstream/10125/50237/paper0350.pdf
+# https://www.mdpi.com/1996-1073/10/8/1233/htm
+const MVA_LIMITS_TRANSFORMERS = Dict(
+    69.0 => (min = 7.0, max = 115.0),
+    115.0 => (min = 17.0, max = 140.0),
+    138.0 => (min = 15.0, max = 239.0),
+    161.0 => (min = 30.0, max = 276.0),
+    230.0 => (min = 50.0, max = 470.0),
+    345.0 => (min = 160.0, max = 702.0),
+    500.0 => (min = 150.0, max = 1383.0),
+    765.0 => (min = 2200.0, max = 6900.0), # This value is 3x the SIL value from https://neos-guide.org/wp-content/uploads/2022/04/line_flow_approximation.pdf
+)
 
-    return new_rate
-end
+function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
+    arc = get_arc(line)
+    vrated = get_base_voltage(get_to(arc))
+    voltage_levels = collect(keys(MVA_LIMITS_LINES))
+    closestV_ix = findmin(abs.(voltage_levels .- vrated))
+    closest_v_level = voltage_levels[closestV_ix[2]]
+    closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
 
-function calculate_thermal_limits!(branch, basemva::Float64)
-    is_valid = true
-    if get_rating(branch) < 0.0
-        @error "PowerSystems does not support negative line rates"
-        is_valid = false
-    elseif get_rating(branch) == 0.0
-        @warn "Data for branch $(summary(branch)) rating is not provided, PowerSystems will infer a rate from line parameters" maxlog =
-            PS_MAX_LOG
-        if get_angle_limits(branch) == get_angle_limits(Line(nothing))
-            branch.rating =
-                min(calculate_sil(branch, basemva), linerate_calculation(branch)) / basemva
-        else
-            branch.rating = linerate_calculation(branch) / basemva
+    # Assuming that the rate is in pu
+    for field in [:rating, :rating_b, :rating_c]
+        rating_value = getfield(line, field)
+        if isnothing(rating_value)
+            @assert field ∈ [:rating_b, :rating_c]
+            continue
         end
-
-    elseif get_rating(branch) > linerate_calculation(branch)
-        mult = get_rating(branch) / linerate_calculation(branch)
-        if mult > 50
-            @warn "Data for branch $(summary(branch)) rating is $(mult) times larger than the base MVA for the system" maxlog =
+        if (rating_value >= 2.0 * closest_rate_range.max / basemva)
+            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+                PS_MAX_LOG
+        elseif (rating_value >= closest_rate_range.max / basemva) ||
+               (rating_value <= closest_rate_range.min / basemva)
+            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
                 PS_MAX_LOG
         end
     end
 
-    return is_valid
+    return true
 end
 
-const SIL_STANDARDS = Dict( #from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
-    69.0 => (min = 12.0, max = 13.0),
-    138.0 => (min = 47.0, max = 52.0),
-    230.0 => (min = 134.0, max = 145.0),
-    345.0 => (min = 325.0, max = 425.0),
-    500.0 => (min = 850.0, max = 1075.0),
-    765.0 => (min = 2200.0, max = 2300.0),
-)
+"""
+Calculates the line rating based on the formula for the maximum transfer limit over an impedance
+"""
+function line_rating_calculation(l::Union{Line, MonitoredLine})
+    theta_max = max(abs(l.angle_limits.min), abs(l.angle_limits.max))
 
-# calculation from https://neos-guide.org/sites/default/files/line_flow_approximation.pdf
-function calculate_sil(line, basemva::Float64)
-    arc = get_arc(line)
-    #Assumess voltage at both ends of the arc is the same
-    vrated = get_base_voltage(get_to(arc))
-    zbase = vrated^2 / basemva
-    l = get_x(line) / (2 * pi * 60) * zbase
-    r = get_r(line) * zbase
-    c = sum(get_b(line)) / (2 * pi * 60 * zbase)
-    # A line with no C doesn't allow calculation of SIL
-    isapprox(c, 0.0) && return Inf
-    zc = sqrt((r + im * 2 * pi * 60 * l) / (im * 2 * pi * 60 * c))
-    sil = vrated^2 / abs(zc)
-    return sil
+    g = l.r / (l.r^2 + l.x^2)
+    b = -l.x / (l.r^2 + l.x^2)
+    y_mag = sqrt(g^2 + b^2)
+
+    from_voltage_limits = get_voltage_limits(get_arc(l).from)
+    to_voltage_limits = get_voltage_limits(get_arc(l).to)
+
+    fr_vmin = isnothing(from_voltage_limits) ? 0.9 : from_voltage_limits.min
+    to_vmin = isnothing(to_voltage_limits) ? 0.9 : from_voltage_limits.min
+
+    c_max = sqrt(fr_vmin^2 + to_vmin^2 - 2 * fr_vmin * to_vmin * cos(theta_max))
+    new_rate = y_mag * max(fr_vmin, to_vmin) * c_max
+
+    return new_rate
 end
 
-function check_sil_values(line::Union{Line, MonitoredLine}, basemva::Float64)
-    arc = get_arc(line)
-    vrated = get_base_voltage(get_to(arc))
-    SIL_levels = collect(keys(SIL_STANDARDS))
-    rating = get_rating(line)
-    closestV = findmin(abs.(SIL_levels .- vrated))
-    closestSIL = SIL_STANDARDS[SIL_levels[closestV[2]]]
-    is_valid = true
-
-    # Assuming that the rate is in pu
-    if (rating >= closestSIL.max / basemva)
-        # rate outside of expected SIL range
-        sil = calculate_sil(line, basemva)
-        @warn "Rating $(round(rating*basemva; digits=2)) MW for $(line.name) is larger than the max expected in the range of $(closestSIL)." maxlog =
-            PS_MAX_LOG
-        is_valid = false
+function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
+    theoretical_line_rate_pu = line_rating_calculation(branch)
+    for field in [:rating, :rating_b, :rating_c]
+        rating_value = getfield(branch, field)
+        if isnothing(rating_value)
+            @assert field ∈ [:rating_b, :rating_c]
+            continue
+        end
+        if rating_value < 0.0
+            @error "PowerSystems does not support negative line rates. $(field): $(rating)"
+            return false
+        end
+        if rating_value == INFINITE_BOUND
+            @warn "Data for branch $(summary(branch)) $(field) is set to INFINITE_BOUND. \
+                PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" maxlog =
+                PS_MAX_LOG
+            setfield!(branch, field, theoretical_line_rate_pu)
+        end
     end
-    return is_valid
+
+    return check_rating_values(branch, basemva)
 end
 
-function check_endpoint_voltages(line)
+function check_endpoint_voltages(line::Union{Line, MonitoredLine})
     is_valid = true
     arc = get_arc(line)
-    if get_base_voltage(get_from(arc)) != get_base_voltage(get_to(arc))
+    from_voltage = get_base_voltage(get_from(arc))
+    to_voltage = get_base_voltage(get_to(arc))
+    percent_difference = abs(from_voltage - to_voltage) / ((from_voltage + to_voltage) / 2)
+    if percent_difference > BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL
         is_valid = false
-        @error "Voltage endpoints of $(line.name) are different, cannot create Line"
+        @error "Voltage endpoints of $(get_name(line)) have more than $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% difference, cannot create Line. /
+        Check if the data corresponds to transformer data."
     end
+
     return is_valid
 end
