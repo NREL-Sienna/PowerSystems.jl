@@ -60,8 +60,41 @@ get_components(::Type{T}, sys::System; subsystem_name = nothing) where {T <: Com
 """
 Return a vector of components that are attached to the supplemental attribute.
 """
-get_components(sys::System, attribute::SupplementalAttribute) =
-    IS.get_components(sys, attribute)
+function get_associated_components(sys::System, attribute::SupplementalAttribute)
+    return IS.get_associated_components(sys.data, attribute)
+end
+
+@deprecate get_components(sys::System, attribute::SupplementalAttribute) get_associated_components(
+    sys,
+    attribute,
+)
+
+function get_associated_components(
+    filter_func::Function,
+    sys::System,
+    attribute::SupplementalAttribute,
+)
+    return IS.get_associated_components(filter_func, sys.data, attribute)
+end
+
+"""
+Return a vector of components that are attached to one or more supplemental attributes of
+the given type.
+"""
+function get_associated_components(
+    sys::System,
+    attribute_type::Type{<:SupplementalAttribute},
+)
+    return IS.get_associated_components(sys.data, attribute_type)
+end
+
+function get_associated_components(
+    filter_func::Function,
+    sys::System,
+    attribute_type::Type{<:SupplementalAttribute},
+)
+    return IS.get_associated_components(filter_func, sys.data, attribute_type)
+end
 
 """
 Return an iterator of components of a given `Type` from a [`System`](@ref), using an
