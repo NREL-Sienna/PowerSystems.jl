@@ -1865,18 +1865,18 @@ range or if the custom validate method for the type fails its check.
 """
 function check_component(sys::System, component::Component)
     if !validate_component_with_system(component, sys)
-        throw(IS.InvalidValue("Invalid value for $component"))
+        throw(IS.InvalidValue("Invalid value for $(summary(component))"))
     end
     IS.check_component(sys.data, component)
     return
 end
 
-function check_sil_values(sys::System)
+function check_ac_transmission_rate_values(sys::System)
     is_valid = true
     base_power = get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
-        if !check_sil_values(line, base_power)
+        if !check_rating_values(line, base_power)
             is_valid = false
         end
     end
@@ -2583,6 +2583,8 @@ function convert_component!(
         (from_to = line.rating, to_from = line.rating),
         line.rating,
         line.angle_limits,
+        line.rating_b,
+        line.rating_c,
         line.g,
         line.services,
         line.ext,
@@ -2627,6 +2629,8 @@ function convert_component!(
         line.b,
         line.rating,
         line.angle_limits,
+        line.rating_b,
+        line.rating_c,
         line.g,
         line.services,
         line.ext,
@@ -2732,7 +2736,7 @@ function _validate_or_skip!(sys, component, skip_validation)
     if !skip_validation
         sanitize_component!(component, sys)
         if !validate_component_with_system(component, sys)
-            throw(IS.InvalidValue("Invalid value for $component"))
+            throw(IS.InvalidValue("Invalid value for $(summary(component))"))
         end
     end
 

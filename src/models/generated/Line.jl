@@ -16,6 +16,8 @@ This file is auto-generated. Do not edit.
         b::FromTo
         rating::Float64
         angle_limits::MinMax
+        rating_b::Union{Nothing, Float64}
+        rating_c::Union{Nothing, Float64}
         g::FromTo
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -35,6 +37,8 @@ An AC transmission line
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `rating::Float64`: Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
 - `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
+- `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
+- `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -61,6 +65,10 @@ mutable struct Line <: ACTransmission
     rating::Float64
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
+    "Second current rating; entered in MVA."
+    rating_b::Union{Nothing, Float64}
+    "Third current rating; entered in MVA."
+    rating_c::Union{Nothing, Float64}
     "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value"
     g::FromTo
     "Services that this device contributes to"
@@ -71,12 +79,12 @@ mutable struct Line <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, InfrastructureSystemsInternal(), )
+function Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b, rating_c, g, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, g, services, ext, internal, )
+function Line(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Line(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, rating, angle_limits, rating_b, rating_c, g, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,6 +100,8 @@ function Line(::Nothing)
         b=(from=0.0, to=0.0),
         rating=0.0,
         angle_limits=(min=-1.571, max=1.571),
+        rating_b=0.0,
+        rating_c=0.0,
         g=(from=0.0, to=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -118,6 +128,10 @@ get_b(value::Line) = value.b
 get_rating(value::Line) = get_value(value, value.rating)
 """Get [`Line`](@ref) `angle_limits`."""
 get_angle_limits(value::Line) = value.angle_limits
+"""Get [`Line`](@ref) `rating_b`."""
+get_rating_b(value::Line) = get_value(value, value.rating_b)
+"""Get [`Line`](@ref) `rating_c`."""
+get_rating_c(value::Line) = get_value(value, value.rating_c)
 """Get [`Line`](@ref) `g`."""
 get_g(value::Line) = value.g
 """Get [`Line`](@ref) `services`."""
@@ -145,6 +159,10 @@ set_b!(value::Line, val) = value.b = val
 set_rating!(value::Line, val) = value.rating = set_value(value, val)
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
+"""Set [`Line`](@ref) `rating_b`."""
+set_rating_b!(value::Line, val) = value.rating_b = set_value(value, val)
+"""Set [`Line`](@ref) `rating_c`."""
+set_rating_c!(value::Line, val) = value.rating_c = set_value(value, val)
 """Set [`Line`](@ref) `g`."""
 set_g!(value::Line, val) = value.g = val
 """Set [`Line`](@ref) `services`."""

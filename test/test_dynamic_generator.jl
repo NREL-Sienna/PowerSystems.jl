@@ -46,7 +46,7 @@ branch_OMIB = [
         0.01, #resistance in pu
         0.05, #reactance in pu
         (from = 0.0, to = 0.0), #susceptance in pu
-        18.046, #rate in MW
+        1.14, #rate in MW
         1.04,
     ),
 ]  #angle limits (-min and max)

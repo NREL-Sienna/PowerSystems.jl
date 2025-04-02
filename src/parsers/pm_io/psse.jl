@@ -164,56 +164,58 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Branch data into a PowerModels Dict..."
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
-        for (i, branch) in enumerate(pti_data["BRANCH"])
-            sub_data = Dict{String, Any}()
+        for branch in pti_data["BRANCH"]
+            if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
+                sub_data = Dict{String, Any}()
 
-            sub_data["f_bus"] = pop!(branch, "I")
-            sub_data["t_bus"] = pop!(branch, "J")
-            sub_data["br_r"] = pop!(branch, "R")
-            sub_data["br_x"] = pop!(branch, "X")
-            sub_data["g_fr"] = pop!(branch, "GI")
-            sub_data["b_fr"] =
-                if branch["BI"] == 0.0 && branch["B"] != 0.0
-                    branch["B"] / 2
-                else
-                    pop!(branch, "BI")
+                sub_data["f_bus"] = pop!(branch, "I")
+                sub_data["t_bus"] = pop!(branch, "J")
+                sub_data["br_r"] = pop!(branch, "R")
+                sub_data["br_x"] = pop!(branch, "X")
+                sub_data["g_fr"] = pop!(branch, "GI")
+                sub_data["b_fr"] =
+                    if branch["BI"] == 0.0 && branch["B"] != 0.0
+                        branch["B"] / 2
+                    else
+                        pop!(branch, "BI")
+                    end
+                sub_data["g_to"] = pop!(branch, "GJ")
+                sub_data["b_to"] =
+                    if branch["BJ"] == 0.0 && branch["B"] != 0.0
+                        branch["B"] / 2
+                    else
+                        pop!(branch, "BJ")
+                    end
+                sub_data["rate_a"] = pop!(branch, "RATEA")
+                sub_data["rate_b"] = pop!(branch, "RATEB")
+                sub_data["rate_c"] = pop!(branch, "RATEC")
+                sub_data["tap"] = 1.0
+                sub_data["shift"] = 0.0
+                sub_data["br_status"] = pop!(branch, "ST")
+                sub_data["angmin"] = 0.0
+                sub_data["angmax"] = 0.0
+                sub_data["transformer"] = false
+
+                sub_data["source_id"] =
+                    ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
+                sub_data["index"] = length(pm_data["branch"]) + 1
+
+                if import_all
+                    _import_remaining_keys!(sub_data, branch; exclude = ["B", "BI", "BJ"])
                 end
-            sub_data["g_to"] = pop!(branch, "GJ")
-            sub_data["b_to"] =
-                if branch["BJ"] == 0.0 && branch["B"] != 0.0
-                    branch["B"] / 2
-                else
-                    pop!(branch, "BJ")
+
+                if sub_data["rate_a"] == 0.0
+                    delete!(sub_data, "rate_a")
                 end
-            sub_data["rate_a"] = pop!(branch, "RATEA")
-            sub_data["rate_b"] = pop!(branch, "RATEB")
-            sub_data["rate_c"] = pop!(branch, "RATEC")
-            sub_data["tap"] = 1.0
-            sub_data["shift"] = 0.0
-            sub_data["br_status"] = pop!(branch, "ST")
-            sub_data["angmin"] = 0.0
-            sub_data["angmax"] = 0.0
-            sub_data["transformer"] = false
+                if sub_data["rate_b"] == 0.0
+                    delete!(sub_data, "rate_b")
+                end
+                if sub_data["rate_c"] == 0.0
+                    delete!(sub_data, "rate_c")
+                end
 
-            sub_data["source_id"] =
-                ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
-            sub_data["index"] = i
-
-            if import_all
-                _import_remaining_keys!(sub_data, branch; exclude = ["B", "BI", "BJ"])
+                push!(pm_data["branch"], sub_data)
             end
-
-            if sub_data["rate_a"] == 0.0
-                delete!(sub_data, "rate_a")
-            end
-            if sub_data["rate_b"] == 0.0
-                delete!(sub_data, "rate_b")
-            end
-            if sub_data["rate_c"] == 0.0
-                delete!(sub_data, "rate_c")
-            end
-
-            push!(pm_data["branch"], sub_data)
         end
     end
 end
@@ -1273,15 +1275,65 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     return
 end
 
-function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
-    pm_data["storage"] = []
+function _build_switch_breaker_sub_data(
+    branch::Dict,
+    branch_type::String,
+    discrete_branch_type::Int,
+    index::Int,
+)
+    sub_data = Dict{String, Any}()
+
+    sub_data["f_bus"] = pop!(branch, "I")
+    sub_data["t_bus"] = pop!(branch, "J")
+    sub_data["r"] = pop!(branch, "R")
+    sub_data["x"] = pop!(branch, "X")
+    sub_data["state"] = pop!(branch, "ST")
+    sub_data["active_power_flow"] = 0.0
+    sub_data["reactive_power_flow"] = 0.0
+    sub_data["rating"] = pop!(branch, "RATEA")
+    sub_data["discrete_branch_type"] = discrete_branch_type
+    sub_data["source_id"] =
+        [branch_type, sub_data["f_bus"], sub_data["t_bus"], branch["CKT"]]
+    sub_data["index"] = index
+
+    return sub_data
+end
+
+function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Switches & Breakers data into a PowerModels Dict..."
+    pm_data["breaker"] = []
+    pm_data["switch"] = []
+    mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
+
+    if haskey(pti_data, "BRANCH")
+        for branch in pti_data["BRANCH"]
+            branch_init = first(branch["CKT"])
+
+            # Check if character is in the mapping
+            if haskey(mapping, branch_init)
+                branch_type, discrete_branch_type = mapping[branch_init]
+
+                sub_data = _build_switch_breaker_sub_data(
+                    branch,
+                    branch_type,
+                    discrete_branch_type,
+                    length(pm_data[branch_type]) + 1,
+                )
+
+                if import_all
+                    _import_remaining_keys!(sub_data, branch)
+                end
+
+                push!(pm_data[branch_type], sub_data)
+            end
+        end
+    end
     return
 end
 
-function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @warn "This PSS(R)E parser currently doesn't support Switch data parsing..."
-    pm_data["switch"] = []
+function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
+    pm_data["storage"] = []
     return
 end
 
@@ -1316,12 +1368,12 @@ function _pti_to_powermodels!(
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
     _psse2pm_generator!(pm_data, pti_data, import_all)
+    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
-    _psse2pm_switch!(pm_data, pti_data, import_all)
 
     if import_all
         _import_remaining_comps!(

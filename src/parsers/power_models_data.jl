@@ -64,6 +64,9 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
+    for component_type in ["switch", "breaker"]
+        read_switch_breaker!(sys, data, bus_number_to_bus, component_type; kwargs...)
+    end
     read_branch!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
@@ -90,7 +93,7 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
 end
 
 """
-Internal component name retreval from pm2ps_dict
+Internal component name retrieval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict::Dict)::String
     if haskey(device_dict, "shunt_bus")
@@ -121,7 +124,7 @@ function _get_pm_bus_name(device_dict::Dict, unique_names::Bool)
 end
 
 """
-Internal branch name retreval from pm2ps_dict
+Internal branch name retrieval from pm2ps_dict
 """
 function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
     # Additional if-else are used to catch line id in PSSe parsing cases
@@ -129,6 +132,10 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
         index = device_dict["name"]
     elseif device_dict["source_id"][1] == "branch" && length(device_dict["source_id"]) > 2
         index = strip(device_dict["source_id"][4])
+    elseif (
+        device_dict["source_id"][1] == "switch" || device_dict["source_id"][1] == "breaker"
+    ) && length(device_dict["source_id"]) > 2
+        index = string(device_dict["source_id"][4][2])
     elseif device_dict["source_id"][1] == "transformer" &&
            length(device_dict["source_id"]) > 3
         index = strip(device_dict["source_id"][5])
@@ -139,7 +146,7 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
 end
 
 """
-Internal branch name retreval from pm2ps_dict
+Internal 3WT name retrieval from pm2ps_dict
 """
 function _get_pm_3w_name(
     device_dict,
@@ -721,6 +728,26 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
     return value
 end
 
+function _get_rating(
+    branch_type::String,
+    name::AbstractString,
+    line_data::Dict,
+    key::String,
+)
+    if !haskey(line_data, key)
+        return INFINITE_BOUND
+    end
+
+    if isapprox(line_data[key], 0.0)
+        @warn(
+            "$branch_type $name rating value: $(line_data[key]). Unbounded value implied as per PSSe Manual"
+        )
+        return INFINITE_BOUND
+    else
+        return line_data[key]
+    end
+end
+
 function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -729,6 +756,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return Line(;
         name = name,
         available = available_value,
@@ -738,9 +766,51 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rating = d["rate_a"],
+        rating = _get_rating("Line", name, d, "rate_a"),
         angle_limits = (min = d["angmin"], max = d["angmax"]),
+        rating_b = _get_rating("Line", name, d, "rate_b"),
+        rating_c = _get_rating("Line", name, d, "rate_c"),
     )
+end
+
+function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+    return DiscreteControlledACBranch(;
+        name = name,
+        available = Bool(d["state"]),
+        active_power_flow = d["active_power_flow"],
+        reactive_power_flow = d["reactive_power_flow"],
+        arc = Arc(bus_f, bus_t),
+        r = d["r"],
+        x = d["x"],
+        rating = d["rating"],
+        discrete_branch_type = d["discrete_branch_type"],
+        branch_status = d["state"],
+    )
+end
+
+function read_switch_breaker!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus},
+    device_type::String;
+    kwargs...,
+)
+    @info "Reading $device_type data"
+    if !haskey(data, device_type)
+        @info "There is no $device_type data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    for (_, d) in data[device_type]
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        value = make_switch_breaker(name, d, bus_f, bus_t)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
 end
 
 function make_transformer_2w(
@@ -758,6 +828,7 @@ function make_transformer_2w(
         available_value = false
     end
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
+
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -767,7 +838,9 @@ function make_transformer_2w(
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = _get_rating("Transformer2W", name, d, "rate_a"),
+        rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
+        rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
         ext = ext,
     )
 end
@@ -816,9 +889,9 @@ function make_3w_transformer(
         available_primary = d["available_primary"],
         available_secondary = d["available_secondary"],
         available_tertiary = d["available_tertiary"],
-        rating_primary = d["rating_primary"],
-        rating_secondary = d["rating_secondary"],
-        rating_tertiary = d["rating_tertiary"],
+        rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
+        rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
+        rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
         ext = d["ext"],
     )
 end
@@ -831,6 +904,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -841,7 +915,9 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = _get_rating("TapTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
     )
 end
 
@@ -859,6 +935,7 @@ function make_phase_shifting_transformer(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
@@ -870,7 +947,9 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rating = d["rate_a"],
+        rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
     )
 end
 
