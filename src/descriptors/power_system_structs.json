@@ -1378,7 +1378,7 @@
         },
         {
             "struct_name": "ShiftablePowerLoad",
-            "docstring": "A [static](@ref S) power load that can be partially or completed shifted to later time periods.\n\n These loads are used to model demand response programs, and were originally developed as a component of a virtual power plant. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation). Load in the profile can be shifted to later time periods to aid in satisfing other system needs; however, any shifted load must be served within a desingated period of time (e.g., 24 hours), which is set by `balance_time_period`.",
+            "docstring": "A [static](@ref S) power load that can be partially or completed shifted to later time periods.\n\n These loads are used to model demand response. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation). Load in the profile can be shifted to later time periods to aid in satisfying other system needs; however, any shifted load must be served within a designated time horizon (e.g., 24 hours), which is set by `balance_time_period`.",
             "fields": [
                 {
                     "null_value": "init",
