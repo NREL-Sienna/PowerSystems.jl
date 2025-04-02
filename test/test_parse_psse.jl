@@ -129,6 +129,66 @@ end
     @test get_control_mode(facts) == FACTSOperationModes.NML
 end
 
+@testset "PSSE Switches & Breakers Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_case24_sys")
+    line1 = first(get_components(Line, sys))
+    sw_1 = DiscreteControlledACBranch(;
+        name = "SWITCH 1",
+        available = true,
+        arc = line1.arc,
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
+        r = 0.0,
+        x = line1.x,
+        rating = line1.rating,
+        discrete_branch_type = 0,
+        branch_status = 1,
+    )
+    add_component!(sys, sw_1)
+    line2 = get_component(Line, sys, "15-16-i_1")
+    br_1 = DiscreteControlledACBranch(;
+        name = "BREAKER 1",
+        available = true,
+        arc = line2.arc,
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
+        r = 0.0,
+        x = line2.x,
+        rating = line2.rating,
+        discrete_branch_type = 1,
+        branch_status = 1,
+    )
+    add_component!(sys, br_1)
+    line3 = get_component(Line, sys, "20-23-i_1")
+    otr_1 = DiscreteControlledACBranch(;
+        name = "OTHER 1",
+        available = true,
+        arc = line3.arc,
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
+        r = line3.r,
+        x = line3.x,
+        rating = line3.rating,
+        discrete_branch_type = 2,
+        branch_status = 1,
+    )
+    add_component!(sys, otr_1)
+
+    switch = get_component(DiscreteControlledACBranch, sys, "SWITCH 1")
+    breaker = get_component(DiscreteControlledACBranch, sys, "BREAKER 1")
+    other = get_component(DiscreteControlledACBranch, sys, "OTHER 1")
+
+    @test get_available(switch) == true
+    @test get_available(breaker) == true
+    @test get_available(other) == true
+
+    @test get_discrete_branch_type(switch) == DiscreteControlledBranchType.SWITCH
+    @test get_discrete_branch_type(breaker) == DiscreteControlledBranchType.BREAKER
+
+    @test get_branch_status(switch) == DiscreteControlledBranchStatus.CLOSED
+    @test get_branch_status(other) == DiscreteControlledBranchStatus.CLOSED
+end
+
 @testset "PSSE LCC Parsing" begin
     sys = build_system(PSSEParsingTestSystems, "pti_two_terminal_hvdc_test_sys")
 
