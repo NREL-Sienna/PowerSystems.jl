@@ -127,7 +127,7 @@ function remove_reservoir!(device::HydroTurbine, reservoir::HydroReservoir)
     if !_remove_reservoir!(device, reservoir)
         throw(
             ArgumentError(
-                "service $(get_name(reservoir)) was not attached to $(get_name(device))",
+                "reservoir $(get_name(reservoir)) was not attached to $(get_name(device))",
             ),
         )
     end

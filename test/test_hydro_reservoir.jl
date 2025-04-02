@@ -14,10 +14,11 @@
     )
 end
 
-@testset "Test Hydro Reservoir constructors" begin
+@testset "Test Hydro Reservoir constructors and getters" begin
     reservoir = HydroReservoir(;
         name = "init",
         available = false,
+        initial_level=1.0,
         storage_level_limits = 1.0,
         spillage_limits = nothing,
         inflow = 0.0,
@@ -25,9 +26,20 @@ end
         level_targets = 0.0,
         travel_time = 0.0,
         head_to_volume_factor = 0.0,
-        level_data_type = ReservoirDataType.VOLUME,
     )
     @test get_storage_level_limits(reservoir) == 1.0
+    @test get_initial_level(reservoir) == 1.0
+    @test get_level_data_type(reservoir) == ReservoirDataType.VOLUME
+    @test get_inflow(reservoir) == 0.0
+    @test get_outflow(reservoir) == 0.0
+end
+
+@testset "Test Hydro Reservoir constructors and setters" begin
+    reservoir = HydroReservoir(nothing)
+    @test set_storage_level_limits!(reservoir, 1.0) == 1.0
+    @test set_level_data_type!(reservoir, ReservoirDataType.HEAD) == ReservoirDataType.HEAD
+    @test set_inflow!(reservoir, 10.0) == 10.0
+    @test set_outflow!(reservoir, 10.0) == 10.0
 end
 
 @testset "Test single `HydroTurbine` with single `HydroReservoir`" begin
@@ -48,14 +60,16 @@ end
     @test has_reservoir(turbine)
     @test has_reservoir(turbine, reservoir)
     @test length(get_components(HydroTurbine, sys)) == 1
-    @test length(get_contributing_devices(sys, reservoir)) == 1
+    @test length(get_connected_devices(sys, reservoir)) == 1
 
     remove_reservoir!(turbine, reservoir)
+    @test_throws ArgumentError remove_reservoir!(turbine, reservoir)
     @test !has_reservoir(turbine)
-    @test length(get_contributing_devices(sys, reservoir)) == 0
+    @test !has_reservoir(turbine, reservoir)
+    @test length(get_connected_devices(sys, reservoir)) == 0
 
     remove_component!(sys, reservoir)
-    @test_throws ArgumentError get_contributing_devices(sys, reservoir)
+    @test_throws ArgumentError get_connected_devices(sys, reservoir)
 end
 
 @testset "Test multiple `HydroTurbine` with single `HydroReservoir`" begin
@@ -91,7 +105,7 @@ end
 
     mapping = get_reservoir_device_mapping(sys)
     @test mapping isa ReservoirConnectedDevicesMapping
-    @test length(get_contributing_devices(sys, hydro_reservoir)) == 5
+    @test length(get_connected_devices(sys, hydro_reservoir)) == 5
 end
 
 @testset "Test single `HydroTurbine` with multiple `HydroReservoir`" begin

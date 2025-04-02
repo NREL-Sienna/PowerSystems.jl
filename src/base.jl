@@ -1305,16 +1305,16 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-Return a vector of devices contributing to the service.
+Return a vector of connected turbines to the reservoir
 """
-function get_contributing_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
+function get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
     throw_if_not_attached(reservoir, sys)
     return [x for x in get_components(Device, sys) if has_reservoir(x, reservoir)]
 end
 
 struct ReservoirConnectedDevices
     reservoir::HydroReservoir
-    contributing_devices::Vector{Device}
+    connected_devices::Vector{Device}
 end
 
 const ReservoirConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
@@ -1322,15 +1322,15 @@ const ReservoirConnectedDevicesMapping =
     Dict{ReservoirConnectedDevicesKey, ReservoirConnectedDevices}
 
 """
-Returns a ServiceContributingDevices object.
+Returns a ReservoirConnectedDevices object.
 """
-function _get_contributing_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
+function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
     uuid = IS.get_uuid(reservoir)
     devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
     for device in get_components(Device, sys)
         for _reservoir in get_reservoirs(device)
             if IS.get_uuid(_reservoir) == uuid
-                push!(devices.contributing_devices, device)
+                push!(devices.connected_devices, device)
                 break
             end
         end
@@ -1339,13 +1339,13 @@ function _get_contributing_devices(sys::System, reservoir::T) where {T <: HydroR
 end
 
 """
-Return an instance of ServiceContributingDevicesMapping.
+Return an instance of ReservoirConnectedDevicesMapping.
 """
 function get_reservoir_device_mapping(sys::System)
     reservoir_mapping = ReservoirConnectedDevicesMapping()
     for reservoir in get_components(HydroReservoir, sys)
         key = ReservoirConnectedDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
-        reservoir_mapping[key] = _get_contributing_devices(sys, reservoir)
+        reservoir_mapping[key] = _get_connected_devices(sys, reservoir)
     end
 
     return reservoir_mapping
