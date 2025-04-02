@@ -63,22 +63,40 @@ are intended to reflect the options in the
 [Aggregated Fuel Codes](https://www.eia.gov/survey/form/eia_923/instructions.pdf) from the
 EIA Annual Energy Review. `ThermalFuels` has the options:
 
-| Name                  | EIA Fuel Code | Description                                                                                                                            |
-|:--------------------- |:------------- |:-------------------------------------------------------------------------------------------------------------------------------------- |
-| `COAL`                | COL           | Anthracite Coal and Bituminous Coal                                                                                                    |
-| `WASTE_COAL`          | WOC           | Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)                                                 |
-| `DISTILLATE_FUEL_OIL` | DFO           | Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4)                                                                                  |
-| `WASTE_OIL`           | WOO           | Waste Oil Kerosene and JetFuel Butane, Propane                                                                                         |
-| `PETROLEUM_COKE`      | PC            | Petroleum Coke                                                                                                                         |
-| `RESIDUAL_FUEL_OIL`   | RFO           | Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)                                                                             |
-| `NATURAL_GAS`         | NG            | Natural Gas                                                                                                                            |
-| `OTHER_GAS`           | OOG           | Other Gas and blast furnace gas                                                                                                        |
-| `NUCLEAR`             | NUC           | Nuclear Fission (Uranium, Plutonium, Thorium)                                                                                          |
-| `AG_BIPRODUCT`        | ORW           | Agricultural Crop Byproducts/Straw/Energy Crops                                                                                        |
-| `MUNICIPAL_WASTE`     | MLG           | Municipal Solid Waste – Biogenic component                                                                                             |
-| `WOOD_WASTE`          | WWW           | Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids) |
-| `GEOTHERMAL`          | GEO           | Geothermal                                                                                                                             |
-| `OTHER`               | OTH           | Other                                                                                                                                  |
+| Name                           | EIA Fuel Code | Description                                                                                                                         |
+|:------------------------------ |:------------- |:----------------------------------------------------------------------------------------------------------------------------------- |
+| `ANTHRACITE_COAL`              | ANT           | Anthracite Coal                                                                                                                     |
+| `BITUMINOUS_COAL`              | BIT           | Bituminous Coal                                                                                                                     |
+| `LIGNITE_COAL`                 | LIG           | Lignite Coal                                                                                                                        |
+| `SUBBITUMINOUS_COAL`           | SUB           | Subbituminous Coal                                                                                                                  |
+| `WASTE_COAL`                   | WC            | Waste/Other Coal (including anthracite culm, bituminous gob, fine coal, lignite waste, waste coal)                                  |
+| `REFINED_COAL`                 | RC            | Refined Coal (A coal product that improves heat content and reduces emissions. Excludes coal processed by coal preparation plants.) |
+| `SYNTHESIS_GAS_COAL`           | SGC           | Coal-Derived Synthesis Gas                                                                                                          |
+| `DISTILLATE_FUEL_OIL`          | DFO           | Distillate Fuel Oil (including diesel, No. 1, No. 2, and No. 4 fuel oils)                                                           |
+| `JET_FUEL`                     | JF            | Jet Fuel                                                                                                                            |
+| `KEROSENE`                     | KER           | Kerosene                                                                                                                            |
+| `PETROLEUM_COKE`               | PC            | Petroleum Coke                                                                                                                      |
+| `RESIDUAL_FUEL_OIL`            | RFO           | Residual Fuel Oil (including No. 5 and No. 6 fuel oils, and bunker C fuel oil)                                                      |
+| `PROPANE`                      | PG            | Propane, gaseous                                                                                                                    |
+| `SYNTHESIS_GAS_PETROLEUM_COKE` | SGP           | Petroleum Coke Derived Synthesis Gas                                                                                                |
+| `WASTE_OIL`                    | WO            | Waste/Other Oil (including crude oil, liquid butane, liquid propane, naphtha, oil waste, re-refined motor oil, sludge oil, tar oil) |
+| `BLASTE_FURNACE_GAS`           | BFG           | Blast Furnace Gas                                                                                                                   |
+| `NATURAL_GAS`                  | NG            | Natural Gas                                                                                                                         |
+| `OTHER_GAS`                    | OG            | Other Gas                                                                                                                           |
+| `AG_BYPRODUCT`                 | AB            | Agricultural By-products                                                                                                            |
+| `MUNICIPAL_WASTE`              | MSW           | Municipal Solid Waste                                                                                                               |
+| `OTHER_BIOMASS_SOLIDS`         | OBS           | Other Biomass Solids                                                                                                                |
+| `WOOD_WASTE_SOLIDS`            | WDS           | Wood/Wood Waste Solids (including paper, pellets, railroad ties, utility poles, wood chips, bark, and wood waste solids)            |
+| `OTHER_BIOMASS_LIQUIDS`        | OBL           | Other Biomass Liquids                                                                                                               |
+| `SLUDGE_WASTE`                 | SLW           | Sludge Waste                                                                                                                        |
+| `BLACK_LIQUOR`                 | BLQ           | Black Liquor                                                                                                                        |
+| `WOOD_WASTE_LIQUIDS`           | WDL           | Wood Waste Liquids excluding Black Liquor (includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)    |
+| `LANDFILL_GAS`                 | LFG           | Landfill Gas                                                                                                                        |
+| `OTHEHR_BIOMASS_GAS`           | OBG           | Other Biomass Gas (includes digester gas, methane, and other biomass gasses)                                                        |
+| `NUCLEAR`                      | NUC           | Nuclear Uranium, Plutonium, Thorium                                                                                                 |
+| `WASTE_HEAT`                   | WH            | Waste heat not directly attributed to a fuel source                                                                                 |
+| `TIREDERIVED_FUEL`             | TDF           | Tire-derived Fuels                                                                                                                  |
+| `OTHER`                        | OTH           | Other type of fuel                                                                                                                  |
 
 ## [Energy Storage](@id storagetech_list)
 
