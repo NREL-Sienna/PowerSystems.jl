@@ -709,6 +709,7 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
+
     if d["transformer"]
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
@@ -827,9 +828,8 @@ function make_transformer_2w(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
-    # println(name)
+
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
-    # println(d["ext"])
 
     return Transformer2W(;
         name = name,
