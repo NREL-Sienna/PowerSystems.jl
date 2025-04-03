@@ -1,3 +1,4 @@
+const VOLT_THRESHOLD = 1.0
 
 """Container for data parsed by PowerModels"""
 struct PowerModelsData
@@ -83,11 +84,13 @@ end
 
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
+        f_bus_bvolt = pm_data.data["bus"][branch["f_bus"]]["base_kv"]
+        t_bus_bvolt = pm_data.data["bus"][branch["t_bus"]]["base_kv"]
         if !branch["transformer"] &&
-           pm_data.data["bus"][branch["f_bus"]]["base_kv"] !=
-           pm_data.data["bus"][branch["t_bus"]]["base_kv"]
+           !isapprox(f_bus_bvolt, t_bus_bvolt; atol = VOLT_THRESHOLD)
             branch["transformer"] = true
-            @warn "Branch $k endpoints have different voltage levels, converting to transformer."
+            branch["ext"] = Dict{String, Any}()
+            @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) have different voltage levels endpoints: from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV, converting to transformer."
         end
     end
 end
@@ -827,6 +830,7 @@ function make_transformer_2w(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
 
     return Transformer2W(;
