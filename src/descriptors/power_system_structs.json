@@ -550,12 +550,6 @@
                     "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
                     "data_type": "Bool"
                 },
-                {   
-                    "name": "id",
-                    "comment": "Multisection line grouping identifier, with a '&' as a first character",
-                    "data_type": "String",
-                    "default": "&1"
-                },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
@@ -563,18 +557,15 @@
                     "data_type": "Arc"
                 },
                 {
-                    "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow on the line (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true
+                    "name": "section_number",
+                    "comment": "Number of sections to consider in the multisection line",
+                    "data_type": "Int"
                 },
-                {
-                    "name": "reactive_power_flow",
-                    "comment": "Initial condition of reactive power flow on the line (MVAR)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true
+                {   
+                    "name": "id",
+                    "comment": "Multisection line grouping identifier, with a '&' as a first character",
+                    "data_type": "String",
+                    "default": "1"
                 },
                 {
                     "name": "dummy_buses",
@@ -582,11 +573,6 @@
                     "data_type": "Dict{String, Int}",
                     "null_value": "Dict{String, Int}()",
                     "default": "Dict{String, Int}()"
-                },
-                {
-                    "name": "section_number",
-                    "comment": "Number of sections to consider in the multisection line",
-                    "data_type": "Int"
                 },
                 {
                     "name": "services",
