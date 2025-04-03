@@ -1,15 +1,11 @@
-
-include("data_5bus_pu.jl")
-include("data_14bus_pu.jl")
-
 checksys = false
 
 @testset "Test System constructors from .jl files" begin
     tPowerSystem = System(nothing)
-    nodes_5 = nodes5()
-    nodes_14 = nodes14()
+    nodes_5_nodes = nodes5()
+    nodes_14_nodes = nodes14()
 
-    for node in nodes_5
+    for node in nodes_5_nodes
         node.angle = deg2rad(node.angle)
     end
 
@@ -18,19 +14,19 @@ checksys = false
 
     sys5 = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        loads5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5)
 
     sys5b = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        loads5(nodes_5),
-        battery5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        battery5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5b)
@@ -42,12 +38,12 @@ checksys = false
 
     sys5bh = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        hydro_generators5(nodes_5),
-        loads5(nodes_5),
-        branches5(nodes_5),
-        battery5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        hydro_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        branches5(nodes_5_nodes),
+        battery5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5bh)
@@ -59,26 +55,26 @@ checksys = false
     #                            100.0, Dict{Symbol,Vector{<:TimeSeriesData}}(),nothing,nothing)
     #sys14 = System(_sys14)
 
-    for node in nodes_14
+    for node in nodes_14_nodes
         node.angle = deg2rad(node.angle)
     end
 
     sys14b = PowerSystems.System(
         100.0,
-        nodes_14,
-        thermal_generators14(nodes_14),
-        loads14(nodes_14),
-        battery14(nodes_14);
+        nodes_14_nodes,
+        thermal_generators14(nodes_14_nodes),
+        loads14(nodes_14_nodes),
+        battery14(nodes_14_nodes);
         runchecks = checksys,
     )
     clear_components!(sys14b)
     sys14b = PowerSystems.System(
         100.0,
-        nodes_14,
-        thermal_generators14(nodes_14),
-        loads14(nodes_14),
-        branches14(nodes_14),
-        battery14(nodes_14);
+        nodes_14_nodes,
+        thermal_generators14(nodes_14_nodes),
+        loads14(nodes_14_nodes),
+        branches14(nodes_14_nodes),
+        battery14(nodes_14_nodes);
         runchecks = checksys,
     )
     clear_components!(sys14b)
