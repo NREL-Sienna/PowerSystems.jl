@@ -568,13 +568,6 @@
                     "default": "1"
                 },
                 {
-                    "name": "dummy_buses",
-                    "comment": "Dictionary mapping the dummy bus DUMi string to its respective bus number. Each dummy bus connected between exactly two branches.",
-                    "data_type": "Dict{String, Int}",
-                    "null_value": "Dict{String, Int}()",
-                    "default": "Dict{String, Int}()"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",

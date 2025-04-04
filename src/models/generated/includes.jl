@@ -539,7 +539,6 @@ export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
 export get_droop_flag
-export get_dummy_buses
 export get_dynamic_injector
 export get_e_lim
 export get_efficiency
@@ -1194,7 +1193,6 @@ export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
 export set_droop_flag!
-export set_dummy_buses!
 export set_dynamic_injector!
 export set_e_lim!
 export set_efficiency!

@@ -1357,7 +1357,7 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
 
             dummy_buses =
                 Dict(k => v for (k, v) in multisec_line if startswith(k, "DUM") && v != "")
-            sub_data["dummy_buses"] = dummy_buses
+            sub_data["ext"] = dummy_buses
 
             # Check if the multisection line is available based on branch status
             # Multi-section lines are treated as a single entity regarding its status

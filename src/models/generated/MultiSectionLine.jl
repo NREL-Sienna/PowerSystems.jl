@@ -11,7 +11,6 @@ This file is auto-generated. Do not edit.
         arc::Arc
         section_number::Int
         id::String
-        dummy_buses::Dict{String, Int}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -25,7 +24,6 @@ A multi-section line grouping representation
 - `arc::Arc`: An [`Arc`](@ref) defining this line `from` a bus `to` another bus
 - `section_number::Int`: Number of sections to consider in the multisection line
 - `id::String`: (default: `1`) Multisection line grouping identifier, with a '&' as a first character
-- `dummy_buses::Dict{String, Int}`: (default: `Dict{String, Int}()`) Dictionary mapping the dummy bus DUMi string to its respective bus number. Each dummy bus connected between exactly two branches.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -41,8 +39,6 @@ mutable struct MultiSectionLine <: ACTransmission
     section_number::Int
     "Multisection line grouping identifier, with a '&' as a first character"
     id::String
-    "Dictionary mapping the dummy bus DUMi string to its respective bus number. Each dummy bus connected between exactly two branches."
-    dummy_buses::Dict{String, Int}
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -51,12 +47,12 @@ mutable struct MultiSectionLine <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function MultiSectionLine(name, available, arc, section_number, id=1, dummy_buses=Dict{String, Int}(), services=Device[], ext=Dict{String, Any}(), )
-    MultiSectionLine(name, available, arc, section_number, id, dummy_buses, services, ext, InfrastructureSystemsInternal(), )
+function MultiSectionLine(name, available, arc, section_number, id=1, services=Device[], ext=Dict{String, Any}(), )
+    MultiSectionLine(name, available, arc, section_number, id, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function MultiSectionLine(; name, available, arc, section_number, id=1, dummy_buses=Dict{String, Int}(), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MultiSectionLine(name, available, arc, section_number, id, dummy_buses, services, ext, internal, )
+function MultiSectionLine(; name, available, arc, section_number, id=1, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MultiSectionLine(name, available, arc, section_number, id, services, ext, internal, )
 end
 
 """Get [`MultiSectionLine`](@ref) `name`."""
@@ -69,8 +65,6 @@ get_arc(value::MultiSectionLine) = value.arc
 get_section_number(value::MultiSectionLine) = value.section_number
 """Get [`MultiSectionLine`](@ref) `id`."""
 get_id(value::MultiSectionLine) = value.id
-"""Get [`MultiSectionLine`](@ref) `dummy_buses`."""
-get_dummy_buses(value::MultiSectionLine) = value.dummy_buses
 """Get [`MultiSectionLine`](@ref) `services`."""
 get_services(value::MultiSectionLine) = value.services
 """Get [`MultiSectionLine`](@ref) `ext`."""
@@ -86,8 +80,6 @@ set_arc!(value::MultiSectionLine, val) = value.arc = val
 set_section_number!(value::MultiSectionLine, val) = value.section_number = val
 """Set [`MultiSectionLine`](@ref) `id`."""
 set_id!(value::MultiSectionLine, val) = value.id = val
-"""Set [`MultiSectionLine`](@ref) `dummy_buses`."""
-set_dummy_buses!(value::MultiSectionLine, val) = value.dummy_buses = val
 """Set [`MultiSectionLine`](@ref) `services`."""
 set_services!(value::MultiSectionLine, val) = value.services = val
 """Set [`MultiSectionLine`](@ref) `ext`."""

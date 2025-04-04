@@ -986,9 +986,8 @@ function make_multisection_line(
     bus_t::ACBus,
     facts_buses::Set{Int},
 )
-    dummy_buses = d["dummy_buses"]
 
-    for (_, dbus) in dummy_buses
+    for (_, dbus) in d["ext"]
         # Check if a FACTS device is connected to a dummy bus
         if dbus in facts_buses
             @warn "FACTS device is connected to a dummy bus $(dbus) in multi-section line $name."
@@ -1008,8 +1007,7 @@ function make_multisection_line(
         id = d["id"],
         arc = Arc(bus_f, bus_t),
         section_number = d["section_number"],
-        dummy_buses = dummy_buses,
-        ext = Dict{String, Any}(),
+        ext = d["ext"],
     )
 end
 
