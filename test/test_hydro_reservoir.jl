@@ -18,8 +18,8 @@ end
     reservoir = HydroReservoir(;
         name = "init",
         available = false,
-        initial_level=1.0,
-        storage_level_limits = (min=0.0, max=1.0),
+        initial_level = 1.0,
+        storage_level_limits = (min = 0.0, max = 1.0),
         spillage_limits = nothing,
         inflow = 0.0,
         outflow = 0.0,
@@ -27,7 +27,7 @@ end
         travel_time = 0.0,
         head_to_volume_factor = 0.0,
     )
-    @test get_storage_level_limits(reservoir) == (min=0.0, max=1.0)
+    @test get_storage_level_limits(reservoir) == (min = 0.0, max = 1.0)
     @test get_initial_level(reservoir) == 1.0
     @test get_level_data_type(reservoir) == ReservoirDataType.VOLUME
     @test get_inflow(reservoir) == 0.0
@@ -36,7 +36,8 @@ end
 
 @testset "Test Hydro Reservoir constructors and setters" begin
     reservoir = HydroReservoir(nothing)
-    @test set_storage_level_limits!(reservoir, (min=0.0, max=0.0)) == (min=0.0, max=0.0)
+    @test set_storage_level_limits!(reservoir, (min = 0.0, max = 0.0)) ==
+          (min = 0.0, max = 0.0)
     @test set_level_data_type!(reservoir, ReservoirDataType.HEAD) == ReservoirDataType.HEAD
     @test set_inflow!(reservoir, 10.0) == 10.0
     @test set_outflow!(reservoir, 10.0) == 10.0
