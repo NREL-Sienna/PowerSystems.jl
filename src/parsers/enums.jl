@@ -24,6 +24,7 @@ const ENUMS = (
     InputCategory,
     PrimeMovers,
     StateTypes,
+    ReservoirDataType,
     ThermalFuels,
     UnitSystem,
 )
