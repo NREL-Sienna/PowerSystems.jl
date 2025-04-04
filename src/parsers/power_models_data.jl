@@ -72,6 +72,7 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_vscline!(sys, data, bus_number_to_bus; kwargs...)
     read_facts!(sys, data, bus_number_to_bus; kwargs...)
+    read_multisection_line!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -977,6 +978,81 @@ function read_branch!(
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
         value = make_branch(name, d, bus_f, bus_t, source_type)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_multisection_line(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    facts_buses::Set{Int},
+)
+    for (_, dbus) in d["ext"]
+        # Check if a FACTS device is connected to a dummy bus
+        if dbus in facts_buses
+            @warn "FACTS device is connected to a dummy bus $(dbus) in multi-section line $name."
+        end
+
+        # Check if any dummy bus is used as a converter bus
+        if haskey(d, "dc_converters")
+            if dbus in d["dc_converters"]
+                @warn "Dummy bus $(dbus) assigned as a DC line converter bus in multi-section line $(name)."
+            end
+        end
+    end
+
+    return MultiSectionLine(;
+        name = name,
+        available = d["available"],
+        id = d["id"],
+        arc = Arc(bus_f, bus_t),
+        section_number = d["section_number"],
+        ext = d["ext"],
+    )
+end
+
+function read_multisection_line!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading multi-section line data"
+    if !haskey(data, "multisection_line")
+        @info "There is no multi-section line data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    # Collect all DC converter buses
+    dc_converters = Set{Int}()
+    for key in ["dcline", "vscline"]
+        if haskey(data, key)
+            for (_, d) in data[key]
+                push!(dc_converters, d["f_bus"])
+                push!(dc_converters, d["t_bus"])
+            end
+        end
+    end
+
+    # Collect all buses where FACTS devices are connected to
+    facts_buses = Set{Int}()
+    if haskey(data, "facts")
+        for (_, d) in data["facts"]
+            push!(facts_buses, d["bus"])
+        end
+    end
+    for (d_key, d) in data["multisection_line"]
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        d["dc_converters"] = dc_converters
+        msl_name = "$(name)-$(d["id"])"
+        value = make_multisection_line(msl_name, d, bus_f, bus_t, facts_buses)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
