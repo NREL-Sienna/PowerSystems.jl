@@ -1309,7 +1309,7 @@ Return a vector of connected turbines to the reservoir
 """
 function get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
     throw_if_not_attached(reservoir, sys)
-    return [x for x in get_components(Device, sys) if has_reservoir(x, reservoir)]
+    return [x for x in get_components(HydroTurbine, sys) if has_reservoir(x, reservoir)]
 end
 
 struct ReservoirConnectedDevices
@@ -1327,7 +1327,7 @@ Returns a ReservoirConnectedDevices object.
 function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
     uuid = IS.get_uuid(reservoir)
     devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
-    for device in get_components(Device, sys)
+    for device in get_components(HydroTurbine, sys)
         for _reservoir in get_reservoirs(device)
             if IS.get_uuid(_reservoir) == uuid
                 push!(devices.connected_devices, device)
