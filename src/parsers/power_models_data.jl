@@ -986,7 +986,6 @@ function make_multisection_line(
     bus_t::ACBus,
     facts_buses::Set{Int},
 )
-
     for (_, dbus) in d["ext"]
         # Check if a FACTS device is connected to a dummy bus
         if dbus in facts_buses
