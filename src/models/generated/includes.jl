@@ -482,7 +482,6 @@ export get_arc
 export get_area
 export get_available
 export get_b
-export get_balance_time_period
 export get_base_power
 export get_base_voltage
 export get_battery_resistance
@@ -583,10 +582,12 @@ export get_kω
 export get_l
 export get_lf
 export get_lg
+export get_load_balance_time_horizon
 export get_load_response
 export get_load_zone
 export get_loss
 export get_loss_function
+export get_lower_bound_active_power
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -671,6 +672,7 @@ export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
+export get_upper_bound_active_power
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1053,7 +1055,6 @@ export set_arc!
 export set_area!
 export set_available!
 export set_b!
-export set_balance_time_period!
 export set_base_power!
 export set_base_voltage!
 export set_battery_resistance!
@@ -1154,10 +1155,12 @@ export set_kω!
 export set_l!
 export set_lf!
 export set_lg!
+export set_load_balance_time_horizon!
 export set_load_response!
 export set_load_zone!
 export set_loss!
 export set_loss_function!
+export set_lower_bound_active_power!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
@@ -1242,6 +1245,7 @@ export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
+export set_upper_bound_active_power!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!

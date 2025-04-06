@@ -1378,7 +1378,7 @@
         },
         {
             "struct_name": "ShiftablePowerLoad",
-            "docstring": "A [static](@ref S) power load that can be partially or completed shifted to later time periods.\n\n These loads are used to model demand response. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation). Load in the profile can be shifted to later time periods to aid in satisfying other system needs; however, any shifted load must be served within a designated time horizon (e.g., 24 hours), which is set by `balance_time_period`.",
+            "docstring": "A [static](@ref S) power load that can be partially or completed shifted to later time periods.\n\n These loads are used to model demand response. This load has a target demand profile (set by a [`max_active_power` time series](@ref ts_data) for an operational simulation). Load in the profile can be shifted to later time periods to aid in satisfying other system needs; however, any shifted load must be served within a designated time horizon (e.g., 24 hours), which is set by `load_balance_time_horizon`.",
             "fields": [
                 {
                     "null_value": "init",
@@ -1404,6 +1404,30 @@
                     "comment": "Initial steady state active power demand (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "upper_bound_active_power",
+                    "comment": "Initial upper bound on the active power load (MW), validation range: `>= active_power`",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": "active_power",
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "lower_bound_active_power",
+                    "comment": "Initial lower bound on the active power load (MW), validation range: `<= active_power`",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": null,
+                        "max": "active_power"
+                    },
+                    "validation_action": "error",
                     "needs_conversion": true
                 },
                 {
@@ -1439,8 +1463,8 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "balance_time_period",
-                    "comment": "Time period during which load must be balanced in hours",
+                    "name": "load_balance_time_horizon",
+                    "comment": "Number of time periods over which load must be balanced",
                     "null_value": "0",
                     "data_type": "Int",
                     "validation_action": "warn"
