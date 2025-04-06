@@ -2427,9 +2427,13 @@
                 {
                     "name": "load_balance_time_horizon",
                     "comment": "Number of time periods over which load must be balanced",
-                    "null_value": "0",
+                    "null_value": "1",
                     "data_type": "Int",
-                    "validation_action": "warn"
+                    "valid_range": {
+                        "min": 1,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "operation_cost",
