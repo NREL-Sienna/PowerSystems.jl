@@ -1615,7 +1615,7 @@ function transform_single_time_series!(
         sys.data,
         IS.DeterministicSingleTimeSeries,
         horizon,
-        interval,
+        interval;
         resolution = resolution,
     )
     return
@@ -1865,18 +1865,18 @@ range or if the custom validate method for the type fails its check.
 """
 function check_component(sys::System, component::Component)
     if !validate_component_with_system(component, sys)
-        throw(IS.InvalidValue("Invalid value for $component"))
+        throw(IS.InvalidValue("Invalid value for $(summary(component))"))
     end
     IS.check_component(sys.data, component)
     return
 end
 
-function check_sil_values(sys::System)
+function check_ac_transmission_rate_values(sys::System)
     is_valid = true
     base_power = get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
-        if !check_sil_values(line, base_power)
+        if !check_rating_values(line, base_power)
             is_valid = false
         end
     end
@@ -2193,6 +2193,20 @@ function check_attached_buses(sys::System, component::Branch)
     return
 end
 
+function check_attached_buses(sys::System, component::Transformer3W)
+    arc_ps = get_primary_secondary_arc(component)
+    arc_pt = get_primary_tertiary_arc(component)
+    bus_primary = get_from(arc_ps)
+    bus_secondary = get_to(arc_ps)
+    bus_tertiary = get_to(arc_pt)
+    star_bus = get_star_bus(component)
+    throw_if_not_attached(bus_primary, sys)
+    throw_if_not_attached(bus_secondary, sys)
+    throw_if_not_attached(bus_tertiary, sys)
+    throw_if_not_attached(star_bus, sys)
+    return
+end
+
 function check_attached_buses(sys::System, component::DynamicBranch)
     check_attached_buses(sys, get_branch(component))
     return
@@ -2241,6 +2255,20 @@ function check_component_addition(sys::System, branch::Branch; kwargs...)
     arc = get_arc(branch)
     throw_if_not_attached(get_from(arc), sys)
     throw_if_not_attached(get_to(arc), sys)
+    return
+end
+
+function check_component_addition(sys::System, component::Transformer3W; kwargs...)
+    arc_ps = get_primary_secondary_arc(component)
+    arc_pt = get_primary_tertiary_arc(component)
+    bus_primary = get_from(arc_ps)
+    bus_secondary = get_to(arc_ps)
+    bus_tertiary = get_to(arc_pt)
+    star_bus = get_star_bus(component)
+    throw_if_not_attached(bus_primary, sys)
+    throw_if_not_attached(bus_secondary, sys)
+    throw_if_not_attached(bus_tertiary, sys)
+    throw_if_not_attached(star_bus, sys)
     return
 end
 
@@ -2346,6 +2374,30 @@ function _handle_branch_addition_common!(sys::System, component::Branch)
         add_component!(sys, arc)
     else
         set_arc!(component, _arc)
+    end
+    return
+end
+
+function _handle_branch_addition_common!(sys::System, component::Transformer3W)
+    # If this arc is already attached to the system, assign it to the 3W XFRM.
+    # Else, add it to the system.
+    arcs = [
+        get_primary_secondary_arc(component),
+        get_secondary_tertiary_arc(component),
+        get_primary_tertiary_arc(component),
+    ]
+    set_arc_methods = [
+        set_primary_secondary_arc!,
+        set_secondary_tertiary_arc!,
+        set_primary_tertiary_arc!,
+    ]
+    for (ix, arc) in enumerate(arcs)
+        _arc = get_component(Arc, sys, get_name(arc))
+        if isnothing(_arc)
+            add_component!(sys, arc)
+        else
+            set_arc_methods[ix](component, _arc)
+        end
     end
     return
 end
@@ -2531,6 +2583,8 @@ function convert_component!(
         (from_to = line.rating, to_from = line.rating),
         line.rating,
         line.angle_limits,
+        line.rating_b,
+        line.rating_c,
         line.g,
         line.services,
         line.ext,
@@ -2575,6 +2629,8 @@ function convert_component!(
         line.b,
         line.rating,
         line.angle_limits,
+        line.rating_b,
+        line.rating_c,
         line.g,
         line.services,
         line.ext,
@@ -2680,7 +2736,7 @@ function _validate_or_skip!(sys, component, skip_validation)
     if !skip_validation
         sanitize_component!(component, sys)
         if !validate_component_with_system(component, sys)
-            throw(IS.InvalidValue("Invalid value for $component"))
+            throw(IS.InvalidValue("Invalid value for $(summary(component))"))
         end
     end
 

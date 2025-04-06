@@ -53,6 +53,66 @@ function ACBus(
     )
 end
 
+"""Allows construction with bus type specified as a string for legacy code."""
+function DiscreteControlledACBranch(
+    name,
+    available,
+    arc,
+    active_power_flow,
+    reactive_power_flow,
+    r,
+    x,
+    rating,
+    discrete_branch_type::String,
+    branch_status::String,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return DiscreteControlledACBranch(
+        name,
+        available,
+        arc,
+        active_power_flow,
+        reactive_power_flow,
+        r,
+        x,
+        rating,
+        get_enum_value(DiscreteControlledBranchType, discrete_branch_type),
+        get_enum_value(DiscreteControlledBranchStatus, branch_status),
+        ext,
+        internal,
+    )
+end
+
+"""Allows construction with bus type specified as a string for legacy code."""
+function FACTSControlDevice(
+    name,
+    available,
+    bus,
+    control_mode::String,
+    voltage_setpoint,
+    max_shunt_current,
+    reactive_power_required,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return FACTSControlDevice(
+        name,
+        available,
+        bus,
+        get_enum_value(FACTSOperationModes, control_mode),
+        voltage_setpoint,
+        max_shunt_current,
+        reactive_power_required,
+        services,
+        dynamic_injector,
+        ext,
+        internal,
+    )
+end
+
 """Allows construction of a reserve from an iterator."""
 function ConstantReserve(
     name,
@@ -211,7 +271,7 @@ function TwoTerminalHVDCLine(
     internal,
 )
     new_loss = LinearCurve(loss.l0, loss.l1)
-    TwoTerminalHVDCLine(
+    TwoTerminalGenericHVDCLine(
         name,
         available,
         active_power_flow,
@@ -227,6 +287,9 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -241,7 +304,7 @@ function TwoTerminalHVDCLine(
     ext = Dict{String, Any}(),
 )
     new_loss = LinearCurve(loss.l0, loss.l1)
-    TwoTerminalHVDCLine(
+    TwoTerminalGenericHVDCLine(
         name,
         available,
         active_power_flow,
@@ -254,5 +317,102 @@ function TwoTerminalHVDCLine(
         services,
         ext,
         InfrastructureSystemsInternal(),
+    )
+end
+
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
+function TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::Union{LinearCurve, PiecewiseIncrementalCurve},
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    return TwoTerminalGenericHVDCLine(
+        name,
+        available,
+        active_power_flow,
+        arc,
+        active_power_limits_from,
+        active_power_limits_to,
+        reactive_power_limits_from,
+        reactive_power_limits_to,
+        loss,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
+end
+
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
+function TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss = LinearCurve(0.0),
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    TwoTerminalGenericHVDCLine(
+        name,
+        available,
+        active_power_flow,
+        arc,
+        active_power_limits_from,
+        active_power_limits_to,
+        reactive_power_limits_from,
+        reactive_power_limits_to,
+        loss,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
+end
+
+"""
+Deprecated method for TwoTerminalHVDCLine
+"""
+function TwoTerminalHVDCLine(;
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss = LinearCurve(0.0),
+    services = Device[],
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    TwoTerminalGenericHVDCLine(
+        name,
+        available,
+        active_power_flow,
+        arc,
+        active_power_limits_from,
+        active_power_limits_to,
+        reactive_power_limits_from,
+        reactive_power_limits_to,
+        loss,
+        services,
+        ext,
+        internal,
     )
 end

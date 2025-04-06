@@ -3,10 +3,10 @@ Extends the branch type to add the information required for dynamic modeling of 
 
 
 # Arguments
-- `branch::ACBranch`
+- `branch::ACTransmission`
 """
-mutable struct DynamicBranch <: ACBranch
-    branch::ACBranch
+mutable struct DynamicBranch <: ACTransmission
+    branch::ACTransmission
     n_states::Int
     states::Vector{Symbol}
     internal::IS.InfrastructureSystemsInternal
@@ -22,7 +22,7 @@ const DEFAULT_DYNAMIC_BRANCH_STATES = [:Il_R, :Il_I]
 function DynamicBranch(
     branch::T;
     internal = IS.InfrastructureSystemsInternal(),
-) where {T <: ACBranch}
+) where {T <: ACTransmission}
     states = DEFAULT_DYNAMIC_BRANCH_STATES
     n_states = length(states)
     return DynamicBranch(branch, n_states, states, internal)
@@ -103,7 +103,7 @@ set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
 "Set branch"
-set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
+set_branch!(value::DynamicBranch, val::ACTransmission) = value.branch = val
 "Set n_states"
 set_n_states!(value::DynamicBranch, val::Int) = value.n_states = val
 "Set states"

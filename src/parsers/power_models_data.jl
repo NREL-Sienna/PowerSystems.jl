@@ -1,4 +1,3 @@
-
 """Container for data parsed by PowerModels"""
 struct PowerModelsData
     data::Dict{String, Any}
@@ -58,15 +57,23 @@ function System(pm_data::PowerModelsData; kwargs...)
     @info "Constructing System from Power Models" data["name"] data["source_type"]
 
     sys = System(data["baseMVA"]; kwargs...)
+    source_type = data["source_type"]
 
     bus_number_to_bus = read_bus!(sys, data; kwargs...)
     read_loads!(sys, data, bus_number_to_bus; kwargs...)
     read_loadzones!(sys, data, bus_number_to_bus; kwargs...)
     read_gen!(sys, data, bus_number_to_bus; kwargs...)
-    read_branch!(sys, data, bus_number_to_bus; kwargs...)
+    for component_type in ["switch", "breaker"]
+        read_switch_breaker!(sys, data, bus_number_to_bus, component_type; kwargs...)
+    end
+    read_branch!(sys, data, bus_number_to_bus, source_type; kwargs...)
+    read_switched_shunt!(sys, data, bus_number_to_bus; kwargs...)
     read_shunt!(sys, data, bus_number_to_bus; kwargs...)
-    read_dcline!(sys, data, bus_number_to_bus; kwargs...)
+    read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
+    read_vscline!(sys, data, bus_number_to_bus; kwargs...)
+    read_facts!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
+    read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
         check(sys)
     end
@@ -75,20 +82,28 @@ end
 
 function correct_pm_transformer_status!(pm_data::PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
+        f_bus_bvolt = pm_data.data["bus"][branch["f_bus"]]["base_kv"]
+        t_bus_bvolt = pm_data.data["bus"][branch["t_bus"]]["base_kv"]
+        percent_difference =
+            abs(f_bus_bvolt - t_bus_bvolt) / ((f_bus_bvolt + t_bus_bvolt) / 2)
         if !branch["transformer"] &&
-           pm_data.data["bus"][branch["f_bus"]]["base_kv"] !=
-           pm_data.data["bus"][branch["t_bus"]]["base_kv"]
+           percent_difference > BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL
             branch["transformer"] = true
-            @warn "Branch $k endpoints have different voltage levels, converting to transformer."
+            branch["ext"] = Dict{String, Any}()
+            @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) has different voltage levels endpoints (from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV) which exceed the $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% threshold; converting to transformer."
         end
     end
 end
 
 """
-Internal component name retreval from pm2ps_dict
+Internal component name retrieval from pm2ps_dict
 """
 function _get_pm_dict_name(device_dict::Dict)::String
-    if haskey(device_dict, "name")
+    if haskey(device_dict, "shunt_bus")
+        # With shunts, we have FixedAdmittance and SwitchedAdmittance types.
+        # To avoid potential name collision, we add the connected bus number to the name.
+        name = join(strip.(string.((device_dict["shunt_bus"], device_dict["name"]))), "-")
+    elseif haskey(device_dict, "name")
         name = string(device_dict["name"])
     elseif haskey(device_dict, "source_id")
         name = strip(join(string.(device_dict["source_id"]), "-"))
@@ -112,7 +127,7 @@ function _get_pm_bus_name(device_dict::Dict, unique_names::Bool)
 end
 
 """
-Internal branch name retreval from pm2ps_dict
+Internal branch name retrieval from pm2ps_dict
 """
 function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
     # Additional if-else are used to catch line id in PSSe parsing cases
@@ -120,6 +135,10 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
         index = device_dict["name"]
     elseif device_dict["source_id"][1] == "branch" && length(device_dict["source_id"]) > 2
         index = strip(device_dict["source_id"][4])
+    elseif (
+        device_dict["source_id"][1] == "switch" || device_dict["source_id"][1] == "breaker"
+    ) && length(device_dict["source_id"]) > 2
+        index = string(device_dict["source_id"][4][2])
     elseif device_dict["source_id"][1] == "transformer" &&
            length(device_dict["source_id"]) > 3
         index = strip(device_dict["source_id"][5])
@@ -127,6 +146,19 @@ function _get_pm_branch_name(device_dict, bus_f::ACBus, bus_t::ACBus)
         index = device_dict["index"]
     end
     return "$(get_name(bus_f))-$(get_name(bus_t))-i_$index"
+end
+
+"""
+Internal 3WT name retrieval from pm2ps_dict
+"""
+function _get_pm_3w_name(
+    device_dict,
+    bus_primary::ACBus,
+    bus_secondary::ACBus,
+    bus_tertiary::ACBus,
+)
+    ckt = device_dict["circuit"]
+    return "$(get_name(bus_primary))-$(get_name(bus_secondary))-$(get_name(bus_tertiary))-i_$ckt"
 end
 
 """
@@ -582,6 +614,10 @@ function make_thermal_gen(
         ext["z_source"] = (r = d["r_source"], x = d["x_source"])
     end
 
+    if haskey(d, "rt_source")
+        ext["zt_source"] = (rt = d["rt_source"], xt = d["xt_source"])
+    end
+
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
@@ -671,7 +707,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_type::String)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
@@ -680,7 +716,7 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
         elseif branch_type == Transformer2W
-            value = make_transformer_2w(name, d, bus_f, bus_t)
+            value = make_transformer_2w(name, d, bus_f, bus_t, source_type)
         elseif branch_type == TapTransformer
             value = make_tap_transformer(name, d, bus_f, bus_t)
         elseif branch_type == PhaseShiftingTransformer
@@ -695,6 +731,26 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     return value
 end
 
+function _get_rating(
+    branch_type::String,
+    name::AbstractString,
+    line_data::Dict,
+    key::String,
+)
+    if !haskey(line_data, key)
+        return INFINITE_BOUND
+    end
+
+    if isapprox(line_data[key], 0.0)
+        @warn(
+            "$branch_type $name rating value: $(line_data[key]). Unbounded value implied as per PSSe Manual"
+        )
+        return INFINITE_BOUND
+    else
+        return line_data[key]
+    end
+end
+
 function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -703,6 +759,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return Line(;
         name = name,
         available = available_value,
@@ -712,12 +769,60 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         b = (from = d["b_fr"], to = d["b_to"]),
-        rating = d["rate_a"],
+        rating = _get_rating("Line", name, d, "rate_a"),
         angle_limits = (min = d["angmin"], max = d["angmax"]),
+        rating_b = _get_rating("Line", name, d, "rate_b"),
+        rating_c = _get_rating("Line", name, d, "rate_c"),
     )
 end
 
-function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+    return DiscreteControlledACBranch(;
+        name = name,
+        available = Bool(d["state"]),
+        active_power_flow = d["active_power_flow"],
+        reactive_power_flow = d["reactive_power_flow"],
+        arc = Arc(bus_f, bus_t),
+        r = d["r"],
+        x = d["x"],
+        rating = d["rating"],
+        discrete_branch_type = d["discrete_branch_type"],
+        branch_status = d["state"],
+    )
+end
+
+function read_switch_breaker!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus},
+    device_type::String;
+    kwargs...,
+)
+    @info "Reading $device_type data"
+    if !haskey(data, device_type)
+        @info "There is no $device_type data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    for (_, d) in data[device_type]
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        value = make_switch_breaker(name, d, bus_f, bus_t)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_transformer_2w(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    source_type::String,
+)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -725,6 +830,9 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
+    ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
+
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -734,7 +842,61 @@ function make_transformer_2w(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = _get_rating("Transformer2W", name, d, "rate_a"),
+        rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
+        rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
+        ext = ext,
+    )
+end
+
+function make_3w_transformer(
+    name::String,
+    d::Dict,
+    bus_primary::ACBus,
+    bus_secondary::ACBus,
+    bus_tertiary::ACBus,
+    star_bus::ACBus,
+)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
+    return Transformer3W(;
+        name = name,
+        available = d["available"],
+        primary_secondary_arc = Arc(bus_primary, bus_secondary),
+        secondary_tertiary_arc = Arc(bus_secondary, bus_tertiary),
+        primary_tertiary_arc = Arc(bus_primary, bus_tertiary),
+        star_bus = star_bus,
+        active_power_flow_primary = pf,
+        reactive_power_flow_primary = qf,
+        active_power_flow_secondary = pf,
+        reactive_power_flow_secondary = qf,
+        active_power_flow_tertiary = pf,
+        reactive_power_flow_tertiary = qf,
+        r_primary = d["r_primary"],
+        x_primary = d["x_primary"],
+        r_secondary = d["r_secondary"],
+        x_secondary = d["x_secondary"],
+        r_tertiary = d["r_tertiary"],
+        x_tertiary = d["x_tertiary"],
+        rating = d["rating"],
+        r_12 = d["r_12"],
+        x_12 = d["x_12"],
+        r_23 = d["r_23"],
+        x_23 = d["x_23"],
+        r_13 = d["r_13"],
+        x_13 = d["x_13"],
+        g = d["g"],
+        b = d["b"],
+        primary_turns_ratio = d["primary_turns_ratio"],
+        secondary_turns_ratio = d["secondary_turns_ratio"],
+        tertiary_turns_ratio = d["tertiary_turns_ratio"],
+        available_primary = d["available_primary"],
+        available_secondary = d["available_secondary"],
+        available_tertiary = d["available_tertiary"],
+        rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
+        rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
+        rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
+        ext = d["ext"],
     )
 end
 
@@ -746,6 +908,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -756,7 +919,9 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = d["rate_a"],
+        rating = _get_rating("TapTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
     )
 end
 
@@ -774,6 +939,7 @@ function make_phase_shifting_transformer(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
@@ -785,14 +951,17 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
-        rating = d["rate_a"],
+        rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
+        rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
+        rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
     )
 end
 
 function read_branch!(
     sys::System,
     data::Dict,
-    bus_number_to_bus::Dict{Int, ACBus};
+    bus_number_to_bus::Dict{Int, ACBus},
+    source_type::String;
     kwargs...,
 )
     @info "Reading branch data"
@@ -807,30 +976,103 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t)
+        value = make_branch(name, d, bus_f, bus_t, source_type)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
-function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
-    return TwoTerminalHVDCLine(;
-        name = name,
-        available = d["br_status"] == 1,
-        active_power_flow = get(d, "pf", 0.0),
-        arc = Arc(bus_f, bus_t),
-        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
-        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
-        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
-        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
-        loss = LinearCurve(d["loss1"], d["loss0"]),
-    )
+function read_3w_transformer!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading 3W transformer data"
+    if !haskey(data, "3w_transformer")
+        @info "There is no 3W transformer data in this file"
+        return
+    end
+    _get_name = get(kwargs, :xfrm_3w_name_formatter, _get_pm_3w_name)
+
+    for (d_key, d) in data["3w_transformer"]
+        bus_primary = bus_number_to_bus[d["bus_primary"]]
+        bus_secondary = bus_number_to_bus[d["bus_secondary"]]
+        bus_tertiary = bus_number_to_bus[d["bus_tertiary"]]
+        star_bus = bus_number_to_bus[d["star_bus"]]
+
+        name = _get_name(d, bus_primary, bus_secondary, bus_tertiary)
+        value =
+            make_3w_transformer(name, d, bus_primary, bus_secondary, bus_tertiary, star_bus)
+
+        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_type::String)
+    if source_type == "pti"
+        return TwoTerminalLCCLine(;
+            name = name,
+            available = d["available"],
+            arc = Arc(bus_f, bus_t),
+            active_power_flow = get(d, "pf", 0.0),
+            r = d["r"],
+            transfer_setpoint = d["transfer_setpoint"],
+            scheduled_dc_voltage = d["scheduled_dc_voltage"],
+            rectifier_bridges = d["rectifier_bridges"],
+            rectifier_delay_angle_limits = d["rectifier_delay_angle_limits"],
+            rectifier_rc = d["rectifier_rc"],
+            rectifier_xc = d["rectifier_xc"],
+            rectifier_base_voltage = d["rectifier_base_voltage"],
+            inverter_bridges = d["inverter_bridges"],
+            inverter_extinction_angle_limits = d["inverter_extinction_angle_limits"],
+            inverter_rc = d["inverter_rc"],
+            inverter_xc = d["inverter_xc"],
+            inverter_base_voltage = d["inverter_base_voltage"],
+            power_mode = d["power_mode"],
+            switch_mode_voltage = d["switch_mode_voltage"],
+            compounding_resistance = d["compounding_resistance"],
+            min_compounding_voltage = d["min_compounding_voltage"],
+            rectifier_transformer_ratio = d["rectifier_transformer_ratio"],
+            rectifier_tap_setting = d["rectifier_tap_setting"],
+            rectifier_tap_limits = d["rectifier_tap_limits"],
+            rectifier_tap_step = d["rectifier_tap_step"],
+            rectifier_delay_angle = d["rectifier_delay_angle"],
+            rectifier_capacitor_reactance = d["inverter_capacitor_reactance"],
+            inverter_transformer_ratio = d["inverter_transformer_ratio"],
+            inverter_tap_setting = d["inverter_tap_setting"],
+            inverter_tap_limits = d["inverter_tap_limits"],
+            inverter_tap_step = d["inverter_tap_step"],
+            inverter_extinction_angle = d["inverter_extinction_angle"],
+            inverter_capacitor_reactance = d["inverter_capacitor_reactance"],
+            active_power_limits_from = d["active_power_limits_from"],
+            active_power_limits_to = d["active_power_limits_to"],
+            reactive_power_limits_from = d["reactive_power_limits_from"],
+            reactive_power_limits_to = d["reactive_power_limits_to"],
+            loss = LinearCurve(d["loss1"], d["loss0"]),
+        )
+    elseif source_type == "matpower"
+        return TwoTerminalGenericHVDCLine(;
+            name = name,
+            available = d["br_status"] == 1,
+            active_power_flow = get(d, "pf", 0.0),
+            arc = Arc(bus_f, bus_t),
+            active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+            active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+            reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+            reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
+            loss = LinearCurve(d["loss1"], d["loss0"]),
+        )
+    else
+        error("Not supported source type for DC lines: $source_type")
+    end
 end
 
 function read_dcline!(
     sys::System,
     data::Dict,
-    bus_number_to_bus::Dict{Int, ACBus};
+    bus_number_to_bus::Dict{Int, ACBus},
+    source_type::String;
     kwargs...,
 )
     @info "Reading DC Line data"
@@ -846,8 +1088,103 @@ function read_dcline!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        dcline = make_dcline(name, d, bus_f, bus_t)
+        dcline = make_dcline(name, d, bus_f, bus_t, source_type)
         add_component!(sys, dcline; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_vscline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+    return TwoTerminalVSCLine(;
+        name = name,
+        available = d["available"],
+        arc = Arc(bus_f, bus_t),
+        active_power_flow = get(d, "pf", 0.0),
+        rating = d["rating"],
+        active_power_limits_from = (min = d["pminf"], max = d["pmaxf"]),
+        active_power_limits_to = (min = d["pmint"], max = d["pmaxt"]),
+        g = d["r"] == 0.0 ? 0.0 : 1.0 / d["r"],
+        dc_current = get(d, "if", 0.0),
+        reactive_power_from = get(d, "qf", 0.0),
+        dc_voltage_control_from = d["dc_voltage_control_from"],
+        ac_voltage_control_from = d["ac_voltage_control_from"],
+        dc_setpoint_from = d["dc_setpoint_from"],
+        ac_setpoint_from = d["ac_setpoint_from"],
+        converter_loss_from = d["converter_loss_from"],
+        max_dc_current_from = d["max_dc_current_from"],
+        rating_from = d["rating_from"],
+        reactive_power_limits_from = (min = d["qminf"], max = d["qmaxf"]),
+        power_factor_weighting_fraction_from = d["power_factor_weighting_fraction_from"],
+        reactive_power_to = get(d, "qt", 0.0),
+        dc_voltage_control_to = d["dc_voltage_control_to"],
+        ac_voltage_control_to = d["ac_voltage_control_to"],
+        dc_setpoint_to = d["dc_setpoint_to"],
+        ac_setpoint_to = d["ac_setpoint_to"],
+        converter_loss_to = d["converter_loss_to"],
+        max_dc_current_to = d["max_dc_current_to"],
+        rating_to = d["rating_to"],
+        reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
+        power_factor_weighting_fraction_to = d["power_factor_weighting_fraction_to"],
+        ext = d["EXT"],
+    )
+end
+
+function read_vscline!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading VSC Line data"
+    if !haskey(data, "vscline")
+        @info "There is no VSC lines data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+
+    for (d_key, d) in data["vscline"]
+        d["name"] = get(d, "name", d_key)
+        bus_f = bus_number_to_bus[d["f_bus"]]
+        bus_t = bus_number_to_bus[d["t_bus"]]
+        name = _get_name(d, bus_f, bus_t)
+        vscline = make_vscline(name, d, bus_f, bus_t)
+        add_component!(sys, vscline; skip_validation = SKIP_PM_VALIDATION)
+    end
+end
+
+function make_switched_shunt(name::String, d::Dict, bus::ACBus)
+    return SwitchedAdmittance(;
+        name = name,
+        available = Bool(d["status"]),
+        bus = bus,
+        Y = (d["gs"] + d["bs"]im),
+        number_of_steps = d["step_number"],
+        Y_increase = d["y_increment"],
+        admittance_limits = d["admittance_limits"],
+    )
+end
+
+function read_switched_shunt!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading switched shunt data"
+    if !haskey(data, "switched_shunt")
+        @info "There is no switched shunt data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["switched_shunt"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["shunt_bus"]]
+        shunt = make_switched_shunt(name, d, bus)
+
+        add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 
@@ -858,6 +1195,55 @@ function make_shunt(name::String, d::Dict, bus::ACBus)
         bus = bus,
         Y = (d["gs"] + d["bs"]im),
     )
+end
+
+function make_facts(name::String, d::Dict, bus::ACBus)
+    if d["tbus"] != 0
+        @warn "Series FACTs not supported."
+    end
+
+    if d["control_mode"] > 3
+        throw(DataFormatError("Operation mode not supported."))
+    end
+
+    if d["reactive_power_required"] < 0
+        throw(DataFormatError("% MVAr required must me positive."))
+    end
+
+    return FACTSControlDevice(;
+        name = name,
+        available = Bool(d["available"]),
+        bus = bus,
+        control_mode = d["control_mode"],
+        voltage_setpoint = d["voltage_setpoint"],
+        max_shunt_current = d["max_shunt_current"],
+        reactive_power_required = d["reactive_power_required"],
+    )
+end
+
+function read_facts!(
+    sys::System,
+    data::Dict,
+    bus_number_to_bus::Dict{Int, ACBus};
+    kwargs...,
+)
+    @info "Reading FACTS data"
+    if !haskey(data, "facts")
+        @info "There is no facts data in this file"
+        return
+    end
+
+    _get_name = get(kwargs, :bus_name_formatter, _get_pm_dict_name)
+
+    for (d_key, d) in data["facts"]
+        d["name"] = get(d, "name", d_key)
+        name = _get_name(d)
+        bus = bus_number_to_bus[d["bus"]]
+        full_name = "$(d["bus"])_$(name)"
+        facts = make_facts(full_name, d, bus)
+
+        add_component!(sys, facts; skip_validation = SKIP_PM_VALIDATION)
+    end
 end
 
 function read_shunt!(

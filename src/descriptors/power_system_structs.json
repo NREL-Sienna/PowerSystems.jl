@@ -482,6 +482,22 @@
                     "validation_action": "error"
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "g",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
@@ -515,7 +531,104 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
+        },
+        {
+            "struct_name": "DiscreteControlledACBranch",
+            "docstring": "Used to represent switches and breakers connecting AC Buses",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_flow",
+                    "comment": "Initial condition of reactive power flow on the line (MVAR)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x",
+                    "data_type": "Float64",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "discrete_branch_type",
+                    "comment": "Type of discrete control",
+                    "null_value": "DiscreteControlledBranchType.BREAKER",
+                    "data_type": "DiscreteControlledBranchType",
+                    "default": "DiscreteControlledBranchType.OTHER"
+                },
+                {
+                    "name": "branch_status",
+                    "comment": "Open or Close status",
+                    "null_value": "DiscreteControlledBranchStatus.CLOSED",
+                    "data_type": "DiscreteControlledBranchStatus",
+                    "default": "DiscreteControlledBranchStatus.CLOSED"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "MonitoredLine",
@@ -613,6 +726,22 @@
                     "validation_action": "error"
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "g",
                     "null_value": "(from=0.0, to=0.0)",
                     "data_type": "FromTo",
@@ -646,7 +775,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "PhaseShiftingTransformer",
@@ -753,6 +882,22 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "phase_angle_limits",
                     "comment": "Minimum and maximum phase angle limits (radians)",
                     "null_value": "(min=-1.571, max=1.571)",
@@ -786,7 +931,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "TapTransformer",
@@ -882,6 +1027,22 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -903,7 +1064,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
             "struct_name": "Transformer2W",
@@ -988,6 +1149,22 @@
                     "needs_conversion": true
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "rating_b",
+                    "comment": "Second current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_c",
+                    "comment": "Third current rating; entered in MVA.",
+                    "data_type": "Union{Nothing, Float64}",
+                    "needs_conversion": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1009,10 +1186,341 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "ACTransmission"
         },
         {
-            "struct_name": "TwoTerminalHVDCLine",
+            "struct_name": "Transformer3W",
+            "docstring": "A 3-winding transformer.\n\nThe model uses an equivalent star model with a star (hidden) bus. The user must transform the data to use `CW = CZ = CM = 1` and `COD1 = COD2 = COD3 = 0` (no voltage control) if taken from a PSS/E 3W transformer model. Three equivalent impedances (connecting each side to the star bus) are required to define the model. Shunt conductance (iron losses) and magnetizing susceptance can be considered from the star bus to ground. The model is described in Chapter 3.6 in J.D. Glover, M.S. Sarma and T. Overbye: Power Systems Analysis and Design.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "primary_secondary_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a secondary bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "secondary_tertiary_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` a tertiary bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "primary_tertiary_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a tertiary bus",
+                    "data_type": "Arc"
+                },
+                {
+                    "name": "star_bus",
+                    "comment": "Star (hidden) Bus that this component (equivalent model) is connected to",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "active_power_flow_primary",
+                    "comment": "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_flow_primary",
+                    "comment": "Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_flow_secondary",
+                    "comment": "Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_flow_secondary",
+                    "comment": "Initial condition of reactive power flow through the transformer secondary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_flow_tertiary",
+                    "comment": "Initial condition of active power flow through the transformer tertiary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_flow_tertiary",
+                    "comment": "Initial condition of reactive power flow through the transformer tertiary side to star (hidden) bus (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_primary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_primary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_secondary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_secondary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_tertiary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_tertiary",
+                    "data_type": "Float64",
+                    "comment": "Equivalent reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from tertiary to star (hidden) bus.",
+                    "valid_range": {
+                        "min": -2,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "rating",
+                    "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_12",
+                    "data_type": "Float64",
+                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (R1-2 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_12",
+                    "data_type": "Float64",
+                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to secondary windings (X1-2 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_23",
+                    "data_type": "Float64",
+                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (R2-3 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_23",
+                    "data_type": "Float64",
+                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r_13",
+                    "data_type": "Float64",
+                    "comment": "Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (R1-3 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "x_13",
+                    "data_type": "Float64",
+                    "comment": "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E).",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "g",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).",
+                    "default": "0.0"
+                },
+                {
+                    "name": "b",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).",
+                    "default": "0.0"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "primary_turns_ratio",
+                    "data_type": "Float64",
+                    "comment": "Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).",
+                    "default": "1.0"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "secondary_turns_ratio",
+                    "data_type": "Float64",
+                    "comment": "Secondary side off-nominal turns ratio in p.u. with respect to connected secondary bus (WINDV2 with CW = 1 in PSS/E).",
+                    "default": "1.0"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "tertiary_turns_ratio",
+                    "data_type": "Float64",
+                    "comment": "Tertiary side off-nominal turns ratio in p.u. with respect to connected tertiary bus (WINDV3 with CW = 1 in PSS/E).",
+                    "default": "1.0"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available_primary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available_secondary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available_tertiary",
+                    "data_type": "Bool",
+                    "comment": "Status if primary winding is available or not.",
+                    "default": "true"
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_primary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for primary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_secondary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for secondary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "rating_tertiary",
+                    "data_type": "Float64",
+                    "comment": "Rating (in MVA) for tertiary winding.",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ACTransmission"
+        },
+        {
+            "struct_name": "TwoTerminalGenericHVDCLine",
             "docstring": "A High Voltage DC line, which must be connected to an [`ACBus`](@ref) on each end.\n\nThis model is appropriate for operational simulations with a linearized DC power flow approximation with losses proportional to the power flow. For modeling a DC network, see [`TModelHVDCLine`](@ref)",
             "fields": [
                 {
@@ -1098,11 +1606,11 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "TwoTerminalHVDC"
         },
         {
-            "struct_name": "TwoTerminalVSCDCLine",
-            "docstring": "A Voltage Sourced Converter (VSC)-HVDC transmission line.\n\nAs implemented in [\"Power System Modelling and Scripting\"](https://link.springer.com/book/10.1007/978-3-642-13669-6) by Federico Milano, Chapter 18, Page 397. This model is suitable for dynamic simulations",
+            "struct_name": "TwoTerminalVSCLine",
+            "docstring": "A High Voltage Voltage-Source Converter DC line, which must be connected to an [`ACBus`](@ref) on each end.\n\nThis model is appropriate for operational simulations with a linearized DC power flow approximation with losses using a voltage-current model. For modeling a DC network, see [`TModelHVDCLine`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -1118,53 +1626,224 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "active_power_flow",
-                    "comment": "Initial condition of active power flow on the line (MW)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true
-                },
-                {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
                 {
-                    "name": "rectifier_tap_limits",
-                    "comment": "Minimum and maximum rectifier tap limits as a ratio between the primary and secondary side voltages",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax"
-                },
-                {
-                    "name": "rectifier_xrc",
-                    "comment": "Rectifier commutation reactance in p.u. ([`DEVICE_BASE`](@ref per_unit))",
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flowing from the from-bus to the to-bus in DC.",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true
                 },
                 {
-                    "name": "rectifier_firing_angle",
-                    "comment": "Minimum and maximum rectifier firing angle (α) (radians)",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax"
-                },
-                {
-                    "name": "inverter_tap_limits",
-                    "comment": "Minimum and maximum inverter tap limits as a ratio between the primary and secondary side voltages",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax"
-                },
-                {
-                    "name": "inverter_xrc",
-                    "comment": "Inverter commutation reactance in p.u. ([`DEVICE_BASE`](@ref per_unit))",
+                    "name": "rating",
+                    "comment": "Maximum output power rating of the converter (MVA)",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true
                 },
                 {
-                    "name": "inverter_extinction_angle",
-                    "comment": "Minimum and maximum inverter extinction angle (γ) (radians)",
+                    "name": "active_power_limits_from",
+                    "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax"
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits_to",
+                    "comment": "Minimum and maximum active power flows to the TO node (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "g",
+                    "data_type": "Float64",
+                    "comment": "Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "default": "0.0"
+                },
+                {
+                    "name": "dc_current",
+                    "comment": "DC current (A) on the converter flowing in the DC line, from `from` bus to `to` bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "reactive_power_from",
+                    "comment": "Initial condition of reactive power flowing into the from-bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "default": "0.0"
+                },
+                {
+                    "name": "dc_voltage_control_from",
+                    "comment": "Converter control type in the `from` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "ac_voltage_control_from",
+                    "comment": "Converter control type in the `from` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "dc_setpoint_from",
+                    "comment": "Converter DC setpoint in the `from` bus converter. If `voltage_control_from = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_from = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `from` bus; if negative, the converter is withdrawing power from the AC network at the `from` bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "ac_setpoint_from",
+                    "comment": "Converter AC setpoint in the `from` bus converter. If `voltage_control_from = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_from = false`, this value is the power factor setpoint.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "converter_loss_from",
+                    "comment": "Loss model coefficients in the `from` bus converter. It accepts a linear model or quadratic. Same converter data is used in both ends.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, QuadraticCurve}",
+                    "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "max_dc_current_from",
+                    "comment": "Maximum stable dc current limits (A).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1e8"
+                },
+                {
+                    "name": "rating_from",
+                    "comment": "Converter rating in MVA in the `from` bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1e8",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_limits_from",
+                    "comment": "Limits on the Reactive Power at the `from` side.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "power_factor_weighting_fraction_from",
+                    "comment": "Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "voltage_limits_from",
+                    "comment": "Limits on the Voltage at the DC `from` Bus in [per unit](@ref per_unit.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=999.9)"
+                },
+                {
+                    "name": "reactive_power_to",
+                    "comment": "Initial condition of reactive power flowing into the to-bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "default": "0.0"
+                },
+                {
+                    "name": "dc_voltage_control_to",
+                    "comment": "Converter control type in the `to` bus converter. Set true for DC Voltage Control (set DC voltage on the DC side of the converter), and false for power demand in the converter.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "ac_voltage_control_to",
+                    "comment": "Converter control type in the `to` bus converter. Set true for AC Voltage Control (set AC voltage on the AC side of the converter), and false for fixed power AC factor.",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "true"
+                },
+                {
+                    "name": "dc_setpoint_to",
+                    "comment": "Converter DC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the DC voltage on the DC side of the converter, entered in kV. If `voltage_control_to = false`, this value is the power demand in MW, if positive the converter is supplying power to the AC network at the `to` bus; if negative, the converter is withdrawing power from the AC network at the `to` bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "ac_setpoint_to",
+                    "comment": "Converter AC setpoint in the `to` bus converter. If `voltage_control_to = true` this number is the AC voltage on the AC side of the converter, entered in [per unit](@ref per_unit). If `voltage_control_to = false`, this value is the power factor setpoint.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "converter_loss_to",
+                    "comment": "Loss model coefficients in the `to` bus converter. It accepts a linear model or quadratic. Same converter data is used in both ends.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, QuadraticCurve}",
+                    "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "max_dc_current_to",
+                    "comment": "Maximum stable dc current limits (A).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1e8"
+                },
+                {
+                    "name": "rating_to",
+                    "comment": "Converter rating in MVA in the `to` bus.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1e8"
+                },
+                {
+                    "name": "reactive_power_limits_to",
+                    "comment": "Limits on the Reactive Power at the `to` side.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "power_factor_weighting_fraction_to",
+                    "comment": "Power weighting factor fraction used in reducing the active power order and either the reactive power order when the converter rating is violated. When is 0.0, only the active power is reduced; when is 1.0, only the reactive power is reduced; otherwise, a weighted reduction of both active and reactive power is applied.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0",
+                    "valid_range": {
+                        "min": 0,
+                        "max": 1
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "voltage_limits_to",
+                    "comment": "Limits on the Voltage at the DC `to` Bus.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=999.9)"
                 },
                 {
                     "name": "services",
@@ -1188,7 +1867,290 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACBranch"
+            "supertype": "TwoTerminalHVDC"
+        },
+        {
+            "struct_name": "TwoTerminalLCCLine",
+            "docstring": "A Non-Capacitor Line Commutated Converter (LCC)-HVDC transmission line.\n\nAs implemented in PSS/E.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
+                    "name": "arc",
+                    "comment": "An [`Arc`](@ref) defining this line `from` a rectifier bus `to` an inverter bus. The rectifier bus must be specified in the `from` bus and inverter bus in the `to` bus.",
+                    "data_type": "Arc"
+                },
+                {
+                    "name": "active_power_flow",
+                    "comment": "Initial condition of active power flow on the line (MW)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true
+                },
+                {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
+                },
+                {
+                    "name": "transfer_setpoint",
+                    "comment": "Desired set-point of power. If `power_mode = true` this value is in MW units, and if `power_mode = false` is in Amperes units. This parameter must not be specified in per-unit. A positive value represents the desired consumed power at the rectifier bus, while a negative value represents the desired power at the inverter bus (i.e. the absolute value of `transfer_setpoint` is the generated power at the inverter bus).",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "scheduled_dc_voltage",
+                    "comment": "Scheduled compounded DC voltage in kV. By default this parameter is the scheduled DC voltage in the inverter bus This parameter must not be specified in per-unit.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "rectifier_bridges",
+                    "comment": "Number of bridges in series in the rectifier side.",
+                    "null_value": "0",
+                    "data_type": "Int"
+                },
+                {
+                    "name": "rectifier_delay_angle_limits",
+                    "comment": "Minimum and maximum rectifier firing delay angle (α) (radians)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "rectifier_rc",
+                    "comment": "Rectifier commutating transformer resistance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "rectifier_xc",
+                    "comment": "Rectifier commutating transformer reactance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "rectifier_base_voltage",
+                    "comment": "Rectifier primary base AC voltage in kV, entered in kV.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "inverter_bridges",
+                    "comment": "Number of bridges in series in the inverter side.",
+                    "null_value": "0",
+                    "data_type": "Int"
+                },
+                {
+                    "name": "inverter_extinction_angle_limits",
+                    "comment": "Minimum and maximum inverter extinction angle (γ) (radians)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "inverter_rc",
+                    "comment": "Inverter commutating transformer resistance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "inverter_xc",
+                    "comment": "Inverter commutating transformer reactance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "inverter_base_voltage",
+                    "comment": "Inverter primary base AC voltage in kV, entered in kV.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "power_mode",
+                    "data_type": "Bool",
+                    "comment": "Boolean flag to identify if the LCC line is in power mode or current mode. If `power_mode = true`, setpoint values must be specified in MW, and if `power_mode = false` setpoint values must be specified in Amperes.",
+                    "null_value": "false",
+                    "default": "true"
+                },
+                {
+                    "name": "switch_mode_voltage",
+                    "data_type": "Float64",
+                    "comment": "Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.",
+                    "null_value": "0.0",
+                    "default": "0.0"
+                },
+                {
+                    "name": "compounding_resistance",
+                    "data_type": "Float64",
+                    "comment": "Compounding Resistance Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.",
+                    "null_value": "0.0",
+                    "default": "0.0"
+                },
+                {
+                    "name": "min_compounding_voltage",
+                    "data_type": "Float64",
+                    "comment": "Minimum compounded voltage, in kV. This parameter must not be added in per-unit. Only used in constant gamma operation (γ_min = γ_max), and the AC transformer is used to control the DC voltage.",
+                    "null_value": "0.0",
+                    "default": "0.0"
+                },
+                {
+                    "name": "rectifier_transformer_ratio",
+                    "comment": "Rectifier transformer ratio between the primary and secondary side AC voltages.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "rectifier_tap_setting",
+                    "comment": "Rectifier transformer tap setting.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "rectifier_tap_limits",
+                    "comment": "Minimum and maximum rectifier tap limits as a ratio between the primary and secondary side AC voltages.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.51, max=1.5)"
+                },
+                {
+                    "name": "rectifier_tap_step",
+                    "comment": "Rectifier transformer tap step value",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.00625"
+                },
+                {
+                    "name": "rectifier_delay_angle",
+                    "comment": "Rectifier firing delay angle (α).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "rectifier_capacitor_reactance",
+                    "comment": "Commutating rectifier capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "inverter_transformer_ratio",
+                    "comment": "Inverter transformer ratio between the primary and secondary side AC voltages.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "inverter_tap_setting",
+                    "comment": "Inverter transformer tap setting.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "1.0"
+                },
+                {
+                    "name": "inverter_tap_limits",
+                    "comment": "Minimum and maximum inverter tap limits as a ratio between the primary and secondary side AC voltages.",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.51, max=1.5)"
+                },
+                {
+                    "name": "inverter_tap_step",
+                    "comment": "Inverter transformer tap step value.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.00625"
+                },
+                {
+                    "name": "inverter_extinction_angle",
+                    "comment": "Inverter extinction angle (γ).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "inverter_capacitor_reactance",
+                    "comment": "Commutating inverter capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0"
+                },
+                {
+                    "name": "active_power_limits_from",
+                    "comment": "Minimum and maximum active power flows to the FROM node (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true,
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "active_power_limits_to",
+                    "comment": "Minimum and maximum active power flows to the TO node (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true,
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "reactive_power_limits_from",
+                    "comment": "Minimum and maximum reactive power limits to the FROM node (MVAR)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true,
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "reactive_power_limits_to",
+                    "comment": "Minimum and maximum reactive power limits to the TO node (MVAR)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true,
+                    "default": "(min=0.0, max=0.0)"
+                },
+                {
+                    "name": "loss",
+                    "comment": "A generic loss model coefficients. It accepts a linear model with a constant loss (MW) and a proportional loss rate (MW of loss per MW of flow). It also accepts a Piecewise loss, with N segments to specify different proportional losses for different segments.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "Union{LinearCurve, PiecewiseIncrementalCurve}",
+                    "default": "LinearCurve(0.0)"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "TwoTerminalHVDC"
         },
         {
             "struct_name": "TModelHVDCLine",
@@ -1500,6 +2462,85 @@
             "supertype": "ControllableLoad"
         },
         {
+            "struct_name": "FACTSControlDevice",
+            "docstring": "Facts control devices.\n\nMost often used in AC power flow studies as a control of voltage and, active and reactive power.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "bus",
+                    "comment": "Sending end bus number",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "control_mode",
+                    "comment": "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, FACTSOperationModes}"
+                },
+                {
+                    "name": "voltage_setpoint",
+                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "internal_default": "1.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "max_shunt_current",
+                    "comment": "Maximum shunt current at the sending end bus; entered in MVA at unity voltage.",
+                    "internal_default": "9999.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "reactive_power_required",
+                    "comment": "Total MVAr required to hold voltage at sending bus, in %.",
+                    "internal_default": "100.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "Corresponding dynamic injection model for FACTS control device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "StaticInjection"
+        },
+        {
             "struct_name": "FixedAdmittance",
             "docstring": "A fixed admittance.\n\nMost often used in dynamics or AC power flow studies as a source of reactive power",
             "fields": [
@@ -1586,22 +2627,28 @@
                 {
                     "name": "Y",
                     "comment": "Initial admittance at N = 0",
-                    "null_value": "0.0",
+                    "null_value": "0.0 + 0.0im",
                     "data_type": "Complex{Float64}"
                 },
                 {
                     "name": "number_of_steps",
-                    "comment": "Number of steps for adjustable shunt",
-                    "null_value": "0",
-                    "data_type": "Int",
-                    "default": "0"
+                    "comment": "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.",
+                    "null_value": "Int[]",
+                    "data_type": "Vector{Int}",
+                    "default": "Int[]"
                 },
                 {
                     "name": "Y_increase",
-                    "comment": "Admittance increment for each of step increase",
-                    "null_value": "0",
-                    "data_type": "Complex{Float64}",
-                    "default": "0"
+                    "comment": "Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.",
+                    "null_value": "Complex{Float64}[]",
+                    "data_type": "Vector{Complex{Float64}}",
+                    "default": "Complex{Float64}[]"
+                },
+                {   "name": "admittance_limits",
+                    "comment": "Shunt admittance limits for switched shunt model",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=1.0, max=1.0)"
                 },
                 {
                     "name": "dynamic_injector",
@@ -17319,7 +18366,7 @@
                 }
             ],
             "supertype": "DynamicInjection"
-        }, 
+        },
         {
             "struct_name": "GenericDER",
             "docstring": "Parameters of a Generic Distributed Energy Resource Model. Based on [\"Modeling Framework and Coordination of DER and Flexible Loads for Ancillary Service Provision.\"](http://hdl.handle.net/10125/70994)",

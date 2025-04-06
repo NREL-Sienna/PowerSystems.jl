@@ -6,6 +6,12 @@ const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 
+# Intended for use with generators that are not multi-start (e.g. ThermalStandard).
+# Operators use `hot` when they don’t have multiple stages.
+"Convert a single start-up cost value to a `StartUpStages`"
+single_start_up_to_stages(start_up::Real) =
+    (hot = Float64(start_up), warm = 0.0, cold = 0.0)
+
 "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
 
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
@@ -14,6 +20,27 @@ IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 
 # "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
 IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
+
+# "From PSSE POM v33 Manual"
+IS.@scoped_enum(
+    FACTSOperationModes,
+    OOS = 0, # out-of-service (i.e., Series and Shunt links open)
+    NML = 1, # Normal mode of operation, where Series and Shunt links are operating.
+    BYP = 2, # Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM.
+)
+
+IS.@scoped_enum(
+    DiscreteControlledBranchType,
+    SWITCH = 0,
+    BREAKER = 1,
+    OTHER = 2,
+)
+
+IS.@scoped_enum(
+    DiscreteControlledBranchStatus,
+    OPEN = 0,
+    CLOSED = 1,
+)
 
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
@@ -48,20 +75,40 @@ IS.@scoped_enum(
 
 IS.@scoped_enum(
     ThermalFuels,
-    COAL = 1,  # COL    # Anthracite Coal and Bituminous Coal
-    WASTE_COAL = 2,  # WOC    # Waste/Other Coal (includes anthracite culm, gob, fine coal, lignite waste, waste coal)
-    DISTILLATE_FUEL_OIL = 3,  # DFO # Distillate Fuel Oil (Diesel, No. 1, No. 2, and No. 4
-    WASTE_OIL = 4,  # WOO    # Waste Oil Kerosene and JetFuel Butane, Propane,
-    PETROLEUM_COKE = 5,  # PC  # Petroleum Coke
-    RESIDUAL_FUEL_OIL = 6,     # RFO # Residual Fuel Oil (No. 5, No. 6 Fuel Oils, and Bunker Oil)
-    NATURAL_GAS = 7,  # NG    # Natural Gas
-    OTHER_GAS = 8,  # OOG    # Other Gas and blast furnace gas
-    NUCLEAR = 9,  # NUC # Nuclear Fission (Uranium, Plutonium, Thorium)
-    AG_BIPRODUCT = 10,  # ORW    # Agricultural Crop Byproducts/Straw/Energy Crops
-    MUNICIPAL_WASTE = 11,  # MLG    # Municipal Solid Waste – Biogenic component
-    WOOD_WASTE = 12,  # WWW     # Wood Waste Liquids excluding Black Liquor (BLQ) (Includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)
-    GEOTHERMAL = 13,  # GEO     # Geothermal
-    OTHER = 14,  # OTH     # Other
+    COAL = 1,  # General Coal Category.
+    ANTHRACITE_COAL = 2,# ANT
+    BITUMINOUS_COAL = 3, # BIT
+    LIGNITE_COAL = 4, # LIG
+    SUBBITUMINOUS_COAL = 5, # SUB
+    WASTE_COAL = 6, # WC # includes anthracite culm, bituminous gob, fine coal, lignite waste, waste coal
+    REFINED_COAL = 7,  # RC # ncludes any coal which meets the IRS definition of refined coal [Notice 2010-54 or any superseding IRS notices]. Does not include coal processed by coal preparation plants.)
+    SYNTHESIS_GAS_COAL = 8, # SGC
+    DISTILLATE_FUEL_OIL = 9,  # DFO # includes Diesel, No. 1, No. 2, and No. 4
+    JET_FUEL = 10, # JF
+    KEROSENE = 11, # KER
+    PETROLEUM_COKE = 12,  # PC
+    RESIDUAL_FUEL_OIL = 13,  # RFO # includes No. 5, No. 6 Fuel Oils, and Bunker Oil
+    PROPANE = 14, # PG # Propane, gaseous
+    SYNTHESIS_GAS_PETROLEUM_COKE = 15,  # SGP
+    WASTE_OIL = 16,  # WO # including crude oil, liquid butane, liquid propane, naphtha, oil waste, re-refined motor oil, sludge oil, tar oil, or other petroleum-based liquid wastes
+    BLASTE_FURNACE_GAS = 17,  # BFG
+    NATURAL_GAS = 18,  # NG    # Natural Gas
+    OTHER_GAS = 19,  # OOG    # Other Gas and blast furnace gas
+    NUCLEAR = 20,  # NUC # Nuclear Fission (Uranium, Plutonium, Thorium)
+    AG_BYPRODUCT = 21,  # AB    # Agricultural Crop Byproducts/Straw/Energy Crops
+    MUNICIPAL_WASTE = 22,  # MSW    # Municipal Solid Waste – Biogenic component
+    OTHER_BIOMASS_SOLIDS = 23,  # OBS
+    WOOD_WASTE_SOLIDS = 24,  # WDS # including paper 18 pellets, railroad ties, utility poles, wood chips, bark, and wood waste solid
+    OTHER_BIOMASS_LIQUIDS = 26,  # OBL
+    SLUDGE_WASTE = 27, # SLW
+    BLACK_LIQUOR = 28, # BLQ
+    WOOD_WASTE_LIQUIDS = 29, # WDL # includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquid. Excluding black liquour
+    LANDFILL_GAS = 30, # LFG
+    OTHEHR_BIOMASS_GAS = 31, # OBG # includes digester gas, methane, and other biomass gasses
+    GEOTHERMAL = 32,  # GEO
+    WASTE_HEAT = 33, # WH # WH should only be reported where the fuel source for the waste heat is undetermined, and for combined-cycle steam turbines that do not have supplemental firing.
+    TIREDERIVED_FUEL = 34, # TDF
+    OTHER = 35,  # OTH
 )
 
 IS.@scoped_enum(
@@ -99,3 +146,5 @@ const DEFAULT_SYSTEM_FREQUENCY = 60.0
 const INFINITE_TIME = 1e4
 const START_COST = 1e8
 const INFINITE_COST = 1e8
+const INFINITE_BOUND = 1e6
+const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01

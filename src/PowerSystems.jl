@@ -29,16 +29,20 @@ export get_max_reactive_power
 export Branch
 export StaticInjection
 export StaticInjectionSubsystem
+export DiscreteControlledACBranch
 export ACBranch
 export Line
 export MonitoredLine
 export DCBranch
-export TwoTerminalHVDCLine
-export TwoTerminalVSCDCLine
+export TwoTerminalGenericHVDCLine
+export TwoTerminalVSCLine
+export TwoTerminalLCCLine
 export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export FACTSControlDevice
+export Transformer3W
 
 # from IS function_data.jl
 export FunctionData
@@ -53,6 +57,7 @@ export get_slopes
 export get_average_rates
 export get_x_lengths
 export is_convex
+export is_concave
 export get_points
 export get_x_coords
 export get_y_coords
@@ -256,7 +261,7 @@ export Contingency
 export Outage
 export GeometricDistributionForcedOutage
 export PlannedOutage
-export TimeSeriesForcedOutage
+export FixedForcedOutage
 
 export get_mean_time_to_recovery
 export get_outage_transition_probability
@@ -281,6 +286,9 @@ export TransmissionInterface
 
 export AngleUnits
 export ACBusTypes
+export FACTSOperationModes
+export DiscreteControlledBranchStatus
+export DiscreteControlledBranchType
 export PrimeMovers
 export ThermalFuels
 export StorageTech
@@ -345,6 +353,7 @@ export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
 export get_component
 export get_components
+export get_associated_components
 export show_components
 export get_subcomponents
 export get_components_by_name
@@ -485,7 +494,7 @@ export set_runchecks!
 export check
 export check_component
 export check_components
-export check_sil_values
+export check_ac_transmission_rate_values
 
 # From IS logging.jl, generate_struct_files.jl
 export configure_logging
@@ -621,6 +630,7 @@ import InfrastructureSystems:
     running_sum,
     get_x_lengths,
     is_convex,
+    is_concave,
     get_points,  # TODO possible rename to disambiguate from geographical information
     get_x_coords,
     get_y_coords,
@@ -642,6 +652,7 @@ import InfrastructureSystems:
     COMPONENT_NAME_DELIMITER,
     make_selector,
     rebuild_selector
+
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,

@@ -95,6 +95,7 @@ function _create_starbus_from_transformer(
     starbus["bus_type"] = bus_type
     starbus["area"] = _get_bus_value(transformer["I"], "area", pm_data)
     starbus["zone"] = _get_bus_value(transformer["I"], "zone", pm_data)
+    starbus["hidden"] = true
     starbus["source_id"] = push!(
         ["transformer", starbus["bus_i"], starbus["name"]],
         transformer["I"],
@@ -163,56 +164,58 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Branch data into a PowerModels Dict..."
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
-        for (i, branch) in enumerate(pti_data["BRANCH"])
-            sub_data = Dict{String, Any}()
+        for branch in pti_data["BRANCH"]
+            if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
+                sub_data = Dict{String, Any}()
 
-            sub_data["f_bus"] = pop!(branch, "I")
-            sub_data["t_bus"] = pop!(branch, "J")
-            sub_data["br_r"] = pop!(branch, "R")
-            sub_data["br_x"] = pop!(branch, "X")
-            sub_data["g_fr"] = pop!(branch, "GI")
-            sub_data["b_fr"] =
-                if branch["BI"] == 0.0 && branch["B"] != 0.0
-                    branch["B"] / 2
-                else
-                    pop!(branch, "BI")
+                sub_data["f_bus"] = pop!(branch, "I")
+                sub_data["t_bus"] = pop!(branch, "J")
+                sub_data["br_r"] = pop!(branch, "R")
+                sub_data["br_x"] = pop!(branch, "X")
+                sub_data["g_fr"] = pop!(branch, "GI")
+                sub_data["b_fr"] =
+                    if branch["BI"] == 0.0 && branch["B"] != 0.0
+                        branch["B"] / 2
+                    else
+                        pop!(branch, "BI")
+                    end
+                sub_data["g_to"] = pop!(branch, "GJ")
+                sub_data["b_to"] =
+                    if branch["BJ"] == 0.0 && branch["B"] != 0.0
+                        branch["B"] / 2
+                    else
+                        pop!(branch, "BJ")
+                    end
+                sub_data["rate_a"] = pop!(branch, "RATEA")
+                sub_data["rate_b"] = pop!(branch, "RATEB")
+                sub_data["rate_c"] = pop!(branch, "RATEC")
+                sub_data["tap"] = 1.0
+                sub_data["shift"] = 0.0
+                sub_data["br_status"] = pop!(branch, "ST")
+                sub_data["angmin"] = 0.0
+                sub_data["angmax"] = 0.0
+                sub_data["transformer"] = false
+
+                sub_data["source_id"] =
+                    ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
+                sub_data["index"] = length(pm_data["branch"]) + 1
+
+                if import_all
+                    _import_remaining_keys!(sub_data, branch; exclude = ["B", "BI", "BJ"])
                 end
-            sub_data["g_to"] = pop!(branch, "GJ")
-            sub_data["b_to"] =
-                if branch["BJ"] == 0.0 && branch["B"] != 0.0
-                    branch["B"] / 2
-                else
-                    pop!(branch, "BJ")
+
+                if sub_data["rate_a"] == 0.0
+                    delete!(sub_data, "rate_a")
                 end
-            sub_data["rate_a"] = pop!(branch, "RATEA")
-            sub_data["rate_b"] = pop!(branch, "RATEB")
-            sub_data["rate_c"] = pop!(branch, "RATEC")
-            sub_data["tap"] = 1.0
-            sub_data["shift"] = 0.0
-            sub_data["br_status"] = pop!(branch, "ST")
-            sub_data["angmin"] = 0.0
-            sub_data["angmax"] = 0.0
-            sub_data["transformer"] = false
+                if sub_data["rate_b"] == 0.0
+                    delete!(sub_data, "rate_b")
+                end
+                if sub_data["rate_c"] == 0.0
+                    delete!(sub_data, "rate_c")
+                end
 
-            sub_data["source_id"] =
-                ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
-            sub_data["index"] = i
-
-            if import_all
-                _import_remaining_keys!(sub_data, branch; exclude = ["B", "BI", "BJ"])
+                push!(pm_data["branch"], sub_data)
             end
-
-            if sub_data["rate_a"] == 0.0
-                delete!(sub_data, "rate_a")
-            end
-            if sub_data["rate_b"] == 0.0
-                delete!(sub_data, "rate_b")
-            end
-            if sub_data["rate_c"] == 0.0
-                delete!(sub_data, "rate_c")
-            end
-
-            push!(pm_data["branch"], sub_data)
         end
     end
 end
@@ -240,6 +243,8 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pmax"] = pop!(gen, "PT")
             sub_data["qmin"] = pop!(gen, "QB")
             sub_data["qmax"] = pop!(gen, "QT")
+            sub_data["rt_source"] = pop!(gen, "RT")
+            sub_data["xt_source"] = pop!(gen, "XT")
             sub_data["r_source"] = pop!(gen, "ZR")
             sub_data["x_source"] = pop!(gen, "ZX")
 
@@ -288,6 +293,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["name"] = pop!(bus, "NAME")
             sub_data["vmax"] = pop!(bus, "NVHI")
             sub_data["vmin"] = pop!(bus, "NVLO")
+            sub_data["hidden"] = false
 
             sub_data["source_id"] = ["bus", "$(bus["I"])"]
             sub_data["index"] = pop!(bus, "I")
@@ -345,8 +351,8 @@ specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
-    pm_data["shunt"] = []
 
+    pm_data["shunt"] = []
     if haskey(pti_data, "FIXED SHUNT")
         for shunt in pti_data["FIXED SHUNT"]
             sub_data = Dict{String, Any}()
@@ -368,26 +374,47 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         end
     end
 
+    pm_data["switched_shunt"] = []
     if haskey(pti_data, "SWITCHED SHUNT")
         @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
 
-        for shunt in pti_data["SWITCHED SHUNT"]
+        for switched_shunt in pti_data["SWITCHED SHUNT"]
             sub_data = Dict{String, Any}()
 
-            sub_data["shunt_bus"] = pop!(shunt, "I")
+            sub_data["shunt_bus"] = pop!(switched_shunt, "I")
             sub_data["gs"] = 0.0
-            sub_data["bs"] = pop!(shunt, "BINIT")
-            sub_data["status"] = pop!(shunt, "STAT")
+            sub_data["bs"] = pop!(switched_shunt, "BINIT")
+            sub_data["status"] = pop!(switched_shunt, "STAT")
+            sub_data["admittance_limits"] =
+                (pop!(switched_shunt, "VSWLO"), pop!(switched_shunt, "VSWHI"))
+
+            step_numbers = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k))
+            )
+            step_numbers_sorted =
+                sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
+            sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
+            sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
+
+            y_increment = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k))
+            )
+            y_increment_sorted =
+                sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
+            sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]im
+            sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
 
             sub_data["source_id"] =
-                ["switched shunt", sub_data["shunt_bus"], pop!(shunt, "SWREM")]
-            sub_data["index"] = length(pm_data["shunt"]) + 1
+                ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
+            sub_data["index"] = length(pm_data["switched_shunt"]) + 1
 
             if import_all
-                _import_remaining_keys!(sub_data, shunt)
+                _import_remaining_keys!(sub_data, switched_shunt)
             end
 
-            push!(pm_data["shunt"], sub_data)
+            push!(pm_data["switched_shunt"], sub_data)
         end
     end
 end
@@ -579,6 +606,12 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     pop!(transformer, "CKT"),
                     0,
                 ]
+                sub_data["ext"] = Dict{String, Any}(
+                    "CW" => transformer["CW"],
+                    "CZ" => transformer["CZ"],
+                    "CM" => transformer["CM"],
+                )
+
                 sub_data["transformer"] = true
                 sub_data["index"] = length(pm_data["branch"]) + 1
 
@@ -612,13 +645,17 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 push!(pm_data["branch"], sub_data)
             else  # Three-winding Transformers
+                # Create 3w-transformer key
+                if !haskey(pm_data, "3w_transformer")
+                    pm_data["3w_transformer"] = []
+                end
+
                 bus_id1, bus_id2, bus_id3 =
                     transformer["I"], transformer["J"], transformer["K"]
 
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
                 pm_data["bus"][starbus_id] = starbus
-                starbus_id += 1
 
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
                 br_r12, br_r23, br_r31 =
@@ -679,6 +716,119 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_p = 1 / 2 * (br_x12 - br_x23 + br_x31)
                 Zx_s = 1 / 2 * (br_x23 - br_x31 + br_x12)
                 Zx_t = 1 / 2 * (br_x31 - br_x12 + br_x23)
+
+                # Add parameters to the 3w-transformer key 
+                sub_data = Dict{String, Any}()
+                sub_data["name"] = transformer["NAME"]
+                sub_data["bus_primary"] = bus_id1
+                sub_data["bus_secondary"] = bus_id2
+                sub_data["bus_tertiary"] = bus_id3
+
+                sub_data["available"] = false
+                if transformer["STAT"] != 0
+                    sub_data["available"] = true
+                end
+
+                sub_data["available_primary"] = true
+                sub_data["available_secondary"] = true
+                sub_data["available_tertiary"] = true
+
+                if transformer["STAT"] == 2
+                    sub_data["available_secondary"] = false
+                end
+
+                if transformer["STAT"] == 3
+                    sub_data["available_tertiary"] = false
+                end
+
+                if transformer["STAT"] == 4
+                    sub_data["available_primary"] = false
+                end
+
+                if transformer["STAT"] == 0
+                    sub_data["available_primary"] = false
+                    sub_data["available_secondary"] = false
+                    sub_data["available_tertiary"] = false
+                end
+
+                sub_data["star_bus"] = starbus_id
+
+                sub_data["active_power_flow_primary"] = 0.0
+                sub_data["reactive_power_flow_primary"] = 0.0
+                sub_data["active_power_flow_secondary"] = 0.0
+                sub_data["reactive_power_flow_secondary"] = 0.0
+                sub_data["active_power_flow_tertiary"] = 0.0
+                sub_data["reactive_power_flow_tertiary"] = 0.0
+
+                sub_data["r_primary"] = Zr_p
+                sub_data["x_primary"] = Zx_p
+                sub_data["r_secondary"] = Zr_s
+                sub_data["x_secondary"] = Zx_s
+                sub_data["r_tertiary"] = Zr_t
+                sub_data["x_tertiary"] = Zx_t
+
+                sub_data["rating_primary"] =
+                    min(transformer["RATA1"], transformer["RATB1"], transformer["RATC1"])
+                sub_data["rating_secondary"] =
+                    min(transformer["RATA2"], transformer["RATB2"], transformer["RATC2"])
+                sub_data["rating_tertiary"] =
+                    min(transformer["RATA3"], transformer["RATB3"], transformer["RATC3"])
+                sub_data["rating"] = min(
+                    sub_data["rating_primary"],
+                    sub_data["rating_secondary"],
+                    sub_data["rating_tertiary"],
+                )
+
+                sub_data["r_12"] = br_r12
+                sub_data["x_12"] = br_x12
+                sub_data["r_23"] = br_r23
+                sub_data["x_23"] = br_x23
+                sub_data["r_13"] = br_r31
+                sub_data["x_13"] = br_x31
+                sub_data["g"] = transformer["MAG1"] # M. conductance MAG1 is saved in "g"
+                # If CM = 1 & MAG2 != 0 -> MAG2 < 0
+                # If CM = 2 & MAG2 != 0 -> MAG2 > 0
+                sub_data["b"] = abs(transformer["MAG2"]) # M. susceptance MAG2 is saved in "b"
+
+                if transformer["CW"] == 1
+                    sub_data["primary_turns_ratio"] = transformer["WINDV1"]
+                    sub_data["secondary_turns_ratio"] = transformer["WINDV2"]
+                    sub_data["tertiary_turns_ratio"] = transformer["WINDV3"]
+                else
+                    sub_data["primary_turns_ratio"] = 1.0
+                    sub_data["secondary_turns_ratio"] = 1.0
+                    sub_data["tertiary_turns_ratio"] = 1.0
+                end
+
+                sub_data["circuit"] = strip(transformer["CKT"])
+
+                sub_data["ext"] = Dict{String, Any}(
+                    "CW" => transformer["CW"],
+                    "CZ" => transformer["CZ"],
+                    "CM" => transformer["CM"],
+                )
+
+                sub_data["index"] = length(pm_data["3w_transformer"]) + 1
+
+                if import_all
+                    _import_remaining_keys!(
+                        sub_data,
+                        transformer;
+                        exclude = [
+                            "NAME",
+                            "STAT",
+                            "MAG1",
+                            "MAG2",
+                            "WINDV1",
+                            "WINDV2",
+                            "WINDV3",
+                        ],
+                    )
+                end
+
+                push!(pm_data["3w_transformer"], sub_data)
+
+                starbus_id += 1 # after adding the 1st 3WT, increase the counter
 
                 # Build each of the three transformer branches
                 for (m, (bus_id, br_r, br_x)) in enumerate(
@@ -805,8 +955,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             ],
                         )
                     end
-
-                    push!(pm_data["branch"], sub_data)
                 end
             end
         end
@@ -827,6 +975,8 @@ PSS(R)E Voltage Source Converter specification.
 function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Two-Terminal and VSC DC line data into a PowerModels Dict..."
     pm_data["dcline"] = []
+    pm_data["vscline"] = []
+    baseMVA = pm_data["baseMVA"]
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
@@ -840,15 +990,57 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if dcline["MDC"] == 1
                     abs(dcline["SETVL"])
                 elseif dcline["MDC"] == 2
-                    abs(dcline["SETVL"] / pop!(dcline, "VSCHD") / 1000)
+                    abs(dcline["SETVL"] * dcline["VSCHD"] / 1000) # Amp * V 
                 else
                     0
                 end
 
+            sub_data["transfer_setpoint"] = dcline["SETVL"]
+
+            sub_data["name"] = dcline["NAME"]
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
-            sub_data["br_status"] = pop!(dcline, "MDC") == 0 ? 0 : 1
+
+            if dcline["MDC"] == 1
+                sub_data["power_mode"] = true
+            else
+                sub_data["power_mode"] = false
+            end
+            sub_data["available"] = dcline["MDC"] == 0 ? false : true
+            sub_data["br_status"] = sub_data["available"]
+
+            sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
+            ZbaseR = dcline["EBASR"]^2 / baseMVA
+            sub_data["rectifier_bridges"] = dcline["NBR"]
+            sub_data["rectifier_rc"] = dcline["RCR"] / ZbaseR
+            sub_data["rectifier_xc"] = dcline["XCR"] / ZbaseR
+            sub_data["rectifier_base_voltage"] = dcline["EBASR"]
+
+            ZbaseI = dcline["EBASI"]^2 / baseMVA
+            sub_data["inverter_bridges"] = dcline["NBI"]
+            sub_data["inverter_rc"] = dcline["RCI"] / ZbaseI
+            sub_data["inverter_xc"] = dcline["XCI"] / ZbaseI
+            sub_data["inverter_base_voltage"] = dcline["EBASI"]
+
+            sub_data["switch_mode_voltage"] = dcline["VCMOD"]
+            sub_data["compounding_resistance"] = dcline["RCOMP"]
+            sub_data["min_compounding_voltage"] = dcline["DCVMIN"]
+
+            sub_data["rectifier_transformer_ratio"] = dcline["TRR"]
+            sub_data["rectifier_tap_setting"] = dcline["TAPR"]
+            sub_data["rectifier_tap_limits"] = (min = dcline["TMNR"], max = dcline["TMXR"])
+            sub_data["rectifier_tap_step"] = dcline["STPR"]
+
+            sub_data["inverter_transformer_ratio"] = dcline["TRI"]
+            sub_data["inverter_tap_setting"] = dcline["TAPI"]
+            sub_data["inverter_tap_limits"] = (min = dcline["TMNI"], max = dcline["TMXI"])
+            sub_data["inverter_tap_step"] = dcline["STPI"]
+
+            sub_data["loss0"] = 0.0
+            sub_data["loss1"] = 0.0
+
             sub_data["pf"] = power_demand
+            sub_data["active_power_flow"] = sub_data["pf"]
             sub_data["pt"] = power_demand
             sub_data["qf"] = 0.0
             sub_data["qt"] = 0.0
@@ -863,12 +1055,19 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             anmn = []
             for key in ["ANMNR", "ANMNI"]
                 if abs(dcline[key]) <= 90.0
-                    push!(anmn, pop!(dcline, key))
+                    push!(anmn, dcline[key])
                 else
                     push!(anmn, 0)
                     @info("$key outside reasonable limits, setting to 0 degress")
                 end
             end
+            sub_data["rectifier_delay_angle_limits"] =
+                (min = deg2rad(anmn[1]), max = deg2rad(dcline["ANMXR"]))
+            sub_data["inverter_extinction_angle_limits"] =
+                (min = deg2rad(anmn[2]), max = deg2rad(dcline["ANMXI"]))
+
+            sub_data["rectifier_delay_angle"] = deg2rad(anmn[1])
+            sub_data["inverter_extinction_angle"] = deg2rad(anmn[2])
 
             sub_data["qmaxf"] = 0.0
             sub_data["qmaxt"] = 0.0
@@ -877,16 +1076,18 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qmint"] =
                 -max(abs(sub_data["pmint"]), abs(sub_data["pmaxt"])) * cosd(anmn[2])
 
-            # Can we use "number of bridges in series (NBR/NBI)" to compute a loss?
-            sub_data["loss0"] = 0.0
-            sub_data["loss1"] = 0.0
+            sub_data["active_power_limits_from"] =
+                (min = sub_data["pminf"], max = sub_data["pmaxf"])
+            sub_data["active_power_limits_to"] =
+                (min = sub_data["pmint"], max = sub_data["pmaxt"])
+            sub_data["reactive_power_limits_from"] =
+                (min = sub_data["qminf"], max = sub_data["qmaxf"])
+            sub_data["reactive_power_limits_to"] =
+                (min = sub_data["qmint"], max = sub_data["qmaxt"])
 
-            # Costs (set to default values)
-            sub_data["startup"] = 0.0
-            sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 0.0, 0.0]
-            sub_data["model"] = 2
+            sub_data["rectifier_capacitor_reactance"] = dcline["XCAPR"] / ZbaseR
+            sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
+            sub_data["r"] = dcline["RDC"] / ZbaseR
 
             sub_data["source_id"] = [
                 "two-terminal dc",
@@ -910,24 +1111,46 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         )
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
             # Converter buses : is the distinction between ac and dc side meaningful?
-            dcside, acside = dcline["CONVERTER BUSES"]
+            from_bus, to_bus = dcline["CONVERTER BUSES"]
 
             # PowerWorld conversion from PTI to matpower seems to create two
             # artificial generators from a VSC, but it is not clear to me how
             # the value of "pg" is determined and adds shunt to the DC-side bus.
             sub_data = Dict{String, Any}()
+            sub_data["name"] = dcline["NAME"]
 
             # VSC intended to be one or bi-directional?
-            sub_data["f_bus"] = pop!(dcside, "IBUS")
-            sub_data["t_bus"] = pop!(acside, "IBUS")
+            sub_data["f_bus"] = from_bus["IBUS"]
+            sub_data["t_bus"] = to_bus["IBUS"]
             sub_data["br_status"] =
-                if pop!(dcline, "MDC") == 0 ||
-                   pop!(dcside, "TYPE") == 0 ||
-                   pop!(acside, "TYPE") == 0
+                if dcline["MDC"] == 0 ||
+                   from_bus["TYPE"] == 0 ||
+                   to_bus["TYPE"] == 0
                     0
                 else
                     1
                 end
+            sub_data["available"] = sub_data["br_status"] == 0 ? false : true
+
+            sub_data["dc_voltage_control_from"] = from_bus["TYPE"] == 1 ? true : false
+            sub_data["dc_voltage_control_to"] = to_bus["TYPE"] == 1 ? true : false
+            sub_data["ac_voltage_control_from"] = from_bus["MODE"] == 1 ? true : false
+            sub_data["ac_voltage_control_to"] = to_bus["MODE"] == 1 ? true : false
+
+            sub_data["dc_setpoint_from"] = from_bus["DCSET"]
+            sub_data["dc_setpoint_to"] = to_bus["DCSET"]
+            sub_data["ac_setpoint_from"] = from_bus["ACSET"]
+            sub_data["ac_setpoint_to"] = to_bus["ACSET"]
+
+            # ALOSS, MINLOSS in kW, and BLOSS in kW/A. Divide by a 1000 to transform into MW, and divide by baseMVA to normalize to per-unit.
+            sub_data["converter_loss_from"] = LinearCurve(
+                from_bus["BLOSS"] / (1000.0 * baseMVA),
+                (from_bus["ALOSS"] + from_bus["MINLOSS"]) / (1000.0 * baseMVA),
+            )
+            sub_data["converter_loss_to"] = LinearCurve(
+                to_bus["BLOSS"] / (1000.0 * baseMVA),
+                (to_bus["ALOSS"] + to_bus["MINLOSS"]) / (1000.0 * baseMVA),
+            )
 
             sub_data["pf"] = 0.0
             sub_data["pt"] = 0.0
@@ -935,48 +1158,56 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qf"] = 0.0
             sub_data["qt"] = 0.0
 
-            sub_data["vf"] = pop!(dcside, "MODE") == 1 ? pop!(dcside, "ACSET") : 1.0
-            sub_data["vt"] = pop!(acside, "MODE") == 1 ? pop!(acside, "ACSET") : 1.0
+            sub_data["qminf"] = from_bus["MINQ"] / baseMVA
+            sub_data["qmaxf"] = from_bus["MAXQ"] / baseMVA
+            sub_data["qmint"] = to_bus["MINQ"] / baseMVA
+            sub_data["qmaxt"] = to_bus["MAXQ"] / baseMVA
 
-            sub_data["pmaxf"] =
-                if dcside["SMAX"] == 0.0 && dcside["IMAX"] == 0.0
-                    max(abs(dcside["MAXQ"]), abs(dcside["MINQ"]))
-                else
-                    min(pop!(dcside, "IMAX"), pop!(dcside, "SMAX"))
-                end
-            sub_data["pmaxt"] =
-                if acside["SMAX"] == 0.0 && acside["IMAX"] == 0.0
-                    max(abs(acside["MAXQ"]), abs(acside["MINQ"]))
-                else
-                    min(pop!(acside, "IMAX"), pop!(acside, "SMAX"))
-                end
+            PTI_INF = 9999.0
+
+            sub_data["rating_from"] =
+                from_bus["SMAX"] == 0.0 ? PTI_INF : from_bus["SMAX"] / baseMVA
+            sub_data["rating_to"] =
+                to_bus["SMAX"] == 0.0 ? PTI_INF : to_bus["SMAX"] / baseMVA
+            sub_data["rating"] = min(sub_data["rating_from"], sub_data["rating_to"])
+            sub_data["max_dc_current_from"] =
+                from_bus["IMAX"] == 0.0 ? PTI_INF : from_bus["IMAX"]
+            sub_data["max_dc_current_to"] = to_bus["IMAX"] == 0.0 ? PTI_INF : to_bus["IMAX"]
+            sub_data["power_factor_weighting_fraction_from"] = from_bus["PWF"]
+            sub_data["power_factor_weighting_fraction_to"] = to_bus["PWF"]
+            qmax_from = max(abs(sub_data["qminf"]), abs(sub_data["qmaxf"]))
+            qmax_to = max(abs(sub_data["qmint"]), abs(sub_data["qmaxt"]))
+            sub_data["pmaxf"] = sqrt(sub_data["rating_from"]^2 - qmax_from^2)
+            sub_data["pmaxt"] = sqrt(sub_data["rating_to"]^2 - qmax_to^2)
             sub_data["pminf"] = -sub_data["pmaxf"]
             sub_data["pmint"] = -sub_data["pmaxt"]
 
-            sub_data["qminf"] = pop!(dcside, "MINQ")
-            sub_data["qmaxf"] = pop!(dcside, "MAXQ")
-            sub_data["qmint"] = pop!(acside, "MINQ")
-            sub_data["qmaxt"] = pop!(acside, "MAXQ")
+            if sub_data["dc_voltage_control_from"] && !sub_data["dc_voltage_control_to"]
+                base_voltage = sub_data["dc_setpoint_from"]
+                flow_setpoint = sub_data["dc_setpoint_to"]
+            elseif !sub_data["dc_voltage_control_from"] && sub_data["dc_voltage_control_to"]
+                base_voltage = sub_data["dc_setpoint_to"]
+                flow_setpoint = -sub_data["dc_setpoint_from"]
+            else
+                error(
+                    "At least one converter in converter $(sub_data["name"]) must set a voltage control.",
+                )
+            end
+            Zbase = base_voltage^2 / baseMVA
+            sub_data["r"] = dcline["RDC"] / Zbase
+            sub_data["pf"] = flow_setpoint / baseMVA
+            sub_data["if"] = 1000.0 * (flow_setpoint / base_voltage)
 
-            sub_data["loss0"] =
-                (
-                    pop!(dcside, "ALOSS") +
-                    pop!(acside, "ALOSS") +
-                    pop!(dcside, "MINLOSS") +
-                    pop!(acside, "MINLOSS")
-                ) * 1e-3
-            sub_data["loss1"] = (pop!(dcside, "BLOSS") + pop!(acside, "BLOSS")) * 1e-3 # how to include resistance?
-
-            # Costs (set to default values)
-            sub_data["startup"] = 0.0
-            sub_data["shutdown"] = 0.0
-            sub_data["ncost"] = 3
-            sub_data["cost"] = [0.0, 0.0, 0.0]
-            sub_data["model"] = 2
+            sub_data["EXT"] = Dict{String, Any}(
+                "REMOT_FROM" => from_bus["REMOT"],
+                "REMOT_TO" => to_bus["REMOT"],
+                "RMPCT_FROM" => from_bus["RMPCT"],
+                "RMPCT_TO" => to_bus["RMPCT"],
+            )
 
             sub_data["source_id"] =
-                ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], pop!(dcline, "NAME")]
-            sub_data["index"] = length(pm_data["dcline"]) + 1
+                ["vsc dc", sub_data["f_bus"], sub_data["t_bus"], dcline["NAME"]]
+            sub_data["index"] = length(pm_data["vscline"]) + 1
 
             if import_all
                 _import_remaining_keys!(sub_data, dcline)
@@ -989,20 +1220,122 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
             end
 
-            push!(pm_data["dcline"], sub_data)
+            push!(pm_data["vscline"], sub_data)
         end
     end
+end
+
+function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E FACTs devices data into a PowerModels Dict..."
+    pm_data["facts"] = []
+
+    if haskey(pti_data, "FACTS CONTROL DEVICE")
+        for facts in pti_data["FACTS CONTROL DEVICE"]
+            @info(
+                """FACTs are supported via a simplification approach for terminal_bus = 0 (STATCOM operation)"""
+            )
+            sub_data = Dict{String, Any}()
+
+            sub_data["name"] = facts["NAME"]
+            sub_data["control_mode"] = facts["MODE"]
+
+            # MODE = 0 -> Unavailable
+            # MODE = 1 -> Normal mode 
+            # MODE = 2 -> Link bypassed
+            if facts["MODE"] != 0
+                sub_data["available"] = 1
+            else
+                sub_data["available"] = 0
+            end
+
+            sub_data["bus"] = facts["I"]  # Sending end bus number
+            sub_data["tbus"] = facts["J"] # Terminal end bus number
+
+            sub_data["voltage_setpoint"] = facts["VSET"]
+            sub_data["max_shunt_current"] = facts["SHMX"]
+
+            # % of MVAr required to hold voltage at sending bus
+            if facts["RMPCT"] < 0
+                @warn "% MVAr required must me positive."
+            end
+
+            sub_data["reactive_power_required"] = facts["RMPCT"]
+
+            sub_data["source_id"] =
+                ["facts", sub_data["bus"], sub_data["name"]]
+            sub_data["index"] = length(pm_data["facts"]) + 1
+
+            if import_all
+                _import_remaining_keys!(sub_data, facts)
+            end
+
+            push!(pm_data["facts"], sub_data)
+        end
+    end
+    return
+end
+
+function _build_switch_breaker_sub_data(
+    branch::Dict,
+    branch_type::String,
+    discrete_branch_type::Int,
+    index::Int,
+)
+    sub_data = Dict{String, Any}()
+
+    sub_data["f_bus"] = pop!(branch, "I")
+    sub_data["t_bus"] = pop!(branch, "J")
+    sub_data["r"] = pop!(branch, "R")
+    sub_data["x"] = pop!(branch, "X")
+    sub_data["state"] = pop!(branch, "ST")
+    sub_data["active_power_flow"] = 0.0
+    sub_data["reactive_power_flow"] = 0.0
+    sub_data["psw"] = sub_data["active_power_flow"]
+    sub_data["qsw"] = sub_data["reactive_power_flow"]
+    sub_data["rating"] = pop!(branch, "RATEA")
+    sub_data["discrete_branch_type"] = discrete_branch_type
+    sub_data["source_id"] =
+        [branch_type, sub_data["f_bus"], sub_data["t_bus"], branch["CKT"]]
+    sub_data["index"] = index
+
+    return sub_data
+end
+
+function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Switches & Breakers data into a PowerModels Dict..."
+    pm_data["breaker"] = []
+    pm_data["switch"] = []
+    mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
+
+    if haskey(pti_data, "BRANCH")
+        for branch in pti_data["BRANCH"]
+            branch_init = first(branch["CKT"])
+
+            # Check if character is in the mapping
+            if haskey(mapping, branch_init)
+                branch_type, discrete_branch_type = mapping[branch_init]
+
+                sub_data = _build_switch_breaker_sub_data(
+                    branch,
+                    branch_type,
+                    discrete_branch_type,
+                    length(pm_data[branch_type]) + 1,
+                )
+
+                if import_all
+                    _import_remaining_keys!(sub_data, branch)
+                end
+
+                push!(pm_data[branch_type], sub_data)
+            end
+        end
+    end
+    return
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
-    return
-end
-
-function _psse2pm_switch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @warn "This PSS(R)E parser currently doesn't support Switch data parsing..."
-    pm_data["switch"] = []
     return
 end
 
@@ -1037,11 +1370,12 @@ function _pti_to_powermodels!(
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
     _psse2pm_generator!(pm_data, pti_data, import_all)
+    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
+    _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
-    _psse2pm_switch!(pm_data, pti_data, import_all)
 
     if import_all
         _import_remaining_comps!(

@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct TwoTerminalHVDCLine <: ACBranch
+    mutable struct TwoTerminalGenericHVDCLine <: TwoTerminalHVDC
         name::String
         available::Bool
         active_power_flow::Float64
@@ -38,7 +38,7 @@ This model is appropriate for operational simulations with a linearized DC power
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct TwoTerminalHVDCLine <: ACBranch
+mutable struct TwoTerminalGenericHVDCLine <: TwoTerminalHVDC
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -65,17 +65,17 @@ mutable struct TwoTerminalHVDCLine <: ACBranch
     internal::InfrastructureSystemsInternal
 end
 
-function TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
+function TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), )
+    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TwoTerminalHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TwoTerminalHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
+function TwoTerminalGenericHVDCLine(; name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss=LinearCurve(0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TwoTerminalGenericHVDCLine(name, available, active_power_flow, arc, active_power_limits_from, active_power_limits_to, reactive_power_limits_from, reactive_power_limits_to, loss, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
-function TwoTerminalHVDCLine(::Nothing)
-    TwoTerminalHVDCLine(;
+function TwoTerminalGenericHVDCLine(::Nothing)
+    TwoTerminalGenericHVDCLine(;
         name="init",
         available=false,
         active_power_flow=0.0,
@@ -90,48 +90,48 @@ function TwoTerminalHVDCLine(::Nothing)
     )
 end
 
-"""Get [`TwoTerminalHVDCLine`](@ref) `name`."""
-get_name(value::TwoTerminalHVDCLine) = value.name
-"""Get [`TwoTerminalHVDCLine`](@ref) `available`."""
-get_available(value::TwoTerminalHVDCLine) = value.available
-"""Get [`TwoTerminalHVDCLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::TwoTerminalHVDCLine) = get_value(value, value.active_power_flow)
-"""Get [`TwoTerminalHVDCLine`](@ref) `arc`."""
-get_arc(value::TwoTerminalHVDCLine) = value.arc
-"""Get [`TwoTerminalHVDCLine`](@ref) `active_power_limits_from`."""
-get_active_power_limits_from(value::TwoTerminalHVDCLine) = get_value(value, value.active_power_limits_from)
-"""Get [`TwoTerminalHVDCLine`](@ref) `active_power_limits_to`."""
-get_active_power_limits_to(value::TwoTerminalHVDCLine) = get_value(value, value.active_power_limits_to)
-"""Get [`TwoTerminalHVDCLine`](@ref) `reactive_power_limits_from`."""
-get_reactive_power_limits_from(value::TwoTerminalHVDCLine) = get_value(value, value.reactive_power_limits_from)
-"""Get [`TwoTerminalHVDCLine`](@ref) `reactive_power_limits_to`."""
-get_reactive_power_limits_to(value::TwoTerminalHVDCLine) = get_value(value, value.reactive_power_limits_to)
-"""Get [`TwoTerminalHVDCLine`](@ref) `loss`."""
-get_loss(value::TwoTerminalHVDCLine) = value.loss
-"""Get [`TwoTerminalHVDCLine`](@ref) `services`."""
-get_services(value::TwoTerminalHVDCLine) = value.services
-"""Get [`TwoTerminalHVDCLine`](@ref) `ext`."""
-get_ext(value::TwoTerminalHVDCLine) = value.ext
-"""Get [`TwoTerminalHVDCLine`](@ref) `internal`."""
-get_internal(value::TwoTerminalHVDCLine) = value.internal
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `name`."""
+get_name(value::TwoTerminalGenericHVDCLine) = value.name
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `available`."""
+get_available(value::TwoTerminalGenericHVDCLine) = value.available
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`."""
+get_active_power_flow(value::TwoTerminalGenericHVDCLine) = get_value(value, value.active_power_flow)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `arc`."""
+get_arc(value::TwoTerminalGenericHVDCLine) = value.arc
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`."""
+get_active_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, value.active_power_limits_from)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`."""
+get_active_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, value.active_power_limits_to)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`."""
+get_reactive_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, value.reactive_power_limits_from)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`."""
+get_reactive_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, value.reactive_power_limits_to)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `loss`."""
+get_loss(value::TwoTerminalGenericHVDCLine) = value.loss
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `services`."""
+get_services(value::TwoTerminalGenericHVDCLine) = value.services
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `ext`."""
+get_ext(value::TwoTerminalGenericHVDCLine) = value.ext
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `internal`."""
+get_internal(value::TwoTerminalGenericHVDCLine) = value.internal
 
-"""Set [`TwoTerminalHVDCLine`](@ref) `available`."""
-set_available!(value::TwoTerminalHVDCLine, val) = value.available = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TwoTerminalHVDCLine, val) = value.active_power_flow = set_value(value, val)
-"""Set [`TwoTerminalHVDCLine`](@ref) `arc`."""
-set_arc!(value::TwoTerminalHVDCLine, val) = value.arc = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::TwoTerminalHVDCLine, val) = value.active_power_limits_from = set_value(value, val)
-"""Set [`TwoTerminalHVDCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::TwoTerminalHVDCLine, val) = value.active_power_limits_to = set_value(value, val)
-"""Set [`TwoTerminalHVDCLine`](@ref) `reactive_power_limits_from`."""
-set_reactive_power_limits_from!(value::TwoTerminalHVDCLine, val) = value.reactive_power_limits_from = set_value(value, val)
-"""Set [`TwoTerminalHVDCLine`](@ref) `reactive_power_limits_to`."""
-set_reactive_power_limits_to!(value::TwoTerminalHVDCLine, val) = value.reactive_power_limits_to = set_value(value, val)
-"""Set [`TwoTerminalHVDCLine`](@ref) `loss`."""
-set_loss!(value::TwoTerminalHVDCLine, val) = value.loss = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `services`."""
-set_services!(value::TwoTerminalHVDCLine, val) = value.services = val
-"""Set [`TwoTerminalHVDCLine`](@ref) `ext`."""
-set_ext!(value::TwoTerminalHVDCLine, val) = value.ext = val
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `available`."""
+set_available!(value::TwoTerminalGenericHVDCLine, val) = value.available = val
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`."""
+set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_flow = set_value(value, val)
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `arc`."""
+set_arc!(value::TwoTerminalGenericHVDCLine, val) = value.arc = val
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`."""
+set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_from = set_value(value, val)
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`."""
+set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_to = set_value(value, val)
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`."""
+set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_from = set_value(value, val)
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`."""
+set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_to = set_value(value, val)
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `loss`."""
+set_loss!(value::TwoTerminalGenericHVDCLine, val) = value.loss = val
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `services`."""
+set_services!(value::TwoTerminalGenericHVDCLine, val) = value.services = val
+"""Set [`TwoTerminalGenericHVDCLine`](@ref) `ext`."""
+set_ext!(value::TwoTerminalGenericHVDCLine, val) = value.ext = val
