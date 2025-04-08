@@ -705,7 +705,14 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
     end
 end
 
-function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_type::String)
+function make_branch(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+    source_type::String,
+    dummy_buses::Set,
+)
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
@@ -723,7 +730,7 @@ function make_branch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             error("Unsupported branch type $branch_type")
         end
     else
-        value = make_line(name, d, bus_f, bus_t)
+        value = make_line(name, d, bus_f, bus_t, dummy_buses)
     end
 
     return value
@@ -749,7 +756,12 @@ function _get_rating(
     end
 end
 
-function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, dummy_buses::Set)
+    if get_number(bus_f) in dummy_buses || get_number(bus_t) in dummy_buses
+        @warn "Skipping line $name because it connects to a dummy bus"
+        return
+    end
+
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -967,15 +979,30 @@ function read_branch!(
         return
     end
 
+    dummy_buses = Set{Int}()
+    if haskey(data, "multisection_line")
+        msl_data = data["multisection_line"]
+        for key in keys(msl_data)
+            ext_dict = msl_data[key]["ext"]
+            for bus in values(ext_dict)
+                push!(dummy_buses, bus)
+            end
+        end
+    end
+
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["branch"]
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t, source_type)
+        value = make_branch(name, d, bus_f, bus_t, source_type, dummy_buses)
 
-        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+        if value !== nothing
+            add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+        else
+            continue
+        end
     end
 end
 
@@ -985,7 +1012,10 @@ function make_multisection_line(
     bus_f::ACBus,
     bus_t::ACBus,
     facts_buses::Set{Int},
+    branch_data::Dict,
 )
+    @warn "Dummy buses are ignored. Each line group id is added as a regular line component..."
+
     for (_, dbus) in d["ext"]
         # Check if a FACTS device is connected to a dummy bus
         if dbus in facts_buses
@@ -1000,12 +1030,61 @@ function make_multisection_line(
         end
     end
 
-    return MultiSectionLine(;
+    # Define equivalent parameters for line groupings
+    eq_r = 0.0
+    eq_x = 0.0
+    eq_b_fr = 0.0
+    eq_b_to = 0.0
+    ang_min_val = []
+    ang_max_val = []
+    ratings = []
+    ratings_b = []
+    ratings_c = []
+
+    sorted_dummy_buses = [bus for (_, bus) in sort(collect(d["ext"]))]
+    bus_path = [d["f_bus"]; sorted_dummy_buses; d["t_bus"]]
+
+    pairs = []
+    for i in 1:(length(bus_path) - 1)
+        push!(pairs, "$(bus_path[i])-$(bus_path[i+1])")
+        push!(pairs, "$(bus_path[i+1])-$(bus_path[i])")
+    end
+
+    for (_, d) in branch_data
+        if d["source_id"][1] == "branch"
+            line_path = "$(d["source_id"][2])-$(d["source_id"][3])"
+            if line_path in pairs
+                println(d)
+                eq_r += d["br_r"]
+                eq_x += d["br_x"]
+                eq_b_fr += d["b_fr"]
+                eq_b_to += d["b_to"]
+                push!(ang_min_val, d["angmin"])
+                push!(ang_max_val, d["angmax"])
+                push!(ratings, d["rate_a"])
+
+                for (key, arr) in [("rate_b", ratings_b), ("rate_c", ratings_c)]
+                    push!(arr, get(d, key, INFINITE_BOUND))
+                end
+            else
+                continue
+            end
+        end
+    end
+
+    return Line(;
         name = name,
         available = d["available"],
-        id = d["id"],
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
         arc = Arc(bus_f, bus_t),
-        section_number = d["section_number"],
+        r = eq_r,
+        x = eq_x,
+        b = (from = eq_b_fr, to = eq_b_to),
+        rating = maximum(ratings),
+        angle_limits = (min = minimum(ang_min_val), max = maximum(ang_max_val)),
+        rating_b = maximum(ratings_b),
+        rating_c = maximum(ratings_c),
         ext = d["ext"],
     )
 end
@@ -1042,13 +1121,16 @@ function read_multisection_line!(
             push!(facts_buses, d["bus"])
         end
     end
-    for (d_key, d) in data["multisection_line"]
+
+    branch_data = data["branch"]
+
+    for (_, d) in data["multisection_line"]
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
         d["dc_converters"] = dc_converters
         msl_name = "$(name)-$(d["id"])"
-        value = make_multisection_line(msl_name, d, bus_f, bus_t, facts_buses)
+        value = make_multisection_line(msl_name, d, bus_f, bus_t, facts_buses, branch_data)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
