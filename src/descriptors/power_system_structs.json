@@ -534,64 +534,6 @@
             "supertype": "ACTransmission"
         },
         {
-            "struct_name": "MultiSectionLine",
-            "docstring": "A multi-section line grouping representation ",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "arc",
-                    "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
-                    "data_type": "Arc"
-                },
-                {
-                    "name": "section_number",
-                    "comment": "Number of sections to consider in the multisection line",
-                    "data_type": "Int"
-                },
-                {   
-                    "name": "id",
-                    "comment": "Multisection line grouping identifier, with a '&' as a first character",
-                    "data_type": "String",
-                    "default": "1"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "ACTransmission"
-        },
-        {
             "struct_name": "DiscreteControlledACBranch",
             "docstring": "Used to represent switches and breakers connecting AC Buses",
             "fields": [

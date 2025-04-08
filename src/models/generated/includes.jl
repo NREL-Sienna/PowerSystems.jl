@@ -6,7 +6,6 @@ include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
-include("MultiSectionLine.jl")
 include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
@@ -562,7 +561,6 @@ export get_g
 export get_gate_openings
 export get_gate_position_limits
 export get_hysteresis_binary_logic
-export get_id
 export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
@@ -719,7 +717,6 @@ export get_saturation_coeffs
 export get_scheduled_dc_voltage
 export get_secondary_tertiary_arc
 export get_secondary_turns_ratio
-export get_section_number
 export get_services
 export get_speed_error_signal
 export get_star_bus
@@ -1216,7 +1213,6 @@ export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
 export set_hysteresis_binary_logic!
-export set_id!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
@@ -1373,7 +1369,6 @@ export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
 export set_secondary_tertiary_arc!
 export set_secondary_turns_ratio!
-export set_section_number!
 export set_services!
 export set_speed_error_signal!
 export set_star_bus!

@@ -42,7 +42,6 @@ export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
 export FACTSControlDevice
-export MultiSectionLine
 export Transformer3W
 
 # from IS function_data.jl
