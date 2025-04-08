@@ -1333,6 +1333,56 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     return
 end
 
+function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Multi-section Lines data into a PowerModels Dict..."
+
+    # Lookup for branches status (br_status)
+    branch_status_lookup = Dict{Tuple{Int, Int, String}, Int}()
+    if haskey(pm_data, "branch")
+        for branch in pm_data["branch"]
+            branch_id = branch["source_id"][end]
+            branch_status_lookup[(branch["f_bus"], branch["t_bus"], branch_id)] =
+                branch["br_status"]
+        end
+    end
+
+    pm_data["multisection_line"] = []
+
+    if haskey(pti_data, "MULTI-SECTION LINE")
+        for multisec_line in pti_data["MULTI-SECTION LINE"]
+            sub_data = Dict{String, Any}()
+
+            sub_data["f_bus"] = pop!(multisec_line, "I")
+            sub_data["t_bus"] = pop!(multisec_line, "J")
+            sub_data["id"] = pop!(multisec_line, "ID")
+            sub_data["section_number"] = pop!(multisec_line, "MET")
+
+            dummy_buses =
+                Dict(k => v for (k, v) in multisec_line if startswith(k, "DUM") && v != "")
+            sub_data["ext"] = dummy_buses
+
+            # Check if the multisection line is available based on branch status
+            # Multi-section lines are treated as a single entity regarding its status
+            sub_data["available"] =
+                get(
+                    branch_status_lookup,
+                    (sub_data["f_bus"], sub_data["t_bus"], sub_data["id"]),
+                    1,
+                ) == 1
+            sub_data["source_id"] =
+                ["multisection_line", sub_data["f_bus"], sub_data["t_bus"]]
+            sub_data["index"] = length(pm_data["multisection_line"]) + 1
+
+            if import_all
+                _import_remaining_keys!(sub_data, multisec_line)
+            end
+
+            push!(pm_data["multisection_line"], sub_data)
+        end
+    end
+    return
+end
+
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
@@ -1370,11 +1420,12 @@ function _pti_to_powermodels!(
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
     _psse2pm_generator!(pm_data, pti_data, import_all)
+    _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
+    _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
-    _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
 
     if import_all
