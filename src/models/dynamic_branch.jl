@@ -65,10 +65,14 @@ get_r(value::DynamicBranch) = get_r(value.branch)
 get_x(value::DynamicBranch) = get_x(value.branch)
 """Get DynamicBranch b."""
 get_b(value::DynamicBranch) = get_b(value.branch)
-"""Get DynamicBranch rating."""
+"""Get DynamicBranch A rating."""
 get_rating(value::DynamicBranch) = get_rating(value.branch)
 """Get DynamicBranch angle_limits."""
 get_angle_limits(value::DynamicBranch) = get_angle_limits(value.branch)
+"""Get DynamicBranch B rating."""
+get_rating_b(value::DynamicBranch) = get_rating_b(value.branch)
+"""Get DynamicBranch C rating."""
+get_rating_c(value::DynamicBranch) = get_rating_c(value.branch)
 """Get DynamicBranch services."""
 get_services(value::DynamicBranch) = get_services(value.branch)
 """Get DynamicBranch ext."""
