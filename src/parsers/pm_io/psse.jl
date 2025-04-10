@@ -350,7 +350,7 @@ for Switched Shunts, as given by the PSS(R)E Fixed and Switched Shunts
 specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
+    @info "Parsing PSS(R)E Fixed & Switched Shunt data into a PowerModels Dict..."
 
     pm_data["shunt"] = []
     if haskey(pti_data, "FIXED SHUNT")
@@ -376,8 +376,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     pm_data["switched_shunt"] = []
     if haskey(pti_data, "SWITCHED SHUNT")
-        @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
-
         for switched_shunt in pti_data["SWITCHED SHUNT"]
             sub_data = Dict{String, Any}()
 
@@ -980,9 +978,6 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
-            @info(
-                "Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators."
-            )
             sub_data = Dict{String, Any}()
 
             # Unit conversions?
