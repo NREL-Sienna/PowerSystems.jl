@@ -1182,7 +1182,8 @@ function read_switched_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_switched_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_switched_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
@@ -1264,7 +1265,8 @@ function read_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
