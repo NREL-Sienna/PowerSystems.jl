@@ -1430,7 +1430,7 @@ Parses directly from iostream
 """
 function parse_psse(io::IO; kwargs...)::Dict
     @info(
-        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines",
+        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, switches, breakers, transformers, facts, and dc lines",
     )
     pti_data = parse_pti(io)
     pm = _pti_to_powermodels!(pti_data; kwargs...)
