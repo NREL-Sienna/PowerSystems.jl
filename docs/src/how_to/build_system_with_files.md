@@ -52,10 +52,10 @@ the parameter names based on the column names in your CSV file.
 ```julia
 bus_params = CSV.read("MyData/Buses.csv", DataFrame)
 
-min_voltage_col = "Voltage-Min"
-max_voltage_col = "Voltage-Max"
-base_voltage_col = "Base Voltage"
-bus_number_col = "Bus Number"
+min_volt = "Voltage-Min"
+max_volt = "Voltage-Max"
+base_volt = "Base Voltage"
+bus_number = "Bus Number"
 region = "Region"
 ```
 
@@ -83,18 +83,14 @@ data in the `for` loop. We have done that here for e.g., the `bustype` and `angl
 
 ```julia
 for row in eachrow(bus_params)
-    num = row[bus_number_col]
-    min_volt = row[min_voltage_col]
-    max_volt = row[max_voltage_col]
-    base_volt = row[base_voltage_col]
     bus = ACBus(;
-        number = num,
-        name = "bus$num",
+        number = row[bus_number],
+        name = "bus$(row[bus_number])",
         bustype = ACBusTypes.PQ,
         angle = 0.0,
         magnitude = 1.0,
-        voltage_limits = (min = min_volt, max = max_volt),
-        base_voltage = base_volt,
+        voltage_limits = (min = row[min_volt], max = row[max_volt]),
+        base_voltage = row[base_volt],
         area = get_component(Area, sys, row[region]))
     )
     add_component!(sys, bus)
@@ -145,16 +141,15 @@ whatever parameters you are missing (in this example, `active_power_flow`,
 
 ```julia
 for row in eachrow(branch_params)
-    num = row[branch_num]
-    bus_from = row[bus_from_col]
-    bus_to = row[bus_to_col]
-    if bus_params[bus_to, base_voltage_col] == bus_params[bus_from, base_voltage_col]
+    bus_from = get_bus(sys, row[bus_from_col])
+    bus_to = get_bus(sys, row[bus_to_col])
+    if get_base_voltage(bus_to) == get_base_voltage(bus_from)
         local line = Line(;
-            name = "line$num",
+            name = "line$(row[branch_num])",
             available = true,
             active_power_flow = 0.0,
             reactive_power_flow = 0.0,
-            arc = Arc(; from = get_bus(sys, bus_from), to = get_bus(sys, bus_to)),
+            arc = Arc(; from = bus_from, to = bus_to),
             r = row[resistance],
             x = row[reactance],
             b = (from = 0.0, to = 0.0),
@@ -164,11 +159,11 @@ for row in eachrow(branch_params)
         add_component!(sys, line)
     else # if the base voltages of the connecting buses do not match build a transformer
         local tline = Transformer2W(;
-            name = "tline$num",
+            name = "tline$(row[branch_num])",
             available = true,
             active_power_flow = 0.0,
             reactive_power_flow = 0.0,
-            arc = Arc(; from = get_bus(sys, bus_from), to = get_bus(sys, bus_to)),
+            arc = Arc(; from = bus_from, to = bus_to),
             r = row[resistance],
             x = row[reactance],
             primary_shunt = 0.0,
