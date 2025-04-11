@@ -280,7 +280,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         active_power = d["pd"],
         reactive_power = d["qd"],
@@ -294,7 +294,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return StandardLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         constant_active_power = d["pd"],
         constant_reactive_power = d["qd"],
