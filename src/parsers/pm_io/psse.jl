@@ -195,6 +195,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["angmin"] = 0.0
                 sub_data["angmax"] = 0.0
                 sub_data["transformer"] = false
+                sub_data["ext"] = Dict{String, Any}(
+                    "LEN" => pop!(branch, "LEN"),
+                )
 
                 sub_data["source_id"] =
                     ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]

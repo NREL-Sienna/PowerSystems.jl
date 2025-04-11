@@ -773,6 +773,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         angle_limits = (min = d["angmin"], max = d["angmax"]),
         rating_b = _get_rating("Line", name, d, "rate_b"),
         rating_c = _get_rating("Line", name, d, "rate_c"),
+        ext = d["ext"],
     )
 end
 
