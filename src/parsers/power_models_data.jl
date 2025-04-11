@@ -280,7 +280,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         active_power = d["pd"],
         reactive_power = d["qd"],
@@ -294,7 +294,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return StandardLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         constant_active_power = d["pd"],
         constant_reactive_power = d["qd"],
@@ -387,6 +387,7 @@ function read_loadzones!(
     # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
     _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
 
+    @warn "Skipping LoadZones that are not associated with a bus ..."
     for zone in zones
         name = _get_name(zone)
         load_zone = make_loadzone(
@@ -773,6 +774,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         angle_limits = (min = d["angmin"], max = d["angmax"]),
         rating_b = _get_rating("Line", name, d, "rate_b"),
         rating_c = _get_rating("Line", name, d, "rate_c"),
+        ext = d["ext"],
     )
 end
 
@@ -1182,7 +1184,8 @@ function read_switched_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_switched_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_switched_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
@@ -1264,7 +1267,8 @@ function read_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
