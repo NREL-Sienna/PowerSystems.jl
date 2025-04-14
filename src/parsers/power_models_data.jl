@@ -387,7 +387,18 @@ function read_loadzones!(
     # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
     _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
 
-    @warn "Skipping LoadZones that are not associated with a bus ..."
+    @info "Reading Zone data"
+    if !haskey(data, "zone")
+        @info "There is no Zone data in this file"
+    else
+        for (_, v) in data["zone"]
+            zone_number = v["zone_number"]
+            if !(zone_number in zones)
+                @warn "Skipping empty LoadZone $(zone_number)-$(v["zone_name"])"
+            end
+        end
+    end
+
     for zone in zones
         name = _get_name(zone)
         load_zone = make_loadzone(
