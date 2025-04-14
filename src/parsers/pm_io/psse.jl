@@ -273,6 +273,25 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 end
 
+function _psse2pm_zone!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Zone data into a PowerModels Dict..."
+    pm_data["zone"] = []
+
+    if haskey(pti_data, "ZONE")
+        for zone in pti_data["ZONE"]
+            sub_data = Dict{String, Any}()
+            sub_data["zone_number"] = pop!(zone, "I")
+            sub_data["zone_name"] = pop!(zone, "ZONAME")
+            sub_data["index"] = length(pm_data["zone"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, zone)
+            end
+
+            push!(pm_data["zone"], sub_data)
+        end
+    end
+end
+
 """
     _psse2pm_bus!(pm_data, pti_data)
 
@@ -1364,6 +1383,7 @@ function _pti_to_powermodels!(
         _import_remaining_keys!(pm_data, pti_data["CASE IDENTIFICATION"][1])
     end
 
+    _psse2pm_zone!(pm_data, pti_data, import_all)
     _psse2pm_bus!(pm_data, pti_data, import_all)
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
