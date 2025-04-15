@@ -295,6 +295,27 @@ function _psse2pm_area_interchange!(pm_data::Dict, pti_data::Dict, import_all::B
     end
 end
 
+function _psse2pm_interarea_transfer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E InterAreaTransfer data into a PowerModels Dict..."
+    pm_data["interarea_transfer"] = []
+
+    if haskey(pti_data, "INTER-AREA TRANSFER")
+        for interarea in pti_data["INTER-AREA TRANSFER"]
+            sub_data = Dict{String, Any}()
+            sub_data["area_from"] = pop!(interarea, "ARFROM")
+            sub_data["area_to"] = pop!(interarea, "ARTO")
+            sub_data["power_transfer"] = pop!(interarea, "PTRAN")
+
+            sub_data["index"] = length(pm_data["interarea_transfer"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, interarea)
+            end
+
+            push!(pm_data["interarea_transfer"], sub_data)
+        end
+    end
+end
+
 function _psse2pm_zone!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Zone data into a PowerModels Dict..."
     pm_data["zone"] = []
