@@ -273,6 +273,28 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 end
 
+function _psse2pm_area_interchange!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E AreaInterchange data into a PowerModels Dict..."
+    pm_data["area_interchange"] = []
+
+    if haskey(pti_data, "AREA INTERCHANGE")
+        for area_int in pti_data["AREA INTERCHANGE"]
+            sub_data = Dict{String, Any}()
+            sub_data["area_name"] = pop!(area_int, "ARNAME")
+            sub_data["area_number"] = pop!(area_int, "I")
+            sub_data["bus_number"] = pop!(area_int, "ISW")
+            sub_data["net_interchange"] = pop!(area_int, "PDES")
+            sub_data["tol_interchange"] = pop!(area_int, "PTOL")
+            sub_data["index"] = length(pm_data["area_interchange"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, area_int)
+            end
+
+            push!(pm_data["area_interchange"], sub_data)
+        end
+    end
+end
+
 function _psse2pm_zone!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Zone data into a PowerModels Dict..."
     pm_data["zone"] = []
@@ -1383,6 +1405,8 @@ function _pti_to_powermodels!(
         _import_remaining_keys!(pm_data, pti_data["CASE IDENTIFICATION"][1])
     end
 
+    _psse2pm_interarea_transfer!(pm_data, pti_data, import_all)
+    _psse2pm_area_interchange!(pm_data, pti_data, import_all)
     _psse2pm_zone!(pm_data, pti_data, import_all)
     _psse2pm_bus!(pm_data, pti_data, import_all)
     _psse2pm_load!(pm_data, pti_data, import_all)

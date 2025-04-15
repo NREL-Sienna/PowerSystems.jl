@@ -261,6 +261,26 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
         end
 
+        ext = Dict{String, Any}(
+            "ARNAME" => "",
+            "I" => "",
+            "ISW" => "",
+            "PDES" => "",
+            "PTOL" => "",
+        )
+        for (k, area_data) in data["area_interchange"]
+            if haskey(area_data, "area_number") &&
+               string(area_data["area_number"]) == area_name
+                ext["ARNAME"] = strip(get(area_data, "area_name", ""))
+                ext["I"] = string(get(area_data, "area_number", ""))
+                ext["ISW"] = string(get(area_data, "bus_number", ""))
+                ext["PDES"] = get(area_data, "net_interchange", "")
+                ext["PTOL"] = get(area_data, "tol_interchange", "")
+                break  # Only one match is allowed
+            end
+        end
+        set_ext!(area, ext)
+
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
