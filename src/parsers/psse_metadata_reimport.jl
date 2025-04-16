@@ -124,6 +124,16 @@ function parse_export_metadata_dict(md::Dict)
 
         return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
     end
+    function xfrm_3w_name_formatter(
+        device_dict::Dict,
+    )::String
+        bus_primary = device_dict["bus_primary"]
+        bus_secondary = device_dict["bus_secondary"]
+        bus_tertiary = device_dict["bus_tertiary"]
+        ckt = device_dict["circuit"]
+
+        return "$(bus_primary)-$(bus_secondary)-$(bus_tertiary)_i-$(ckt)"
+    end
     shunt_name_formatter = name_formatter_from_component_ids(
         md["shunt_name_mapping"],
         md["bus_number_mapping"],
@@ -144,6 +154,7 @@ function parse_export_metadata_dict(md::Dict)
         :shunt_name_formatter => shunt_name_formatter,
         :gen_name_formatter => gen_name_formatter,
         :branch_name_formatter => branch_name_formatter,
+        :xfrm_3w_name_formatter => xfrm_3w_name_formatter,
     )
     bus_number_mapping = reverse_dict(md["bus_number_mapping"])  # PSS/E bus name -> Sienna bus name
 

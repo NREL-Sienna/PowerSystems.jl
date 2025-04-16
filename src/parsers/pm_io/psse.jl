@@ -195,6 +195,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["angmin"] = 0.0
                 sub_data["angmax"] = 0.0
                 sub_data["transformer"] = false
+                sub_data["ext"] = Dict{String, Any}(
+                    "LEN" => pop!(branch, "LEN"),
+                )
 
                 sub_data["source_id"] =
                     ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
@@ -267,6 +270,68 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         end
     else
         pm_data["gen"] = Vector{Dict{String, Any}}()
+    end
+end
+
+function _psse2pm_area_interchange!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E AreaInterchange data into a PowerModels Dict..."
+    pm_data["area_interchange"] = []
+
+    if haskey(pti_data, "AREA INTERCHANGE")
+        for area_int in pti_data["AREA INTERCHANGE"]
+            sub_data = Dict{String, Any}()
+            sub_data["area_name"] = pop!(area_int, "ARNAME")
+            sub_data["area_number"] = pop!(area_int, "I")
+            sub_data["bus_number"] = pop!(area_int, "ISW")
+            sub_data["net_interchange"] = pop!(area_int, "PDES")
+            sub_data["tol_interchange"] = pop!(area_int, "PTOL")
+            sub_data["index"] = length(pm_data["area_interchange"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, area_int)
+            end
+
+            push!(pm_data["area_interchange"], sub_data)
+        end
+    end
+end
+
+function _psse2pm_interarea_transfer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E InterAreaTransfer data into a PowerModels Dict..."
+    pm_data["interarea_transfer"] = []
+
+    if haskey(pti_data, "INTER-AREA TRANSFER")
+        for interarea in pti_data["INTER-AREA TRANSFER"]
+            sub_data = Dict{String, Any}()
+            sub_data["area_from"] = pop!(interarea, "ARFROM")
+            sub_data["area_to"] = pop!(interarea, "ARTO")
+            sub_data["power_transfer"] = pop!(interarea, "PTRAN")
+
+            sub_data["index"] = length(pm_data["interarea_transfer"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, interarea)
+            end
+
+            push!(pm_data["interarea_transfer"], sub_data)
+        end
+    end
+end
+
+function _psse2pm_zone!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Zone data into a PowerModels Dict..."
+    pm_data["zone"] = []
+
+    if haskey(pti_data, "ZONE")
+        for zone in pti_data["ZONE"]
+            sub_data = Dict{String, Any}()
+            sub_data["zone_number"] = pop!(zone, "I")
+            sub_data["zone_name"] = pop!(zone, "ZONAME")
+            sub_data["index"] = length(pm_data["zone"]) + 1
+            if import_all
+                _import_remaining_keys!(sub_data, zone)
+            end
+
+            push!(pm_data["zone"], sub_data)
+        end
     end
 end
 
@@ -350,7 +415,7 @@ for Switched Shunts, as given by the PSS(R)E Fixed and Switched Shunts
 specifications.
 """
 function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @info "Parsing PSS(R)E Shunt data into a PowerModels Dict..."
+    @info "Parsing PSS(R)E Fixed & Switched Shunt data into a PowerModels Dict..."
 
     pm_data["shunt"] = []
     if haskey(pti_data, "FIXED SHUNT")
@@ -376,8 +441,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     pm_data["switched_shunt"] = []
     if haskey(pti_data, "SWITCHED SHUNT")
-        @info("Switched shunt converted to fixed shunt, with default value gs=0.0")
-
         for switched_shunt in pti_data["SWITCHED SHUNT"]
             sub_data = Dict{String, Any}()
 
@@ -980,9 +1043,6 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TWO-TERMINAL DC")
         for dcline in pti_data["TWO-TERMINAL DC"]
-            @info(
-                "Two-Terminal DC lines are supported via a simple *lossless* dc line model approximated by two generators."
-            )
             sub_data = Dict{String, Any}()
 
             # Unit conversions?
@@ -1416,6 +1476,9 @@ function _pti_to_powermodels!(
         _import_remaining_keys!(pm_data, pti_data["CASE IDENTIFICATION"][1])
     end
 
+    _psse2pm_interarea_transfer!(pm_data, pti_data, import_all)
+    _psse2pm_area_interchange!(pm_data, pti_data, import_all)
+    _psse2pm_zone!(pm_data, pti_data, import_all)
     _psse2pm_bus!(pm_data, pti_data, import_all)
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
@@ -1486,7 +1549,7 @@ Parses directly from iostream
 """
 function parse_psse(io::IO; kwargs...)::Dict
     @info(
-        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines",
+        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, switches, breakers, transformers, facts, and dc lines",
     )
     pti_data = parse_pti(io)
     pm = _pti_to_powermodels!(pti_data; kwargs...)

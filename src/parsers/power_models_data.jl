@@ -262,6 +262,27 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             add_component!(sys, area; skip_validation = SKIP_PM_VALIDATION)
         end
 
+        # Store area data into ext dictionary
+        ext = Dict{String, Any}(
+            "ARNAME" => "",
+            "I" => "",
+            "ISW" => "",
+            "PDES" => "",
+            "PTOL" => "",
+        )
+        for (_, area_data) in data["area_interchange"]
+            if haskey(area_data, "area_number") &&
+               string(area_data["area_number"]) == area_name
+                ext["ARNAME"] = strip(get(area_data, "area_name", ""))
+                ext["I"] = string(get(area_data, "area_number", ""))
+                ext["ISW"] = string(get(area_data, "bus_number", ""))
+                ext["PDES"] = get(area_data, "net_interchange", "")
+                ext["PTOL"] = get(area_data, "tol_interchange", "")
+                break  # Only one match is allowed
+            end
+        end
+        set_ext!(area, ext)
+
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
@@ -274,6 +295,37 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
+    # get Inter-area Transfers as AreaInterchange
+    for (k, d) in data["interarea_transfer"]
+        area_from_name = _get_name_area(d["area_from"])
+        area_to_name = _get_name_area(d["area_to"])
+
+        from_area = get_component(Area, sys, area_from_name)
+        to_area = get_component(Area, sys, area_to_name)
+
+        name = "$(area_from_name)_$(area_to_name)"
+        available = true
+        active_power_flow = d["power_transfer"]
+        flow_limits = (from_to = Inf, to_from = Inf)
+
+        ext = Dict{String, Any}(
+            "index" => d["index"],
+            "source_id" => ["interarea_transfer", k],
+        )
+
+        interarea_inter = AreaInterchange(;
+            name = name,
+            available = available,
+            active_power_flow = active_power_flow,
+            from_area = from_area,
+            to_area = to_area,
+            flow_limits = flow_limits,
+            ext = ext,
+        )
+
+        add_component!(sys, interarea_inter; skip_validation = SKIP_PM_VALIDATION)
+    end
+
     return bus_number_to_bus
 end
 
@@ -281,7 +333,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         active_power = d["pd"],
         reactive_power = d["qd"],
@@ -295,7 +347,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return StandardLoad(;
         name = _get_name(d),
-        available = true,
+        available = d["status"],
         bus = bus,
         constant_active_power = d["pd"],
         constant_reactive_power = d["qd"],
@@ -387,6 +439,18 @@ function read_loadzones!(
     default_loadzone_naming = string
     # The formatter for loadzone_name should be a function that transform the LoadZone Int to a String
     _get_name = get(kwargs, :loadzone_name_formatter, default_loadzone_naming)
+
+    @info "Reading Zone data"
+    if !haskey(data, "zone")
+        @info "There is no Zone data in this file"
+    else
+        for (_, v) in data["zone"]
+            zone_number = v["zone_number"]
+            if !(zone_number in zones)
+                @warn "Skipping empty LoadZone $(zone_number)-$(v["zone_name"])"
+            end
+        end
+    end
 
     for zone in zones
         name = _get_name(zone)
@@ -786,6 +850,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, dummy_buse
         angle_limits = (min = d["angmin"], max = d["angmax"]),
         rating_b = _get_rating("Line", name, d, "rate_b"),
         rating_c = _get_rating("Line", name, d, "rate_c"),
+        ext = d["ext"],
     )
 end
 
@@ -1340,7 +1405,8 @@ function read_switched_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_switched_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_switched_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
@@ -1422,7 +1488,8 @@ function read_shunt!(
         d["name"] = get(d, "name", d_key)
         name = _get_name(d)
         bus = bus_number_to_bus[d["shunt_bus"]]
-        shunt = make_shunt(name, d, bus)
+        full_name = "$(get_name(bus))_$(name)"
+        shunt = make_shunt(full_name, d, bus)
 
         add_component!(sys, shunt; skip_validation = SKIP_PM_VALIDATION)
     end
