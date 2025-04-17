@@ -813,9 +813,7 @@ function _get_rating(
     line_data::Dict,
     key::String,
 )
-    if !haskey(line_data, key)
-        return INFINITE_BOUND
-    end
+    haskey(line_data, key) || return key == "rate_a" ? INFINITE_BOUND : nothing
 
     if isapprox(line_data[key], 0.0)
         @warn(
