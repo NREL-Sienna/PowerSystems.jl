@@ -23,7 +23,7 @@ using TimeSeries
 
 ## Build the base [`System`](@ref)
 
-Begin by building the base [`System`](@ref) using the base power.
+Begin by building the base [`System`](@ref) using the base power in MVA.
 
 ```julia
 system_base_power = 100.0
@@ -36,15 +36,16 @@ The first building block of a system are the buses. In this example, we assume
 that the component data for the buses are contained in a CSV file, `Buses.csv`.
 Each row is an individual bus, and there is a column for each input parameter:
 
-| Bus Number | BusType | Magnitude | Voltage-Max | Voltage-Min | Base Voltage | Region  |
-| ---------- | ------- | --------- | ----------- | ----------- | ------------ | ------- |
-| 1          | ref     | 1         | 1.06        | 0.94        | 138          | R1      |
-| 2          | ref     | 1         | 1.06        | 0.94        | 138          | R1      |
-| 3          | ref     | 1         | 1.06        | 0.94        | 345          | R2      |
-| ...        | ...     | ...       | ...         | ...         | ...          | ...     |
+| Bus Number | BusType | Magnitude (p.u.)| Voltage-Max (p.u.) | Voltage-Min (p.u.) | Base Voltage (kV) | Region  |
+| ---------- | ------- | --------------- | ------------------ | ------------------ | ----------------- | ------- |
+| 1          | ref     | 1               | 1.06               | 0.94               | 138               | R1      |
+| 2          | ref     | 1               | 1.06               | 0.94               | 138               | R1      |
+| 3          | ref     | 1               | 1.06               | 0.94               | 345               | R2      |
+| ...        | ...     | ...             | ...                | ...                | ...               | ...     |
 
-Ensure your data follows this row-column format before beginning. Exact data
-columns and column names can be customized based on what you have available.
+Ensure your data follows this row-column format before beginning, and that your
+data are in the given units. Exact data columns and column names can be
+customized based on what you have available.
 
 Read in the contents of the CSV file `Buses.csv` to a data frame and customize
 the parameter names based on the column names in your CSV file.
@@ -52,14 +53,14 @@ the parameter names based on the column names in your CSV file.
 ```julia
 bus_params = CSV.read("MyData/Buses.csv", DataFrame)
 
-min_volt = "Voltage-Min"
-max_volt = "Voltage-Max"
-base_volt = "Base Voltage"
+min_volt = "Voltage-Min (p.u.)"
+max_volt = "Voltage-Max (p.u.)"
+base_volt = "Base Voltage (kV)"
 bus_number = "Bus Number"
 region = "Region"
 ```
 
-In this example, we assume that the buses are sorted into three `Areas`, where
+In this example, we assume that the buses are sorted into `Areas`, where
 [`Area`](@ref) is an optional parameter in the [`ACBus`](@ref) constructor.
 Because we will be sorting our buses into these areas as we construct the
 buses, we must first attach the areas to our [`System`](@ref).
@@ -79,7 +80,8 @@ for your system.
 Now, we are ready to build the buses using the [`ACBus`](@ref) constructor. If
 the input data you have available in your `Buses.csv` file does not include all
 the required parameters of [`ACBus`](@ref), you can hard code in the necessary
-data in the `for` loop. We have done that here for e.g., the `bustype` and `angle`.
+data in the `for` loop. We have done that here for `bustype`, `angle`, and
+`magnitude`.
 
 ```julia
 for row in eachrow(bus_params)
@@ -106,17 +108,17 @@ have different base voltages. You may need to implement additional logic if you
 have other branch types as well.
 
 We assume the data for each [`Branch`](@ref) is contained in a `Branches.csv`
-with the following format that your data should follow as well. Each row is a
-branch, and each column represents an input parameter. The conventions used in
-`Bus from` and `Bus to` must be consistent with the conventions used in the
-`Bus Number` column of `Buses.csv`.
+with the following format and in the given units that your data should follow
+as well. Each row is a branch, and each column represents an input parameter.
+The conventions used in `Bus from` and `Bus to` must be consistent with the
+conventions used in the `Bus Number` column of `Buses.csv`.
 
-| Branch Number | Bus from | Bus to | Reactance | Resistance | Max Flow (MW) | Min Flow (MW) |
-| ------------- | -------- | ------ | --------- | ---------- | ------------- | ------------- |
-| 1             | 1        | 2      | 0.0999    | 0.0303     | 600           | -600          |
-| 2             | 1        | 3      | 0.0424    | 0.0129     | 600           | -600          |
-| 3             | 4        | 5      | 0.00798   | 0.00176    | 1700          | -1700         |
-| ...           | ...      | ...    | ...       | ...        | ...           | ...           |
+| Branch Number | Bus from | Bus to | Reactance (p.u.) | Resistance (p.u.) | Max Flow (MW) | Min Flow (MW) |
+| ------------- | -------- | ------ | ---------------- | ----------------- | ------------- | ------------- |
+| 1             | 1        | 2      | 0.0999           | 0.0303            | 600           | -600          |
+| 2             | 1        | 3      | 0.0424           | 0.0129            | 600           | -600          |
+| 3             | 4        | 5      | 0.00798          | 0.00176           | 1700          | -1700         |
+| ...           | ...      | ...    | ...              | ...               | ...           | ...           |
 
 Read in the contents of the CSV file `Branches.csv` to a data frame and customize
 the parameter names based on the column names in your CSV file.
@@ -135,16 +137,16 @@ max_flow = "Max Flow (MW)"
 Build the lines and transformers using the [`Line`](@ref) and
 [`Transformer2W`](@ref) constructors.  Again, if you don't have all of these
 parameters available in your file, customize the `for` loop to hard code
-whatever parameters you are missing (in this example, `active_power_flow`,
-`reactive_power_flow`, and `primary_shunt` are not specified in our
-`Branches.csv` file).
+whatever parameters you are missing. For instance, the example data does not
+specify `rating`, so we hard code `rating` to be the `max_flow` of the branch,
+per-unitized by the `system_base_power`. 
 
 ```julia
 for row in eachrow(branch_params)
     bus_from = get_bus(sys, row[bus_from_col])
     bus_to = get_bus(sys, row[bus_to_col])
     if get_base_voltage(bus_to) == get_base_voltage(bus_from)
-        local line = Line(;
+         branch = Line(;
             name = "line$(row[branch_num])",
             available = true,
             active_power_flow = 0.0,
@@ -153,12 +155,11 @@ for row in eachrow(branch_params)
             r = row[resistance],
             x = row[reactance],
             b = (from = 0.0, to = 0.0),
-            rating = row[max_flow] / system_base_power, # Must be normalized by System base power
+            rating = row[max_flow]/system_base_power,
             angle_limits = (min = 0.0, max = 0.0),
         )
-        add_component!(sys, line)
-    else # if the base voltages of the connecting buses do not match build a transformer
-        local tline = Transformer2W(;
+    else
+        branch = Transformer2W(;
             name = "tline$(row[branch_num])",
             available = true,
             active_power_flow = 0.0,
@@ -167,10 +168,10 @@ for row in eachrow(branch_params)
             r = row[resistance],
             x = row[reactance],
             primary_shunt = 0.0,
-            rating = row[max_flow] / system_base_power, # Must be normalized by System base power
+            rating = row[max_flow]/system_base_power,
         )
-        add_component!(sys, tline)
     end
+    add_component!(sys, branch)
 end
 ```
 
@@ -180,15 +181,16 @@ end
 
 We assume the data needed to build each [`ThermalStandard`](@ref) unit is found
 in a CSV file `Thermal_Gens.csv`, with a row for each generator, and columns
-for the generators' input parameters. The following table is a snapshot of the
-first 7 columns of an example `Thermal_Gens.csv`:
+for the generators' input parameters. Ensure that your data are in the given
+format and units. The following table is a snapshot of the first 7 columns of
+an example `Thermal_Gens.csv`:
 
-| Gen Name   | Bus | Rating | Min Stable Level (MW) | Max Capacity (MW) | PrimeMoveType | Fuel Type    | ... |
-| ---------- | --- | ------ | --------------------- | ----------------- | ------------- | ------------ | --- |
-| Biomass 01 | 12  | 3      | 0.9                   | 3.0               | OT            | AG_BIPRODUCT | ... |
-| Biomass 02 | 12  | 3      | 0.9                   | 3.0               | OT            | AG_BIPRODUCT | ... |
-| Biomass 03 | 103 | 1.2    | 0.36                  | 1.2               | OT            | AG_BIPRODUCT | ... |
-| ...        | ... | ...    | ...                   | ...               | ...           | ...          | ... |
+| Gen Name   | Bus | Rating (MVA) | Min Stable Level (MW) | Max Capacity (MW) | PrimeMoveType | Fuel Type    | ... |
+| ---------- | --- | ------------ | --------------------- | ----------------- | ------------- | ------------ | --- |
+| Biomass 01 | 12  | 3            | 0.9                   | 3.0               | OT            | AG_BIPRODUCT | ... |
+| Biomass 02 | 12  | 3            | 0.9                   | 3.0               | OT            | AG_BIPRODUCT | ... |
+| Biomass 03 | 103 | 1.2          | 0.36                  | 1.2               | OT            | AG_BIPRODUCT | ... |
+| ...        | ... | ...          | ...                   | ...               | ...           | ...          | ... |
 
 The convention used for the contents of the `Bus` column must be consistent
 with the convention used in the `Bus Number` column of `Buses.csv`.
@@ -204,7 +206,7 @@ thermal_gens = CSV.read("MyData/Thermal_Gens.csv", DataFrame)
 
 name = "Gen Name"
 bus_connection = "Bus"
-rate = "Rating"
+rate = "Rating (MVA)"
 min_active_power = "Min Stable Level (MW)"
 max_active_power = "Max Capacity (MW)"
 ramp_up = "Max Ramp Up (MW/min)"
@@ -217,26 +219,29 @@ fuel = "Fuel Type"
 
 Build the thermal generator components using the [`ThermalStandard`](@ref)
 constructor and data stored in the `thermal_gens` data frame, again customizing
-the `for` loop to hard code any parameters you are missing:
+the `for` loop to hard code any parameters you are missing. Since the example
+data is missing base power, we set base power equal to the rating data, and the
+rating parameter to 1.0:
 
 ```julia
 for row in eachrow(thermal_gens)
-    local thermal = ThermalStandard(;
+    base = row[rate]
+    thermal = ThermalStandard(;
         name = row[name],
         available = true,
         status = true,
         bus = get_bus(sys, row[bus_connection]),
         active_power = 0.0,
         reactive_power = 0.0,
-        rating = row[rate],
+        rating = 1.0,
         active_power_limits = (
-            min = row[min_active_power],
-            max = row[max_active_power],
+            min = row[min_active_power]/base,
+            max = row[max_active_power]/base,
         ),
         reactive_power_limits = (min = 0.0, max = 0.0),
-        ramp_limits = (up = row[ramp_up], down = row[ramp_down]),
+        ramp_limits = (up = row[ramp_up]/base, down = row[ramp_down]/base),
         operation_cost = ThermalGenerationCost(nothing),
-        base_power = system_base_power,
+        base_power = base,
         time_limits = (up = row[min_up], down = row[min_down]),
         prime_mover_type = IS.deserialize(PrimeMovers, row[prime_move]),
         fuel = IS.deserialize(ThermalFuels, row[fuel]),
@@ -292,9 +297,9 @@ gen_name = "Generator Name"
 heat_rate_base = "Heat Rate Base (MMBTU/hr)"
 heat_rate = "Heat Rate (MMBTU/hr)"
 load_point = "Load Point Band (MW)"
-fixed_cost = "Fixed Cost"
-start_up_cost = "Start Up Cost"
-shut_down_cost = "Shut Down Cost"
+fixed_cost = "Fixed Cost (dollar)"
+start_up_cost = "Start Up Cost (dollar)"
+shut_down_cost = "Shut Down Cost (dollar)"
 
 for row in eachrow(thermal_gens)
     thermal = get_component(ThermalStandard, sys, row[gen_name])
@@ -330,16 +335,17 @@ parameters. The convention used for the contents of the `Bus` column must be
 consistent with the convention used in the `Bus Number` column of `Buses.csv`.
 The following table is a snapshot of the first 3 rows of our `Solar_Gens.csv`:
 
-| Gen Name | Number | Bus | Rating |
-| -------- | ------ | --- | ------ |
-| Solar 01 | 1      | 32  | 746.76 |
-| Solar 02 | 2      | 92  | 369.26 |
-| Solar 03 | 3      | 54  | 264.47 |
-| ...      | ...    | ... | ...    |
+| Gen Name | Number | Bus | Rating (MVA) |
+| -------- | ------ | --- | ------------ |
+| Solar 01 | 1      | 32  | 746.76       |
+| Solar 02 | 2      | 92  | 369.26       |
+| Solar 03 | 3      | 54  | 264.47       |
+| ...      | ...    | ... | ...          |
 
-Read in the contents of the CSV file `Solar_Gens.csv` to a data frame and
-customize the parameter names based on the column names in your CSV file. Also
-create a variable for the prime mover type of these generators.
+Read in the contents of the CSV file `Solar_Gens.csv` to a data frame, ensuring
+your data are in the given units, and customize the parameter names based on
+the column names in your CSV file. Also create a variable for the prime mover
+type of these generators.
 
 ```julia
 solar_gens =  CSV.read("MyData/Solar_Gens.csv", DataFrame)
@@ -347,7 +353,7 @@ solar_gens =  CSV.read("MyData/Solar_Gens.csv", DataFrame)
 name = "Gen Name"
 num = "Number"
 bus_connection = "Bus"
-rate = "Rating"
+rate = "Rating (MVA)"
 prime_mover = PrimeMovers.PVe
 ```
 
@@ -358,7 +364,7 @@ time series, and all of these time series are contained in one file:
 normalized, and so we will normalize them in a later step. Here is a snapshot
 of this time series CSV file, where the first column contains time stamps, and
 the remaining columns are titled with its respective generator's name, and
-contain the time series values for each solar generator:
+contain the time series values in MW for each solar generator:
 
 | Time Stamp  | Solar 01 | Solar 02 | Solar 03 | ... |
 | ----------- | -------- | -------- | -------- | --- |
@@ -388,7 +394,9 @@ data frame, and build and attach each solar generator's time series. In this
 example, we assume that the [`RenewableGenerationCost`](@ref) is at zero
 marginal cost. If the marginal cost is not zero, follow similar steps to
 building the [`ThermalGenerationCost`](@ref) constructor from above, but for
-the [`RenewableGenerationCost`](@ref) constructor instead. 
+the [`RenewableGenerationCost`](@ref) constructor instead. Since the example
+data is missing base power, we set base power equal to the rating data, and the
+rating parameter to 1.0:
 
 ```julia
 for row in eachrow(solar_gens)
@@ -399,18 +407,18 @@ for row in eachrow(solar_gens)
         data = solar_array,
         scaling_factor_multiplier = get_max_active_power,
     )
-    local solar = RenewableDispatch(;
+    solar = RenewableDispatch(;
         name = row[name],
         available = true,
         bus = get_bus(sys, row[bus_connection]),
         active_power = 0.0,
         reactive_power = 0.0,
-        rating = row[rate],
+        rating = 1.0,
         prime_mover_type = prime_mover,
         reactive_power_limits = (min = 0.0, max = 0.0),
         power_factor = 1.0,
         operation_cost = RenewableGenerationCost(zero(CostCurve)),
-        base_power = system_base_power,
+        base_power = row[rate],
     )
     add_component!(sys, solar)
     add_time_series!(sys, solar, solar_TS)
@@ -433,8 +441,9 @@ of our `Hydro_Gens.csv`:
 | Hydro 03 | 3      | 66  | 0.0                   | 77.0              | 0.86                 | ... |
 | ...      | ...    | ... | ...                   | ...               | ...                  | ... |
 
-Read in the contents of the CSV file `Hydro_Gens.csv` to a data frame and customize
-the parameter names based on the column names in your CSV file.
+Ensure that your data are in the given units. Then read in the contents of the
+CSV file `Hydro_Gens.csv` to a data frame and customize the parameter names
+based on the column names in your CSV file.
 
 ```julia
 hydro_gens =  CSV.read("MyData/Hydro_Gens.csv", DataFrame)
@@ -442,6 +451,7 @@ hydro_gens =  CSV.read("MyData/Hydro_Gens.csv", DataFrame)
 name = "Gen Name"
 bus_connection = "Bus"
 num = "Number"
+rate = "Rating (MVA)"
 min_active_power = "Min Stable Level (MW)"
 max_active_power = "Max Capacity (MW)"
 ramp_up = "Max Ramp Up (MW/min)"
@@ -457,7 +467,7 @@ time series, and all of these time series are contained in one file:
 normalized, and so we will normalize them in a later step. Here is a snapshot
 of this time series CSV file, where the first column contains time stamps, and
 the remaining columns are titled with its respective generator's name, and
-contain the time series values for each hydro generator:
+contain the time series values in MW for each hydro generator:
 
 
 | Time Stamp  | Hydro 01 | Hydro 02 | Hydro 03 | ... |
@@ -483,9 +493,11 @@ timestamps = range(DateTime("2023-01-01T00:00:00"); step = resolution, length = 
 ```
 
 In the same `for` loop, we will build the hydro generator components using the
-[`HydroDispatch`](@ref) constructor and data stored in the `hydro_gens`
-data frame, and build and attach each hydro generator's time series. In this example,
-we assume that the [`HydroGenerationCost`](@ref) has both zero fixed and variable costs.
+[`HydroDispatch`](@ref) constructor and data stored in the `hydro_gens` data
+frame, and build and attach each hydro generator's time series. In this
+example, we assume that the [`HydroGenerationCost`](@ref) has both zero fixed
+and variable costs. Since the example data is missing base power, we set base
+power equal to the rating data, and the rating parameter to 1.0:
 
 ```julia
 for row in eachrow(hydro_gens)
@@ -496,22 +508,23 @@ for row in eachrow(hydro_gens)
         data = hydro_array,
         scaling_factor_multiplier = get_max_active_power,
     )
-    local hydro = HydroDispatch(;
+    base = row[rate]
+    hydro = HydroDispatch(;
         name = row[name],
         available = true,
         bus = get_bus(sys, row[bus_connection]),
         active_power = 0.0,
         reactive_power = 0.0,
-        rating = 0.0,
+        rating = 1.0,
         prime_mover_type = PrimeMovers.HA,
         active_power_limits = (
-            min = row[min_active_power] / system_base_power,
-            max = row[max_active_power] / system_base_power,
+            min = row[min_active_power]/base,
+            max = row[max_active_power]/base,
         ),
         reactive_power_limits = (min = 0.0, max = 0.0),
-        ramp_limits = (up = row[ramp_up], down = row[ramp_down]),
+        ramp_limits = (up = row[ramp_up]/base, down = row[ramp_down]/base),
         time_limits = (up = row[min_up], down = row[min_down]),
-        base_power = system_base_power,
+        base_power = base,
         operation_cost = HydroGenerationCost(zero(LinearCurve), 0.0),
     )
     add_component!(sys, hydro)
@@ -557,7 +570,7 @@ example, we assume that each load region has a unique time series, and all of
 these time series are contained in one file: `MyData/Load_Time_Series.csv`.
 Here is a snapshot of this time series CSV file, where the first column
 contains time stamps, and the remaining columns are titled with its respective
-region's name, and contain the time series values for each region:
+region's name, and contain the time series values in MW for each region:
 
 
 | Time Stamp  | R1         | R2         | R3         |
@@ -596,10 +609,10 @@ for row in eachrow(load_params)
         name = "load$num",
         available = true,
         bus = get_bus(sys, row[bus_connection]),
-        active_power = 0.0, #per-unitized by device base_power
-        reactive_power = 0.0, #per-unitized by device base_power
+        active_power = 0.0,
+        reactive_power = 0.0,
         base_power = system_base_power,
-        max_active_power = (max) * (row[factor]),
+        max_active_power = (max) * (row[factor])/system_base_power,
         max_reactive_power = 0.0,
     )
     add_component!(sys, load)
@@ -614,8 +627,8 @@ respective loads' time series to every load in a region at once.
 regions = unique(load_params[:, region])
 
 for reg in regions
-    local load_array = TimeArray(timestamps, (load_time_series[:, reg] ./ maximum(load_time_series[:, reg])))
-    local load_TS = SingleTimeSeries(;
+    load_array = TimeArray(timestamps, (load_time_series[:, reg] ./ maximum(load_time_series[:, reg])))
+    load_TS = SingleTimeSeries(;
         name = "max_active_power",
         data = load_array,
         scaling_factor_multiplier = get_max_active_power,
