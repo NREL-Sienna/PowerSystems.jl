@@ -911,20 +911,23 @@ function make_transformer_2w(
 
     ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
 
-    return Transformer2W(;
-        name = name,
-        available = available_value,
-        active_power_flow = pf,
-        reactive_power_flow = qf,
-        arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
-        rating = _get_rating("Transformer2W", name, d, "rate_a"),
-        rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
-        rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
-        ext = ext,
-    )
+    if d["source_id"][1] == "transformer"
+        return Transformer2W(;
+            name = name,
+            available = available_value,
+            active_power_flow = pf,
+            reactive_power_flow = qf,
+            arc = Arc(bus_f, bus_t),
+            r = d["br_r"],
+            x = d["br_x"],
+            primary_shunt = d["b_fr"],  # TODO: which b ??
+            rating = _get_rating("Transformer2W", name, d, "rate_a"),
+            rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
+            rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
+            correction_table = d["correction_table"],
+            ext = ext,
+        )
+    end
 end
 
 function make_3w_transformer(
@@ -974,6 +977,9 @@ function make_3w_transformer(
         rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
         rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
         rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
+        primary_correction_table = d["primary_correction_table"],
+        secondary_correction_table = d["secondary_correction_table"],
+        tertiary_correction_table = d["tertiary_correction_table"],
         ext = d["ext"],
     )
 end
