@@ -309,7 +309,7 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             name = "$(area_from_name)_$(area_to_name)"
             available = true
             active_power_flow = d["power_transfer"]
-            flow_limits = (from_to = Inf, to_from = Inf)
+            flow_limits = (from_to = -INFINITE_BOUND, to_from = INFINITE_BOUND)
 
             ext = Dict{String, Any}(
                 "index" => d["index"],
