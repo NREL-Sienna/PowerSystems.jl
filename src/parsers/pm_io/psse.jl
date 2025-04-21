@@ -676,6 +676,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 )
 
                 sub_data["transformer"] = true
+                sub_data["correction_table"] = transformer["TAB1"]
+
                 sub_data["index"] = length(pm_data["branch"]) + 1
 
                 if import_all
@@ -852,6 +854,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # If CM = 1 & MAG2 != 0 -> MAG2 < 0
                 # If CM = 2 & MAG2 != 0 -> MAG2 > 0
                 sub_data["b"] = abs(transformer["MAG2"]) # M. susceptance MAG2 is saved in "b"
+
+                sub_data["primary_correction_table"] = transformer["TAB1"]
+                sub_data["secondary_correction_table"] = transformer["TAB2"]
+                sub_data["tertiary_correction_table"] = transformer["TAB3"]
 
                 if transformer["CW"] == 1
                     sub_data["primary_turns_ratio"] = transformer["WINDV1"]
@@ -1443,6 +1449,33 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
     return
 end
 
+function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Transformer Impedance Correction Tables data into a PowerModels Dict..."
+
+    pm_data["impedance_correction"] = []
+
+    if haskey(pti_data, "IMPEDANCE CORRECTION")
+        for imp_correction in pti_data["IMPEDANCE CORRECTION"]
+            sub_data = Dict{String, Any}()
+
+            sub_data["table_number"] = imp_correction["I"]
+            sub_data["transformer_type"] =
+                Dict(k => v for (k, v) in imp_correction if startswith(k, "T") && v != 0)
+            sub_data["scaling_factor"] =
+                Dict(k => v for (k, v) in imp_correction if startswith(k, "F") && v != 0)
+
+            sub_data["index"] = length(pm_data["impedance_correction"]) + 1
+
+            if import_all
+                _import_remaining_keys!(sub_data, imp_correction)
+            end
+
+            push!(pm_data["impedance_correction"], sub_data)
+        end
+    end
+    return
+end
+
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @warn "This PSS(R)E parser currently doesn't support Storage data parsing..."
     pm_data["storage"] = []
@@ -1489,6 +1522,7 @@ function _pti_to_powermodels!(
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
+    _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
 
     if import_all
