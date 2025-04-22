@@ -73,7 +73,7 @@ export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
-export make_import_export_curve
+export make_import_curve, make_export_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 export set_shut_down!
 export get_curtailment_cost
@@ -728,6 +728,7 @@ include("models/OuterControl.jl")
 # Costs
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
 include("models/cost_functions/LoadCost.jl")
 include("models/cost_functions/RenewableGenerationCost.jl")
