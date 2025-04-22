@@ -1129,7 +1129,6 @@ function make_multisection_line(
         if d["source_id"][1] == "branch"
             line_path = "$(d["source_id"][2])-$(d["source_id"][3])"
             if line_path in pairs
-                println(d)
                 eq_r += d["br_r"]
                 eq_x += d["br_x"]
                 eq_b_fr += d["b_fr"]
