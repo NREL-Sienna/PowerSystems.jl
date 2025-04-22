@@ -1165,13 +1165,6 @@
                     "default": "nothing"
                 },
                 {
-                    "name": "correction_table",
-                    "data_type": "Int64",
-                    "comment": "Transformer impedance correction table related to this transformer winding's impedance",
-                    "validation_action": "warn",
-                    "default": "0"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1501,24 +1494,6 @@
                     "comment": "Rating (in MVA) for tertiary winding.",
                     "default": "0.0",
                     "needs_conversion": true
-                },
-                {
-                    "name": "primary_correction_table",
-                    "comment": "The number of a transformer impedance correction table related to the winding primary's impedance.",
-                    "data_type": "Int64",
-                    "default": "0"
-                },
-                {
-                    "name": "secondary_correction_table",
-                    "comment": "The number of a transformer impedance correction table related to the winding secondary's impedance.",
-                    "data_type": "Int64",
-                    "default": "0"
-                },
-                {
-                    "name": "tertiary_correction_table",
-                    "comment": "The number of a transformer impedance correction table related to the winding tertiary's impedance.",
-                    "data_type": "Int64",
-                    "default": "0"
                 },
                 {
                     "name": "services",

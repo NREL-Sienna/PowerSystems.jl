@@ -517,7 +517,6 @@ export get_control_mode
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
-export get_correction_table
 export get_current_active_power
 export get_current_reactive_power
 export get_cycle_limits
@@ -653,7 +652,6 @@ export get_power_factor_weighting_fraction_to
 export get_power_gate_openings
 export get_power_mode
 export get_power_trajectory
-export get_primary_correction_table
 export get_primary_secondary_arc
 export get_primary_shunt
 export get_primary_tertiary_arc
@@ -717,7 +715,6 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
-export get_secondary_correction_table
 export get_secondary_tertiary_arc
 export get_secondary_turns_ratio
 export get_services
@@ -738,7 +735,6 @@ export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
-export get_tertiary_correction_table
 export get_tertiary_turns_ratio
 export get_tfh
 export get_tfl
@@ -1173,7 +1169,6 @@ export set_control_mode!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
-export set_correction_table!
 export set_current_active_power!
 export set_current_reactive_power!
 export set_cycle_limits!
@@ -1309,7 +1304,6 @@ export set_power_factor_weighting_fraction_to!
 export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
-export set_primary_correction_table!
 export set_primary_secondary_arc!
 export set_primary_shunt!
 export set_primary_tertiary_arc!
@@ -1373,7 +1367,6 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
-export set_secondary_correction_table!
 export set_secondary_tertiary_arc!
 export set_secondary_turns_ratio!
 export set_services!
@@ -1394,7 +1387,6 @@ export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
-export set_tertiary_correction_table!
 export set_tertiary_turns_ratio!
 export set_tfh!
 export set_tfl!

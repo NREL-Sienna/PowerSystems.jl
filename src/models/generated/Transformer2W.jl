@@ -17,7 +17,6 @@ This file is auto-generated. Do not edit.
         rating::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
-        correction_table::Int64
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -39,7 +38,6 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
-- `correction_table::Int64`: (default: `0`) Transformer impedance correction table related to this transformer winding's impedance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -67,8 +65,6 @@ mutable struct Transformer2W <: ACTransmission
     rating_b::Union{Nothing, Float64}
     "Third current rating; entered in MVA."
     rating_c::Union{Nothing, Float64}
-    "Transformer impedance correction table related to this transformer winding's impedance"
-    correction_table::Int64
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -77,12 +73,12 @@ mutable struct Transformer2W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b=nothing, rating_c=nothing, correction_table=0, services=Device[], ext=Dict{String, Any}(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b, rating_c, correction_table, services, ext, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b=nothing, rating_c=nothing, correction_table=0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b, rating_c, correction_table, services, ext, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, rating_b, rating_c, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -99,7 +95,6 @@ function Transformer2W(::Nothing)
         rating=nothing,
         rating_b=0.0,
         rating_c=0.0,
-        correction_table=0,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -127,8 +122,6 @@ get_rating(value::Transformer2W) = get_value(value, value.rating)
 get_rating_b(value::Transformer2W) = get_value(value, value.rating_b)
 """Get [`Transformer2W`](@ref) `rating_c`."""
 get_rating_c(value::Transformer2W) = get_value(value, value.rating_c)
-"""Get [`Transformer2W`](@ref) `correction_table`."""
-get_correction_table(value::Transformer2W) = value.correction_table
 """Get [`Transformer2W`](@ref) `services`."""
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
@@ -156,8 +149,6 @@ set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val)
 set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, val)
 """Set [`Transformer2W`](@ref) `rating_c`."""
 set_rating_c!(value::Transformer2W, val) = value.rating_c = set_value(value, val)
-"""Set [`Transformer2W`](@ref) `correction_table`."""
-set_correction_table!(value::Transformer2W, val) = value.correction_table = val
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""
