@@ -1449,6 +1449,18 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
     return
 end
 
+function sort_values_by_key_prefix(imp_correction::Dict{String, Any}, prefix::String)
+    sorted_values = [v for (_, v) in sort(
+        [(parse(Int, k[2:end]), v) for (k, v) in imp_correction if startswith(k, prefix)],
+        by = x -> x[1]
+    )]
+
+    while !isempty(sorted_values) && sorted_values[end] == 0.0
+        pop!(sorted_values)
+    end
+    return sorted_values
+end
+
 function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Transformer Impedance Correction Tables data into a PowerModels Dict..."
 
@@ -1459,11 +1471,9 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
             sub_data = Dict{String, Any}()
 
             sub_data["table_number"] = imp_correction["I"]
-
-            sub_data["scaling_factor"] =
-                Dict(k => v for (k, v) in imp_correction if startswith(k, "F") && v != 0)
-            sub_data["tap_or_angle"] =
-                Dict(k => v for (k, v) in imp_correction if startswith(k, "T") && v != 0)
+            
+            sub_data["scaling_factor"] = sort_values_by_key_prefix(imp_correction, "F")
+            sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
 
             sub_data["index"] = length(pm_data["impedance_correction"]) + 1
 
