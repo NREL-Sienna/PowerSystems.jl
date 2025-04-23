@@ -188,7 +188,11 @@ function _impedance_correction_table_lookup(data::Dict)
                 (x[1] >= 0.5 && x[1] <= 1.5) ? "turns_ratio" : "phase_shift_angle"
             type_lookup[table_number] = table_type
         else
-            throw(DataFormatError("Impedance correction mismatch at table $table_number: tap/angle and scaling count differs."))
+            throw(
+                DataFormatError(
+                    "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs.",
+                ),
+            )
         end
     end
 
@@ -223,7 +227,7 @@ function _attach_impedance_correction_tables!(
             table_number = d[key]
             if haskey(ict_lookup, table_number)
                 pwl_data = ict_lookup[table_number]
-                table_type = get(type_lookup, table_number, "phase_shift_angle")    
+                table_type = get(type_lookup, table_number, "phase_shift_angle")
                 ict = ImpedanceCorrectionData(;
                     table_number = table_number,
                     function_data = pwl_data,
@@ -232,7 +236,11 @@ function _attach_impedance_correction_tables!(
                 )
                 add_supplemental_attribute!(sys, value, ict)
             else
-                throw(DataFormatError("Transformer $name references a missing correction table $table_number."))
+                throw(
+                    DataFormatError(
+                        "Transformer $name references a missing correction table $table_number.",
+                    ),
+                )
             end
         end
     end
