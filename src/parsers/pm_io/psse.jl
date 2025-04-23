@@ -1459,7 +1459,7 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
             sub_data = Dict{String, Any}()
 
             sub_data["table_number"] = imp_correction["I"]
-            
+
             sub_data["scaling_factor"] =
                 Dict(k => v for (k, v) in imp_correction if startswith(k, "F") && v != 0)
             sub_data["tap_or_angle"] =
