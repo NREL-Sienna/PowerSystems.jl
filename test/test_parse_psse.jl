@@ -201,3 +201,32 @@ end
     @test isapprox(get_inverter_extinction_angle_limits(lcc).max, pi / 2)
     @test get_power_mode(lcc)
 end
+
+@testset "PSSE Impedance Correction Table Parsing" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
+
+    tr2w = first(get_components(Transformer2W, sys))
+
+    t_dict = Dict("T3" => 1.02, "T1" => 0.88, "T2" => 1.0, "T4" => 1.17)
+    f_dict = Dict("F3"=>0.979, "F1"=>1.12, "F2"=>1.0, "F4"=>0.895)
+
+    t_indices = sort(parse.(Int, replace.(keys(t_dict), r"[A-Z]" => "")))
+    f_indices = sort(parse.(Int, replace.(keys(f_dict), r"[A-Z]" => "")))
+    xs = [t_dict["T$(i)"] for i in t_indices]
+    ys = [f_dict["F$(i)"] for i in f_indices]
+
+    pwl2w = PiecewiseLinearData([(xs[i], ys[i]) for i in eachindex(xs)])
+    ict2w = PSY.ImpedanceCorrectionTable(
+        ict_row = "1",
+        function_data = pwl2w,
+        type = all(0.5 .<= xs .<= 1.5) ? "turns_ratio" : "phase_shift",
+    )
+
+    add_supplemental_attribute!(sys, tr2w, ict2w)
+
+    tr2w_supp_attr = get_supplemental_attributes(tr2w)
+
+    @test PSY.get_table_number(tr2w_supp_attr[1]) == "1"
+    @test PSY.get_function_data(tr2w_supp_attr[1])[1] == (x = 0.88, y = 1.12)
+    @test PSY.get_type(tr2w_supp_attr[1]) == "turns_ratio"
+end
