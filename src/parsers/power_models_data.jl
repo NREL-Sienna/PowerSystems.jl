@@ -230,7 +230,7 @@ function _attach_impedance_correction_tables!(
                 table_type = get(type_lookup, table_number, "phase_shift_angle")
                 ict = ImpedanceCorrectionData(;
                     table_number = table_number,
-                    function_data = pwl_data,
+                    impedance_correction_function_data = pwl_data,
                     subcategory = subcategory,
                     type = table_type,
                 )
