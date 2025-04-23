@@ -163,6 +163,95 @@ function _get_pm_3w_name(
 end
 
 """
+Parses ITC data from a dictionary and constructs a lookup table
+of piecewise linear scaling functions.
+"""
+function _impedance_correction_table_lookup(data::Dict)
+    lookup = Dict{String, PiecewiseLinearData}()
+    type_lookup = Dict{String, String}()
+
+    @info "Reading Impedance Correction Table data"
+    if !haskey(data, "impedance_correction")
+        @info "There is no Impedance Correction Table data in this file"
+        return
+    end
+
+    for (table_number, table_data) in data["impedance_correction"]
+        angle_or_taps_dict = table_data["tap_or_angle"]
+        scaling_factors_dict = table_data["scaling_factor"]
+
+        # Sort dict by key "Fi" or "Ti"
+        indices = sort(
+            parse.(Int, replace.(collect(keys(angle_or_taps_dict)), r"[A-Z]" => "")),
+        )
+
+        x = [
+            angle_or_taps_dict["T$(i)"] for
+            i in indices if haskey(angle_or_taps_dict, "T$(i)")
+        ]
+        y = [
+            scaling_factors_dict["F$(i)"] for
+            i in indices if haskey(scaling_factors_dict, "F$(i)")
+        ]
+
+        if length(x) == length(y)
+            lookup[table_number] =
+                PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
+            table_type =
+                (x[1] >= 0.5 && x[1] <= 1.5) ? "turns_ratio" : "phase_shift_angle"
+            type_lookup[string(table_number)] = table_type
+        else
+            @warn "Impedance correction mismatch at table $table_number: tap and scale count differs"
+        end
+    end
+
+    return lookup, type_lookup
+end
+
+"""
+Attaches the corresponding ICT data to a transformer component as a supplemental attribute.
+"""
+function _attach_impedance_correction_tables!(
+    sys::System,
+    value::Union{Transformer2W, Transformer3W},
+    name::String,
+    d::Dict,
+    ict_lookup::Dict{String, PiecewiseLinearData},
+    type_lookup::Dict{String, String},
+)
+    # Match for windings in Transformer 2W and 3W
+    keys_and_categories = if isa(value, Transformer3W)
+        zip(("primary_winding", "secondary_winding", "tertiary_winding"),
+            (
+                "primary_correction_table",
+                "secondary_correction_table",
+                "tertiary_correction_table",
+            ))
+    else
+        zip(("",), ("correction_table",))
+    end
+
+    for (subcategory, key) in keys_and_categories
+        if haskey(d, key)
+            table_number = string(d[key])
+            if haskey(ict_lookup, table_number)
+                pwl_data = ict_lookup[table_number]
+                table_type = get(type_lookup, table_number, "phase_shift_angle")
+                ict = ImpedanceCorrectionTable(;
+                    ict_row = table_number,
+                    function_data = pwl_data,
+                    subcategory = subcategory,
+                    type = table_type,
+                )
+                add_supplemental_attribute!(sys, value, ict)
+            else
+                @warn "Transformer $name references missing correction table $table_number"
+            end
+        end
+    end
+end
+
+"""
 Creates a PowerSystems.ACBus from a PowerSystems bus dictionary
 """
 function make_bus(bus_dict::Dict{String, Any})
@@ -1060,6 +1149,7 @@ function read_branch!(
     end
 
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    ict_lookup, type_lookup = _impedance_correction_table_lookup(data)
 
     for (d_key, d) in data["branch"]
         bus_f = bus_number_to_bus[d["f_bus"]]
@@ -1071,6 +1161,17 @@ function read_branch!(
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
         else
             continue
+        end
+
+        if isa(value, Transformer2W)
+            _attach_impedance_correction_tables!(
+                sys,
+                value,
+                name,
+                d,
+                ict_lookup,
+                type_lookup,
+            )
         end
     end
 end
@@ -1217,6 +1318,8 @@ function read_3w_transformer!(
     end
     _get_name = get(kwargs, :xfrm_3w_name_formatter, _get_pm_3w_name)
 
+    ict_lookup, type_lookup = _impedance_correction_table_lookup(data)
+
     for (d_key, d) in data["3w_transformer"]
         bus_primary = bus_number_to_bus[d["bus_primary"]]
         bus_secondary = bus_number_to_bus[d["bus_secondary"]]
@@ -1228,6 +1331,8 @@ function read_3w_transformer!(
             make_3w_transformer(name, d, bus_primary, bus_secondary, bus_tertiary, star_bus)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
+
+        _attach_impedance_correction_tables!(sys, value, name, d, ict_lookup, type_lookup)
     end
 end
 

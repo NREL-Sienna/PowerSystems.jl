@@ -765,6 +765,7 @@ include("models/supplemental_accessors.jl")
 # Supplemental attributes
 include("contingencies.jl")
 include("outages.jl")
+include("impedance_correction.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
