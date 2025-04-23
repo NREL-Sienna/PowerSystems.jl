@@ -1,27 +1,30 @@
 """
-Attribute that contains information regarding the Transformer Impedance Correction Table.
+Attribute that contains information regarding the Transformer Impedance Correction Rows defined in the Table.
 
 # Arguments
-- `ict_row::Int64`: Row number of the impedance correction table to linked it with a specific Transformer component.
+- `table_number::Int64`: Row number of the impedance correction table to be linked with a specific Transformer component.
+- `function_data::PiecewiseLinearData`: Function to define intervals to apply tap ratio or angle shift to the Transformer component.
+- `subcategory::String`: Indicates the winding for Transformer3W or an empty string for the Transformer2W.
+- `type::String`: Indicates whether the function is for tap ratio or angle shift.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-struct ImpedanceCorrectionTable <: SupplementalAttribute
-    table_number::String
+struct ImpedanceCorrectionData <: SupplementalAttribute
+    table_number::Int64
     function_data::PiecewiseLinearData
     subcategory::String
     type::String
     internal::InfrastructureSystemsInternal
 end
 
-function ImpedanceCorrectionTable(;
-    ict_row,
+function ImpedanceCorrectionData(;
+    table_number,
     function_data::PiecewiseLinearData,
     subcategory::String = "",
     type::String,
     internal = InfrastructureSystemsInternal(),
 )
-    return ImpedanceCorrectionTable(
-        ict_row,
+    return ImpedanceCorrectionData(
+        table_number,
         function_data,
         subcategory,
         type,
@@ -29,13 +32,13 @@ function ImpedanceCorrectionTable(;
     )
 end
 
-"""Get [`ImpedanceCorrectionTable`](@ref) `table_number`."""
-get_table_number(value::ImpedanceCorrectionTable) = value.table_number
-"""Get [`ImpedanceCorrectionTable`](@ref) `function_data`."""
-get_function_data(value::ImpedanceCorrectionTable) = value.function_data
-"""Get [`ImpedanceCorrectionTable`](@ref) `subcategory`."""
-get_subcategory(value::ImpedanceCorrectionTable) = value.subcategory
-"""Get [`ImpedanceCorrectionTable`](@ref) `type`."""
-get_type(value::ImpedanceCorrectionTable) = value.type
-"""Get [`ImpedanceCorrectionTable`](@ref) `internal`."""
-get_internal(value::ImpedanceCorrectionTable) = value.internal
+"""Get [`ImpedanceCorrectionData`](@ref) `table_number`."""
+get_table_number(value::ImpedanceCorrectionData) = value.table_number
+"""Get [`ImpedanceCorrectionData`](@ref) `function_data`."""
+get_function_data(value::ImpedanceCorrectionData) = value.function_data
+"""Get [`ImpedanceCorrectionData`](@ref) `subcategory`."""
+get_subcategory(value::ImpedanceCorrectionData) = value.subcategory
+"""Get [`ImpedanceCorrectionData`](@ref) `type`."""
+get_type(value::ImpedanceCorrectionData) = value.type
+"""Get [`ImpedanceCorrectionData`](@ref) `internal`."""
+get_internal(value::ImpedanceCorrectionData) = value.internal
