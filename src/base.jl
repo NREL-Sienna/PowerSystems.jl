@@ -1306,6 +1306,53 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
+Return a vector of connected turbines to the reservoir
+"""
+function get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
+    throw_if_not_attached(reservoir, sys)
+    return [x for x in get_components(HydroTurbine, sys) if has_reservoir(x, reservoir)]
+end
+
+struct ReservoirConnectedDevices
+    reservoir::HydroReservoir
+    connected_devices::Vector{Device}
+end
+
+const ReservoirConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const ReservoirConnectedDevicesMapping =
+    Dict{ReservoirConnectedDevicesKey, ReservoirConnectedDevices}
+
+"""
+Returns a ReservoirConnectedDevices object.
+"""
+function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
+    uuid = IS.get_uuid(reservoir)
+    devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
+    for device in get_components(HydroTurbine, sys)
+        for _reservoir in get_reservoirs(device)
+            if IS.get_uuid(_reservoir) == uuid
+                push!(devices.connected_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
+"""
+Return an instance of ReservoirConnectedDevicesMapping.
+"""
+function get_reservoir_device_mapping(sys::System)
+    reservoir_mapping = ReservoirConnectedDevicesMapping()
+    for reservoir in get_components(HydroReservoir, sys)
+        key = ReservoirConnectedDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
+        reservoir_mapping[key] = _get_connected_devices(sys, reservoir)
+    end
+
+    return reservoir_mapping
+end
+
+"""
 Return a vector of components with buses in the AggregationTopology.
 """
 function get_components_in_aggregation_topology(

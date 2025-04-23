@@ -117,3 +117,77 @@ function clear_services!(device::Device)
     empty!(services)
     return
 end
+
+"""
+Remove a reservoir from a device.
+
+Throws ArgumentError if the reservoir is not attached to the device.
+"""
+function remove_reservoir!(device::HydroTurbine, reservoir::HydroReservoir)
+    if !_remove_reservoir!(device, reservoir)
+        throw(
+            ArgumentError(
+                "reservoir $(get_name(reservoir)) was not attached to $(get_name(device))",
+            ),
+        )
+    end
+end
+
+"""
+Return true if the service is attached to the device.
+"""
+function has_reservoir(device::HydroTurbine, reservoir::HydroReservoir)
+    for _reservoir in get_reservoirs(device)
+        if IS.get_uuid(_reservoir) == IS.get_uuid(reservoir)
+            return true
+        end
+    end
+
+    return false
+end
+
+"""
+Return true if any reservoir is attached to the device.
+"""
+function has_reservoir(turbine::HydroTurbine)
+    for _reservoir in get_reservoirs(turbine)
+        if isa(_reservoir, HydroReservoir)
+            return true
+        end
+    end
+
+    return false
+end
+
+has_reservoir(T::Type{<:HydroReservoir}, device::Device) = has_reservoir(device, T)
+
+"""
+Remove service from device if it is attached.
+"""
+function _remove_reservoir!(device::Device, reservoir::HydroReservoir)
+    removed = false
+    reservoirs = get_reservoirs(device)
+
+    # The expectation is that there won't be many services in each device, and so
+    # a faster lookup method is not needed.
+    for (i, _reservoir) in enumerate(reservoirs)
+        if IS.get_uuid(_reservoir) == IS.get_uuid(reservoir)
+            deleteat!(reservoirs, i)
+            removed = true
+            @debug "Removed service $(get_name(reservoir)) from $(get_name(device))" _group =
+                IS.LOG_GROUP_SYSTEM
+            break
+        end
+    end
+
+    return removed
+end
+
+"""
+Remove all services attached to the device.
+"""
+function clear_reservoirs!(device::Device)
+    reservoirs = get_reservoirs(device)
+    empty!(reservoirs)
+    return
+end
