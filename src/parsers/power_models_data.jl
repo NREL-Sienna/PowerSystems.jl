@@ -167,8 +167,8 @@ Parses ITC data from a dictionary and constructs a lookup table
 of piecewise linear scaling functions.
 """
 function _impedance_correction_table_lookup(data::Dict)
-    lookup = Dict{String, PiecewiseLinearData}()
-    type_lookup = Dict{String, String}()
+    lookup = Dict{Int64, PiecewiseLinearData}()
+    type_lookup = Dict{Int64, String}()
 
     @info "Reading Impedance Correction Table data"
     if !haskey(data, "impedance_correction")
@@ -177,31 +177,18 @@ function _impedance_correction_table_lookup(data::Dict)
     end
 
     for (table_number, table_data) in data["impedance_correction"]
-        angle_or_taps_dict = table_data["tap_or_angle"]
-        scaling_factors_dict = table_data["scaling_factor"]
-
-        # Sort dict by key "Fi" or "Ti"
-        indices = sort(
-            parse.(Int, replace.(collect(keys(angle_or_taps_dict)), r"[A-Z]" => "")),
-        )
-
-        x = [
-            angle_or_taps_dict["T$(i)"] for
-            i in indices if haskey(angle_or_taps_dict, "T$(i)")
-        ]
-        y = [
-            scaling_factors_dict["F$(i)"] for
-            i in indices if haskey(scaling_factors_dict, "F$(i)")
-        ]
+        table_number = parse(Int64, table_number)
+        x = table_data["tap_or_angle"]
+        y = table_data["scaling_factor"]
 
         if length(x) == length(y)
             lookup[table_number] =
                 PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
             table_type =
                 (x[1] >= 0.5 && x[1] <= 1.5) ? "turns_ratio" : "phase_shift_angle"
-            type_lookup[string(table_number)] = table_type
+            type_lookup[table_number] = table_type
         else
-            @warn "Impedance correction mismatch at table $table_number: tap and scale count differs"
+            throw(DataFormatError("Impedance correction mismatch at table $table_number: tap/angle and scaling count differs."))
         end
     end
 
@@ -216,8 +203,8 @@ function _attach_impedance_correction_tables!(
     value::Union{Transformer2W, Transformer3W},
     name::String,
     d::Dict,
-    ict_lookup::Dict{String, PiecewiseLinearData},
-    type_lookup::Dict{String, String},
+    ict_lookup::Dict{Int64, PiecewiseLinearData},
+    type_lookup::Dict{Int64, String},
 )
     # Match for windings in Transformer 2W and 3W
     keys_and_categories = if isa(value, Transformer3W)
@@ -233,19 +220,19 @@ function _attach_impedance_correction_tables!(
 
     for (subcategory, key) in keys_and_categories
         if haskey(d, key)
-            table_number = string(d[key])
+            table_number = d[key]
             if haskey(ict_lookup, table_number)
                 pwl_data = ict_lookup[table_number]
-                table_type = get(type_lookup, table_number, "phase_shift_angle")
-                ict = ImpedanceCorrectionTable(;
-                    ict_row = table_number,
+                table_type = get(type_lookup, table_number, "phase_shift_angle")    
+                ict = ImpedanceCorrectionData(;
+                    table_number = table_number,
                     function_data = pwl_data,
                     subcategory = subcategory,
                     type = table_type,
                 )
                 add_supplemental_attribute!(sys, value, ict)
             else
-                @warn "Transformer $name references missing correction table $table_number"
+                throw(DataFormatError("Transformer $name references a missing correction table $table_number."))
             end
         end
     end
