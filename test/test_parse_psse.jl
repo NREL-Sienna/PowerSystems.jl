@@ -207,24 +207,69 @@ end
 
     tr2w = first(get_components(Transformer2W, sys))
 
-    t_dict = Dict("T1" => 0.88, "T2" => 1.0, "T3" => 1.020, "T4" => 1.170)
-    f_dict = Dict("F1" => 1.12, "F2" => 1.0, "F3" => 0.979, "F4" => 0.895)
-
-    x = sort_values_by_key_prefix(t_dict, "T")
-    y = sort_values_by_key_prefix(f_dict, "F")
+    x = [0.88, 1.0, 1.020, 1.170]
+    y = [1.12, 1.0, 0.979, 0.895]
 
     pwl2w = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
     ict2w = PSY.ImpedanceCorrectionData(;
-        ict_row = "1",
-        function_data = pwl2w,
-        type = all(0.5 .<= xs .<= 1.5) ? "turns_ratio" : "phase_shift",
+        table_number = 1,
+        impedance_correction_function_data = pwl2w,
+        transformer_winding = 0,
+        transformer_control_mode = if all(
+            PSY.TAP_RATIO_LBOUND .<= x .<= PSY.TAP_RATIO_UBOUND,
+        )
+            PSY.TAP_RATIO
+        else
+            PSY.PHASE_SHIFT_ANGLE
+        end,
     )
 
     add_supplemental_attribute!(sys, tr2w, ict2w)
 
     tr2w_supp_attr = get_supplemental_attributes(tr2w)
 
-    @test PSY.get_table_number(tr2w_supp_attr[1]) == "1"
-    @test PSY.get_function_data(tr2w_supp_attr[1])[1] == (x = 0.88, y = 1.12)
-    @test PSY.get_type(tr2w_supp_attr[1]) == "turns_ratio"
+    @test PSY.get_table_number(tr2w_supp_attr[1]) == 1
+    @test PSY.get_impedance_correction_function_data(tr2w_supp_attr[1])[1] ==
+          (x = 0.88, y = 1.12)
+    @test PSY.get_transformer_control_mode(tr2w_supp_attr[1]) ==
+          TransformerControlMode.TAP_RATIO
+end
+
+@testset "PSSE System Serialize/Desearialized - Initial Test" begin
+    original_sys = build_system(PSSEParsingTestSystems, "pti_case30_sys")
+    serialize_sys_path = joinpath(tempdir(), "test_system.json")
+    to_json(original_sys, serialize_sys_path; force = true)
+    deserialized_sys = System(serialize_sys_path)
+
+    @test get_base_power(original_sys) == get_base_power(deserialized_sys)
+    @test get_frequency(original_sys) == get_frequency(deserialized_sys)
+    @test IS.get_num_components(original_sys.data.components) ==
+          IS.get_num_components(deserialized_sys.data.components)
+
+    gen1_names = sort(get_name.(get_components(ThermalStandard, original_sys)))
+    gen2_names = sort(get_name.(get_components(ThermalStandard, deserialized_sys)))
+    @test gen1_names == gen2_names
+
+    sa1_y = get_Y.(get_components(SwitchedAdmittance, original_sys))
+    sa2_y = get_Y.(get_components(SwitchedAdmittance, deserialized_sys))
+    @test sa1_y == sa2_y
+
+    original_data = original_sys.data.components.data
+    deserialized_data = deserialized_sys.data.components.data
+    original_keys = Set(keys(original_data))
+    deserialized_keys = Set(keys(deserialized_data))
+
+    @test original_keys == deserialized_keys
+
+    for component_type in original_keys
+        orig_components = original_data[component_type]
+        deser_components = deserialized_data[component_type]
+
+        @test length(orig_components) == length(deser_components)
+
+        orig_names = Set(keys(orig_components))
+        deser_names = Set(keys(deser_components))
+
+        @test orig_names == deser_names
+    end
 end
