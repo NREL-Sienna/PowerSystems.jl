@@ -214,7 +214,7 @@ end
     y = sort_values_by_key_prefix(f_dict, "F")
 
     pwl2w = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
-    ict2w = PSY.ImpedanceCorrectionTable(;
+    ict2w = PSY.ImpedanceCorrectionData(;
         ict_row = "1",
         function_data = pwl2w,
         type = all(0.5 .<= xs .<= 1.5) ? "turns_ratio" : "phase_shift",
