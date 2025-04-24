@@ -167,8 +167,9 @@ Parses ITC data from a dictionary and constructs a lookup table
 of piecewise linear scaling functions.
 """
 function _impedance_correction_table_lookup(data::Dict)
-    lookup = Dict{Int64, PiecewiseLinearData}()
+    pwl_lookup = Dict{Int64, PiecewiseLinearData}()
     type_lookup = Dict{Int64, Int64}()
+    ict_instances = Dict{Tuple{Int64, Int}, ImpedanceCorrectionData}()
 
     @info "Reading Impedance Correction Table data"
     if !haskey(data, "impedance_correction")
@@ -176,17 +177,15 @@ function _impedance_correction_table_lookup(data::Dict)
         return
     end
 
-    PHASE_SHIFT_ANGLE = 1
-    TAP_RATIO = 2
-
     for (table_number, table_data) in data["impedance_correction"]
         table_number = parse(Int64, table_number)
         x = table_data["tap_or_angle"]
         y = table_data["scaling_factor"]
 
         if length(x) == length(y)
-            lookup[table_number] =
-                PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
+            pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
+            pwl_lookup[table_number] = pwl_data
+
             table_type =
                 if (x[1] >= TAP_RATIO_LBOUND && x[1] <= TAP_RATIO_UBOUND)
                     TAP_RATIO
@@ -194,6 +193,15 @@ function _impedance_correction_table_lookup(data::Dict)
                     PHASE_SHIFT_ANGLE
                 end
             type_lookup[table_number] = table_type
+
+            for winding_index in 0:WINDING_NUMBER
+                ict_instances[(table_number, winding_index)] = ImpedanceCorrectionData(;
+                    table_number = table_number,
+                    impedance_correction_function_data = pwl_data,
+                    transformer_winding = winding_index,
+                    transformer_control_mode = table_type,
+                )
+            end
         else
             throw(
                 DataFormatError(
@@ -203,7 +211,7 @@ function _impedance_correction_table_lookup(data::Dict)
         end
     end
 
-    return lookup, type_lookup
+    return ict_instances
 end
 
 """
@@ -214,31 +222,20 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer2W,
     name::String,
     d::Dict,
-    ict_lookup::Dict{Int64, PiecewiseLinearData},
-    type_lookup::Dict{Int64, Int64},
+    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
 )
-    keys_and_categories = zip((0,), ("correction_table",))
-
-    for (idx, key) in keys_and_categories
-        if haskey(d, key)
-            table_number = d[key]
-            if haskey(ict_lookup, table_number)
-                pwl_data = ict_lookup[table_number]
-                table_type = get(type_lookup, table_number, 1)
-                ict = ImpedanceCorrectionData(;
-                    table_number = table_number,
-                    impedance_correction_function_data = pwl_data,
-                    transformer_winding = idx,
-                    transformer_control_mode = table_type,
-                )
-                add_supplemental_attribute!(sys, transformer, ict)
-            else
-                throw(
-                    DataFormatError(
-                        "Transformer $name references a missing correction table $table_number.",
-                    ),
-                )
-            end
+    if haskey(d, "correction_table")
+        table_number = d["correction_table"]
+        key = (table_number, 0)
+        if haskey(ict_instances, key)
+            ict = ict_instances[key]
+            add_supplemental_attribute!(sys, transformer, ict)
+        else
+            throw(
+                DataFormatError(
+                    "Transformer $name references missing correction table $table_number.",
+                ),
+            )
         end
     end
 end
@@ -251,35 +248,20 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer3W,
     name::String,
     d::Dict,
-    ict_lookup::Dict{Int64, PiecewiseLinearData},
-    type_lookup::Dict{Int64, Int64},
+    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
 )
-    keys_and_categories = zip(
-        (1, 2, 3),
-        (
-            "primary_correction_table",
-            "secondary_correction_table",
-            "tertiary_correction_table",
-        ),
-    )
-
-    for (idx, key) in keys_and_categories
+    for idx in 1:WINDING_NUMBER
+        key = "$(WINDING_NAMES[idx])_correction_table"
         if haskey(d, key)
             table_number = d[key]
-            if haskey(ict_lookup, table_number)
-                pwl_data = ict_lookup[table_number]
-                table_type = get(type_lookup, table_number, 1)
-                ict = ImpedanceCorrectionData(;
-                    table_number = table_number,
-                    impedance_correction_function_data = pwl_data,
-                    transformer_winding = idx,
-                    transformer_control_mode = table_type,
-                )
+            cache_key = (table_number, idx)
+            if haskey(ict_instances, cache_key)
+                ict = ict_instances[cache_key]
                 add_supplemental_attribute!(sys, transformer, ict)
             else
                 throw(
                     DataFormatError(
-                        "Transformer $name references a missing correction table $table_number.",
+                        "Transformer $name references missing correction table $table_number.",
                     ),
                 )
             end
@@ -1185,7 +1167,7 @@ function read_branch!(
     end
 
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
-    ict_lookup, type_lookup = _impedance_correction_table_lookup(data)
+    ict_instances = _impedance_correction_table_lookup(data)
 
     for (_, d) in data["branch"]
         bus_f = bus_number_to_bus[d["f_bus"]]
@@ -1205,8 +1187,7 @@ function read_branch!(
                 value,
                 name,
                 d,
-                ict_lookup,
-                type_lookup,
+                ict_instances,
             )
         end
     end
@@ -1355,7 +1336,7 @@ function read_3w_transformer!(
 
     _get_name = get(kwargs, :xfrm_3w_name_formatter, _get_pm_3w_name)
 
-    ict_lookup, type_lookup = _impedance_correction_table_lookup(data)
+    ict_instances = _impedance_correction_table_lookup(data)
 
     for (_, d) in data["3w_transformer"]
         bus_primary = bus_number_to_bus[d["bus_primary"]]
@@ -1369,7 +1350,7 @@ function read_3w_transformer!(
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
 
-        _attach_impedance_correction_tables!(sys, value, name, d, ict_lookup, type_lookup)
+        _attach_impedance_correction_tables!(sys, value, name, d, ict_instances)
     end
 end
 

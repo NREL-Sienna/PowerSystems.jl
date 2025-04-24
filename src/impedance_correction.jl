@@ -1,11 +1,11 @@
 """
-Attribute that contains information regarding the Transformer Impedance Correction Rows defined in the Table.
+Attribute that contains information regarding the Impedance Correction Table (ICT) rows defined in the Table.
 
 # Arguments
-- `table_number::Int64`: Row number of the impedance correction table to be linked with a specific Transformer component.
-- `function_data::PiecewiseLinearData`: Function to define intervals to apply tap ratio or angle shift to the Transformer component.
-- `subcategory::String`: Indicates the winding for Transformer3W or an empty string for the Transformer2W.
-- `type::String`: Indicates whether the function is for tap ratio or angle shift.
+- `table_number::Int64`: Row number of the ICT to be linked with a specific Transformer component.
+- `impedance_correction_function_data::PiecewiseLinearData`: Function to define intervals (tap ratio/angle shift) in the Transformer component.
+- `transformer_winding::String`: Indicates the winding to which the ICT is linked to for a Transformer component.
+- `transformer_control_mode::String`: Defines the control modes of the Transformer, whether is for off-nominal turns ratio or phase angle shifts.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
 struct ImpedanceCorrectionData <: SupplementalAttribute

@@ -165,3 +165,8 @@ const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
 
 const TAP_RATIO_UBOUND = 1.5
 const TAP_RATIO_LBOUND = 0.5
+
+const PHASE_SHIFT_ANGLE = 1
+const TAP_RATIO = 2
+const WINDING_NUMBER = 3
+const WINDING_NAMES = ("primary", "secondary", "tertiary")
