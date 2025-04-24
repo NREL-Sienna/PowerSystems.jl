@@ -231,11 +231,7 @@ function _attach_impedance_correction_tables!(
             ict = ict_instances[key]
             add_supplemental_attribute!(sys, transformer, ict)
         else
-            throw(
-                DataFormatError(
-                    "Transformer $name references missing correction table $table_number.",
-                ),
-            )
+            @error "No correction table associated with transformer $name."
         end
     end
 end
@@ -259,11 +255,7 @@ function _attach_impedance_correction_tables!(
                 ict = ict_instances[cache_key]
                 add_supplemental_attribute!(sys, transformer, ict)
             else
-                throw(
-                    DataFormatError(
-                        "Transformer $name references missing correction table $table_number.",
-                    ),
-                )
+                @error "No correction table associated with transformer $name."
             end
         end
     end
