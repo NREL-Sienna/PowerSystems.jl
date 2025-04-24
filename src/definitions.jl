@@ -42,6 +42,20 @@ IS.@scoped_enum(
     CLOSED = 1,
 )
 
+IS.@scoped_enum(
+    WindingCategory,
+    TR2W_WINDING = 0,       # Transformer2W only winding associated with a TICT
+    PRIMARY_WINDING = 1,    # Primary winding of Trasnformer3W associated with a TICT
+    SECONDARY_WINDING = 2,  # Secondary winding of Trasnformer3W associated with a TICT
+    TERTIARY_WINDING = 3,   # Tertiary winding of Trasnformer3W associated with a TICT
+)
+
+IS.@scoped_enum(
+    TransformerControlMode,
+    PHASE_SHIFT_ANGLE = 1,
+    TAP_RATIO = 2,
+)
+
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
 IS.@scoped_enum(
@@ -148,3 +162,6 @@ const START_COST = 1e8
 const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6
 const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
+
+const TAP_RATIO_UBOUND = 1.5
+const TAP_RATIO_LBOUND = 0.5

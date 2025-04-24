@@ -12,6 +12,7 @@ IS.@scoped_enum(
     FACTS = 9,
     DCBRTYPE = 10,
     DCBRSTATUS = 11,
+    TICT = 12,
 )
 
 const ENUMS = (
@@ -20,6 +21,8 @@ const ENUMS = (
     FACTSOperationModes,
     DiscreteControlledBranchType,
     DiscreteControlledBranchStatus,
+    WindingCategory,
+    TransformerControlMode,
     GeneratorCostModels,
     InputCategory,
     PrimeMovers,
@@ -53,12 +56,16 @@ end
 
 Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnits, val)
 Base.convert(::Type{ACBusTypes}, val::AbstractString) = get_enum_value(ACBusTypes, val)
+Base.convert(::Type{FACTSOperationModes}, val::AbstractString) =
+    get_enum_value(FACTSOperationModes, val)
 Base.convert(::Type{DiscreteControlledBranchType}, val::AbstractString) =
     get_enum_value(DiscreteControlledBranchType, val)
 Base.convert(::Type{DiscreteControlledBranchStatus}, val::AbstractString) =
     get_enum_value(DiscreteControlledBranchStatus, val)
-Base.convert(::Type{FACTSOperationModes}, val::AbstractString) =
-    get_enum_value(FACTSOperationModes, val)
+Base.convert(::Type{WindingCategory}, val::AbstractString) =
+    get_enum_value(WindingCategory, val)
+Base.convert(::Type{TransformerControlMode}, val::AbstractString) =
+    get_enum_value(TransformerControlMode, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)

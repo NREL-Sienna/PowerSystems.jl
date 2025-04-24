@@ -84,7 +84,7 @@ function DiscreteControlledACBranch(
     )
 end
 
-"""Allows construction with bus type specified as a string for legacy code."""
+"""Allows construction of FACT Devices with control modes."""
 function FACTSControlDevice(
     name,
     available,
@@ -109,6 +109,23 @@ function FACTSControlDevice(
         services,
         dynamic_injector,
         ext,
+        internal,
+    )
+end
+
+"""Allows construction of Impedance Correction Table data with control modes and winding association."""
+function ImpedanceCorrectionData(
+    table_number,
+    impedance_correction_function_data,
+    transformer_winding::String,
+    transformer_control_mode::String,
+    internal = InfrastructureSystemsInternal(),
+)
+    return ImpedanceCorrectionData(
+        table_number,
+        impedance_correction_function_data,
+        get_enum_value(WindingCategory, transformer_winding),
+        get_enum_value(TransformerControlMode, transformer_control_mode),
         internal,
     )
 end
