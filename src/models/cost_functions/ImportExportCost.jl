@@ -2,9 +2,8 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 
-    ImportExportCost(import_offer_curves, export_offer_curves, ancillary_service_offers)
-    ImportExportCost(; import_offer_curves, export_offer_curves, ancillary_service_offers)
-    ImportExportCost(import_offer_curves, export_offer_curves, ancillary_service_offers)
+    ImportExportCost(import_offer_curves, export_offer_curves, energy_import_weekly_limit, energy_export_weekly_limits, ancillary_service_offers)
+    ImportExportCost(; import_offer_curves, export_offer_curves, energy_export_weekly_limits, ancillary_service_offers)
 
 An operating cost for imports/exports and ancillary services from neighboring areas. The data model
 employs a CostCurve{PiecewiseIncrementalCurve} with an implied zero cost at zero power.
