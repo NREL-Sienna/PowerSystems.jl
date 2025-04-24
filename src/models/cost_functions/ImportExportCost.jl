@@ -34,8 +34,8 @@ end
 ImportExportCost(;
     import_offer_curves = nothing,
     export_offer_curves = nothing,
-    energy_import_weekly_limit = INFINITE_COST, # TODO: change to INFINITE_BOUND after rebase
-    energy_export_weekly_limit = INFINITE_COST, # TODO: change to INFINITE_BOUND after rebase
+    energy_import_weekly_limit = INFINITE_BOUND,
+    energy_export_weekly_limit = INFINITE_BOUND,
     ancillary_service_offers = Vector{Service}(),
 ) = ImportExportCost(
     import_offer_curves,
