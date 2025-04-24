@@ -18,7 +18,7 @@ This file is auto-generated. Do not edit.
         internal_voltage::Float64
         internal_angle::Float64
         base_power::Float64
-        operation_cost::Union{ImportExportCost, MarketBidCost}
+        operation_cost::ImportExportCost
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -37,12 +37,12 @@ Commonly used in dynamics simulations to represent a very large machine on a sin
 - `reactive_power::Float64`: (default: `0.0`) Initial reactive power set point of the unit (MVAR)
 - `active_power_limits::MinMax`: (default: `(min=0.0, max=0.0)`) Minimum and maximum stable active power levels (MW)
 - `reactive_power_limits::Union{Nothing, MinMax}`: (default: `(min=0.0, max=0.0)`) Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
-- `R_th::Float64`: (default: `0.0`) Source Thevenin resistance, validation range: `(0, nothing)`
-- `X_th::Float64`: (default: `0.0`) Source Thevenin reactance, validation range: `(0, nothing)`
+- `R_th::Float64`: (default: `0.0`) Source Thevenin resistance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem), validation range: `(0, nothing)`
+- `X_th::Float64`: (default: `0.0`) Source Thevenin reactance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem), validation range: `(0, nothing)`
 - `internal_voltage::Float64`: (default: `1.0`) Internal Voltage (pu), validation range: `(0, nothing)`
 - `internal_angle::Float64`: (default: `0.0`) Internal Angle
 - `base_power::Float64`: (default: `100.0`) Base Power in MVA
-- `operation_cost::Union{ImportExportCost, MarketBidCost}`: (default: `ImportExportCost(nothing)`) [`ImportExportCost`](@ref)
+- `operation_cost::ImportExportCost`: (default: `ImportExportCost(nothing)`) [`ImportExportCost`](@ref) of the source.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -63,9 +63,9 @@ mutable struct Source <: StaticInjection
     active_power_limits::MinMax
     "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}
-    "Source Thevenin resistance"
+    "Source Thevenin resistance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)"
     R_th::Float64
-    "Source Thevenin reactance"
+    "Source Thevenin reactance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)"
     X_th::Float64
     "Internal Voltage (pu)"
     internal_voltage::Float64
@@ -73,8 +73,8 @@ mutable struct Source <: StaticInjection
     internal_angle::Float64
     "Base Power in MVA"
     base_power::Float64
-    "[`ImportExportCost`](@ref)"
-    operation_cost::Union{ImportExportCost, MarketBidCost}
+    "[`ImportExportCost`](@ref) of the source."
+    operation_cost::ImportExportCost
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"

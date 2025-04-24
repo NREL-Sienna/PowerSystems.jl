@@ -17816,7 +17816,7 @@
                 },
                 {
                     "name": "R_th",
-                    "comment": "Source Thevenin resistance",
+                    "comment": "Source Thevenin resistance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)",
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "0.0",
@@ -17827,7 +17827,7 @@
                 },
                 {
                     "name": "X_th",
-                    "comment": "Source Thevenin reactance",
+                    "comment": "Source Thevenin reactance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)",
                     "null_value": 0,
                     "default": "0.0",
                     "data_type": "Float64",
@@ -17864,9 +17864,9 @@
                 {
                     "name": "operation_cost",
                     "null_value": "ImportExportCost(nothing)",
-                    "data_type": "Union{ImportExportCost, MarketBidCost}",
+                    "data_type": "ImportExportCost",
                     "default": "ImportExportCost(nothing)",
-                    "comment": "[`ImportExportCost`](@ref)"
+                    "comment": "[`ImportExportCost`](@ref) of the source."
                 },
                 {
                     "name": "dynamic_injector",
