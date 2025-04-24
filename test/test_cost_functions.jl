@@ -427,24 +427,24 @@ end
         base_power = 100.0,
     )
 
-    import_curve = make_import_curve(
-        [0.0, 100.0, 105.0, 120.0, 200.0],
-        [5.0, 10.0, 20.0, 40.0],
+    import_curve = make_import_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [5.0, 10.0, 20.0, 40.0],
     )
 
-    import_curve2 = make_import_curve(
-        200.0,
-        25.0,
+    import_curve2 = make_import_curve(;
+        power = 200.0,
+        price = 25.0,
     )
 
-    export_curve = make_export_curve(
-        [0.0, 100.0, 105.0, 120.0, 200.0],
-        [40.0, 20.0, 10.0, 5.0],
+    export_curve = make_export_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [40.0, 20.0, 10.0, 5.0],
     )
 
-    export_curve2 = make_export_curve(
-        200.0,
-        45.0,
+    export_curve2 = make_export_curve(;
+        power = 200.0,
+        price = 45.0,
     )
 
     @test PowerSystems.is_import_export_curve(import_curve)
