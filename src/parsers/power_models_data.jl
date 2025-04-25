@@ -187,7 +187,10 @@ function _impedance_correction_table_lookup(data::Dict)
             pwl_lookup[table_number] = pwl_data
 
             table_type =
-                if (x[1] >= TAP_RATIO_MIN_THRESH && x[1] <= TAP_RATIO_MAX_THRESH)
+                if (
+                    x[1] >= PSSE_PARSER_TAP_RATIO_LBOUND &&
+                    x[1] <= PSSE_PARSER_TAP_RATIO_UBOUND
+                )
                     TransformerControlMode.TAP_RATIO.value
                 else
                     TransformerControlMode.PHASE_SHIFT_ANGLE.value

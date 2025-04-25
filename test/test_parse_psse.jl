@@ -216,7 +216,7 @@ end
         impedance_correction_curve = pwl2w,
         transformer_winding = WindingCategory.TR2W_WINDING.value,
         transformer_control_mode = if all(
-            PSY.TAP_RATIO_LBOUND .<= x .<= PSY.TAP_RATIO_UBOUND,
+            PSY.PSSE_PARSER_TAP_RATIO_LBOUND .<= x .<= PSY.PSSE_PARSER_TAP_RATIO_UBOUND,
         )
             TransformerControlMode.TAP_RATIO.value
         else
