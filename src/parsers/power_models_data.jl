@@ -194,7 +194,7 @@ function _impedance_correction_table_lookup(data::Dict)
                 end
             type_lookup[table_number] = table_type
 
-            for winding_index in 0:WindingCategory.TERTIARY_WINDING.value
+            for winding_index in 0:(WindingCategory.TERTIARY_WINDING.value)
                 ict_instances[(table_number, winding_index)] = ImpedanceCorrectionData(;
                     table_number = table_number,
                     impedance_correction_curve = pwl_data,
