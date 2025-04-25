@@ -270,15 +270,17 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             "PDES" => "",
             "PTOL" => "",
         )
-        for (_, area_data) in data["area_interchange"]
-            if haskey(area_data, "area_number") &&
-               string(area_data["area_number"]) == area_name
-                ext["ARNAME"] = strip(get(area_data, "area_name", ""))
-                ext["I"] = string(get(area_data, "area_number", ""))
-                ext["ISW"] = string(get(area_data, "bus_number", ""))
-                ext["PDES"] = get(area_data, "net_interchange", "")
-                ext["PTOL"] = get(area_data, "tol_interchange", "")
-                break  # Only one match is allowed
+        if data["source_type"] == "pti" && haskey(data, "area_interchange")
+            for (_, area_data) in data["area_interchange"]
+                if haskey(area_data, "area_number") &&
+                   string(area_data["area_number"]) == area_name
+                    ext["ARNAME"] = strip(get(area_data, "area_name", ""))
+                    ext["I"] = string(get(area_data, "area_number", ""))
+                    ext["ISW"] = string(get(area_data, "bus_number", ""))
+                    ext["PDES"] = get(area_data, "net_interchange", "")
+                    ext["PTOL"] = get(area_data, "tol_interchange", "")
+                    break  # Only one match is allowed
+                end
             end
         end
         set_ext!(area, ext)
@@ -295,35 +297,37 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
-    # get Inter-area Transfers as AreaInterchange
-    for (k, d) in data["interarea_transfer"]
-        area_from_name = _get_name_area(d["area_from"])
-        area_to_name = _get_name_area(d["area_to"])
+    if data["source_type"] == "pti" && haskey(data, "interarea_transfer")
+        # get Inter-area Transfers as AreaInterchange
+        for (k, d) in data["interarea_transfer"]
+            area_from_name = _get_name_area(d["area_from"])
+            area_to_name = _get_name_area(d["area_to"])
 
-        from_area = get_component(Area, sys, area_from_name)
-        to_area = get_component(Area, sys, area_to_name)
+            from_area = get_component(Area, sys, area_from_name)
+            to_area = get_component(Area, sys, area_to_name)
 
-        name = "$(area_from_name)_$(area_to_name)"
-        available = true
-        active_power_flow = d["power_transfer"]
-        flow_limits = (from_to = Inf, to_from = Inf)
+            name = "$(area_from_name)_$(area_to_name)"
+            available = true
+            active_power_flow = d["power_transfer"]
+            flow_limits = (from_to = -INFINITE_BOUND, to_from = INFINITE_BOUND)
 
-        ext = Dict{String, Any}(
-            "index" => d["index"],
-            "source_id" => ["interarea_transfer", k],
-        )
+            ext = Dict{String, Any}(
+                "index" => d["index"],
+                "source_id" => ["interarea_transfer", k],
+            )
 
-        interarea_inter = AreaInterchange(;
-            name = name,
-            available = available,
-            active_power_flow = active_power_flow,
-            from_area = from_area,
-            to_area = to_area,
-            flow_limits = flow_limits,
-            ext = ext,
-        )
+            interarea_inter = AreaInterchange(;
+                name = name,
+                available = available,
+                active_power_flow = active_power_flow,
+                from_area = from_area,
+                to_area = to_area,
+                flow_limits = flow_limits,
+                ext = ext,
+            )
 
-        add_component!(sys, interarea_inter; skip_validation = SKIP_PM_VALIDATION)
+            add_component!(sys, interarea_inter; skip_validation = SKIP_PM_VALIDATION)
+        end
     end
 
     return bus_number_to_bus
@@ -809,9 +813,7 @@ function _get_rating(
     line_data::Dict,
     key::String,
 )
-    if !haskey(line_data, key)
-        return INFINITE_BOUND
-    end
+    haskey(line_data, key) || return key == "rate_a" ? INFINITE_BOUND : nothing
 
     if isapprox(line_data[key], 0.0)
         @warn(
@@ -837,6 +839,8 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, dummy_buse
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+
     return Line(;
         name = name,
         available = available_value,
@@ -850,7 +854,7 @@ function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, dummy_buse
         angle_limits = (min = d["angmin"], max = d["angmax"]),
         rating_b = _get_rating("Line", name, d, "rate_b"),
         rating_c = _get_rating("Line", name, d, "rate_c"),
-        ext = d["ext"],
+        ext = ext,
     )
 end
 
