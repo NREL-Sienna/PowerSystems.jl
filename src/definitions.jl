@@ -163,10 +163,5 @@ const INFINITE_COST = 1e8
 const INFINITE_BOUND = 1e6
 const BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL = 0.01
 
-const TAP_RATIO_UBOUND = 1.5
-const TAP_RATIO_LBOUND = 0.5
-
-const PHASE_SHIFT_ANGLE = 1
-const TAP_RATIO = 2
-const WINDING_NUMBER = 3
-const WINDING_NAMES = ("primary", "secondary", "tertiary")
+const TAP_RATIO_MAX_THRESH = 1.5
+const TAP_RATIO_MIN_THRESH = 0.5

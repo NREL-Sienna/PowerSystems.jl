@@ -187,17 +187,17 @@ function _impedance_correction_table_lookup(data::Dict)
             pwl_lookup[table_number] = pwl_data
 
             table_type =
-                if (x[1] >= TAP_RATIO_LBOUND && x[1] <= TAP_RATIO_UBOUND)
-                    TAP_RATIO
+                if (x[1] >= TAP_RATIO_MIN_THRESH && x[1] <= TAP_RATIO_MAX_THRESH)
+                    TransformerControlMode.TAP_RATIO.value
                 else
-                    PHASE_SHIFT_ANGLE
+                    TransformerControlMode.PHASE_SHIFT_ANGLE.value
                 end
             type_lookup[table_number] = table_type
 
-            for winding_index in 0:WINDING_NUMBER
+            for winding_index in 0:WindingCategory.TERTIARY_WINDING.value
                 ict_instances[(table_number, winding_index)] = ImpedanceCorrectionData(;
                     table_number = table_number,
-                    impedance_correction_function_data = pwl_data,
+                    impedance_correction_curve = pwl_data,
                     transformer_winding = winding_index,
                     transformer_control_mode = table_type,
                 )
@@ -215,7 +215,31 @@ function _impedance_correction_table_lookup(data::Dict)
 end
 
 """
-Attaches the corresponding ICT data to a Transformer2W component as a supplemental attribute.
+Function to attach ICTs to a single Transformer component.
+"""
+function _attach_single_ict!(
+    sys::System,
+    transformer::Union{Transformer2W, Transformer3W},
+    name::String,
+    d::Dict,
+    table_key::String,
+    winding_idx::Int,
+    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
+)
+    if haskey(d, table_key)
+        table_number = d[table_key]
+        cache_key = (table_number, winding_idx)
+        if haskey(ict_instances, cache_key)
+            ict = ict_instances[cache_key]
+            add_supplemental_attribute!(sys, transformer, ict)
+        else
+            @error "No correction table associated with transformer $name for winding $winding_idx."
+        end
+    end
+end
+
+"""
+Attaches the corresponding ICT data to a Transformer2W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
@@ -224,20 +248,19 @@ function _attach_impedance_correction_tables!(
     d::Dict,
     ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
 )
-    if haskey(d, "correction_table")
-        table_number = d["correction_table"]
-        key = (table_number, 0)
-        if haskey(ict_instances, key)
-            ict = ict_instances[key]
-            add_supplemental_attribute!(sys, transformer, ict)
-        else
-            @error "No correction table associated with transformer $name."
-        end
-    end
+    _attach_single_ict!(
+        sys,
+        transformer,
+        name,
+        d,
+        "correction_table",
+        WindingCategory.TR2W_WINDING.value,
+        ict_instances,
+    )
 end
 
 """
-Attaches the corresponding ICT data to a Transformer3W component as a supplemental attribute.
+Attaches the corresponding ICT data to a Transformer3W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
@@ -246,18 +269,11 @@ function _attach_impedance_correction_tables!(
     d::Dict,
     ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
 )
-    for idx in 1:WINDING_NUMBER
-        key = "$(WINDING_NAMES[idx])_correction_table"
-        if haskey(d, key)
-            table_number = d[key]
-            cache_key = (table_number, idx)
-            if haskey(ict_instances, cache_key)
-                ict = ict_instances[cache_key]
-                add_supplemental_attribute!(sys, transformer, ict)
-            else
-                @error "No correction table associated with transformer $name."
-            end
-        end
+    winding_names = ["primary", "secondary", "tertiary"]
+
+    for idx in 1:(WindingCategory.TERTIARY_WINDING.value)
+        key = "$(winding_names[idx])_correction_table"
+        _attach_single_ict!(sys, transformer, name, d, key, idx, ict_instances)
     end
 end
 
@@ -1161,7 +1177,7 @@ function read_branch!(
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
     ict_instances = _impedance_correction_table_lookup(data)
 
-    for (_, d) in data["branch"]
+    for d in values(data["branch"])
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)

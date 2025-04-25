@@ -1449,20 +1449,20 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
     return
 end
 
-function sort_values_by_key_prefix(imp_correction::Dict{String, Any}, prefix::String)
+function sort_values_by_key_prefix(imp_correction::Dict{String, <:Any}, prefix::String)
     sorted_values = [
-        v for (_, v) in sort(
+        last(pair) for pair in sort(
             [
                 (parse(Int, k[2:end]), v) for
                 (k, v) in imp_correction if startswith(k, prefix)
             ];
-            by = x -> x[1],
+            by = first,
         )
     ]
 
-    while !isempty(sorted_values) && sorted_values[end] == 0.0
-        pop!(sorted_values)
-    end
+    first_non_zero_index = findfirst(x -> x != 0.0, reverse(sorted_values))
+    sorted_values = sorted_values[1:(length(sorted_values) - first_non_zero_index + 1)]
+
     return sorted_values
 end
 

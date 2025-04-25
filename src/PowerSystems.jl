@@ -272,7 +272,7 @@ export WindingCategory
 export TransformerControlMode
 
 export get_table_number
-export get_impedance_correction_function_data
+export get_impedance_correction_curve
 export get_transformer_winding
 export get_transformer_control_mode
 

@@ -213,14 +213,14 @@ end
     pwl2w = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
     ict2w = PSY.ImpedanceCorrectionData(;
         table_number = 1,
-        impedance_correction_function_data = pwl2w,
-        transformer_winding = 0,
+        impedance_correction_curve = pwl2w,
+        transformer_winding = WindingCategory.TR2W_WINDING.value,
         transformer_control_mode = if all(
             PSY.TAP_RATIO_LBOUND .<= x .<= PSY.TAP_RATIO_UBOUND,
         )
-            PSY.TAP_RATIO
+            TransformerControlMode.TAP_RATIO.value
         else
-            PSY.PHASE_SHIFT_ANGLE
+            TransformerControlMode.PHASE_SHIFT_ANGLE.value
         end,
     )
 
@@ -229,13 +229,13 @@ end
     tr2w_supp_attr = get_supplemental_attributes(tr2w)
 
     @test PSY.get_table_number(tr2w_supp_attr[1]) == 1
-    @test PSY.get_impedance_correction_function_data(tr2w_supp_attr[1])[1] ==
+    @test PSY.impedance_correction_curve(tr2w_supp_attr[1])[1] ==
           (x = 0.88, y = 1.12)
     @test PSY.get_transformer_control_mode(tr2w_supp_attr[1]) ==
           TransformerControlMode.TAP_RATIO
 end
 
-@testset "PSSE System Serialize/Desearialized - Initial Test" begin
+@testset "PSSE System Serialize/Desearialize - Initial Test" begin
     original_sys = build_system(PSSEParsingTestSystems, "pti_case30_sys")
     serialize_sys_path = joinpath(tempdir(), "test_system.json")
     to_json(original_sys, serialize_sys_path; force = true)
@@ -254,22 +254,5 @@ end
     sa2_y = get_Y.(get_components(SwitchedAdmittance, deserialized_sys))
     @test sa1_y == sa2_y
 
-    original_data = original_sys.data.components.data
-    deserialized_data = deserialized_sys.data.components.data
-    original_keys = Set(keys(original_data))
-    deserialized_keys = Set(keys(deserialized_data))
-
-    @test original_keys == deserialized_keys
-
-    for component_type in original_keys
-        orig_components = original_data[component_type]
-        deser_components = deserialized_data[component_type]
-
-        @test length(orig_components) == length(deser_components)
-
-        orig_names = Set(keys(orig_components))
-        deser_names = Set(keys(deser_components))
-
-        @test orig_names == deser_names
-    end
+    @test IS.compare_values(original_sys, deserialized_sys)
 end
