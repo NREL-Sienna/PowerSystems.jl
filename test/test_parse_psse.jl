@@ -222,12 +222,12 @@ end
     suppl_attr_tr2w_2 = get_supplemental_attributes(tr2w_2)[1]
     @test get_table_number(suppl_attr_tr2w_2) == 1
     @test get_impedance_correction_curve(suppl_attr_tr2w_2).points[1] ==
-    (x = 0.88, y = 1.12)
+          (x = 0.88, y = 1.12)
     @test get_impedance_correction_curve(suppl_attr_tr2w_2).points[end] ==
-    (x = 1.17, y = 0.895)
+          (x = 1.17, y = 0.895)
     @test get_transformer_winding(suppl_attr_tr2w_2) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
-        TransformerControlMode.TAP_RATIO
+          TransformerControlMode.TAP_RATIO
 
     tr3w_1 = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
     suppl_attr_tr3w_1 = collect(get_supplemental_attributes(tr3w_1))
