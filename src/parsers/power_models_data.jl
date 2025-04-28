@@ -270,9 +270,8 @@ function _attach_impedance_correction_tables!(
     winding_names = ["primary", "secondary", "tertiary"]
 
     for (idx, winding_category) in enumerate(instances(WindingCategory))
-        (winding_catory == WindingCategory.TR2W_WINDING) && continue
-        println(idx, " ", winding_category)
-        key = "$(winding_names[idx])_correction_table"
+        (winding_category == WindingCategory.TR2W_WINDING) && continue
+        key = "$(winding_names[idx - (idx > 1 ? 1 : 0)])_correction_table"
         _attach_single_ict!(sys, transformer, name, d, key, winding_category, ict_instances)
     end
 end
