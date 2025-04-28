@@ -4425,11 +4425,21 @@
                 },
                 {
                     "name": "outflow_limits",
-                    "comment": "Turbine outflow limits. Set to `Nothing` if not applicable",
+                    "comment": "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable",
                     "validation_action": "warn",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "data_type": "Union{Nothing, MinMax}"
+                },
+                {
+                    "name": "powerhouse_height",
+                    "comment": "Height level in meters above the sea level of the powerhouse on which the turbine is installed.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "ramp_limits",
