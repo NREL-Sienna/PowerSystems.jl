@@ -167,8 +167,6 @@ Parses ITC data from a dictionary and constructs a lookup table
 of piecewise linear scaling functions.
 """
 function _impedance_correction_table_lookup(data::Dict)
-    pwl_lookup = Dict{Int64, PiecewiseLinearData}()
-    type_lookup = Dict{Int64, Int64}()
     ict_instances = Dict{Tuple{Int64, Int}, ImpedanceCorrectionData}()
 
     @info "Reading Impedance Correction Table data"
@@ -184,20 +182,17 @@ function _impedance_correction_table_lookup(data::Dict)
 
         if length(x) == length(y)
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
-            pwl_lookup[table_number] = pwl_data
-
             table_type =
                 if (
                     x[1] >= PSSE_PARSER_TAP_RATIO_LBOUND &&
                     x[1] <= PSSE_PARSER_TAP_RATIO_UBOUND
                 )
-                    TransformerControlMode.TAP_RATIO.value
+                    TransformerControlMode.TAP_RATIO
                 else
-                    TransformerControlMode.PHASE_SHIFT_ANGLE.value
+                    TransformerControlMode.PHASE_SHIFT_ANGLE
                 end
-            type_lookup[table_number] = table_type
 
-            for winding_index in 0:(WindingCategory.TERTIARY_WINDING.value)
+            for winding_index in 0:(length(instances(WindingCategory)) - 1)
                 ict_instances[(table_number, winding_index)] = ImpedanceCorrectionData(;
                     table_number = table_number,
                     impedance_correction_curve = pwl_data,
@@ -257,7 +252,7 @@ function _attach_impedance_correction_tables!(
         name,
         d,
         "correction_table",
-        WindingCategory.TR2W_WINDING.value,
+        0,
         ict_instances,
     )
 end
@@ -274,7 +269,7 @@ function _attach_impedance_correction_tables!(
 )
     winding_names = ["primary", "secondary", "tertiary"]
 
-    for idx in 1:(WindingCategory.TERTIARY_WINDING.value)
+    for idx in 1:(length(instances(WindingCategory)) - 1)
         key = "$(winding_names[idx])_correction_table"
         _attach_single_ict!(sys, transformer, name, d, key, idx, ict_instances)
     end

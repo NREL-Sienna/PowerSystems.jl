@@ -4,7 +4,7 @@ Attribute that contains information regarding the Impedance Correction Table (IC
 # Arguments
 - `table_number::Int64`: Row number of the ICT to be linked with a specific Transformer component.
 - `impedance_correction_curve::PiecewiseLinearData`: Function to define intervals (tap ratio/angle shift) in the Transformer component.
-- `transformer_winding::String`: Indicates the winding to which the ICT is linked to for a Transformer component.
+- `transformer_winding::WindingCategory`: Indicates the winding to which the ICT is linked to for a Transformer component.
 - `transformer_control_mode::String`: Defines the control modes of the Transformer, whether is for off-nominal turns ratio or phase angle shifts.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
@@ -35,7 +35,7 @@ end
 """Get [`ImpedanceCorrectionData`](@ref) `table_number`."""
 get_table_number(value::ImpedanceCorrectionData) = value.table_number
 """Get [`ImpedanceCorrectionData`](@ref) `function_data`."""
-impedance_correction_curve(value::ImpedanceCorrectionData) =
+get_impedance_correction_curve(value::ImpedanceCorrectionData) =
     value.impedance_correction_curve
 """Get [`ImpedanceCorrectionData`](@ref) `transformer_winding`."""
 get_transformer_winding(value::ImpedanceCorrectionData) = value.transformer_winding

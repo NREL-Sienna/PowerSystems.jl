@@ -203,36 +203,57 @@ end
 end
 
 @testset "PSSE Impedance Correction Table Parsing" begin
-    sys = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
+    base_dir = string(dirname(@__FILE__))
+    file_dir = joinpath(base_dir, "test_data", "modified_14bus_system.raw")
+    sys = System(file_dir)
 
-    tr2w = first(get_components(Transformer2W, sys))
+    tr2w_1 = get_component(Transformer2W, sys, "BUS 110-BUS 109-i_1")
+    suppl_attr_tr2w_1 = get_supplemental_attributes(tr2w_1)[1]
+    @test get_table_number(suppl_attr_tr2w_1) == 3
+    @test get_impedance_correction_curve(suppl_attr_tr2w_1).points[1] ==
+          (x = -24.1, y = 1.27)
+    @test get_impedance_correction_curve(suppl_attr_tr2w_1).points[end] ==
+          (x = 24.1, y = 1.27)
+    @test get_transformer_winding(suppl_attr_tr2w_1) == WindingCategory.TR2W_WINDING
+    @test get_transformer_control_mode(suppl_attr_tr2w_1) ==
+          TransformerControlMode.PHASE_SHIFT_ANGLE
 
-    x = [0.88, 1.0, 1.020, 1.170]
-    y = [1.12, 1.0, 0.979, 0.895]
+    tr2w_2 = get_component(Transformer2W, sys, "BUS 109-BUS 104-i_1")
+    suppl_attr_tr2w_2 = get_supplemental_attributes(tr2w_2)[1]
+    @test get_table_number(suppl_attr_tr2w_2) == 1
+    @test get_impedance_correction_curve(suppl_attr_tr2w_2).points[1] ==
+    (x = 0.88, y = 1.12)
+    @test get_impedance_correction_curve(suppl_attr_tr2w_2).points[end] ==
+    (x = 1.17, y = 0.895)
+    @test get_transformer_winding(suppl_attr_tr2w_2) == WindingCategory.TR2W_WINDING
+    @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
+        TransformerControlMode.TAP_RATIO
 
-    pwl2w = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
-    ict2w = PSY.ImpedanceCorrectionData(;
-        table_number = 1,
-        impedance_correction_curve = pwl2w,
-        transformer_winding = WindingCategory.TR2W_WINDING.value,
-        transformer_control_mode = if all(
-            PSY.PSSE_PARSER_TAP_RATIO_LBOUND .<= x .<= PSY.PSSE_PARSER_TAP_RATIO_UBOUND,
-        )
-            TransformerControlMode.TAP_RATIO.value
-        else
-            TransformerControlMode.PHASE_SHIFT_ANGLE.value
-        end,
-    )
+    tr3w_1 = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
+    suppl_attr_tr3w_1 = collect(get_supplemental_attributes(tr3w_1))
+    sorted_icts = sort(suppl_attr_tr3w_1; by = x -> get_table_number(x))
 
-    add_supplemental_attribute!(sys, tr2w, ict2w)
+    @test get_table_number(sorted_icts[3]) == 6
+    @test get_impedance_correction_curve(sorted_icts[3]).points[1] ==
+          (x = -45.0, y = 1.725)
+    @test get_impedance_correction_curve(sorted_icts[3]).points[end] ==
+          (x = 45.0, y = 1.952)
+    @test get_transformer_winding(sorted_icts[3]) == WindingCategory.TERTIARY_WINDING
+    @test get_transformer_control_mode(sorted_icts[3]) ==
+          TransformerControlMode.PHASE_SHIFT_ANGLE
 
-    tr2w_supp_attr = get_supplemental_attributes(tr2w)
+    tr3w_2 = get_component(Transformer3W, sys, "BUS 113-BUS 110-BUS 114-i_1")
+    suppl_attr_tr3w_2 = collect(get_supplemental_attributes(tr3w_2))
+    sorted_icts = sort(suppl_attr_tr3w_2; by = x -> get_table_number(x))
 
-    @test PSY.get_table_number(tr2w_supp_attr[1]) == 1
-    @test PSY.impedance_correction_curve(tr2w_supp_attr[1])[1] ==
-          (x = 0.88, y = 1.12)
-    @test PSY.get_transformer_control_mode(tr2w_supp_attr[1]) ==
-          TransformerControlMode.TAP_RATIO
+    @test get_table_number(sorted_icts[2]) == 8
+    @test get_impedance_correction_curve(sorted_icts[2]).points[1] ==
+          (x = -60.0, y = 1.5718)
+    @test get_impedance_correction_curve(sorted_icts[2]).points[end] ==
+          (x = 60.0, y = 1.5718)
+    @test get_transformer_winding(sorted_icts[2]) == WindingCategory.SECONDARY_WINDING
+    @test get_transformer_control_mode(sorted_icts[2]) ==
+          TransformerControlMode.PHASE_SHIFT_ANGLE
 end
 
 @testset "PSSE System Serialize/Desearialize - Initial Test" begin
