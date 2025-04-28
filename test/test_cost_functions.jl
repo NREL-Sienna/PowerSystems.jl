@@ -393,3 +393,79 @@ end
     @test first(TimeSeries.values(get_shut_down(generator, op_cost))) ==
           first(data_float[initial_time])
 end
+
+@testset "ImportExportCost methods" begin
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc")
+
+    source = Source(;
+        name = "source",
+        available = true,
+        bus = get_component(ACBus, sys, "nodeC"),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        active_power_limits = (min = -2.0, max = 2.0),
+        reactive_power_limits = (min = -2.0, max = 2.0),
+        R_th = 0.01,
+        X_th = 0.02,
+        internal_voltage = 1.0,
+        internal_angle = 0.0,
+        base_power = 100.0,
+    )
+
+    source2 = Source(;
+        name = "source2",
+        available = true,
+        bus = get_component(ACBus, sys, "nodeD"),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        active_power_limits = (min = -2.0, max = 2.0),
+        reactive_power_limits = (min = -2.0, max = 2.0),
+        R_th = 0.01,
+        X_th = 0.02,
+        internal_voltage = 1.0,
+        internal_angle = 0.0,
+        base_power = 100.0,
+    )
+
+    import_curve = make_import_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [5.0, 10.0, 20.0, 40.0],
+    )
+
+    import_curve2 = make_import_curve(;
+        power = 200.0,
+        price = 25.0,
+    )
+
+    export_curve = make_export_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [40.0, 20.0, 10.0, 5.0],
+    )
+
+    export_curve2 = make_export_curve(;
+        power = 200.0,
+        price = 45.0,
+    )
+
+    @test PowerSystems.is_import_export_curve(import_curve)
+    @test PowerSystems.is_import_export_curve(import_curve2)
+    @test PowerSystems.is_import_export_curve(export_curve)
+    @test PowerSystems.is_import_export_curve(export_curve2)
+
+    ie_cost = ImportExportCost(;
+        import_offer_curves = import_curve,
+        export_offer_curves = export_curve,
+    )
+
+    ie_cost2 = ImportExportCost(;
+        import_offer_curves = import_curve2,
+        export_offer_curves = export_curve2,
+    )
+
+    set_operation_cost!(source, ie_cost)
+    set_operation_cost!(source2, ie_cost2)
+    add_component!(sys, source)
+    add_component!(sys, source2)
+    @test get_operation_cost(source) isa ImportExportCost
+    @test get_operation_cost(source2) isa ImportExportCost
+end

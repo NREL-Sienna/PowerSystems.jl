@@ -71,10 +71,11 @@ export ProductionVariableCostCurve, CostCurve, FuelCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
-export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
+export make_import_curve, make_export_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 export set_shut_down!
 export get_curtailment_cost
@@ -417,6 +418,10 @@ export get_decremental_offer_curves, set_decremental_offer_curves!
 export get_incremental_initial_input, set_incremental_initial_input!
 export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
+export get_import_offer_curves, set_import_offer_curves!
+export get_export_offer_curves, set_export_offer_curves!
+export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
+export get_energy_export_weekly_limit, set_energy_export_weekly_limit!
 export get_services_bid
 export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
@@ -767,6 +772,7 @@ include("models/OuterControl.jl")
 # Costs
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
 include("models/cost_functions/LoadCost.jl")
 include("models/cost_functions/RenewableGenerationCost.jl")

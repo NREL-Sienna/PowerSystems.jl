@@ -18321,7 +18321,7 @@
         },
         {
             "struct_name": "Source",
-            "docstring": "An infinite bus with a constant voltage output.\n\nCommonly used in dynamics simulations to represent a very large machine on a single bus",
+            "docstring": "An infinite bus with a constant voltage output.\n\nCommonly used in dynamics simulations to represent a very large machine on a single bus or for the representation of import/exports in operational simulations",
             "fields": [
                 {
                     "null_value": "init",
@@ -18347,6 +18347,7 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "default": "0.0",
                     "needs_conversion": true
                 },
                 {
@@ -18354,13 +18355,32 @@
                     "comment": "Initial reactive power set point of the unit (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
+                    "default": "0.0",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true
+                },
+                {
+                    "name": "reactive_power_limits",
+                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
+                    "validation_action": "warn",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}",
+                    "default": "(min=0.0, max=0.0)",
                     "needs_conversion": true
                 },
                 {
                     "name": "R_th",
-                    "comment": "Source Thevenin resistance",
+                    "comment": "Source Thevenin resistance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)",
                     "null_value": 0,
                     "data_type": "Float64",
+                    "default": "0.0",
                     "valid_range": {
                         "min": 0,
                         "max": null
@@ -18368,8 +18388,9 @@
                 },
                 {
                     "name": "X_th",
-                    "comment": "Source Thevenin reactance",
+                    "comment": "Source Thevenin reactance. [See here:](https://en.wikipedia.org/wiki/Thevenins_theorem)",
                     "null_value": 0,
+                    "default": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": 0,
@@ -18400,6 +18421,13 @@
                     "null_value": 0,
                     "data_type": "Float64",
                     "default": "100.0"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "ImportExportCost(nothing)",
+                    "data_type": "ImportExportCost",
+                    "default": "ImportExportCost(nothing)",
+                    "comment": "[`ImportExportCost`](@ref) of the source."
                 },
                 {
                     "name": "dynamic_injector",
