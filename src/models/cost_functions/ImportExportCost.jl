@@ -101,7 +101,7 @@ function make_import_export_curve(
 end
 
 """
-Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a ImportExportCost from a
+Make a CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in an ImportExportCost from a
 vector of power values, a vector of costs, and an optional units system.
 
 # Examples
@@ -156,7 +156,7 @@ function make_import_export_curve(;
 end
 
 """
-Make an import CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a ImportExportCost from a
+Make an import CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in an ImportExportCost from a
 vector of power values, a vector of costs, and an optional units system.
 
 # Examples
@@ -188,7 +188,7 @@ function make_import_curve(
 end
 
 """
-Make a CostCurve{PiecewiseIncrementalCurve} from suitable for inclusion in a ImportExportCost from a
+Make a CostCurve{PiecewiseIncrementalCurve} from suitable for inclusion in an ImportExportCost from
 a max import power, a single price and an optional units system. Assume the minimum import is 0.0
 
 # Examples
@@ -222,7 +222,7 @@ function make_import_curve(;
 end
 
 """
-Make an export CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in a ImportExportCost from a
+Make an export CostCurve{PiecewiseIncrementalCurve} suitable for inclusion in an ImportExportCost from a
 vector of power values, a vector of costs, and an optional units system.
 
 # Examples
@@ -254,7 +254,7 @@ function make_export_curve(
 end
 
 """
-Make a CostCurve{PiecewiseIncrementalCurve} from suitable for inclusion in a ImportExportCost from a
+Make a CostCurve{PiecewiseIncrementalCurve} from suitable for inclusion in an ImportExportCost from a
 a max export power, a single price and an optional units system. Assume the minimum export is 0.0.
 
 # Examples
