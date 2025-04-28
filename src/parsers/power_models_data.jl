@@ -167,7 +167,7 @@ Parses ITC data from a dictionary and constructs a lookup table
 of piecewise linear scaling functions.
 """
 function _impedance_correction_table_lookup(data::Dict)
-    ict_instances = Dict{Tuple{Int64, Int}, ImpedanceCorrectionData}()
+    ict_instances = Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData}()
 
     @info "Reading Impedance Correction Table data"
     if !haskey(data, "impedance_correction")
@@ -192,7 +192,7 @@ function _impedance_correction_table_lookup(data::Dict)
                     TransformerControlMode.PHASE_SHIFT_ANGLE
                 end
 
-            for winding_index in 0:(length(instances(WindingCategory)) - 1)
+            for winding_index in instances(WindingCategory)
                 ict_instances[(table_number, winding_index)] = ImpedanceCorrectionData(;
                     table_number = table_number,
                     impedance_correction_curve = pwl_data,
@@ -221,8 +221,8 @@ function _attach_single_ict!(
     name::String,
     d::Dict,
     table_key::String,
-    winding_idx::Int,
-    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
+    winding_idx::WindingCategory,
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     if haskey(d, table_key)
         table_number = d[table_key]
@@ -244,7 +244,7 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer2W,
     name::String,
     d::Dict,
-    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     _attach_single_ict!(
         sys,
@@ -252,7 +252,7 @@ function _attach_impedance_correction_tables!(
         name,
         d,
         "correction_table",
-        0,
+        WindingCategory.TR2W_WINDING,
         ict_instances,
     )
 end
@@ -265,13 +265,15 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer3W,
     name::String,
     d::Dict,
-    ict_instances::Dict{Tuple{Int64, Int64}, ImpedanceCorrectionData},
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     winding_names = ["primary", "secondary", "tertiary"]
 
-    for idx in 1:(length(instances(WindingCategory)) - 1)
+    for (idx, winding_category) in enumerate(instances(WindingCategory))
+        (winding_catory == WindingCategory.TR2W_WINDING) && continue
+        println(idx, " ", winding_category)
         key = "$(winding_names[idx])_correction_table"
-        _attach_single_ict!(sys, transformer, name, d, key, idx, ict_instances)
+        _attach_single_ict!(sys, transformer, name, d, key, winding_category, ict_instances)
     end
 end
 

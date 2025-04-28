@@ -113,23 +113,6 @@ function FACTSControlDevice(
     )
 end
 
-"""Allows construction of Impedance Correction Table data with control modes and winding association."""
-function ImpedanceCorrectionData(
-    table_number,
-    impedance_correction_curve,
-    transformer_winding::String,
-    transformer_control_mode::String,
-    internal = InfrastructureSystemsInternal(),
-)
-    return ImpedanceCorrectionData(
-        table_number,
-        impedance_correction_curve,
-        get_enum_value(WindingCategory, transformer_winding),
-        get_enum_value(TransformerControlMode, transformer_control_mode),
-        internal,
-    )
-end
-
 """Allows construction of a reserve from an iterator."""
 function ConstantReserve(
     name,
