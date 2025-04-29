@@ -18970,6 +18970,96 @@
             "supertype": "DynamicInjection"
         }
     ],
-    "struct_validation_descriptors": [
+   "struct_validation_descriptors": [
+        {
+            "struct_name": "DynamicGenerator",
+            "docstring": "",
+            "fields": [
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "ω_ref"
+                },
+                {
+                    "name": "machine"
+                },
+                {
+                    "name": "shaft"
+                },
+                {
+                    "name": "avr"
+                },
+                {
+                    "name": "prime_mover"
+                },
+                {
+                    "name": "pss"
+                },
+                {
+                    "name": "base_power"
+                },
+                {
+                    "name": "n_states"
+                },
+                {
+                    "name": "states"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        },
+        {
+            "struct_name": "DynamicInverter",
+            "docstring": "",
+            "fields": [
+                {
+                    "name": "name"
+                },
+                {
+                    "name": "ω_ref"
+                },
+                {
+                    "name": "converter"
+                },
+                {
+                    "name": "outer_control"
+                },
+                {
+                    "name": "inner_control"
+                },
+                {
+                    "name": "dc_source"
+                },
+                {
+                    "name": "freq_estimator"
+                },
+                {
+                    "name": "filter"
+                },
+                {
+                    "name": "limiter"
+                },
+                {
+                    "name": "base_power"
+                },
+                {
+                    "name": "n_states"
+                },
+                {
+                    "name": "states"
+                },
+                {
+                    "name": "ext"
+                },
+                {
+                    "name": "internal"
+                }
+            ]
+        }
     ]
 }
