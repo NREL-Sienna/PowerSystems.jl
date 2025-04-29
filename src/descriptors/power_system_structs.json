@@ -18970,7 +18970,7 @@
             "supertype": "DynamicInjection"
         }
     ],
-   "struct_validation_descriptors": [
+    "struct_validation_descriptors": [
         {
             "struct_name": "DynamicGenerator",
             "docstring": "",
