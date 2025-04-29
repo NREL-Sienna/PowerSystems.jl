@@ -17,6 +17,8 @@ The `variable` cost is a required parameter, but `zero(CostCurve)` can be used t
     variable::CostCurve
     "(default of 0) Cost of curtailing power represented as a [`CostCurve`](@ref)"
     curtailment_cost::CostCurve = zero(CostCurve)
+    "Fixed cost of keeping the unit online. For some cost representations this field can be duplicative"
+    fixed::Float64 = 0.0
 end
 
 RenewableGenerationCost(variable) = RenewableGenerationCost(; variable)
@@ -28,8 +30,12 @@ RenewableGenerationCost(::Nothing) = RenewableGenerationCost(zero(CostCurve))
 get_variable(value::RenewableGenerationCost) = value.variable
 """Get [`RenewableGenerationCost`](@ref) `curtailment_cost`."""
 get_curtailment_cost(value::RenewableGenerationCost) = value.curtailment_cost
+"""Get [`RenewableGenerationCost`](@ref) `fixed`."""
+get_fixed(value::RenewableGenerationCost) = value.fixed
 
 """Set [`RenewableGenerationCost`](@ref) `variable`."""
 set_variable!(value::RenewableGenerationCost, val) = value.variable = val
 """Set [`RenewableGenerationCost`](@ref) `curtailment_cost`."""
 set_curtailment_cost!(value::RenewableGenerationCost, val) = value.curtailment_cost = val
+"""Set [`RenewableGenerationCost`](@ref) `fixed`."""
+set_fixed!(value::RenewableGenerationCost, val) = value.fixed = val
