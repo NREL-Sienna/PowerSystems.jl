@@ -273,7 +273,7 @@ end
 
     tr3w_2 = get_component(Transformer3W, sys, "BUS 113-BUS 110-BUS 114-i_1")
     suppl_attr_tr3w_2 = collect(get_supplemental_attributes(tr3w_2))
-    
+
     filtered_primary_tr3w_2 = only(
         filter(
             x -> get_transformer_winding(x) == WindingCategory.PRIMARY_WINDING,
@@ -282,12 +282,11 @@ end
     )
     @test get_table_number(filtered_primary_tr3w_2) == 9
     @test get_points(get_impedance_correction_curve(filtered_primary_tr3w_2))[1] ==
-            (x = -40.0, y = 1.4)
+          (x = -40.0, y = 1.4)
     @test get_points(get_impedance_correction_curve(filtered_primary_tr3w_2))[end] ==
-            (x = 40.0, y = 1.4)
+          (x = 40.0, y = 1.4)
     @test get_transformer_control_mode(filtered_primary_tr3w_2) ==
-            TransformerControlMode.PHASE_SHIFT_ANGLE
-
+          TransformerControlMode.PHASE_SHIFT_ANGLE
 end
 
 @testset "PSSE System Serialize/Desearialize - Initial Test" begin
