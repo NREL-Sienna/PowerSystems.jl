@@ -15,7 +15,7 @@ This file is auto-generated. Do not edit.
         active_power_limits::MinMax
         reactive_power_limits::Union{Nothing, MinMax}
         outflow_limits::Union{Nothing, MinMax}
-        powerhouse_height::Float64
+        powerhouse_elevation::Float64
         ramp_limits::Union{Nothing, UpDown}
         time_limits::Union{Nothing, UpDown}
         base_power::Float64
@@ -41,7 +41,7 @@ A hydropower generator that needs to be attached to a reservoir, suitable for mo
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `outflow_limits::Union{Nothing, MinMax}`: Turbine outflow limits in m3/s. Set to `Nothing` if not applicable
-- `powerhouse_height::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
+- `powerhouse_elevation::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -74,7 +74,7 @@ mutable struct HydroTurbine <: HydroGen
     "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable"
     outflow_limits::Union{Nothing, MinMax}
     "Height level in meters above the sea level of the powerhouse on which the turbine is installed."
-    powerhouse_height::Float64
+    powerhouse_elevation::Float64
     "ramp up and ramp down limits in MW/min"
     ramp_limits::Union{Nothing, UpDown}
     "Minimum up and Minimum down time limits in hours"
@@ -99,12 +99,12 @@ mutable struct HydroTurbine <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_height, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_height, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_height, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_height, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
+function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -119,7 +119,7 @@ function HydroTurbine(::Nothing)
         active_power_limits=(min=0.0, max=0.0),
         reactive_power_limits=nothing,
         outflow_limits=nothing,
-        powerhouse_height=0.0,
+        powerhouse_elevation=0.0,
         ramp_limits=nothing,
         time_limits=nothing,
         base_power=0.0,
@@ -151,8 +151,8 @@ get_active_power_limits(value::HydroTurbine) = get_value(value, value.active_pow
 get_reactive_power_limits(value::HydroTurbine) = get_value(value, value.reactive_power_limits)
 """Get [`HydroTurbine`](@ref) `outflow_limits`."""
 get_outflow_limits(value::HydroTurbine) = value.outflow_limits
-"""Get [`HydroTurbine`](@ref) `powerhouse_height`."""
-get_powerhouse_height(value::HydroTurbine) = value.powerhouse_height
+"""Get [`HydroTurbine`](@ref) `powerhouse_elevation`."""
+get_powerhouse_elevation(value::HydroTurbine) = value.powerhouse_elevation
 """Get [`HydroTurbine`](@ref) `ramp_limits`."""
 get_ramp_limits(value::HydroTurbine) = get_value(value, value.ramp_limits)
 """Get [`HydroTurbine`](@ref) `time_limits`."""
@@ -192,8 +192,8 @@ set_active_power_limits!(value::HydroTurbine, val) = value.active_power_limits =
 set_reactive_power_limits!(value::HydroTurbine, val) = value.reactive_power_limits = set_value(value, val)
 """Set [`HydroTurbine`](@ref) `outflow_limits`."""
 set_outflow_limits!(value::HydroTurbine, val) = value.outflow_limits = val
-"""Set [`HydroTurbine`](@ref) `powerhouse_height`."""
-set_powerhouse_height!(value::HydroTurbine, val) = value.powerhouse_height = val
+"""Set [`HydroTurbine`](@ref) `powerhouse_elevation`."""
+set_powerhouse_elevation!(value::HydroTurbine, val) = value.powerhouse_elevation = val
 """Set [`HydroTurbine`](@ref) `ramp_limits`."""
 set_ramp_limits!(value::HydroTurbine, val) = value.ramp_limits = set_value(value, val)
 """Set [`HydroTurbine`](@ref) `time_limits`."""

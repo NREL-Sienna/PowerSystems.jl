@@ -444,7 +444,7 @@ export get_inflow
 export get_outflow
 export get_level_targets
 export get_travel_time
-export get_intake_height
+export get_intake_elevation
 export get_head_to_volume_factor
 export get_level_data_type
 export set_initial_level!
@@ -453,7 +453,7 @@ export set_storage_level_limits!
 export set_outflow!
 export set_inflow!
 export set_travel_time!
-export set_intake_height!
+export set_intake_elevation!
 export set_head_to_volume_factor!
 export set_spillage_limits!
 export set_level_data_type!

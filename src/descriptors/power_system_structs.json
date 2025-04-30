@@ -4431,7 +4431,7 @@
                     "data_type": "Union{Nothing, MinMax}"
                 },
                 {
-                    "name": "powerhouse_height",
+                    "name": "powerhouse_elevation",
                     "comment": "Height level in meters above the sea level of the powerhouse on which the turbine is installed.",
                     "null_value": "0.0",
                     "data_type": "Float64",
