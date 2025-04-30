@@ -1711,13 +1711,6 @@ function remove_supplemental_attribute!(
 end
 
 """
-Remove the supplemental attribute from the system and all attached components.
-"""
-function remove_supplemental_attribute!(sys::System, attribute::IS.SupplementalAttribute)
-    return IS.remove_supplemental_attribute!(sys.data, attribute)
-end
-
-"""
 Remove all supplemental attributes with the given type from the system.
 """
 function remove_supplemental_attributes!(
