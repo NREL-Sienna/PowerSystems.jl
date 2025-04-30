@@ -2749,6 +2749,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "is_conforming",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Int64",
+                    "default": "1.0"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -2911,6 +2917,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "is_conforming",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Int64",
+                    "default": "1.0"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3025,6 +3037,12 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "is_conforming",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Int64",
+                    "default": "1.0"
                 },
                 {
                     "name": "services",
