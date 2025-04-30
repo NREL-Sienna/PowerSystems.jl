@@ -267,11 +267,9 @@ function _attach_impedance_correction_tables!(
     d::Dict,
     ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
-    winding_names = ["primary", "secondary", "tertiary"]
-
-    for (idx, winding_category) in enumerate(instances(WindingCategory))
-        (winding_category == WindingCategory.TR2W_WINDING) && continue
-        key = "$(winding_names[idx - (idx > 1 ? 1 : 0)])_correction_table"
+    for winding_category in instances(WindingCategory)
+        winding_category == WindingCategory.TR2W_WINDING && continue
+        key = "$(WINDING_NAMES[winding_category])_correction_table"
         _attach_single_ict!(sys, transformer, name, d, key, winding_category, ict_instances)
     end
 end
