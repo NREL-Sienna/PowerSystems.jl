@@ -9,9 +9,13 @@
         active_power_limits = (min = 0, max = 1),
         reactive_power_limits = nothing,
         outflow_limits = nothing,
+        powerhouse_elevation = 0.0,
         ramp_limits = nothing,
         time_limits = nothing,
     )
+
+    set_powerhouse_elevation!(turbine, 10.0)
+    @test get_powerhouse_elevation(turbine) == 10.0
 end
 
 @testset "Test Hydro Reservoir constructors and getters" begin
@@ -25,13 +29,18 @@ end
         outflow = 0.0,
         level_targets = 0.0,
         travel_time = 0.0,
+        intake_elevation = 0.0,
         head_to_volume_factor = 0.0,
     )
     @test get_storage_level_limits(reservoir) == (min = 0.0, max = 1.0)
     @test get_initial_level(reservoir) == 1.0
-    @test get_level_data_type(reservoir) == ReservoirDataType.VOLUME
+    @test get_level_data_type(reservoir) == ReservoirDataType.USABLE_VOLUME
     @test get_inflow(reservoir) == 0.0
     @test get_outflow(reservoir) == 0.0
+    @test get_intake_elevation(reservoir) == 0.0
+    @test get_head_to_volume_factor(reservoir) == 0.0
+    set_intake_elevation!(reservoir, 10.0)
+    @test get_intake_elevation(reservoir) == 10.0
 end
 
 @testset "Test Hydro Reservoir constructors and setters" begin

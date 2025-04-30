@@ -657,6 +657,7 @@ export get_power_factor_weighting_fraction_to
 export get_power_gate_openings
 export get_power_mode
 export get_power_trajectory
+export get_powerhouse_elevation
 export get_primary_secondary_arc
 export get_primary_shunt
 export get_primary_tertiary_arc
@@ -1314,6 +1315,7 @@ export set_power_factor_weighting_fraction_to!
 export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
+export set_powerhouse_elevation!
 export set_primary_secondary_arc!
 export set_primary_shunt!
 export set_primary_tertiary_arc!
