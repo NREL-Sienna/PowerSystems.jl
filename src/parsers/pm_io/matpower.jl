@@ -216,6 +216,7 @@ function _parse_matpower_string(data_string::String)
             bus_data = row_to_typed_dict(bus_row, _mp_bus_columns)
             bus_data["index"] = check_type(Int, bus_row[1])
             bus_data["source_id"] = ["bus", bus_data["index"]]
+            bus_data["is_conforming"] = true
             push!(buses, bus_data)
             if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES
                 pv_bus_lookup[bus_data["index"]] = bus_data
@@ -509,6 +510,7 @@ function _split_loads_shunts!(data::Dict{String, Any})
                     Dict{String, Any}(
                         "pd" => bus["pd"],
                         "qd" => bus["qd"],
+                        "is_conforming" => true,
                         "load_bus" => bus["bus_i"],
                         "status" => convert(Int8, bus["bus_type"] != 4),
                         "index" => load_num,
