@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct ExponentialLoad <: StaticLoad
         name::String
         available::Bool
+        is_conforming::Bool
         bus::ACBus
         active_power::Float64
         reactive_power::Float64
@@ -16,7 +17,6 @@ This file is auto-generated. Do not edit.
         base_power::Float64
         max_active_power::Float64
         max_reactive_power::Float64
-        is_conforming::Int64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -30,6 +30,7 @@ An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `is_conforming::Bool`: Indicates whether the specified load is conforming or non-conforming.
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Active power coefficient, P0 (MW)
 - `reactive_power::Float64`: Reactive power coefficient, Q0 (MVAR)
@@ -38,7 +39,6 @@ An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as 
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `is_conforming::Int64`: (default: `1.0`) Indicates whether the specified load is conforming or non-conforming.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -49,6 +49,8 @@ mutable struct ExponentialLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Indicates whether the specified load is conforming or non-conforming."
+    is_conforming::Bool
     "Bus that this component is connected to"
     bus::ACBus
     "Active power coefficient, P0 (MW)"
@@ -65,8 +67,6 @@ mutable struct ExponentialLoad <: StaticLoad
     max_active_power::Float64
     "Maximum reactive power (MVAR) that this load can demand"
     max_reactive_power::Float64
-    "Indicates whether the specified load is conforming or non-conforming."
-    is_conforming::Int64
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -77,38 +77,20 @@ mutable struct ExponentialLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, is_conforming=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, is_conforming, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function ExponentialLoad(name, available, is_conforming, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    ExponentialLoad(name, available, is_conforming, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function ExponentialLoad(; name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, is_conforming=1.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    ExponentialLoad(name, available, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, is_conforming, services, dynamic_injector, ext, internal, )
-end
-
-# Constructor for demo purposes; non-functional.
-function ExponentialLoad(::Nothing)
-    ExponentialLoad(;
-        name="init",
-        available=false,
-        bus=ACBus(nothing),
-        active_power=0.0,
-        reactive_power=0.0,
-        α=0.0,
-        β=0.0,
-        base_power=0.0,
-        max_active_power=0.0,
-        max_reactive_power=0.0,
-        is_conforming=1.0,
-        services=Device[],
-        dynamic_injector=nothing,
-        ext=Dict{String, Any}(),
-    )
+function ExponentialLoad(; name, available, is_conforming, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ExponentialLoad(name, available, is_conforming, bus, active_power, reactive_power, α, β, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
 end
 
 """Get [`ExponentialLoad`](@ref) `name`."""
 get_name(value::ExponentialLoad) = value.name
 """Get [`ExponentialLoad`](@ref) `available`."""
 get_available(value::ExponentialLoad) = value.available
+"""Get [`ExponentialLoad`](@ref) `is_conforming`."""
+get_is_conforming(value::ExponentialLoad) = value.is_conforming
 """Get [`ExponentialLoad`](@ref) `bus`."""
 get_bus(value::ExponentialLoad) = value.bus
 """Get [`ExponentialLoad`](@ref) `active_power`."""
@@ -125,8 +107,6 @@ get_base_power(value::ExponentialLoad) = value.base_power
 get_max_active_power(value::ExponentialLoad) = get_value(value, value.max_active_power)
 """Get [`ExponentialLoad`](@ref) `max_reactive_power`."""
 get_max_reactive_power(value::ExponentialLoad) = get_value(value, value.max_reactive_power)
-"""Get [`ExponentialLoad`](@ref) `is_conforming`."""
-get_is_conforming(value::ExponentialLoad) = value.is_conforming
 """Get [`ExponentialLoad`](@ref) `services`."""
 get_services(value::ExponentialLoad) = value.services
 """Get [`ExponentialLoad`](@ref) `dynamic_injector`."""
@@ -138,6 +118,8 @@ get_internal(value::ExponentialLoad) = value.internal
 
 """Set [`ExponentialLoad`](@ref) `available`."""
 set_available!(value::ExponentialLoad, val) = value.available = val
+"""Set [`ExponentialLoad`](@ref) `is_conforming`."""
+set_is_conforming!(value::ExponentialLoad, val) = value.is_conforming = val
 """Set [`ExponentialLoad`](@ref) `bus`."""
 set_bus!(value::ExponentialLoad, val) = value.bus = val
 """Set [`ExponentialLoad`](@ref) `active_power`."""
@@ -154,8 +136,6 @@ set_base_power!(value::ExponentialLoad, val) = value.base_power = val
 set_max_active_power!(value::ExponentialLoad, val) = value.max_active_power = set_value(value, val)
 """Set [`ExponentialLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::ExponentialLoad, val) = value.max_reactive_power = set_value(value, val)
-"""Set [`ExponentialLoad`](@ref) `is_conforming`."""
-set_is_conforming!(value::ExponentialLoad, val) = value.is_conforming = val
 """Set [`ExponentialLoad`](@ref) `services`."""
 set_services!(value::ExponentialLoad, val) = value.services = val
 """Set [`ExponentialLoad`](@ref) `ext`."""
