@@ -68,43 +68,43 @@ end
     @test length(get_components(Transformer3W, sys5)) == 5
 
     @info "Testing Switched Shunt Parsing"
-    @test get_available(get_component(SwitchedAdmittance, sys3, "ALPINE 0_1030-9")) == false
+    @test get_available(get_component(SwitchedAdmittance, sys3, "1030-9")) == false
     @test only(
-        get_Y_increase(get_component(SwitchedAdmittance, sys3, "LAMPASAS 0_3147-42")),
+        get_Y_increase(get_component(SwitchedAdmittance, sys3, "3147-42")),
     ).im ==
           0.35
     @test get_admittance_limits(
-        get_component(SwitchedAdmittance, sys3, "LAMPASAS 0_3147-42"),
+        get_component(SwitchedAdmittance, sys3, "3147-42"),
     ).min ==
           1.03
     @test only(
         get_number_of_steps(
-            get_component(SwitchedAdmittance, sys3, "HOUSTON 10 0_7075-119"),
+            get_component(SwitchedAdmittance, sys3, "7075-119"),
         ),
     ) ==
           1
     @test only(
-        get_Y_increase(get_component(SwitchedAdmittance, sys3, "HOUSTON 10 0_7075-119")),
+        get_Y_increase(get_component(SwitchedAdmittance, sys3, "7075-119")),
     ).im ==
           3.425
 
-    @test get_available(get_component(SwitchedAdmittance, sys4, "FAV PLACE 05_1005-2")) ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1005-2")) ==
           true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "FAV PLACE 05_1005-2")) == 0.06im
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1005-2")) == 0.06im
     @test get_admittance_limits(
-        get_component(SwitchedAdmittance, sys4, "FAV PLACE 05_1005-2"),
+        get_component(SwitchedAdmittance, sys4, "1005-2"),
     ).max ==
           1.045
     @test only(
-        get_Y_increase(get_component(SwitchedAdmittance, sys4, "FAV PLACE 05_1005-2")),
+        get_Y_increase(get_component(SwitchedAdmittance, sys4, "1005-2")),
     ).im == 0.06
 
     @test length(get_components(SwitchedAdmittance, sys4)) == 2
-    @test get_available(get_component(SwitchedAdmittance, sys4, "FAV SPOT 03_1003-1")) ==
+    @test get_available(get_component(SwitchedAdmittance, sys4, "1003-1")) ==
           true
-    @test get_Y(get_component(SwitchedAdmittance, sys4, "FAV SPOT 03_1003-1")) == 0.038im
+    @test get_Y(get_component(SwitchedAdmittance, sys4, "1003-1")) == 0.038im
     @test get_admittance_limits(
-        get_component(SwitchedAdmittance, sys4, "FAV SPOT 03_1003-1"),
+        get_component(SwitchedAdmittance, sys4, "1003-1"),
     ).min ==
           0.95
 
@@ -247,7 +247,7 @@ end
     @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
           TransformerControlMode.TAP_RATIO
 
-    tr2w_3 = get_component(Transformer2W, network, "BUS 106-BUS 105-i_1")
+    tr2w_3 = get_component(Transformer2W, sys, "BUS 106-BUS 105-i_1")
     suppl_attr_tr2w_3 = only(get_supplemental_attributes(tr2w_3))
     @test get_table_number(suppl_attr_tr2w_3) == 7
     @test get_points(get_impedance_correction_curve(suppl_attr_tr2w_3))[1] ==
@@ -307,7 +307,7 @@ end
           TransformerControlMode.PHASE_SHIFT_ANGLE
 end
 
-@testset "PSSE System Serialize/Desearialize - Initial Test" begin
+@testset "PSSE System Serialization/Desearialization" begin
     original_sys = build_system(PSSEParsingTestSystems, "pti_case30_sys")
     serialize_sys_path = joinpath(tempdir(), "test_system.json")
     to_json(original_sys, serialize_sys_path; force = true)

@@ -33,10 +33,10 @@ checksys = false
 
     sys5f = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        loads5(nodes_5),
-        shiftable5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        shiftable5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5f)
