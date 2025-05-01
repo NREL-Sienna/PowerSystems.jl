@@ -234,7 +234,7 @@ function _attach_single_ict!(
             ict = ict_instances[cache_key]
             add_supplemental_attribute!(sys, transformer, ict)
         else
-            @warn "No correction table associated with transformer $name for winding $winding_idx."
+            @info "No correction table associated with transformer $name for winding $winding_idx."
         end
     end
 end
