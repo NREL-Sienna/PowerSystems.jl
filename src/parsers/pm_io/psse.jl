@@ -395,6 +395,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["py"] = pop!(load, "YP")
             sub_data["qy"] = pop!(load, "YQ")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
+            sub_data["is_conforming"] = pop!(load, "SCALE")
             sub_data["status"] = pop!(load, "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
             if import_all

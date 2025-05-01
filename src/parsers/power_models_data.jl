@@ -456,6 +456,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_active_power = d["pd"],
         max_reactive_power = d["qd"],
         base_power = sys_mbase,
+        is_conforming = Bool(d["is_conforming"]),
     )
 end
 
@@ -478,6 +479,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_impedance_active_power = d["py"],
         max_impedance_reactive_power = d["qy"],
         base_power = sys_mbase,
+        is_conforming = Bool(d["is_conforming"]),
     )
 end
 
