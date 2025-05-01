@@ -84,7 +84,7 @@ function DiscreteControlledACBranch(
     )
 end
 
-"""Allows construction with bus type specified as a string for legacy code."""
+"""Allows construction of FACT Devices with control modes."""
 function FACTSControlDevice(
     name,
     available,

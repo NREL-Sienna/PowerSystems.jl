@@ -270,6 +270,16 @@ export get_mean_time_to_recovery
 export get_outage_transition_probability
 export get_outage_schedule
 
+# Impedance Correction Data
+export ImpedanceCorrectionData
+export WindingCategory
+export TransformerControlMode
+
+export get_table_number
+export get_impedance_correction_curve
+export get_transformer_winding
+export get_transformer_control_mode
+
 export Service
 export AbstractReserve
 export Reserve
@@ -801,6 +811,7 @@ include("models/SalientPoleExponential.jl")
 include("models/SalientPoleQuadratic.jl")
 include("models/dynamic_branch.jl")
 
+include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
 
