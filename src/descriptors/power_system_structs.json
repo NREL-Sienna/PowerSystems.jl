@@ -5234,8 +5234,8 @@
             "supertype": "ThermalGen"
         },
         {
-            "struct_name": "ThermalStandard",
-            "docstring": "A thermal generator, such as a fossil fuel and nuclear generator.\n\nThis is a standard representation with options to include a minimum up time, minimum down time, and ramp limits. For a more detailed representation the start-up and shut-down processes, including hot starts, see [`ThermalMultiStart`](@ref)",
+            "struct_name": "SynchronousCondenser",
+            "docstring": "A Synchronous Machine connected to the system to provide inertia or reactive power support",
             "fields": [
                 {
                     "null_value": "init",
