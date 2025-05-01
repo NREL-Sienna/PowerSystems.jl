@@ -32,7 +32,7 @@ A Synchronous Machine connected to the system to provide inertia or reactive pow
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
-- `active_power_losses::Float64`: (default: `0.0`) Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used, validation range: `(0, nothing)`
+- `active_power_losses::Float64`: (default: `0.0`) Active Power Loss incurred by having the unit online., validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -55,7 +55,7 @@ mutable struct SynchronousCondenser <: StaticInjection
     base_power::Float64
     "Set to `true` if the unit is must run"
     must_run::Bool
-    "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
+    "Active Power Loss incurred by having the unit online."
     active_power_losses::Float64
     "Services that this device contributes to"
     services::Vector{Service}
