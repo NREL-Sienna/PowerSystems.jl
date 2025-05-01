@@ -2705,7 +2705,6 @@ function convert_component!(
         constant_reactive_power = get_reactive_power(old_load),
         max_constant_active_power = get_max_active_power(old_load),
         max_constant_reactive_power = get_max_active_power(old_load),
-        is_conforming = get_is_conforming(old_load),
         dynamic_injector = get_dynamic_injector(old_load),
         internal = _copy_internal_for_conversion(old_load),
         services = Device[],

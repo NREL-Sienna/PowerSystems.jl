@@ -594,7 +594,6 @@ export get_inverter_tap_setting
 export get_inverter_tap_step
 export get_inverter_transformer_ratio
 export get_inverter_xc
-export get_is_conforming
 export get_is_filter_differential
 export get_k1
 export get_k2
@@ -1253,7 +1252,6 @@ export set_inverter_tap_setting!
 export set_inverter_tap_step!
 export set_inverter_transformer_ratio!
 export set_inverter_xc!
-export set_is_conforming!
 export set_is_filter_differential!
 export set_k1!
 export set_k2!

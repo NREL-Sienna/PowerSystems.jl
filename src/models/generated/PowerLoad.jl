@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
     mutable struct PowerLoad <: StaticLoad
         name::String
         available::Bool
-        is_conforming::Bool
         bus::ACBus
         active_power::Float64
         reactive_power::Float64
@@ -28,7 +27,6 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `is_conforming::Bool`: Indicates whether the specified load is conforming or non-conforming.
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW)
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR)
@@ -45,8 +43,6 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Indicates whether the specified load is conforming or non-conforming."
-    is_conforming::Bool
     "Bus that this component is connected to"
     bus::ACBus
     "Initial steady-state active power demand (MW)"
@@ -69,20 +65,35 @@ mutable struct PowerLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, is_conforming, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    PowerLoad(name, available, is_conforming, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, is_conforming, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, is_conforming, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
+function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
+end
+
+# Constructor for demo purposes; non-functional.
+function PowerLoad(::Nothing)
+    PowerLoad(;
+        name="init",
+        available=false,
+        bus=ACBus(nothing),
+        active_power=0.0,
+        reactive_power=0.0,
+        base_power=0.0,
+        max_active_power=0.0,
+        max_reactive_power=0.0,
+        services=Device[],
+        dynamic_injector=nothing,
+        ext=Dict{String, Any}(),
+    )
 end
 
 """Get [`PowerLoad`](@ref) `name`."""
 get_name(value::PowerLoad) = value.name
 """Get [`PowerLoad`](@ref) `available`."""
 get_available(value::PowerLoad) = value.available
-"""Get [`PowerLoad`](@ref) `is_conforming`."""
-get_is_conforming(value::PowerLoad) = value.is_conforming
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
 """Get [`PowerLoad`](@ref) `active_power`."""
@@ -106,8 +117,6 @@ get_internal(value::PowerLoad) = value.internal
 
 """Set [`PowerLoad`](@ref) `available`."""
 set_available!(value::PowerLoad, val) = value.available = val
-"""Set [`PowerLoad`](@ref) `is_conforming`."""
-set_is_conforming!(value::PowerLoad, val) = value.is_conforming = val
 """Set [`PowerLoad`](@ref) `bus`."""
 set_bus!(value::PowerLoad, val) = value.bus = val
 """Set [`PowerLoad`](@ref) `active_power`."""

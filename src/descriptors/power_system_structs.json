@@ -2704,11 +2704,6 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Bool"
-                },
-                {
                     "name": "bus",
                     "comment": "Bus that this component is connected to",
                     "null_value": "ACBus(nothing)",
@@ -2800,11 +2795,6 @@
                     "null_value": "false",
                     "name": "available",
                     "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
                     "data_type": "Bool"
                 },
                 {
@@ -2967,11 +2957,6 @@
                     "null_value": "false",
                     "name": "available",
                     "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
                     "data_type": "Bool"
                 },
                 {

@@ -8,7 +8,6 @@ This file is auto-generated. Do not edit.
     mutable struct StandardLoad <: StaticLoad
         name::String
         available::Bool
-        is_conforming::Bool
         bus::ACBus
         base_power::Float64
         constant_active_power::Float64
@@ -38,7 +37,6 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `is_conforming::Bool`: Indicates whether the specified load is conforming or non-conforming.
 - `bus::ACBus`: Bus that this component is connected to
 - `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
@@ -63,8 +61,6 @@ mutable struct StandardLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Indicates whether the specified load is conforming or non-conforming."
-    is_conforming::Bool
     "Bus that this component is connected to"
     bus::ACBus
     "Base power of the load (MVA) for [per unitization](@ref per_unit)"
@@ -103,20 +99,43 @@ mutable struct StandardLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function StandardLoad(name, available, is_conforming, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    StandardLoad(name, available, is_conforming, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function StandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function StandardLoad(; name, available, is_conforming, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    StandardLoad(name, available, is_conforming, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, internal, )
+function StandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, internal, )
+end
+
+# Constructor for demo purposes; non-functional.
+function StandardLoad(::Nothing)
+    StandardLoad(;
+        name="init",
+        available=false,
+        bus=ACBus(nothing),
+        base_power=0.0,
+        constant_active_power=0.0,
+        constant_reactive_power=0.0,
+        impedance_active_power=0.0,
+        impedance_reactive_power=0.0,
+        current_active_power=0.0,
+        current_reactive_power=0.0,
+        max_constant_active_power=0.0,
+        max_constant_reactive_power=0.0,
+        max_impedance_active_power=0.0,
+        max_impedance_reactive_power=0.0,
+        max_current_active_power=0.0,
+        max_current_reactive_power=0.0,
+        services=Device[],
+        dynamic_injector=nothing,
+        ext=Dict{String, Any}(),
+    )
 end
 
 """Get [`StandardLoad`](@ref) `name`."""
 get_name(value::StandardLoad) = value.name
 """Get [`StandardLoad`](@ref) `available`."""
 get_available(value::StandardLoad) = value.available
-"""Get [`StandardLoad`](@ref) `is_conforming`."""
-get_is_conforming(value::StandardLoad) = value.is_conforming
 """Get [`StandardLoad`](@ref) `bus`."""
 get_bus(value::StandardLoad) = value.bus
 """Get [`StandardLoad`](@ref) `base_power`."""
@@ -156,8 +175,6 @@ get_internal(value::StandardLoad) = value.internal
 
 """Set [`StandardLoad`](@ref) `available`."""
 set_available!(value::StandardLoad, val) = value.available = val
-"""Set [`StandardLoad`](@ref) `is_conforming`."""
-set_is_conforming!(value::StandardLoad, val) = value.is_conforming = val
 """Set [`StandardLoad`](@ref) `bus`."""
 set_bus!(value::StandardLoad, val) = value.bus = val
 """Set [`StandardLoad`](@ref) `base_power`."""
