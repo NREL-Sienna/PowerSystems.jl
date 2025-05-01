@@ -536,6 +536,7 @@ export get_dc_setpoint_to
 export get_dc_voltage_control_from
 export get_dc_voltage_control_to
 export get_delta_t
+export get_delta_winding_connection
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
@@ -658,9 +659,8 @@ export get_power_gate_openings
 export get_power_mode
 export get_power_trajectory
 export get_powerhouse_elevation
-export get_primary_secondary_arc
 export get_primary_shunt
-export get_primary_tertiary_arc
+export get_primary_star_arc
 export get_primary_turns_ratio
 export get_prime_mover_type
 export get_pump_efficiency
@@ -722,7 +722,7 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
-export get_secondary_tertiary_arc
+export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
@@ -742,6 +742,7 @@ export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
+export get_tertiary_star_arc
 export get_tertiary_turns_ratio
 export get_tfh
 export get_tfl
@@ -1194,6 +1195,7 @@ export set_dc_setpoint_to!
 export set_dc_voltage_control_from!
 export set_dc_voltage_control_to!
 export set_delta_t!
+export set_delta_winding_connection!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
@@ -1316,9 +1318,8 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
-export set_primary_secondary_arc!
 export set_primary_shunt!
-export set_primary_tertiary_arc!
+export set_primary_star_arc!
 export set_primary_turns_ratio!
 export set_prime_mover_type!
 export set_pump_efficiency!
@@ -1380,7 +1381,7 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
-export set_secondary_tertiary_arc!
+export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
@@ -1400,6 +1401,7 @@ export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
+export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!
 export set_tfh!
 export set_tfl!
