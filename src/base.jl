@@ -2699,7 +2699,7 @@ function convert_component!(
     new_load = new_type(;
         name = get_name(old_load),
         available = get_available(old_load),
-        # conformity = get_conformity(old_load),
+        conformity = get_conformity(old_load),
         bus = get_bus(old_load),
         base_power = get_base_power(old_load),
         constant_active_power = get_active_power(old_load),
