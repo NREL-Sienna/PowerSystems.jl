@@ -37,6 +37,7 @@ include("HydroPumpedStorage.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
+include("SynchronousCondenser.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
 include("ConstantReserve.jl")
@@ -488,6 +489,7 @@ export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
 export get_active_power_limits_to
+export get_active_power_losses
 export get_admittance_limits
 export get_angle
 export get_angle_limits
@@ -1147,6 +1149,7 @@ export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
 export set_active_power_limits_to!
+export set_active_power_losses!
 export set_admittance_limits!
 export set_angle!
 export set_angle_limits!
