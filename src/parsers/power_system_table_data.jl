@@ -1246,7 +1246,7 @@ function make_hydro_generator(
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
 
-    if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
+    if gen_type == HydroEnergyReservoir || gen_type == HydroPumpTurbine
         if !haskey(data.category_to_df, InputCategory.STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
@@ -1284,8 +1284,8 @@ function make_hydro_generator(
                 initial_storage = storage.head.energy_level,
             )
 
-        elseif gen_type == HydroPumpedStorage
-            @debug "Creating $(gen.name) as HydroPumpedStorage" _group =
+        elseif gen_type == HydroPumpTurbine
+            @debug "Creating $(gen.name) as HydroPumpTurbine" _group =
                 IS.LOG_GROUP_PARSING
 
             pump_active_power_limits = (
@@ -1307,7 +1307,7 @@ function make_hydro_generator(
                 rampdncol = :pump_ramp_down,
             )
             pump_time_limits = make_timelimits(gen, :pump_min_up_time, :pump_min_down_time)
-            hydro_gen = HydroPumpedStorage(;
+            hydro_gen = HydroPumpTurbine(;
                 name = gen.name,
                 available = gen.available,
                 bus = bus,

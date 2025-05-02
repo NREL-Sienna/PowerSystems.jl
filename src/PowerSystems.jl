@@ -93,7 +93,7 @@ export HydroDispatch
 export HydroEnergyReservoir
 export HydroTurbine
 export HydroReservoir
-export HydroPumpedStorage
+export HydroPumpTurbine
 export InterconnectingConverter
 
 export RenewableGen
