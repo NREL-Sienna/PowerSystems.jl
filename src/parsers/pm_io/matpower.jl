@@ -216,7 +216,6 @@ function _parse_matpower_string(data_string::String)
             bus_data = row_to_typed_dict(bus_row, _mp_bus_columns)
             bus_data["index"] = check_type(Int, bus_row[1])
             bus_data["source_id"] = ["bus", bus_data["index"]]
-            bus_data["is_conforming"] = true
             push!(buses, bus_data)
             if bus_data["bus_type"] ∈ MP_FIX_VOLTAGE_BUSES
                 pv_bus_lookup[bus_data["index"]] = bus_data
@@ -469,6 +468,13 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
     # translate cost models
     _add_dcline_costs!(pm_data)
 
+    # Add default conformity field to loads in buses
+    for bus in pm_data["bus"]
+        if !haskey(bus, "conformity")
+            bus["conformity"] = 1
+        end
+    end
+
     # merge data tables
     _merge_bus_name_data!(pm_data)
     _merge_cost_data!(pm_data)
@@ -510,9 +516,9 @@ function _split_loads_shunts!(data::Dict{String, Any})
                     Dict{String, Any}(
                         "pd" => bus["pd"],
                         "qd" => bus["qd"],
-                        "is_conforming" => true,
                         "load_bus" => bus["bus_i"],
                         "status" => convert(Int8, bus["bus_type"] != 4),
+                        "conformity" => get(bus, "conformity", 1),
                         "index" => load_num,
                         "source_id" => ["bus", bus["bus_i"]],
                     ),
