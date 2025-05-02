@@ -1,13 +1,36 @@
 # [Building a System from CSV Files](@id system_from_csv)
 
+If you have input data on the component specifications and time series data formatted in
+CSV files, rather than a Matpower or PSS/e file that can be
+[parsed automatically](@ref pm_data), the basic formula to build a [`System`](@ref)
+manually is:
+
+ 1. Format all .csv data into row-column format, where there is a row for each component and a
+    column for each input parameter. Load each .csv into a `DataFrame`.
+ 2. Define a [`System`](@ref).
+ 3. Starting with the buses, write a `for` loop for each component `Type` to loop over the
+    `DataFrame`, using a constructor from `PowerSystems.jl`'s Model Library to define a
+    component for each row. Hard-code any required parameters that are missing in
+    your dataset. Use [`add_component!`](@ref) to add each component to the [`System`](@ref).
+ 4. Similarly, add cost and time series data either within each `for` loop, or after the
+    components have been defined using [`begin_time_series_update`](@ref).
+ 5. [Save your `System` to a JSON](@ref "Write, View, and Load Data with a JSON") once you are
+    finished
+
+The following example demonstrates this process for selected component
+types (e.g., [`ACBus`](@ref), [`ThermalStandard`](@ref), [`RenewableDispatch`](@ref)), but
+the same principles apply to build any of the components in `PowerSystems.jl`'s Model
+Library.
+
+Feel free to reuse the code below, ensuring that you customize the exact file names,
+data columns, column names, and hard-coded parameters in the `for` loops based on the data
+you have available.
+
 ## Prerequisites
 
-In this example, we show how to build a [`System`](@ref), assuming you have
-input data on the component specifications and time series data formatted in
-CSV files. Moreover, it is assumed that the CSV files are stored in a directory
-called `MyData`. These formatting expectations are more clearly specified in
-the following sections of this how-to, where the components and time series are
-built.
+In this example, it is assumed that the CSV files are stored in a directory
+called `MyData`. In each section below, ensure your data follows the row-column format
+before beginning, and that your data are in the given units.
 
 These are the depedencies needed for this how-to:
 
@@ -32,20 +55,14 @@ Begin by building the base [`System`](@ref) using the base power in MVA.
 
 ## Add Buses and Network Topology
 
-The first building block of a system are the buses. In this example, we assume
-that the component data for the buses are contained in a CSV file, `Buses.csv`.
-Each row is an individual bus, and there is a column for each input parameter:
+In this example, we assume that the component data for the buses are contained in a CSV
+file, `Buses.csv`. Each row is an individual bus, and there is a column for each input parameter:
 
 | Bus Number | BusType | Magnitude (p.u.) | Voltage-Max (p.u.) | Voltage-Min (p.u.) | Base Voltage (kV) | Region |
 |:---------- |:------- |:---------------- |:------------------ |:------------------ |:----------------- |:------ |
 | 1          | ref     | 1                | 1.06               | 0.94               | 138               | R1     |
-| 2          | ref     | 1                | 1.06               | 0.94               | 138               | R1     |
 | 3          | ref     | 1                | 1.06               | 0.94               | 345               | R2     |
 | ...        | ...     | ...              | ...                | ...                | ...               | ...    |
-
-Ensure your data follows this row-column format before beginning, and that your
-data are in the given units. Exact data columns and column names can be
-customized based on what you have available.
 
 Read in the contents of the CSV file `Buses.csv` to a data frame and customize
 the parameter names based on the column names in your CSV file.
@@ -176,7 +193,7 @@ end
 ```
 
 !!! warning
-
+    
     When defining a branch that isn't attached to a `System` yet, you must define the
     thermal rating of the transmission line [per-unitized in "SYSTEM_BASE"](@ref per_unit)
     using the base power of the `System` you plan to connect it to -- defined above as
@@ -229,7 +246,7 @@ constructor and data stored in the `thermal_gens` data frame, again customizing
 the `for` loop to hard code any parameters you are missing.
 
 !!! warning
-
+    
     When you define components that aren't attached to a `System` yet, the constructors
     assume define all fields related to power are
     [per-unitized in "DEVICE_BASE"](@ref per_unit). Divide all fields with units such as MW,
@@ -342,8 +359,8 @@ For more information regarding thermal cost functions please visit
 ## Adding Renewable Generators and Their Time Series
 
 The following section demonstrates how to add solar generators and their time
-series to a [`System`]. However, if you desire to add other
-[`RenewableDispatch`] generator types, such as wind, the process is exactly the
+series to a [`System`](@ref). However, if you desire to add other
+[`RenewableDispatch`](@ref) generator types, such as wind, the process is exactly the
 same, with changing the [prime mover type](@ref pm_list) from `PrimeMovers.PVe` to
 `PrimeMovers.WT`.
 
@@ -664,5 +681,15 @@ end
 
 ## Customizing and Expanding
 
-The same 
+Additional resources to help you built your own custom [`System`](@ref):
 
+  - See how to [Add additional data to a component](@ref additional_fields)
+  - Learn about [Adding Data for Dynamic Simulations](@ref), which could also be loaded in a
+    `for` loop from a .csv, if you don't have PSS/e files available for
+    [automated parsing](@ref dyr_data)
+  - See more on how to [Parse Time Series Data from .csv's](@ref parsing_time_series)
+  - See how to [Add a New or Custom Type](@ref)
+  - See how to [Add a Component in Natural Units](@ref), which is an alternative to the
+    per-unitized `for` loops above, but requires more code
+  - See how to [Write, View, and Load Data with a JSON](@ref) to efficiently save your
+    [`System`](@ref) once you've built it
