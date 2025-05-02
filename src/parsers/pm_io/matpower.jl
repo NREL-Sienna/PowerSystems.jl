@@ -464,6 +464,7 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
     # Add conformity key to bus data if not present
     for bus in pm_data["bus"]
         if !haskey(bus, "conformity")
+            @info "No conformity field found. Setting to default value of 1 (Conforming Load)."
             bus["conformity"] = 1
         end
     end
