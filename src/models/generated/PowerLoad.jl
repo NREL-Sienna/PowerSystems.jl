@@ -8,13 +8,13 @@ This file is auto-generated. Do not edit.
     mutable struct PowerLoad <: StaticLoad
         name::String
         available::Bool
-        conformity::Union{Nothing, LoadConformity}
         bus::ACBus
         active_power::Float64
         reactive_power::Float64
         base_power::Float64
         max_active_power::Float64
         max_reactive_power::Float64
+        conformity::LoadConformity
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -28,13 +28,13 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `conformity::Union{Nothing, LoadConformity}`: Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW)
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR)
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
@@ -45,8 +45,6 @@ mutable struct PowerLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
-    conformity::Union{Nothing, LoadConformity}
     "Bus that this component is connected to"
     bus::ACBus
     "Initial steady-state active power demand (MW)"
@@ -59,6 +57,8 @@ mutable struct PowerLoad <: StaticLoad
     max_active_power::Float64
     "Maximum reactive power (MVAR) that this load can demand"
     max_reactive_power::Float64
+    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
+    conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -69,20 +69,36 @@ mutable struct PowerLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function PowerLoad(name, available, conformity, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    PowerLoad(name, available, conformity, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function PowerLoad(; name, available, conformity, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PowerLoad(name, available, conformity, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, services, dynamic_injector, ext, internal, )
+function PowerLoad(; name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PowerLoad(name, available, bus, active_power, reactive_power, base_power, max_active_power, max_reactive_power, conformity, services, dynamic_injector, ext, internal, )
+end
+
+# Constructor for demo purposes; non-functional.
+function PowerLoad(::Nothing)
+    PowerLoad(;
+        name="init",
+        available=false,
+        bus=ACBus(nothing),
+        active_power=0.0,
+        reactive_power=0.0,
+        base_power=0.0,
+        max_active_power=0.0,
+        max_reactive_power=0.0,
+        conformity=LoadConformity.UNDEFINED,
+        services=Device[],
+        dynamic_injector=nothing,
+        ext=Dict{String, Any}(),
+    )
 end
 
 """Get [`PowerLoad`](@ref) `name`."""
 get_name(value::PowerLoad) = value.name
 """Get [`PowerLoad`](@ref) `available`."""
 get_available(value::PowerLoad) = value.available
-"""Get [`PowerLoad`](@ref) `conformity`."""
-get_conformity(value::PowerLoad) = value.conformity
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
 """Get [`PowerLoad`](@ref) `active_power`."""
@@ -95,6 +111,8 @@ get_base_power(value::PowerLoad) = value.base_power
 get_max_active_power(value::PowerLoad) = get_value(value, value.max_active_power)
 """Get [`PowerLoad`](@ref) `max_reactive_power`."""
 get_max_reactive_power(value::PowerLoad) = get_value(value, value.max_reactive_power)
+"""Get [`PowerLoad`](@ref) `conformity`."""
+get_conformity(value::PowerLoad) = value.conformity
 """Get [`PowerLoad`](@ref) `services`."""
 get_services(value::PowerLoad) = value.services
 """Get [`PowerLoad`](@ref) `dynamic_injector`."""
@@ -106,8 +124,6 @@ get_internal(value::PowerLoad) = value.internal
 
 """Set [`PowerLoad`](@ref) `available`."""
 set_available!(value::PowerLoad, val) = value.available = val
-"""Set [`PowerLoad`](@ref) `conformity`."""
-set_conformity!(value::PowerLoad, val) = value.conformity = val
 """Set [`PowerLoad`](@ref) `bus`."""
 set_bus!(value::PowerLoad, val) = value.bus = val
 """Set [`PowerLoad`](@ref) `active_power`."""
@@ -120,6 +136,8 @@ set_base_power!(value::PowerLoad, val) = value.base_power = val
 set_max_active_power!(value::PowerLoad, val) = value.max_active_power = set_value(value, val)
 """Set [`PowerLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = set_value(value, val)
+"""Set [`PowerLoad`](@ref) `conformity`."""
+set_conformity!(value::PowerLoad, val) = value.conformity = val
 """Set [`PowerLoad`](@ref) `services`."""
 set_services!(value::PowerLoad, val) = value.services = val
 """Set [`PowerLoad`](@ref) `ext`."""

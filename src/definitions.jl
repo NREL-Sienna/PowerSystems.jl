@@ -25,7 +25,7 @@ IS.@scoped_enum(
     LoadConformity,
     NON_CONFORMING = 0,
     CONFORMING = 1,
-    NOT_SCALABLE = 2,
+    UNDEFINED = 2,
 )
 
 # "From PSSE POM v33 Manual"

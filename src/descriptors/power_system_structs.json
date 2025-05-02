@@ -2704,11 +2704,6 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Union{Nothing, LoadConformity}"
-                },
-                {
                     "name": "bus",
                     "comment": "Bus that this component is connected to",
                     "null_value": "ACBus(nothing)",
@@ -2752,6 +2747,12 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "services",
@@ -2801,11 +2802,6 @@
                     "name": "available",
                     "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
                     "data_type": "Bool"
-                },
-                {
-                    "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Union{Nothing, LoadConformity}"
                 },
                 {
                     "name": "bus",
@@ -2921,6 +2917,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -2968,11 +2970,6 @@
                     "name": "available",
                     "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
                     "data_type": "Bool"
-                },
-                {
-                    "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Union{Nothing, LoadConformity}"
                 },
                 {
                     "name": "bus",
@@ -3040,6 +3037,12 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "services",
