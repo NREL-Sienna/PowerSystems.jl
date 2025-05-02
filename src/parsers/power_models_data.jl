@@ -222,7 +222,10 @@ function _attach_single_ict!(
     d::Dict,
     table_key::String,
     winding_idx::WindingCategory,
-    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    ict_instances::Union{
+        Nothing,
+        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    },
 )
     if haskey(d, table_key)
         table_number = d[table_key]
@@ -231,7 +234,7 @@ function _attach_single_ict!(
             ict = ict_instances[cache_key]
             add_supplemental_attribute!(sys, transformer, ict)
         else
-            @error "No correction table associated with transformer $name for winding $winding_idx."
+            @info "No correction table associated with transformer $name for winding $winding_idx."
         end
     end
 end
@@ -244,7 +247,10 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer2W,
     name::String,
     d::Dict,
-    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    ict_instances::Union{
+        Nothing,
+        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    },
 )
     _attach_single_ict!(
         sys,
@@ -265,7 +271,10 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer3W,
     name::String,
     d::Dict,
-    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    ict_instances::Union{
+        Nothing,
+        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
+    },
 )
     for winding_category in instances(WindingCategory)
         winding_category == WindingCategory.TR2W_WINDING && continue
