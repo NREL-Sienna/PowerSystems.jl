@@ -515,6 +515,7 @@ export get_c
 export get_c_dc
 export get_cf
 export get_compounding_resistance
+export get_conformity
 export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
@@ -1174,6 +1175,7 @@ export set_c!
 export set_c_dc!
 export set_cf!
 export set_compounding_resistance!
+export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!

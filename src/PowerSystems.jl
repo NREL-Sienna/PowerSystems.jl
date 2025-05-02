@@ -114,6 +114,7 @@ export ControllableLoad
 export InterruptiblePowerLoad
 export ShiftablePowerLoad
 export ExponentialLoad
+export LoadConformity
 
 export Storage
 export EnergyReservoirStorage

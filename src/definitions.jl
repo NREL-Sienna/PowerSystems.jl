@@ -22,6 +22,13 @@ IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 # "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
 IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 
+IS.@scoped_enum(
+    LoadConformity,
+    NON_CONFORMING = 0,
+    CONFORMING = 1,
+    UNDEFINED = 2,
+)
+
 # "From PSSE POM v33 Manual"
 IS.@scoped_enum(
     FACTSOperationModes,

@@ -2756,6 +2756,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -2918,6 +2924,12 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3032,6 +3044,12 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "services",
