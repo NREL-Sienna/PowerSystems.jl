@@ -138,8 +138,8 @@ Build the lines and transformers using the [`Line`](@ref) and
 [`Transformer2W`](@ref) constructors.  Again, if you don't have all of these
 parameters available in your file, customize the `for` loop to hard code
 whatever parameters you are missing. For instance, the example data does not
-specify `rating`, so we hard code `rating` to be the `max_flow` of the branch,
-per-unitized by the `system_base_power`.
+specify `active_power_flow`, `reactive_power_flow`, `b`, and `primary_shunt`, so we hard
+code these.
 
 ```julia
 for row in eachrow(branch_params)
@@ -175,6 +175,13 @@ for row in eachrow(branch_params)
 end
 ```
 
+!!! warning
+
+    When defining a branch that isn't attached to a `System` yet, you must define the
+    thermal rating of the transmission line [per-unitized in "SYSTEM_BASE"](@ref per_unit)
+    using the base power of the `System` you plan to connect it to -- defined above as
+    `system_base_power`.
+
 ## Adding Thermal Generators and their Costs
 
 ### Build Thermal Generators
@@ -192,7 +199,7 @@ an example `Thermal_Gens.csv`:
 | Biomass 03 | 103 | 1.2          | 0.36                  | 1.2               | OT            | AG_BIPRODUCT | ... |
 | ...        | ... | ...          | ...                   | ...               | ...           | ...          | ... |
 
-The convention used for the contents of the `Bus` column must be consistent
+The naming convention used for the contents of the `Bus` column must be consistent
 with the convention used in the `Bus Number` column of `Buses.csv`.
 
 Read in the contents of the CSV file `Thermal_Gens.csv` to a data frame and
@@ -219,8 +226,17 @@ fuel = "Fuel Type"
 
 Build the thermal generator components using the [`ThermalStandard`](@ref)
 constructor and data stored in the `thermal_gens` data frame, again customizing
-the `for` loop to hard code any parameters you are missing. Since the example
-data is missing base power, we set base power equal to the rating data, and the
+the `for` loop to hard code any parameters you are missing.
+
+!!! warning
+
+    When you define components that aren't attached to a `System` yet, the constructors
+    assume define all fields related to power are
+    [per-unitized in "DEVICE_BASE"](@ref per_unit). Divide all fields with units such as MW,
+    MVA, MVAR, or MW/min using the `base_power` of the component (with the exception of
+    `base_power` itself, which is in MVA).
+
+Since the example data is missing base power, we set base power equal to the rating data, and the
 rating parameter to 1.0:
 
 ```julia
@@ -328,7 +344,7 @@ For more information regarding thermal cost functions please visit
 The following section demonstrates how to add solar generators and their time
 series to a [`System`]. However, if you desire to add other
 [`RenewableDispatch`] generator types, such as wind, the process is exactly the
-same, with the only change needed to the prime mover type, from `PrimeMovers.PVe` to
+same, with changing the [prime mover type](@ref pm_list) from `PrimeMovers.PVe` to
 `PrimeMovers.WT`.
 
 We assume the data needed to build each solar powered
@@ -645,3 +661,8 @@ for reg in regions
     end
 end
 ```
+
+## Customizing and Expanding
+
+The same 
+
