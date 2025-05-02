@@ -1056,9 +1056,9 @@ function make_3w_transformer(
     return Transformer3W(;
         name = name,
         available = d["available"],
-        primary_secondary_arc = Arc(bus_primary, bus_secondary),
-        secondary_tertiary_arc = Arc(bus_secondary, bus_tertiary),
-        primary_tertiary_arc = Arc(bus_primary, bus_tertiary),
+        primary_star_arc = Arc(bus_primary, star_bus),
+        secondary_star_arc = Arc(bus_secondary, star_bus),
+        tertiary_star_arc = Arc(bus_tertiary, star_bus),
         star_bus = star_bus,
         active_power_flow_primary = pf,
         reactive_power_flow_primary = qf,
@@ -1090,6 +1090,11 @@ function make_3w_transformer(
         rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
         rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
         rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
+        delta_winding_connection = [
+            (get_number(bus_primary), get_number(bus_secondary)),
+            (get_number(bus_secondary), get_number(bus_tertiary)),
+            (get_number(bus_primary), get_number(bus_tertiary)),
+        ],
         ext = d["ext"],
     )
 end

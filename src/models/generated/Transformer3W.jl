@@ -8,9 +8,9 @@ This file is auto-generated. Do not edit.
     mutable struct Transformer3W <: ACTransmission
         name::String
         available::Bool
-        primary_secondary_arc::Arc
-        secondary_tertiary_arc::Arc
-        primary_tertiary_arc::Arc
+        primary_star_arc::Arc
+        secondary_star_arc::Arc
+        tertiary_star_arc::Arc
         star_bus::ACBus
         active_power_flow_primary::Float64
         reactive_power_flow_primary::Float64
@@ -42,6 +42,7 @@ This file is auto-generated. Do not edit.
         rating_primary::Float64
         rating_secondary::Float64
         rating_tertiary::Float64
+        delta_winding_connection::Vector{Tuple}
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -54,9 +55,9 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `primary_secondary_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a secondary bus
-- `secondary_tertiary_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` a tertiary bus
-- `primary_tertiary_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a tertiary bus
+- `primary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus
+- `secondary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus
+- `tertiary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus
 - `star_bus::ACBus`: Star (hidden) Bus that this component (equivalent model) is connected to
 - `active_power_flow_primary::Float64`: Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)
 - `reactive_power_flow_primary::Float64`: Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)
@@ -88,6 +89,7 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `rating_primary::Float64`: (default: `0.0`) Rating (in MVA) for primary winding.
 - `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
 - `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
+- `delta_winding_connection::Vector{Tuple}`: (default: `Vector{Tuple}()`) Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -97,12 +99,12 @@ mutable struct Transformer3W <: ACTransmission
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a secondary bus"
-    primary_secondary_arc::Arc
-    "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` a tertiary bus"
-    secondary_tertiary_arc::Arc
-    "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a tertiary bus"
-    primary_tertiary_arc::Arc
+    "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus"
+    primary_star_arc::Arc
+    "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus"
+    secondary_star_arc::Arc
+    "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus"
+    tertiary_star_arc::Arc
     "Star (hidden) Bus that this component (equivalent model) is connected to"
     star_bus::ACBus
     "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)"
@@ -165,6 +167,8 @@ mutable struct Transformer3W <: ACTransmission
     rating_secondary::Float64
     "Rating (in MVA) for tertiary winding."
     rating_tertiary::Float64
+    "Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince."
+    delta_winding_connection::Vector{Tuple}
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
@@ -173,12 +177,12 @@ mutable struct Transformer3W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
-    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
+function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer3W(; name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer3W(name, available, primary_secondary_arc, secondary_tertiary_arc, primary_tertiary_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
+function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -186,9 +190,9 @@ function Transformer3W(::Nothing)
     Transformer3W(;
         name="init",
         available=false,
-        primary_secondary_arc=Arc(ACBus(nothing), ACBus(nothing)),
-        secondary_tertiary_arc=Arc(ACBus(nothing), ACBus(nothing)),
-        primary_tertiary_arc=Arc(ACBus(nothing), ACBus(nothing)),
+        primary_star_arc=Arc(ACBus(nothing), ACBus(nothing)),
+        secondary_star_arc=Arc(ACBus(nothing), ACBus(nothing)),
+        tertiary_star_arc=Arc(ACBus(nothing), ACBus(nothing)),
         star_bus=ACBus(nothing),
         active_power_flow_primary=0.0,
         reactive_power_flow_primary=0.0,
@@ -220,6 +224,7 @@ function Transformer3W(::Nothing)
         rating_primary=0.0,
         rating_secondary=0.0,
         rating_tertiary=0.0,
+        delta_winding_connection=Vector{Tuple}(),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -229,12 +234,12 @@ end
 get_name(value::Transformer3W) = value.name
 """Get [`Transformer3W`](@ref) `available`."""
 get_available(value::Transformer3W) = value.available
-"""Get [`Transformer3W`](@ref) `primary_secondary_arc`."""
-get_primary_secondary_arc(value::Transformer3W) = value.primary_secondary_arc
-"""Get [`Transformer3W`](@ref) `secondary_tertiary_arc`."""
-get_secondary_tertiary_arc(value::Transformer3W) = value.secondary_tertiary_arc
-"""Get [`Transformer3W`](@ref) `primary_tertiary_arc`."""
-get_primary_tertiary_arc(value::Transformer3W) = value.primary_tertiary_arc
+"""Get [`Transformer3W`](@ref) `primary_star_arc`."""
+get_primary_star_arc(value::Transformer3W) = value.primary_star_arc
+"""Get [`Transformer3W`](@ref) `secondary_star_arc`."""
+get_secondary_star_arc(value::Transformer3W) = value.secondary_star_arc
+"""Get [`Transformer3W`](@ref) `tertiary_star_arc`."""
+get_tertiary_star_arc(value::Transformer3W) = value.tertiary_star_arc
 """Get [`Transformer3W`](@ref) `star_bus`."""
 get_star_bus(value::Transformer3W) = value.star_bus
 """Get [`Transformer3W`](@ref) `active_power_flow_primary`."""
@@ -297,6 +302,8 @@ get_rating_primary(value::Transformer3W) = get_value(value, value.rating_primary
 get_rating_secondary(value::Transformer3W) = get_value(value, value.rating_secondary)
 """Get [`Transformer3W`](@ref) `rating_tertiary`."""
 get_rating_tertiary(value::Transformer3W) = get_value(value, value.rating_tertiary)
+"""Get [`Transformer3W`](@ref) `delta_winding_connection`."""
+get_delta_winding_connection(value::Transformer3W) = value.delta_winding_connection
 """Get [`Transformer3W`](@ref) `services`."""
 get_services(value::Transformer3W) = value.services
 """Get [`Transformer3W`](@ref) `ext`."""
@@ -306,12 +313,12 @@ get_internal(value::Transformer3W) = value.internal
 
 """Set [`Transformer3W`](@ref) `available`."""
 set_available!(value::Transformer3W, val) = value.available = val
-"""Set [`Transformer3W`](@ref) `primary_secondary_arc`."""
-set_primary_secondary_arc!(value::Transformer3W, val) = value.primary_secondary_arc = val
-"""Set [`Transformer3W`](@ref) `secondary_tertiary_arc`."""
-set_secondary_tertiary_arc!(value::Transformer3W, val) = value.secondary_tertiary_arc = val
-"""Set [`Transformer3W`](@ref) `primary_tertiary_arc`."""
-set_primary_tertiary_arc!(value::Transformer3W, val) = value.primary_tertiary_arc = val
+"""Set [`Transformer3W`](@ref) `primary_star_arc`."""
+set_primary_star_arc!(value::Transformer3W, val) = value.primary_star_arc = val
+"""Set [`Transformer3W`](@ref) `secondary_star_arc`."""
+set_secondary_star_arc!(value::Transformer3W, val) = value.secondary_star_arc = val
+"""Set [`Transformer3W`](@ref) `tertiary_star_arc`."""
+set_tertiary_star_arc!(value::Transformer3W, val) = value.tertiary_star_arc = val
 """Set [`Transformer3W`](@ref) `star_bus`."""
 set_star_bus!(value::Transformer3W, val) = value.star_bus = val
 """Set [`Transformer3W`](@ref) `active_power_flow_primary`."""
@@ -374,6 +381,8 @@ set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_valu
 set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, val)
 """Set [`Transformer3W`](@ref) `rating_tertiary`."""
 set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, val)
+"""Set [`Transformer3W`](@ref) `delta_winding_connection`."""
+set_delta_winding_connection!(value::Transformer3W, val) = value.delta_winding_connection = val
 """Set [`Transformer3W`](@ref) `services`."""
 set_services!(value::Transformer3W, val) = value.services = val
 """Set [`Transformer3W`](@ref) `ext`."""

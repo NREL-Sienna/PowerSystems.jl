@@ -2235,11 +2235,9 @@ function check_attached_buses(sys::System, component::Branch)
 end
 
 function check_attached_buses(sys::System, component::Transformer3W)
-    arc_ps = get_primary_secondary_arc(component)
-    arc_pt = get_primary_tertiary_arc(component)
-    bus_primary = get_from(arc_ps)
-    bus_secondary = get_to(arc_ps)
-    bus_tertiary = get_to(arc_pt)
+    bus_primary = get_from(get_primary_star_arc(component))
+    bus_secondary = get_from(get_secondary_star_arc(component))
+    bus_tertiary = get_from(get_tertiary_star_arc(component))
     star_bus = get_star_bus(component)
     throw_if_not_attached(bus_primary, sys)
     throw_if_not_attached(bus_secondary, sys)
@@ -2300,11 +2298,9 @@ function check_component_addition(sys::System, branch::Branch; kwargs...)
 end
 
 function check_component_addition(sys::System, component::Transformer3W; kwargs...)
-    arc_ps = get_primary_secondary_arc(component)
-    arc_pt = get_primary_tertiary_arc(component)
-    bus_primary = get_from(arc_ps)
-    bus_secondary = get_to(arc_ps)
-    bus_tertiary = get_to(arc_pt)
+    bus_primary = get_from(get_primary_star_arc(component))
+    bus_secondary = get_from(get_secondary_star_arc(component))
+    bus_tertiary = get_from(get_tertiary_star_arc(component))
     star_bus = get_star_bus(component)
     throw_if_not_attached(bus_primary, sys)
     throw_if_not_attached(bus_secondary, sys)
@@ -2423,14 +2419,14 @@ function _handle_branch_addition_common!(sys::System, component::Transformer3W)
     # If this arc is already attached to the system, assign it to the 3W XFRM.
     # Else, add it to the system.
     arcs = [
-        get_primary_secondary_arc(component),
-        get_secondary_tertiary_arc(component),
-        get_primary_tertiary_arc(component),
+        get_primary_star_arc(component),
+        get_secondary_star_arc(component),
+        get_tertiary_star_arc(component),
     ]
     set_arc_methods = [
-        set_primary_secondary_arc!,
-        set_secondary_tertiary_arc!,
-        set_primary_tertiary_arc!,
+        set_primary_star_arc!,
+        set_secondary_star_arc!,
+        set_tertiary_star_arc!,
     ]
     for (ix, arc) in enumerate(arcs)
         _arc = get_component(Arc, sys, get_name(arc))

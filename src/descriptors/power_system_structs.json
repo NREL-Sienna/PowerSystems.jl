@@ -1207,20 +1207,20 @@
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "primary_secondary_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a secondary bus",
+                    "name": "primary_star_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus",
                     "data_type": "Arc"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "secondary_tertiary_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` a tertiary bus",
+                    "name": "secondary_star_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus",
                     "data_type": "Arc"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
-                    "name": "primary_tertiary_arc",
-                    "comment": "An [`Arc`](@ref) defining this transformer `from` a primary bus `to` a tertiary bus",
+                    "name": "tertiary_star_arc",
+                    "comment": "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus",
                     "data_type": "Arc"
                 },
                 {
@@ -1494,6 +1494,13 @@
                     "comment": "Rating (in MVA) for tertiary winding.",
                     "default": "0.0",
                     "needs_conversion": true
+                },
+                {
+                    "name": "delta_winding_connection",
+                    "data_type": "Vector{Tuple}",
+                    "comment": "Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince.",
+                    "null_value": "Vector{Tuple}()",
+                    "default": "Vector{Tuple}()"
                 },
                 {
                     "name": "services",

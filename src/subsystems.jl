@@ -193,9 +193,9 @@ end
 function _check_branch_consistency(sys::System, branch::Transformer3W)
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [
-        get_primary_secondary_arc(branch),
-        get_secondary_tertiary_arc(branch),
-        get_primary_tertiary_arc(branch),
+        get_primary_star_arc(branch),
+        get_secondary_star_arc(branch),
+        get_tertiary_star_arc(branch),
     ]
     for arc in arcs
         _check_subsystem_assignments(sys, branch, arc, msg; symmetric_diff = true)
