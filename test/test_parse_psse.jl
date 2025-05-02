@@ -26,18 +26,21 @@ end
     mp_sys = build_system(MatpowerTestSystems, "matpower_case24_sys")
     @test get_active_power(get_component(PowerLoad, mp_sys, "bus14")) == 1.94
     @test get_max_reactive_power(get_component(PowerLoad, mp_sys, "bus14")) == 0.39
-    @test get_conformity(get_component(PowerLoad, mp_sys, "bus14")) == LoadConformity.CONFORMING
+    @test get_conformity(get_component(PowerLoad, mp_sys, "bus14")) ==
+          LoadConformity.CONFORMING
 
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
           5.83546
-    @test get_conformity(get_component(StandardLoad, sys, "load10021")) == LoadConformity.CONFORMING
+    @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
+          LoadConformity.CONFORMING
 
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
     @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
-    @test get_conformity(get_component(StandardLoad, sys2, "load71")) == LoadConformity.CONFORMING
+    @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
+          LoadConformity.CONFORMING
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
