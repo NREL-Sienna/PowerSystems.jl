@@ -4002,7 +4002,7 @@
         },
         {
             "struct_name": "HydroEnergyReservoir",
-            "docstring": "A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.\n\nFor hydro generators with pumped storage, see [`HydroPumpedTurbine`](@ref)",
+            "docstring": "A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.\n\nFor hydro generators with pumped storage, see [`HydroPumpTurbine`](@ref) and [`HydroReservoir`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -4548,7 +4548,7 @@
             "supertype": "HydroGen"
         },
         {
-            "struct_name": "HydroPumpedTurbine",
+            "struct_name": "HydroPumpTurbine",
             "docstring": "A hydropower pumped turbine that needs to be attached to two reservoir, suitable for modeling independent pumped hydro with reservoirs.",
             "fields": [
                 {
@@ -5508,7 +5508,7 @@
         },
         {
             "struct_name": "EnergyReservoirStorage",
-            "docstring": "An energy storage device, modeled as a generic energy reservoir.\n\nThis is suitable for modeling storage charging and discharging with average efficiency losses, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach. For pumped hydro storage, alternatively see [`HydroPumpedTurbine`](@ref)",
+            "docstring": "An energy storage device, modeled as a generic energy reservoir.\n\nThis is suitable for modeling storage charging and discharging with average efficiency losses, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach. For pumped hydro storage, alternatively see [`HydroPumpTurbine`](@ref) and [`HydroReservoir`](@ref)",
             "fields": [
                 {
                     "null_value": "init",

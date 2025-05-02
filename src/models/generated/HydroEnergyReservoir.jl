@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 
 A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.
 
-For hydro generators with pumped storage, see [`HydroPumpedTurbine`](@ref)
+For hydro generators with pumped storage, see [`HydroPumpTurbine`](@ref) and [`HydroReservoir`](@ref)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
