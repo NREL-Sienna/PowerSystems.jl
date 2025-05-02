@@ -99,9 +99,6 @@ _convert_op_cost(::Val{:GenericBattery}, ::Val{:StorageManagementCost}, op_cost:
         energy_surplus_cost = op_cost["energy_surplus_cost"],
     )
 
-_convert_op_cost(::Val{:HydroPumpedStorage}, ::Val{:TwoPartCost}, op_cost::Dict) =
-    HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
-
 _convert_op_cost(::Val{:HydroDispatch}, ::Val{:TwoPartCost}, op_cost::Dict) =
     HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
 
