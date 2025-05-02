@@ -461,6 +461,13 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
         pm_data["switch"] = []
     end
 
+    # Add conformity key to bus data if not present
+    for bus in pm_data["bus"]
+        if !haskey(bus, "conformity")
+            bus["conformity"] = 1
+        end
+    end
+
     # translate component models
     _mp2pm_branch!(pm_data)
     _mp2pm_dcline!(pm_data)
@@ -511,6 +518,7 @@ function _split_loads_shunts!(data::Dict{String, Any})
                         "qd" => bus["qd"],
                         "load_bus" => bus["bus_i"],
                         "status" => convert(Int8, bus["bus_type"] != 4),
+                        "conformity" => get(bus, "conformity", 1),
                         "index" => load_num,
                         "source_id" => ["bus", bus["bus_i"]],
                     ),
