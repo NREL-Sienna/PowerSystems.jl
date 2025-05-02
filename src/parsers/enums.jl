@@ -30,6 +30,7 @@ const ENUMS = (
     ReservoirDataType,
     ThermalFuels,
     UnitSystem,
+    LoadConformity,
 )
 
 const ENUM_MAPPINGS = Dict()
@@ -57,6 +58,7 @@ end
 
 Base.convert(::Type{AngleUnits}, val::AbstractString) = get_enum_value(AngleUnits, val)
 Base.convert(::Type{ACBusTypes}, val::AbstractString) = get_enum_value(ACBusTypes, val)
+Base.convert(::Type{LoadConformity}, val::AbstractString) = get_enum_value(LoadConformity, val)
 Base.convert(::Type{FACTSOperationModes}, val::AbstractString) =
     get_enum_value(FACTSOperationModes, val)
 Base.convert(::Type{DiscreteControlledBranchType}, val::AbstractString) =
