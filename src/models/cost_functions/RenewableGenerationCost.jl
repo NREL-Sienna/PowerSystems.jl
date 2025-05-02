@@ -17,7 +17,7 @@ The `variable` cost is a required parameter, but `zero(CostCurve)` can be used t
     variable::CostCurve
     "(default of 0) Cost of curtailing power represented as a [`CostCurve`](@ref)"
     curtailment_cost::CostCurve = zero(CostCurve)
-    "Fixed cost of keeping the unit online. For some cost representations this field can be duplicative"
+    "Fixed cost of keeping the unit online. For some cost representations this field can be duplicative with respect to the data in the VOM field."
     fixed::Float64 = 0.0
 end
 
