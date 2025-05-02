@@ -2,6 +2,7 @@ const MinMax = NamedTuple{(:min, :max), Tuple{Float64, Float64}}
 const UpDown = NamedTuple{(:up, :down), Tuple{Float64, Float64}}
 const StartUpShutDown = NamedTuple{(:startup, :shutdown), Tuple{Float64, Float64}}
 const FromTo = NamedTuple{(:from, :to), Tuple{Float64, Float64}}
+const TurbinePump = NamedTuple{(:turbine, :pump), Tuple{Float64, Float64}}
 # Exception to CamelCase convention for aliases due to confusssing reading of FromToToFrom
 const FromTo_ToFrom = NamedTuple{(:from_to, :to_from), Tuple{Float64, Float64}}
 const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}

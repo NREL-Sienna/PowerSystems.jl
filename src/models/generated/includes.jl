@@ -33,7 +33,7 @@ include("CSVGN1.jl")
 include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroTurbine.jl")
-include("HydroPumpedStorage.jl")
+include("HydroPumpedTurbine.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
@@ -490,6 +490,7 @@ export get_active_power_limits_from
 export get_active_power_limits_pump
 export get_active_power_limits_to
 export get_active_power_losses
+export get_active_power_pump
 export get_admittance_limits
 export get_angle
 export get_angle_limits
@@ -565,6 +566,7 @@ export get_fuel_flag
 export get_g
 export get_gate_openings
 export get_gate_position_limits
+export get_head_reservoir
 export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
@@ -642,13 +644,13 @@ export get_max_participation_factor
 export get_max_reactive_power
 export get_max_shunt_current
 export get_min_compounding_voltage
+export get_minimum_time
 export get_must_run
 export get_n_states
 export get_name
 export get_number
 export get_number_of_steps
 export get_operation_cost
-export get_outflow
 export get_outflow_limits
 export get_output_active_power_limits
 export get_peak_active_power
@@ -665,7 +667,6 @@ export get_primary_shunt
 export get_primary_star_arc
 export get_primary_turns_ratio
 export get_prime_mover_type
-export get_pump_efficiency
 export get_q_nl
 export get_r
 export get_r_12
@@ -676,7 +677,6 @@ export get_r_primary
 export get_r_secondary
 export get_r_tertiary
 export get_ramp_limits
-export get_ramp_limits_pump
 export get_rated_current
 export get_rated_voltage
 export get_rating
@@ -684,7 +684,6 @@ export get_rating_b
 export get_rating_c
 export get_rating_from
 export get_rating_primary
-export get_rating_pump
 export get_rating_secondary
 export get_rating_tertiary
 export get_rating_to
@@ -697,7 +696,6 @@ export get_reactive_power_flow_tertiary
 export get_reactive_power_from
 export get_reactive_power_limits
 export get_reactive_power_limits_from
-export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
 export get_reactive_power_required
 export get_reactive_power_to
@@ -743,6 +741,7 @@ export get_switch
 export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
+export get_tail_reservoir
 export get_tap
 export get_tertiary_star_arc
 export get_tertiary_turns_ratio
@@ -751,11 +750,11 @@ export get_tfl
 export get_time_at_status
 export get_time_frame
 export get_time_limits
-export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
+export get_transition_time
 export get_upper_bound_active_power
 export get_valve_position_limits
 export get_variable
@@ -1150,6 +1149,7 @@ export set_active_power_limits_from!
 export set_active_power_limits_pump!
 export set_active_power_limits_to!
 export set_active_power_losses!
+export set_active_power_pump!
 export set_admittance_limits!
 export set_angle!
 export set_angle_limits!
@@ -1225,6 +1225,7 @@ export set_fuel_flag!
 export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
+export set_head_reservoir!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
@@ -1302,13 +1303,13 @@ export set_max_participation_factor!
 export set_max_reactive_power!
 export set_max_shunt_current!
 export set_min_compounding_voltage!
+export set_minimum_time!
 export set_must_run!
 export set_n_states!
 export set_name!
 export set_number!
 export set_number_of_steps!
 export set_operation_cost!
-export set_outflow!
 export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
@@ -1325,7 +1326,6 @@ export set_primary_shunt!
 export set_primary_star_arc!
 export set_primary_turns_ratio!
 export set_prime_mover_type!
-export set_pump_efficiency!
 export set_q_nl!
 export set_r!
 export set_r_12!
@@ -1336,7 +1336,6 @@ export set_r_primary!
 export set_r_secondary!
 export set_r_tertiary!
 export set_ramp_limits!
-export set_ramp_limits_pump!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
@@ -1344,7 +1343,6 @@ export set_rating_b!
 export set_rating_c!
 export set_rating_from!
 export set_rating_primary!
-export set_rating_pump!
 export set_rating_secondary!
 export set_rating_tertiary!
 export set_rating_to!
@@ -1357,7 +1355,6 @@ export set_reactive_power_flow_tertiary!
 export set_reactive_power_from!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
-export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
 export set_reactive_power_required!
 export set_reactive_power_to!
@@ -1403,6 +1400,7 @@ export set_switch!
 export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
+export set_tail_reservoir!
 export set_tap!
 export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!
@@ -1411,11 +1409,11 @@ export set_tfl!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
-export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
+export set_transition_time!
 export set_upper_bound_active_power!
 export set_valve_position_limits!
 export set_variable!

@@ -1,0 +1,277 @@
+#=
+This file is auto-generated. Do not edit.
+=#
+
+#! format: off
+
+"""
+    mutable struct HydroPumpedTurbine <: HydroGen
+        name::String
+        available::Bool
+        bus::ACBus
+        active_power::Float64
+        reactive_power::Float64
+        rating::Float64
+        active_power_limits::MinMax
+        reactive_power_limits::Union{Nothing, MinMax}
+        active_power_limits_pump::MinMax
+        outflow_limits::Union{Nothing, MinMax}
+        head_reservoir::HydroReservoir
+        tail_reservoir::HydroReservoir
+        powerhouse_elevation::Float64
+        ramp_limits::Union{Nothing, UpDown}
+        time_limits::Union{Nothing, UpDown}
+        base_power::Float64
+        operation_cost::Union{HydroGenerationCost, MarketBidCost}
+        active_power_pump::Float64
+        efficiency::TurbinePump
+        transition_time::TurbinePump
+        minimum_time::TurbinePump
+        conversion_factor::Float64
+        must_run::Bool
+        prime_mover_type::PrimeMovers
+        services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
+        ext::Dict{String, Any}
+        internal::InfrastructureSystemsInternal
+    end
+
+A hydropower pumped turbine that needs to be attached to two reservoir, suitable for modeling independent pumped hydro with reservoirs.
+
+# Arguments
+- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `bus::ACBus`: Bus that this component is connected to
+- `active_power::Float64`: Initial active power set point of the turbine unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
+- `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
+- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW) for the turbine, validation range: `(0, nothing)`
+- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `active_power_limits_pump::MinMax`: Minimum and maximum stable active power levels (MW) for the pump, validation range: `(0, nothing)`
+- `outflow_limits::Union{Nothing, MinMax}`: Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable
+- `head_reservoir::HydroReservoir`: Head reservoir that this component is connected to
+- `tail_reservoir::HydroReservoir`: Tail reservoir that this component is connected to
+- `powerhouse_elevation::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
+- `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
+- `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
+- `active_power_pump::Float64`: (default: `0.0`) Initial active power set point of the pump unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
+- `efficiency::TurbinePump`: (default: `(turbine = 1.0, pump = 1.0)`) Turbine/Pump efficiency [0, 1.0]
+- `transition_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Transition time in hours to switch into the specific mode.
+- `minimum_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Minimum operating time in hours for the specific mode.
+- `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
+- `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
+"""
+mutable struct HydroPumpedTurbine <: HydroGen
+    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
+    name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
+    available::Bool
+    "Bus that this component is connected to"
+    bus::ACBus
+    "Initial active power set point of the turbine unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
+    active_power::Float64
+    "Initial reactive power set point of the unit (MVAR)"
+    reactive_power::Float64
+    "Maximum output power rating of the unit (MVA)"
+    rating::Float64
+    "Minimum and maximum stable active power levels (MW) for the turbine"
+    active_power_limits::MinMax
+    "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
+    reactive_power_limits::Union{Nothing, MinMax}
+    "Minimum and maximum stable active power levels (MW) for the pump"
+    active_power_limits_pump::MinMax
+    "Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable"
+    outflow_limits::Union{Nothing, MinMax}
+    "Head reservoir that this component is connected to"
+    head_reservoir::HydroReservoir
+    "Tail reservoir that this component is connected to"
+    tail_reservoir::HydroReservoir
+    "Height level in meters above the sea level of the powerhouse on which the turbine is installed."
+    powerhouse_elevation::Float64
+    "ramp up and ramp down limits in MW/min"
+    ramp_limits::Union{Nothing, UpDown}
+    "Minimum up and Minimum down time limits in hours"
+    time_limits::Union{Nothing, UpDown}
+    "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
+    base_power::Float64
+    "[`OperationalCost`](@ref) of generation"
+    operation_cost::Union{HydroGenerationCost, MarketBidCost}
+    "Initial active power set point of the pump unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
+    active_power_pump::Float64
+    "Turbine/Pump efficiency [0, 1.0]"
+    efficiency::TurbinePump
+    "Transition time in hours to switch into the specific mode."
+    transition_time::TurbinePump
+    "Minimum operating time in hours for the specific mode."
+    minimum_time::TurbinePump
+    "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
+    conversion_factor::Float64
+    "Set to `true` if the unit is must run"
+    must_run::Bool
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
+    prime_mover_type::PrimeMovers
+    "Services that this device contributes to"
+    services::Vector{Service}
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    ext::Dict{String, Any}
+    "(**Do not modify.**) PowerSystems.jl internal reference"
+    internal::InfrastructureSystemsInternal
+end
+
+function HydroPumpedTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroPumpedTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+end
+
+function HydroPumpedTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpedTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, internal, )
+end
+
+# Constructor for demo purposes; non-functional.
+function HydroPumpedTurbine(::Nothing)
+    HydroPumpedTurbine(;
+        name="init",
+        available=false,
+        bus=ACBus(nothing),
+        active_power=0.0,
+        reactive_power=0.0,
+        rating=0.0,
+        active_power_limits=(min=0.0, max=0.0),
+        reactive_power_limits=nothing,
+        active_power_limits_pump=(min=0.0, max=0.0),
+        outflow_limits=nothing,
+        head_reservoir=HydroReservoir(nothing),
+        tail_reservoir=HydroReservoir(nothing),
+        powerhouse_elevation=0.0,
+        ramp_limits=nothing,
+        time_limits=nothing,
+        base_power=0.0,
+        operation_cost=HydroGenerationCost(nothing),
+        active_power_pump=0.0,
+        efficiency=(turbine = 1.0, pump = 1.0),
+        transition_time=(turbine = 0.0, pump = 0.0),
+        minimum_time=(turbine = 0.0, pump = 0.0),
+        conversion_factor=1.0,
+        must_run=false,
+        prime_mover_type=PrimeMovers.PS,
+        services=Device[],
+        dynamic_injector=nothing,
+        ext=Dict{String, Any}(),
+    )
+end
+
+"""Get [`HydroPumpedTurbine`](@ref) `name`."""
+get_name(value::HydroPumpedTurbine) = value.name
+"""Get [`HydroPumpedTurbine`](@ref) `available`."""
+get_available(value::HydroPumpedTurbine) = value.available
+"""Get [`HydroPumpedTurbine`](@ref) `bus`."""
+get_bus(value::HydroPumpedTurbine) = value.bus
+"""Get [`HydroPumpedTurbine`](@ref) `active_power`."""
+get_active_power(value::HydroPumpedTurbine) = get_value(value, value.active_power)
+"""Get [`HydroPumpedTurbine`](@ref) `reactive_power`."""
+get_reactive_power(value::HydroPumpedTurbine) = get_value(value, value.reactive_power)
+"""Get [`HydroPumpedTurbine`](@ref) `rating`."""
+get_rating(value::HydroPumpedTurbine) = get_value(value, value.rating)
+"""Get [`HydroPumpedTurbine`](@ref) `active_power_limits`."""
+get_active_power_limits(value::HydroPumpedTurbine) = get_value(value, value.active_power_limits)
+"""Get [`HydroPumpedTurbine`](@ref) `reactive_power_limits`."""
+get_reactive_power_limits(value::HydroPumpedTurbine) = get_value(value, value.reactive_power_limits)
+"""Get [`HydroPumpedTurbine`](@ref) `active_power_limits_pump`."""
+get_active_power_limits_pump(value::HydroPumpedTurbine) = get_value(value, value.active_power_limits_pump)
+"""Get [`HydroPumpedTurbine`](@ref) `outflow_limits`."""
+get_outflow_limits(value::HydroPumpedTurbine) = value.outflow_limits
+"""Get [`HydroPumpedTurbine`](@ref) `head_reservoir`."""
+get_head_reservoir(value::HydroPumpedTurbine) = value.head_reservoir
+"""Get [`HydroPumpedTurbine`](@ref) `tail_reservoir`."""
+get_tail_reservoir(value::HydroPumpedTurbine) = value.tail_reservoir
+"""Get [`HydroPumpedTurbine`](@ref) `powerhouse_elevation`."""
+get_powerhouse_elevation(value::HydroPumpedTurbine) = value.powerhouse_elevation
+"""Get [`HydroPumpedTurbine`](@ref) `ramp_limits`."""
+get_ramp_limits(value::HydroPumpedTurbine) = get_value(value, value.ramp_limits)
+"""Get [`HydroPumpedTurbine`](@ref) `time_limits`."""
+get_time_limits(value::HydroPumpedTurbine) = value.time_limits
+"""Get [`HydroPumpedTurbine`](@ref) `base_power`."""
+get_base_power(value::HydroPumpedTurbine) = value.base_power
+"""Get [`HydroPumpedTurbine`](@ref) `operation_cost`."""
+get_operation_cost(value::HydroPumpedTurbine) = value.operation_cost
+"""Get [`HydroPumpedTurbine`](@ref) `active_power_pump`."""
+get_active_power_pump(value::HydroPumpedTurbine) = get_value(value, value.active_power_pump)
+"""Get [`HydroPumpedTurbine`](@ref) `efficiency`."""
+get_efficiency(value::HydroPumpedTurbine) = value.efficiency
+"""Get [`HydroPumpedTurbine`](@ref) `transition_time`."""
+get_transition_time(value::HydroPumpedTurbine) = value.transition_time
+"""Get [`HydroPumpedTurbine`](@ref) `minimum_time`."""
+get_minimum_time(value::HydroPumpedTurbine) = value.minimum_time
+"""Get [`HydroPumpedTurbine`](@ref) `conversion_factor`."""
+get_conversion_factor(value::HydroPumpedTurbine) = value.conversion_factor
+"""Get [`HydroPumpedTurbine`](@ref) `must_run`."""
+get_must_run(value::HydroPumpedTurbine) = value.must_run
+"""Get [`HydroPumpedTurbine`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::HydroPumpedTurbine) = value.prime_mover_type
+"""Get [`HydroPumpedTurbine`](@ref) `services`."""
+get_services(value::HydroPumpedTurbine) = value.services
+"""Get [`HydroPumpedTurbine`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::HydroPumpedTurbine) = value.dynamic_injector
+"""Get [`HydroPumpedTurbine`](@ref) `ext`."""
+get_ext(value::HydroPumpedTurbine) = value.ext
+"""Get [`HydroPumpedTurbine`](@ref) `internal`."""
+get_internal(value::HydroPumpedTurbine) = value.internal
+
+"""Set [`HydroPumpedTurbine`](@ref) `available`."""
+set_available!(value::HydroPumpedTurbine, val) = value.available = val
+"""Set [`HydroPumpedTurbine`](@ref) `bus`."""
+set_bus!(value::HydroPumpedTurbine, val) = value.bus = val
+"""Set [`HydroPumpedTurbine`](@ref) `active_power`."""
+set_active_power!(value::HydroPumpedTurbine, val) = value.active_power = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `reactive_power`."""
+set_reactive_power!(value::HydroPumpedTurbine, val) = value.reactive_power = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `rating`."""
+set_rating!(value::HydroPumpedTurbine, val) = value.rating = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `active_power_limits`."""
+set_active_power_limits!(value::HydroPumpedTurbine, val) = value.active_power_limits = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `reactive_power_limits`."""
+set_reactive_power_limits!(value::HydroPumpedTurbine, val) = value.reactive_power_limits = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `active_power_limits_pump`."""
+set_active_power_limits_pump!(value::HydroPumpedTurbine, val) = value.active_power_limits_pump = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `outflow_limits`."""
+set_outflow_limits!(value::HydroPumpedTurbine, val) = value.outflow_limits = val
+"""Set [`HydroPumpedTurbine`](@ref) `head_reservoir`."""
+set_head_reservoir!(value::HydroPumpedTurbine, val) = value.head_reservoir = val
+"""Set [`HydroPumpedTurbine`](@ref) `tail_reservoir`."""
+set_tail_reservoir!(value::HydroPumpedTurbine, val) = value.tail_reservoir = val
+"""Set [`HydroPumpedTurbine`](@ref) `powerhouse_elevation`."""
+set_powerhouse_elevation!(value::HydroPumpedTurbine, val) = value.powerhouse_elevation = val
+"""Set [`HydroPumpedTurbine`](@ref) `ramp_limits`."""
+set_ramp_limits!(value::HydroPumpedTurbine, val) = value.ramp_limits = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `time_limits`."""
+set_time_limits!(value::HydroPumpedTurbine, val) = value.time_limits = val
+"""Set [`HydroPumpedTurbine`](@ref) `base_power`."""
+set_base_power!(value::HydroPumpedTurbine, val) = value.base_power = val
+"""Set [`HydroPumpedTurbine`](@ref) `operation_cost`."""
+set_operation_cost!(value::HydroPumpedTurbine, val) = value.operation_cost = val
+"""Set [`HydroPumpedTurbine`](@ref) `active_power_pump`."""
+set_active_power_pump!(value::HydroPumpedTurbine, val) = value.active_power_pump = set_value(value, val)
+"""Set [`HydroPumpedTurbine`](@ref) `efficiency`."""
+set_efficiency!(value::HydroPumpedTurbine, val) = value.efficiency = val
+"""Set [`HydroPumpedTurbine`](@ref) `transition_time`."""
+set_transition_time!(value::HydroPumpedTurbine, val) = value.transition_time = val
+"""Set [`HydroPumpedTurbine`](@ref) `minimum_time`."""
+set_minimum_time!(value::HydroPumpedTurbine, val) = value.minimum_time = val
+"""Set [`HydroPumpedTurbine`](@ref) `conversion_factor`."""
+set_conversion_factor!(value::HydroPumpedTurbine, val) = value.conversion_factor = val
+"""Set [`HydroPumpedTurbine`](@ref) `must_run`."""
+set_must_run!(value::HydroPumpedTurbine, val) = value.must_run = val
+"""Set [`HydroPumpedTurbine`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::HydroPumpedTurbine, val) = value.prime_mover_type = val
+"""Set [`HydroPumpedTurbine`](@ref) `services`."""
+set_services!(value::HydroPumpedTurbine, val) = value.services = val
+"""Set [`HydroPumpedTurbine`](@ref) `ext`."""
+set_ext!(value::HydroPumpedTurbine, val) = value.ext = val
