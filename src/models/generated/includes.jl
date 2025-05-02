@@ -512,6 +512,7 @@ export get_c
 export get_c_dc
 export get_cf
 export get_compounding_resistance
+export get_conformity
 export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
@@ -594,7 +595,6 @@ export get_inverter_tap_setting
 export get_inverter_tap_step
 export get_inverter_transformer_ratio
 export get_inverter_xc
-export get_is_conforming
 export get_is_filter_differential
 export get_k1
 export get_k2
@@ -1171,6 +1171,7 @@ export set_c!
 export set_c_dc!
 export set_cf!
 export set_compounding_resistance!
+export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
@@ -1253,7 +1254,6 @@ export set_inverter_tap_setting!
 export set_inverter_tap_step!
 export set_inverter_transformer_ratio!
 export set_inverter_xc!
-export set_is_conforming!
 export set_is_filter_differential!
 export set_k1!
 export set_k2!

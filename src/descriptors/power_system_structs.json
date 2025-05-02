@@ -2704,9 +2704,9 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Bool"
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Union{Nothing, LoadConformity}"
                 },
                 {
                     "name": "bus",
@@ -2803,9 +2803,9 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Bool"
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Union{Nothing, LoadConformity}"
                 },
                 {
                     "name": "bus",
@@ -2970,9 +2970,9 @@
                     "data_type": "Bool"
                 },
                 {
-                    "name": "is_conforming",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "Bool"
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "Union{Nothing, LoadConformity}"
                 },
                 {
                     "name": "bus",
