@@ -35,7 +35,7 @@ This line must be connected to a [`DCBus`](@ref) on each end. It uses a T-Model 
 - `active_power_limits_from::MinMax`: Minimum and maximum active power flows to the FROM node (MW)
 - `active_power_limits_to::MinMax`: Minimum and maximum active power flows to the TO node (MW)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct TModelHVDCLine <: DCBranch
@@ -59,7 +59,7 @@ mutable struct TModelHVDCLine <: DCBranch
     active_power_limits_to::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

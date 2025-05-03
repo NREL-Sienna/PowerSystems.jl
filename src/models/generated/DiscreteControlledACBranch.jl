@@ -33,7 +33,7 @@ Used to represent switches and breakers connecting AC Buses
 - `rating::Float64`: Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
 - `discrete_branch_type::DiscreteControlledBranchType`: (default: `DiscreteControlledBranchType.OTHER`) Type of discrete control
 - `branch_status::DiscreteControlledBranchStatus`: (default: `DiscreteControlledBranchStatus.CLOSED`) Open or Close status
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct DiscreteControlledACBranch <: ACTransmission
@@ -57,7 +57,7 @@ mutable struct DiscreteControlledACBranch <: ACTransmission
     discrete_branch_type::DiscreteControlledBranchType
     "Open or Close status"
     branch_status::DiscreteControlledBranchStatus
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

@@ -38,7 +38,7 @@ Parameters for the DC-side with a Battery Energy Storage System from ["Grid-Coup
 - `kpi::Float64`: current controller proportional gain, validation range: `(0, nothing)`
 - `kii::Float64`: current controller integral gain, validation range: `(0, nothing)`
 - `Vdc_ref::Float64`: (default: `1.1`) Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit)), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,
 	i_b: Battery current,
@@ -71,7 +71,7 @@ mutable struct ZeroOrderBESS <: DCSource
     kii::Float64
     "Reference DC-Voltage Set-point in pu ([`DEVICE_BASE`](@ref per_unit))"
     Vdc_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ZeroOrderBESS model are:
 	v_dc: DC-link voltage,

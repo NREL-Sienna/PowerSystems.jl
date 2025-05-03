@@ -49,7 +49,7 @@ Parameters of IEEE Std 421.5 Type ST6B Excitacion System. ST6B in PSSE and PSLF
 - `Kg::Float64`: Feedback gain constant of the inner loop field regulator, validation range: `(0, nothing)`
 - `Tg::Float64`: Feedback time constant of the inner loop field voltage regulator in s, validation range: `(0, nothing)`
 - `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	x_i: Regulator Integrator,
@@ -92,7 +92,7 @@ mutable struct ST6B <: AVR
     Tg::Float64
     "Reference Voltage Set-point (pu)"
     V_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,

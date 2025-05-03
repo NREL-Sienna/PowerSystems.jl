@@ -45,7 +45,7 @@ Commonly used in dynamics simulations to represent a very large machine on a sin
 - `operation_cost::ImportExportCost`: (default: `ImportExportCost(nothing)`) [`ImportExportCost`](@ref) of the source.
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct Source <: StaticInjection
@@ -79,7 +79,7 @@ mutable struct Source <: StaticInjection
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

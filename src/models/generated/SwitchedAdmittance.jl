@@ -33,7 +33,7 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SwitchedAdmittance <: ElectricLoad
@@ -55,7 +55,7 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
