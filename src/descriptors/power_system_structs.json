@@ -1449,8 +1449,30 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "base_power",
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
+                    "name": "base_power_12",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "base_power_23",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "base_power_13",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {

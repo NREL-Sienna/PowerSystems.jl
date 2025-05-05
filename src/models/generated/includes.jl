@@ -502,6 +502,9 @@ export get_available_secondary
 export get_available_tertiary
 export get_b
 export get_base_power
+export get_base_power_12
+export get_base_power_13
+export get_base_power_23
 export get_base_voltage
 export get_battery_resistance
 export get_battery_voltage
@@ -1162,6 +1165,9 @@ export set_available_secondary!
 export set_available_tertiary!
 export set_b!
 export set_base_power!
+export set_base_power_12!
+export set_base_power_13!
+export set_base_power_23!
 export set_base_voltage!
 export set_battery_resistance!
 export set_battery_voltage!
