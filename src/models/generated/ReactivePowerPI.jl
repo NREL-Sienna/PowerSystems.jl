@@ -24,7 +24,7 @@ Parameters of a Proportional-Integral Reactive Power controller for a specified 
 - `ωf::Float64`: filter frequency cutoff, validation range: `(0, nothing)`
 - `V_ref::Float64`: (default: `1.0`) Voltage Set-point (pu), validation range: `(0, nothing)`
 - `Q_ref::Float64`: (default: `1.0`) Reactive Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,
 	q_oc: Measured reactive power of the inverter model
@@ -41,7 +41,7 @@ mutable struct ReactivePowerPI <: ReactivePowerControl
     V_ref::Float64
     "Reactive Power Set-point (pu)"
     Q_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the ReactivePowerPI model are:
 	σq_oc: Integrator state of the PI Controller,

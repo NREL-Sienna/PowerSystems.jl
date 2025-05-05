@@ -39,7 +39,7 @@ A hydropower reservoir that needs to have `HydroTurbine` attached to generate po
 - `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
 - `head_to_volume_factor::Union{Float64, PiecewisePointCurve}`: Head to volume relationship for the reservoir.
 - `level_data_type::ReservoirDataType`: Reservoir level data type. (default: ReservoirDataType.USABLE_VOLUME)
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct HydroReservoir <: Device
@@ -67,7 +67,7 @@ mutable struct HydroReservoir <: Device
     head_to_volume_factor::Union{Float64, PiecewisePointCurve}
     "Reservoir level data type. (default: ReservoirDataType.USABLE_VOLUME)"
     level_data_type::ReservoirDataType
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

@@ -37,7 +37,7 @@ This struct acts as an infinity bus with time varying phasor values magnitude an
 - `base_power::Float64`: (default: `100.0`) Base power of the source (MVA) for [per unitization](@ref per_unit)
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) for time, voltage and angle
 - `n_states::Int`: (**Do not modify.**) PeriodicVariableSource has 2 states
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PeriodicVariableSource <: DynamicInjection
@@ -65,7 +65,7 @@ mutable struct PeriodicVariableSource <: DynamicInjection
     states::Vector{Symbol}
     "(**Do not modify.**) PeriodicVariableSource has 2 states"
     n_states::Int
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
