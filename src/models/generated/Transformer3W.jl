@@ -31,6 +31,7 @@ This file is auto-generated. Do not edit.
         x_23::Float64
         r_13::Float64
         x_13::Float64
+        base_power::Float64
         g::Float64
         b::Float64
         primary_turns_ratio::Float64
@@ -78,6 +79,7 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `x_23::Float64`: Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from secondary to tertiary windings (X2-3 with CZ = 1 in PSS/E)., validation range: `(0, 4)`
 - `r_13::Float64`: Measured resistance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (R1-3 with CZ = 1 in PSS/E)., validation range: `(0, 4)`
 - `x_13::Float64`: Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E)., validation range: `(0, 4)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `g::Float64`: (default: `0.0`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).
 - `b::Float64`: (default: `0.0`) Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).
 - `primary_turns_ratio::Float64`: (default: `1.0`) Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).
@@ -145,6 +147,8 @@ mutable struct Transformer3W <: ACTransmission
     r_13::Float64
     "Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E)."
     x_13::Float64
+    "Base power (MVA) for [per unitization](@ref per_unit)"
+    base_power::Float64
     "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E)."
     g::Float64
     "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E)."
@@ -177,12 +181,12 @@ mutable struct Transformer3W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, InfrastructureSystemsInternal(), )
+function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, internal, )
+function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, delta_winding_connection=Vector{Tuple}(), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, delta_winding_connection, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -213,6 +217,7 @@ function Transformer3W(::Nothing)
         x_23=0.0,
         r_13=0.0,
         x_13=0.0,
+        base_power=0.0,
         g=0.0,
         b=0.0,
         primary_turns_ratio=0.0,
@@ -280,6 +285,8 @@ get_x_23(value::Transformer3W) = value.x_23
 get_r_13(value::Transformer3W) = value.r_13
 """Get [`Transformer3W`](@ref) `x_13`."""
 get_x_13(value::Transformer3W) = value.x_13
+"""Get [`Transformer3W`](@ref) `base_power`."""
+get_base_power(value::Transformer3W) = value.base_power
 """Get [`Transformer3W`](@ref) `g`."""
 get_g(value::Transformer3W) = value.g
 """Get [`Transformer3W`](@ref) `b`."""
@@ -359,6 +366,8 @@ set_x_23!(value::Transformer3W, val) = value.x_23 = val
 set_r_13!(value::Transformer3W, val) = value.r_13 = val
 """Set [`Transformer3W`](@ref) `x_13`."""
 set_x_13!(value::Transformer3W, val) = value.x_13 = val
+"""Set [`Transformer3W`](@ref) `base_power`."""
+set_base_power!(value::Transformer3W, val) = value.base_power = val
 """Set [`Transformer3W`](@ref) `g`."""
 set_g!(value::Transformer3W, val) = value.g = val
 """Set [`Transformer3W`](@ref) `b`."""
