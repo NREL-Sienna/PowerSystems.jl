@@ -570,6 +570,7 @@ function _mp2pm_branch!(data::Dict{String, Any})
 
         branch["b_fr"] = branch["br_b"] / 2.0
         branch["b_to"] = branch["br_b"] / 2.0
+        branch["base_power"] = data["baseMVA"]
 
         delete!(branch, "br_b")
 

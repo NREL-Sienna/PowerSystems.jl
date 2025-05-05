@@ -678,6 +678,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["transformer"] = true
                 sub_data["correction_table"] = transformer["TAB1"]
+                if transformer["SBASE1-2"] < 0.0
+                    throw(
+                        IS.InvalidValue(
+                            "Transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) has non-positive base power SBASE1-2: $(transformer["SBASE1-2"])",
+                        ),
+                    )
+                end
+                if iszero(transformer["SBASE1-2"])
+                    sub_data["base_power"] = pm_data["baseMVA"]
+                else
+                    sub_data["base_power"] = transformer["SBASE1-2"]
+                end
 
                 sub_data["index"] = length(pm_data["branch"]) + 1
 
@@ -877,6 +889,32 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
                 )
+
+                bases = [
+                    transformer["SBASE1-2"],
+                    transformer["SBASE2-3"],
+                    transformer["SBASE3-1"],
+                ]
+                base_names = [
+                    "base_power_12",
+                    "base_power_23",
+                    "base_power_13",
+                ]
+
+                for (ix, base) in enumerate(bases)
+                    if base < 0.0
+                        throw(
+                            IS.InvalidValue(
+                                "Transformer $(transformer[I]) -> $(transformer["J"]) -> $(transformer["K"]) has negative base power $base",
+                            ),
+                        )
+                    end
+                    if iszero(base)
+                        sub_data[base_names[ix]] = pm_data["baseMVA"]
+                    else
+                        sub_data[base_names[ix]] = base
+                    end
+                end
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
 
