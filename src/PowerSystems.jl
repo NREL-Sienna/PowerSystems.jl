@@ -21,6 +21,7 @@ export AreaInterchange
 export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
+export get_geo_json
 
 export Component
 export Device
@@ -619,6 +620,7 @@ import InfrastructureSystems:
     InvalidRange,
     InvalidValue,
     GeographicInfo,
+    get_geo_json,
     copy_time_series!,
     get_count,
     get_data,
