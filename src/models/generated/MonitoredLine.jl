@@ -40,7 +40,7 @@ For example, monitored lines can be used to restrict line flow following a conti
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 2)`
 - `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`
 - `rating::Float64`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
-- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-3.1416, 3.1416)`
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians)
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`

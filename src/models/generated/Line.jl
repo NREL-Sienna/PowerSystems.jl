@@ -36,7 +36,7 @@ An AC transmission line
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `rating::Float64`: Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
-- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-3.1416, 3.1416)`
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians)
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
