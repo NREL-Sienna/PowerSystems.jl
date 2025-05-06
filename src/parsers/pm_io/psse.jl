@@ -671,6 +671,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     0,
                 ]
                 sub_data["ext"] = Dict{String, Any}(
+                    "psse_name" => transformer["NAME"],
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
@@ -885,6 +886,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["circuit"] = strip(transformer["CKT"])
 
                 sub_data["ext"] = Dict{String, Any}(
+                    "psse_name" => transformer["NAME"],
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
