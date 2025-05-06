@@ -801,13 +801,15 @@ function make_thermal_gen(
         shut_down = shutdn,
     )
 
-    ext = Dict{String, Any}()
-    if haskey(d, "r_source")
-        ext["z_source"] = (r = d["r_source"], x = d["x_source"])
+    ext = Dict{String, Float64}()
+    if haskey(d, "r_source") && haskey(d, "x_source")
+        ext["r"] = d["r_source"]
+        ext["x"] = d["x_source"]
     end
 
-    if haskey(d, "rt_source")
-        ext["zt_source"] = (rt = d["rt_source"], xt = d["xt_source"])
+    if haskey(d, "rt_source") && haskey(d, "xt_source")
+        ext["rt"] = d["rt_source"]
+        ext["xt"] = d["xt_source"]
     end
 
     if d["mbase"] != 0.0

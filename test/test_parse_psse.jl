@@ -10,7 +10,9 @@
         @info "Successfully parsed $f to PowerModelsData"
         sys = System(pm_data)
         for g in get_components(Generator, sys)
-            @test haskey(get_ext(g), "z_source")
+            # @test haskey(get_ext(g), "z_source")
+            @test haskey(get_ext(g), "r")
+            @test haskey(get_ext(g), "x")
         end
         @info "Successfully parsed $f to System struct"
     end
@@ -329,7 +331,8 @@ end
 end
 
 @testset "PSSE System Serialization/Desearialization" begin
-    original_sys = build_system(PSSEParsingTestSystems, "pti_case30_sys")
+    original_sys =
+        build_system(PSSEParsingTestSystems, "pti_case30_sys"; force_build = true)
     serialize_sys_path = joinpath(tempdir(), "test_system.json")
     to_json(original_sys, serialize_sys_path; force = true)
     deserialized_sys = System(serialize_sys_path)

@@ -503,7 +503,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
         temp_dict = get(bus_dict_gen, _num, nothing)
         if temp_dict === nothing
             @warn "Generator at bus $(_num), id $(_id), not found in Dynamic Data.\nVoltage Source will be used to model it."
-            r, x = get_ext(g)["z_source"]
+            r, x = get_ext(g)["r"], get_ext(g)["x"]
             if x == 0.0
                 @warn "No series reactance found. Setting it to 1e-6"
                 x = 1e-6
@@ -516,7 +516,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 # Obtain Machine from Dictionary
                 machine = temp_dict[_id][1]
                 # Update R,X from RSORCE and XSORCE from RAW file
-                r, x = get_ext(g)["z_source"]
+                r, x = get_ext(g)["r"], get_ext(g)["x"]
                 set_R!(machine, r)
                 # Obtain Shaft from dictionary
                 shaft = temp_dict[_id][2]
