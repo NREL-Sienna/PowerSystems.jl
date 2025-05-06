@@ -60,16 +60,17 @@ System(; kwargs...)
     containing subtypes of `Component`.
 
 # Keyword arguments
-- `name`:,
-- `description`:,
+- `name::String`: System name,
+- `description::String`: System description,
 - `frequency::Float64`: (default = 60.0) Operating frequency (Hz)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
+- `generator_mapping`: A dictionary mapping generator names to their corresponding topologies. This is used to associate generators with their respective buses when parsing from CSV.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
     Defaults to the tmp file system,
-- `timeseries_metadata_file`:
-- `time_series_read_only`::Bool=false: Open the time series store in read-only mode.
+- `timeseries_metadata_file`: Path to a file containing time series metadata descriptors. This is used to add time series data to the system from files.
+- `time_series_read_only::Bool=false`: Open the time series store in read-only mode.
     This is useful for reading time series data without modifying it.
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
@@ -77,29 +78,19 @@ System(; kwargs...)
 - `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
     [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
-- `bus_name_formatter`:
-- `load_name_formatter`:
-- `loadzone_name_formatter`:
-- `gen_name_formatter`:
-- `shunt_name_formatter`:.
-- `branch_name_formatter`:.
-- `pm_data_corrections`:
-- `generator_mapping`:
-
-
-
-    :internal,
-
-
-
-    :import_all,
-
-
+- `bus_name_formatter`: A function that takes a bus and returns a string to use as the bus name when parsing PSSe or Matpower.
+- `load_name_formatter`: A function that takes a load and returns a string to use as the load names when parsing PSSe or Matpower.
+- `loadzone_name_formatter`: A function that takes a load zone and returns a string to use as the load zone name when parsing PSSe or Matpower.
+- `gen_name_formatter`: A function that takes a generator and returns a string to use as the generator name when parsing PSSe or Matpower.
+- `shunt_name_formatter`: A function that takes a shunt and returns a string to use as the shunt name when parsing PSSe or Matpower.
+- `branch_name_formatter`: A function that takes a branch and returns a string to use as the branch name when parsing PSSe or Matpower.
+- `pm_data_corrections::Bool`: A function that applies the correction to the data from PowerModels.jl.
+- `import_all::Bool`: A boolean flag to indicate whether to import all available data when parsin from PSSe and Matpower. The additional data can be retrieved using the [`get_ext`](@ref)
+- `internal::IS.InfrastructureSystemsInternal`: Internal structure for infrastructure systems. This is used only during JSON de-seralization, do not pass it when building a system manually.
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
 large datasets from overwhelming system memory (see [Data Storage](@ref)).
-**If the system's time series
-data will be larger than the amount of tmp space available**, use the
+**If the system's time seriesdata will be larger than the amount of tmp space available**, use the
 `time_series_directory` parameter to change its location.
 You can also override the location by setting the environment
 variable `SIENNA_TIME_SERIES_DIRECTORY` to another directory.
@@ -113,6 +104,8 @@ performance by storing it in memory with `time_series_in_memory`.
 
 # Examples
 ```julia
+sys = System(100.0; name = "My Power System")
+sys = System(100.0; name = "My Power System", description = "System corresponds to scenario A")
 sys = System(100.0; enable_compression = true)
 sys = System(100.0; compression = CompressionSettings(
     enabled = true,
