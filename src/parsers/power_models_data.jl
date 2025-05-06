@@ -800,7 +800,7 @@ function make_thermal_gen(
         start_up = startup,
         shut_down = shutdn,
     )
- 
+
     ext = Dict{String, Float64}()
     if haskey(d, "r_source") && haskey(d, "x_source")
         ext["r"] = d["r_source"]

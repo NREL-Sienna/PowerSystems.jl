@@ -321,7 +321,8 @@ end
 end
 
 @testset "PSSE System Serialization/Desearialization" begin
-    original_sys = build_system(PSSEParsingTestSystems, "pti_case30_sys"; force_build = true)
+    original_sys =
+        build_system(PSSEParsingTestSystems, "pti_case30_sys"; force_build = true)
     serialize_sys_path = joinpath(tempdir(), "test_system.json")
     to_json(original_sys, serialize_sys_path; force = true)
     deserialized_sys = System(serialize_sys_path)
