@@ -251,6 +251,7 @@ branches14_dc(nodes14_nodes) = [
         0.0,
         0.978,
         20.0,
+        100.0,
     ),
     TapTransformer(
         "Trans1",
@@ -263,6 +264,7 @@ branches14_dc(nodes14_nodes) = [
         0.0,
         0.969,
         20.0,
+        100.0,
     ),
     TapTransformer(
         "Trans2",
@@ -275,6 +277,7 @@ branches14_dc(nodes14_nodes) = [
         0.0,
         0.932,
         20.0,
+        100.0,
     ),
     Line(
         "Line8",
@@ -322,6 +325,7 @@ branches14_dc(nodes14_nodes) = [
         0.17615,
         0.0,
         20.0,
+        100.0,
     ),
     Line(
         "Line16",
@@ -493,6 +497,7 @@ branches14(nodes14_nodes) = [
         0.0,
         0.978,
         20.0,
+        100.0,
     ),
     TapTransformer(
         "Trans1",
@@ -505,6 +510,7 @@ branches14(nodes14_nodes) = [
         0.0,
         0.969,
         20.0,
+        100.0,
     ),
     TapTransformer(
         "Trans2",
@@ -517,6 +523,7 @@ branches14(nodes14_nodes) = [
         0.0,
         0.932,
         20.0,
+        100.0,
     ),
     Line(
         "Line8",
@@ -564,6 +571,7 @@ branches14(nodes14_nodes) = [
         0.17615,
         0.0,
         20.0,
+        100.0,
     ),
     Line(
         "Line16",

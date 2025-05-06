@@ -1050,6 +1050,7 @@ function make_transformer_2w(
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
+        base_power = d["base_power"],
         ext = ext,
     )
 end
@@ -1090,6 +1091,9 @@ function make_3w_transformer(
         x_23 = d["x_23"],
         r_13 = d["r_13"],
         x_13 = d["x_13"],
+        base_power_12 = d["base_power_12"],
+        base_power_23 = d["base_power_23"],
+        base_power_13 = d["base_power_13"],
         g = d["g"],
         b = d["b"],
         primary_turns_ratio = d["primary_turns_ratio"],
@@ -1129,6 +1133,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
+        base_power = d["base_power"],
         rating = _get_rating("TapTransformer", name, d, "rate_a"),
         rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
         rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
@@ -1161,6 +1166,7 @@ function make_phase_shifting_transformer(
         tap = d["tap"],
         primary_shunt = d["b_fr"],  # TODO: which b ??
         α = alpha,
+        base_power = d["base_power"],
         rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
         rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
         rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),

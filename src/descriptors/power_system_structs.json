@@ -882,6 +882,17 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "base_power",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1027,6 +1038,17 @@
                     "needs_conversion": true
                 },
                 {
+                    "name": "base_power",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1147,6 +1169,17 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "null_value": "0.0",
@@ -1412,6 +1445,39 @@
                     "valid_range": {
                         "min": 0,
                         "max": 4
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "base_power_12",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "base_power_23",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "base_power_13",
+                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
                     },
                     "validation_action": "warn"
                 },

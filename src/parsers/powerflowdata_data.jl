@@ -509,6 +509,7 @@ function read_branch!(
                 x = branches.x[ix],
                 primary_shunt = 0.0,
                 rating = max_rate,
+                base_power = get_base_power(sys), # add system base power
                 ext = Dict(
                     "line_to_xfr" => true,
                 ),

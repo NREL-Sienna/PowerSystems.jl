@@ -398,6 +398,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
                 rating = branch.rate,
+                base_power = data.base_power, # use system base power
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(;
@@ -411,6 +412,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 primary_shunt = branch.primary_shunt,
                 tap = branch.tap,
                 rating = branch.rate,
+                base_power = data.base_power, # use system base power
             )
         elseif branch_type == PhaseShiftingTransformer
             # TODO create PhaseShiftingTransformer
