@@ -619,10 +619,9 @@ timestamps = range(DateTime("2023-01-01T00:00:00"); step = resolution, length = 
 ```
 
 Construct and attach the loads to the system using the [`PowerLoad`](@ref)
-constructor according to their regions.  Because each the time series within a
-region are not unique, the `max_active_power` of each load will depend on the
-maximum time series value of its region, according to the mathematical
-relationship seen in the code block below.
+constructor according to their regions. Because all loads in each region share
+a time series profile, the `max_active_power` of each load will depend on the
+maximum time series value of its region and its load participation factor.
 
 ```julia
 for row in eachrow(load_params)
