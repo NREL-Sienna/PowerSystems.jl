@@ -85,7 +85,6 @@ System(; kwargs...)
 - `branch_name_formatter`:.
 - `pm_data_corrections`:
 - `generator_mapping`:
-- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
 
 
 
