@@ -565,7 +565,7 @@ end
 In this example, we assume that all loads will be represented as
 [`PowerLoad`](@ref) components, and that the loads are located in three
 regions. Each region has one unique time series, and every load in each region
-is assigned its region's respective time series.
+is assigned its region's normalized time series profile.
 
 The data needed to build each [`PowerLoad`](@ref) unit is found in the CSV file
 `Loads.csv`, snapshotted below. The convention used for the contents of the
