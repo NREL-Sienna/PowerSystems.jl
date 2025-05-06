@@ -232,8 +232,8 @@
                     "null_value": "0.0",
                     "data_type": "Union{Nothing, Float64}",
                     "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
+                        "min": -3.1416,
+                        "max": 3.1416
                     },
                     "validation_action": "error"
                 },
@@ -473,11 +473,11 @@
                 {
                     "name": "angle_limits",
                     "comment": "Minimum and maximum angle limits (radians)",
-                    "null_value": "(min=-1.571, max=1.571)",
+                    "null_value": "(min=-3.1416, max=3.1416)",
                     "data_type": "MinMax",
                     "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
+                        "min": -3.1416,
+                        "max": 3.1416
                     },
                     "validation_action": "error"
                 },
@@ -717,11 +717,11 @@
                 {
                     "name": "angle_limits",
                     "comment": "Minimum and maximum angle limits (radians)",
-                    "null_value": "(min=-1.571, max=1.571)",
+                    "null_value": "(min=-3.1416, max=3.1416)",
                     "data_type": "MinMax",
                     "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
+                        "min": -3.1416,
+                        "max": 3.1416
                     },
                     "validation_action": "error"
                 },
@@ -911,14 +911,14 @@
                 {
                     "name": "phase_angle_limits",
                     "comment": "Minimum and maximum phase angle limits (radians)",
-                    "null_value": "(min=-1.571, max=1.571)",
+                    "null_value": "(min=-3.1416, max=3.1416)",
                     "data_type": "MinMax",
                     "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
+                        "min": -3.1416,
+                        "max": 3.1416
                     },
                     "validation_action": "error",
-                    "default": "(min=-1.571, max=1.571)"
+                    "default": "(min=-3.1416, max=3.1416)"
                 },
                 {
                     "name": "services",
