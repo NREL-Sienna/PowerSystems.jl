@@ -60,19 +60,42 @@ System(; kwargs...)
     containing subtypes of `Component`.
 
 # Keyword arguments
-- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+- `name`:,
+- `description`:,
 - `frequency::Float64`: (default = 60.0) Operating frequency (Hz)
 - `runchecks::Bool`: Run available checks on input fields and when add_component! is called.
   Throws InvalidValue if an error is found.
 - `time_series_in_memory::Bool=false`: Store time series data in memory instead of HDF5.
 - `time_series_directory::Union{Nothing, String}`: Directory for the time series HDF5 file.
-    Defaults to the tmp file system
+    Defaults to the tmp file system,
+- `timeseries_metadata_file`:
+- `time_series_read_only`::Bool=false: Open the time series store in read-only mode.
+    This is useful for reading time series data without modifying it.
 - `enable_compression::Bool=false`: Enable compression of time series data in HDF5.
 - `compression::CompressionSettings`: Allows customization of HDF5 compression settings.
 - `config_path::String`: specify path to validation config file
 - `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
     [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
+- `bus_name_formatter`:
+- `load_name_formatter`:
+- `loadzone_name_formatter`:
+- `gen_name_formatter`:
+- `shunt_name_formatter`:.
+- `branch_name_formatter`:.
+- `pm_data_corrections`:
+- `generator_mapping`:
+- `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
+
+
+
+    :internal,
+
+
+
+    :import_all,
+
+
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
 large datasets from overwhelming system memory (see [Data Storage](@ref)).
