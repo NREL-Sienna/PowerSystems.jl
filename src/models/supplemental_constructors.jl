@@ -132,6 +132,7 @@ function ConstantReserve(
     )
 end
 
+"""Allows construction of a EnergyReservoirStorage without the specification of a cost."""
 function EnergyReservoirStorage(
     name::AbstractString,
     available::Bool,
