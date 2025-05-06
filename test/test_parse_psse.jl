@@ -58,7 +58,10 @@ end
     @info "Testing Three-Winding Transformer Parsing"
 
     @test isnothing(get_component(Transformer3W, sys3, "1"))
-
+    @test haskey(
+        get_ext(get_component(Transformer2W, sys3, "DALLAS 1 3-DALLAS 1 0-i_1")),
+        "psse_name",
+    )
     @test get_available(
         get_component(Transformer3W, sys4, "FAV PLACE 07-FAV SPOT 06-FAV SPOT 03-i_1"),
     ) == true
@@ -76,6 +79,13 @@ end
     @test get_r_primary(
         get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_C"),
     ) == 0.00225
+    @test haskey(
+        get_ext(
+            get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_C"),
+        ),
+        "psse_name",
+    )
+
     @test length(get_components(Transformer3W, sys5)) == 5
 
     @info "Testing Switched Shunt Parsing"
