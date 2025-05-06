@@ -220,13 +220,13 @@
             "unit": "radian",
             "name": "min_angle_limits",
             "description": "Minimum Angle Limits",
-            "default_value": -1.57079
+            "default_value": -3.1416
         },
         {
             "unit": "radian",
             "name": "max_angle_limits",
             "description": "Maximum endpoint angle limits",
-            "default_value": 1.57079
+            "default_value": 3.1416
         },
         {
             "name": "active_power_flow",

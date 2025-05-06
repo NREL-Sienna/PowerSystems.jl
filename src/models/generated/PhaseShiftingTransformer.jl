@@ -45,7 +45,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
-- `phase_angle_limits::MinMax`: (default: `(min=-1.571, max=1.571)`) Minimum and maximum phase angle limits (radians), validation range: `(-1.571, 1.571)`
+- `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -88,11 +88,11 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
     PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b, rating_c, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-1.571, max=1.571), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b, rating_c, phase_angle_limits, services, ext, internal, )
 end
 
@@ -113,7 +113,7 @@ function PhaseShiftingTransformer(::Nothing)
         base_power=0.0,
         rating_b=0.0,
         rating_c=0.0,
-        phase_angle_limits=(min=-1.571, max=1.571),
+        phase_angle_limits=(min=-3.1416, max=3.1416),
         services=Device[],
         ext=Dict{String, Any}(),
     )
