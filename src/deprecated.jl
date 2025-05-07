@@ -1,7 +1,7 @@
 # BEGIN 4.0.0  deprecations
 export TwoTerminalHVDCLine
 
-Base.@deprecate function TwoTerminalHVDCLine(
+function TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
@@ -32,7 +32,7 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-Base.@deprecate function TwoTerminalHVDCLine(
+function TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
@@ -65,7 +65,7 @@ end
 """
 Deprecated method for TwoTerminalHVDCLine
 """
-Base.@deprecate function TwoTerminalHVDCLine(
+function TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
@@ -94,7 +94,7 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-Base.@deprecate function TwoTerminalHVDCLine(
+function TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
@@ -123,7 +123,7 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-Base.@deprecate function TwoTerminalHVDCLine(;
+function TwoTerminalHVDCLine(;
     name,
     available,
     active_power_flow,
