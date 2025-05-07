@@ -1,9 +1,6 @@
 # BEGIN 4.0.0  deprecations
 export TwoTerminalHVDCLine
 
-"""
-Deprecated method for TwoTerminalHVDCLine
-"""
 Base.@deprecate function TwoTerminalHVDCLine(
     name,
     available,
@@ -35,9 +32,6 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-"""
-Deprecated method for TwoTerminalHVDCLine
-"""
 Base.@deprecate function TwoTerminalHVDCLine(
     name,
     available,
@@ -100,9 +94,6 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-"""
-Deprecated method for TwoTerminalHVDCLine
-"""
 Base.@deprecate function TwoTerminalHVDCLine(
     name,
     available,
@@ -132,9 +123,6 @@ Base.@deprecate function TwoTerminalHVDCLine(
     )
 end
 
-"""
-Deprecated method for TwoTerminalHVDCLine
-"""
 Base.@deprecate function TwoTerminalHVDCLine(;
     name,
     available,
