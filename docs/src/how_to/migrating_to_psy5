@@ -1,8 +1,10 @@
 # [Migrating from version 4.0 to 5.0](@id psy5_migration)
 
 This guide outlines the code updates required to upgrade from PowerSystems.jl version 4.0
-to 5.0, which was released in May 2025 and includes breaking changes. These are:
+to 5.0, which was released in May 2025 and includes breaking changes. Most the changes are related
+to modeling in more detail AC transmission technologies.
 
+The changes are:
   - [AC Branches Type Hierarchy Change](@ref)
   - [Renamed Types and Parameters](@ref)
   - [New and Eliminated Types](@ref)
@@ -34,7 +36,7 @@ New parameters:
 
 ## New and Eliminated Types
 
-  - [`Transformer3W`](@ref)
+  - [`Transformer3W`](@ref) (see [Handle 3-windig transformer data](@ref 3wtdata))
   - [`TwoTerminalLCCLine`](@ref)
   - [`TwoTerminalVSCLine`](@ref)
   - [`HydroReservoir`](@ref)
@@ -52,6 +54,7 @@ These types are no longer part of PowerSystems.jl:
   - `HydroEnergyReservoir` (see [Updates to Hydro Storage related devices](@ref hyd_migration))
 
 ## [Updates to Hydro Storage related devices](@id hyd_migration)
+
 
 
 ## [Updates to fuel categories](@id fuel_migration)
