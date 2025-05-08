@@ -21,7 +21,7 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 
 Renamed `Types`:
 
-  - `TwoTerminalHVDC` is now named [`TwoTerminalGenericHVDC`](@ref)
+  - `TwoTerminalHVDC` is now named [`TwoTerminalGenericHVDC`](@ref) and a method has been included to read old `TwoTerminalHVDC` data.
   - `TimeSeriesForcedOutage` is now named [`FixedOutage`](@ref)
 
 New parameters:
@@ -33,6 +33,8 @@ New parameters:
       + [`PhaseShiftingTransformer`](@ref)
       + [`TapTransformer`](@ref)
       + [`Transformer2W`](@ref)
+
+- `FuelCurve`(@ref) now has a new field for fuel offtake at the start of a thermal unit. This field defaults to a `LinearCurve(0.0)` value.
 
 ## New and Eliminated Types
 
