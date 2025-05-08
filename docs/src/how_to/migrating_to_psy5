@@ -4,13 +4,10 @@ This guide outlines the code updates required to upgrade from PowerSystems.jl ve
 to 5.0, which was released in May 2025 and includes breaking changes. These are:
 
   - [AC Branches Type Hierarchy Change](@ref)
+  - [Renamed Types and Parameters](@ref)
   - [New and Eliminated Types](@ref)
-  - [Updates to Energy Storage Parameters](@ref esr_migration)
-  - [Hydropower `status` added](@ref)
-  - [New Cost Functions](@ref)
-  - [New Time Series Horizon Format](@ref)
-  - [Minor Type Hierarchy Change](@ref)
-  - [(Temporary) Use Version 3.0 for `HybridSystem` (+ new parameter)](@ref)
+  - [Updates to Hydro Storage related devices](@ref)
+  - [Updates to fuel categories](@ref)
 
 ## AC Branches Type Hierarchy Change
 
