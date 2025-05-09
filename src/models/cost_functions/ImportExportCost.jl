@@ -70,10 +70,10 @@ set_export_offer_curves!(value::ImportExportCost, val) =
 """Set [`ImportExportCost`](@ref) `ancillary_service_offers`."""
 set_ancillary_service_offers!(value::ImportExportCost, val) =
     value.ancillary_service_offers = val
-"""Get [`ImportExportCost`](@ref) `energy_import_weekly_limit`."""
+"""Set [`ImportExportCost`](@ref) `energy_import_weekly_limit`."""
 set_energy_import_weekly_limit!(value::ImportExportCost, val) =
     value.energy_import_weekly_limit = val
-"""Get [`ImportExportCost`](@ref) `energy_export_weekly_limits`."""
+"""Set [`ImportExportCost`](@ref) `energy_export_weekly_limits`."""
 set_energy_export_weekly_limit!(value::ImportExportCost, val) =
     value.energy_export_weekly_limit = val
 
