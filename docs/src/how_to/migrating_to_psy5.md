@@ -49,6 +49,7 @@ New parameters:
   - [`FACTSControlDevice`](@ref)
   - [`ImpedanceCorrectionData`](@ref)
   - [`ImportExportCost](@ref)
+  - [`SynchronousCondenser`](@ref)
 
 These types are no longer part of PowerSystems.jl:
 
