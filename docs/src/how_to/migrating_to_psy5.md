@@ -8,12 +8,12 @@ The changes are:
   - [AC Branches Type Hierarchy Change](@ref)
   - [Renamed Types and Parameters](@ref)
   - [New and Eliminated Types](@ref)
-  - [Updates to Hydro Storage related devices](@ref)
+  - [Updates to Hydro Storage related devices](@ref Hyd_updates)
   - [Updates to fuel categories](@ref)
 
 ## AC Branches Type Hierarchy Change
 
-New abstract type [`ACTransmission`] and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`] abstract type to caputre HVDC links connected between [`ACBus`](@ref).
+New abstract type [`ACTransmission`] and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to caputre HVDC links connected between [`ACBus`](@ref).
 
 ## Renamed Types and Parameters
 
@@ -22,7 +22,7 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 Renamed `Types`:
 
   - `TwoTerminalHVDCLine` is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDC` data.
-  - `TimeSeriesForcedOutage` is now named [`FixedOutage`](@ref)
+  - `TimeSeriesForcedOutage` is now named [`FixedForcedOutage`](@ref)
 
 New parameters:
 
@@ -54,10 +54,10 @@ New parameters:
 These types are no longer part of PowerSystems.jl:
 
   - `TwoTerminalVSDCLine`
-  - `HydroPumpedStorage` (see [Updates to Hydro Storage related devices](@ref hyd_migration))
-  - `HydroEnergyReservoir` (see [Updates to Hydro Storage related devices](@ref hyd_migration))
+  - `HydroPumpedStorage` (see [Updates to Hydro Storage related devices](@ref Hyd_updates))
+  - `HydroEnergyReservoir` (see [Updates to Hydro Storage related devices](@ref Hyd_updates))
 
-## Updates to Hydro Storage related devices
+## [Updates to Hydro Storage related devices](@id Hyd_updates)
 
 In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model was
 

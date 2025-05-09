@@ -30,6 +30,18 @@ Public = true
 Private = false
 ```
 
+## Supplemental Attributes
+
+```@autodocs
+Modules = [PowerSystems, InfrastructureSystems]
+Pages   = ["outages.jl",
+           "impedance_correction.jl",
+           "GeographicInfo.jl"
+           ]
+Public = true
+Private = false
+```
+
 ## Operating Costs
 
 ```@autodocs
