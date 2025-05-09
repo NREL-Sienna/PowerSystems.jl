@@ -13,7 +13,7 @@ The changes are:
 
 ## AC Branches Type Hierarchy Change
 
-New abstract type [`ACTransmission`](@ref) and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to caputre HVDC links connected between [`ACBus`](@ref).
+New abstract type [`ACTransmission`] and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`] abstract type to caputre HVDC links connected between [`ACBus`](@ref).
 
 ## Renamed Types and Parameters
 
@@ -21,7 +21,7 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 
 Renamed `Types`:
 
-  - `TwoTerminalHVDC` is now named [`TwoTerminalGenericHVDC`](@ref) and a method has been included to read old `TwoTerminalHVDC` data.
+  - `TwoTerminalHVDCLine` is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDC` data.
   - `TimeSeriesForcedOutage` is now named [`FixedOutage`](@ref)
 
 New parameters:
@@ -48,6 +48,7 @@ New parameters:
   - [`DiscreteControlledACBranch`](@ref)
   - [`FACTSControlDevice`](@ref)
   - [`ImpedanceCorrectionData`](@ref)
+  - [`ImportExportCost](@ref)
 
 These types are no longer part of PowerSystems.jl:
 
@@ -55,8 +56,8 @@ These types are no longer part of PowerSystems.jl:
   - `HydroPumpedStorage` (see [Updates to Hydro Storage related devices](@ref hyd_migration))
   - `HydroEnergyReservoir` (see [Updates to Hydro Storage related devices](@ref hyd_migration))
 
-## [Updates to Hydro Storage related devices](@id hyd_migration)
+## Updates to Hydro Storage related devices
 
 In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model was
 
-## [Updates to fuel categories](@id fuel_migration)
+## Updates to fuel categories
