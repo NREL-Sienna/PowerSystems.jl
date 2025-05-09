@@ -23,7 +23,8 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_function_timeseries.jl",
-           "definitions.jl"]
+           "definitions.jl"
+           ]
 Public = true
 Private = false
 ```
@@ -136,6 +137,15 @@ Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && ge
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["supplemental_accessors.jl"]
+Public = true
+Private = false
+```
+
+## Deprecated Methods(@id deprecated)
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["deprecated.jl"]
 Public = true
 Private = false
 ```

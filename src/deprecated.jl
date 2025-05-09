@@ -77,7 +77,8 @@ function TwoTerminalHVDCLine(
 end
 
 """
-Deprecated method for TwoTerminalHVDCLine
+Deprecated method for the old TwoTerminalHVDCLine that returns the new TwoTerminalGenericHVDCLine.
+This constructor is used for some backward compatibility and will be removed in a future version.
 """
 function TwoTerminalHVDCLine(
     name,
