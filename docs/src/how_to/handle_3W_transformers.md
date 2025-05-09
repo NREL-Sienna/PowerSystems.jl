@@ -47,13 +47,17 @@ It does not explicitly store the equivalent star (wye) impedances. Instead, it s
 - Winding 2 Tap Ratio (RATIO2): Tap ratio for the secondary winding.
 - Winding 3 Tap Ratio (RATIO3): Tap ratio for the tertiary winding.
 - Phase Shift (ANGLE1, ANGLE2, ANGLE3): Phase shift in degrees applied by each winding.
-Winding Ratings:
+
+### Winding Ratings
 
 - Winding 1 MVA Base (SBASE1): Base apparent power for winding 1.
-W- inding 2 MVA Base (SBASE2): Base apparent power for winding 2.
-Winding 3 MVA Base (SBASE3): Base apparent power for winding 3.
-Nominal Voltages (WINDV1, WINDV2, WINDV3): Nominal voltage levels of each winding in kV.
-Control Information (Optional): For transformers with on-load tap changers (OLTCs) or phase shifters, additional data related to the control parameters (controlled bus, voltage setpoint, tap limits, etc.) would be included in the relevant control records, not directly within the transformer data record itself.
+- Winding 2 MVA Base (SBASE2): Base apparent power for winding 2.
+- Winding 3 MVA Base (SBASE3): Base apparent power for winding 3.
+- Nominal Voltages (WINDV1, WINDV2, WINDV3): Nominal voltage levels of each winding in kV.
+
+### Control Information (Optional)
+
+For transformers with on-load tap changers (OLTCs) or phase shifters, additional data related to the control parameters (controlled bus, voltage setpoint, tap limits, etc.) would be included in the relevant control records, not directly within the transformer data record itself.
 
 ## Deriving the Equivalent Star Impedances from PSSe
 
@@ -67,8 +71,8 @@ Z_3 &= \frac{1}{2} (Z_{13} + Z_{23} - Z_{12})
 
 Where:
 
-  - $Z_1$: Equivalent series impedance of winding 1, connected between its terminal and the neutral point of the equivalent star.
-  - $Z_2$: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
-  - $Z_3$: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
+- $Z_1$: Equivalent series impedance of winding 1, connected between its terminal and the neutral point of the equivalent star.
+- $Z_2$: Equivalent series impedance of winding 2, connected between its terminal and the neutral point of the equivalent star.
+- $Z_3$: Equivalent series impedance of winding 3, connected between its terminal and the neutral point of the equivalent star.
 
 We store the data from both representations (Delta and Wye) for completness as well as the star bus used in the wye representation.
