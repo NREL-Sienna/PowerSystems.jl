@@ -5,11 +5,11 @@ CurrentModule = PowerSystems
 ```
 
 !!! tip "Announcement"
-    
+
     PowerSystems.jl upgraded to version 5.0 in Mat 2025, which included breaking changes.
     Visit the [v5.0 migration guide](@ref psy5_migration) for information on
     how to update your existing code from version 4.0.
-    
+
     We also have re-organized and updated this documentation, including new tutorials! Check
     out [How To Use This Documentation](@ref) below to orient yourself.
 
@@ -76,7 +76,7 @@ If you are new to `PowerSystems.jl`, here's how we suggest getting started:
  2. Work through the introductory tutorial: [Create and Explore a Power `System`](@ref) to
     familiarize yourself with how `PowerSystems.jl` works
  3. Work through the other basic tutorials based on your interests
-    
+
       + See [Working with Time Series Data](@ref tutorial_time_series) if you will be doing
         production cost modeling or working with time series
       + See [Adding Data for Dynamic Simulations](@ref)
