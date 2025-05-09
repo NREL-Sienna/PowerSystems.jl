@@ -22,13 +22,15 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 
 Renamed `Types`:
 
-  - `TwoTerminalHVDCLine`(@ref) is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDC` data. See [Deprecated Methods](@ref logging)
-  - `TimeSeriesForcedOutage` is now named [`FixedForcedOutage`](@ref)
+  - [`TwoTerminalHVDCLine`](@ref) is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDCLine` data. See [Deprecated Methods](@ref logging)
+  - `TimeSeriesForcedOutage` is now named [`FixedForcedOutage`](@ref) and the method has been removed but the functionality remains.
 
 New parameters:
 
-  - The [`ACTransmission`](@ref) objects now have rating fields for `b` and `c` ratings to enable modeling security constrained problems. Affected Types are:
-    
+  - The [`ACTransmission`](@ref) objects now have rating fields for `b` and `c` ratings to enable modeling security constrained problems. These components now also include a field for their base power, in situations where the base power for the transformer is not availble (e.g., when parsing Matpower) the default behavior is to use the system base.
+
+  Affected Types are:
+
       + [`Line`](@ref)
       + [`MonitoredLine`](@ref)
       + [`PhaseShiftingTransformer`](@ref)
