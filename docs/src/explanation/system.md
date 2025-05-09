@@ -37,3 +37,57 @@ _this is actively discouraged_ for two reasons:
 
  1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
  2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit section](@ref per_unit) for more details)
+
+## [Using sub-systems](@id subsystems)
+
+For certain applications like dispatch coordination methods or decomposition approaches it is useful to be able to split the components in subsystems
+in aggregations that are not related to the existing Areas or LoadZones mappings. The subsystems are assigned using any arbitrary string.
+It is possible to add subsystems by calling the following commands on the system:
+
+```@repl sub-system
+using PowerSystems;
+using PowerSystemCaseBuilder;
+sys = build_system(PSISystems, "c_sys5_pjm")
+add_subsystem!(sys, "1")
+add_subsystem!(sys, "2")
+```
+
+Devices in the system can be assigned to the subsystems in the following way using the function [`add_component_to_subsystem!`](@ref)
+
+```@repl subsystem
+g = get_component(ThermalStandard, sys, "Alta")
+add_component_to_subsystem!(sys, "1", g)
+
+g = get_component(ThermalStandard, sys, "Sundance")
+add_component_to_subsystem!(sys, "2", g)
+```
+
+To retrieve components assigned to specific subsystem the use the keyword argument `subsystem_name`.
+
+```@repl subsystem
+gens_1 = get_components(ThermalStandard, sys; subsystem_name = "1")
+get_name.(gens_1)
+
+gens_2 = get_components(ThermalStandard, sys; subsystem_name = "2")
+get_name.(gens_2)
+```
+
+One useful feature that requires care when used is generating a new system from a subsystem assignment.
+The function [`from_subsystem`](@ref) will allow the user to produce a new system object that can be used or exported.
+This functionality requires careful subsystem assignemnt of the devices and its dependencies. In the current example this code will as follows
+
+```@repl subsystem
+from_subsystem(sys, "1")
+```
+
+In order to fix the error the bus in the Alta generator also needs to be added to the subsystem 1.
+
+```@repl subsystem
+g = get_component(ThermalStandard, sys, "Alta")
+b = get_bus(g)
+add_component_to_subsystem!(sys, "1", b)
+from_subsystem(sys, "1")
+```
+
+Advanced users can use the keyword `runchecks=false` and avoid any topological check in the process.
+It is highly recommended that users do this only if there is a clear understanding the resulting system might be invalid for any modeling.

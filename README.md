@@ -34,7 +34,7 @@ For information on using the package and a more extensive list of device data en
 
 - MATPOWER CaseFormat
 - PSS/e - PTI Format v30 and v33(.raw and .dyr files) 
-- [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/main/RTS_Data/SourceData) table data format
+- [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Development
 
