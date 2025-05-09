@@ -5,6 +5,7 @@ to 5.0, which was released in May 2025 and includes breaking changes. Most the c
 to modeling in more detail AC transmission technologies.
 
 The changes are:
+
   - [AC Branches Type Hierarchy Change](@ref)
   - [Renamed Types and Parameters](@ref)
   - [New and Eliminated Types](@ref)
@@ -27,14 +28,14 @@ Renamed `Types`:
 New parameters:
 
   - The [`ACTransmission`](@ref) objects now have rating fields for `b` and `c` ratings to enable modeling security constrained problems. Affected Types are:
-
+    
       + [`Line`](@ref)
       + [`MonitoredLine`](@ref)
       + [`PhaseShiftingTransformer`](@ref)
       + [`TapTransformer`](@ref)
       + [`Transformer2W`](@ref)
 
-- `FuelCurve`(@ref) now has a new field for fuel offtake at the start of a thermal unit. This field defaults to a `LinearCurve(0.0)` value.
+  - `FuelCurve`(@ref) now has a new field for fuel offtake at the start of a thermal unit. This field defaults to a `LinearCurve(0.0)` value.
 
 ## New and Eliminated Types
 
