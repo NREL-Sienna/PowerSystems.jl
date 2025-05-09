@@ -14,7 +14,7 @@ The changes are:
 
 ## AC Branches Type Hierarchy Change
 
-New abstract type [`ACTransmission`] and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to caputre HVDC links connected between [`ACBus`](@ref).
+New abstract type [`ACTransmission`](@ref) and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to caputre HVDC links connected between [`ACBus`](@ref).
 
 ## Renamed Types and Parameters
 
@@ -22,7 +22,7 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 
 Renamed `Types`:
 
-  - `TwoTerminalHVDCLine` is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDC` data.
+  - `TwoTerminalHVDCLine`(@ref) is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDC` data. See [Deprecated Methods](@ref logging)
   - `TimeSeriesForcedOutage` is now named [`FixedForcedOutage`](@ref)
 
 New parameters:
