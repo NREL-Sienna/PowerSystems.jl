@@ -57,6 +57,6 @@ These types are no longer part of PowerSystems.jl:
 
 ## [Updates to Hydro Storage related devices](@id hyd_migration)
 
-
+In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model was
 
 ## [Updates to fuel categories](@id fuel_migration)
