@@ -6,7 +6,7 @@ CurrentModule = PowerSystems
 
 !!! tip "Announcement"
     
-    PowerSystems.jl upgraded to version 5.0 in Mat 2025, which included breaking changes.
+    PowerSystems.jl upgraded to version 5.0 in May 2025, which included breaking changes.
     Visit the [v5.0 migration guide](@ref psy5_migration) for information on
     how to update your existing code from version 4.0.
     
