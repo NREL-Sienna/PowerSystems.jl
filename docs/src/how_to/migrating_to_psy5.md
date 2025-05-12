@@ -51,7 +51,7 @@ Affected Types are:
   - [`DiscreteControlledACBranch`](@ref)
   - [`FACTSControlDevice`](@ref)
   - [`ImpedanceCorrectionData`](@ref)
-  - [`ImportExportCost](@ref)
+  - [`ImportExportCost`](@ref)
   - [`SynchronousCondenser`](@ref)
 
 These types are no longer part of PowerSystems.jl:
