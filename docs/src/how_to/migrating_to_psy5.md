@@ -47,7 +47,7 @@ Affected Types are:
   - [`HydroReservoir`](@ref)
   - [`HydroTurbine`](@ref)
   - [`HydroPumpTurbine`](@ref)
-  - [`ShiftablePowerLoad](@ref)
+  - [`ShiftablePowerLoad`](@ref)
   - [`DiscreteControlledACBranch`](@ref)
   - [`FACTSControlDevice`](@ref)
   - [`ImpedanceCorrectionData`](@ref)
