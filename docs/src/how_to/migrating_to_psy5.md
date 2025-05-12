@@ -41,7 +41,7 @@ Affected Types are:
 
 ## New and Eliminated Types
 
-  - [`Transformer3W`](@ref) (see [Handle 3-windig transformer data](@ref 3wtdata))
+  - [`Transformer3W`](@ref) (see [Handle 3-winding transformer data](@ref 3wtdata))
   - [`TwoTerminalLCCLine`](@ref)
   - [`TwoTerminalVSCLine`](@ref)
   - [`HydroReservoir`](@ref)
