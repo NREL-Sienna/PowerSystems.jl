@@ -2,6 +2,7 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 using DocumenterInterLinks
+using DocumenterMermaid
 
 links = InterLinks(
     "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
