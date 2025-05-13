@@ -434,7 +434,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": "ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -445,7 +447,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": "ohm"
                 },
                 {
                     "name": "b",
@@ -456,7 +460,9 @@
                         "min": 0,
                         "max": 100
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": "siemens"
                 },
                 {
                     "null_value": "0.0",
