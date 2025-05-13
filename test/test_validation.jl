@@ -245,7 +245,7 @@ end
     remove_component!(sys, bus)
 
     # Make the bus invalid.
-    set_angle!(bus, 1000.0)
+    set_base_voltage!(bus, -1000.0)
     @test_logs(
         (:error, r"Invalid range"),
         match_mode = :any,
@@ -262,7 +262,7 @@ end
     bus = _make_bus()
 
     # Make the bus invalid.
-    set_angle!(bus, 1000.0)
+    set_base_voltage!(bus, -1000.0)
     add_component!(sys, bus)
 end
 
@@ -271,7 +271,7 @@ end
     bus = _make_bus()
 
     # Make the bus invalid.
-    set_angle!(bus, 1000.0)
+    set_base_voltage!(bus, -1000.0)
     add_component!(sys, bus)
 
     @test_logs(
@@ -316,7 +316,7 @@ end
     bus = _make_bus()
 
     # Make the bus invalid.
-    set_angle!(bus, 1000.0)
+    set_base_voltage!(bus, -1000.0)
     add_component!(sys, bus)
 
     @test_logs(
