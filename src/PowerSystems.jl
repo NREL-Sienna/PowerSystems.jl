@@ -46,6 +46,7 @@ export TapTransformer
 export PhaseShiftingTransformer
 export FACTSControlDevice
 export Transformer3W
+export SynchronousCondenser
 
 # from IS function_data.jl
 export FunctionData
