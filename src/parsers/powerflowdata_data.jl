@@ -680,6 +680,7 @@ function read_branch!(
             x = br_x,
             tap = tap_value,
             primary_shunt = transformers.mag2[ix],
+            base_power = get_base_power(sys),
             rating = max_rate,
         )
         add_component!(sys, transformer; skip_validation = SKIP_PM_VALIDATION)
