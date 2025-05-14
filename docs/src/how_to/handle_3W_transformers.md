@@ -61,7 +61,7 @@ For transformers with on-load tap changers (OLTCs) or phase shifters, additional
 
 ## Deriving the Equivalent Star Impedances from PSSe
 
-In PowerSystems.jl we explictly represent and store the [`Transformer3W`](@ref) as an equivalent star (wye) circuit with a common neutral point (often referred to conceptually as a "starbus"), w calculate the equivalent series impedance for each winding ($Z_1, Z_2, Z_3$) using the following formulas:
+In `PowerSystems.jl`, we explictly represent and store the [`Transformer3W`](@ref) as an equivalent star (wye) circuit with a common neutral point (often referred to conceptually as a "starbus"), we calculate the equivalent series impedance for each winding ($Z_1, Z_2, Z_3$) from the PSS®E Positive Sequence Impedance data (e.g., R1-2, X1-2, etc.) using the following formulas:
 
 $$\begin{aligned}
 Z_1 &= \frac{1}{2} (Z_{12} + Z_{13} - Z_{23}) \\
