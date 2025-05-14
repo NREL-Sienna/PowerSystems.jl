@@ -38,13 +38,13 @@ _this is actively discouraged_ for two reasons:
  1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
  2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit section](@ref per_unit) for more details)
 
-## [Using sub-systems](@id subsystems)
+## [Using subsystems](@id subsystems)
 
 For certain applications like dispatch coordination methods or decomposition approaches it is useful to be able to split the components in subsystems
 in aggregations that are not related to the existing Areas or LoadZones mappings. The subsystems are assigned using any arbitrary string.
 It is possible to add subsystems by calling the following commands on the system:
 
-```@repl sub-system
+```@repl subsystem
 using PowerSystems;
 using PowerSystemCaseBuilder;
 sys = build_system(PSISystems, "c_sys5_pjm")
