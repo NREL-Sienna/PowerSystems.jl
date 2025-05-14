@@ -1,12 +1,13 @@
 # [Modeling with JuMP](@id modeling_with_jump)
 
-This guide is for users who are interested in writing custom optimization problems directly in [JuMP](https://jump.dev/JuMP.jl/stable/), using data formatted with `PowerSystems.jl`. 
-Also see [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/) for developing reusable templates for optimization problems within the Sienna platform.
+This guide is for users who are interested in writing custom optimization problems directly in [JuMP](https://jump.dev/JuMP.jl/stable/), using data formatted with `PowerSystems.jl`. Check out [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/) for developing reusable templates for optimization problems within the Sienna platform.
+
+This page shows a minimal example to develop a Economic Dispatch model. The code shows the stages to develop modeling code:
 
 This page shows a minimal example to develop a Economic Dispatch model. The code shows the stages to develop modeling code:
 
  1. Make the data set from power flow and time series data,
- 2. Serialize the data,
+ 2. Serialize the system data,
  3. Pass the data and algorithm to the model.
 
 One of the main uses of `PowerSystems.jl` is not having re-run the data generation for every model execution. The model code shows an example of populating the constraints and cost functions using accessor functions inside the model function. The example concludes by reading the data created earlier and passing the algorithm with the data.
@@ -17,12 +18,16 @@ const PSY = PowerSystems
 using JuMP
 using Ipopt
 using PowerSystemCaseBuilder
+using Dates
 ```
 
 !!! note
     
     `PowerSystemCaseBuilder.jl` is a helper library that makes it easier to reproduce examples in the documentation and tutorials. Normally you would pass your local files to create the system data instead of calling the function `build_system`.
-    For more details visit [PowerSystemCaseBuilder Documentation](https://nrel-sienna.github.io/PowerSystems.jl/stable/tutorials/powersystembuilder/)
+    For more details visit [PowerSystemCaseBuilder Documentation](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable).
+
+Next, we define the optimization problem using [`JuMP`](https://jump.dev/JuMP.jl/stable/)'s syntax.
+The constraints include each generator's minimum and maximum active power output as well as the system power balance equation, minimizing the operating cost for each step in the 24-hour horizon:
 
 ```@repl using_jump
 system_data = build_system(PSISystems, "c_sys5_pjm")
@@ -59,14 +64,18 @@ function ed_model(system::System, optimizer)
         ed_m,
         Min,
         sum(
-            pg[get_name(g), t]^2 * get_cost(get_variable(get_operation_cost(g)))[1] +
-            pg[get_name(g), t] * get_cost(get_variable(get_operation_cost(g)))[2]
+            pg[get_name(g), t] *
+            get_proportional_term(get_function_data(get_variable(get_operation_cost(g))))
             for g in get_components(ThermalGen, system), t in time_periods
         )
     )
     optimize!(ed_m)
     return ed_m
 end
+```
 
+Finally, the `PowerSystems.jl` data is combined with this economic dispatch model and solved with the open-source [`Ipopt`](https://github.com/jump-dev/Ipopt.jl) solver:
+
+```@repl using_jump
 results = ed_model(system_data, Ipopt.Optimizer)
 ```
