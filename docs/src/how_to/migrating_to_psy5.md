@@ -37,7 +37,6 @@ Affected Types are:
   - [`PhaseShiftingTransformer`](@ref)
   - [`TapTransformer`](@ref)
   - [`Transformer2W`](@ref)
-
   - [`FuelCurve`](@ref) now has a new field for fuel offtake at the start of a thermal unit. This field defaults to a `LinearCurve(0.0)` value.
 
 ## New and Eliminated Types
