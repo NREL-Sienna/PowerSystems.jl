@@ -82,7 +82,7 @@ System(; kwargs...)
 - `load_name_formatter`: A function that takes an [`ElectricLoad`](@ref) and returns a string to use as the load names when [parsing PSSe or Matpower files](@ref pm_data).
 - `loadzone_name_formatter`: A function that takes a [`LoadZone`](@ref) and returns a string to use as the load zone name when [parsing PSSe or Matpower files](@ref pm_data).
 - `gen_name_formatter`: A function that takes a [`Generator`](@ref) and returns a string to use as the generator name when [parsing PSSe or Matpower files](@ref pm_data).
-- `shunt_name_formatter`: A function that takes a [`FixedShunt`](@ref) and returns a string to use as the shunt name when [parsing PSSe or Matpower files](@ref pm_data).
+- `shunt_name_formatter`: A function that takes the fixed shunt data and returns a string to use as the [`FixedAdmittance`](@ref) name when [parsing PSSe or Matpower files](@ref pm_data).
 - `branch_name_formatter`: A function that takes a [`Branch`](@ref) and returns a string to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
 - `pm_data_corrections::Bool`: A function that applies the correction to the data from [`PowerModels.jl`](https://lanl-ansi.github.io/PowerModels.jl/stable/).
 - `import_all::Bool`: A boolean flag to indicate whether to import all available data when [parsing PSSe or Matpower files](@ref pm_data). The additional data will be stored in the `ext` dictionary and can be retrieved using [`get_ext`](@ref)
@@ -379,6 +379,13 @@ end
 
 """
 Construct a System from a subsystem of an existing system.
+
+# Arguments
+- `sys::System`: the base system from which the subsystems are derived
+- `subsystem::String`: the name of the subsystem to extract from the original system
+
+# Keyword arguments
+- `runchecks::Bool`: (default = true) whether to run system validation checks.
 """
 function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
     if !in(subsystem, get_subsystems(sys))

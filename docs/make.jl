@@ -2,6 +2,7 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 using DocumenterInterLinks
+using DocumenterMermaid
 
 links = InterLinks(
     "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
@@ -41,7 +42,10 @@ pages = OrderedDict(
             "...improve performance with time series data" => "how_to/improve_ts_performance.md",
             "...write and read data with a JSON" => "how_to/serialize_data.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
-            "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md"
+            "...handle 3 WT Transformers" => "how_to/handle_3W_transformers.md",
+            "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
+            "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
+            "...migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md"
         ],
         "Explanation" =>
             Any[
@@ -95,7 +99,8 @@ pages["Model Library"] = make_model_library(
         "RenewableGenerationCost" =>"model_library/renewable_generation_cost.md",
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
-        "MarketBidCost" =>"model_library/market_bid_cost.md"],
+        "MarketBidCost" =>"model_library/market_bid_cost.md",
+        "ImportExportCost" =>"model_library/import_export_cost.md"],
         )
 )
 
