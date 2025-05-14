@@ -32,7 +32,6 @@ New parameters:
 Affected Types are:
 
   - [`Line`](@ref)
-
   - [`MonitoredLine`](@ref)
   - [`PhaseShiftingTransformer`](@ref)
   - [`TapTransformer`](@ref)
@@ -64,7 +63,7 @@ These types are no longer part of PowerSystems.jl:
 
 In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model just kept track of the total energy in the reservoir. In this version of PowerSystems a new structs [`HydroTurbine`](@ref) and [`HydroReservoir`](@ref) has been included to enable individual unit dispatch modeling as well as a shared reservoir.
 
-The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@ref) to model the head and tail reservoirs for Hydro Pump Storage facilities.
+The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@ref) to model the head and tail reservoirs for Hydro Pump Storage facilities
 
 ## Updates to fuel categories
 
