@@ -1133,7 +1133,11 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             inverter_base_voltage = dcline["EBASI"]
             if inverter_base_voltage == 0
-                throw(ArgumentError("DC line $(sub_data["name"]): Inverter base voltage EBASI cannot be 0"))
+                throw(
+                    ArgumentError(
+                        "DC line $(sub_data["name"]): Inverter base voltage EBASI cannot be 0",
+                    ),
+                )
             end
             ZbaseI = inverter_base_voltage^2 / baseMVA
             sub_data["inverter_bridges"] = dcline["NBI"]
