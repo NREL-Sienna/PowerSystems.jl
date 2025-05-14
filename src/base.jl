@@ -2292,6 +2292,15 @@ function check_component_removal(sys::System, static_injector::StaticInjection)
     end
 end
 
+function check_component_removal(sys::System, area::Area)
+    for interchange in get_components(AreaInterchange, sys)
+        if get_from_area(interchange) == area || get_to_area(interchange) == area
+            throw(ArgumentError("Area $area cannot be removed with attached AreaInterchange: $(get_name(interchange))"))
+        end
+    end
+    return
+end
+
 """
 Refer to docstring for check_component_addition!
 """
