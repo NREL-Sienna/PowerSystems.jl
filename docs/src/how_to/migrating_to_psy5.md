@@ -22,7 +22,7 @@ Some `Types` and fields were renamed, which should require a trivial search and 
 
 Renamed `Types`:
 
-  - [`TwoTerminalHVDCLine`](@ref) is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDCLine` data. See [Deprecated Methods](@ref logging)
+  - [`TwoTerminalHVDCLine`](@ref) is now named [`TwoTerminalGenericHVDCLine`](@ref) and a method has been included to read old `TwoTerminalHVDCLine` data. See [Deprecated Methods](@ref deprecated)
   - `TimeSeriesForcedOutage` is now named [`FixedForcedOutage`](@ref) and the method has been removed but the functionality remains.
 
 New parameters:
