@@ -4,16 +4,16 @@ HydroDispatch: 1
 RenewableDispatch: 29
 RenewableNonDispatch: 31
 ThermalStandard: 54</code></pre><p>The iterator avoids unnecessary memory allocations if there are many generators, and it can be used to view or update the generator data, such as seeing each of the names:</p><pre><code class="language-julia-repl hljs" style="display:block;">julia&gt; get_name.(gen_iter)</code><code class="nohighlight hljs ansi" style="display:block;">115-element Vector{String}:
- &quot;122_WIND_1&quot;
- &quot;324_PV_3&quot;
- &quot;312_PV_1&quot;
- &quot;102_PV_1&quot;
- &quot;101_PV_1&quot;
- &quot;324_PV_2&quot;
- &quot;313_PV_2&quot;
- &quot;104_PV_1&quot;
- &quot;101_PV_2&quot;
- &quot;309_WIND_1&quot;
+ &quot;201_HYDRO_4&quot;
+ &quot;313_RTPV_1&quot;
+ &quot;320_RTPV_2&quot;
+ &quot;213_RTPV_1&quot;
+ &quot;313_RTPV_9&quot;
+ &quot;313_RTPV_2&quot;
+ &quot;313_RTPV_7&quot;
+ &quot;320_RTPV_3&quot;
+ &quot;308_RTPV_1&quot;
+ &quot;313_RTPV_4&quot;
  ⋮
  &quot;301_CT_3&quot;
  &quot;316_STEAM_1&quot;
@@ -33,4 +33,4 @@ mermaid.initialize({
     startOnLoad: true,
     theme: "neutral"
 });
-</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../get_buses/">« ...get all the buses in a system</a><a class="docs-footer-nextpage" href="../add_cost_curve/">...add an Operating Cost »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.11.2 on <span class="colophon-date" title="Wednesday 14 May 2025 04:18">Wednesday 14 May 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+</script></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../get_buses/">« ...get all the buses in a system</a><a class="docs-footer-nextpage" href="../add_cost_curve/">...add an Operating Cost »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.11.2 on <span class="colophon-date" title="Wednesday 14 May 2025 04:19">Wednesday 14 May 2025</span>. Using Julia version 1.11.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
