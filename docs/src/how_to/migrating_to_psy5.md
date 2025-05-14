@@ -31,11 +31,11 @@ New parameters:
 
 Affected Types are:
 
-  + [`Line`](@ref)
-  + [`MonitoredLine`](@ref)
-  + [`PhaseShiftingTransformer`](@ref)
-  + [`TapTransformer`](@ref)
-  + [`Transformer2W`](@ref)
+  - [`Line`](@ref)
+  - [`MonitoredLine`](@ref)
+  - [`PhaseShiftingTransformer`](@ref)
+  - [`TapTransformer`](@ref)
+  - [`Transformer2W`](@ref)
 
   - [`FuelCurve`](@ref) now has a new field for fuel offtake at the start of a thermal unit. This field defaults to a `LinearCurve(0.0)` value.
 
@@ -60,8 +60,13 @@ These types are no longer part of PowerSystems.jl:
   - `HydroPumpedStorage` (see [Updates to Hydro Storage related devices](@ref Hyd_updates))
   - `HydroEnergyReservoir` (see [Updates to Hydro Storage related devices](@ref Hyd_updates))
 
-## [Updates to Hydro Storage related devices](@id Hyd_updates)
+## [Updates to hydro storage related devices](@id Hyd_updates)
 
-In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model was
+In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model just kept track of the total energy in the reservoir. In this version of PowerSystems a new structs [`HydroTurbine`](@ref) and [`HydroReservoir`](@ref) has been included to enable individual unit dispatch modeling as well as a shared reservoir.
+
+The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@ref) to model the head and tail reservoirs for Hydro Pump Storage facilities.
 
 ## Updates to fuel categories
+
+The fuel categories available in form EIA-923 have been expanded, the old categories are still
+valid and the expanded list can be explored in the documentation [`ThermalFuels`](@ref tf_list)
