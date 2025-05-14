@@ -91,4 +91,4 @@ from_subsystem(sys, "1")
 ```
 
 Advanced users can use the keyword `runchecks=false` and avoid any topological check in the process.
-It is highly recommended that users do this only if there is a clear understanding the resulting system might be invalid for any modeling.
+It is highly recommended that users only do this if they clearly understand how to validate the resulting system before using it for modeling.
