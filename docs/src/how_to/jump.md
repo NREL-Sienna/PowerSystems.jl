@@ -1,6 +1,9 @@
 # [Modeling with JuMP](@id modeling_with_jump)
 
-This page shows a minimal example of `PowerSystems.jl` used to develop and Economic Dispatch model. The code shows the stages to develop modeling code
+This guide is for users who are interested in writing custom optimization problems directly in [JuMP](https://jump.dev/JuMP.jl/stable/), using data formatted with `PowerSystems.jl`. 
+Also see [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/) for developing reusable templates for optimization problems within the Sienna platform.
+
+This page shows a minimal example to develop a Economic Dispatch model. The code shows the stages to develop modeling code:
 
  1. Make the data set from power flow and time series data,
  2. Serialize the data,
