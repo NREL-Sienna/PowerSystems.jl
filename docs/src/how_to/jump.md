@@ -6,7 +6,7 @@ This page shows a minimal example of `PowerSystems.jl` used to develop and Econo
  2. Serialize the data,
  3. Pass the data and algorithm to the model.
 
-One of the main uses of ``PowerSystems.jl` is not having re-run the data generation for every model execution. The model code shows an example of populating the constraints and cost functions using accessor functions inside the model function. The example concludes by reading the data created earlier and passing the algorithm with the data.
+One of the main uses of `PowerSystems.jl` is not having re-run the data generation for every model execution. The model code shows an example of populating the constraints and cost functions using accessor functions inside the model function. The example concludes by reading the data created earlier and passing the algorithm with the data.
 
 ```@repl using_jump
 using PowerSystems
