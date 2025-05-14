@@ -379,6 +379,13 @@ end
 
 """
 Construct a System from a subsystem of an existing system.
+
+# Arguments
+- `sys::System`: the base system from which the subsystems are derived
+- `subsystem::String`: the name of the subsystem to extract from the original system
+
+# Keyword arguments
+- `runchecks::Bool`: (default = true) whether to run system validation checks.
 """
 function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
     if !in(subsystem, get_subsystems(sys))
