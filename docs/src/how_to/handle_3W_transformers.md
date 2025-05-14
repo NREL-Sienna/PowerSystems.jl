@@ -16,11 +16,11 @@ graph TD
     end
 ```
 
-## Representing PSSe Data
+## Representing 3-windig transformer PSSe Data in PowerSystems.jl
 
 PSS®E represents a [`Transformer3W`](@ref) as a single element with a dedicated data record. This record contains several fields that define the transformer's characteristics and connections. The key information stored includes:
 
-### Bus Connections
+### Bus Connections in Delta configuration
 
   - From Bus Number (I): The bus number connected to the primary winding.
   - To Bus Number (J): The bus number connected to the secondary winding.

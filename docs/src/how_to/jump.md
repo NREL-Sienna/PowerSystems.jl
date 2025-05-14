@@ -22,7 +22,7 @@ using Dates
 ```
 
 !!! note
-    
+
     `PowerSystemCaseBuilder.jl` is a helper library that makes it easier to reproduce examples in the documentation and tutorials. Normally you would pass your local files to create the system data instead of calling the function `build_system`.
     For more details visit [PowerSystemCaseBuilder Documentation](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable).
 
@@ -33,7 +33,7 @@ The constraints include each generator's minimum and maximum active power output
 system_data = build_system(PSISystems, "c_sys5_pjm")
 transform_single_time_series!(system_data, Hour(24), Hour(24))
 
-function ed_model(system::System, optimizer)
+function ed_model(system::System, optimizer, load_scaling_factor::Float64 = 1.0)
     ed_m = Model(optimizer)
     time_periods = 1:24
     thermal_gens_names = get_name.(get_components(ThermalStandard, system))
@@ -57,7 +57,7 @@ function ed_model(system::System, optimizer)
     end
 
     for t in time_periods
-        @constraint(ed_m, sum(pg[g, t] for g in thermal_gens_names) == net_load[t])
+        @constraint(ed_m, sum(pg[g, t] for g in thermal_gens_names) == load_scaling_factor*net_load[t])
     end
 
     @objective(
