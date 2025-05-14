@@ -1119,7 +1119,11 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
             rectifier_base_voltage = dcline["EBASR"]
             if rectifier_base_voltage == 0
-                throw(ArgumentError("DC line $(sub_data["name"]): Rectifier base voltage EBASER cannot be 0"))
+                throw(
+                    ArgumentError(
+                        "DC line $(sub_data["name"]): Rectifier base voltage EBASER cannot be 0",
+                    ),
+                )
             end
             ZbaseR = rectifier_base_voltage^2 / baseMVA
             sub_data["rectifier_bridges"] = dcline["NBR"]
