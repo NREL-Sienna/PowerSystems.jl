@@ -72,7 +72,8 @@ gens_2 = get_components(ThermalStandard, sys; subsystem_name = "2")
 get_name.(gens_2)
 ```
 
-One useful feature that requires care when used is generating a new system from a subsystem assignment.
+One useful feature that requires care when used is generating a new [`System`](@ref) from a `subsystem` assignment.
+
 The function [`from_subsystem`](@ref) will allow the user to produce a new [`System`](@ref) that can be used or exported.
 This functionality requires careful subsystem assignemnt of the devices and its dependencies. In the current example this code will as follows
 
