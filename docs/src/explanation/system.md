@@ -40,9 +40,9 @@ _this is actively discouraged_ for two reasons:
 
 ## [Using subsystems](@id subsystems)
 
-For certain applications like dispatch coordination methods or decomposition approaches it is useful to be able to split the components in subsystems
-in aggregations that are not related to the existing Areas or LoadZones mappings. The subsystems are assigned using any arbitrary string.
-It is possible to add subsystems by calling the following commands on the system:
+For certain applications, such as those that employ dispatch coordination methods or decomposition approaches, it is useful to be able to split components into subsystems based upon user-defined criteria. The  `System` provides `subsystem` containers for this purpose. Each subsystem is defined by a name and can hold references to any number of components.
+
+The following commands demonstrate how to create subsystems and add components.
 
 ```@repl subsystem
 using PowerSystems;
