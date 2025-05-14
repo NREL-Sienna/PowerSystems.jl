@@ -57,7 +57,10 @@ function ed_model(system::System, optimizer, load_scaling_factor::Float64 = 1.0)
     end
 
     for t in time_periods
-        @constraint(ed_m, sum(pg[g, t] for g in thermal_gens_names) == load_scaling_factor*net_load[t])
+        @constraint(
+            ed_m,
+            sum(pg[g, t] for g in thermal_gens_names) == load_scaling_factor * net_load[t]
+        )
     end
 
     @objective(
