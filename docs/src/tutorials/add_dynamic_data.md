@@ -104,7 +104,7 @@ and then use those 5 components to define the complete dynamic generator.
 ```
 
 !!! note
-
+    
     When defining dynamic data, by convention `PowerSystems.jl` assumes that all data is
     in [`DEVICE_BASE`](@ref per_unit).
 
@@ -217,14 +217,14 @@ Notice that unlike static components, which are just added to the `System`,
 this dynamic component is added to a specific static component within the `System`.
 
 !!! tip
-
+    
     To define identical dynamic devices for multiple generators at once, define the pieces of the
     generator model as *functions*, such as:
-
+    
     ```
     avr_type1() = AVRTypeI(...
     ```
-
+    
     When called in the `DynamicGenerator` constructor, this will create a new AVR for each generator, so
     they are different in memory. Later, if you decide to modify the AVR parameters for
     a specific generator, it will not modify the AVR in another generator.
@@ -367,7 +367,7 @@ updates by adding dynamic lines.
 ## Adding Dynamic Lines
 
 !!! warning
-
+    
     A `System` must have at least two buses and one branch to run a dynamic simulation in
     [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/).
 
