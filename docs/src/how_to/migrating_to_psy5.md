@@ -27,7 +27,7 @@ Renamed `Types`:
 
 New parameters:
 
-  - The [`ACTransmission`](@ref) objects now have rating fields for `b` and `c` ratings to enable modeling security constrained problems. These components now also include a field for their base power, in situations where the base power for the transformer is not availble (e.g., when parsing Matpower) the default behavior is to use the system base.
+  - The [`ACTransmission`](@ref) objects now have rating fields for `b` and `c` ratings to enable modeling security constrained problems. These components now also include a `base_power` field, in situations where the base power for the transformer is not available (e.g., when parsing Matpower), the default behavior is to use the [system base for per-unitization](@ref per_unit).
 
 Affected Types are:
 
