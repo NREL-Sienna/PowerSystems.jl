@@ -62,7 +62,7 @@ g = get_component(ThermalStandard, sys, "Sundance")
 add_component_to_subsystem!(sys, "2", g)
 ```
 
-To retrieve components assigned to specific subsystem the use the keyword argument `subsystem_name`.
+To retrieve components assigned to a specific subsystem, add the `subsystem_name` keyword argument to `get_components`.
 
 ```@repl subsystem
 gens_1 = get_components(ThermalStandard, sys; subsystem_name = "1")
