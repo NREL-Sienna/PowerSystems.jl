@@ -141,7 +141,7 @@ Public = true
 Private = false
 ```
 
-## Deprecated Methods(@id deprecated)
+## [Deprecated Methods](@id deprecated)
 
 ```@autodocs
 Modules = [PowerSystems]
