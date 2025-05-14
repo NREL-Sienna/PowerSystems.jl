@@ -80,7 +80,7 @@ This functionality requires careful subsystem assignemnt of the devices and its 
 from_subsystem(sys, "1")
 ```
 
-In order to fix the error the bus in the Alta generator also needs to be added to the subsystem 1.
+The system is invalid because the bus connected to the Alta generator is not part of the subsystem. We can add it, and then run [`from_subsystem`](@ref) again
 
 ```@repl subsystem
 g = get_component(ThermalStandard, sys, "Alta")
