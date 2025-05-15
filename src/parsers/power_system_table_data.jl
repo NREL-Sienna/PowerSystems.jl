@@ -822,7 +822,7 @@ function make_cost(
             var_cost,
             UnitSystem.NATURAL_UNITS,
             fuel_price,
-            LinearCurve(0.0),
+            LinearCurve(0.0),  # this is the default fuel offtake cost
             vom_data,
         ),
         fixed * fuel_price,
