@@ -762,6 +762,44 @@ function _add_service!(
     end
 end
 
+function _validate_types_for_interface(sys::System, contributing_devices)
+    device_types = Set{DataType}()
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Branch)
+            throw(ArgumentError("contributing_devices must be of type Device"))
+        end
+        push!(device_types, device_type)
+        throw_if_not_attached(device, sys)
+    end
+    if length(device_types) > 1 && AreaInterchange in device_types
+        throw(
+            ArgumentError(
+                "contributing_devices can't mix AreaInterchange with other Branch types",
+            ),
+        )
+    end
+    return
+end
+
+function _add_service!(
+    sys::System,
+    service::TransmissionInterface,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
+    _validate_types_for_interface(sys, contributing_devices)
+    set_units_setting!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+
+    for device in contributing_devices
+        add_service_internal!(device, service)
+    end
+end
+
 """
 Similar to [`add_component!`](@ref) but for services.
 
@@ -2294,8 +2332,12 @@ end
 
 function check_component_removal(sys::System, area::Area)
     for interchange in get_components(AreaInterchange, sys)
-        if get_from_area(interchange) == area || get_to_area(interchange) == area
-            throw(ArgumentError("Area $area cannot be removed with attached AreaInterchange: $(get_name(interchange))"))
+        if area in [get_from_area(interchange), get_to_area(interchange)]
+            throw(
+                ArgumentError(
+                    "Area $(summary(area)) cannot be removed with attached AreaInterchange: $(summary(interchange))",
+                ),
+            )
         end
     end
     return
