@@ -1117,17 +1117,33 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["br_status"] = sub_data["available"]
 
             sub_data["scheduled_dc_voltage"] = dcline["VSCHD"]
-            ZbaseR = dcline["EBASR"]^2 / baseMVA
+            rectifier_base_voltage = dcline["EBASR"]
+            if rectifier_base_voltage == 0
+                throw(
+                    ArgumentError(
+                        "DC line $(sub_data["name"]): Rectifier base voltage EBASER cannot be 0",
+                    ),
+                )
+            end
+            ZbaseR = rectifier_base_voltage^2 / baseMVA
             sub_data["rectifier_bridges"] = dcline["NBR"]
             sub_data["rectifier_rc"] = dcline["RCR"] / ZbaseR
             sub_data["rectifier_xc"] = dcline["XCR"] / ZbaseR
-            sub_data["rectifier_base_voltage"] = dcline["EBASR"]
+            sub_data["rectifier_base_voltage"] = rectifier_base_voltage
 
-            ZbaseI = dcline["EBASI"]^2 / baseMVA
+            inverter_base_voltage = dcline["EBASI"]
+            if inverter_base_voltage == 0
+                throw(
+                    ArgumentError(
+                        "DC line $(sub_data["name"]): Inverter base voltage EBASI cannot be 0",
+                    ),
+                )
+            end
+            ZbaseI = inverter_base_voltage^2 / baseMVA
             sub_data["inverter_bridges"] = dcline["NBI"]
             sub_data["inverter_rc"] = dcline["RCI"] / ZbaseI
             sub_data["inverter_xc"] = dcline["XCI"] / ZbaseI
-            sub_data["inverter_base_voltage"] = dcline["EBASI"]
+            sub_data["inverter_base_voltage"] = inverter_base_voltage
 
             sub_data["switch_mode_voltage"] = dcline["VCMOD"]
             sub_data["compounding_resistance"] = dcline["RCOMP"]
