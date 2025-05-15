@@ -767,7 +767,7 @@ function _validate_types_for_interface(sys::System, contributing_devices)
     for device in contributing_devices
         device_type = typeof(device)
         if !(device_type <: Branch)
-            throw(ArgumentError("contributing_devices must be of type Device"))
+            throw(ArgumentError("contributing_devices must be of type Branch"))
         end
         push!(device_types, device_type)
         throw_if_not_attached(device, sys)
