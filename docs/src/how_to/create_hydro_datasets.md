@@ -21,12 +21,11 @@ flowchart TB
 It is possible to attach an upstream reservoir to any number of turbines with different power house elevations to consider the effect of the elevation and pressure heads
 on the specific turbines inside of a power plant.
 
-
-
 ## Head and Tail Reservoirs for Pumped Hydropower Plants
 
 The turbine and reservoirs structs store the elevations in each case calculate adequately the elevation and pressure heads for
 the facility.
+
 ```mermaid
 flowchart TB
  subgraph s1["Pumped Hydro Plant"]

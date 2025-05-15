@@ -25,8 +25,8 @@ You can retrieve the attributes in a component using the function [`get_suppleme
 
 ## Existing Supplemental Attributes in PowerSystems
 
-- [`FixedForcedOutage`](@ref)
-- [`GeometricDistributionForcedOutage`](@ref)
-- [`PlannedOutage`](@ref)
-- [`GeographicInfo`](@ref)
-- [`ImpedanceCorrectionData`](@ref)
+  - [`FixedForcedOutage`](@ref)
+  - [`GeometricDistributionForcedOutage`](@ref)
+  - [`PlannedOutage`](@ref)
+  - [`GeographicInfo`](@ref)
+  - [`ImpedanceCorrectionData`](@ref)
