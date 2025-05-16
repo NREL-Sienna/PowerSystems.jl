@@ -110,9 +110,9 @@ get_name(value::Transformer2W) = value.name
 """Get [`Transformer2W`](@ref) `available`."""
 get_available(value::Transformer2W) = value.available
 """Get [`Transformer2W`](@ref) `active_power_flow`."""
-get_active_power_flow(value::Transformer2W) = get_value(value, value.active_power_flow)
+get_active_power_flow(value::Transformer2W) = get_value(value, value.active_power_flow, Val(:mva))
 """Get [`Transformer2W`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::Transformer2W) = get_value(value, value.reactive_power_flow)
+get_reactive_power_flow(value::Transformer2W) = get_value(value, value.reactive_power_flow, Val(:mva))
 """Get [`Transformer2W`](@ref) `arc`."""
 get_arc(value::Transformer2W) = value.arc
 """Get [`Transformer2W`](@ref) `r`."""
@@ -122,13 +122,13 @@ get_x(value::Transformer2W) = value.x
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
 get_primary_shunt(value::Transformer2W) = value.primary_shunt
 """Get [`Transformer2W`](@ref) `rating`."""
-get_rating(value::Transformer2W) = get_value(value, value.rating)
+get_rating(value::Transformer2W) = get_value(value, value.rating, Val(:mva))
 """Get [`Transformer2W`](@ref) `base_power`."""
 get_base_power(value::Transformer2W) = value.base_power
 """Get [`Transformer2W`](@ref) `rating_b`."""
-get_rating_b(value::Transformer2W) = get_value(value, value.rating_b)
+get_rating_b(value::Transformer2W) = get_value(value, value.rating_b, Val(:mva))
 """Get [`Transformer2W`](@ref) `rating_c`."""
-get_rating_c(value::Transformer2W) = get_value(value, value.rating_c)
+get_rating_c(value::Transformer2W) = get_value(value, value.rating_c, Val(:mva))
 """Get [`Transformer2W`](@ref) `services`."""
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
@@ -139,9 +139,9 @@ get_internal(value::Transformer2W) = value.internal
 """Set [`Transformer2W`](@ref) `available`."""
 set_available!(value::Transformer2W, val) = value.available = val
 """Set [`Transformer2W`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = set_value(value, val)
+set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = set_value(value, val)
+set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `arc`."""
 set_arc!(value::Transformer2W, val) = value.arc = val
 """Set [`Transformer2W`](@ref) `r`."""
@@ -151,13 +151,13 @@ set_x!(value::Transformer2W, val) = value.x = val
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
 """Set [`Transformer2W`](@ref) `rating`."""
-set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val)
+set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
 set_base_power!(value::Transformer2W, val) = value.base_power = val
 """Set [`Transformer2W`](@ref) `rating_b`."""
-set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, val)
+set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `rating_c`."""
-set_rating_c!(value::Transformer2W, val) = value.rating_c = set_value(value, val)
+set_rating_c!(value::Transformer2W, val) = value.rating_c = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""

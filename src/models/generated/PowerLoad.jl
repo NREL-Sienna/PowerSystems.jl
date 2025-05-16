@@ -102,15 +102,15 @@ get_available(value::PowerLoad) = value.available
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
 """Get [`PowerLoad`](@ref) `active_power`."""
-get_active_power(value::PowerLoad) = get_value(value, value.active_power)
+get_active_power(value::PowerLoad) = get_value(value, value.active_power, Val(:mva))
 """Get [`PowerLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::PowerLoad) = get_value(value, value.reactive_power)
+get_reactive_power(value::PowerLoad) = get_value(value, value.reactive_power, Val(:mva))
 """Get [`PowerLoad`](@ref) `base_power`."""
 get_base_power(value::PowerLoad) = value.base_power
 """Get [`PowerLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::PowerLoad) = get_value(value, value.max_active_power)
+get_max_active_power(value::PowerLoad) = get_value(value, value.max_active_power, Val(:mva))
 """Get [`PowerLoad`](@ref) `max_reactive_power`."""
-get_max_reactive_power(value::PowerLoad) = get_value(value, value.max_reactive_power)
+get_max_reactive_power(value::PowerLoad) = get_value(value, value.max_reactive_power, Val(:mva))
 """Get [`PowerLoad`](@ref) `conformity`."""
 get_conformity(value::PowerLoad) = value.conformity
 """Get [`PowerLoad`](@ref) `services`."""
@@ -127,15 +127,15 @@ set_available!(value::PowerLoad, val) = value.available = val
 """Set [`PowerLoad`](@ref) `bus`."""
 set_bus!(value::PowerLoad, val) = value.bus = val
 """Set [`PowerLoad`](@ref) `active_power`."""
-set_active_power!(value::PowerLoad, val) = value.active_power = set_value(value, val)
+set_active_power!(value::PowerLoad, val) = value.active_power = set_value(value, val, Val(:mva))
 """Set [`PowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::PowerLoad, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::PowerLoad, val) = value.reactive_power = set_value(value, val, Val(:mva))
 """Set [`PowerLoad`](@ref) `base_power`."""
 set_base_power!(value::PowerLoad, val) = value.base_power = val
 """Set [`PowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::PowerLoad, val) = value.max_active_power = set_value(value, val)
+set_max_active_power!(value::PowerLoad, val) = value.max_active_power = set_value(value, val, Val(:mva))
 """Set [`PowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = set_value(value, val)
+set_max_reactive_power!(value::PowerLoad, val) = value.max_reactive_power = set_value(value, val, Val(:mva))
 """Set [`PowerLoad`](@ref) `conformity`."""
 set_conformity!(value::PowerLoad, val) = value.conformity = val
 """Set [`PowerLoad`](@ref) `services`."""

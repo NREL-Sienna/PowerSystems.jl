@@ -258,17 +258,17 @@ get_tertiary_star_arc(value::Transformer3W) = value.tertiary_star_arc
 """Get [`Transformer3W`](@ref) `star_bus`."""
 get_star_bus(value::Transformer3W) = value.star_bus
 """Get [`Transformer3W`](@ref) `active_power_flow_primary`."""
-get_active_power_flow_primary(value::Transformer3W) = get_value(value, value.active_power_flow_primary)
+get_active_power_flow_primary(value::Transformer3W) = get_value(value, value.active_power_flow_primary, Val(:mva))
 """Get [`Transformer3W`](@ref) `reactive_power_flow_primary`."""
-get_reactive_power_flow_primary(value::Transformer3W) = get_value(value, value.reactive_power_flow_primary)
+get_reactive_power_flow_primary(value::Transformer3W) = get_value(value, value.reactive_power_flow_primary, Val(:mva))
 """Get [`Transformer3W`](@ref) `active_power_flow_secondary`."""
-get_active_power_flow_secondary(value::Transformer3W) = get_value(value, value.active_power_flow_secondary)
+get_active_power_flow_secondary(value::Transformer3W) = get_value(value, value.active_power_flow_secondary, Val(:mva))
 """Get [`Transformer3W`](@ref) `reactive_power_flow_secondary`."""
-get_reactive_power_flow_secondary(value::Transformer3W) = get_value(value, value.reactive_power_flow_secondary)
+get_reactive_power_flow_secondary(value::Transformer3W) = get_value(value, value.reactive_power_flow_secondary, Val(:mva))
 """Get [`Transformer3W`](@ref) `active_power_flow_tertiary`."""
-get_active_power_flow_tertiary(value::Transformer3W) = get_value(value, value.active_power_flow_tertiary)
+get_active_power_flow_tertiary(value::Transformer3W) = get_value(value, value.active_power_flow_tertiary, Val(:mva))
 """Get [`Transformer3W`](@ref) `reactive_power_flow_tertiary`."""
-get_reactive_power_flow_tertiary(value::Transformer3W) = get_value(value, value.reactive_power_flow_tertiary)
+get_reactive_power_flow_tertiary(value::Transformer3W) = get_value(value, value.reactive_power_flow_tertiary, Val(:mva))
 """Get [`Transformer3W`](@ref) `r_primary`."""
 get_r_primary(value::Transformer3W) = value.r_primary
 """Get [`Transformer3W`](@ref) `x_primary`."""
@@ -282,7 +282,7 @@ get_r_tertiary(value::Transformer3W) = value.r_tertiary
 """Get [`Transformer3W`](@ref) `x_tertiary`."""
 get_x_tertiary(value::Transformer3W) = value.x_tertiary
 """Get [`Transformer3W`](@ref) `rating`."""
-get_rating(value::Transformer3W) = get_value(value, value.rating)
+get_rating(value::Transformer3W) = get_value(value, value.rating, Val(:mva))
 """Get [`Transformer3W`](@ref) `r_12`."""
 get_r_12(value::Transformer3W) = value.r_12
 """Get [`Transformer3W`](@ref) `x_12`."""
@@ -318,11 +318,11 @@ get_available_secondary(value::Transformer3W) = value.available_secondary
 """Get [`Transformer3W`](@ref) `available_tertiary`."""
 get_available_tertiary(value::Transformer3W) = value.available_tertiary
 """Get [`Transformer3W`](@ref) `rating_primary`."""
-get_rating_primary(value::Transformer3W) = get_value(value, value.rating_primary)
+get_rating_primary(value::Transformer3W) = get_value(value, value.rating_primary, Val(:mva))
 """Get [`Transformer3W`](@ref) `rating_secondary`."""
-get_rating_secondary(value::Transformer3W) = get_value(value, value.rating_secondary)
+get_rating_secondary(value::Transformer3W) = get_value(value, value.rating_secondary, Val(:mva))
 """Get [`Transformer3W`](@ref) `rating_tertiary`."""
-get_rating_tertiary(value::Transformer3W) = get_value(value, value.rating_tertiary)
+get_rating_tertiary(value::Transformer3W) = get_value(value, value.rating_tertiary, Val(:mva))
 """Get [`Transformer3W`](@ref) `delta_winding_connection`."""
 get_delta_winding_connection(value::Transformer3W) = value.delta_winding_connection
 """Get [`Transformer3W`](@ref) `services`."""
@@ -343,17 +343,17 @@ set_tertiary_star_arc!(value::Transformer3W, val) = value.tertiary_star_arc = va
 """Set [`Transformer3W`](@ref) `star_bus`."""
 set_star_bus!(value::Transformer3W, val) = value.star_bus = val
 """Set [`Transformer3W`](@ref) `active_power_flow_primary`."""
-set_active_power_flow_primary!(value::Transformer3W, val) = value.active_power_flow_primary = set_value(value, val)
+set_active_power_flow_primary!(value::Transformer3W, val) = value.active_power_flow_primary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `reactive_power_flow_primary`."""
-set_reactive_power_flow_primary!(value::Transformer3W, val) = value.reactive_power_flow_primary = set_value(value, val)
+set_reactive_power_flow_primary!(value::Transformer3W, val) = value.reactive_power_flow_primary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `active_power_flow_secondary`."""
-set_active_power_flow_secondary!(value::Transformer3W, val) = value.active_power_flow_secondary = set_value(value, val)
+set_active_power_flow_secondary!(value::Transformer3W, val) = value.active_power_flow_secondary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `reactive_power_flow_secondary`."""
-set_reactive_power_flow_secondary!(value::Transformer3W, val) = value.reactive_power_flow_secondary = set_value(value, val)
+set_reactive_power_flow_secondary!(value::Transformer3W, val) = value.reactive_power_flow_secondary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `active_power_flow_tertiary`."""
-set_active_power_flow_tertiary!(value::Transformer3W, val) = value.active_power_flow_tertiary = set_value(value, val)
+set_active_power_flow_tertiary!(value::Transformer3W, val) = value.active_power_flow_tertiary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `reactive_power_flow_tertiary`."""
-set_reactive_power_flow_tertiary!(value::Transformer3W, val) = value.reactive_power_flow_tertiary = set_value(value, val)
+set_reactive_power_flow_tertiary!(value::Transformer3W, val) = value.reactive_power_flow_tertiary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `r_primary`."""
 set_r_primary!(value::Transformer3W, val) = value.r_primary = val
 """Set [`Transformer3W`](@ref) `x_primary`."""
@@ -367,7 +367,7 @@ set_r_tertiary!(value::Transformer3W, val) = value.r_tertiary = val
 """Set [`Transformer3W`](@ref) `x_tertiary`."""
 set_x_tertiary!(value::Transformer3W, val) = value.x_tertiary = val
 """Set [`Transformer3W`](@ref) `rating`."""
-set_rating!(value::Transformer3W, val) = value.rating = set_value(value, val)
+set_rating!(value::Transformer3W, val) = value.rating = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `r_12`."""
 set_r_12!(value::Transformer3W, val) = value.r_12 = val
 """Set [`Transformer3W`](@ref) `x_12`."""
@@ -403,11 +403,11 @@ set_available_secondary!(value::Transformer3W, val) = value.available_secondary 
 """Set [`Transformer3W`](@ref) `available_tertiary`."""
 set_available_tertiary!(value::Transformer3W, val) = value.available_tertiary = val
 """Set [`Transformer3W`](@ref) `rating_primary`."""
-set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_value(value, val)
+set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `rating_secondary`."""
-set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, val)
+set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `rating_tertiary`."""
-set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, val)
+set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, val, Val(:mva))
 """Set [`Transformer3W`](@ref) `delta_winding_connection`."""
 set_delta_winding_connection!(value::Transformer3W, val) = value.delta_winding_connection = val
 """Set [`Transformer3W`](@ref) `services`."""
