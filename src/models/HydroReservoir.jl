@@ -10,12 +10,12 @@ an import error.
     mutable struct HydroReservoir <: Device
         name::String
         available::Bool
-        storage_level_limits::Union{MinMax, TimeSeriesKey}
+        storage_level_limits::Union{MinMax}
         initial_level::Float64
-        spillage_limits::Union{Nothing, MinMax, TimeSeriesKey}
-        inflow::Union{Float64, TimeSeriesKey}
-        outflow::Union{Float64, TimeSeriesKey}
-        level_targets::Union{Nothing, Float64, TimeSeriesKey}
+        spillage_limits::Union{Nothing, MinMax}
+        inflow::Union{Float64}
+        outflow::Union{Float64}
+        level_targets::Union{Nothing, Float64}
         travel_time::Union{Nothing, Float64}
         intake_elevation::Float64
         head_to_volume_factor::Union{Float64, PiecewisePointCurve}
@@ -29,12 +29,12 @@ A hydropower reservoir that needs to have `HydroTurbine` attached to generate po
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `storage_level_limits::Union{MinMax, TimeSeriesKey}`: Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head).
+- `storage_level_limits::Union{MinMax}`: Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head).
 - `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits`.
-- `spillage_limits::Union{Nothing, MinMax, TimeSeriesKey}`: Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed.
-- `inflow::Union{Float64, TimeSeriesKey}`: Amount of water refilling the reservoir in m^3/h.
-- `outflow::Union{Float64, TimeSeriesKey}`: Amount of water going to the turbine(s) in m^3/h.
-- `level_targets::Union{Nothing, Float64, TimeSeriesKey}`: Reservoir level targets at the end of a simulation as a fraction of the total level.
+- `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed.
+- `inflow::Union{Float64}`: Amount of water refilling the reservoir in m^3/h.
+- `outflow::Union{Float64}`: Amount of water going to the turbine(s) in m^3/h.
+- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the total level.
 - `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours
 - `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
 - `head_to_volume_factor::Union{Float64, PiecewisePointCurve}`: Head to volume relationship for the reservoir.
@@ -48,17 +48,17 @@ mutable struct HydroReservoir <: Device
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
     "Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head). If nothing, the reservoir volume is assumed to be infinite."
-    storage_level_limits::Union{MinMax, TimeSeriesKey}
+    storage_level_limits::Union{MinMax}
     "Initial level of the reservoir relative to the `storage_level_limits`."
     initial_level::Float64
     "Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed."
-    spillage_limits::Union{Nothing, MinMax, TimeSeriesKey}
+    spillage_limits::Union{Nothing, MinMax}
     "Amount of water refilling the reservoir in m^3/h."
-    inflow::Union{Float64, TimeSeriesKey}
+    inflow::Union{Float64}
     "Amount of water going to the turbine(s) in m^3/h."
-    outflow::Union{Float64, TimeSeriesKey}
+    outflow::Union{Float64}
     "Reservoir level targets at the end of a simulation as a fraction of the total level."
-    level_targets::Union{Nothing, Float64, TimeSeriesKey}
+    level_targets::Union{Nothing, Float64}
     "Downstream travel time in hours"
     travel_time::Union{Nothing, Float64}
     "Height of the intake of the reservoir in meters above the sea level."
