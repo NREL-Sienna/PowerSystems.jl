@@ -101,36 +101,36 @@ end
 _get_multiplier(::T, ::IS.SystemUnitsSettings, ::Val, ::Val) where {T <: Component} =
     error("Undefined Conditional")
 
-function get_value(c::Component, value::Float64, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::Float64, conversion_unit::Val)
     return _get_multiplier(c, conversion_unit) * value
 end
 
-function get_value(c::Component, value::MinMax, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::MinMax, conversion_unit::Val)
     m = _get_multiplier(c, conversion_unit)
     return (min = value.min * m, max = value.max * m)
 end
 
-function get_value(c::Component, value::StartUpShutDown, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::StartUpShutDown, conversion_unit::Val)
     m = _get_multiplier(c, conversion_unit)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function get_value(c::Component, value::UpDown, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::UpDown, conversion_unit::Val)
     m = _get_multiplier(c, conversion_unit)
     return (up = value.up * m, down = value.down * m)
 end
 
-function get_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val)
     m = _get_multiplier(c, conversion_unit)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
 
-function get_value(c::Component, value::FromTo, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::FromTo, conversion_unit::Val)
     m = _get_multiplier(c, conversion_unit)
     return (from = value.from * m, to = value.to * m)
 end
 
-function get_value(c::Component, value::Nothing, conversion_unit::Val = Val{:mva})
+function get_value(c::Component, value::Nothing, conversion_unit::Val)
     return value
 end
 
@@ -143,31 +143,31 @@ function get_value(::Nothing, _, _)
     return
 end
 
-function set_value(c::Component, value::Float64, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::Float64, conversion_unit::Val)
     return (1 / _get_multiplier(c, conversion_unit)) * value
 end
 
-function set_value(c::Component, value::MinMax, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::MinMax, conversion_unit::Val)
     m = 1 / _get_multiplier(c, conversion_unit)
     return (min = value.min * m, max = value.max * m)
 end
 
-function set_value(c::Component, value::StartUpShutDown, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::StartUpShutDown, conversion_unit::Val)
     m = 1 / _get_multiplier(c, conversion_unit)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function set_value(c::Component, value::UpDown, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::UpDown, conversion_unit::Val)
     m = 1 / _get_multiplier(c, conversion_unit)
     return (up = value.up * m, down = value.down * m)
 end
 
-function set_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val)
     m = 1 / _get_multiplier(c, conversion_unit)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
 
-function set_value(c::Component, value::FromTo, conversion_unit::Val = Val{:mva})
+function set_value(c::Component, value::FromTo, conversion_unit::Val)
     m = 1 / _get_multiplier(c, conversion_unit)
     return (from = value.from * m, to_from = value.to * m)
 end
