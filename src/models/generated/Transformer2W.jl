@@ -116,11 +116,11 @@ get_reactive_power_flow(value::Transformer2W) = get_value(value, value.reactive_
 """Get [`Transformer2W`](@ref) `arc`."""
 get_arc(value::Transformer2W) = value.arc
 """Get [`Transformer2W`](@ref) `r`."""
-get_r(value::Transformer2W) = value.r
+get_r(value::Transformer2W) = get_value(value, value.r, Val(:ohm))
 """Get [`Transformer2W`](@ref) `x`."""
-get_x(value::Transformer2W) = value.x
+get_x(value::Transformer2W) = get_value(value, value.x, Val(:ohm))
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
-get_primary_shunt(value::Transformer2W) = value.primary_shunt
+get_primary_shunt(value::Transformer2W) = get_value(value, value.primary_shunt, Val(:ohm))
 """Get [`Transformer2W`](@ref) `rating`."""
 get_rating(value::Transformer2W) = get_value(value, value.rating, Val(:mva))
 """Get [`Transformer2W`](@ref) `base_power`."""
@@ -145,11 +145,11 @@ set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow 
 """Set [`Transformer2W`](@ref) `arc`."""
 set_arc!(value::Transformer2W, val) = value.arc = val
 """Set [`Transformer2W`](@ref) `r`."""
-set_r!(value::Transformer2W, val) = value.r = val
+set_r!(value::Transformer2W, val) = value.r = set_value(value, val, Val(:ohm))
 """Set [`Transformer2W`](@ref) `x`."""
-set_x!(value::Transformer2W, val) = value.x = val
+set_x!(value::Transformer2W, val) = value.x = set_value(value, val, Val(:ohm))
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = val
+set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, val, Val(:ohm))
 """Set [`Transformer2W`](@ref) `rating`."""
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
