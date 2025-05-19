@@ -7,15 +7,15 @@ Default behavior of a component. If there is no base_power field, assume is in t
 """
 get_base_power(c::Component) = get_system_base_power(c)
 
-_get_multiplier(c::T, conversion_unit::Val) where {T <: Component} =
+_get_multiplier(c::T, conversion_unit) where {T <: Component} =
     _get_multiplier(c, get_internal(c).units_info, conversion_unit)
 
-_get_multiplier(::T, ::Nothing, conversion_unit::Val) where {T <: Component} =
+_get_multiplier(::T, ::Nothing, conversion_unit) where {T <: Component} =
     1.0
 _get_multiplier(
     c::T,
     setting::IS.SystemUnitsSettings,
-    conversion_unit::Val,
+    conversion_unit,
 ) where {T <: Component} =
     _get_multiplier(c, setting, Val(setting.unit_system), conversion_unit)
 
@@ -27,7 +27,7 @@ _get_multiplier(
     ::T,
     ::IS.SystemUnitsSettings,
     ::Val{IS.UnitSystem.DEVICE_BASE},
-    ::Val,
+    ::Any,
 ) where {T <: Component} =
     1.0
 ###############
@@ -97,21 +97,19 @@ function _get_multiplier(
     return get_base_power(c) / get_base_voltage(get_arc(c).from)^2
 end
 
-_get_multiplier(::T, ::IS.SystemUnitsSettings, ::Val, ::Val) where {T <: Component} =
+_get_multiplier(::T, ::IS.SystemUnitsSettings, _, _) where {T <: Component} =
     error("Undefined Conditional")
 
-function get_value(c::Component, ::Val{T}, conversion_unit::Val) where {T}
-    #@show T
-    # @show typeof(T)
+function get_value(c::Component, ::Val{T}, conversion_unit) where {T}
     value = Base.getproperty(c, T)
     return _get_value(c, value, conversion_unit)
 end
 
-function _get_value(c::Component, value::Float64, conversion_unit::Val)::Float64
+function _get_value(c::Component, value::Float64, conversion_unit)::Float64
     return _get_multiplier(c, conversion_unit) * value
 end
 
-function _get_value(c::Component, value::MinMax, conversion_unit::Val)::MinMax
+function _get_value(c::Component, value::MinMax, conversion_unit)::MinMax
     m = _get_multiplier(c, conversion_unit)
     return (min = value.min * m, max = value.max * m)
 end
@@ -119,32 +117,32 @@ end
 function _get_value(
     c::Component,
     value::StartUpShutDown,
-    conversion_unit::Val,
+    conversion_unit,
 )::StartUpShutDown
     m = _get_multiplier(c, conversion_unit)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function _get_value(c::Component, value::UpDown, conversion_unit::Val)::UpDown
+function _get_value(c::Component, value::UpDown, conversion_unit)::UpDown
     m = _get_multiplier(c, conversion_unit)
     return (up = value.up * m, down = value.down * m)
 end
 
-function _get_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val)::FromTo_ToFrom
+function _get_value(c::Component, value::FromTo_ToFrom, conversion_unit)::FromTo_ToFrom
     m = _get_multiplier(c, conversion_unit)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
 
-function _get_value(c::Component, value::FromTo, conversion_unit::Val)::FromTo
+function _get_value(c::Component, value::FromTo, conversion_unit)::FromTo
     m = _get_multiplier(c, conversion_unit)
     return (from = value.from * m, to = value.to * m)
 end
 
-function _get_value(::Component, ::Nothing, ::Val)
+function _get_value(::Component, ::Nothing, _)
     return nothing
 end
 
-function _get_value(c::T, value::V, conversion_unit::Val) where {T <: Component, V}
+function _get_value(::T, value::V, _) where {T <: Component, V}
     @warn("conversion not implemented for $(V) in component $(T)")
     return value::V
 end
@@ -153,16 +151,16 @@ function _get_value(::Nothing, _, _)
     return
 end
 
-function set_value(c::Component, ::Val{T}, conversion_unit::Val) where {T}
+function set_value(c::Component, ::Val{T}, conversion_unit) where {T}
     value = Base.getproperty(c, T)
     return _set_value(c, value, conversion_unit)
 end
 
-function _set_value(c::Component, value::Float64, conversion_unit::Val)::Float64
+function _set_value(c::Component, value::Float64, conversion_unit)::Float64
     return (1 / _get_multiplier(c, conversion_unit)) * value
 end
 
-function _set_value(c::Component, value::MinMax, conversion_unit::Val)::MinMax
+function _set_value(c::Component, value::MinMax, conversion_unit)::MinMax
     m = 1 / _get_multiplier(c, conversion_unit)
     return (min = value.min * m, max = value.max * m)
 end
@@ -170,32 +168,32 @@ end
 function _set_value(
     c::Component,
     value::StartUpShutDown,
-    conversion_unit::Val,
+    conversion_unit,
 )::StartUpShutDown
     m = 1 / _get_multiplier(c, conversion_unit)
     return (startup = value.startup * m, shutdown = value.shutdown * m)
 end
 
-function _set_value(c::Component, value::UpDown, conversion_unit::Val)::UpDown
+function _set_value(c::Component, value::UpDown, conversion_unit)::UpDown
     m = 1 / _get_multiplier(c, conversion_unit)
     return (up = value.up * m, down = value.down * m)
 end
 
-function _set_value(c::Component, value::FromTo_ToFrom, conversion_unit::Val)::FromTo_ToFrom
+function _set_value(c::Component, value::FromTo_ToFrom, conversion_unit)::FromTo_ToFrom
     m = 1 / _get_multiplier(c, conversion_unit)
     return (from_to = value.from_to * m, to_from = value.to_from * m)
 end
 
-function _set_value(c::Component, value::FromTo, conversion_unit::Val)::FromTo
+function _set_value(c::Component, value::FromTo, conversion_unit)::FromTo
     m = 1 / _get_multiplier(c, conversion_unit)
     return (from = value.from * m, to_from = value.to * m)
 end
 
-function _set_value(::Component, ::Nothing, ::Val)
+function _set_value(::Component, ::Nothing, _)
     return nothing
 end
 
-function _set_value(c::T, value::V, ::Val) where {T <: Component, V}
+function _set_value(c::T, value::V, _) where {T <: Component, V}
     @warn("conversion not implemented for $(V) in component $(T)")
     return value::V
 end
