@@ -113,25 +113,25 @@ get_name(value::Line) = value.name
 """Get [`Line`](@ref) `available`."""
 get_available(value::Line) = value.available
 """Get [`Line`](@ref) `active_power_flow`."""
-get_active_power_flow(value::Line) = get_value(value, value.active_power_flow, Val(:mva))
+get_active_power_flow(value::Line) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`Line`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::Line) = get_value(value, value.reactive_power_flow, Val(:mva))
+get_reactive_power_flow(value::Line) = get_value(value, Val(:reactive_power_flow), Val(:mva))
 """Get [`Line`](@ref) `arc`."""
 get_arc(value::Line) = value.arc
 """Get [`Line`](@ref) `r`."""
-get_r(value::Line) = get_value(value, value.r, Val(:ohm))
+get_r(value::Line) = get_value(value, Val(:r), Val(:ohm))
 """Get [`Line`](@ref) `x`."""
-get_x(value::Line) = get_value(value, value.x, Val(:ohm))
+get_x(value::Line) = get_value(value, Val(:x), Val(:ohm))
 """Get [`Line`](@ref) `b`."""
-get_b(value::Line) = get_value(value, value.b, Val(:siemens))
+get_b(value::Line) = get_value(value, Val(:b), Val(:siemens))
 """Get [`Line`](@ref) `rating`."""
-get_rating(value::Line) = get_value(value, value.rating, Val(:mva))
+get_rating(value::Line) = get_value(value, Val(:rating), Val(:mva))
 """Get [`Line`](@ref) `angle_limits`."""
 get_angle_limits(value::Line) = value.angle_limits
 """Get [`Line`](@ref) `rating_b`."""
-get_rating_b(value::Line) = get_value(value, value.rating_b, Val(:mva))
+get_rating_b(value::Line) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`Line`](@ref) `rating_c`."""
-get_rating_c(value::Line) = get_value(value, value.rating_c, Val(:mva))
+get_rating_c(value::Line) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`Line`](@ref) `g`."""
 get_g(value::Line) = value.g
 """Get [`Line`](@ref) `services`."""
@@ -144,25 +144,25 @@ get_internal(value::Line) = value.internal
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, val, Val(:mva))
+set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
 """Set [`Line`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, val, Val(:mva))
+set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), Val(:mva))
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
 """Set [`Line`](@ref) `r`."""
-set_r!(value::Line, val) = value.r = set_value(value, val, Val(:ohm))
+set_r!(value::Line, val) = value.r = set_value(value, Val(:r), Val(:ohm))
 """Set [`Line`](@ref) `x`."""
-set_x!(value::Line, val) = value.x = set_value(value, val, Val(:ohm))
+set_x!(value::Line, val) = value.x = set_value(value, Val(:x), Val(:ohm))
 """Set [`Line`](@ref) `b`."""
-set_b!(value::Line, val) = value.b = set_value(value, val, Val(:siemens))
+set_b!(value::Line, val) = value.b = set_value(value, Val(:b), Val(:siemens))
 """Set [`Line`](@ref) `rating`."""
-set_rating!(value::Line, val) = value.rating = set_value(value, val, Val(:mva))
+set_rating!(value::Line, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
 """Set [`Line`](@ref) `rating_b`."""
-set_rating_b!(value::Line, val) = value.rating_b = set_value(value, val, Val(:mva))
+set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_b), Val(:mva))
 """Set [`Line`](@ref) `rating_c`."""
-set_rating_c!(value::Line, val) = value.rating_c = set_value(value, val, Val(:mva))
+set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), Val(:mva))
 """Set [`Line`](@ref) `g`."""
 set_g!(value::Line, val) = value.g = val
 """Set [`Line`](@ref) `services`."""

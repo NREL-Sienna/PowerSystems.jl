@@ -95,7 +95,7 @@ get_name(value::TModelHVDCLine) = value.name
 """Get [`TModelHVDCLine`](@ref) `available`."""
 get_available(value::TModelHVDCLine) = value.available
 """Get [`TModelHVDCLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::TModelHVDCLine) = get_value(value, value.active_power_flow, Val(:mva))
+get_active_power_flow(value::TModelHVDCLine) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`TModelHVDCLine`](@ref) `arc`."""
 get_arc(value::TModelHVDCLine) = value.arc
 """Get [`TModelHVDCLine`](@ref) `r`."""
@@ -105,9 +105,9 @@ get_l(value::TModelHVDCLine) = value.l
 """Get [`TModelHVDCLine`](@ref) `c`."""
 get_c(value::TModelHVDCLine) = value.c
 """Get [`TModelHVDCLine`](@ref) `active_power_limits_from`."""
-get_active_power_limits_from(value::TModelHVDCLine) = get_value(value, value.active_power_limits_from, Val(:mva))
+get_active_power_limits_from(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva))
 """Get [`TModelHVDCLine`](@ref) `active_power_limits_to`."""
-get_active_power_limits_to(value::TModelHVDCLine) = get_value(value, value.active_power_limits_to, Val(:mva))
+get_active_power_limits_to(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva))
 """Get [`TModelHVDCLine`](@ref) `services`."""
 get_services(value::TModelHVDCLine) = value.services
 """Get [`TModelHVDCLine`](@ref) `ext`."""
@@ -118,7 +118,7 @@ get_internal(value::TModelHVDCLine) = value.internal
 """Set [`TModelHVDCLine`](@ref) `available`."""
 set_available!(value::TModelHVDCLine, val) = value.available = val
 """Set [`TModelHVDCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TModelHVDCLine, val) = value.active_power_flow = set_value(value, val, Val(:mva))
+set_active_power_flow!(value::TModelHVDCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
 """Set [`TModelHVDCLine`](@ref) `arc`."""
 set_arc!(value::TModelHVDCLine, val) = value.arc = val
 """Set [`TModelHVDCLine`](@ref) `r`."""
@@ -128,9 +128,9 @@ set_l!(value::TModelHVDCLine, val) = value.l = val
 """Set [`TModelHVDCLine`](@ref) `c`."""
 set_c!(value::TModelHVDCLine, val) = value.c = val
 """Set [`TModelHVDCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::TModelHVDCLine, val) = value.active_power_limits_from = set_value(value, val, Val(:mva))
+set_active_power_limits_from!(value::TModelHVDCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), Val(:mva))
 """Set [`TModelHVDCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::TModelHVDCLine, val) = value.active_power_limits_to = set_value(value, val, Val(:mva))
+set_active_power_limits_to!(value::TModelHVDCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), Val(:mva))
 """Set [`TModelHVDCLine`](@ref) `services`."""
 set_services!(value::TModelHVDCLine, val) = value.services = val
 """Set [`TModelHVDCLine`](@ref) `ext`."""

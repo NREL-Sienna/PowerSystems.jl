@@ -67,7 +67,7 @@ get_name(value::ConstantReserveGroup) = value.name
 """Get [`ConstantReserveGroup`](@ref) `available`."""
 get_available(value::ConstantReserveGroup) = value.available
 """Get [`ConstantReserveGroup`](@ref) `requirement`."""
-get_requirement(value::ConstantReserveGroup) = get_value(value, value.requirement, Val(:mva))
+get_requirement(value::ConstantReserveGroup) = get_value(value, Val(:requirement), Val(:mva))
 """Get [`ConstantReserveGroup`](@ref) `ext`."""
 get_ext(value::ConstantReserveGroup) = value.ext
 """Get [`ConstantReserveGroup`](@ref) `contributing_services`."""
@@ -78,6 +78,6 @@ get_internal(value::ConstantReserveGroup) = value.internal
 """Set [`ConstantReserveGroup`](@ref) `available`."""
 set_available!(value::ConstantReserveGroup, val) = value.available = val
 """Set [`ConstantReserveGroup`](@ref) `requirement`."""
-set_requirement!(value::ConstantReserveGroup, val) = value.requirement = set_value(value, val, Val(:mva))
+set_requirement!(value::ConstantReserveGroup, val) = value.requirement = set_value(value, Val(:requirement), Val(:mva))
 """Set [`ConstantReserveGroup`](@ref) `ext`."""
 set_ext!(value::ConstantReserveGroup, val) = value.ext = val

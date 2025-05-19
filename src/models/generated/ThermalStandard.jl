@@ -144,17 +144,17 @@ get_status(value::ThermalStandard) = value.status
 """Get [`ThermalStandard`](@ref) `bus`."""
 get_bus(value::ThermalStandard) = value.bus
 """Get [`ThermalStandard`](@ref) `active_power`."""
-get_active_power(value::ThermalStandard) = get_value(value, value.active_power, Val(:mva))
+get_active_power(value::ThermalStandard) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`ThermalStandard`](@ref) `reactive_power`."""
-get_reactive_power(value::ThermalStandard) = get_value(value, value.reactive_power, Val(:mva))
+get_reactive_power(value::ThermalStandard) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`ThermalStandard`](@ref) `rating`."""
-get_rating(value::ThermalStandard) = get_value(value, value.rating, Val(:mva))
+get_rating(value::ThermalStandard) = get_value(value, Val(:rating), Val(:mva))
 """Get [`ThermalStandard`](@ref) `active_power_limits`."""
-get_active_power_limits(value::ThermalStandard) = get_value(value, value.active_power_limits, Val(:mva))
+get_active_power_limits(value::ThermalStandard) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::ThermalStandard) = get_value(value, value.reactive_power_limits, Val(:mva))
+get_reactive_power_limits(value::ThermalStandard) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `ramp_limits`."""
-get_ramp_limits(value::ThermalStandard) = get_value(value, value.ramp_limits, Val(:mva))
+get_ramp_limits(value::ThermalStandard) = get_value(value, Val(:ramp_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `operation_cost`."""
 get_operation_cost(value::ThermalStandard) = value.operation_cost
 """Get [`ThermalStandard`](@ref) `base_power`."""
@@ -185,17 +185,17 @@ set_status!(value::ThermalStandard, val) = value.status = val
 """Set [`ThermalStandard`](@ref) `bus`."""
 set_bus!(value::ThermalStandard, val) = value.bus = val
 """Set [`ThermalStandard`](@ref) `active_power`."""
-set_active_power!(value::ThermalStandard, val) = value.active_power = set_value(value, val, Val(:mva))
+set_active_power!(value::ThermalStandard, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
 """Set [`ThermalStandard`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = set_value(value, val, Val(:mva))
+set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
 """Set [`ThermalStandard`](@ref) `rating`."""
-set_rating!(value::ThermalStandard, val) = value.rating = set_value(value, val, Val(:mva))
+set_rating!(value::ThermalStandard, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
 """Set [`ThermalStandard`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = set_value(value, val, Val(:mva))
+set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), Val(:mva))
 """Set [`ThermalStandard`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = set_value(value, val, Val(:mva))
+set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
 """Set [`ThermalStandard`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, val, Val(:mva))
+set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), Val(:mva))
 """Set [`ThermalStandard`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
 """Set [`ThermalStandard`](@ref) `base_power`."""
