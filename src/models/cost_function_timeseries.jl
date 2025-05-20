@@ -602,6 +602,7 @@ function set_fuel_cost!(
             get_value_curve(var_cost),
             get_power_units(var_cost),
             to_set,
+            get_startup_fuel_offtake(var_cost),
             get_vom_cost(var_cost),
         )
     set_variable!(op_cost, new_var_cost)
