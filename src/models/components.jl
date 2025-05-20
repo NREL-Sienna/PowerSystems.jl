@@ -67,7 +67,7 @@ function _get_multiplier(
 ) where {T <: Branch}
     base_voltage = get_base_voltage(get_arc(c).from)
     if isnothing(base_voltage)
-        error("Base voltage is not defined for $(c.name).")
+        error("Base voltage is not defined for $(summary(c)).")
     end
     return get_base_voltage(get_arc(c).from)^2 / get_base_power(c)
 end
@@ -151,9 +151,8 @@ function _get_value(::Nothing, _, _)
     return
 end
 
-function set_value(c::Component, ::Val{T}, conversion_unit) where {T}
-    value = Base.getproperty(c, T)
-    return _set_value(c, value, conversion_unit)
+function set_value(c::Component, _, val, conversion_unit)
+    return _set_value(c, val, conversion_unit)
 end
 
 function _set_value(c::Component, value::Float64, conversion_unit)::Float64
@@ -200,4 +199,200 @@ end
 
 function _set_value(::Nothing, _, _)
     return
+end
+
+######################################
+########### Transformer 3W ###########
+######################################
+
+PrimaryImpedances = Union{
+    Val{:r_primary},
+    Val{:x_primary},
+    Val{:r_12},
+    Val{:x_12},
+}
+
+PrimaryAdmittances = Union{
+    Val{:g},
+    Val{:b},
+}
+
+PrimaryPower = Union{
+    Val{:active_power_flow_primary},
+    Val{:reactive_power_flow_primary},
+    Val{:rating},
+    Val{:rating_primary},
+}
+
+SecondaryImpedances = Union{
+    Val{:r_secondary},
+    Val{:x_secondary},
+    Val{:r_23},
+    Val{:x_23},
+}
+
+SecondaryPower = Union{
+    Val{:active_power_flow_secondary},
+    Val{:reactive_power_flow_secondary},
+    Val{:rating_secondary},
+}
+
+TertiaryImpedances = Union{
+    Val{:r_tertiary},
+    Val{:x_tertiary},
+    Val{:r_13},
+    Val{:x_13},
+}
+
+TertiaryPower = Union{
+    Val{:active_power_flow_tertiary},
+    Val{:reactive_power_flow_tertiary},
+    Val{:rating_tertiary},
+}
+
+###### Multipliers ######
+
+_get_winding_base_power(
+    c::Transformer3W,
+    ::Union{PrimaryImpedances, PrimaryAdmittances, PrimaryPower},
+) = get_base_power_12(c)
+_get_winding_base_power(c::Transformer3W, ::Union{SecondaryImpedances, SecondaryPower}) =
+    get_base_power_23(c)
+_get_winding_base_power(c::Transformer3W, ::Union{TertiaryImpedances, TertiaryPower}) =
+    get_base_power_13(c)
+
+function _get_winding_base_voltage(
+    c::Transformer3W,
+    ::Union{PrimaryImpedances, PrimaryAdmittances},
+)
+    base_voltage = get_base_voltage(get_primary_star_arc(c).from)
+    if isnothing(base_voltage)
+        error("Base voltage is not defined for $(summary(c)).")
+    end
+    return base_voltage
+end
+
+function _get_winding_base_voltage(c::Transformer3W, ::SecondaryImpedances)
+    base_voltage = get_base_voltage(get_secondary_star_arc(c).from)
+    if isnothing(base_voltage)
+        error("Base voltage is not defined for $(summary(c)).")
+    end
+    return base_voltage
+end
+
+function _get_winding_base_voltage(c::Transformer3W, ::TertiaryImpedances)
+    base_voltage = get_base_voltage(get_tertiary_star_arc(c).from)
+    if isnothing(base_voltage)
+        error("Base voltage is not defined for $(summary(c)).")
+    end
+    return base_voltage
+end
+
+# DEVICE_BASE
+function _get_multiplier(
+    ::Transformer3W,
+    ::Any,
+    ::Val{IS.UnitSystem.DEVICE_BASE},
+    ::Float64,
+    ::Any,
+)
+    return 1.0
+end
+
+###########
+## Power ##
+###########
+
+# SYSTEM_BASE
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.SYSTEM_BASE},
+    base_mva::Float64,
+    ::Val{:mva},
+)
+    return _get_winding_base_power(c, field) / base_mva
+end
+
+# NATURAL_UNITS
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+    base_mva::Float64,
+    ::Val{:mva},
+)
+    return _get_winding_base_power(c, field)
+end
+
+############
+### Ohms ###
+############
+
+# SYSTEM_BASE
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.SYSTEM_BASE},
+    base_mva::Float64,
+    ::Val{:ohm},
+)
+    return _get_winding_base_power(c, field) / base_mva
+end
+
+# NATURAL_UNITS
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+    base_mva::Float64,
+    ::Val{:ohm},
+)
+    return _get_winding_base_voltage(c, field)^2 / _get_winding_base_power(c, field)
+end
+
+#############
+## Siemens ##
+#############
+
+# SYSTEM_BASE
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.SYSTEM_BASE},
+    base_mva::Float64,
+    ::Val{:siemens},
+)
+    return base_mva / _get_winding_base_power(c, field)
+end
+
+# NATURAL_UNITS
+function _get_multiplier(
+    c::Transformer3W,
+    field::Any,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+    base_mva::Float64,
+    ::Val{:siemens},
+)
+    return _get_winding_base_power(c, field) / _get_winding_base_voltage(c, field)^2
+end
+
+function get_value(c::Transformer3W, field::Val{T}, conversion_unit) where {T}
+    value = Base.getproperty(c, T)
+    if isnothing(value)
+        return nothing
+    end
+    settings = get_internal(c).units_info
+    unit_system = settings.unit_system
+    base_mva = settings.base_value
+    multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
+    return value * multiplier
+end
+
+function set_value(c::Transformer3W, field::Val{T}, val::Float64, conversion_unit) where {T}
+    settings = get_internal(c).units_info
+    unit_system = settings.unit_system
+    base_mva = settings.base_value
+    multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
+    return val / multiplier
 end
