@@ -383,14 +383,20 @@ function get_value(c::Transformer3W, field::Val{T}, conversion_unit) where {T}
         return nothing
     end
     settings = get_internal(c).units_info
+    if isnothing(settings)
+        return value
+    end
     unit_system = settings.unit_system
     base_mva = settings.base_value
     multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
     return value * multiplier
 end
 
-function set_value(c::Transformer3W, field::Val{T}, val::Float64, conversion_unit) where {T}
+function set_value(c::Transformer3W, field, val::Float64, conversion_unit)
     settings = get_internal(c).units_info
+    if isnothing(settings)
+        return val
+    end
     unit_system = settings.unit_system
     base_mva = settings.base_value
     multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
