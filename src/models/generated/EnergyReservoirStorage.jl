@@ -208,25 +208,25 @@ set_prime_mover_type!(value::EnergyReservoirStorage, val) = value.prime_mover_ty
 """Set [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 set_storage_technology_type!(value::EnergyReservoirStorage, val) = value.storage_technology_type = val
 """Set [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
-set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), Val(:mva))
+set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
 """Set [`EnergyReservoirStorage`](@ref) `rating`."""
-set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `active_power`."""
-set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
+set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
-set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), Val(:mva))
+set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
-set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), Val(:mva))
+set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `efficiency`."""
 set_efficiency!(value::EnergyReservoirStorage, val) = value.efficiency = val
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power`."""
-set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
+set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `base_power`."""
 set_base_power!(value::EnergyReservoirStorage, val) = value.base_power = val
 """Set [`EnergyReservoirStorage`](@ref) `operation_cost`."""

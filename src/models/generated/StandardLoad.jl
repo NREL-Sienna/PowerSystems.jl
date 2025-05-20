@@ -187,29 +187,29 @@ set_bus!(value::StandardLoad, val) = value.bus = val
 """Set [`StandardLoad`](@ref) `base_power`."""
 set_base_power!(value::StandardLoad, val) = value.base_power = val
 """Set [`StandardLoad`](@ref) `constant_active_power`."""
-set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), Val(:mva))
+set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `constant_reactive_power`."""
-set_constant_reactive_power!(value::StandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), Val(:mva))
+set_constant_reactive_power!(value::StandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `impedance_active_power`."""
-set_impedance_active_power!(value::StandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), Val(:mva))
+set_impedance_active_power!(value::StandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `impedance_reactive_power`."""
-set_impedance_reactive_power!(value::StandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), Val(:mva))
+set_impedance_reactive_power!(value::StandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `current_active_power`."""
-set_current_active_power!(value::StandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), Val(:mva))
+set_current_active_power!(value::StandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `current_reactive_power`."""
-set_current_reactive_power!(value::StandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), Val(:mva))
+set_current_reactive_power!(value::StandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_constant_active_power`."""
-set_max_constant_active_power!(value::StandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), Val(:mva))
+set_max_constant_active_power!(value::StandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_constant_reactive_power`."""
-set_max_constant_reactive_power!(value::StandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), Val(:mva))
+set_max_constant_reactive_power!(value::StandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_impedance_active_power`."""
-set_max_impedance_active_power!(value::StandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), Val(:mva))
+set_max_impedance_active_power!(value::StandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
-set_max_impedance_reactive_power!(value::StandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), Val(:mva))
+set_max_impedance_reactive_power!(value::StandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_current_active_power`."""
-set_max_current_active_power!(value::StandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), Val(:mva))
+set_max_current_active_power!(value::StandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_current_reactive_power`."""
-set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), Val(:mva))
+set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `conformity`."""
 set_conformity!(value::StandardLoad, val) = value.conformity = val
 """Set [`StandardLoad`](@ref) `services`."""

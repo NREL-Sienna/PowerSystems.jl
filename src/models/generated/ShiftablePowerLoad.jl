@@ -141,17 +141,17 @@ set_available!(value::ShiftablePowerLoad, val) = value.available = val
 """Set [`ShiftablePowerLoad`](@ref) `bus`."""
 set_bus!(value::ShiftablePowerLoad, val) = value.bus = val
 """Set [`ShiftablePowerLoad`](@ref) `active_power`."""
-set_active_power!(value::ShiftablePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
+set_active_power!(value::ShiftablePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `upper_bound_active_power`."""
-set_upper_bound_active_power!(value::ShiftablePowerLoad, val) = value.upper_bound_active_power = set_value(value, Val(:upper_bound_active_power), Val(:mva))
+set_upper_bound_active_power!(value::ShiftablePowerLoad, val) = value.upper_bound_active_power = set_value(value, Val(:upper_bound_active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `lower_bound_active_power`."""
-set_lower_bound_active_power!(value::ShiftablePowerLoad, val) = value.lower_bound_active_power = set_value(value, Val(:lower_bound_active_power), Val(:mva))
+set_lower_bound_active_power!(value::ShiftablePowerLoad, val) = value.lower_bound_active_power = set_value(value, Val(:lower_bound_active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), Val(:mva))
+set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), Val(:mva))
+set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `base_power`."""
 set_base_power!(value::ShiftablePowerLoad, val) = value.base_power = val
 """Set [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""

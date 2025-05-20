@@ -143,15 +143,15 @@ set_available!(value::RenewableDispatch, val) = value.available = val
 """Set [`RenewableDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableDispatch, val) = value.bus = val
 """Set [`RenewableDispatch`](@ref) `active_power`."""
-set_active_power!(value::RenewableDispatch, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
+set_active_power!(value::RenewableDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `rating`."""
-set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::RenewableDispatch, val) = value.prime_mover_type = val
 """Set [`RenewableDispatch`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
+set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `power_factor`."""
 set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val
 """Set [`RenewableDispatch`](@ref) `operation_cost`."""

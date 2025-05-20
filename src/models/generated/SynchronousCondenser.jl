@@ -125,17 +125,17 @@ set_available!(value::SynchronousCondenser, val) = value.available = val
 """Set [`SynchronousCondenser`](@ref) `bus`."""
 set_bus!(value::SynchronousCondenser, val) = value.bus = val
 """Set [`SynchronousCondenser`](@ref) `reactive_power`."""
-set_reactive_power!(value::SynchronousCondenser, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::SynchronousCondenser, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `rating`."""
-set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
+set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `base_power`."""
 set_base_power!(value::SynchronousCondenser, val) = value.base_power = val
 """Set [`SynchronousCondenser`](@ref) `must_run`."""
 set_must_run!(value::SynchronousCondenser, val) = value.must_run = val
 """Set [`SynchronousCondenser`](@ref) `active_power_losses`."""
-set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), Val(:mva))
+set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `services`."""
 set_services!(value::SynchronousCondenser, val) = value.services = val
 """Set [`SynchronousCondenser`](@ref) `ext`."""

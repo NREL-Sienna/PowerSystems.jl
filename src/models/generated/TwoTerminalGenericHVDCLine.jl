@@ -118,17 +118,17 @@ get_internal(value::TwoTerminalGenericHVDCLine) = value.internal
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `available`."""
 set_available!(value::TwoTerminalGenericHVDCLine, val) = value.available = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalGenericHVDCLine, val) = value.arc = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), Val(:mva))
+set_active_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), Val(:mva))
+set_active_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`."""
-set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), Val(:mva))
+set_reactive_power_limits_from!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`."""
-set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), Val(:mva))
+set_reactive_power_limits_to!(value::TwoTerminalGenericHVDCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `loss`."""
 set_loss!(value::TwoTerminalGenericHVDCLine, val) = value.loss = val
 """Set [`TwoTerminalGenericHVDCLine`](@ref) `services`."""

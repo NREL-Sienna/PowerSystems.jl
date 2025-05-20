@@ -76,7 +76,7 @@ get_internal(value::TransmissionInterface) = value.internal
 """Set [`TransmissionInterface`](@ref) `available`."""
 set_available!(value::TransmissionInterface, val) = value.available = val
 """Set [`TransmissionInterface`](@ref) `active_power_flow_limits`."""
-set_active_power_flow_limits!(value::TransmissionInterface, val) = value.active_power_flow_limits = set_value(value, Val(:active_power_flow_limits), Val(:mva))
+set_active_power_flow_limits!(value::TransmissionInterface, val) = value.active_power_flow_limits = set_value(value, Val(:active_power_flow_limits), val, Val(:mva))
 """Set [`TransmissionInterface`](@ref) `violation_penalty`."""
 set_violation_penalty!(value::TransmissionInterface, val) = value.violation_penalty = val
 """Set [`TransmissionInterface`](@ref) `direction_mapping`."""

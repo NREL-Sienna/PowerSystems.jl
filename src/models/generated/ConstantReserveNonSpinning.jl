@@ -106,7 +106,7 @@ set_available!(value::ConstantReserveNonSpinning, val) = value.available = val
 """Set [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::ConstantReserveNonSpinning, val) = value.time_frame = val
 """Set [`ConstantReserveNonSpinning`](@ref) `requirement`."""
-set_requirement!(value::ConstantReserveNonSpinning, val) = value.requirement = set_value(value, Val(:requirement), Val(:mva))
+set_requirement!(value::ConstantReserveNonSpinning, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
 set_sustained_time!(value::ConstantReserveNonSpinning, val) = value.sustained_time = val
 """Set [`ConstantReserveNonSpinning`](@ref) `max_output_fraction`."""

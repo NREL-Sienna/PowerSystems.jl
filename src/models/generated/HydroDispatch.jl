@@ -155,19 +155,19 @@ set_available!(value::HydroDispatch, val) = value.available = val
 """Set [`HydroDispatch`](@ref) `bus`."""
 set_bus!(value::HydroDispatch, val) = value.bus = val
 """Set [`HydroDispatch`](@ref) `active_power`."""
-set_active_power!(value::HydroDispatch, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
+set_active_power!(value::HydroDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::HydroDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `rating`."""
-set_rating!(value::HydroDispatch, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::HydroDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::HydroDispatch, val) = value.prime_mover_type = val
 """Set [`HydroDispatch`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), Val(:mva))
+set_active_power_limits!(value::HydroDispatch, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
+set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), Val(:mva))
+set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `time_limits`."""
 set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
 """Set [`HydroDispatch`](@ref) `base_power`."""

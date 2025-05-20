@@ -274,19 +274,19 @@ set_available!(value::TwoTerminalVSCLine, val) = value.available = val
 """Set [`TwoTerminalVSCLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalVSCLine, val) = value.arc = val
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TwoTerminalVSCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::TwoTerminalVSCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `rating`."""
-set_rating!(value::TwoTerminalVSCLine, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::TwoTerminalVSCLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::TwoTerminalVSCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), Val(:mva))
+set_active_power_limits_from!(value::TwoTerminalVSCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::TwoTerminalVSCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), Val(:mva))
+set_active_power_limits_to!(value::TwoTerminalVSCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `g`."""
 set_g!(value::TwoTerminalVSCLine, val) = value.g = val
 """Set [`TwoTerminalVSCLine`](@ref) `dc_current`."""
 set_dc_current!(value::TwoTerminalVSCLine, val) = value.dc_current = val
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_from`."""
-set_reactive_power_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_from = set_value(value, Val(:reactive_power_from), Val(:mva))
+set_reactive_power_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_from = set_value(value, Val(:reactive_power_from), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `dc_voltage_control_from`."""
 set_dc_voltage_control_from!(value::TwoTerminalVSCLine, val) = value.dc_voltage_control_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `ac_voltage_control_from`."""
@@ -300,7 +300,7 @@ set_converter_loss_from!(value::TwoTerminalVSCLine, val) = value.converter_loss_
 """Set [`TwoTerminalVSCLine`](@ref) `max_dc_current_from`."""
 set_max_dc_current_from!(value::TwoTerminalVSCLine, val) = value.max_dc_current_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `rating_from`."""
-set_rating_from!(value::TwoTerminalVSCLine, val) = value.rating_from = set_value(value, Val(:rating_from), Val(:mva))
+set_rating_from!(value::TwoTerminalVSCLine, val) = value.rating_from = set_value(value, Val(:rating_from), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from`."""
 set_reactive_power_limits_from!(value::TwoTerminalVSCLine, val) = value.reactive_power_limits_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `power_factor_weighting_fraction_from`."""
@@ -308,7 +308,7 @@ set_power_factor_weighting_fraction_from!(value::TwoTerminalVSCLine, val) = valu
 """Set [`TwoTerminalVSCLine`](@ref) `voltage_limits_from`."""
 set_voltage_limits_from!(value::TwoTerminalVSCLine, val) = value.voltage_limits_from = val
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_to`."""
-set_reactive_power_to!(value::TwoTerminalVSCLine, val) = value.reactive_power_to = set_value(value, Val(:reactive_power_to), Val(:mva))
+set_reactive_power_to!(value::TwoTerminalVSCLine, val) = value.reactive_power_to = set_value(value, Val(:reactive_power_to), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `dc_voltage_control_to`."""
 set_dc_voltage_control_to!(value::TwoTerminalVSCLine, val) = value.dc_voltage_control_to = val
 """Set [`TwoTerminalVSCLine`](@ref) `ac_voltage_control_to`."""

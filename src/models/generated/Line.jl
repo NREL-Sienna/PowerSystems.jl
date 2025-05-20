@@ -144,25 +144,25 @@ get_internal(value::Line) = value.internal
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
 """Set [`Line`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`Line`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), Val(:mva))
+set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
 """Set [`Line`](@ref) `r`."""
-set_r!(value::Line, val) = value.r = set_value(value, Val(:r), Val(:ohm))
+set_r!(value::Line, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`Line`](@ref) `x`."""
-set_x!(value::Line, val) = value.x = set_value(value, Val(:x), Val(:ohm))
+set_x!(value::Line, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`Line`](@ref) `b`."""
-set_b!(value::Line, val) = value.b = set_value(value, Val(:b), Val(:siemens))
+set_b!(value::Line, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`Line`](@ref) `rating`."""
-set_rating!(value::Line, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::Line, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
 """Set [`Line`](@ref) `rating_b`."""
-set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_b), Val(:mva))
+set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`Line`](@ref) `rating_c`."""
-set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), Val(:mva))
+set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`Line`](@ref) `g`."""
 set_g!(value::Line, val) = value.g = val
 """Set [`Line`](@ref) `services`."""

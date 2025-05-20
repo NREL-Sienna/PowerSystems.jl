@@ -323,7 +323,7 @@ set_available!(value::TwoTerminalLCCLine, val) = value.available = val
 """Set [`TwoTerminalLCCLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalLCCLine, val) = value.arc = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `r`."""
 set_r!(value::TwoTerminalLCCLine, val) = value.r = val
 """Set [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
@@ -383,13 +383,13 @@ set_inverter_extinction_angle!(value::TwoTerminalLCCLine, val) = value.inverter_
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_capacitor_reactance`."""
 set_inverter_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.inverter_capacitor_reactance = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
-set_active_power_limits_from!(value::TwoTerminalLCCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), Val(:mva))
+set_active_power_limits_from!(value::TwoTerminalLCCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
-set_active_power_limits_to!(value::TwoTerminalLCCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), Val(:mva))
+set_active_power_limits_to!(value::TwoTerminalLCCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`."""
-set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), Val(:mva))
+set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`."""
-set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), Val(:mva))
+set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `loss`."""
 set_loss!(value::TwoTerminalLCCLine, val) = value.loss = val
 """Set [`TwoTerminalLCCLine`](@ref) `services`."""

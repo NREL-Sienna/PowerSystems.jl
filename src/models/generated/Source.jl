@@ -155,13 +155,13 @@ set_available!(value::Source, val) = value.available = val
 """Set [`Source`](@ref) `bus`."""
 set_bus!(value::Source, val) = value.bus = val
 """Set [`Source`](@ref) `active_power`."""
-set_active_power!(value::Source, val) = value.active_power = set_value(value, Val(:active_power), Val(:mva))
+set_active_power!(value::Source, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`Source`](@ref) `reactive_power`."""
-set_reactive_power!(value::Source, val) = value.reactive_power = set_value(value, Val(:reactive_power), Val(:mva))
+set_reactive_power!(value::Source, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`Source`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::Source, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), Val(:mva))
+set_active_power_limits!(value::Source, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`Source`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::Source, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), Val(:mva))
+set_reactive_power_limits!(value::Source, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`Source`](@ref) `R_th`."""
 set_R_th!(value::Source, val) = value.R_th = val
 """Set [`Source`](@ref) `X_th`."""

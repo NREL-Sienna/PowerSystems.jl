@@ -88,12 +88,12 @@ get_internal(value::AreaInterchange) = value.internal
 """Set [`AreaInterchange`](@ref) `available`."""
 set_available!(value::AreaInterchange, val) = value.available = val
 """Set [`AreaInterchange`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::AreaInterchange, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::AreaInterchange, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`AreaInterchange`](@ref) `from_area`."""
 set_from_area!(value::AreaInterchange, val) = value.from_area = val
 """Set [`AreaInterchange`](@ref) `to_area`."""
 set_to_area!(value::AreaInterchange, val) = value.to_area = val
 """Set [`AreaInterchange`](@ref) `flow_limits`."""
-set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(value, Val(:flow_limits), Val(:mva))
+set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
 """Set [`AreaInterchange`](@ref) `ext`."""
 set_ext!(value::AreaInterchange, val) = value.ext = val

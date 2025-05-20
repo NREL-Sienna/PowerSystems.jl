@@ -146,9 +146,9 @@ get_internal(value::TapTransformer) = value.internal
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
 """Set [`TapTransformer`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), Val(:mva))
+set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), Val(:mva))
+set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `arc`."""
 set_arc!(value::TapTransformer, val) = value.arc = val
 """Set [`TapTransformer`](@ref) `r`."""
@@ -160,13 +160,13 @@ set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""
-set_rating!(value::TapTransformer, val) = value.rating = set_value(value, Val(:rating), Val(:mva))
+set_rating!(value::TapTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `base_power`."""
 set_base_power!(value::TapTransformer, val) = value.base_power = val
 """Set [`TapTransformer`](@ref) `rating_b`."""
-set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), Val(:mva))
+set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `rating_c`."""
-set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), Val(:mva))
+set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `services`."""
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""
