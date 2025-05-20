@@ -724,6 +724,7 @@ import InfrastructureSystems:
     FuelCurve,
     get_value_curve,
     get_vom_cost,
+    get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost
 
