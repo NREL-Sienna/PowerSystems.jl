@@ -121,11 +121,11 @@ get_reactive_power_flow(value::TapTransformer) = get_value(value, Val(:reactive_
 """Get [`TapTransformer`](@ref) `arc`."""
 get_arc(value::TapTransformer) = value.arc
 """Get [`TapTransformer`](@ref) `r`."""
-get_r(value::TapTransformer) = value.r
+get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`TapTransformer`](@ref) `x`."""
-get_x(value::TapTransformer) = value.x
+get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`TapTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::TapTransformer) = value.primary_shunt
+get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
 """Get [`TapTransformer`](@ref) `rating`."""
@@ -152,11 +152,11 @@ set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow
 """Set [`TapTransformer`](@ref) `arc`."""
 set_arc!(value::TapTransformer, val) = value.arc = val
 """Set [`TapTransformer`](@ref) `r`."""
-set_r!(value::TapTransformer, val) = value.r = val
+set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `x`."""
-set_x!(value::TapTransformer, val) = value.x = val
+set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
+set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""

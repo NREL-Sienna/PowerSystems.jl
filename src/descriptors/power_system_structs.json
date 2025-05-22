@@ -838,7 +838,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -849,7 +851,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "primary_shunt",
@@ -860,7 +864,9 @@
                         "min": 0,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "tap",
@@ -1005,7 +1011,9 @@
                         "min": -2,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1016,7 +1024,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "primary_shunt",
@@ -1027,7 +1037,9 @@
                         "min": 0,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "tap",

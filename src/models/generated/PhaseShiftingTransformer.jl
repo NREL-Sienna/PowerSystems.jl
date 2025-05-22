@@ -130,11 +130,11 @@ get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(
 """Get [`PhaseShiftingTransformer`](@ref) `arc`."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get [`PhaseShiftingTransformer`](@ref) `r`."""
-get_r(value::PhaseShiftingTransformer) = value.r
+get_r(value::PhaseShiftingTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `x`."""
-get_x(value::PhaseShiftingTransformer) = value.x
+get_x(value::PhaseShiftingTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
+get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `tap`."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
@@ -165,11 +165,11 @@ set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_
 """Set [`PhaseShiftingTransformer`](@ref) `arc`."""
 set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
 """Set [`PhaseShiftingTransformer`](@ref) `r`."""
-set_r!(value::PhaseShiftingTransformer, val) = value.r = val
+set_r!(value::PhaseShiftingTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `x`."""
-set_x!(value::PhaseShiftingTransformer, val) = value.x = val
+set_x!(value::PhaseShiftingTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = val
+set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `tap`."""
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
