@@ -494,7 +494,6 @@ export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
-export TamuSystem
 export PowerModelsData
 export PowerSystemTableData
 export add_dyn_injectors!
