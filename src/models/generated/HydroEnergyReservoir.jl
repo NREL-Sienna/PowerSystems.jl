@@ -157,29 +157,29 @@ get_available(value::HydroEnergyReservoir) = value.available
 """Get [`HydroEnergyReservoir`](@ref) `bus`."""
 get_bus(value::HydroEnergyReservoir) = value.bus
 """Get [`HydroEnergyReservoir`](@ref) `active_power`."""
-get_active_power(value::HydroEnergyReservoir) = get_value(value, value.active_power)
+get_active_power(value::HydroEnergyReservoir) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `reactive_power`."""
-get_reactive_power(value::HydroEnergyReservoir) = get_value(value, value.reactive_power)
+get_reactive_power(value::HydroEnergyReservoir) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `rating`."""
-get_rating(value::HydroEnergyReservoir) = get_value(value, value.rating)
+get_rating(value::HydroEnergyReservoir) = get_value(value, Val(:rating), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::HydroEnergyReservoir) = value.prime_mover_type
 """Get [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
-get_active_power_limits(value::HydroEnergyReservoir) = get_value(value, value.active_power_limits)
+get_active_power_limits(value::HydroEnergyReservoir) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::HydroEnergyReservoir) = get_value(value, value.reactive_power_limits)
+get_reactive_power_limits(value::HydroEnergyReservoir) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `ramp_limits`."""
-get_ramp_limits(value::HydroEnergyReservoir) = get_value(value, value.ramp_limits)
+get_ramp_limits(value::HydroEnergyReservoir) = get_value(value, Val(:ramp_limits), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `time_limits`."""
 get_time_limits(value::HydroEnergyReservoir) = value.time_limits
 """Get [`HydroEnergyReservoir`](@ref) `base_power`."""
 get_base_power(value::HydroEnergyReservoir) = value.base_power
 """Get [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
-get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, value.storage_capacity)
+get_storage_capacity(value::HydroEnergyReservoir) = get_value(value, Val(:storage_capacity), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `inflow`."""
-get_inflow(value::HydroEnergyReservoir) = get_value(value, value.inflow)
+get_inflow(value::HydroEnergyReservoir) = get_value(value, Val(:inflow), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `initial_storage`."""
-get_initial_storage(value::HydroEnergyReservoir) = get_value(value, value.initial_storage)
+get_initial_storage(value::HydroEnergyReservoir) = get_value(value, Val(:initial_storage), Val(:mva))
 """Get [`HydroEnergyReservoir`](@ref) `operation_cost`."""
 get_operation_cost(value::HydroEnergyReservoir) = value.operation_cost
 """Get [`HydroEnergyReservoir`](@ref) `storage_target`."""
@@ -204,29 +204,29 @@ set_available!(value::HydroEnergyReservoir, val) = value.available = val
 """Set [`HydroEnergyReservoir`](@ref) `bus`."""
 set_bus!(value::HydroEnergyReservoir, val) = value.bus = val
 """Set [`HydroEnergyReservoir`](@ref) `active_power`."""
-set_active_power!(value::HydroEnergyReservoir, val) = value.active_power = set_value(value, val)
+set_active_power!(value::HydroEnergyReservoir, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `reactive_power`."""
-set_reactive_power!(value::HydroEnergyReservoir, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::HydroEnergyReservoir, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `rating`."""
-set_rating!(value::HydroEnergyReservoir, val) = value.rating = set_value(value, val)
+set_rating!(value::HydroEnergyReservoir, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::HydroEnergyReservoir, val) = value.prime_mover_type = val
 """Set [`HydroEnergyReservoir`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::HydroEnergyReservoir, val) = value.active_power_limits = set_value(value, val)
+set_active_power_limits!(value::HydroEnergyReservoir, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::HydroEnergyReservoir, val) = value.reactive_power_limits = set_value(value, val)
+set_reactive_power_limits!(value::HydroEnergyReservoir, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::HydroEnergyReservoir, val) = value.ramp_limits = set_value(value, val)
+set_ramp_limits!(value::HydroEnergyReservoir, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `time_limits`."""
 set_time_limits!(value::HydroEnergyReservoir, val) = value.time_limits = val
 """Set [`HydroEnergyReservoir`](@ref) `base_power`."""
 set_base_power!(value::HydroEnergyReservoir, val) = value.base_power = val
 """Set [`HydroEnergyReservoir`](@ref) `storage_capacity`."""
-set_storage_capacity!(value::HydroEnergyReservoir, val) = value.storage_capacity = set_value(value, val)
+set_storage_capacity!(value::HydroEnergyReservoir, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `inflow`."""
-set_inflow!(value::HydroEnergyReservoir, val) = value.inflow = set_value(value, val)
+set_inflow!(value::HydroEnergyReservoir, val) = value.inflow = set_value(value, Val(:inflow), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `initial_storage`."""
-set_initial_storage!(value::HydroEnergyReservoir, val) = value.initial_storage = set_value(value, val)
+set_initial_storage!(value::HydroEnergyReservoir, val) = value.initial_storage = set_value(value, Val(:initial_storage), val, Val(:mva))
 """Set [`HydroEnergyReservoir`](@ref) `operation_cost`."""
 set_operation_cost!(value::HydroEnergyReservoir, val) = value.operation_cost = val
 """Set [`HydroEnergyReservoir`](@ref) `storage_target`."""

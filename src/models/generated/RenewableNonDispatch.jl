@@ -104,11 +104,11 @@ get_available(value::RenewableNonDispatch) = value.available
 """Get [`RenewableNonDispatch`](@ref) `bus`."""
 get_bus(value::RenewableNonDispatch) = value.bus
 """Get [`RenewableNonDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableNonDispatch) = get_value(value, value.active_power)
+get_active_power(value::RenewableNonDispatch) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`RenewableNonDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableNonDispatch) = get_value(value, value.reactive_power)
+get_reactive_power(value::RenewableNonDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`RenewableNonDispatch`](@ref) `rating`."""
-get_rating(value::RenewableNonDispatch) = get_value(value, value.rating)
+get_rating(value::RenewableNonDispatch) = get_value(value, Val(:rating), Val(:mva))
 """Get [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableNonDispatch) = value.prime_mover_type
 """Get [`RenewableNonDispatch`](@ref) `power_factor`."""
@@ -129,11 +129,11 @@ set_available!(value::RenewableNonDispatch, val) = value.available = val
 """Set [`RenewableNonDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableNonDispatch, val) = value.bus = val
 """Set [`RenewableNonDispatch`](@ref) `active_power`."""
-set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, val)
+set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`RenewableNonDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`RenewableNonDispatch`](@ref) `rating`."""
-set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, val)
+set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::RenewableNonDispatch, val) = value.prime_mover_type = val
 """Set [`RenewableNonDispatch`](@ref) `power_factor`."""

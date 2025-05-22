@@ -70,7 +70,7 @@ end
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
     tw3 = only(tw3s)
-    @test get_b(tw3) == 0.00251
+    @test isapprox(get_b(tw3), 0.0017430555555555556)
     @test get_primary_turns_ratio(tw3) == 1.0
     @test get_rating(tw3) == 0.0
 

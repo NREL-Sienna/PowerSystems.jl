@@ -214,7 +214,14 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 val = summary(getproperty(ist, name))
             elseif hasproperty(PowerSystems, getter_name)
                 getter_func = getproperty(PowerSystems, getter_name)
-                val = getter_func(ist)
+                try
+                    val = getter_func(ist)
+                catch e
+                    @warn "$(e.msg) Printing in DEVICE_BASE instead."
+                    val = with_units_base(ist, "DEVICE_BASE") do
+                        getter_func(ist)
+                    end
+                end
             else
                 val = getproperty(ist, name)
             end

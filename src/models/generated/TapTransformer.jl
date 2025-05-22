@@ -115,27 +115,27 @@ get_name(value::TapTransformer) = value.name
 """Get [`TapTransformer`](@ref) `available`."""
 get_available(value::TapTransformer) = value.available
 """Get [`TapTransformer`](@ref) `active_power_flow`."""
-get_active_power_flow(value::TapTransformer) = get_value(value, value.active_power_flow)
+get_active_power_flow(value::TapTransformer) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`TapTransformer`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::TapTransformer) = get_value(value, value.reactive_power_flow)
+get_reactive_power_flow(value::TapTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva))
 """Get [`TapTransformer`](@ref) `arc`."""
 get_arc(value::TapTransformer) = value.arc
 """Get [`TapTransformer`](@ref) `r`."""
-get_r(value::TapTransformer) = value.r
+get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`TapTransformer`](@ref) `x`."""
-get_x(value::TapTransformer) = value.x
+get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`TapTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::TapTransformer) = value.primary_shunt
+get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
 """Get [`TapTransformer`](@ref) `rating`."""
-get_rating(value::TapTransformer) = get_value(value, value.rating)
+get_rating(value::TapTransformer) = get_value(value, Val(:rating), Val(:mva))
 """Get [`TapTransformer`](@ref) `base_power`."""
 get_base_power(value::TapTransformer) = value.base_power
 """Get [`TapTransformer`](@ref) `rating_b`."""
-get_rating_b(value::TapTransformer) = get_value(value, value.rating_b)
+get_rating_b(value::TapTransformer) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`TapTransformer`](@ref) `rating_c`."""
-get_rating_c(value::TapTransformer) = get_value(value, value.rating_c)
+get_rating_c(value::TapTransformer) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`TapTransformer`](@ref) `services`."""
 get_services(value::TapTransformer) = value.services
 """Get [`TapTransformer`](@ref) `ext`."""
@@ -146,27 +146,27 @@ get_internal(value::TapTransformer) = value.internal
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
 """Set [`TapTransformer`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, val)
+set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, val)
+set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `arc`."""
 set_arc!(value::TapTransformer, val) = value.arc = val
 """Set [`TapTransformer`](@ref) `r`."""
-set_r!(value::TapTransformer, val) = value.r = val
+set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `x`."""
-set_x!(value::TapTransformer, val) = value.x = val
+set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = val
+set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""
-set_rating!(value::TapTransformer, val) = value.rating = set_value(value, val)
+set_rating!(value::TapTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `base_power`."""
 set_base_power!(value::TapTransformer, val) = value.base_power = val
 """Set [`TapTransformer`](@ref) `rating_b`."""
-set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, val)
+set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `rating_c`."""
-set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, val)
+set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `services`."""
 set_services!(value::TapTransformer, val) = value.services = val
 """Set [`TapTransformer`](@ref) `ext`."""

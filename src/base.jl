@@ -600,6 +600,41 @@ function with_units_base(f::Function, sys::System, units::Union{UnitSystem, Stri
     end
 end
 
+_set_units_base!(c::Component, settings::String) =
+    _set_units_base!(c::Component, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+
+function _set_units_base!(c::Component, settings::UnitSystem)
+    units_info = get_internal(c).units_info
+    old_base_value = units_info.base_value
+    set_units_setting!(
+        c,
+        SystemUnitsSettings(old_base_value, settings),
+    )
+    return
+end
+
+"""
+A "context manager" that sets the [`Component`](@ref)'s [units base](@ref per_unit) to the
+given value, executes the function, then sets the units base back.
+
+# Examples
+```julia
+active_power_mw = with_units_base(component, UnitSystem.NATURAL_UNITS) do
+    get_active_power(component)
+end
+# now active_power_mw is in natural units no matter what units base the system is in
+```
+"""
+function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
+    old_unit_system = get_internal(c).units_info.unit_system
+    _set_units_base!(c, units)
+    try
+        f()
+    finally
+        _set_units_base!(c, old_unit_system)
+    end
+end
+
 function get_units_setting(component::T) where {T <: Component}
     return get_units_info(get_internal(component))
 end

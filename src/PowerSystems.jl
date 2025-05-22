@@ -494,7 +494,6 @@ export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
-export TamuSystem
 export PowerModelsData
 export PowerSystemTableData
 export add_dyn_injectors!
@@ -724,6 +723,7 @@ import InfrastructureSystems:
     FuelCurve,
     get_value_curve,
     get_vom_cost,
+    get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost
 

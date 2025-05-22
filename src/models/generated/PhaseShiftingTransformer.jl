@@ -124,29 +124,29 @@ get_name(value::PhaseShiftingTransformer) = value.name
 """Get [`PhaseShiftingTransformer`](@ref) `available`."""
 get_available(value::PhaseShiftingTransformer) = value.available
 """Get [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
-get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.active_power_flow)
+get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, value.reactive_power_flow)
+get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `arc`."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
 """Get [`PhaseShiftingTransformer`](@ref) `r`."""
-get_r(value::PhaseShiftingTransformer) = value.r
+get_r(value::PhaseShiftingTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `x`."""
-get_x(value::PhaseShiftingTransformer) = value.x
+get_x(value::PhaseShiftingTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::PhaseShiftingTransformer) = value.primary_shunt
+get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `tap`."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
 get_α(value::PhaseShiftingTransformer) = value.α
 """Get [`PhaseShiftingTransformer`](@ref) `rating`."""
-get_rating(value::PhaseShiftingTransformer) = get_value(value, value.rating)
+get_rating(value::PhaseShiftingTransformer) = get_value(value, Val(:rating), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `base_power`."""
 get_base_power(value::PhaseShiftingTransformer) = value.base_power
 """Get [`PhaseShiftingTransformer`](@ref) `rating_b`."""
-get_rating_b(value::PhaseShiftingTransformer) = get_value(value, value.rating_b)
+get_rating_b(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `rating_c`."""
-get_rating_c(value::PhaseShiftingTransformer) = get_value(value, value.rating_c)
+get_rating_c(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
@@ -159,29 +159,29 @@ get_internal(value::PhaseShiftingTransformer) = value.internal
 """Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
 """Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = set_value(value, val)
+set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = set_value(value, val)
+set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `arc`."""
 set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
 """Set [`PhaseShiftingTransformer`](@ref) `r`."""
-set_r!(value::PhaseShiftingTransformer, val) = value.r = val
+set_r!(value::PhaseShiftingTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `x`."""
-set_x!(value::PhaseShiftingTransformer, val) = value.x = val
+set_x!(value::PhaseShiftingTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = val
+set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `tap`."""
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set [`PhaseShiftingTransformer`](@ref) `rating`."""
-set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, val)
+set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `base_power`."""
 set_base_power!(value::PhaseShiftingTransformer, val) = value.base_power = val
 """Set [`PhaseShiftingTransformer`](@ref) `rating_b`."""
-set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value(value, val)
+set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `rating_c`."""
-set_rating_c!(value::PhaseShiftingTransformer, val) = value.rating_c = set_value(value, val)
+set_rating_c!(value::PhaseShiftingTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""

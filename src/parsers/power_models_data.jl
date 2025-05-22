@@ -1049,7 +1049,7 @@ function make_transformer_2w(
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["b_fr"],  # MAG2
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),

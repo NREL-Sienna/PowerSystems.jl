@@ -816,15 +816,9 @@ function make_cost(
     vom_data = LinearCurve(vom_cost)
 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
-
+    fuel_offtake = LinearCurve(0.0)
     op_cost = ThermalGenerationCost(
-        FuelCurve(
-            var_cost,
-            UnitSystem.NATURAL_UNITS,
-            fuel_price,
-            LinearCurve(0.0),  # this is the default fuel offtake cost
-            vom_data,
-        ),
+        FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price, fuel_offtake, vom_data),
         fixed * fuel_price,
         startup_cost,
         shutdown_cost,

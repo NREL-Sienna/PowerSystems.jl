@@ -140,21 +140,21 @@ get_available(value::HydroTurbine) = value.available
 """Get [`HydroTurbine`](@ref) `bus`."""
 get_bus(value::HydroTurbine) = value.bus
 """Get [`HydroTurbine`](@ref) `active_power`."""
-get_active_power(value::HydroTurbine) = get_value(value, value.active_power)
+get_active_power(value::HydroTurbine) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`HydroTurbine`](@ref) `reactive_power`."""
-get_reactive_power(value::HydroTurbine) = get_value(value, value.reactive_power)
+get_reactive_power(value::HydroTurbine) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`HydroTurbine`](@ref) `rating`."""
-get_rating(value::HydroTurbine) = get_value(value, value.rating)
+get_rating(value::HydroTurbine) = get_value(value, Val(:rating), Val(:mva))
 """Get [`HydroTurbine`](@ref) `active_power_limits`."""
-get_active_power_limits(value::HydroTurbine) = get_value(value, value.active_power_limits)
+get_active_power_limits(value::HydroTurbine) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`HydroTurbine`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::HydroTurbine) = get_value(value, value.reactive_power_limits)
+get_reactive_power_limits(value::HydroTurbine) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`HydroTurbine`](@ref) `outflow_limits`."""
 get_outflow_limits(value::HydroTurbine) = value.outflow_limits
 """Get [`HydroTurbine`](@ref) `powerhouse_elevation`."""
 get_powerhouse_elevation(value::HydroTurbine) = value.powerhouse_elevation
 """Get [`HydroTurbine`](@ref) `ramp_limits`."""
-get_ramp_limits(value::HydroTurbine) = get_value(value, value.ramp_limits)
+get_ramp_limits(value::HydroTurbine) = get_value(value, Val(:ramp_limits), Val(:mva))
 """Get [`HydroTurbine`](@ref) `time_limits`."""
 get_time_limits(value::HydroTurbine) = value.time_limits
 """Get [`HydroTurbine`](@ref) `base_power`."""
@@ -181,21 +181,21 @@ set_available!(value::HydroTurbine, val) = value.available = val
 """Set [`HydroTurbine`](@ref) `bus`."""
 set_bus!(value::HydroTurbine, val) = value.bus = val
 """Set [`HydroTurbine`](@ref) `active_power`."""
-set_active_power!(value::HydroTurbine, val) = value.active_power = set_value(value, val)
+set_active_power!(value::HydroTurbine, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `reactive_power`."""
-set_reactive_power!(value::HydroTurbine, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::HydroTurbine, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `rating`."""
-set_rating!(value::HydroTurbine, val) = value.rating = set_value(value, val)
+set_rating!(value::HydroTurbine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::HydroTurbine, val) = value.active_power_limits = set_value(value, val)
+set_active_power_limits!(value::HydroTurbine, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::HydroTurbine, val) = value.reactive_power_limits = set_value(value, val)
+set_reactive_power_limits!(value::HydroTurbine, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `outflow_limits`."""
 set_outflow_limits!(value::HydroTurbine, val) = value.outflow_limits = val
 """Set [`HydroTurbine`](@ref) `powerhouse_elevation`."""
 set_powerhouse_elevation!(value::HydroTurbine, val) = value.powerhouse_elevation = val
 """Set [`HydroTurbine`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::HydroTurbine, val) = value.ramp_limits = set_value(value, val)
+set_ramp_limits!(value::HydroTurbine, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `time_limits`."""
 set_time_limits!(value::HydroTurbine, val) = value.time_limits = val
 """Set [`HydroTurbine`](@ref) `base_power`."""
