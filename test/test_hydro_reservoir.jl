@@ -38,7 +38,7 @@ end
     @test get_inflow(reservoir) == 0.0
     @test get_outflow(reservoir) == 0.0
     @test get_intake_elevation(reservoir) == 0.0
-    @test get_head_to_volume_factor(reservoir) == 0.0
+    @test get_head_to_volume_factor(reservoir) == LinearCurve(0.0)
     set_intake_elevation!(reservoir, 10.0)
     @test get_intake_elevation(reservoir) == 10.0
 end
