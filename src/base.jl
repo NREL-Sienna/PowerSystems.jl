@@ -1901,7 +1901,7 @@ Check system consistency and validity.
 function check(sys::System)
     buses = get_components(ACBus, sys)
     slack_bus_check(buses)
-    buscheck(buses)
+    buscheck(sys)
     critical_components_check(sys)
     adequacy_check(sys)
     check_subsystems(sys)
