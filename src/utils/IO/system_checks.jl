@@ -3,10 +3,13 @@
 
 ## Check that all the buses have a type defintion and that bus types are consistent with generator connections ##
 
-function buscheck(sys)
+function buscheck(sys::System)
     buses = get_components(ACBus, sys)
     bus_to_active_gens_map = Dict((i, Set{String}()) for i in get_number.(buses))
-    for gen in get_components(x -> get_available(x), Generator, sys)
+    for gen in get_components(Generator, sys)
+        if !get_available(gen)
+            continue
+        end
         bus_number = get_number(get_bus(gen))
         gen_name = get_name(gen)
         push!(get!(bus_to_active_gens_map, bus_number, Set{String}()), gen_name)
@@ -20,11 +23,11 @@ function buscheck(sys)
         elseif b_type != ACBusTypes.ISOLATED && b_type != ACBusTypes.REF
             bus_gens_count = length(bus_to_active_gens_map[b_number])
             if bus_gens_count == 0 && b_type != ACBusTypes.PQ
-                @error "no active generators found at bus $(b_number) with type $(b_type), consider checking your data inputs." maxlog =
+                @error "no active generators found at bus $(summary(b)) with type $(b_type), consider checking your data inputs." maxlog =
                     PS_MAX_LOG
             end
             if bus_gens_count != 0 && b_type != ACBusTypes.PV
-                @error "active generators found at bus $(b_number) with type $(b_type), consider checking your data inputs." maxlog =
+                @error "active generators found at bus $(summary(b)) with type $(b_type), consider checking your data inputs." maxlog =
                     PS_MAX_LOG
             end
         end
