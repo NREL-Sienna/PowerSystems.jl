@@ -106,7 +106,7 @@ function get_branch_type(
         is_transformer = (tap != 0.0) & (tap != 1.0)
     end
     if is_transformer
-        if tap == 1.0
+        if tap == 1.0 && alpha == 0.0
             branch_type = Transformer2W
         elseif alpha == 0.0
             branch_type = TapTransformer
