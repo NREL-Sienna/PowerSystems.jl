@@ -312,6 +312,7 @@ export ReservoirDataType
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
+export TimeSeriesOwners
 export TimeSeriesKey
 export StaticTimeSeriesKey
 export ForecastKey
@@ -608,6 +609,7 @@ import InfrastructureSystems:
     TimeSeriesKey,
     TimeSeriesCounts,
     TimeSeriesAssociation,
+    TimeSeriesOwners,
     InfrastructureSystemsComponent,
     InfrastructureSystemsType,
     InfrastructureSystemsInternal,
