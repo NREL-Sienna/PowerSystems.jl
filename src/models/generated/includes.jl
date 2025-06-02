@@ -543,7 +543,6 @@ export get_dc_setpoint_to
 export get_dc_voltage_control_from
 export get_dc_voltage_control_to
 export get_delta_t
-export get_delta_winding_connection
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
@@ -1206,7 +1205,6 @@ export set_dc_setpoint_to!
 export set_dc_voltage_control_from!
 export set_dc_voltage_control_to!
 export set_delta_t!
-export set_delta_winding_connection!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
