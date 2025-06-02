@@ -170,6 +170,10 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["f_bus"] = pop!(branch, "I")
                 sub_data["t_bus"] = pop!(branch, "J")
+                if pm_data["has_isolated_buses"]
+                    push!(pm_data["connected_buses"], sub_data["f_bus"])
+                    push!(pm_data["connected_buses"], sub_data["t_bus"])
+                end
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
                 sub_data["g_fr"] = pop!(branch, "GI")
@@ -343,6 +347,7 @@ by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
+    pm_data["has_isolated_buses"] = false
     pm_data["bus"] = Dict{Int, Any}()
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
@@ -350,6 +355,11 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["bus_i"] = bus["I"]
             sub_data["bus_type"] = pop!(bus, "IDE")
+            if sub_data["bus_type"] == 4
+                pm_data["has_isolated_buses"] = true
+                @warn "The PSS(R)E data buses designated as isolated. The parser will check if the buses are connected or topologically isolated."
+                pm_data["connected_buses"] = Set{Int}()
+            end
             sub_data["area"] = pop!(bus, "AREA")
             sub_data["vm"] = pop!(bus, "VM")
             sub_data["va"] = pop!(bus, "VA")
@@ -373,6 +383,7 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             pm_data["bus"][sub_data["bus_i"]] = sub_data
         end
     end
+    return
 end
 
 """
@@ -527,6 +538,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["f_bus"] = transformer["I"]
                 sub_data["t_bus"] = transformer["J"]
+                if pm_data["has_isolated_buses"]
+                    push!(pm_data["connected_buses"], sub_data["f_bus"])
+                    push!(pm_data["connected_buses"], sub_data["t_bus"])
+                end
 
                 # Store base_power
                 if transformer["SBASE1-2"] < 0.0
@@ -758,12 +773,16 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 bus_id1, bus_id2, bus_id3 =
                     transformer["I"], transformer["J"], transformer["K"]
-
+                if pm_data["has_isolated_buses"]
+                    push!(pm_data["connected_buses"], bus_id1)
+                    push!(pm_data["connected_buses"], bus_id2)
+                    push!(pm_data["connected_buses"], bus_id3)
+                end
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
                 pm_data["bus"][starbus_id] = starbus
 
-                # Add parameters to the 3w-transformer key 
+                # Add parameters to the 3w-transformer key
                 sub_data = Dict{String, Any}()
                 bases = [
                     transformer["SBASE1-2"],
@@ -1152,7 +1171,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if dcline["MDC"] == 1
                     abs(dcline["SETVL"])
                 elseif dcline["MDC"] == 2
-                    abs(dcline["SETVL"] * dcline["VSCHD"] / 1000) # Amp * V 
+                    abs(dcline["SETVL"] * dcline["VSCHD"] / 1000) # Amp * V
                 else
                     0
                 end
@@ -1418,7 +1437,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["control_mode"] = facts["MODE"]
 
             # MODE = 0 -> Unavailable
-            # MODE = 1 -> Normal mode 
+            # MODE = 1 -> Normal mode
             # MODE = 2 -> Link bypassed
             if facts["MODE"] != 0
                 sub_data["available"] = 1
