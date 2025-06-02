@@ -227,6 +227,23 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 end
 
+function _correct_isolated_buses!(gen_data::Dict, bus_data::Dict, load = false, gen = false)
+    gen_bus_no = sub_data["gen_bus"]
+    bus = data["bus"][gen_bus_no]
+    if bus["bus_type"] == 4
+        @warn "Bus $gen_bus_no is isolated with a connected static injection. Setting bus type to PQ for loads and PV for generators."
+        if gen
+            bus["bus_type"] = 1
+        elseif load
+            bus["bus_type"] = 2
+        else
+            error("Unrecognized static injection in bus")
+        end
+        sub_data["gen_bus"]["gen_status"] = 0
+    end
+    return
+end
+
 """
     _psse2pm_generator!(pm_data, pti_data)
 
@@ -269,7 +286,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, gen)
             end
-
+            _correct_isolated_buses!(sub_data, pm_data["bus"]; gen = true)
             pm_data["gen"][ix] = sub_data
         end
     else
