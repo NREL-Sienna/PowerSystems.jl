@@ -630,7 +630,6 @@ export get_load_response
 export get_load_zone
 export get_loss
 export get_loss_function
-export get_lower_bound_active_power
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -759,7 +758,6 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
-export get_upper_bound_active_power
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1293,7 +1291,6 @@ export set_load_response!
 export set_load_zone!
 export set_loss!
 export set_loss_function!
-export set_lower_bound_active_power!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
@@ -1422,7 +1419,6 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
-export set_upper_bound_active_power!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!

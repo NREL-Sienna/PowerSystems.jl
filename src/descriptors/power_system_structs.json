@@ -2546,28 +2546,10 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "upper_bound_active_power",
-                    "comment": "Initial upper bound on the active power load (MW), validation range: `>= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": "active_power",
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "lower_bound_active_power",
-                    "comment": "Initial lower bound on the active power load (MW), validation range: `<= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": null,
-                        "max": "active_power"
-                    },
-                    "validation_action": "error",
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
                 },
