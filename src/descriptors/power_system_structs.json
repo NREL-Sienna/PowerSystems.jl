@@ -1897,7 +1897,9 @@
                     "comment": "Limits on the Reactive Power at the `from` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_from",
@@ -1974,14 +1976,18 @@
                     "comment": "Converter rating in MVA in the `to` bus.",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "1e8"
+                    "default": "1e8",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_to",
                     "comment": "Limits on the Reactive Power at the `to` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_to",
