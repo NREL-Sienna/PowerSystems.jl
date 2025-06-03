@@ -29,6 +29,7 @@ end
 function ACBus(
     number,
     name,
+    available,
     bustype::String,
     angle,
     voltage,
@@ -41,6 +42,7 @@ function ACBus(
     return ACBus(
         number,
         name,
+        available,
         get_enum_value(ACBusTypes, bustype),
         angle,
         voltage,
