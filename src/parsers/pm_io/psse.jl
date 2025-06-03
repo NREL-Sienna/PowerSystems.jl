@@ -1544,7 +1544,24 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
             if import_all
                 _import_remaining_keys!(sub_data, multisec_line)
             end
-            branch_isolated_bus_modifications!(pm_data, sub_data)
+            # If from or to bus is isolated, make multi-section line unavailabe:
+            bus_data = pm_data["bus"]
+            from_bus_no = sub_data["f_bus"]
+            to_bus_no = sub_data["t_bus"]
+            from_bus = bus_data[from_bus_no]
+            to_bus = bus_data[to_bus_no]
+            if from_bus["bus_type"] == 4 || to_bus["bus_type"] == 4
+                sub_data["available"] = 0
+            end
+            if from_bus["bus_type"] == 4
+                push!(pm_data["isolated_to_pq_buses"], from_bus_no)
+                from_bus["bus_status"] = false
+            end
+            if to_bus["bus_type"] == 4
+                push!(pm_data["isolated_to_pq_buses"], to_bus_no)
+                to_bus["bus_status"] = false
+            end
+                
             push!(pm_data["multisection_line"], sub_data)
         end
     end
