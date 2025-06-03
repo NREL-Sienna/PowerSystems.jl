@@ -256,10 +256,43 @@ end
 end
 
 @testset "Test get subsystems and components for c_sys5" begin
-    bus_c = ACBus(3, "nodeC", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
-    bus_d = ACBus(4, "nodeD", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+    bus_c = ACBus(
+        3,
+        "nodeC",
+        true,
+        "PV",
+        0,
+        1.0,
+        (min = 0.9, max = 1.05),
+        230,
+        nothing,
+        nothing,
+    )
+    bus_d = ACBus(
+        4,
+        "nodeD",
+        true,
+        "REF",
+        0,
+        1.0,
+        (min = 0.9, max = 1.05),
+        230,
+        nothing,
+        nothing,
+    )
     bus_d2 =
-        ACBus(9, "nodeD2", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+        ACBus(
+            9,
+            "nodeD2",
+            true,
+            "REF",
+            0,
+            1.0,
+            (min = 0.9, max = 1.05),
+            230,
+            nothing,
+            nothing,
+        )
 
     d_d2 = Line(
         "nodeD-nodeD2",

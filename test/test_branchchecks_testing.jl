@@ -17,6 +17,7 @@ end
         ACBus(
             1,
             "nodeA",
+            true,
             PowerSystems.ACBusTypes.PV,
             0,
             1.0,
@@ -28,6 +29,7 @@ end
         ACBus(
             2,
             "nodeB",
+            true,
             PowerSystems.ACBusTypes.PQ,
             0,
             1.0,
@@ -39,6 +41,7 @@ end
         ACBus(
             3,
             "nodeC",
+            true,
             PowerSystems.ACBusTypes.PV,
             0,
             1.0,
@@ -50,6 +53,7 @@ end
         ACBus(
             4,
             "nodeD",
+            true,
             PowerSystems.ACBusTypes.REF,
             0,
             1.0,
@@ -61,6 +65,7 @@ end
         ACBus(
             5,
             "nodeE",
+            true,
             PowerSystems.ACBusTypes.PV,
             0,
             1.0,

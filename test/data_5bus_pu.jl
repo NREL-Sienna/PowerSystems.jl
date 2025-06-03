@@ -12,11 +12,11 @@ DayAhead = collect(
 #Dispatch_11am =  collect(DateTime("1/1/2024  0:11:00", "d/m/y  H:M:S"):Minute(15):DateTime("1/1/2024  12::00", "d/m/y  H:M:S"))
 
 nodes5() = [
-    ACBus(1, "nodeA", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
-    ACBus(2, "nodeB", "PQ", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
-    ACBus(3, "nodeC", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
-    ACBus(4, "nodeD", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
-    ACBus(5, "nodeE", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
+    ACBus(1, "nodeA", true, "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
+    ACBus(2, "nodeB", true, "PQ", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
+    ACBus(3, "nodeC", true, "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
+    ACBus(4, "nodeD", true, "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
+    ACBus(5, "nodeE", true, "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing),
 ];
 
 branches5_dc(nodes5_nodes) = [
