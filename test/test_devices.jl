@@ -40,3 +40,50 @@ end
     remove_component!(sys, area1)
     @test get_component(Area, sys, "1") === nothing
 end
+
+@testset "Test Shiftable Power Loads and Interruptible PowerLoads" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    buses = collect(get_components(ACBus, sys))
+    add_component!(
+        sys,
+        InterruptiblePowerLoad(
+            "IloadBus",
+            true,
+            buses[1],
+            0.10,
+            0.0,
+            0.10,
+            0.0,
+            100.0,
+            LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
+        ),
+    )
+    add_component!(
+        sys,
+        ShiftablePowerLoad(
+            "ShiftableLoadBus4",
+            true,
+            buses[2],
+            0.10,
+            (min = 0.03, max = 0.10),
+            0.0,
+            0.10,
+            0.0,
+            100.0,
+            24,
+            LoadCost(CostCurve(LinearCurve(150.0)), 2400.0),
+        ),
+    )
+    dir_path = mktempdir()
+    to_json(sys, joinpath(dir_path, "test_RTS_GMLC_sys.json"))
+    sys2 = System(joinpath(dir_path, "test_RTS_GMLC_sys.json"))
+    @test get_active_power(get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4")) ==
+          0.10
+    @test get_active_power(get_component(InterruptiblePowerLoad, sys2, "IloadBus")) == 0.10
+    @test get_active_power_limits(
+        get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
+    ).min == 0.03
+    @test get_active_power_limits(
+        get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
+    ).max == 0.10
+end
