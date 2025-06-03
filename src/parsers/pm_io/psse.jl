@@ -86,13 +86,11 @@ function _create_starbus_from_transformer(
     starbus["name"] = "starbus_$(transformer["I"])_$(transformer["J"])_$(transformer["K"])_$(strip(transformer["CKT"]))"
 
     bus_type = 1
-    if transformer["STAT"] == 0
-        bus_type = 4
-    end
 
     starbus["vm"] = transformer["VMSTAR"]
     starbus["va"] = transformer["ANSTAR"]
     starbus["bus_type"] = bus_type
+    starbus["bus_status"] = true
     starbus["area"] = _get_bus_value(transformer["I"], "area", pm_data)
     starbus["zone"] = _get_bus_value(transformer["I"], "zone", pm_data)
     starbus["hidden"] = true
