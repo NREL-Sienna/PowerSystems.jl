@@ -74,6 +74,7 @@ export get_value_curve, get_power_units
 
 export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
+export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
 export make_import_curve, make_export_curve
@@ -87,6 +88,9 @@ export get_charge_variable_cost, set_charge_variable_cost!
 export get_discharge_variable_cost, set_discharge_variable_cost!
 export get_energy_shortage_cost, set_energy_shortage_cost!
 export get_energy_surplus_cost, set_energy_surplus_cost!
+export get_level_shortage_cost, set_level_shortage_cost!
+export get_level_surplus_cost, set_level_surplus_cost!
+export get_spillage_cost, set_spillage_cost!
 
 export Generator
 export HydroGen
@@ -793,6 +797,7 @@ include("models/cost_functions/LoadCost.jl")
 include("models/cost_functions/RenewableGenerationCost.jl")
 include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
+include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
 include("models/HydroReservoir.jl")
