@@ -1641,13 +1641,6 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "delta_winding_connection",
-                    "data_type": "Vector{Tuple}",
-                    "comment": "Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince.",
-                    "null_value": "Vector{Tuple}()",
-                    "default": "Vector{Tuple}()"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
