@@ -341,6 +341,12 @@ end
 
 function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
+    if data["has_isolated_buses"]
+        # Find set diff between the bus numbers in the data["Bus"] and connected buses
+        # Do other logic to convert buses with PSSE or matpower type isolated to PV/PQ and set
+        # Unavailable if the have components connected and make those also unavailable
+    end
+
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
