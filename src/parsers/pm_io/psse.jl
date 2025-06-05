@@ -94,7 +94,6 @@ function _create_starbus_from_transformer(
     else 
         starbus["bus_status"] = false
     end
-    starbus["bus_status"] = true
     starbus["area"] = _get_bus_value(transformer["I"], "area", pm_data)
     starbus["zone"] = _get_bus_value(transformer["I"], "zone", pm_data)
     starbus["hidden"] = true
