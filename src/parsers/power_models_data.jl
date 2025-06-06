@@ -291,6 +291,7 @@ function make_bus(bus_dict::Dict{String, Any})
     bus = ACBus(
         bus_dict["number"],
         bus_dict["name"],
+        bus_dict["available"],
         bus_dict["bustype"],
         bus_dict["angle"],
         bus_dict["voltage"],
@@ -313,6 +314,7 @@ function make_bus(
         Dict{String, Any}(
             "name" => bus_name,
             "number" => bus_number,
+            "available" => d["bus_status"],
             "bustype" => bus_types[d["bus_type"]],
             "angle" => d["va"],
             "voltage" => d["vm"],
@@ -341,6 +343,7 @@ end
 
 function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
+
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
@@ -406,7 +409,9 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             end
         end
         set_ext!(area, ext)
-
+        if !haskey(d, "bus_status")
+            d["bus_status"] = true
+        end
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(

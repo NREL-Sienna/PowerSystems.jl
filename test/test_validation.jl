@@ -156,7 +156,18 @@ end
 
     add_component!(
         sys,
-        ACBus(11, "11", ACBusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
+        ACBus(
+            11,
+            "11",
+            true,
+            ACBusTypes.PQ,
+            1,
+            1,
+            (min = 0.9, max = 1.1),
+            123,
+            nothing,
+            nothing,
+        ),
     )
     B = collect(get_components(ACBus, sys))
     a = Arc(B[1], B[6])
@@ -186,7 +197,18 @@ end
 
     add_component!(
         sys,
-        ACBus(11, "11", ACBusTypes.PQ, 1, 1, (min = 0.9, max = 1.1), 123, nothing, nothing),
+        ACBus(
+            11,
+            "11",
+            true,
+            ACBusTypes.PQ,
+            1,
+            1,
+            (min = 0.9, max = 1.1),
+            123,
+            nothing,
+            nothing,
+        ),
     )
     path = joinpath(mktempdir(), "test_validation.json")
     try
@@ -227,6 +249,7 @@ function _make_bus()
     return ACBus(;
         number = 1,
         name = "bus1",
+        available = true,
         bustype = ACBusTypes.REF,
         angle = 0.0,
         magnitude = 0.0,

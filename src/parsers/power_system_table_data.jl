@@ -314,6 +314,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         ps_bus = ACBus(;
             number = bus_id,
             name = name,
+            available = true,
             bustype = bus_type,
             angle = bus.angle,
             magnitude = bus.voltage,

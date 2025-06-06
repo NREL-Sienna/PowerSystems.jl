@@ -229,6 +229,12 @@
                     "data_type": "String"
                 },
                 {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)",
+                    "data_type": "Bool"
+                },
+                {
                     "name": "bustype",
                     "comment": "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)",
                     "null_value": "nothing",

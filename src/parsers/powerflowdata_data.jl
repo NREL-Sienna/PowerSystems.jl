@@ -161,6 +161,7 @@ function read_bus!(
         bus = ACBus(
             bus_number,
             bus_name,
+            true,
             bus_types[buses.ide[ix]],
             clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
             buses.vm[ix],
@@ -240,6 +241,7 @@ function read_bus!(
         bus = ACBus(
             bus_number,
             bus_name,
+            true,
             bus_types[buses.ide[ix]],
             clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
             buses.vm[ix],
