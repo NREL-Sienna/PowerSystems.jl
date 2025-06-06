@@ -915,6 +915,28 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1077,6 +1099,28 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1219,6 +1263,28 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "null_value": "0.0",

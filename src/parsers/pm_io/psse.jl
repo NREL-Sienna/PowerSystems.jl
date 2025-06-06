@@ -541,16 +541,28 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 else
                     sub_data["base_power"] = transformer["SBASE1-2"]
                 end
+                if iszero(transformer["NOMV1"])
+                    bus = pm_data["bus"][transformer["I"]]
+                    sub_data["base_voltage_from"] = bus["base_kv"]
+                else
+                    sub_data["base_voltage_from"] = transformer["NOMV1"]
+                end
+                if iszero(transformer["NOMV2"])
+                    bus = pm_data["bus"][transformer["J"]]
+                    sub_data["base_voltage_to"] = bus["base_kv"]
+                else
+                    sub_data["base_voltage_to"] = transformer["NOMV2"]
+                end
 
                 # Unit Transformations
                 # Data must be stored in the DEVICE_BASE
                 # Z_base_device = (V_device)^2 / S_device, Z_base_sys = (V_device)^2 / S_sys
                 # Z_ohms = Z_pu_sys * Z_base_sys, Z_pu_device = Z_ohms / Z_device = Z_pu_sys * S_device / S_sys
                 mva_ratio = sub_data["base_power"] / pm_data["baseMVA"]
-                Z_base_device = transformer["NOMV1"]^2 / sub_data["base_power"]
-                Z_base_sys =
-                    _get_bus_value(transformer["I"], "base_kv", pm_data)^2 /
-                    pm_data["baseMVA"]
+                Z_base_device = sub_data["base_voltage_from"]^2 / sub_data["base_power"]
+                Z_base_sys = sub_data["base_voltage_from"]^2 / pm_data["baseMVA"]
+                #_get_bus_value(transformer["I"], "base_kv", pm_data)^2 /
+                #pm_data["baseMVA"]
                 if transformer["CZ"] == 2  # "for resistance and reactance in pu on system MVA base and winding voltage base"
                     # Compute br_r and br_x in pu of device base
                     br_r, br_x = transformer["R1-2"], transformer["X1-2"]
@@ -559,6 +571,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         br_r = 1e-6 * transformer["R1-2"] / sub_data["base_power"] # device pu
                         br_x = sqrt(transformer["X1-2"]^2 - br_r^2) # device pu
                     else # "CZ" = 1 in system base pu
+                        @assert transformer["CZ"] == 1
                         br_r, br_x = transformer["R1-2"], transformer["X1-2"] # sys pu
                         if iszero(Z_base_device) # NOMV1 = 0.0: use the power ratios
                             br_r = transformer["R1-2"] * mva_ratio

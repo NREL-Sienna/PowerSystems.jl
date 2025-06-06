@@ -16,6 +16,8 @@ This file is auto-generated. Do not edit.
         primary_shunt::Float64
         rating::Union{Nothing, Float64}
         base_power::Float64
+        base_voltage_primary::Union{Nothing, Float64}
+        base_voltage_secondary::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
         services::Vector{Service}
@@ -38,6 +40,8 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `primary_shunt::Float64`: Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_voltage_primary::Union{Nothing, Float64}`: Primary base voltage in kV, validation range: `(0, nothing)`
+- `base_voltage_secondary::Union{Nothing, Float64}`: Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -65,6 +69,10 @@ mutable struct Transformer2W <: ACTransmission
     rating::Union{Nothing, Float64}
     "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
+    "Primary base voltage in kV"
+    base_voltage_primary::Union{Nothing, Float64}
+    "Secondary base voltage in kV"
+    base_voltage_secondary::Union{Nothing, Float64}
     "Second current rating; entered in MVA."
     rating_b::Union{Nothing, Float64}
     "Third current rating; entered in MVA."
@@ -77,12 +85,12 @@ mutable struct Transformer2W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, rating_b, rating_c, services, ext, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -98,6 +106,8 @@ function Transformer2W(::Nothing)
         primary_shunt=0.0,
         rating=nothing,
         base_power=0.0,
+        base_voltage_primary=nothing,
+        base_voltage_secondary=nothing,
         rating_b=0.0,
         rating_c=0.0,
         services=Device[],
@@ -125,6 +135,10 @@ get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), 
 get_rating(value::Transformer2W) = get_value(value, Val(:rating), Val(:mva))
 """Get [`Transformer2W`](@ref) `base_power`."""
 get_base_power(value::Transformer2W) = value.base_power
+"""Get [`Transformer2W`](@ref) `base_voltage_primary`."""
+get_base_voltage_primary(value::Transformer2W) = value.base_voltage_primary
+"""Get [`Transformer2W`](@ref) `base_voltage_secondary`."""
+get_base_voltage_secondary(value::Transformer2W) = value.base_voltage_secondary
 """Get [`Transformer2W`](@ref) `rating_b`."""
 get_rating_b(value::Transformer2W) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`Transformer2W`](@ref) `rating_c`."""
@@ -154,6 +168,10 @@ set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
 set_base_power!(value::Transformer2W, val) = value.base_power = val
+"""Set [`Transformer2W`](@ref) `base_voltage_primary`."""
+set_base_voltage_primary!(value::Transformer2W, val) = value.base_voltage_primary = val
+"""Set [`Transformer2W`](@ref) `base_voltage_secondary`."""
+set_base_voltage_secondary!(value::Transformer2W, val) = value.base_voltage_secondary = val
 """Set [`Transformer2W`](@ref) `rating_b`."""
 set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `rating_c`."""

@@ -180,3 +180,125 @@ function EnergyReservoirStorage(
         internal = internal,
     )
 end
+
+"""Allows construction of a Transformer2W without the specification of base voltages."""
+function Transformer2W(
+    name,
+    available,
+    active_power_flow,
+    reactive_power_flow,
+    arc,
+    r,
+    x,
+    primary_shunt,
+    rating,
+    base_power,
+    rating_b = nothing,
+    rating_c = nothing,
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    Transformer2W(
+        name,
+        available,
+        active_power_flow,
+        reactive_power_flow,
+        arc,
+        r,
+        x,
+        primary_shunt,
+        rating,
+        base_power;
+        base_voltage_primary = nothing,
+        base_voltage_secondary = nothing,
+        rating_b,
+        rating_c,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
+end
+
+"""Allows construction of a TapTransformer without the specification of base voltages."""
+function TapTransformer(
+    name,
+    available,
+    active_power_flow,
+    reactive_power_flow,
+    arc,
+    r,
+    x,
+    primary_shunt,
+    tap,
+    rating,
+    base_power,
+    rating_b = nothing,
+    rating_c = nothing,
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    TapTransformer(
+        name,
+        available,
+        active_power_flow,
+        reactive_power_flow,
+        arc,
+        r,
+        x,
+        primary_shunt,
+        tap,
+        rating,
+        base_power;
+        base_voltage_primary = nothing,
+        base_voltage_secondary = nothing,
+        rating_b,
+        rating_c,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
+end
+
+"""Allows construction of a PhaseShiftingTransformer without the specification of base voltages."""
+function PhaseShiftingTransformer(
+    name,
+    available,
+    active_power_flow,
+    reactive_power_flow,
+    arc,
+    r,
+    x,
+    primary_shunt,
+    tap,
+    α,
+    rating,
+    base_power,
+    rating_b = nothing,
+    rating_c = nothing,
+    phase_angle_limits = (min = -3.1416, max = 3.1416),
+    services = Device[],
+    ext = Dict{String, Any}(),
+)
+    PhaseShiftingTransformer(
+        name,
+        available,
+        active_power_flow,
+        reactive_power_flow,
+        arc,
+        r,
+        x,
+        primary_shunt,
+        tap,
+        α,
+        rating,
+        base_power;
+        base_voltage_primary = nothing,
+        base_voltage_secondary = nothing,
+        rating_b,
+        rating_c,
+        phase_angle_limits,
+        services,
+        ext,
+        InfrastructureSystemsInternal(),
+    )
+end
