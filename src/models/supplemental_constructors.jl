@@ -197,6 +197,7 @@ function Transformer2W(
     rating_c = nothing,
     services = Device[],
     ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
 )
     Transformer2W(
         name,
@@ -215,7 +216,7 @@ function Transformer2W(
         rating_c,
         services,
         ext,
-        InfrastructureSystemsInternal(),
+        internal = internal,
     )
 end
 
@@ -236,6 +237,7 @@ function TapTransformer(
     rating_c = nothing,
     services = Device[],
     ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
 )
     TapTransformer(
         name,
@@ -255,7 +257,7 @@ function TapTransformer(
         rating_c,
         services,
         ext,
-        InfrastructureSystemsInternal(),
+        internal = internal,
     )
 end
 
@@ -278,6 +280,7 @@ function PhaseShiftingTransformer(
     phase_angle_limits = (min = -3.1416, max = 3.1416),
     services = Device[],
     ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
 )
     PhaseShiftingTransformer(
         name,
@@ -299,6 +302,6 @@ function PhaseShiftingTransformer(
         phase_angle_limits,
         services,
         ext,
-        InfrastructureSystemsInternal(),
+        internal = internal,
     )
 end
