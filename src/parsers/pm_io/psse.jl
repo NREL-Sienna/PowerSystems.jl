@@ -170,6 +170,10 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["f_bus"] = pop!(branch, "I")
                 sub_data["t_bus"] = pop!(branch, "J")
+                bus_from = pm_data["bus"][sub_data["f_bus"]]
+                sub_data["base_voltage_from"] = bus_from["base_kv"]
+                bus_to = pm_data["bus"][sub_data["t_bus"]]
+                sub_data["base_voltage_to"] = bus_to["base_kv"]
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
                 sub_data["g_fr"] = pop!(branch, "GI")
