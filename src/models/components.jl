@@ -71,6 +71,18 @@ function _get_multiplier(
     end
     return get_base_voltage(get_arc(c).from)^2 / get_base_power(c)
 end
+function _get_multiplier(
+    c::T,
+    ::IS.SystemUnitsSettings,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+    ::Val{:ohm},
+) where {T <: Union{Transformer2W, TapTransformer, PhaseShiftingTransformer}}
+    base_voltage = get_base_voltage_primary(c)
+    if isnothing(base_voltage)
+        error("Base voltage is not defined for $(summary(c)).")
+    end
+    return base_voltage^2 / get_base_power(c)
+end
 
 ##################
 #### Siemens #####
@@ -95,6 +107,19 @@ function _get_multiplier(
         return 1.0
     end
     return get_base_power(c) / get_base_voltage(get_arc(c).from)^2
+end
+function _get_multiplier(
+    c::T,
+    ::IS.SystemUnitsSettings,
+    ::Val{IS.UnitSystem.NATURAL_UNITS},
+    ::Val{:siemens},
+) where {T <: Union{Transformer2W, TapTransformer, PhaseShiftingTransformer}}
+    base_voltage = get_base_voltage_primary(c)
+    if isnothing(base_voltage)
+        @warn "Base voltage is not set for $(c.name). Returning in DEVICE_BASE units."
+        return 1.0
+    end
+    return get_base_power(c) / base_voltage^2
 end
 
 _get_multiplier(::T, ::IS.SystemUnitsSettings, _, _) where {T <: Component} =

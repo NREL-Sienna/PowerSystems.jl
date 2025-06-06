@@ -1696,15 +1696,15 @@ function clear_time_series!(sys::System)
 end
 
 """
-Remove the time series data for a component and time series type.
+Remove the time series data for a component or supplemental attribute and time series type.
 """
 function remove_time_series!(
     sys::System,
     ::Type{T},
-    component::Component,
+    owner::Union{Component, SupplementalAttribute},
     name::String,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(sys.data, T, component, name)
+    return IS.remove_time_series!(sys.data, T, owner, name)
 end
 
 """

@@ -18,6 +18,8 @@ This file is auto-generated. Do not edit.
         α::Float64
         rating::Union{Nothing, Float64}
         base_power::Float64
+        base_voltage_primary::Union{Nothing, Float64}
+        base_voltage_secondary::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
         phase_angle_limits::MinMax
@@ -43,6 +45,8 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_voltage_primary::Union{Nothing, Float64}`: Primary base voltage in kV, validation range: `(0, nothing)`
+- `base_voltage_secondary::Union{Nothing, Float64}`: Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
@@ -74,6 +78,10 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     rating::Union{Nothing, Float64}
     "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
+    "Primary base voltage in kV"
+    base_voltage_primary::Union{Nothing, Float64}
+    "Secondary base voltage in kV"
+    base_voltage_secondary::Union{Nothing, Float64}
     "Second current rating; entered in MVA."
     rating_b::Union{Nothing, Float64}
     "Third current rating; entered in MVA."
@@ -88,12 +96,12 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b, rating_c, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, rating_b, rating_c, phase_angle_limits, services, ext, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -111,6 +119,8 @@ function PhaseShiftingTransformer(::Nothing)
         α=0.0,
         rating=0.0,
         base_power=0.0,
+        base_voltage_primary=nothing,
+        base_voltage_secondary=nothing,
         rating_b=0.0,
         rating_c=0.0,
         phase_angle_limits=(min=-3.1416, max=3.1416),
@@ -143,6 +153,10 @@ get_α(value::PhaseShiftingTransformer) = value.α
 get_rating(value::PhaseShiftingTransformer) = get_value(value, Val(:rating), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `base_power`."""
 get_base_power(value::PhaseShiftingTransformer) = value.base_power
+"""Get [`PhaseShiftingTransformer`](@ref) `base_voltage_primary`."""
+get_base_voltage_primary(value::PhaseShiftingTransformer) = value.base_voltage_primary
+"""Get [`PhaseShiftingTransformer`](@ref) `base_voltage_secondary`."""
+get_base_voltage_secondary(value::PhaseShiftingTransformer) = value.base_voltage_secondary
 """Get [`PhaseShiftingTransformer`](@ref) `rating_b`."""
 get_rating_b(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `rating_c`."""
@@ -178,6 +192,10 @@ set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `base_power`."""
 set_base_power!(value::PhaseShiftingTransformer, val) = value.base_power = val
+"""Set [`PhaseShiftingTransformer`](@ref) `base_voltage_primary`."""
+set_base_voltage_primary!(value::PhaseShiftingTransformer, val) = value.base_voltage_primary = val
+"""Set [`PhaseShiftingTransformer`](@ref) `base_voltage_secondary`."""
+set_base_voltage_secondary!(value::PhaseShiftingTransformer, val) = value.base_voltage_secondary = val
 """Set [`PhaseShiftingTransformer`](@ref) `rating_b`."""
 set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `rating_c`."""

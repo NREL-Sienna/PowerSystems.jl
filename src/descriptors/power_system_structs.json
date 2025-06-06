@@ -921,6 +921,28 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1083,6 +1105,28 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
@@ -1225,6 +1269,28 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "null_value": "0.0",
@@ -1647,13 +1713,6 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "delta_winding_connection",
-                    "data_type": "Vector{Tuple}",
-                    "comment": "Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince.",
-                    "null_value": "Vector{Tuple}()",
-                    "default": "Vector{Tuple}()"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1910,7 +1969,9 @@
                     "comment": "Limits on the Reactive Power at the `from` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_from",
@@ -1987,14 +2048,18 @@
                     "comment": "Converter rating in MVA in the `to` bus.",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "1e8"
+                    "default": "1e8",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_to",
                     "comment": "Limits on the Reactive Power at the `to` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_to",
@@ -2552,28 +2617,10 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "upper_bound_active_power",
-                    "comment": "Initial upper bound on the active power load (MW), validation range: `>= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": "active_power",
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "lower_bound_active_power",
-                    "comment": "Initial lower bound on the active power load (MW), validation range: `<= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": null,
-                        "max": "active_power"
-                    },
-                    "validation_action": "error",
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
                 },
