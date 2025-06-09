@@ -864,15 +864,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "Comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -1059,15 +1055,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -1236,15 +1228,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "rating",

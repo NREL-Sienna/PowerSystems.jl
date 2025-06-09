@@ -134,6 +134,10 @@ function _get_value(c::Component, value::Float64, conversion_unit)::Float64
     return _get_multiplier(c, conversion_unit) * value
 end
 
+function _get_value(c::Component, value::ComplexF64, conversion_unit)::ComplexF64
+    return _get_multiplier(c, conversion_unit) * value
+end
+
 function _get_value(c::Component, value::MinMax, conversion_unit)::MinMax
     m = _get_multiplier(c, conversion_unit)
     return (min = value.min * m, max = value.max * m)

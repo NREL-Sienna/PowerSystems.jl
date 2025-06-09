@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primary_shunt::Float64
+        primary_shunt::Complex{Float64}
         tap::Float64
         α::Float64
         rating::Union{Nothing, Float64}
@@ -40,7 +40,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
 - `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 4)`
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
-- `primary_shunt::Float64`:, validation range: `(0, 2)`
+- `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `α::Float64`: Initial condition of phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
@@ -69,7 +69,8 @@ mutable struct PhaseShiftingTransformer <: ACTransmission
     r::Float64
     "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    primary_shunt::Float64
+    "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
+    primary_shunt::Complex{Float64}
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
     "Initial condition of phase shift (radians) between the `from` and `to` buses "
@@ -144,7 +145,7 @@ get_r(value::PhaseShiftingTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `x`."""
 get_x(value::PhaseShiftingTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
+get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
 """Get [`PhaseShiftingTransformer`](@ref) `tap`."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
@@ -183,7 +184,7 @@ set_r!(value::PhaseShiftingTransformer, val) = value.r = set_value(value, Val(:r
 """Set [`PhaseShiftingTransformer`](@ref) `x`."""
 set_x!(value::PhaseShiftingTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
+set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`PhaseShiftingTransformer`](@ref) `tap`."""
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""

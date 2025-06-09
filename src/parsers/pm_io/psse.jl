@@ -91,7 +91,7 @@ function _create_starbus_from_transformer(
     starbus["bus_type"] = bus_type
     if transformer["STAT"] != 0
         starbus["bus_status"] = true
-    else 
+    else
         starbus["bus_status"] = false
     end
     starbus["area"] = _get_bus_value(transformer["I"], "area", pm_data)
@@ -1581,7 +1581,7 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
                 push!(pm_data["isolated_to_pq_buses"], to_bus_no)
                 to_bus["bus_status"] = false
             end
-                
+
             push!(pm_data["multisection_line"], sub_data)
         end
     end

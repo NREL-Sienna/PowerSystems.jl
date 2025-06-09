@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primary_shunt::Float64
+        primary_shunt::Complex{Float64}
         tap::Float64
         rating::Union{Nothing, Float64}
         base_power::Float64
@@ -38,7 +38,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
 - `r::Float64`: Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 2)`
 - `x::Float64`: Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
-- `primary_shunt::Float64`: Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`
+- `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -65,8 +65,8 @@ mutable struct TapTransformer <: ACTransmission
     r::Float64
     "Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    "Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
-    primary_shunt::Float64
+    "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
+    primary_shunt::Complex{Float64}
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
     "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
@@ -135,7 +135,7 @@ get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
 """Get [`TapTransformer`](@ref) `x`."""
 get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`TapTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:ohm))
+get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
 """Get [`TapTransformer`](@ref) `rating`."""
@@ -170,7 +170,7 @@ set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Va
 """Set [`TapTransformer`](@ref) `x`."""
 set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
+set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""

@@ -1054,7 +1054,7 @@ function make_transformer_2w(
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primary_shunt = d["b_fr"],  # MAG2
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
@@ -1137,7 +1137,7 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         base_power = d["base_power"],
         rating = _get_rating("TapTransformer", name, d, "rate_a"),
         rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
@@ -1171,7 +1171,7 @@ function make_phase_shifting_transformer(
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = alpha,
         base_power = d["base_power"],
         rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),

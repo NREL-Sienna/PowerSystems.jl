@@ -13,7 +13,7 @@ This file is auto-generated. Do not edit.
         arc::Arc
         r::Float64
         x::Float64
-        primary_shunt::Float64
+        primary_shunt::Complex{Float64}
         rating::Union{Nothing, Float64}
         base_power::Float64
         base_voltage_primary::Union{Nothing, Float64}
@@ -37,7 +37,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a bus `to` another bus
 - `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
-- `primary_shunt::Float64`: Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, 2)`
+- `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `base_voltage_primary::Union{Nothing, Float64}`: Primary base voltage in kV, validation range: `(0, nothing)`
@@ -63,8 +63,8 @@ mutable struct Transformer2W <: ACTransmission
     r::Float64
     "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     x::Float64
-    "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))"
-    primary_shunt::Float64
+    "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
+    primary_shunt::Complex{Float64}
     "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
     rating::Union{Nothing, Float64}
     "Base power (MVA) for [per unitization](@ref per_unit)"
@@ -130,7 +130,7 @@ get_r(value::Transformer2W) = get_value(value, Val(:r), Val(:ohm))
 """Get [`Transformer2W`](@ref) `x`."""
 get_x(value::Transformer2W) = get_value(value, Val(:x), Val(:ohm))
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
-get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), Val(:ohm))
+get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), Val(:siemens))
 """Get [`Transformer2W`](@ref) `rating`."""
 get_rating(value::Transformer2W) = get_value(value, Val(:rating), Val(:mva))
 """Get [`Transformer2W`](@ref) `base_power`."""
@@ -163,7 +163,7 @@ set_r!(value::Transformer2W, val) = value.r = set_value(value, Val(:r), val, Val
 """Set [`Transformer2W`](@ref) `x`."""
 set_x!(value::Transformer2W, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
-set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:ohm))
+set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`Transformer2W`](@ref) `rating`."""
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
