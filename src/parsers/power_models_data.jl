@@ -291,6 +291,7 @@ function make_bus(bus_dict::Dict{String, Any})
     bus = ACBus(
         bus_dict["number"],
         bus_dict["name"],
+        bus_dict["available"],
         bus_dict["bustype"],
         bus_dict["angle"],
         bus_dict["voltage"],
@@ -313,6 +314,7 @@ function make_bus(
         Dict{String, Any}(
             "name" => bus_name,
             "number" => bus_number,
+            "available" => d["bus_status"],
             "bustype" => bus_types[d["bus_type"]],
             "angle" => d["va"],
             "voltage" => d["vm"],
@@ -341,6 +343,7 @@ end
 
 function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
+
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
@@ -406,7 +409,9 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             end
         end
         set_ext!(area, ext)
-
+        if !haskey(d, "bus_status")
+            d["bus_status"] = true
+        end
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
@@ -1049,11 +1054,13 @@ function make_transformer_2w(
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primary_shunt = d["b_fr"],  # MAG2
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
         base_power = d["base_power"],
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
         ext = ext,
     )
 end
@@ -1097,6 +1104,9 @@ function make_3w_transformer(
         base_power_12 = d["base_power_12"],
         base_power_23 = d["base_power_23"],
         base_power_13 = d["base_power_13"],
+        base_voltage_primary = d["base_voltage_primary"],
+        base_voltage_secondary = d["base_voltage_secondary"],
+        base_voltage_tertiary = d["base_voltage_tertiary"],
         g = d["g"],
         b = d["b"],
         primary_turns_ratio = d["primary_turns_ratio"],
@@ -1130,11 +1140,13 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         base_power = d["base_power"],
         rating = _get_rating("TapTransformer", name, d, "rate_a"),
         rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
         rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
     )
 end
 
@@ -1162,12 +1174,14 @@ function make_phase_shifting_transformer(
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = alpha,
         base_power = d["base_power"],
         rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
         rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
         rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
     )
 end
 

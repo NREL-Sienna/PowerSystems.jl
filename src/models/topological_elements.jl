@@ -28,6 +28,7 @@ end
 function check_bus_params(
     number,
     name,
+    available,
     bustype,
     angle,
     voltage,
@@ -49,6 +50,7 @@ function check_bus_params(
 
     return number,
     name,
+    available,
     bustype,
     angle,
     voltage,

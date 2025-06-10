@@ -33,6 +33,7 @@ end
             bus1 = ACBus(;
                 number = number,
                 name = "bus100",
+                available = true,
                 bustype = ACBusTypes.PV,
                 angle = 1.0,
                 magnitude = 1.0,
@@ -42,6 +43,7 @@ end
             bus2 = ACBus(;
                 number = number,
                 name = "bus101",
+                available = true,
                 bustype = ACBusTypes.PV,
                 angle = 1.0,
                 magnitude = 1.0,

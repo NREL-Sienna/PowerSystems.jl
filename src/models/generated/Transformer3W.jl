@@ -34,6 +34,9 @@ This file is auto-generated. Do not edit.
         base_power_12::Float64
         base_power_23::Float64
         base_power_13::Float64
+        base_voltage_primary::Union{Nothing, Float64}
+        base_voltage_secondary::Union{Nothing, Float64}
+        base_voltage_tertiary::Union{Nothing, Float64}
         g::Float64
         b::Float64
         primary_turns_ratio::Float64
@@ -83,6 +86,9 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `base_power_12::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings., validation range: `(0, nothing)`
 - `base_power_23::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings., validation range: `(0, nothing)`
 - `base_power_13::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings., validation range: `(0, nothing)`
+- `base_voltage_primary::Union{Nothing, Float64}`: Primary base voltage in kV, validation range: `(0, nothing)`
+- `base_voltage_secondary::Union{Nothing, Float64}`: Secondary base voltage in kV, validation range: `(0, nothing)`
+- `base_voltage_tertiary::Union{Nothing, Float64}`: Tertiary base voltage in kV, validation range: `(0, nothing)`
 - `g::Float64`: (default: `0.0`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).
 - `b::Float64`: (default: `0.0`) Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).
 - `primary_turns_ratio::Float64`: (default: `1.0`) Primary side off-nominal turns ratio in p.u. with respect to connected primary bus (WINDV1 with CW = 1 in PSS/E).
@@ -155,6 +161,12 @@ mutable struct Transformer3W <: ACTransmission
     base_power_23::Float64
     "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings."
     base_power_13::Float64
+    "Primary base voltage in kV"
+    base_voltage_primary::Union{Nothing, Float64}
+    "Secondary base voltage in kV"
+    base_voltage_secondary::Union{Nothing, Float64}
+    "Tertiary base voltage in kV"
+    base_voltage_tertiary::Union{Nothing, Float64}
     "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E)."
     g::Float64
     "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E)."
@@ -185,12 +197,12 @@ mutable struct Transformer3W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
+function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
+function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -224,6 +236,9 @@ function Transformer3W(::Nothing)
         base_power_12=0.0,
         base_power_23=0.0,
         base_power_13=0.0,
+        base_voltage_primary=nothing,
+        base_voltage_secondary=nothing,
+        base_voltage_tertiary=nothing,
         g=0.0,
         b=0.0,
         primary_turns_ratio=0.0,
@@ -296,6 +311,12 @@ get_base_power_12(value::Transformer3W) = value.base_power_12
 get_base_power_23(value::Transformer3W) = value.base_power_23
 """Get [`Transformer3W`](@ref) `base_power_13`."""
 get_base_power_13(value::Transformer3W) = value.base_power_13
+"""Get [`Transformer3W`](@ref) `base_voltage_primary`."""
+get_base_voltage_primary(value::Transformer3W) = value.base_voltage_primary
+"""Get [`Transformer3W`](@ref) `base_voltage_secondary`."""
+get_base_voltage_secondary(value::Transformer3W) = value.base_voltage_secondary
+"""Get [`Transformer3W`](@ref) `base_voltage_tertiary`."""
+get_base_voltage_tertiary(value::Transformer3W) = value.base_voltage_tertiary
 """Get [`Transformer3W`](@ref) `g`."""
 get_g(value::Transformer3W) = get_value(value, Val(:g), Val(:siemens))
 """Get [`Transformer3W`](@ref) `b`."""
@@ -379,6 +400,12 @@ set_base_power_12!(value::Transformer3W, val) = value.base_power_12 = val
 set_base_power_23!(value::Transformer3W, val) = value.base_power_23 = val
 """Set [`Transformer3W`](@ref) `base_power_13`."""
 set_base_power_13!(value::Transformer3W, val) = value.base_power_13 = val
+"""Set [`Transformer3W`](@ref) `base_voltage_primary`."""
+set_base_voltage_primary!(value::Transformer3W, val) = value.base_voltage_primary = val
+"""Set [`Transformer3W`](@ref) `base_voltage_secondary`."""
+set_base_voltage_secondary!(value::Transformer3W, val) = value.base_voltage_secondary = val
+"""Set [`Transformer3W`](@ref) `base_voltage_tertiary`."""
+set_base_voltage_tertiary!(value::Transformer3W, val) = value.base_voltage_tertiary = val
 """Set [`Transformer3W`](@ref) `g`."""
 set_g!(value::Transformer3W, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`Transformer3W`](@ref) `b`."""

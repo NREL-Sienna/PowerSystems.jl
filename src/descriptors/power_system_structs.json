@@ -229,6 +229,12 @@
                     "data_type": "String"
                 },
                 {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)",
+                    "data_type": "Bool"
+                },
+                {
                     "name": "bustype",
                     "comment": "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)",
                     "null_value": "nothing",
@@ -858,15 +864,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "Comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -913,6 +915,28 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "null_value": "0.0",
@@ -1031,15 +1055,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -1075,6 +1095,28 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "null_value": "0.0",
@@ -1186,15 +1228,11 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
-                    "conversion_unit": ":ohm"
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "rating",
@@ -1219,6 +1257,28 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "null_value": "0.0",
@@ -1552,6 +1612,39 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_tertiary",
+                    "comment": "Tertiary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
                 },
                 {
                     "name": "g",
