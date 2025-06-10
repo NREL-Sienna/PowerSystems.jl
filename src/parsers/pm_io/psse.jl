@@ -1076,7 +1076,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["g"] = transformer["MAG1"] # M. conductance MAG1 is saved in "g"
                 # If CM = 1 & MAG2 != 0 -> MAG2 < 0
                 # If CM = 2 & MAG2 != 0 -> MAG2 > 0
-                sub_data["b"] = abs(transformer["MAG2"]) # M. susceptance MAG2 is saved in "b"
+                sub_data["b"] = transformer["MAG2"] # M. susceptance MAG2 is saved in "b"
 
                 sub_data["primary_correction_table"] = transformer["TAB1"]
                 sub_data["secondary_correction_table"] = transformer["TAB2"]
