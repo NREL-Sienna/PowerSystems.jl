@@ -294,7 +294,7 @@ function _get_winding_base_voltage(
     c::Transformer3W,
     ::Union{PrimaryImpedances, PrimaryAdmittances},
 )
-    base_voltage = get_base_voltage(get_primary_star_arc(c).from)
+    base_voltage = get_base_voltage_primary(c)
     if isnothing(base_voltage)
         error("Base voltage is not defined for $(summary(c)).")
     end
@@ -302,7 +302,7 @@ function _get_winding_base_voltage(
 end
 
 function _get_winding_base_voltage(c::Transformer3W, ::SecondaryImpedances)
-    base_voltage = get_base_voltage(get_secondary_star_arc(c).from)
+    base_voltage = get_base_voltage_secondary(c)
     if isnothing(base_voltage)
         error("Base voltage is not defined for $(summary(c)).")
     end
@@ -310,7 +310,7 @@ function _get_winding_base_voltage(c::Transformer3W, ::SecondaryImpedances)
 end
 
 function _get_winding_base_voltage(c::Transformer3W, ::TertiaryImpedances)
-    base_voltage = get_base_voltage(get_tertiary_star_arc(c).from)
+    base_voltage = get_base_voltage_tertiary(c)
     if isnothing(base_voltage)
         error("Base voltage is not defined for $(summary(c)).")
     end

@@ -1614,6 +1614,39 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
+                    "name": "base_voltage_tertiary",
+                    "comment": "Tertiary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error"
+                },
+                {
                     "name": "g",
                     "null_value": "0.0",
                     "data_type": "Float64",

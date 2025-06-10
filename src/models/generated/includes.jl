@@ -508,6 +508,7 @@ export get_base_power_23
 export get_base_voltage
 export get_base_voltage_primary
 export get_base_voltage_secondary
+export get_base_voltage_tertiary
 export get_battery_resistance
 export get_battery_voltage
 export get_bias
@@ -1170,6 +1171,7 @@ export set_base_power_23!
 export set_base_voltage!
 export set_base_voltage_primary!
 export set_base_voltage_secondary!
+export set_base_voltage_tertiary!
 export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
