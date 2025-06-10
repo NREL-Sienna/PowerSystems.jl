@@ -925,7 +925,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
                 },
                 {
                     "name": "base_voltage_secondary",
@@ -936,7 +937,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
                 },
                 {
                     "null_value": "0.0",
@@ -1105,7 +1107,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
                 },
                 {
                     "name": "base_voltage_secondary",
@@ -1116,7 +1119,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
                 },
                 {
                     "null_value": "0.0",
@@ -1267,7 +1271,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
                 },
                 {
                     "name": "base_voltage_secondary",
@@ -1278,7 +1283,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
                 },
                 {
                     "null_value": "0.0",
@@ -1622,7 +1628,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(primary_star_arc))"
                 },
                 {
                     "name": "base_voltage_secondary",
@@ -1633,7 +1640,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(secondary_star_arc))"
                 },
                 {
                     "name": "base_voltage_tertiary",
@@ -1644,7 +1652,8 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(tertiary_star_arc))"
                 },
                 {
                     "name": "g",
