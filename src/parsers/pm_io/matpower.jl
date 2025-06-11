@@ -486,6 +486,7 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
 
     # use once available
     arrays_to_dicts!(pm_data)
+    set_base_voltages!(pm_data)
 
     for optional in ["dcline", "load", "shunt", "storage", "switch"]
         if length(pm_data[optional]) == 0

@@ -130,3 +130,17 @@ UNIT_SYSTEM_MAPPING = Dict(
     "NATURAL_UNITS" => IS.UnitSystem.NATURAL_UNITS,
     "NA" => nothing,
 )
+
+"""Add the \"base_voltage_primary\" and \"base_voltage_secondary\" keys to transformers that
+don't already have those fields."""
+function set_base_voltages!(pm_data::Dict{String, <:Any})
+    base_voltages = Dict{Int64, Float64}(
+        bus_ind => bus_data["base_kv"] for (bus_ind, bus_data) in pm_data["bus"]
+    )
+    for transf in values(pm_data["branch"])
+        if transf["transformer"] == true && !haskey(transf, "base_voltage_primary")
+            transf["base_voltage_primary"] = base_voltages[transf["f_bus"]]
+            transf["base_voltage_secondary"] = base_voltages[transf["t_bus"]]
+        end
+    end
+end

@@ -354,7 +354,8 @@ end
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    sys = build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true) 
+    sys =
+        build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true)
     @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
     @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0

@@ -1695,6 +1695,7 @@ function _pti_to_powermodels!(
     _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
+    set_base_voltages!(pm_data)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
