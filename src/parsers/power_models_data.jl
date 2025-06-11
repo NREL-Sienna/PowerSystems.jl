@@ -1059,8 +1059,9 @@ function make_transformer_2w(
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
         base_power = d["base_power"],
-        base_voltage_primary = get_base_voltage(bus_f),
-        base_voltage_secondary = get_base_voltage(bus_t),
+        # for psse inputs, these numbers may be different than the base powers
+        base_voltage_primary = get!(d, "base_voltage_primary", get_base_voltage(bus_f)),
+        base_voltage_secondary = get!(d, "base_voltage_secondary", get_base_voltage(bus_t)),
         ext = ext,
     )
 end
@@ -1145,6 +1146,9 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating = _get_rating("TapTransformer", name, d, "rate_a"),
         rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
         rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
+        # for psse inputs, these numbers may be different than the base powers
+        base_voltage_primary = get!(d, "base_voltage_primary", get_base_voltage(bus_f)),
+        base_voltage_secondary = get!(d, "base_voltage_secondary", get_base_voltage(bus_t)),
     )
 end
 
@@ -1178,6 +1182,9 @@ function make_phase_shifting_transformer(
         rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
         rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
         rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
+        # for psse inputs, these numbers may be different than the base powers
+        base_voltage_primary = get!(d, "base_voltage_primary", get_base_voltage(bus_f)),
+        base_voltage_secondary = get!(d, "base_voltage_secondary", get_base_voltage(bus_t)),
     )
 end
 

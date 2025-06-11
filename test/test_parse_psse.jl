@@ -353,10 +353,8 @@ end
     @test IS.compare_values(original_sys, deserialized_sys)
 end
 
-#TODO - add system to PSB to make this test functional
-#=
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    #sys = build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true) 
+    sys = build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true) 
     @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
     @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0
@@ -367,4 +365,4 @@ end
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.REF, ACBus, sys)) == 1
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 4
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
-end=#
+end
