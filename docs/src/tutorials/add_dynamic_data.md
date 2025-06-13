@@ -436,7 +436,7 @@ Next, you might like to:
 
   - Read more about the static and dynamic data layers and the dynamic data format in
     [Dynamic Devices](@ref).
-  - Review the specific sub-system models available in `PowerSystems.jl` for [Machine](@ref),
+  - Review the specific subsystem models available in `PowerSystems.jl` for [Machine](@ref),
     [Shaft](@ref), [AVR](@ref), [PSS](@ref),
     [Prime Mover and Turbine Governor](@ref TurbineGov), [Converter](@ref),
     [OuterControl](@ref), [InnerControl](@ref), [DCSource](@ref),
