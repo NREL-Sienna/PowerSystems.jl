@@ -93,6 +93,10 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
             branch["base_power"] = pm_data.data["baseMVA"]
             branch["ext"] = Dict{String, Any}()
             @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) has different voltage levels endpoints (from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV) which exceed the $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% threshold; converting to transformer."
+            if !haskey(branch, "base_voltage_from")
+                branch["base_voltage_from"] = f_bus_bvolt
+                branch["base_voltage_to"] = t_bus_bvolt
+            end
         end
     end
 end
