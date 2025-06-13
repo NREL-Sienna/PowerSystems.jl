@@ -19,25 +19,27 @@ an import error.
         travel_time::Union{Nothing, Float64}
         intake_elevation::Float64
         head_to_volume_factor::ValueCurve
+        operation_cost::HydroReservoirCost
         level_data_type::ReservoirDataType
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
 
-A hydropower reservoir that needs to have `HydroTurbine` attached to generate power, suitable for modeling indenpendent turbines and reservoirs.
+A hydropower reservoir that needs to have `HydroTurbine` attached to generate power, suitable for modeling independent turbines and reservoirs.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head).
-- `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits`.
-- `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed.
-- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h.
-- `outflow::Float64`: Amount of water going to the turbine(s) in m^3/h.
-- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the total level.
+- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3 (if data type is volume), m (if data type is head) or MWh (if data type is energy).
+- `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits.max`.
+- `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.
+- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if data type is energy).
+- `outflow::Float64`: Amount of water going to the turbine(s) in m^3/h or MW (if data type is energy).
+- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the storage_level_limits.max.
 - `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours
 - `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
+- `operation_cost::HydroReservoirCost`: [`OperationalCost`](@ref) of reservoir.
 - `level_data_type::ReservoirDataType`: Reservoir level data type. (default: ReservoirDataType.USABLE_VOLUME)
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -47,17 +49,17 @@ mutable struct HydroReservoir <: Device
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Storage level limits for the reservoir in m^3 (if data type is volume) or m (if data type is head). If nothing, the reservoir volume is assumed to be infinite."
+    "Storage level limits for the reservoir in m^3 (if data type is volume), m (if data type is head) or MWh (if data type is energy)."
     storage_level_limits::MinMax
-    "Initial level of the reservoir relative to the `storage_level_limits`."
+    "Initial level of the reservoir relative to the `storage_level_limits.max`."
     initial_level::Float64
-    "Amount of water allowed to be spilled from the reservoir. If nothing, no spillage is allowed."
+    "Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed."
     spillage_limits::Union{Nothing, MinMax}
-    "Amount of water refilling the reservoir in m^3/h."
+    "Amount of water refilling the reservoir in m^3/h or MW (if data type is energy)."
     inflow::Float64
-    "Amount of water going to the turbine(s) in m^3/h."
+    "Amount of water going to the turbine(s) in m^3/h or MW (if data type is energy)."
     outflow::Float64
-    "Reservoir level targets at the end of a simulation as a fraction of the total level."
+    "Reservoir level targets at the end of a simulation as a fraction of the storage_level_limits.max."
     level_targets::Union{Nothing, Float64}
     "Downstream travel time in hours"
     travel_time::Union{Nothing, Float64}
@@ -65,6 +67,8 @@ mutable struct HydroReservoir <: Device
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
     head_to_volume_factor::ValueCurve
+    "[`OperationalCost`](@ref) of reservoir."
+    operation_cost::HydroReservoirCost
     "Reservoir level data type. (default: ReservoirDataType.USABLE_VOLUME)"
     level_data_type::ReservoirDataType
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -73,17 +77,17 @@ mutable struct HydroReservoir <: Device
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, operation_cost = HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
 # Float64 method for h2v factor
-function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor::Float64, level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, LinearCurve(head_to_volume_factor), level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor::Float64, operation_cost = HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, LinearCurve(head_to_volume_factor), operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, level_data_type, ext, internal, )
+function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, operation_cost = HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, operation_cost, level_data_type, ext, internal, )
 end
 
 function HydroReservoir(::Nothing)
@@ -99,6 +103,7 @@ function HydroReservoir(::Nothing)
         travel_time=0.0,
         intake_elevation=0.0,
         head_to_volume_factor=LinearCurve(0.0),
+        operation_cost = HydroReservoirCost(nothing),
         level_data_type=ReservoirDataType.USABLE_VOLUME,
         ext=Dict{String, Any}(),
     )
@@ -128,6 +133,8 @@ get_travel_time(value::HydroReservoir) = value.travel_time
 get_intake_elevation(value::HydroReservoir) = value.intake_elevation
 """Get [`HydroReservoir`](@ref) `head_to_volume_factor`."""
 get_head_to_volume_factor(value::HydroReservoir) = value.head_to_volume_factor
+"""Get [`HydroReservoir`](@ref) `operation_cost`."""
+get_operation_cost(value::HydroReservoir) = value.operation_cost
 """Get [`HydroReservoir`](@ref) `level_data_type`."""
 get_level_data_type(value::HydroReservoir) = value.level_data_type
 """Get [`HydroReservoir`](@ref) `ext`."""
@@ -155,6 +162,8 @@ set_travel_time!(value::HydroReservoir, val) = value.travel_time = val
 set_intake_elevation!(value::HydroReservoir, val) = value.intake_elevation = val
 """Set [`HydroReservoir`](@ref) `head_to_volume_factor`."""
 set_head_to_volume_factor!(value::HydroReservoir, val) = value.head_to_volume_factor = val
+"""Set [`HydroReservoir`](@ref) `operation_cost`."""
+set_operation_cost!(value::HydroReservoir, val) = value.operation_cost = val
 """Set [`HydroReservoir`](@ref) `level_data_type`."""
 set_level_data_type!(value::HydroReservoir, val) = value.level_data_type = val
 """Set [`HydroReservoir`](@ref) `ext`."""
