@@ -216,6 +216,7 @@ function System(
             number = 0,
             name = "init",
             bustype = ACBusTypes.REF,
+            available = true,
             angle = 0.0,
             magnitude = 0.0,
             voltage_limits = (min = 0.0, max = 0.0),
