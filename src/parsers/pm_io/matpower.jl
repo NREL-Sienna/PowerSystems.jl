@@ -486,7 +486,16 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
 
     # use once available
     arrays_to_dicts!(pm_data)
-    set_base_voltages!(pm_data)
+
+    base_voltages = Dict{Int64, Float64}(
+        bus_ind => bus_data["base_kv"] for (bus_ind, bus_data) in pm_data["bus"]
+    )
+    for transf in values(pm_data["branch"])
+        if transf["transformer"] == true && !haskey(transf, "base_voltage_from")
+            transf["base_voltage_from"] = base_voltages[transf["f_bus"]]
+            transf["base_voltage_to"] = base_voltages[transf["t_bus"]]
+        end
+    end
 
     for optional in ["dcline", "load", "shunt", "storage", "switch"]
         if length(pm_data[optional]) == 0
