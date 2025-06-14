@@ -5,7 +5,7 @@
 #####################################################################
 
 """
-A list of data file sections in the order that they appear in a PTI v33 file
+A list of data file sections in the order that they appear in a PTI v33/v35 file
 """
 const _pti_sections = [
     "CASE IDENTIFICATION",
@@ -30,6 +30,13 @@ const _pti_sections = [
     "INDUCTION MACHINE",
 ]
 
+const _pti_sections_v35 = vcat(
+    _pti_sections[1:6],
+    ["SWITCHING DEVICE"],
+    _pti_sections[7:end],
+    "SUBSTATION DATA",
+)
+
 const _transaction_dtypes = [
     ("IC", Int64),
     ("SBASE", Float64),
@@ -38,6 +45,60 @@ const _transaction_dtypes = [
     ("NXFRAT", Float64),
     ("BASFRQ", Float64),
 ]
+
+const _transaction_dtypes_v35 = _transaction_dtypes
+
+const _system_wide_dtypes_v35 = [
+    ("THRSHZ", Float64),
+    ("PQBRAK", Float64),
+    ("BLOWUP", Float64),
+    ("MAXISOLLVLS", Int64),
+    ("CAMAXREPTSLN", Int64),
+    ("CHKDUPCNTLBL", Int64),
+    ("ITMX", Int64),
+    ("ACCP", Float64),
+    ("ACCQ", Float64),
+    ("ACCM", Float64),
+    ("TOL", Float64),
+    ("ITMXN", Int64),
+    ("ACCN", Float64),
+    ("TOLN", Float64),
+    ("VCTOLQ", Float64),
+    ("VCTOLV", Float64),
+    ("DVLIM", Float64),
+    ("NDVFCT", Float64),
+    ("ADJTHR", Float64),
+    ("ACCTAP", Float64),
+    ("TAPLIM", Float64),
+    ("SWVBND", Float64),
+    ("MXTPSS", Int64),
+    ("MXSWIM", Int64),
+    ("ITMXTY", Int64),
+    ("ACCTY", Float64),
+    ("TOLTY", Float64),
+    ("METHOD", String),
+    ("ACTAPS", Int64),
+    ("AREAIN", Int64),
+    ("PHSHFT", Int64),
+    ("DCTAPS", Int64),
+    ("SWSHNT", Int64),
+    ("FLATST", Int64),
+    ("VARLIM", Int64),
+    ("NONDIV", Int64),
+    ("IRATE", Int64),
+    ("NAME", String),
+    ("DESC", String),
+]
+
+const _system_wide_data_sections_v35 = Dict{String, Vector{String}}(
+    "GENERAL" => ["THRSHZ", "PQBRAK", "BLOWUP", "MAXISOLLVLS", "CAMAXREPTSLN", "CHKDUPCNTLBL"],
+    "GAUSS" => ["ITMX", "ACCP", "ACCQ", "ACCM", "TOL"],
+    "NEWTON" => ["ITMXN", "ACCN", "TOLN", "VCTOLQ", "VCTOLV", "DVLIM", "NDVFCT"],
+    "ADJUST" => ["ADJTHR", "ACCTAP", "TAPLIM", "SWVBND", "MXTPSS", "MXSWIM"],
+    "TYSL" => ["ITMXTY", "ACCTY", "TOLTY"],
+    "SOLVER" => ["METHOD", "ACTAPS", "AREAIN", "PHSHFT", "DCTAPS", "SWSHNT", "FLATST", "VARLIM", "NONDIV"],
+    "RATING" => ["IRATE", "NAME", "DESC"],
+)
 
 const _bus_dtypes = [
     ("I", Int64),
@@ -54,6 +115,8 @@ const _bus_dtypes = [
     ("EVHI", Float64),
     ("EVLO", Float64),
 ]
+
+const _bus_dtypes_v35 = _bus_dtypes
 
 const _load_dtypes = [
     ("I", Int64),
@@ -72,8 +135,25 @@ const _load_dtypes = [
     ("INTRPT", Int64),
 ]
 
-const _fixed_shunt_dtypes =
-    [("I", Int64), ("ID", String), ("STATUS", Int64), ("GL", Float64), ("BL", Float64)]
+const _load_dtypes_v35 = vcat(
+    _load_dtypes[1:14],
+    [
+        ("DGENP", Float64),
+        ("DGENQ", Float64),
+        ("DGENM", Float64),
+        ("LOADTYPE", String),
+    ],
+)
+
+const _fixed_shunt_dtypes = [
+    ("I", Int64),
+    ("ID", String),
+    ("STATUS", Int64),
+    ("GL", Float64),
+    ("BL", Float64),
+]
+
+const _fixed_shunt_dtypes_v35 = _fixed_shunt_dtypes
 
 const _generator_dtypes = [
     ("I", Int64),
@@ -106,6 +186,14 @@ const _generator_dtypes = [
     ("WPF", Float64),
 ]
 
+const _generator_dtypes_v35 = vcat(
+    _generator_dtypes[1:8],
+    [("NREG", Int64)],
+    _generator_dtypes[9:18],
+    [("BASLOD", Int64)],
+    _generator_dtypes[19:end],
+)
+
 const _branch_dtypes = [
     ("I", Int64),
     ("J", Int64),
@@ -133,6 +221,50 @@ const _branch_dtypes = [
     ("F4", Float64),
 ]
 
+const _branch_dtypes_v35 = vcat(
+    _branch_dtypes[1:6],
+    [
+        ("NAME", String),
+        ("RATE1", Float64),
+        ("RATE2", Float64),
+        ("RATE3", Float64),
+        ("RATE4", Float64),
+        ("RATE5", Float64),
+        ("RATE6", Float64),
+        ("RATE7", Float64),
+        ("RATE8", Float64),
+        ("RATE9", Float64),
+        ("RATE10", Float64),
+        ("RATE11", Float64),
+        ("RATE12", Float64),
+    ],
+    _branch_dtypes[10:end],
+)
+
+const _switching_dtypes_v35 = [
+    ("I", Int64),
+    ("J", Int64),
+    ("CKT", String),
+    ("X", Float64),
+    ("RATE1", Float64),
+    ("RATE2", Float64),
+    ("RATE3", Float64),
+    ("RATE4", Float64),
+    ("RATE5", Float64),
+    ("RATE6", Float64),
+    ("RATE7", Float64),
+    ("RATE8", Float64),
+    ("RATE9", Float64),
+    ("RATE10", Float64),
+    ("RATE11", Float64),
+    ("RATE12", Float64),
+    ("STAT", Int64),
+    ("NSTAT", Int64),
+    ("MET", Int64),
+    ("STYPE", Int64),
+    ("NAME", String),
+]
+
 const _transformer_dtypes = [
     ("I", Int64),
     ("J", Int64),
@@ -157,6 +289,8 @@ const _transformer_dtypes = [
     ("VECGRP", String),
 ]
 
+const _transformer_dtypes_v35 = _transformer_dtypes
+
 const _transformer_3_1_dtypes = [
     ("R1-2", Float64),
     ("X1-2", Float64),
@@ -170,6 +304,8 @@ const _transformer_3_1_dtypes = [
     ("VMSTAR", Float64),
     ("ANSTAR", Float64),
 ]
+
+const _transformer_3_1_dtypes_v35 = _transformer_3_1_dtypes
 
 const _transformer_3_2_dtypes = [
     ("WINDV1", Float64),
@@ -191,6 +327,25 @@ const _transformer_3_2_dtypes = [
     ("CNXA1", Float64),
 ]
 
+const _transformer_3_2_dtypes_v35 = vcat(
+    _transformer_3_2_dtypes[1:3],
+    [
+        ("RATE11", Float64),
+        ("RATE21", Float64),
+        ("RATE31", Float64),
+        ("RATE41", Float64),
+        ("RATE51", Float64),
+        ("RATE61", Float64),
+        ("RATE71", Float64),
+        ("RATE81", Float64),
+        ("RATE91", Float64),
+        ("RATE101", Float64),
+        ("RATE111", Float64),
+        ("RATE121", Float64),
+    ],
+    _transformer_3_2_dtypes[7:end],
+)
+
 const _transformer_3_3_dtypes = [
     ("WINDV2", Float64),
     ("NOMV2", Float64),
@@ -210,6 +365,25 @@ const _transformer_3_3_dtypes = [
     ("CX2", Float64),
     ("CNXA2", Float64),
 ]
+
+const _transformer_3_3_dtypes_v35 = vcat(
+    _transformer_3_3_dtypes[1:3],
+    [
+        ("RATE12", Float64),
+        ("RATE22", Float64),
+        ("RATE32", Float64),
+        ("RATE42", Float64),
+        ("RATE52", Float64),
+        ("RATE62", Float64),
+        ("RATE72", Float64),
+        ("RATE82", Float64),
+        ("RATE92", Float64),
+        ("RATE102", Float64),
+        ("RATE112", Float64),
+        ("RATE122", Float64),
+    ],
+    _transformer_3_2_dtypes[7:end],
+)
 
 const _transformer_3_4_dtypes = [
     ("WINDV3", Float64),
@@ -231,8 +405,29 @@ const _transformer_3_4_dtypes = [
     ("CNXA3", Float64),
 ]
 
+const _transformer_3_4_dtypes_v35 = vcat(
+    _transformer_3_4_dtypes[1:3],
+    [
+        ("RATE13", Float64),
+        ("RATE23", Float64),
+        ("RATE33", Float64),
+        ("RATE43", Float64),
+        ("RATE53", Float64),
+        ("RATE63", Float64),
+        ("RATE73", Float64),
+        ("RATE83", Float64),
+        ("RATE93", Float64),
+        ("RATE103", Float64),
+        ("RATE113", Float64),
+        ("RATE123", Float64),
+    ],
+    _transformer_3_2_dtypes[7:end],
+)
+
 const _transformer_2_1_dtypes =
     [("R1-2", Float64), ("X1-2", Float64), ("SBASE1-2", Float64)]
+
+const _transformer_2_1_dtypes_v35 = _transformer_2_1_dtypes
 
 const _transformer_2_2_dtypes = [
     ("WINDV1", Float64),
@@ -254,10 +449,33 @@ const _transformer_2_2_dtypes = [
     ("CNXA1", Float64),
 ]
 
+const _transformer_2_2_dtypes_v35 = vcat(
+    _transformer_2_2_dtypes[1:3],
+    [
+        ("RATE13", Float64),
+        ("RATE23", Float64),
+        ("RATE33", Float64),
+        ("RATE43", Float64),
+        ("RATE53", Float64),
+        ("RATE63", Float64),
+        ("RATE73", Float64),
+        ("RATE83", Float64),
+        ("RATE93", Float64),
+        ("RATE103", Float64),
+        ("RATE113", Float64),
+        ("RATE123", Float64),
+    ],
+    _transformer_3_2_dtypes[7:end],
+)
+
 const _transformer_2_3_dtypes = [("WINDV2", Float64), ("NOMV2", Float64)]
+
+const _transformer_2_3_dtypes_v35 = _transformer_2_3_dtypes
 
 const _area_interchange_dtypes =
     [("I", Int64), ("ISW", Int64), ("PDES", Float64), ("PTOL", Float64), ("ARNAME", String)]
+
+const _area_interchange_dtypes_v35 = _area_interchange_dtypes
 
 const _two_terminal_line_dtypes = [
     ("NAME", String),
@@ -308,6 +526,14 @@ const _two_terminal_line_dtypes = [
     ("XCAPI", Float64),
 ]
 
+const _two_terminal_line_dtypes_v35 = vcat(
+    _two_terminal_line_dtypes[1:25],
+    [("NDR", Int64)],
+    _two_terminal_line_dtypes[26:42],
+    [("NDI", Int64)],
+    _two_terminal_line_dtypes[43:end],
+)
+
 const _vsc_line_dtypes = [
     ("NAME", String),
     ("MDC", Int64),
@@ -321,6 +547,8 @@ const _vsc_line_dtypes = [
     ("O4", Int64),
     ("F4", Float64),
 ]
+
+const _vsc_line_dtypes_35 = _vsc_line_dtypes
 
 const _vsc_subline_dtypes = [
     ("IBUS", Int64),
@@ -339,6 +567,8 @@ const _vsc_subline_dtypes = [
     ("REMOT", Int64),
     ("RMPCT", Float64),
 ]
+
+const _vsc_subline_dtypes_v35 = _vsc_subline_dtypes
 
 const _impedance_correction_dtypes = [
     ("I", Int64),
@@ -366,6 +596,22 @@ const _impedance_correction_dtypes = [
     ("F11", Float64),
 ]
 
+const _impedance_correction_dtypes_v35 = [
+    ("I", Int64),
+    ("T1", Float64), ("Re(F1)", Float64), ("Im(F1)", Float64),
+    ("T2", Float64), ("Re(F2)", Float64), ("Im(F2)", Float64),
+    ("T3", Float64), ("Re(F3)", Float64), ("Im(F3)", Float64),
+    ("T4", Float64), ("Re(F4)", Float64), ("Im(F4)", Float64),
+    ("T5", Float64), ("Re(F5)", Float64), ("Im(F5)", Float64),
+    ("T6", Float64), ("Re(F6)", Float64), ("Im(F6)", Float64),
+    ("T7", Float64), ("Re(F7)", Float64), ("Im(F7)", Float64),
+    ("T8", Float64), ("Re(F8)", Float64), ("Im(F8)", Float64),
+    ("T9", Float64), ("Re(F9)", Float64), ("Im(F9)", Float64),
+    ("T10", Float64), ("Re(F10)", Float64), ("Im(F10)", Float64),
+    ("T11", Float64), ("Re(F11)", Float64), ("Im(F11)", Float64),
+    ("T12", Float64), ("Re(F12)", Float64), ("Im(F12)", Float64),
+]
+
 const _multi_term_main_dtypes = [
     ("NAME", String),
     ("NCONV", Int64),
@@ -376,6 +622,8 @@ const _multi_term_main_dtypes = [
     ("VCMOD", Float64),
     ("VCONVN", Float64),
 ]
+
+const _multi_term_main_dtypes_v35 = _multi_term_main_dtypes
 
 const _multi_term_nconv_dtypes = [
     ("IB", Int64),
@@ -396,6 +644,8 @@ const _multi_term_nconv_dtypes = [
     ("CNVCOD", Int64),
 ]
 
+const _multi_term_nconv_dtypes_v35 = _multi_term_nconv_dtypes
+
 const _multi_term_ndcbs_dtypes = [
     ("IDC", Int64),
     ("IB", Int64),
@@ -407,6 +657,8 @@ const _multi_term_ndcbs_dtypes = [
     ("OWNER", Int64),
 ]
 
+const _multi_term_ndcbs_dtypes_v35 = _multi_term_ndcbs_dtypes
+
 const _multi_term_ndcln_dtypes = [
     ("IDC", Int64),
     ("JDC", Int64),
@@ -415,6 +667,8 @@ const _multi_term_ndcln_dtypes = [
     ("RDC", Float64),
     ("LDC", Float64),
 ]
+
+const _multi_term_ndcln_dtypes_v35 = _multi_term_ndcln_dtypes
 
 const _multi_section_dtypes = [
     ("I", Int64),
@@ -432,12 +686,20 @@ const _multi_section_dtypes = [
     ("DUM9", Int64),
 ]
 
+const _multi_section_dtypes_v35 = _multi_section_dtypes
+
 const _zone_dtypes = [("I", Int64), ("ZONAME", String)]
+
+const _zone_dtypes_v35 = _zone_dtypes
 
 const _interarea_dtypes =
     [("ARFROM", Int64), ("ARTO", Int64), ("TRID", String), ("PTRAN", Float64)]
 
+const _interarea_dtypes_v35 = _interarea_dtypes
+
 const _owner_dtypes = [("I", Int64), ("OWNAME", String)]
+
+const _owner_dtypes_v35 = _owner_dtypes
 
 const _FACTS_dtypes = [
     ("NAME", String),
@@ -462,6 +724,15 @@ const _FACTS_dtypes = [
     ("REMOT", Int64),
     ("MNAME", String),
 ]
+
+const _FACTS_dtypes_v35 = vcat(
+    _FACTS_dtypes[1:19],
+    [
+        ("FCREG", Int64),
+        ("NREG", Int64),
+        ("MNAME", String),
+    ],
+)
 
 const _switched_shunt_dtypes = [
     ("I", Int64),
@@ -492,6 +763,26 @@ const _switched_shunt_dtypes = [
     ("B8", Float64),
 ]
 
+const _switched_shunt_dtypes_v35 = vcat(
+    _switched_shunt_dtypes[1],
+    [("ID", String)],
+    _switched_shunt_dtypes[2:7],
+    [
+        ("NREG", Int64),
+        ("RMPCT", Float64),
+        ("RMIDNT", String),
+        ("BINIT", Float64),
+        ("S1", Int64), ("N1", Int64), ("B1", Float64), 
+        ("S2", Int64), ("N2", Int64), ("B2", Float64), 
+        ("S3", Int64), ("N3", Int64), ("B3", Float64), 
+        ("S4", Int64), ("N4", Int64), ("B4", Float64), 
+        ("S5", Int64), ("N5", Int64), ("B5", Float64), 
+        ("S6", Int64), ("N6", Int64), ("B6", Float64), 
+        ("S7", Int64), ("N7", Int64), ("B7", Float64), 
+        ("S8", Int64), ("N8", Int64), ("B8", Float64), 
+    ],
+)
+
 # TODO: Account for multiple lines in GNE Device entries
 const _gne_device_dtypes = [
     ("NAME", String),
@@ -508,6 +799,8 @@ const _gne_device_dtypes = [
     ("INTGi", Int64),
     ("CHARi", String),
 ]
+
+const _gne_device_dtypes_v35 = _gne_device_dtypes
 
 const _induction_machine_dtypes = [
     ("I", Int64),
@@ -546,11 +839,21 @@ const _induction_machine_dtypes = [
     ("XAMULT", Float64),
 ]
 
+const _induction_machine_dtypes_v35 = _induction_machine_dtypes
+
+const _substation_dtypes_v35 = [
+    ("IS", Int64),
+    ("NAME", String),
+    ("LATITUDE", Float64),
+    ("LONGITUDE", Float64),
+    ("SGR", Float64),
+]
+
 """
 lookup array of data types for PTI file sections given by
 `field_name`, as enumerated by PSS/E Program Operation Manual.
 """
-const _pti_dtypes = Dict{String, Array}(
+const _pti_dtypes = Dict{String,Array}(
     "BUS" => _bus_dtypes,
     "LOAD" => _load_dtypes,
     "FIXED SHUNT" => _fixed_shunt_dtypes,
@@ -584,10 +887,55 @@ const _pti_dtypes = Dict{String, Array}(
     "INDUCTION MACHINE" => _induction_machine_dtypes,
 )
 
+const _pti_dtypes_v35 = Dict{String,Array}(
+    "BUS" => _bus_dtypes_v35,
+    "LOAD" => _load_dtypes_v35,
+    "FIXED SHUNT" => _fixed_shunt_dtypes_v35,
+    "GENERATOR" => _generator_dtypes_v35,
+    "BRANCH" => _branch_dtypes_v35,
+    "SWITCHING DEVICE" => _switching_dtypes_v35,
+    "TRANSFORMER" => _transformer_dtypes_v35,
+    "TRANSFORMER TWO-WINDING LINE 1" => _transformer_2_1_dtypes_v35,
+    "TRANSFORMER TWO-WINDING LINE 2" => _transformer_2_2_dtypes_v35,
+    "TRANSFORMER TWO-WINDING LINE 3" => _transformer_2_3_dtypes_v35,
+    "TRANSFORMER THREE-WINDING LINE 1" => _transformer_3_1_dtypes_v35,
+    "TRANSFORMER THREE-WINDING LINE 2" => _transformer_3_2_dtypes_v35,
+    "TRANSFORMER THREE-WINDING LINE 3" => _transformer_3_3_dtypes_v35,
+    "TRANSFORMER THREE-WINDING LINE 4" => _transformer_3_4_dtypes_v35,
+    "AREA INTERCHANGE" => _area_interchange_dtypes_v35,
+    "TWO-TERMINAL DC" => _two_terminal_line_dtypes_v35,
+    "VOLTAGE SOURCE CONVERTER" => _vsc_line_dtypes_35,
+    "VOLTAGE SOURCE CONVERTER SUBLINES" => _vsc_subline_dtypes_v35,
+    "IMPEDANCE CORRECTION" => _impedance_correction_dtypes_v35,
+    "MULTI-TERMINAL DC" => _multi_term_main_dtypes_v35,
+    "MULTI-TERMINAL DC NCONV" => _multi_term_nconv_dtypes_v35,
+    "MULTI-TERMINAL DC NDCBS" => _multi_term_ndcbs_dtypes_v35,
+    "MULTI-TERMINAL DC NDCLN" => _multi_term_ndcln_dtypes_v35,
+    "MULTI-SECTION LINE" => _multi_section_dtypes_v35,
+    "ZONE" => _zone_dtypes_v35,
+    "INTER-AREA TRANSFER" => _interarea_dtypes_v35,
+    "OWNER" => _owner_dtypes_v35,
+    "FACTS CONTROL DEVICE" => _FACTS_dtypes_v35,
+    "SWITCHED SHUNT" => _switched_shunt_dtypes_v35,
+    "CASE IDENTIFICATION" => _transaction_dtypes_v35,
+    "GNE DEVICE" => _gne_device_dtypes_v35,
+    "INDUCTION MACHINE" => _induction_machine_dtypes_v35,
+    "SUBSTATION DATA" => _substation_dtypes_v35,
+)
+
 const _default_case_identification = Dict(
     "IC" => 0,
     "SBASE" => 100.0,
     "REV" => 33,
+    "XFRRAT" => 0,
+    "NXFRAT" => 0,
+    "BASFRQ" => 60,
+)
+
+const _default_case_identification_v35 = Dict(
+    "IC" => 0,
+    "SBASE" => 100.0,
+    "REV" => 35,
     "XFRRAT" => 0,
     "NXFRAT" => 0,
     "BASFRQ" => 60,
@@ -608,6 +956,8 @@ const _default_bus = Dict(
     "NAME" => "            ",
 )
 
+const _default_bus_v35 = _default_bus
+
 const _default_load = Dict(
     "ID" => "1",
     "STATUS" => 1,
@@ -624,7 +974,19 @@ const _default_load = Dict(
     "OWNER" => nothing,
 )
 
+const _default_load_v35 = merge(
+    _default_load,
+    Dict(
+        "DGENP" => 0.0,
+        "DGENQ" => 0.0,
+        "DGENM" => 0.0,
+        "LOADTYPE" => nothing,
+    ),
+)
+
 const _default_fixed_shunt = Dict("ID" => "1", "STATUS" => 1, "GL" => 0.0, "BL" => 0.0)
+
+const _default_fixed_shunt_v35 = _default_fixed_shunt
 
 const _default_generator = Dict(
     "ID" => "1",
@@ -656,6 +1018,11 @@ const _default_generator = Dict(
     "WPF" => 1.0,
 )
 
+const _default_generator_v35 = merge(_default_generator, Dict(
+    "NREG" => 0,
+    "BASLOD" => 0,
+))
+
 const _default_branch = Dict(
     "CKT" => "1",
     "B" => 0.0,
@@ -677,6 +1044,45 @@ const _default_branch = Dict(
     "F2" => 1.0,
     "F3" => 1.0,
     "F4" => 1.0,
+)
+
+const _default_branch_v35 = merge(
+    _default_branch,
+    Dict(
+        "RATE1" => 0.0,
+        "RATE2" => 0.0,
+        "RATE3" => 0.0,
+        "RATE4" => 0.0,
+        "RATE5" => 0.0,
+        "RATE6" => 0.0,
+        "RATE7" => 0.0,
+        "RATE8" => 0.0,
+        "RATE9" => 0.0,
+        "RATE10" => 0.0,
+        "RATE11" => 0.0,
+        "RATE12" => 0.0,
+    ),
+)
+
+const _default_switching_device_v35 = Dict(
+    "CKT" => "1",
+    "RATE1" => 0.0,
+    "RATE2" => 0.0,
+    "RATE3" => 0.0,
+    "RATE4" => 0.0,
+    "RATE5" => 0.0,
+    "RATE6" => 0.0,
+    "RATE7" => 0.0,
+    "RATE8" => 0.0,
+    "RATE9" => 0.0,
+    "RATE10" => 0.0,
+    "RATE11" => 0.0,
+    "RATE12" => 0.0,
+    "STAT" => 1,
+    "NSTAT" => 1,
+    "MET" => 0.0,
+    "STYPE" => 0.0,
+    "NAME" => "",
 )
 
 const _default_transformer = Dict(
@@ -760,8 +1166,17 @@ const _default_transformer = Dict(
     "CNXA3" => 0.0,
 )
 
+const _default_transformer_v35 = merge(
+    _default_transformer,
+    Dict(
+        "VECGRP" => "                                        ",
+    ),
+)
+
 const _default_area_interchange =
     Dict("ISW" => 0, "PDES" => 0.0, "PTOL" => 10.0, "ARNAME" => "            ")
+
+const _default_area_interchange_v35 = _default_area_interchange
 
 const _default_two_terminal_dc = Dict(
     "MDC" => 0,
@@ -794,6 +1209,11 @@ const _default_two_terminal_dc = Dict(
     "XCAPI" => 0.0,
 )
 
+const _default_two_terminal_dc_v35 = merge(_default_two_terminal_dc, Dict(
+    "NDR" => 0,
+    "NDI" => 0,
+))
+
 const _default_vsc_dc = Dict(
     "MDC" => 1,
     "O1" => nothing,
@@ -820,6 +1240,8 @@ const _default_vsc_dc = Dict(
     ),
 )
 
+const _default_vsc_dc_v35 = _default_vsc_dc
+
 const _default_impedance_correction = Dict(
     "T1" => 0.0,
     "T2" => 0.0,
@@ -843,6 +1265,21 @@ const _default_impedance_correction = Dict(
     "F9" => 0.0,
     "F10" => 0.0,
     "F11" => 0.0,
+)
+
+const _default_impedance_correction_v35 = Dict(
+    "T1" => 0.0, "Re(F1)" => 0.0, "Im(F1)" => 0.0,
+    "T2" => 0.0, "Re(F2)" => 0.0, "Im(F2)" => 0.0,
+    "T3" => 0.0, "Re(F3)" => 0.0, "Im(F3)" => 0.0,
+    "T4" => 0.0, "Re(F4)" => 0.0, "Im(F4)" => 0.0,
+    "T5" => 0.0, "Re(F5)" => 0.0, "Im(F5)" => 0.0,
+    "T6" => 0.0, "Re(F6)" => 0.0, "Im(F6)" => 0.0,
+    "T7" => 0.0, "Re(F7)" => 0.0, "Im(F7)" => 0.0,
+    "T8" => 0.0, "Re(F8)" => 0.0, "Im(F8)" => 0.0,
+    "T9" => 0.0, "Re(F9)" => 0.0, "Im(F9)" => 0.0,
+    "T10" => 0.0, "Re(F10)" => 0.0, "Im(F10)" => 0.0,
+    "T11" => 0.0, "Re(F11)" => 0.0, "Im(F11)" => 0.0,
+    "T12" => 0.0, "Re(F12)" => 0.0, "Im(F12)" => 0.0,
 )
 
 const _default_multi_term_dc = Dict(
@@ -871,13 +1308,23 @@ const _default_multi_term_dc = Dict(
     "DCLN" => Dict("DCCKT" => 1, "MET" => 1, "LDC" => 0.0),
 )
 
+const _default_multi_term_dc_v35 = _default_multi_term_dc
+
 const _default_multi_section = Dict("ID" => "&1", "MET" => 1)
+
+const _default_multi_section_v35 = _default_multi_section
 
 const _default_zone = Dict("ZONAME" => "            ")
 
+const _default_zone_v35 = _default_zone
+
 const _default_interarea = Dict("TRID" => 1, "PTRAN" => 0.0)
 
+const _default_interarea_v35 = _default_interarea
+
 const _default_owner = Dict("OWNAME" => "            ")
+
+const _default_owner_v35 = _default_owner
 
 const _default_facts = Dict(
     "J" => 0,
@@ -901,6 +1348,14 @@ const _default_facts = Dict(
     "MNAME" => "",
 )
 
+const _default_facts_v35 = merge(
+    Dict(k => v for (k, v) in pairs(_default_facts) if k != "REMOT"),
+    Dict(
+        "FCREG" => 0,  # Replaces REMOT in v35
+        "NREG" => 0,
+    ),
+)
+
 const _default_switched_shunt = Dict(
     "MODSW" => 1,
     "ADJM" => 0,
@@ -911,22 +1366,23 @@ const _default_switched_shunt = Dict(
     "RMPCT" => 100.0,
     "RMIDNT" => "",
     "BINIT" => 0.0,
-    "N1" => 0,
-    "N2" => 0,
-    "N3" => 0,
-    "N4" => 0,
-    "N5" => 0,
-    "N6" => 0,
-    "N7" => 0,
-    "N8" => 0,
-    "B1" => 0.0,
-    "B2" => 0.0,
-    "B3" => 0.0,
-    "B4" => 0.0,
-    "B5" => 0.0,
-    "B6" => 0.0,
-    "B7" => 0.0,
-    "B8" => 0.0,
+    "S1" => 1, "N1" => 0, "B1" => 0.0,
+    "S2" => 1, "N2" => 0, "B2" => 0.0,
+    "S3" => 1, "N3" => 0, "B3" => 0.0,
+    "S4" => 1, "N4" => 0, "B4" => 0.0,
+    "S5" => 1, "N5" => 0, "B5" => 0.0,
+    "S6" => 1, "N6" => 0, "B6" => 0.0,
+    "S7" => 1, "N7" => 0, "B7" => 0.0,
+    "S8" => 1, "N8" => 0, "B8" => 0.0,
+)
+
+const _default_switched_shunt_v35 = merge(
+    Dict(k => v for (k, v) in pairs(_default_switched_shunt) if k != "SWREM"),
+    Dict(
+        "SWREG" => 0,
+        "ID" => "1",
+        "NAME" => "",
+    ),
 )
 
 const _default_gne_device = Dict(
@@ -941,6 +1397,8 @@ const _default_gne_device = Dict(
     "INTG" => nothing,
     "CHAR" => "1",
 )
+
+const _default_gne_device_v35 = _default_gne_device
 
 const _default_induction_machine = Dict(
     "ID" => 1,
@@ -977,6 +1435,15 @@ const _default_induction_machine = Dict(
     "XAMULT" => 1,
 )
 
+const _default_induction_machine_v35 = _default_induction_machine
+
+const _default_substation_data_v35 = Dict(
+    "NAME" => "",
+    "LATI" => 0.0,
+    "LONG" => 0.0,
+    "SGR" => 0.1,
+)
+
 const _pti_defaults = Dict(
     "BUS" => _default_bus,
     "LOAD" => _default_load,
@@ -998,6 +1465,31 @@ const _pti_defaults = Dict(
     "CASE IDENTIFICATION" => _default_case_identification,
     "GNE DEVICE" => _default_gne_device,
     "INDUCTION MACHINE" => _default_induction_machine,
+)
+
+const _pti_defaults_v35 = Dict(
+    "BUS" => _default_bus,
+    "LOAD" => _default_load,
+    "FIXED SHUNT" => _default_fixed_shunt,
+    "GENERATOR" => _default_generator,
+    "BRANCH" => _default_branch,
+    "SWITCHING DEVICE" => _default_switching_device_v35,
+    "TRANSFORMER" => _default_transformer,
+    "AREA INTERCHANGE" => _default_area_interchange,
+    "TWO-TERMINAL DC" => _default_two_terminal_dc,
+    "VOLTAGE SOURCE CONVERTER" => _default_vsc_dc,
+    "IMPEDANCE CORRECTION" => _default_impedance_correction,
+    "MULTI-TERMINAL DC" => _default_multi_term_dc,
+    "MULTI-SECTION LINE" => _default_multi_section,
+    "ZONE" => _default_zone,
+    "INTER-AREA TRANSFER" => _default_interarea,
+    "OWNER" => _default_owner,
+    "FACTS CONTROL DEVICE" => _default_facts,
+    "SWITCHED SHUNT" => _default_switched_shunt,
+    "CASE IDENTIFICATION" => _default_case_identification,
+    "GNE DEVICE" => _default_gne_device,
+    "INDUCTION MACHINE" => _default_induction_machine,
+    "SUBSTATION DATA" => _default_substation_data_v35,
 )
 
 function _correct_nothing_values!(data::Dict)
@@ -1114,7 +1606,7 @@ function _parse_elements(
     defaults::Dict,
     section::AbstractString,
 )
-    data = Dict{String, Any}()
+    data = Dict{String,Any}()
 
     if length(elements) > length(dtypes)
         @warn(
@@ -1130,7 +1622,7 @@ function _parse_elements(
 
         if dtype == String
             if startswith(element, "'") && endswith(element, "'")
-                data[field] = element[2:(end - 1)]
+                data[field] = element[2:(end-1)]
             else
                 data[field] = element
             end
@@ -1183,9 +1675,9 @@ Internal function. Parses a single "line" of data elements from a PTI file, as
 given by `elements` which is an array of the line, typically split at `,`.
 Elements are parsed into data types given by `section` and saved into `data::Dict`.
 """
-function _parse_line_element!(data::Dict, elements::Array, section::AbstractString)
+function _parse_line_element!(data::Dict, elements::Array, section::AbstractString, dtypes::Dict{String, Array})
     missing_fields = []
-    for (i, (field, dtype)) in enumerate(_pti_dtypes[section])
+    for (i, (field, dtype)) in enumerate(dtypes[section])
         if i > length(elements)
             @debug "Have run out of elements in $section at $field" _group =
                 IS.LOG_GROUP_PARSING
@@ -1249,7 +1741,7 @@ function _get_line_elements(line::AbstractString)
         )
     end
 
-    line_comment = split(line, _comment_split; limit = 2)
+    line_comment = split(line, _comment_split; limit=2)
     line = strip(line_comment[1])
     comment = length(line_comment) > 1 ? strip(line_comment[2]) : ""
 
@@ -1267,83 +1759,178 @@ file (typically given by default by `get_pti_sections()`.
 """
 function _parse_pti_data(data_io::IO)
     sections = deepcopy(_pti_sections)
+    sections_v35 = deepcopy(_pti_sections_v35)
     data_lines = readlines(data_io)
     skip_lines = 0
     skip_sublines = 0
     subsection = ""
+    is_v35 = false
 
-    pti_data = Dict{String, Array{Dict}}()
+    pti_data = Dict{String,Array{Dict}}()
 
     section = popfirst!(sections)
-    section_data = Dict{String, Any}()
+    section_v35 = popfirst!(sections_v35)
+    section_data = Dict{String,Any}()
 
-    for (line_number, line) in enumerate(data_lines)
+    if any(startswith.(data_lines, "@!"))
+        is_v35 = true
+    end
+
+    header_line_start = is_v35 ? 2 : 1
+    bus_data_start = is_v35 ? 25 : 4
+
+    current_dtypes = is_v35 ? _pti_dtypes_v35 : _pti_dtypes
+
+    line_index = 1
+    while line_index <= length(data_lines)
+        line = data_lines[line_index]
+
+        if startswith(line, "@!")
+            line_index += 1
+            continue
+        end
+
         (elements, comment) = _get_line_elements(line)
 
         first_element = strip(elements[1])
-        if line_number > 3 && length(elements) != 0 && first_element == "Q"
+
+        if is_v35 && (line_index == 3 || line_index == 4) && section_v35 == "CASE IDENTIFICATION"
+            comment_line = strip(line)
+            comment_key = line_index == 3 ? "Comment_Line_1" : "Comment_Line_2"
+            
+            if haskey(pti_data, "CASE IDENTIFICATION") && !isempty(pti_data["CASE IDENTIFICATION"])
+                pti_data["CASE IDENTIFICATION"][1][comment_key] = comment_line
+                @debug "Added $comment_key: $comment_line" _group = IS.LOG_GROUP_PARSING
+            end
+            line_index += 1
+            continue
+        end
+
+        if is_v35 && line_index >= 3 && line_index < bus_data_start
+            line_index += 1
+            continue
+        end
+
+        if line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 && first_element == "Q"
             break
-        elseif line_number > 3 && length(elements) != 0 && first_element == "0"
-            if line_number == 4
-                section = popfirst!(sections)
+        elseif line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 && first_element == "0"
+            if line_index == bus_data_start
+                section = is_v35 ? popfirst!(sections_v35) : popfirst!(sections)
             end
 
             if length(elements) > 1
                 @info(
-                    "At line $line_number, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.",
+                    "At line $line_index, new section started with '0', but additional non-comment data is present. Pattern '^\\s*0\\s*[/]*.*' is reserved for section start/end.",
                 )
             elseif length(comment) > 0
-                @debug "At line $line_number, switched to $section" _group =
+                @debug "At line $line_index, switched to $section" _group =
                     IS.LOG_GROUP_PARSING
             end
 
-            if !isempty(sections)
-                section = popfirst!(sections)
+            current_sections = is_v35 ? sections_v35 : sections
+            if !isempty(current_sections)
+                section = popfirst!(current_sections)
+            else
+                @debug "No more sections to process, ending parsing..." _group = IS.LOG_GROUP_PARSING
+                break
             end
-
+            
+            line_index += 1
             continue
         else
-            if line_number == 4
-                section = popfirst!(sections)
-                section_data = Dict{String, Any}()
+            if line_index == bus_data_start
+                section = is_v35 ? popfirst!(sections_v35) : popfirst!(sections)
+                section_data = Dict{String,Any}()
             end
 
             if skip_lines > 0
                 skip_lines -= 1
+                line_index += 1
                 continue
             end
 
             @debug join(["Section:", section], " ") _group = IS.LOG_GROUP_PARSING
-            if !(
+
+            if section == "IMPEDANCE CORRECTION" && is_v35
+                if startswith(line, " ") || startswith(line, "\t")
+                    line_index += 1
+                    continue
+                end
+
+                section_data = Dict{String, Any}()
+                section_data["I"] = parse(Int64, strip(elements[1]))
+                
+                all_elements = elements[2:end]
+
+                next_line_index = line_index + 1
+                while next_line_index <= length(data_lines)
+                    next_line = data_lines[next_line_index]
+                    
+                    if !startswith(strip(next_line), r"^\d+") && !startswith(next_line, "0") && !isempty(strip(next_line)) && !startswith(next_line, "@!")
+                        (continuation_elements, _) = _get_line_elements(next_line)
+                        append!(all_elements, continuation_elements)
+                        next_line_index += 1
+                    else
+                        break
+                    end
+                end
+                
+                point_index = 1
+                element_index = 1
+                while element_index <= length(all_elements) && element_index + 2 <= length(all_elements)
+                    if !isempty(strip(all_elements[element_index])) && 
+                       !isempty(strip(all_elements[element_index + 1])) && 
+                       !isempty(strip(all_elements[element_index + 2]))
+                        
+                        t_val = parse(Float64, strip(all_elements[element_index]))
+                        re_val = parse(Float64, strip(all_elements[element_index + 1]))
+                        im_val = parse(Float64, strip(all_elements[element_index + 2]))
+                        
+                        section_data["T$point_index"] = t_val
+                        section_data["Re_F$point_index"] = re_val
+                        section_data["Im_F$point_index"] = im_val
+                        
+                        point_index += 1
+                    end
+                    element_index += 3
+                end
+                
+                line_index = next_line_index
+            
+            elseif !(
                 section in [
                     "CASE IDENTIFICATION",
+                    "SWITCHING DEVICE DATA",
                     "TRANSFORMER",
                     "VOLTAGE SOURCE CONVERTER",
+                    "IMPEDANCE CORRECTION",
                     "MULTI-TERMINAL DC",
                     "TWO-TERMINAL DC",
                     "GNE DEVICE",
+                    "SUBSTATION DATA",
                 ]
             )
-                section_data = Dict{String, Any}()
+                section_data = Dict{String,Any}()
 
                 try
-                    _parse_line_element!(section_data, elements, section)
+                    _parse_line_element!(section_data, elements, section, current_dtypes)
                 catch message
                     throw(
                         @error(
-                            "Parsing failed at line $line_number: $(sprint(showerror, message))"
+                            "Parsing failed at line $line_index: $(sprint(showerror, message))"
                         )
                     )
                 end
+                line_index += 1
 
             elseif section == "CASE IDENTIFICATION"
-                if line_number == 1
+                if line_index == header_line_start
                     try
-                        _parse_line_element!(section_data, elements, section)
+                        _parse_line_element!(section_data, elements, section, current_dtypes)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                                "Parsing failed at line $line_index: $(sprint(showerror, message))",
                             ),
                         )
                     end
@@ -1353,16 +1940,58 @@ function _parse_pti_data(data_io::IO)
                             "Version $(section_data["REV"]) of PTI format is unsupported, parser may not function correctly.",
                         )
                     end
+                    
+                    if is_v35
+                        if haskey(pti_data, section)
+                            push!(pti_data[section], section_data)
+                        else
+                            pti_data[section] = [section_data]
+                        end
+                    end  
                 else
-                    section_data["Comment_Line_$(line_number - 1)"] = line
+                    if is_v35
+                        if line_index == 3
+                            comment_line = strip(line)
+                            if haskey(pti_data, section) && !isempty(pti_data[section])
+                                pti_data[section][1]["Comment_Line_1"] = comment_line
+                            end
+                        elseif line_index == 4
+                            comment_line = strip(line)
+                            if haskey(pti_data, section) && !isempty(pti_data[section])
+                                pti_data[section][1]["Comment_Line_2"] = comment_line
+                            end
+                        end
+                    elseif !is_v35 && line_index > header_line_start
+                        section_data["Comment_Line_$(line_index - 1)"] = strip(line)
+                    end
                 end
 
-                if line_number < 3
+                if line_index < (bus_data_start - 1)
+                    line_index += 1
                     continue
                 end
 
+                line_index += 1
+
+            elseif section == "SWITCHING DEVICE"
+                if is_v35
+                    section_data = Dict{String, Any}()
+                    try
+                        _parse_line_element!(section_data, elements, section, current_dtypes)
+                    catch message
+                        throw(
+                            @error(
+                                "Parsing failed at line $line_index: $(sprint(showerror, message))",
+                            ),
+                        )
+                    end
+                else
+                    @warn("SWITCHING DEVICE DATA section found in non-v35 file, skipping.")
+                end
+                line_index += 1
+
             elseif section == "TRANSFORMER"
-                section_data = Dict{String, Any}()
+                section_data = Dict{String,Any}()
                 if parse(Int64, _get_line_elements(line)[1][3]) == 0 # two winding transformer
                     winding = "TWO-WINDING"
                     skip_lines = 3
@@ -1386,43 +2015,45 @@ function _parse_pti_data(data_io::IO)
                             break
                         else
                             elements = _get_line_elements(
-                                data_lines[line_number + transformer_line],
+                                data_lines[line_index+transformer_line],
                             )[1]
-                            _parse_line_element!(section_data, elements, temp_section)
+                            _parse_line_element!(section_data, elements, temp_section, current_dtypes)
                         end
                     end
                 catch message
                     throw(
                         @error(
-                            "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            "Parsing failed at line $line_index: $(sprint(showerror, message))",
                         ),
                     )
                 end
+                line_index += 1
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
                 if length(_get_line_elements(line)[1]) == 11
-                    section_data = Dict{String, Any}()
+                    section_data = Dict{String,Any}()
                     try
-                        _parse_line_element!(section_data, elements, section)
+                        _parse_line_element!(section_data, elements, section, current_dtypes)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                                "Parsing failed at line $line_index: $(sprint(showerror, message))",
                             ),
                         )
                     end
                     skip_sublines = 2
+                    line_index += 1
                     continue
 
                 elseif skip_sublines > 0
                     skip_sublines -= 1
-                    subsection_data = Dict{String, Any}()
+                    subsection_data = Dict{String,Any}()
 
                     for (field, dtype) in _pti_dtypes["$section SUBLINES"]
                         element = popfirst!(elements)
                         if element != ""
                             subsection_data[field] = parse(dtype, element)
-                        else
+                        else line_index += 1
                             subsection_data[field] = ""
                         end
                     end
@@ -1431,38 +2062,54 @@ function _parse_pti_data(data_io::IO)
                         push!(section_data["CONVERTER BUSES"], subsection_data)
                     else
                         section_data["CONVERTER BUSES"] = [subsection_data]
+                        line_index += 1
                         continue
                     end
                 end
+                line_index += 1
 
             elseif section == "TWO-TERMINAL DC"
-                section_data = Dict{String, Any}()
+                section_data = Dict{String,Any}()
                 if length(_get_line_elements(line)[1]) == 12
                     (elements, comment) = _get_line_elements(
-                        join(data_lines[line_number:(line_number + 2)], ','),
+                        join(data_lines[line_index:(line_index+2)], ','),
                     )
                     skip_lines = 2
                 end
 
                 try
-                    _parse_line_element!(section_data, elements, section)
+                    _parse_line_element!(section_data, elements, section, current_dtypes)
                 catch message
                     throw(
                         @error(
-                            "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                            "Parsing failed at line $line_index: $(sprint(showerror, message))",
                         ),
                     )
                 end
+                line_index += 1
+
+            elseif section == "IMPEDANCE CORRECTION" && !is_v35
+                section_data = Dict{String, Any}()
+                try
+                    _parse_line_element!(section_data, elements, section, current_dtypes)
+                catch message
+                    throw(
+                        @error(
+                            "Parsing failed at line $line_index: $(sprint(showerror, message))",
+                        ),
+                    )
+                end
+                line_index += 1
 
             elseif section == "MULTI-TERMINAL DC"
                 if skip_sublines == 0
-                    section_data = Dict{String, Any}()
+                    section_data = Dict{String,Any}()
                     try
-                        _parse_line_element!(section_data, elements, section)
+                        _parse_line_element!(section_data, elements, section, current_dtypes)
                     catch message
                         throw(
                             @error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                                "Parsing failed at line $line_index: $(sprint(showerror, message))",
                             ),
                         )
                     end
@@ -1470,14 +2117,17 @@ function _parse_pti_data(data_io::IO)
                     if section_data["NCONV"] > 0
                         skip_sublines = section_data["NCONV"]
                         subsection = "NCONV"
+                        line_index += 1
                         continue
                     elseif section_data["NDCBS"] > 0
                         skip_sublines = section_data["NDCBS"]
                         subsection = "NDCBS"
+                        line_index += 1
                         continue
                     elseif section_data["NDCLN"] > 0
                         skip_sublines = section_data["NDCLN"]
                         subsection = "NDCLN"
+                        line_index += 1
                         continue
                     end
                 end
@@ -1485,17 +2135,18 @@ function _parse_pti_data(data_io::IO)
                 if skip_sublines > 0
                     skip_sublines -= 1
 
-                    subsection_data = Dict{String, Any}()
+                    subsection_data = Dict{String,Any}()
                     try
                         _parse_line_element!(
                             subsection_data,
                             elements,
                             "$section $subsection",
+                            current_dtypes
                         )
                     catch message
                         throw(
                             error(
-                                "Parsing failed at line $line_number: $(sprint(showerror, message))",
+                                "Parsing failed at line $line_index: $(sprint(showerror, message))",
                             ),
                         )
                     end
@@ -1504,11 +2155,13 @@ function _parse_pti_data(data_io::IO)
                         section_data["$(subsection[2:end])"] =
                             push!(section_data["$(subsection[2:end])"], subsection_data)
                         if skip_sublines > 0 && subsection != "NDCLN"
+                            line_index += 1
                             continue
                         end
                     else
                         section_data["$(subsection[2:end])"] = [subsection_data]
                         if skip_sublines > 0 && subsection != "NDCLN"
+                            line_index += 1
                             continue
                         end
                     end
@@ -1517,22 +2170,73 @@ function _parse_pti_data(data_io::IO)
                         if subsection == "NDCBS"
                             skip_sublines = section_data["NDCLN"]
                             subsection = "NDCLN"
+                            line_index += 1
                             continue
                         elseif subsection == "NCONV"
                             skip_sublines = section_data["NDCBS"]
                             subsection = "NDCBS"
+                            line_index += 1
                             continue
                         end
                     elseif skip_sublines == 0 && subsection == "NDCLN"
                         subsection = ""
                     else
+                        line_index += 1
                         continue
                     end
                 end
+                line_index += 1
+
+            elseif section == "SUBSTATION DATA" && is_v35
+                println(line)
+                if startswith(line, "@!")
+                    line_index += 1
+                    continue
+                elseif first_element == "0" and 
+                    if contains(comment, "END OF SUBSTATION TERMINAL DATA") && !contains(comment, "BEGIN SUBSTATION DATA BLOCK")
+                        @debug "Found end of substation terminal data, checking if more blocks follow" _group = IS.LOG_GROUP_PARSING
+                    end
+                    line_index += 1
+                    continue
+                else
+                    println(line_index)
+
+                    if length(elements) == 5 && tryparse(Int64, strip(elements[1])) !== nothing
+                        @debug "Parsing substation data line: $line" _group = IS.LOG_GROUP_PARSING
+                        section_data = Dict{String, Any}()
+                        try
+                            _parse_line_element!(section_data, elements, section, current_dtypes)
+
+                            println(section_data)
+                            
+                            if haskey(pti_data, section)
+                                push!(pti_data[section], section_data)
+                            else
+                                pti_data[section] = [section_data]
+                            end
+                            
+                            @debug "Successfully parsed substation IS=$(section_data["IS"]): $(strip(section_data["NAME"]))" _group = IS.LOG_GROUP_PARSING
+                            
+                        catch message
+                            throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
+                        end
+                        
+                    else
+                        @debug "Skipping non-substation line ($(length(elements)) elements): $line" _group = IS.LOG_GROUP_PARSING
+                    end
+                    
+                    line_index += 1
+                    continue
+                end
+                
+                line_index += 1
 
             elseif section == "GNE DEVICE"
                 # TODO: handle multiple lines of GNE Device
                 @info("GNE DEVICE parsing is not supported.")
+                line_index += 1
+            else 
+                line_index += 1
             end
         end
         if subsection != ""
