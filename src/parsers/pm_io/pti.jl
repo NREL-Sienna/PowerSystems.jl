@@ -1830,9 +1830,6 @@ function _parse_pti_data(data_io::IO)
             current_sections = is_v35 ? sections_v35 : sections
             if !isempty(current_sections)
                 section = popfirst!(current_sections)
-            else
-                @debug "No more sections to process, ending parsing..." _group = IS.LOG_GROUP_PARSING
-                break
             end
             
             line_index += 1
@@ -2188,47 +2185,79 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "SUBSTATION DATA" && is_v35
-                println(line)
                 if startswith(line, "@!")
                     line_index += 1
                     continue
-                elseif first_element == "0" and 
-                    if contains(comment, "END OF SUBSTATION TERMINAL DATA") && !contains(comment, "BEGIN SUBSTATION DATA BLOCK")
-                        @debug "Found end of substation terminal data, checking if more blocks follow" _group = IS.LOG_GROUP_PARSING
-                    end
-                    line_index += 1
-                    continue
                 else
-                    println(line_index)
+                    if length(elements) == 4 && occursin('\'', elements[1])
+                        first_part = elements[1]
+                        if occursin(",'", first_part)
+                            comma_quote_pos = findfirst(",'", first_part)
+                            if comma_quote_pos !== nothing
+                                is_part = first_part[1:comma_quote_pos[1]-1]
+                                name_part = first_part[comma_quote_pos[1]+1:end]
+                                
+                                corrected_elements = [
+                                    is_part,       
+                                    name_part,     
+                                    elements[2],   
+                                    elements[3],   
+                                    elements[4]    
+                                ]
+                                if length(corrected_elements) == 5 && 
+                                    occursin('\'', corrected_elements[2]) &&
+                                    tryparse(Float64, strip(corrected_elements[3])) !== nothing && 
+                                    tryparse(Float64, strip(corrected_elements[4])) !== nothing &&
+                                    tryparse(Float64, strip(corrected_elements[5])) !== nothing
+                                        
+                                    @debug "Parsing substation data line: $line" _group = IS.LOG_GROUP_PARSING
+                                    section_data = Dict{String, Any}()
+                                    try
+                                        _parse_line_element!(section_data, corrected_elements, section, current_dtypes)
 
-                    if length(elements) == 5 && tryparse(Int64, strip(elements[1])) !== nothing
-                        @debug "Parsing substation data line: $line" _group = IS.LOG_GROUP_PARSING
+                                        if haskey(section_data, "NAME")
+                                            section_data["NAME"] = strip(section_data["NAME"])
+                                        end
+                                
+                                        if haskey(pti_data, section)
+                                            push!(pti_data[section], section_data)
+                                        else
+                                            pti_data[section] = [section_data]
+                                        end                             
+                                    catch message
+                                        throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
+                                    end
+                                end
+                            end
+                        end
+
+                    elseif length(elements) == 5 && 
+                        occursin('\'', elements[2]) &&
+                        tryparse(Float64, strip(elements[3])) !== nothing && 
+                        tryparse(Float64, strip(elements[4])) !== nothing &&
+                        tryparse(Float64, strip(elements[5])) !== nothing
+                            
                         section_data = Dict{String, Any}()
                         try
                             _parse_line_element!(section_data, elements, section, current_dtypes)
 
-                            println(section_data)
-                            
+                            if haskey(section_data, "NAME")
+                                section_data["NAME"] = strip(section_data["NAME"])
+                            end
+                    
                             if haskey(pti_data, section)
                                 push!(pti_data[section], section_data)
                             else
                                 pti_data[section] = [section_data]
-                            end
-                            
-                            @debug "Successfully parsed substation IS=$(section_data["IS"]): $(strip(section_data["NAME"]))" _group = IS.LOG_GROUP_PARSING
-                            
+                            end                            
                         catch message
                             throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
                         end
-                        
-                    else
-                        @debug "Skipping non-substation line ($(length(elements)) elements): $line" _group = IS.LOG_GROUP_PARSING
                     end
-                    
+
                     line_index += 1
                     continue
                 end
-                
                 line_index += 1
 
             elseif section == "GNE DEVICE"
