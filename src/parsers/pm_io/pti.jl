@@ -90,13 +90,24 @@ const _system_wide_dtypes_v35 = [
     ("DESC", String),
 ]
 
-const _system_wide_data_sections_v35 = Dict{String,Vector{String}}(
-    "GENERAL" => ["THRSHZ", "PQBRAK", "BLOWUP", "MAXISOLLVLS", "CAMAXREPTSLN", "CHKDUPCNTLBL"],
+const _system_wide_data_sections_v35 = Dict{String, Vector{String}}(
+    "GENERAL" =>
+        ["THRSHZ", "PQBRAK", "BLOWUP", "MAXISOLLVLS", "CAMAXREPTSLN", "CHKDUPCNTLBL"],
     "GAUSS" => ["ITMX", "ACCP", "ACCQ", "ACCM", "TOL"],
     "NEWTON" => ["ITMXN", "ACCN", "TOLN", "VCTOLQ", "VCTOLV", "DVLIM", "NDVFCT"],
     "ADJUST" => ["ADJTHR", "ACCTAP", "TAPLIM", "SWVBND", "MXTPSS", "MXSWIM"],
     "TYSL" => ["ITMXTY", "ACCTY", "TOLTY"],
-    "SOLVER" => ["METHOD", "ACTAPS", "AREAIN", "PHSHFT", "DCTAPS", "SWSHNT", "FLATST", "VARLIM", "NONDIV"],
+    "SOLVER" => [
+        "METHOD",
+        "ACTAPS",
+        "AREAIN",
+        "PHSHFT",
+        "DCTAPS",
+        "SWSHNT",
+        "FLATST",
+        "VARLIM",
+        "NONDIV",
+    ],
     "RATING" => ["IRATE", "NAME", "DESC"],
 )
 
@@ -331,17 +342,17 @@ const _transformer_3_2_dtypes_v35 = vcat(
     _transformer_3_2_dtypes[1:3],
     [
         ("RATE11", Float64),
-        ("RATE21", Float64),
-        ("RATE31", Float64),
-        ("RATE41", Float64),
-        ("RATE51", Float64),
-        ("RATE61", Float64),
-        ("RATE71", Float64),
-        ("RATE81", Float64),
-        ("RATE91", Float64),
-        ("RATE101", Float64),
+        ("RATE12", Float64),
+        ("RATE13", Float64),
+        ("RATE14", Float64),
+        ("RATE15", Float64),
+        ("RATE16", Float64),
+        ("RATE17", Float64),
+        ("RATE18", Float64),
+        ("RATE19", Float64),
+        ("RATE110", Float64),
         ("RATE111", Float64),
-        ("RATE121", Float64),
+        ("RATE112", Float64),
     ],
     _transformer_3_2_dtypes[7:8],
     [("NOD1", Int64)],
@@ -371,18 +382,18 @@ const _transformer_3_3_dtypes = [
 const _transformer_3_3_dtypes_v35 = vcat(
     _transformer_3_3_dtypes[1:3],
     [
-        ("RATE12", Float64),
+        ("RATE21", Float64),
         ("RATE22", Float64),
-        ("RATE32", Float64),
-        ("RATE42", Float64),
-        ("RATE52", Float64),
-        ("RATE62", Float64),
-        ("RATE72", Float64),
-        ("RATE82", Float64),
-        ("RATE92", Float64),
-        ("RATE102", Float64),
-        ("RATE112", Float64),
-        ("RATE122", Float64),
+        ("RATE23", Float64),
+        ("RATE24", Float64),
+        ("RATE25", Float64),
+        ("RATE26", Float64),
+        ("RATE27", Float64),
+        ("RATE28", Float64),
+        ("RATE29", Float64),
+        ("RATE210", Float64),
+        ("RATE211", Float64),
+        ("RATE212", Float64),
     ],
     _transformer_3_3_dtypes[7:8],
     [("NOD2", Int64)],
@@ -412,18 +423,18 @@ const _transformer_3_4_dtypes = [
 const _transformer_3_4_dtypes_v35 = vcat(
     _transformer_3_4_dtypes[1:3],
     [
-        ("RATE13", Float64),
-        ("RATE23", Float64),
+        ("RATE31", Float64),
+        ("RATE32", Float64),
         ("RATE33", Float64),
-        ("RATE43", Float64),
-        ("RATE53", Float64),
-        ("RATE63", Float64),
-        ("RATE73", Float64),
-        ("RATE83", Float64),
-        ("RATE93", Float64),
-        ("RATE103", Float64),
-        ("RATE113", Float64),
-        ("RATE123", Float64),
+        ("RATE34", Float64),
+        ("RATE35", Float64),
+        ("RATE36", Float64),
+        ("RATE37", Float64),
+        ("RATE38", Float64),
+        ("RATE39", Float64),
+        ("RATE310", Float64),
+        ("RATE311", Float64),
+        ("RATE312", Float64),
     ],
     _transformer_3_4_dtypes[7:8],
     [("NOD3", Int64)],
@@ -458,18 +469,18 @@ const _transformer_2_2_dtypes = [
 const _transformer_2_2_dtypes_v35 = vcat(
     _transformer_2_2_dtypes[1:3],
     [
+        ("RATE11", Float64),
+        ("RATE12", Float64),
         ("RATE13", Float64),
-        ("RATE23", Float64),
-        ("RATE33", Float64),
-        ("RATE43", Float64),
-        ("RATE53", Float64),
-        ("RATE63", Float64),
-        ("RATE73", Float64),
-        ("RATE83", Float64),
-        ("RATE93", Float64),
-        ("RATE103", Float64),
-        ("RATE113", Float64),
-        ("RATE123", Float64),
+        ("RATE14", Float64),
+        ("RATE15", Float64),
+        ("RATE16", Float64),
+        ("RATE17", Float64),
+        ("RATE18", Float64),
+        ("RATE19", Float64),
+        ("RATE110", Float64),
+        ("RATE111", Float64),
+        ("RATE112", Float64),
     ],
     _transformer_2_2_dtypes[7:8],
     [("NOD1", Int64)],
@@ -861,7 +872,7 @@ const _substation_dtypes_v35 = [
 lookup array of data types for PTI file sections given by
 `field_name`, as enumerated by PSS/E Program Operation Manual.
 """
-const _pti_dtypes = Dict{String,Array}(
+const _pti_dtypes = Dict{String, Array}(
     "BUS" => _bus_dtypes,
     "LOAD" => _load_dtypes,
     "FIXED SHUNT" => _fixed_shunt_dtypes,
@@ -895,7 +906,7 @@ const _pti_dtypes = Dict{String,Array}(
     "INDUCTION MACHINE" => _induction_machine_dtypes,
 )
 
-const _pti_dtypes_v35 = Dict{String,Array}(
+const _pti_dtypes_v35 = Dict{String, Array}(
     "BUS" => _bus_dtypes_v35,
     "LOAD" => _load_dtypes_v35,
     "FIXED SHUNT" => _fixed_shunt_dtypes_v35,
@@ -1616,7 +1627,7 @@ function _parse_elements(
     defaults::Dict,
     section::AbstractString,
 )
-    data = Dict{String,Any}()
+    data = Dict{String, Any}()
 
     if length(elements) > length(dtypes)
         @warn(
@@ -1632,7 +1643,7 @@ function _parse_elements(
 
         if dtype == String
             if startswith(element, "'") && endswith(element, "'")
-                data[field] = element[2:(end-1)]
+                data[field] = element[2:(end - 1)]
             else
                 data[field] = element
             end
@@ -1685,7 +1696,12 @@ Internal function. Parses a single "line" of data elements from a PTI file, as
 given by `elements` which is an array of the line, typically split at `,`.
 Elements are parsed into data types given by `section` and saved into `data::Dict`.
 """
-function _parse_line_element!(data::Dict, elements::Array, section::AbstractString, dtypes::Dict{String,Array})
+function _parse_line_element!(
+    data::Dict,
+    elements::Array,
+    section::AbstractString,
+    dtypes::Dict{String, Array},
+)
     missing_fields = []
     for (i, (field, dtype)) in enumerate(dtypes[section])
         if i > length(elements)
@@ -1751,7 +1767,7 @@ function _get_line_elements(line::AbstractString)
         )
     end
 
-    line_comment = split(line, _comment_split; limit=2)
+    line_comment = split(line, _comment_split; limit = 2)
     line = strip(line_comment[1])
     comment = length(line_comment) > 1 ? strip(line_comment[2]) : ""
 
@@ -1776,11 +1792,11 @@ function _parse_pti_data(data_io::IO)
     subsection = ""
     is_v35 = false
 
-    pti_data = Dict{String,Array{Dict}}()
+    pti_data = Dict{String, Array{Dict}}()
 
     section = popfirst!(sections)
     section_v35 = popfirst!(sections_v35)
-    section_data = Dict{String,Any}()
+    section_data = Dict{String, Any}()
 
     if any(startswith.(data_lines, "@!"))
         is_v35 = true
@@ -1804,11 +1820,13 @@ function _parse_pti_data(data_io::IO)
 
         first_element = strip(elements[1])
 
-        if is_v35 && (line_index == 3 || line_index == 4) && section_v35 == "CASE IDENTIFICATION"
+        if is_v35 && (line_index == 3 || line_index == 4) &&
+           section_v35 == "CASE IDENTIFICATION"
             comment_line = strip(line)
             comment_key = line_index == 3 ? "Comment_Line_1" : "Comment_Line_2"
 
-            if haskey(pti_data, "CASE IDENTIFICATION") && !isempty(pti_data["CASE IDENTIFICATION"])
+            if haskey(pti_data, "CASE IDENTIFICATION") &&
+               !isempty(pti_data["CASE IDENTIFICATION"])
                 pti_data["CASE IDENTIFICATION"][1][comment_key] = comment_line
                 @debug "Added $comment_key: $comment_line" _group = IS.LOG_GROUP_PARSING
             end
@@ -1821,9 +1839,11 @@ function _parse_pti_data(data_io::IO)
             continue
         end
 
-        if line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 && first_element == "Q"
+        if line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 &&
+           first_element == "Q"
             break
-        elseif line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 && first_element == "0"
+        elseif line_index > (is_v35 ? bus_data_start - 1 : 3) && length(elements) != 0 &&
+               first_element == "0"
             if line_index == bus_data_start
                 section = is_v35 ? popfirst!(sections_v35) : popfirst!(sections)
             end
@@ -1847,7 +1867,7 @@ function _parse_pti_data(data_io::IO)
         else
             if line_index == bus_data_start
                 section = is_v35 ? popfirst!(sections_v35) : popfirst!(sections)
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
             end
 
             if skip_lines > 0
@@ -1870,12 +1890,11 @@ function _parse_pti_data(data_io::IO)
                 (elements, comment) = _get_line_elements(line)
                 first_element = strip(elements[1])
 
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
 
                 if tryparse(Int64, first_element) === nothing
                     line_index += 1
                     continue
-
                 end
 
                 section_data["I"] = parse(Int64, strip(elements[1]))
@@ -1903,10 +1922,11 @@ function _parse_pti_data(data_io::IO)
 
                 point_index = 1
                 element_index = 1
-                while element_index <= length(all_elements) && element_index + 2 <= length(all_elements)
+                while element_index <= length(all_elements) &&
+                    element_index + 2 <= length(all_elements)
                     t_str = strip(all_elements[element_index])
-                    re_str = strip(all_elements[element_index+1])
-                    im_str = strip(all_elements[element_index+2])
+                    re_str = strip(all_elements[element_index + 1])
+                    im_str = strip(all_elements[element_index + 2])
 
                     if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
                         t_val = parse(Float64, t_str)
@@ -1945,7 +1965,7 @@ function _parse_pti_data(data_io::IO)
                     "SUBSTATION DATA",
                 ]
             )
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
 
                 try
                     _parse_line_element!(section_data, elements, section, current_dtypes)
@@ -1961,7 +1981,12 @@ function _parse_pti_data(data_io::IO)
             elseif section == "CASE IDENTIFICATION"
                 if line_index == header_line_start
                     try
-                        _parse_line_element!(section_data, elements, section, current_dtypes)
+                        _parse_line_element!(
+                            section_data,
+                            elements,
+                            section,
+                            current_dtypes,
+                        )
                     catch message
                         throw(
                             @error(
@@ -2010,9 +2035,14 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "SWITCHING DEVICE"
                 if is_v35
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
-                        _parse_line_element!(section_data, elements, section, current_dtypes)
+                        _parse_line_element!(
+                            section_data,
+                            elements,
+                            section,
+                            current_dtypes,
+                        )
                     catch message
                         throw(
                             @error(
@@ -2026,7 +2056,7 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "TRANSFORMER"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if parse(Int64, _get_line_elements(line)[1][3]) == 0 # two winding transformer
                     winding = "TWO-WINDING"
                     skip_lines = 3
@@ -2050,9 +2080,14 @@ function _parse_pti_data(data_io::IO)
                             break
                         else
                             elements = _get_line_elements(
-                                data_lines[line_index+transformer_line],
+                                data_lines[line_index + transformer_line],
                             )[1]
-                            _parse_line_element!(section_data, elements, temp_section, current_dtypes)
+                            _parse_line_element!(
+                                section_data,
+                                elements,
+                                temp_section,
+                                current_dtypes,
+                            )
                         end
                     end
                 catch message
@@ -2066,9 +2101,14 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
                 if length(_get_line_elements(line)[1]) == 11
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
-                        _parse_line_element!(section_data, elements, section, current_dtypes)
+                        _parse_line_element!(
+                            section_data,
+                            elements,
+                            section,
+                            current_dtypes,
+                        )
                     catch message
                         throw(
                             @error(
@@ -2082,7 +2122,7 @@ function _parse_pti_data(data_io::IO)
 
                 elseif skip_sublines > 0
                     skip_sublines -= 1
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
 
                     for (field, dtype) in _pti_dtypes["$section SUBLINES"]
                         element = popfirst!(elements)
@@ -2105,10 +2145,10 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "TWO-TERMINAL DC"
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 if length(_get_line_elements(line)[1]) == 12
                     (elements, comment) = _get_line_elements(
-                        join(data_lines[line_index:(line_index+2)], ','),
+                        join(data_lines[line_index:(line_index + 2)], ','),
                     )
                     skip_lines = 2
                 end
@@ -2125,7 +2165,7 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "IMPEDANCE CORRECTION" && !is_v35
-                section_data = Dict{String,Any}()
+                section_data = Dict{String, Any}()
                 try
                     _parse_line_element!(section_data, elements, section, current_dtypes)
                 catch message
@@ -2139,9 +2179,14 @@ function _parse_pti_data(data_io::IO)
 
             elseif section == "MULTI-TERMINAL DC"
                 if skip_sublines == 0
-                    section_data = Dict{String,Any}()
+                    section_data = Dict{String, Any}()
                     try
-                        _parse_line_element!(section_data, elements, section, current_dtypes)
+                        _parse_line_element!(
+                            section_data,
+                            elements,
+                            section,
+                            current_dtypes,
+                        )
                     catch message
                         throw(
                             @error(
@@ -2171,13 +2216,13 @@ function _parse_pti_data(data_io::IO)
                 if skip_sublines > 0
                     skip_sublines -= 1
 
-                    subsection_data = Dict{String,Any}()
+                    subsection_data = Dict{String, Any}()
                     try
                         _parse_line_element!(
                             subsection_data,
                             elements,
                             "$section $subsection",
-                            current_dtypes
+                            current_dtypes,
                         )
                     catch message
                         throw(
@@ -2233,29 +2278,38 @@ function _parse_pti_data(data_io::IO)
                         if occursin(",'", first_part)
                             comma_quote_pos = findfirst(",'", first_part)
                             if comma_quote_pos !== nothing
-                                is_part = first_part[1:comma_quote_pos[1]-1]
-                                name_part = first_part[comma_quote_pos[1]+1:end]
+                                is_part = first_part[1:(comma_quote_pos[1] - 1)]
+                                name_part = first_part[(comma_quote_pos[1] + 1):end]
 
                                 corrected_elements = [
                                     is_part,
                                     name_part,
                                     elements[2],
                                     elements[3],
-                                    elements[4]
+                                    elements[4],
                                 ]
                                 if length(corrected_elements) == 5 &&
                                    occursin('\'', corrected_elements[2]) &&
-                                   tryparse(Float64, strip(corrected_elements[3])) !== nothing &&
-                                   tryparse(Float64, strip(corrected_elements[4])) !== nothing &&
-                                   tryparse(Float64, strip(corrected_elements[5])) !== nothing
-
-                                    @debug "Parsing substation data line: $line" _group = IS.LOG_GROUP_PARSING
-                                    section_data = Dict{String,Any}()
+                                   tryparse(Float64, strip(corrected_elements[3])) !==
+                                   nothing &&
+                                   tryparse(Float64, strip(corrected_elements[4])) !==
+                                   nothing &&
+                                   tryparse(Float64, strip(corrected_elements[5])) !==
+                                   nothing
+                                    @debug "Parsing substation data line: $line" _group =
+                                        IS.LOG_GROUP_PARSING
+                                    section_data = Dict{String, Any}()
                                     try
-                                        _parse_line_element!(section_data, corrected_elements, section, current_dtypes)
+                                        _parse_line_element!(
+                                            section_data,
+                                            corrected_elements,
+                                            section,
+                                            current_dtypes,
+                                        )
 
                                         if haskey(section_data, "NAME")
-                                            section_data["NAME"] = strip(section_data["NAME"])
+                                            section_data["NAME"] =
+                                                strip(section_data["NAME"])
                                         end
 
                                         if haskey(pti_data, section)
@@ -2264,7 +2318,11 @@ function _parse_pti_data(data_io::IO)
                                             pti_data[section] = [section_data]
                                         end
                                     catch message
-                                        throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
+                                        throw(
+                                            @error(
+                                                "Parsing failed at line $line_index: $(sprint(showerror, message))"
+                                            )
+                                        )
                                     end
                                 end
                             end
@@ -2275,10 +2333,14 @@ function _parse_pti_data(data_io::IO)
                            tryparse(Float64, strip(elements[3])) !== nothing &&
                            tryparse(Float64, strip(elements[4])) !== nothing &&
                            tryparse(Float64, strip(elements[5])) !== nothing
-
-                        section_data = Dict{String,Any}()
+                        section_data = Dict{String, Any}()
                         try
-                            _parse_line_element!(section_data, elements, section, current_dtypes)
+                            _parse_line_element!(
+                                section_data,
+                                elements,
+                                section,
+                                current_dtypes,
+                            )
 
                             if haskey(section_data, "NAME")
                                 section_data["NAME"] = strip(section_data["NAME"])
@@ -2290,7 +2352,11 @@ function _parse_pti_data(data_io::IO)
                                 pti_data[section] = [section_data]
                             end
                         catch message
-                            throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
+                            throw(
+                                @error(
+                                    "Parsing failed at line $line_index: $(sprint(showerror, message))"
+                                )
+                            )
                         end
                     end
 
