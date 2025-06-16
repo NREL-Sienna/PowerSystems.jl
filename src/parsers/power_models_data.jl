@@ -533,14 +533,15 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     for d_key in keys(data["load"])
         d = data["load"][d_key]
         bus = bus_number_to_bus[d["load_bus"]]
-        if data["source_type"] == "pti"
+        is_interruptible = haskey(d, "interruptible")
+        if data["source_type"] == "pti" && is_interruptible && d["interruptible"] != 1
             load = make_standard_load(d, bus, sys_mbase; kwargs...)
             has_component(StandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
                     "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
-        elseif data["source_type"] == "pti" && haskey(d, "interruptible") && d["interruptible"] == 1
+        elseif data["source_type"] == "pti" && is_interruptible && d["interruptible"] == 1
             load = make_interruptible_powerload(d, bus, sys_mbase; kwargs...)
             has_component(InterruptiblePowerLoad, sys, get_name(load)) && throw(
                 DataFormatError(
