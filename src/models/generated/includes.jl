@@ -578,6 +578,7 @@ export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
+export get_initial_status
 export get_initial_storage
 export get_initial_storage_capacity_level
 export get_input_active_power_limits
@@ -1241,6 +1242,7 @@ export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
+export set_initial_status!
 export set_initial_storage!
 export set_initial_storage_capacity_level!
 export set_input_active_power_limits!

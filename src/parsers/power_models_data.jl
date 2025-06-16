@@ -460,6 +460,27 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     return bus_number_to_bus
 end
 
+function make_interruptible_powerload(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
+    operation_cost = LoadCost(;
+        variable = zero(CostCurve),
+        fixed = 0.0,
+    )
+
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return InterruptiblePowerLoad(;
+        name = _get_name(d),
+        available = d["status"],
+        bus = bus,
+        active_power = d["pd"],
+        reactive_power = d["qd"],
+        max_active_power = d["pd"],
+        max_reactive_power = d["qd"],
+        base_power = sys_mbase,
+        operation_cost = operation_cost,
+        ext = d["ext"],
+    )
+end
+
 function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
@@ -472,7 +493,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_reactive_power = d["qd"],
         base_power = sys_mbase,
         conformity = d["conformity"],
-        interruptible = d["interruptible"],
+        ext = d["ext"],
     )
 end
 
@@ -496,7 +517,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_impedance_reactive_power = d["qy"],
         base_power = sys_mbase,
         conformity = d["conformity"],
-        interruptible = d["interruptible"],
+        ext = d["ext"],
     )
 end
 
@@ -517,6 +538,13 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
             has_component(StandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
                     "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+        elseif data["source_type"] == "pti" && haskey(d, "interruptible") && d["interruptible"] == 1
+            load = make_interruptible_powerload(d, bus, sys_mbase; kwargs...)
+            has_component(InterruptiblePowerLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate interruptible load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         else

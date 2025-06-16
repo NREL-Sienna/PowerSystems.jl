@@ -494,13 +494,13 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qy"] = pop!(load, "YQ")
             sub_data["conformity"] = pop!(load, "SCALE")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
+            sub_data["interruptible"] = pop!(load, "INTRPT")
+            sub_data["ext"] = Dict{String, Any}()
 
             if pm_data["source_version"] == "33"
-                sub_data["load_type"] = ""
-                sub_data["interruptible"] = 0
+                sub_data["ext"]["LOADTYPE"] = ""
             else
-                sub_data["load_type"] = pop!(load, "LOADTYPE")
-                sub_data["interruptible"] = pop!(load, "INTRPT")
+                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE")
             end
 
             sub_data["status"] = pop!(load, "STATUS")

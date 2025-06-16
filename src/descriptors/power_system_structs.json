@@ -2584,12 +2584,6 @@
                     "comment": "[`OperationalCost`](@ref) of interrupting load"
                 },
                 {
-                    "name": "interruptible",
-                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
-                    "data_type": "Int64",
-                    "default": "0"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3037,12 +3031,6 @@
                     "default": "LoadConformity.UNDEFINED"
                 },
                 {
-                    "name": "interruptible",
-                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
-                    "data_type": "Int64",
-                    "default": "0"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3223,12 +3211,6 @@
                     "default": "LoadConformity.UNDEFINED"
                 },
                 {
-                    "name": "interruptible",
-                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
-                    "data_type": "Int64",
-                    "default": "0"
-                },
-                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3353,12 +3335,6 @@
                     "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
-                },
-                {
-                    "name": "interruptible",
-                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
-                    "data_type": "Int64",
-                    "default": "0"
                 },
                 {
                     "name": "services",
