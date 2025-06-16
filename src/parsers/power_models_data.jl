@@ -179,7 +179,7 @@ function _impedance_correction_table_lookup(data::Dict)
     for (table_number, table_data) in data["impedance_correction"]
         table_number = parse(Int64, table_number)
         x = table_data["tap_or_angle"]
-        y = table_data["scaling_factor_real"]
+        y = table_data["scaling_factor"]
 
         if length(x) == length(y)
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
@@ -202,12 +202,11 @@ function _impedance_correction_table_lookup(data::Dict)
                 )
             end
         else
-            # throw(
-            #     DataFormatError(
-            #         "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs.",
-            #     ),
-            # )
-            @warn "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs. Skipping this table."
+            throw(
+                DataFormatError(
+                    "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs.",
+                ),
+            )
         end
     end
 

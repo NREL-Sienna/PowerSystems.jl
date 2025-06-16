@@ -1877,80 +1877,114 @@ function _parse_pti_data(data_io::IO)
             end
 
             if section == "IMPEDANCE CORRECTION" && is_v35
-                if startswith(line, "@!")
-                    line_index += 1
-                    continue
-                end
+                temporal_ic_elements = Vector{Vector{String}}()
+                
+                while line_index <= length(data_lines)
+                    line = data_lines[line_index]
+                    
+                    if startswith(line, "0 /") || startswith(line, "Q")
+                        if !isempty(temporal_ic_elements)
+                            last_entry_elements = temporal_ic_elements[end]
+                            
+                            section_data_final = Dict{String, Any}()
+                            section_data_final["I"] = parse(Int64, strip(last_entry_elements[1]))
+                            
+                            processing_elements = last_entry_elements[2:end]
+                            
+                            point_index = 1
+                            element_index = 1
+                            while element_index <= length(processing_elements) &&
+                                element_index + 2 <= length(processing_elements)
+                                t_str = strip(processing_elements[element_index])
+                                re_str = strip(processing_elements[element_index + 1])
+                                im_str = strip(processing_elements[element_index + 2])
 
-                if isempty(strip(line))
-                    line_index += 1
-                    continue
-                end
+                                if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
+                                    t_val = parse(Float64, t_str)
+                                    re_val = parse(Float64, re_str)
+                                    im_val = parse(Float64, im_str)
 
-                (elements, comment) = _get_line_elements(line)
-                first_element = strip(elements[1])
+                                    if !(t_val == 0.0 && re_val == 0.0 && im_val == 0.0)
+                                        section_data_final["T$point_index"] = t_val
+                                        section_data_final["Re(F$point_index)"] = re_val
+                                        section_data_final["Im(F$point_index)"] = im_val
+                                        point_index += 1
+                                    end
+                                end
+                                element_index += 3
+                            end
 
-                section_data = Dict{String, Any}()
-
-                if tryparse(Int64, first_element) === nothing
-                    line_index += 1
-                    continue
-                end
-
-                section_data["I"] = parse(Int64, strip(elements[1]))
-                all_elements = elements[2:end]
-
-                next_line_index = line_index + 1
-                while next_line_index <= length(data_lines)
-                    next_line = data_lines[next_line_index]
-
-                    if occursin(r"^\s*\d+", next_line) ||
-                       startswith(strip(next_line), "0") ||
-                       isempty(strip(next_line)) ||
-                       startswith(strip(next_line), "@!")
+                            if haskey(pti_data, section)
+                                push!(pti_data[section], section_data_final)
+                            else
+                                pti_data[section] = [section_data_final]
+                            end
+                        end
                         break
                     end
-
-                    if startswith(next_line, " ") && !isempty(strip(next_line))
-                        (continuation_elements, _) = _get_line_elements(next_line)
-                        append!(all_elements, continuation_elements)
-                        next_line_index += 1
-                    else
-                        break
+                    
+                    if startswith(line, "@!")
+                        line_index += 1
+                        continue
                     end
-                end
 
-                point_index = 1
-                element_index = 1
-                while element_index <= length(all_elements) &&
-                    element_index + 2 <= length(all_elements)
-                    t_str = strip(all_elements[element_index])
-                    re_str = strip(all_elements[element_index + 1])
-                    im_str = strip(all_elements[element_index + 2])
+                    if isempty(strip(line))
+                        line_index += 1
+                        continue
+                    end
 
-                    if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
-                        t_val = parse(Float64, t_str)
-                        re_val = parse(Float64, re_str)
-                        im_val = parse(Float64, im_str)
+                    (elements, comment) = _get_line_elements(line)
+                    first_element = strip(elements[1])
 
-                        if !(t_val == 0.0 && re_val == 0.0 && im_val == 0.0)
-                            section_data["T$point_index"] = t_val
-                            section_data["Re(F$point_index)"] = re_val
-                            section_data["Im(F$point_index)"] = im_val
-                            point_index += 1
+                    if tryparse(Int64, first_element) === nothing
+                        line_index += 1
+                        if !isempty(temporal_ic_elements)
+                            append!(temporal_ic_elements[end], elements)
+                        end
+                        continue
+                    end
+
+                    if !isempty(temporal_ic_elements)
+                        last_entry_elements = temporal_ic_elements[end]
+                        
+                        section_data_prev = Dict{String, Any}()
+                        section_data_prev["I"] = parse(Int64, strip(last_entry_elements[1]))
+                        
+                        processing_elements = last_entry_elements[2:end]
+                        
+                        point_index = 1
+                        element_index = 1
+                        while element_index <= length(processing_elements) &&
+                            element_index + 2 <= length(processing_elements)
+                            t_str = strip(processing_elements[element_index])
+                            re_str = strip(processing_elements[element_index + 1])
+                            im_str = strip(processing_elements[element_index + 2])
+
+                            if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
+                                t_val = parse(Float64, t_str)
+                                re_val = parse(Float64, re_str)
+                                im_val = parse(Float64, im_str)
+
+                                if !(t_val == 0.0 && re_val == 0.0 && im_val == 0.0)
+                                    section_data_prev["T$point_index"] = t_val
+                                    section_data_prev["Re(F$point_index)"] = re_val
+                                    section_data_prev["Im(F$point_index)"] = im_val
+                                    point_index += 1
+                                end
+                            end
+                            element_index += 3
+                        end
+
+                        if haskey(pti_data, section)
+                            push!(pti_data[section], section_data_prev)
+                        else
+                            pti_data[section] = [section_data_prev]
                         end
                     end
-                    element_index += 3
-                end
 
-                if haskey(pti_data, section)
-                    push!(pti_data[section], section_data)
-                else
-                    pti_data[section] = [section_data]
+                    push!(temporal_ic_elements, elements)
+                    line_index += 1
                 end
-
-                line_index = next_line_index
-                continue
 
             elseif !(
                 section in [
@@ -2377,8 +2411,12 @@ function _parse_pti_data(data_io::IO)
             @debug "appending data" _group = IS.LOG_GROUP_PARSING
         end
 
-        if haskey(pti_data, section)
-            push!(pti_data[section], section_data)
+        if haskey(pti_data, section) 
+            if section == "IMPEDANCE CORRECTION" && pti_data["CASE IDENTIFICATION"][1]["REV"] == 35
+                continue
+            else
+                push!(pti_data[section], section_data)
+            end
         else
             pti_data[section] = [section_data]
         end

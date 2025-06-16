@@ -1824,7 +1824,7 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
                 any(k -> contains(k, "Re(F") || contains(k, "Im(F"), keys(imp_correction))
 
             if is_v35
-                sub_data["scaling_factor_real"] =
+                sub_data["scaling_factor"] =
                     sort_values_by_key_prefix_v35(imp_correction, "Re(F")
                 sub_data["scaling_factor_imag"] =
                     sort_values_by_key_prefix_v35(imp_correction, "Im(F")
