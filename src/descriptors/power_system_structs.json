@@ -2714,6 +2714,14 @@
                     "default": "Device[]"
                 },
                 {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
