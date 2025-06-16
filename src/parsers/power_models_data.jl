@@ -1558,13 +1558,13 @@ function make_switched_shunt(name::String, d::Dict, bus::ACBus)
         :number_of_steps => d["step_number"],
         :Y_increase => d["y_increment"],
         :admittance_limits => d["admittance_limits"],
-        :ext => d["ext"]
+        :ext => d["ext"],
     )
-    
+
     if haskey(d, "initial_status")
         params[:initial_status] = d["initial_status"]
     end
-    
+
     return SwitchedAdmittance(; params...)
 end
 
