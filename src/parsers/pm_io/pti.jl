@@ -1878,19 +1878,20 @@ function _parse_pti_data(data_io::IO)
 
             if section == "IMPEDANCE CORRECTION" && is_v35
                 temporal_ic_elements = Vector{Vector{String}}()
-                
+
                 while line_index <= length(data_lines)
                     line = data_lines[line_index]
-                    
+
                     if startswith(line, "0 /") || startswith(line, "Q")
                         if !isempty(temporal_ic_elements)
                             last_entry_elements = temporal_ic_elements[end]
-                            
+
                             section_data_final = Dict{String, Any}()
-                            section_data_final["I"] = parse(Int64, strip(last_entry_elements[1]))
-                            
+                            section_data_final["I"] =
+                                parse(Int64, strip(last_entry_elements[1]))
+
                             processing_elements = last_entry_elements[2:end]
-                            
+
                             point_index = 1
                             element_index = 1
                             while element_index <= length(processing_elements) &&
@@ -1922,7 +1923,7 @@ function _parse_pti_data(data_io::IO)
                         end
                         break
                     end
-                    
+
                     if startswith(line, "@!")
                         line_index += 1
                         continue
@@ -1946,12 +1947,12 @@ function _parse_pti_data(data_io::IO)
 
                     if !isempty(temporal_ic_elements)
                         last_entry_elements = temporal_ic_elements[end]
-                        
+
                         section_data_prev = Dict{String, Any}()
                         section_data_prev["I"] = parse(Int64, strip(last_entry_elements[1]))
-                        
+
                         processing_elements = last_entry_elements[2:end]
-                        
+
                         point_index = 1
                         element_index = 1
                         while element_index <= length(processing_elements) &&
@@ -2411,8 +2412,9 @@ function _parse_pti_data(data_io::IO)
             @debug "appending data" _group = IS.LOG_GROUP_PARSING
         end
 
-        if haskey(pti_data, section) 
-            if section == "IMPEDANCE CORRECTION" && pti_data["CASE IDENTIFICATION"][1]["REV"] == 35
+        if haskey(pti_data, section)
+            if section == "IMPEDANCE CORRECTION" &&
+               pti_data["CASE IDENTIFICATION"][1]["REV"] == 35
                 continue
             else
                 push!(pti_data[section], section_data)
