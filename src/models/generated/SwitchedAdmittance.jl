@@ -10,6 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         Y::Complex{Float64}
+        initial_status::Vector{Int}
         number_of_steps::Vector{Int}
         Y_increase::Vector{Complex{Float64}}
         admittance_limits::MinMax
@@ -28,6 +29,7 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
+- `initial_status::Vector{Int}`: (default: `Int[]`) Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)
 - `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
 - `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.
 - `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
@@ -45,6 +47,8 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     bus::ACBus
     "Initial admittance at N = 0"
     Y::Complex{Float64}
+    "Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)"
+    initial_status::Vector{Int}
     "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2."
     number_of_steps::Vector{Int}
     "Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2."
@@ -61,12 +65,12 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
+function SwitchedAdmittance(; name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -76,6 +80,7 @@ function SwitchedAdmittance(::Nothing)
         available=false,
         bus=ACBus(nothing),
         Y=0.0 + 0.0im,
+        initial_status=Int[],
         number_of_steps=Int[],
         Y_increase=Complex{Float64}[],
         admittance_limits=(min=0.0, max=0.0),
@@ -93,6 +98,8 @@ get_available(value::SwitchedAdmittance) = value.available
 get_bus(value::SwitchedAdmittance) = value.bus
 """Get [`SwitchedAdmittance`](@ref) `Y`."""
 get_Y(value::SwitchedAdmittance) = value.Y
+"""Get [`SwitchedAdmittance`](@ref) `initial_status`."""
+get_initial_status(value::SwitchedAdmittance) = value.initial_status
 """Get [`SwitchedAdmittance`](@ref) `number_of_steps`."""
 get_number_of_steps(value::SwitchedAdmittance) = value.number_of_steps
 """Get [`SwitchedAdmittance`](@ref) `Y_increase`."""
@@ -114,6 +121,8 @@ set_available!(value::SwitchedAdmittance, val) = value.available = val
 set_bus!(value::SwitchedAdmittance, val) = value.bus = val
 """Set [`SwitchedAdmittance`](@ref) `Y`."""
 set_Y!(value::SwitchedAdmittance, val) = value.Y = val
+"""Set [`SwitchedAdmittance`](@ref) `initial_status`."""
+set_initial_status!(value::SwitchedAdmittance, val) = value.initial_status = val
 """Set [`SwitchedAdmittance`](@ref) `number_of_steps`."""
 set_number_of_steps!(value::SwitchedAdmittance, val) = value.number_of_steps = val
 """Set [`SwitchedAdmittance`](@ref) `Y_increase`."""

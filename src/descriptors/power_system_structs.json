@@ -2584,6 +2584,12 @@
                     "comment": "[`OperationalCost`](@ref) of interrupting load"
                 },
                 {
+                    "name": "interruptible",
+                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
+                    "data_type": "Int64",
+                    "default": "0"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -2900,6 +2906,13 @@
                     "data_type": "Complex{Float64}"
                 },
                 {
+                    "name": "initial_status",
+                    "comment": "Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)",
+                    "null_value": "Int[]",
+                    "data_type": "Vector{Int}",
+                    "default": "Int[]"
+                },
+                {
                     "name": "number_of_steps",
                     "comment": "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.",
                     "null_value": "Int[]",
@@ -3022,6 +3035,12 @@
                     "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
+                },
+                {
+                    "name": "interruptible",
+                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
+                    "data_type": "Int64",
+                    "default": "0"
                 },
                 {
                     "name": "services",
@@ -3204,6 +3223,12 @@
                     "default": "LoadConformity.UNDEFINED"
                 },
                 {
+                    "name": "interruptible",
+                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
+                    "data_type": "Int64",
+                    "default": "0"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -3328,6 +3353,12 @@
                     "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
+                },
+                {
+                    "name": "interruptible",
+                    "comment": "Interruptible load flag, one for an interruptible load for zero for a non interruptible load.",
+                    "data_type": "Int64",
+                    "default": "0"
                 },
                 {
                     "name": "services",
