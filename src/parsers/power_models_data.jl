@@ -179,7 +179,7 @@ function _impedance_correction_table_lookup(data::Dict)
     for (table_number, table_data) in data["impedance_correction"]
         table_number = parse(Int64, table_number)
         x = table_data["tap_or_angle"]
-        y = table_data["scaling_factor"]
+        y = table_data["scaling_factor_real"]
 
         if length(x) == length(y)
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
@@ -202,11 +202,12 @@ function _impedance_correction_table_lookup(data::Dict)
                 )
             end
         else
-            throw(
-                DataFormatError(
-                    "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs.",
-                ),
-            )
+            # throw(
+            #     DataFormatError(
+            #         "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs.",
+            #     ),
+            # )
+            @warn "Impedance correction mismatch at table $table_number: tap/angle and scaling count differs. Skipping this table."
         end
     end
 
@@ -472,6 +473,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_reactive_power = d["qd"],
         base_power = sys_mbase,
         conformity = d["conformity"],
+        interruptible = d["interruptible"],
     )
 end
 
@@ -495,6 +497,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_impedance_reactive_power = d["qy"],
         base_power = sys_mbase,
         conformity = d["conformity"],
+        interruptible = d["interruptible"],
     )
 end
 
@@ -807,15 +810,18 @@ function make_thermal_gen(
         shut_down = shutdn,
     )
 
-    ext = Dict{String, Float64}()
+    if !haskey(d, "ext")
+        d["ext"] = Dict{String, Float64}()
+    end
+
     if haskey(d, "r_source") && haskey(d, "x_source")
-        ext["r"] = d["r_source"]
-        ext["x"] = d["x_source"]
+        d["ext"]["r"] = d["r_source"]
+        d["ext"]["x"] = d["x_source"]
     end
 
     if haskey(d, "rt_source") && haskey(d, "xt_source")
-        ext["rt"] = d["rt_source"]
-        ext["xt"] = d["xt_source"]
+        d["ext"]["rt"] = d["rt_source"]
+        d["ext"]["xt"] = d["xt_source"]
     end
 
     if d["mbase"] != 0.0
@@ -848,7 +854,7 @@ function make_thermal_gen(
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
-        ext = ext,
+        ext = d["ext"],
     )
 
     return thermal_gen
@@ -1001,6 +1007,7 @@ function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating = d["rating"],
         discrete_branch_type = d["discrete_branch_type"],
         branch_status = d["state"],
+        ext = d["ext"],
     )
 end
 
@@ -1044,8 +1051,6 @@ function make_transformer_2w(
         available_value = false
     end
 
-    ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
-
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -1062,7 +1067,7 @@ function make_transformer_2w(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        ext = ext,
+        ext = d["ext"],
     )
 end
 
@@ -1441,6 +1446,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             reactive_power_limits_from = d["reactive_power_limits_from"],
             reactive_power_limits_to = d["reactive_power_limits_to"],
             loss = LinearCurve(d["loss1"], d["loss0"]),
+            ext = d["ext"],
         )
     elseif source_type == "matpower"
         return TwoTerminalGenericHVDCLine(;
@@ -1544,15 +1550,22 @@ function read_vscline!(
 end
 
 function make_switched_shunt(name::String, d::Dict, bus::ACBus)
-    return SwitchedAdmittance(;
-        name = name,
-        available = Bool(d["status"]),
-        bus = bus,
-        Y = (d["gs"] + d["bs"]im),
-        number_of_steps = d["step_number"],
-        Y_increase = d["y_increment"],
-        admittance_limits = d["admittance_limits"],
+    params = Dict(
+        :name => name,
+        :available => Bool(d["status"]),
+        :bus => bus,
+        :Y => (d["gs"] + d["bs"]im),
+        :number_of_steps => d["step_number"],
+        :Y_increase => d["y_increment"],
+        :admittance_limits => d["admittance_limits"],
+        :ext => d["ext"]
     )
+    
+    if haskey(d, "initial_status")
+        params[:initial_status] = d["initial_status"]
+    end
+    
+    return SwitchedAdmittance(; params...)
 end
 
 function read_switched_shunt!(
@@ -1609,6 +1622,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
         reactive_power_required = d["reactive_power_required"],
+        ext = d["ext"],
     )
 end
 

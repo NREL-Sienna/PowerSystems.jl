@@ -1616,7 +1616,7 @@ function _build_switch_breaker_sub_data(
     sub_data["psw"] = sub_data["active_power_flow"]
     sub_data["qsw"] = sub_data["reactive_power_flow"]
     sub_data["discrete_branch_type"] = discrete_device_type
-    ext = Dict{String, Any}()
+    sub_data["ext"] = Dict{String, Any}()
 
     if pm_data["source_version"] == "33"
         sub_data["r"] = pop!(dict_object, "R")
@@ -1630,7 +1630,7 @@ function _build_switch_breaker_sub_data(
         for i in 2:12
             rate_key = "RATE$i"
             if haskey(dict_object, rate_key)
-                ext[rate_key] = pop!(dict_object, rate_key)
+                sub_data["ext"][rate_key] = pop!(dict_object, rate_key)
             end
         end
     end
