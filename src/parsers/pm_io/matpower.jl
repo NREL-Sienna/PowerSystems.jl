@@ -571,15 +571,16 @@ function _mp2pm_branch!(data::Dict{String, Any})
         if branch["tap"] == 0.0
             branch["transformer"] = false
             branch["tap"] = 1.0
+            branch["b_fr"] = branch["br_b"] / 2.0
+            branch["b_to"] = branch["br_b"] / 2.0
         else
             branch["transformer"] = true
+            branch["b_fr"] = (branch["br_b"] / branch["tap"]^2)
+            branch["b_to"] = 0.0
         end
-
         branch["g_fr"] = 0.0
         branch["g_to"] = 0.0
 
-        branch["b_fr"] = branch["br_b"] / 2.0
-        branch["b_to"] = branch["br_b"] / 2.0
         branch["base_power"] = data["baseMVA"]
 
         delete!(branch, "br_b")
