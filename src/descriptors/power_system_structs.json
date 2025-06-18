@@ -2908,6 +2908,13 @@
                     "data_type": "Complex{Float64}"
                 },
                 {
+                    "name": "initial_status",
+                    "comment": "Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)",
+                    "null_value": "Int[]",
+                    "data_type": "Vector{Int}",
+                    "default": "Int[]"
+                },
+                {
                     "name": "number_of_steps",
                     "comment": "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.",
                     "null_value": "Int[]",
