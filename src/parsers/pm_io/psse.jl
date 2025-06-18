@@ -1859,6 +1859,7 @@ function _psse2pm_substation_data!(pm_data::Dict, pti_data::Dict, import_all::Bo
 
             sub_data["latitude"] = substation_data["LATITUDE"]
             sub_data["longitude"] = substation_data["LONGITUDE"]
+            sub_data["nodes"] = substation_data["NODES"]
 
             if import_all
                 _import_remaining_keys!(sub_data, substation_data)
