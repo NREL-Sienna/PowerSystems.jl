@@ -78,6 +78,10 @@ function System(pm_data::PowerModelsData; kwargs...)
     if runchecks
         check(sys)
     end
+
+    substation_data = get(data, "substation_data", [])
+    add_geographic_info_to_buses!(sys, substation_data)
+
     return sys
 end
 
@@ -161,6 +165,53 @@ function _get_pm_3w_name(
 )
     ckt = device_dict["circuit"]
     return "$(get_name(bus_primary))-$(get_name(bus_secondary))-$(get_name(bus_tertiary))-i_$ckt"
+end
+
+"""Add geographic coordinates to all buses using pre-built lookup"""
+function add_geographic_info_to_buses!(sys, substation_data)
+    if isempty(substation_data)
+        @warn "No substation data found"
+        return
+    end
+
+    bus_coords_lookup = Dict{Int, Tuple{Float64, Float64}}()
+
+    for (_, substation) in substation_data
+        if haskey(substation, "nodes") && haskey(substation, "latitude") &&
+           haskey(substation, "longitude")
+            lat, lon = substation["latitude"], substation["longitude"]
+            for node in substation["nodes"]
+                if haskey(node, "I")
+                    bus_coords_lookup[node["I"]] = (lat, lon)
+                end
+            end
+        end
+    end
+
+    begin_supplemental_attributes_update(sys) do
+        buses_with_coords = 0
+        buses_without_coords = 0
+
+        for bus in get_components(ACBus, sys)
+            bus_number = get_number(bus)
+
+            if haskey(bus_coords_lookup, bus_number)
+                latitude, longitude = bus_coords_lookup[bus_number]
+                geo_info = GeographicInfo(;
+                    geo_json = Dict(
+                        "x" => longitude,
+                        "y" => latitude,
+                    ),
+                )
+                add_supplemental_attribute!(sys, bus, geo_info)
+                buses_with_coords += 1
+            else
+                buses_without_coords += 1
+            end
+        end
+
+        @info "Added coordinates to $(buses_with_coords[]) buses, $(buses_without_coords[]) buses without coordinates"
+    end
 end
 
 """
