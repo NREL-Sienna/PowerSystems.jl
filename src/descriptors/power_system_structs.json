@@ -522,7 +522,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -596,7 +598,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -607,7 +611,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -696,7 +702,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -707,7 +715,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "b",
@@ -718,7 +728,9 @@
                         "min": 0,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "flow_limits",
@@ -770,7 +782,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -1925,7 +1939,9 @@
                     "name": "g",
                     "data_type": "Float64",
                     "comment": "Series conductance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "dc_current",
@@ -2169,7 +2185,9 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))"
+                    "comment": "Series resistance of the DC line in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "transfer_setpoint",
@@ -2199,13 +2217,17 @@
                     "name": "rectifier_rc",
                     "comment": "Rectifier commutating transformer resistance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "rectifier_xc",
                     "comment": "Rectifier commutating transformer reactance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "rectifier_base_voltage",
@@ -2229,13 +2251,17 @@
                     "name": "inverter_rc",
                     "comment": "Inverter commutating transformer resistance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "inverter_xc",
                     "comment": "Inverter commutating transformer reactance per bridge in system p.u. ([`SYSTEM_BASE`](@ref per_unit))",
                     "null_value": "0.0",
-                    "data_type": "Float64"
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "inverter_base_voltage",
@@ -2262,7 +2288,9 @@
                     "data_type": "Float64",
                     "comment": "Compounding Resistance Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.",
                     "null_value": "0.0",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "min_compounding_voltage",
@@ -2311,7 +2339,9 @@
                     "comment": "Commutating rectifier capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "inverter_transformer_ratio",
@@ -2353,7 +2383,9 @@
                     "comment": "Commutating inverter capacitor reactance magnitude per bridge, in system p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "active_power_limits_from",
@@ -2457,7 +2489,9 @@
                     "null_value": "0.0",
                     "name": "r",
                     "data_type": "Float64",
-                    "comment": "Total series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance"
+                    "comment": "Total series Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), split equally on both sides of the shunt capacitance",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",

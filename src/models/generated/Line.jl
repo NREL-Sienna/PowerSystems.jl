@@ -133,7 +133,7 @@ get_rating_b(value::Line) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`Line`](@ref) `rating_c`."""
 get_rating_c(value::Line) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`Line`](@ref) `g`."""
-get_g(value::Line) = value.g
+get_g(value::Line) = get_value(value, Val(:g), Val(:siemens))
 """Get [`Line`](@ref) `services`."""
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
@@ -164,7 +164,7 @@ set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_
 """Set [`Line`](@ref) `rating_c`."""
 set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`Line`](@ref) `g`."""
-set_g!(value::Line, val) = value.g = val
+set_g!(value::Line, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`Line`](@ref) `services`."""
 set_services!(value::Line, val) = value.services = val
 """Set [`Line`](@ref) `ext`."""
