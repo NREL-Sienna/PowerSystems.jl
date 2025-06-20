@@ -99,9 +99,9 @@ get_reactive_power_flow(value::DiscreteControlledACBranch) = get_value(value, Va
 """Get [`DiscreteControlledACBranch`](@ref) `arc`."""
 get_arc(value::DiscreteControlledACBranch) = value.arc
 """Get [`DiscreteControlledACBranch`](@ref) `r`."""
-get_r(value::DiscreteControlledACBranch) = value.r
+get_r(value::DiscreteControlledACBranch) = get_value(value, Val(:r), Val(:ohm))
 """Get [`DiscreteControlledACBranch`](@ref) `x`."""
-get_x(value::DiscreteControlledACBranch) = value.x
+get_x(value::DiscreteControlledACBranch) = get_value(value, Val(:x), Val(:ohm))
 """Get [`DiscreteControlledACBranch`](@ref) `rating`."""
 get_rating(value::DiscreteControlledACBranch) = get_value(value, Val(:rating), Val(:mva))
 """Get [`DiscreteControlledACBranch`](@ref) `discrete_branch_type`."""
@@ -122,9 +122,9 @@ set_reactive_power_flow!(value::DiscreteControlledACBranch, val) = value.reactiv
 """Set [`DiscreteControlledACBranch`](@ref) `arc`."""
 set_arc!(value::DiscreteControlledACBranch, val) = value.arc = val
 """Set [`DiscreteControlledACBranch`](@ref) `r`."""
-set_r!(value::DiscreteControlledACBranch, val) = value.r = val
+set_r!(value::DiscreteControlledACBranch, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`DiscreteControlledACBranch`](@ref) `x`."""
-set_x!(value::DiscreteControlledACBranch, val) = value.x = val
+set_x!(value::DiscreteControlledACBranch, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`DiscreteControlledACBranch`](@ref) `rating`."""
 set_rating!(value::DiscreteControlledACBranch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`DiscreteControlledACBranch`](@ref) `discrete_branch_type`."""

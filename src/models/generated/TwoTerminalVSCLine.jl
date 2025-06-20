@@ -215,7 +215,7 @@ get_active_power_limits_from(value::TwoTerminalVSCLine) = get_value(value, Val(:
 """Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_to`."""
 get_active_power_limits_to(value::TwoTerminalVSCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva))
 """Get [`TwoTerminalVSCLine`](@ref) `g`."""
-get_g(value::TwoTerminalVSCLine) = value.g
+get_g(value::TwoTerminalVSCLine) = get_value(value, Val(:g), Val(:siemens))
 """Get [`TwoTerminalVSCLine`](@ref) `dc_current`."""
 get_dc_current(value::TwoTerminalVSCLine) = value.dc_current
 """Get [`TwoTerminalVSCLine`](@ref) `reactive_power_from`."""
@@ -282,7 +282,7 @@ set_active_power_limits_from!(value::TwoTerminalVSCLine, val) = value.active_pow
 """Set [`TwoTerminalVSCLine`](@ref) `active_power_limits_to`."""
 set_active_power_limits_to!(value::TwoTerminalVSCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalVSCLine`](@ref) `g`."""
-set_g!(value::TwoTerminalVSCLine, val) = value.g = val
+set_g!(value::TwoTerminalVSCLine, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`TwoTerminalVSCLine`](@ref) `dc_current`."""
 set_dc_current!(value::TwoTerminalVSCLine, val) = value.dc_current = val
 """Set [`TwoTerminalVSCLine`](@ref) `reactive_power_from`."""
