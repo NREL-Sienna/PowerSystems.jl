@@ -353,6 +353,17 @@ end
     @test IS.compare_values(original_sys, deserialized_sys)
 end
 
+@testset "PSSE transformer tap position correction testing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "transformer_correction_test_system";
+        force_build = true,
+    )
+    trf = get_component(TapTransformer, sys, "Bus 4     HV-Bus 7     ZV-i_1")
+    tap = get_tap(trf)
+    @test isapprox(tap, 0.979937; atol = 1e-6)  # Test corrected value matches PSSE
+end
+
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
     sys =
         build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true)

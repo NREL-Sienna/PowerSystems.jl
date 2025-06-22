@@ -769,10 +769,28 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["nomv2"] = transformer["NOMV2"]
                 end
 
-                sub_data["tap"] = pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
+                if abs(transformer["COD1"]) ∈ [1, 2]
+                    tap_data = pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
+                    tap_positions = collect(
+                        range(
+                            transformer["RMI1"],
+                            transformer["RMA1"];
+                            length = Int(transformer["NTP1"]),
+                        ),
+                    )
+                    closest_tap_ix = argmin(abs.(tap_positions .- tap_data))
+                    if !isapprox(tap_data, tap_positions[closest_tap_ix])
+                        @warn "Transformer winding tap setting is not on a step; converting original data ($tap_data) to nearest step ($(tap_positions[closest_tap_ix]))"
+                        sub_data["tap"] = tap_positions[closest_tap_ix]
+                    else
+                        sub_data["tap"] = tap_data
+                    end
+                else
+                    sub_data["tap"] =
+                        pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
+                end
                 sub_data["shift"] = pop!(transformer, "ANG1")
 
-                # Unit Transformations
                 if transformer["CW"] != 1  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
                     sub_data["tap"] *=
                         _get_bus_value(transformer["J"], "base_kv", pm_data) /
