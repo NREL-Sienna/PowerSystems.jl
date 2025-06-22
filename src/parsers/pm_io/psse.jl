@@ -769,7 +769,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["nomv2"] = transformer["NOMV2"]
                 end
 
-                if abs(transformer["COD1"]) ∈ [1, 2]
+                if abs(transformer["COD1"]) ∈ [1, 2] && transformer["CW"] ∈ [1, 3]
                     tap_data = pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
                     tap_positions = collect(
                         range(
