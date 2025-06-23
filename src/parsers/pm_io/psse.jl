@@ -769,8 +769,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["nomv2"] = transformer["NOMV2"]
                 end
 
+                windv1 = pop!(transformer, "WINDV1")
                 if abs(transformer["COD1"]) ∈ [1, 2] && transformer["CW"] ∈ [1, 3]
-                    tap_data = pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
                     tap_positions = collect(
                         range(
                             transformer["RMI1"],
@@ -778,17 +778,13 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             length = Int(transformer["NTP1"]),
                         ),
                     )
-                    closest_tap_ix = argmin(abs.(tap_positions .- tap_data))
-                    if !isapprox(tap_data, tap_positions[closest_tap_ix])
-                        @warn "Transformer winding tap setting is not on a step; converting original data ($tap_data) to nearest step ($(tap_positions[closest_tap_ix]))"
-                        sub_data["tap"] = tap_positions[closest_tap_ix]
-                    else
-                        sub_data["tap"] = tap_data
+                    closest_tap_ix = argmin(abs.(tap_positions .- windv1))
+                    if !isapprox(windv1, tap_positions[closest_tap_ix]; atol = 1e-5)
+                        @warn "Transformer winding tap setting is not on a step; converting original data ($windv1) to nearest step ($(tap_positions[closest_tap_ix]))"
+                        windv1 = tap_positions[closest_tap_ix]
                     end
-                else
-                    sub_data["tap"] =
-                        pop!(transformer, "WINDV1") / pop!(transformer, "WINDV2")
                 end
+                sub_data["tap"] = windv1 / pop!(transformer, "WINDV2")
                 sub_data["shift"] = pop!(transformer, "ANG1")
 
                 if transformer["CW"] != 1  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
