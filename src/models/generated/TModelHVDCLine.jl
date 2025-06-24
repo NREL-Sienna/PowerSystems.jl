@@ -99,7 +99,7 @@ get_active_power_flow(value::TModelHVDCLine) = get_value(value, Val(:active_powe
 """Get [`TModelHVDCLine`](@ref) `arc`."""
 get_arc(value::TModelHVDCLine) = value.arc
 """Get [`TModelHVDCLine`](@ref) `r`."""
-get_r(value::TModelHVDCLine) = get_value(value, Val(:r), Val(:ohm))
+get_r(value::TModelHVDCLine) = value.r
 """Get [`TModelHVDCLine`](@ref) `l`."""
 get_l(value::TModelHVDCLine) = value.l
 """Get [`TModelHVDCLine`](@ref) `c`."""
@@ -122,7 +122,7 @@ set_active_power_flow!(value::TModelHVDCLine, val) = value.active_power_flow = s
 """Set [`TModelHVDCLine`](@ref) `arc`."""
 set_arc!(value::TModelHVDCLine, val) = value.arc = val
 """Set [`TModelHVDCLine`](@ref) `r`."""
-set_r!(value::TModelHVDCLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
+set_r!(value::TModelHVDCLine, val) = value.r = val
 """Set [`TModelHVDCLine`](@ref) `l`."""
 set_l!(value::TModelHVDCLine, val) = value.l = val
 """Set [`TModelHVDCLine`](@ref) `c`."""

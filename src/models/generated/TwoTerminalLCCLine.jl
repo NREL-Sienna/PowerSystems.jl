@@ -244,7 +244,7 @@ get_arc(value::TwoTerminalLCCLine) = value.arc
 """Get [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
 get_active_power_flow(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`TwoTerminalLCCLine`](@ref) `r`."""
-get_r(value::TwoTerminalLCCLine) = get_value(value, Val(:r), Val(:ohm))
+get_r(value::TwoTerminalLCCLine) = value.r
 """Get [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
 get_transfer_setpoint(value::TwoTerminalLCCLine) = value.transfer_setpoint
 """Get [`TwoTerminalLCCLine`](@ref) `scheduled_dc_voltage`."""
@@ -254,9 +254,9 @@ get_rectifier_bridges(value::TwoTerminalLCCLine) = value.rectifier_bridges
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_delay_angle_limits`."""
 get_rectifier_delay_angle_limits(value::TwoTerminalLCCLine) = value.rectifier_delay_angle_limits
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_rc`."""
-get_rectifier_rc(value::TwoTerminalLCCLine) = get_value(value, Val(:rectifier_rc), Val(:ohm))
+get_rectifier_rc(value::TwoTerminalLCCLine) = value.rectifier_rc
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_xc`."""
-get_rectifier_xc(value::TwoTerminalLCCLine) = get_value(value, Val(:rectifier_xc), Val(:ohm))
+get_rectifier_xc(value::TwoTerminalLCCLine) = value.rectifier_xc
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_base_voltage`."""
 get_rectifier_base_voltage(value::TwoTerminalLCCLine) = value.rectifier_base_voltage
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_bridges`."""
@@ -264,9 +264,9 @@ get_inverter_bridges(value::TwoTerminalLCCLine) = value.inverter_bridges
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_extinction_angle_limits`."""
 get_inverter_extinction_angle_limits(value::TwoTerminalLCCLine) = value.inverter_extinction_angle_limits
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_rc`."""
-get_inverter_rc(value::TwoTerminalLCCLine) = get_value(value, Val(:inverter_rc), Val(:ohm))
+get_inverter_rc(value::TwoTerminalLCCLine) = value.inverter_rc
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_xc`."""
-get_inverter_xc(value::TwoTerminalLCCLine) = get_value(value, Val(:inverter_xc), Val(:ohm))
+get_inverter_xc(value::TwoTerminalLCCLine) = value.inverter_xc
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_base_voltage`."""
 get_inverter_base_voltage(value::TwoTerminalLCCLine) = value.inverter_base_voltage
 """Get [`TwoTerminalLCCLine`](@ref) `power_mode`."""
@@ -274,7 +274,7 @@ get_power_mode(value::TwoTerminalLCCLine) = value.power_mode
 """Get [`TwoTerminalLCCLine`](@ref) `switch_mode_voltage`."""
 get_switch_mode_voltage(value::TwoTerminalLCCLine) = value.switch_mode_voltage
 """Get [`TwoTerminalLCCLine`](@ref) `compounding_resistance`."""
-get_compounding_resistance(value::TwoTerminalLCCLine) = get_value(value, Val(:compounding_resistance), Val(:ohm))
+get_compounding_resistance(value::TwoTerminalLCCLine) = value.compounding_resistance
 """Get [`TwoTerminalLCCLine`](@ref) `min_compounding_voltage`."""
 get_min_compounding_voltage(value::TwoTerminalLCCLine) = value.min_compounding_voltage
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_transformer_ratio`."""
@@ -288,7 +288,7 @@ get_rectifier_tap_step(value::TwoTerminalLCCLine) = value.rectifier_tap_step
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_delay_angle`."""
 get_rectifier_delay_angle(value::TwoTerminalLCCLine) = value.rectifier_delay_angle
 """Get [`TwoTerminalLCCLine`](@ref) `rectifier_capacitor_reactance`."""
-get_rectifier_capacitor_reactance(value::TwoTerminalLCCLine) = get_value(value, Val(:rectifier_capacitor_reactance), Val(:ohm))
+get_rectifier_capacitor_reactance(value::TwoTerminalLCCLine) = value.rectifier_capacitor_reactance
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_transformer_ratio`."""
 get_inverter_transformer_ratio(value::TwoTerminalLCCLine) = value.inverter_transformer_ratio
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_tap_setting`."""
@@ -300,7 +300,7 @@ get_inverter_tap_step(value::TwoTerminalLCCLine) = value.inverter_tap_step
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_extinction_angle`."""
 get_inverter_extinction_angle(value::TwoTerminalLCCLine) = value.inverter_extinction_angle
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_capacitor_reactance`."""
-get_inverter_capacitor_reactance(value::TwoTerminalLCCLine) = get_value(value, Val(:inverter_capacitor_reactance), Val(:ohm))
+get_inverter_capacitor_reactance(value::TwoTerminalLCCLine) = value.inverter_capacitor_reactance
 """Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
 get_active_power_limits_from(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva))
 """Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
@@ -325,7 +325,7 @@ set_arc!(value::TwoTerminalLCCLine, val) = value.arc = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
 set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `r`."""
-set_r!(value::TwoTerminalLCCLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
+set_r!(value::TwoTerminalLCCLine, val) = value.r = val
 """Set [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
 set_transfer_setpoint!(value::TwoTerminalLCCLine, val) = value.transfer_setpoint = val
 """Set [`TwoTerminalLCCLine`](@ref) `scheduled_dc_voltage`."""
@@ -335,9 +335,9 @@ set_rectifier_bridges!(value::TwoTerminalLCCLine, val) = value.rectifier_bridges
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_delay_angle_limits`."""
 set_rectifier_delay_angle_limits!(value::TwoTerminalLCCLine, val) = value.rectifier_delay_angle_limits = val
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_rc`."""
-set_rectifier_rc!(value::TwoTerminalLCCLine, val) = value.rectifier_rc = set_value(value, Val(:rectifier_rc), val, Val(:ohm))
+set_rectifier_rc!(value::TwoTerminalLCCLine, val) = value.rectifier_rc = val
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_xc`."""
-set_rectifier_xc!(value::TwoTerminalLCCLine, val) = value.rectifier_xc = set_value(value, Val(:rectifier_xc), val, Val(:ohm))
+set_rectifier_xc!(value::TwoTerminalLCCLine, val) = value.rectifier_xc = val
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_base_voltage`."""
 set_rectifier_base_voltage!(value::TwoTerminalLCCLine, val) = value.rectifier_base_voltage = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_bridges`."""
@@ -345,9 +345,9 @@ set_inverter_bridges!(value::TwoTerminalLCCLine, val) = value.inverter_bridges =
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_extinction_angle_limits`."""
 set_inverter_extinction_angle_limits!(value::TwoTerminalLCCLine, val) = value.inverter_extinction_angle_limits = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_rc`."""
-set_inverter_rc!(value::TwoTerminalLCCLine, val) = value.inverter_rc = set_value(value, Val(:inverter_rc), val, Val(:ohm))
+set_inverter_rc!(value::TwoTerminalLCCLine, val) = value.inverter_rc = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_xc`."""
-set_inverter_xc!(value::TwoTerminalLCCLine, val) = value.inverter_xc = set_value(value, Val(:inverter_xc), val, Val(:ohm))
+set_inverter_xc!(value::TwoTerminalLCCLine, val) = value.inverter_xc = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_base_voltage`."""
 set_inverter_base_voltage!(value::TwoTerminalLCCLine, val) = value.inverter_base_voltage = val
 """Set [`TwoTerminalLCCLine`](@ref) `power_mode`."""
@@ -355,7 +355,7 @@ set_power_mode!(value::TwoTerminalLCCLine, val) = value.power_mode = val
 """Set [`TwoTerminalLCCLine`](@ref) `switch_mode_voltage`."""
 set_switch_mode_voltage!(value::TwoTerminalLCCLine, val) = value.switch_mode_voltage = val
 """Set [`TwoTerminalLCCLine`](@ref) `compounding_resistance`."""
-set_compounding_resistance!(value::TwoTerminalLCCLine, val) = value.compounding_resistance = set_value(value, Val(:compounding_resistance), val, Val(:ohm))
+set_compounding_resistance!(value::TwoTerminalLCCLine, val) = value.compounding_resistance = val
 """Set [`TwoTerminalLCCLine`](@ref) `min_compounding_voltage`."""
 set_min_compounding_voltage!(value::TwoTerminalLCCLine, val) = value.min_compounding_voltage = val
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_transformer_ratio`."""
@@ -369,7 +369,7 @@ set_rectifier_tap_step!(value::TwoTerminalLCCLine, val) = value.rectifier_tap_st
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_delay_angle`."""
 set_rectifier_delay_angle!(value::TwoTerminalLCCLine, val) = value.rectifier_delay_angle = val
 """Set [`TwoTerminalLCCLine`](@ref) `rectifier_capacitor_reactance`."""
-set_rectifier_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.rectifier_capacitor_reactance = set_value(value, Val(:rectifier_capacitor_reactance), val, Val(:ohm))
+set_rectifier_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.rectifier_capacitor_reactance = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_transformer_ratio`."""
 set_inverter_transformer_ratio!(value::TwoTerminalLCCLine, val) = value.inverter_transformer_ratio = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_tap_setting`."""
@@ -381,7 +381,7 @@ set_inverter_tap_step!(value::TwoTerminalLCCLine, val) = value.inverter_tap_step
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_extinction_angle`."""
 set_inverter_extinction_angle!(value::TwoTerminalLCCLine, val) = value.inverter_extinction_angle = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_capacitor_reactance`."""
-set_inverter_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.inverter_capacitor_reactance = set_value(value, Val(:inverter_capacitor_reactance), val, Val(:ohm))
+set_inverter_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.inverter_capacitor_reactance = val
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
 set_active_power_limits_from!(value::TwoTerminalLCCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
