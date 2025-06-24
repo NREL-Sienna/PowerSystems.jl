@@ -1164,11 +1164,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["tertiary_turns_ratio"] = windv3
                 else
                     sub_data["primary_turns_ratio"] =
-                        windv1 / sub_data["base_voltage_primary"]
+                        transformer["WINDV1"] / sub_data["base_voltage_primary"]
                     sub_data["secondary_turns_ratio"] =
-                        windv2 / sub_data["base_voltage_secondary"]
+                        transformer["WINDV2"] / sub_data["base_voltage_secondary"]
                     sub_data["tertiary_turns_ratio"] =
-                        windv3 / sub_data["base_voltage_tertiary"]
+                        transformer["WINDV3"] / sub_data["base_voltage_tertiary"]
                 end
 
                 sub_data["circuit"] = strip(transformer["CKT"])
