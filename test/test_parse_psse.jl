@@ -364,6 +364,22 @@ end
     @test isapprox(tap, 0.979937; atol = 1e-6)  # Test corrected value matches PSSE
 end
 
+@testset "PSSE transformer 3w tap position correction testing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "case14_3wt_tap_correction";
+        force_build = true,
+    )
+    trf_3w = get_component(TapTransformer, sys, "BUS 109-BUS 104-BUS 107-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w)
+    tap2 = get_secondary_turns_ratio(trf_3w)
+    tap3 = get_tertiary_turns_ratio(trf_3w)
+
+    @test isapprox(tap1, 0.98750; atol = 1e-6)
+    @test isapprox(tap2, 0.97500; atol = 1e-6)
+    @test isapprox(tap3, 0.96250; atol = 1e-6)
+end
+
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
     sys =
         build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true)
