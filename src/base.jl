@@ -2960,3 +2960,5 @@ attributes.
 function get_forecast_summary_table(sys::System)
     return IS.get_forecast_summary_table(sys.data)
 end
+
+IS.get_base_component_type(sys::System) = Component

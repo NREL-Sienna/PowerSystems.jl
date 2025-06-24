@@ -7,7 +7,7 @@ end
 function Base.show(io::IO, sys::System)
     show_system_table(io, sys; backend = Val(:auto))
 
-    if IS.get_num_components(sys.data.components) > 0
+    if IS.get_num_components(sys) > 0
         show_components_table(io, sys; backend = Val(:auto))
     end
 
@@ -21,7 +21,7 @@ Base.show(io::IO, ::MIME"text/plain", sys::System) = show(io, sys)
 function Base.show(io::IO, ::MIME"text/html", sys::System)
     show_system_table(io, sys; backend = Val(:html), standalone = false)
 
-    if IS.get_num_components(sys.data.components) > 0
+    if get_num_components(sys) > 0
         show_components_table(
             io,
             sys;
@@ -44,7 +44,7 @@ end
 
 function show_system_table(io::IO, sys::System; kwargs...)
     header = ["Property", "Value"]
-    num_components = IS.get_num_components(sys.data.components)
+    num_components = get_num_components(sys)
     table = [
         "Name" isnothing(get_name(sys)) ? "" : get_name(sys)
         "Description" isnothing(get_description(sys)) ? "" : get_description(sys)
