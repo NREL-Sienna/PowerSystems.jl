@@ -339,8 +339,8 @@ end
 
     @test get_base_power(original_sys) == get_base_power(deserialized_sys)
     @test get_frequency(original_sys) == get_frequency(deserialized_sys)
-    @test IS.get_num_components(original_sys.data.components) ==
-          IS.get_num_components(deserialized_sys.data.components)
+    @test get_num_components(original_sys) ==
+          get_num_components(deserialized_sys)
 
     gen1_names = sort(get_name.(get_components(ThermalStandard, original_sys)))
     gen2_names = sort(get_name.(get_components(ThermalStandard, deserialized_sys)))
