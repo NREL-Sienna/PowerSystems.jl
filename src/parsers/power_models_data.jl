@@ -424,8 +424,10 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         )
 
         bus_number_to_bus[bus.number] = bus
-
-        add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+        # Multi-section dummy buses are in the dict, but should not be added to System
+        if !haskey(d, "skip_add")
+            add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+        end
     end
 
     if data["source_type"] == "pti" && haskey(data, "interarea_transfer")
@@ -1359,7 +1361,6 @@ function read_multisection_line!(
     end
 
     branch_data = data["branch"]
-
     for (_, d) in data["multisection_line"]
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
