@@ -370,7 +370,7 @@ end
         "case14_3wt_tap_correction";
         force_build = true,
     )
-    trf_3w = get_component(TapTransformer, sys, "BUS 109-BUS 104-BUS 107-i_1")
+    trf_3w = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
     tap1 = get_primary_turns_ratio(trf_3w)
     tap2 = get_secondary_turns_ratio(trf_3w)
     tap3 = get_tertiary_turns_ratio(trf_3w)

@@ -797,20 +797,16 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
 
                 windv1 = pop!(transformer, "WINDV1")
-                if abs(transformer["COD1"]) ∈ [1, 2] && transformer["CW"] ∈ [1, 3]
-                    tap_positions = collect(
-                        range(
-                            transformer["RMI1"],
-                            transformer["RMA1"];
-                            length = Int(transformer["NTP1"]),
-                        ),
-                    )
-                    closest_tap_ix = argmin(abs.(tap_positions .- windv1))
-                    if !isapprox(windv1, tap_positions[closest_tap_ix]; atol = 1e-5)
-                        @warn "Transformer winding tap setting is not on a step; converting original data ($windv1) to nearest step ($(tap_positions[closest_tap_ix]))"
-                        windv1 = tap_positions[closest_tap_ix]
-                    end
-                end
+                windv1 = apply_tap_correction!(
+                    windv1,
+                    transformer,
+                    "COD1",
+                    "RMI1",
+                    "RMA1",
+                    "NTP1",
+                    transformer["CW"],
+                    "primary",
+                )
                 sub_data["tap"] = windv1 / pop!(transformer, "WINDV2")
                 sub_data["shift"] = pop!(transformer, "ANG1")
 
