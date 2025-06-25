@@ -50,7 +50,11 @@ end
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
-    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    sys3 =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
+            PSSEParsingTestSystems,
+            "psse_ACTIVSg2000_sys",
+        )
     sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
@@ -354,8 +358,11 @@ end
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    sys =
-        build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true)
+    sys = @test_logs (:error,) match_mode = :any build_system(
+        PSSEParsingTestSystems,
+        "isolated_bus_test_system";
+        force_build = true,
+    )
     @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
     @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0

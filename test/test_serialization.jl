@@ -26,8 +26,15 @@ end
 end
 
 @testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_ACTIVSg2000_sys")
-    _, result = validate_serialization(sys)
+    sys =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any PSB.build_system(
+            PSB.MatpowerTestSystems,
+            "matpower_ACTIVSg2000_sys",
+        )
+    _, result =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any validate_serialization(
+            sys,
+        )
     @test result
 end
 
