@@ -163,15 +163,20 @@ end
 
 @testset "2000-Bus Parsing" begin
     test_dir = mktempdir()
-    texas2000_raw_file = joinpath(TAMU_DIR, "ACTIVSg2000.RAW")
-    texas2000_dyr_file = joinpath(PSSE_DYR_DIR, "ACTIVSg2000_dynamics.dyr")
-    sys = PSB.build_system(PSB.PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    sys =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
+            PSSEParsingTestSystems,
+            "psse_ACTIVSg2000_sys",
+        )
     for g in get_components(ThermalStandard, sys)
         @test !isnothing(get_dynamic_injector(g))
     end
     path = joinpath(test_dir, "test_dyn_system_serialization_2000.json")
     to_json(sys, path)
-    parsed_sys = System(path)
+    parsed_sys =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
+            path,
+        )
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 435
     for g in get_components(ThermalStandard, parsed_sys)
