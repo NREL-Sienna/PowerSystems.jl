@@ -890,7 +890,7 @@ function make_synchronous_condenser(
         available = Bool(d["gen_status"]),
         bus = bus,
         reactive_power = d["qg"] * base_conversion,
-        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        rating = d["qmax"] * base_conversion,
         reactive_power_limits = (
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
