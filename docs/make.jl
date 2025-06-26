@@ -29,7 +29,6 @@ pages = OrderedDict(
             "...parse data from MATPOWER or PSS/e files" => "how_to/parse_matpower_psse.md",
             "...parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
             "...build a `System` using .csv files" => "how_to/build_system_with_files.md",
-            "...parse tabular data from .csv files" => "how_to/parse_tabular_data.md",
             "...parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
             "...add an Operating Cost" => "how_to/add_cost_curve.md",
