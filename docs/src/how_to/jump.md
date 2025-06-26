@@ -4,35 +4,38 @@ This guide is for users who are interested in writing custom optimization proble
 
 This page shows a minimal example to develop a Economic Dispatch model. The code shows the stages to develop modeling code:
 
-This page shows a minimal example to develop a Economic Dispatch model. The code shows the stages to develop modeling code:
-
  1. Make the data set from power flow and time series data,
  2. Serialize the system data,
  3. Pass the data and algorithm to the model.
 
 One of the main uses of `PowerSystems.jl` is not having re-run the data generation for every model execution. The model code shows an example of populating the constraints and cost functions using accessor functions inside the model function. The example concludes by reading the data created earlier and passing the algorithm with the data.
 
+Start by loading required packages:
+
 ```@repl using_jump
 using PowerSystems
-const PSY = PowerSystems
 using JuMP
 using Ipopt
 using PowerSystemCaseBuilder
 using Dates
 ```
 
-!!! note
-    
-    `PowerSystemCaseBuilder.jl` is a helper library that makes it easier to reproduce examples in the documentation and tutorials. Normally you would pass your local files to create the system data instead of calling the function `build_system`.
-    For more details visit [PowerSystemCaseBuilder Documentation](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable).
-
-Next, we define the optimization problem using [`JuMP`](https://jump.dev/JuMP.jl/stable/)'s syntax.
-The constraints include each generator's minimum and maximum active power output as well as the system power balance equation, minimizing the operating cost for each step in the 24-hour horizon:
+For this example, we'll load an existing data set using
+[`PowerSystemCaseBuilder.jl`](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable),
+which is a helper library that makes it easier to reproduce examples.
+Normally you would pass your local files to create the system data instead of calling the function `build_system`.
+We also use [`transform_single_time_series!`](@ref) to format time-series data as forecasts for
+this problem:
 
 ```@repl using_jump
 system_data = build_system(PSISystems, "c_sys5_pjm")
 transform_single_time_series!(system_data, Hour(24), Hour(24))
+```
 
+Next, we define the custom optimization problem using [`JuMP`](https://jump.dev/JuMP.jl/stable/)'s syntax.
+The constraints include each generator's minimum and maximum active power output as well as the system power balance equation, minimizing the operating cost for each step in the 24-hour horizon:
+
+```@repl using_jump
 function ed_model(system::System, optimizer, load_scaling_factor::Float64 = 1.0)
     ed_m = Model(optimizer)
     time_periods = 1:24
