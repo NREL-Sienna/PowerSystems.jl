@@ -25,7 +25,6 @@ pages = OrderedDict(
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
-            "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "...parse data from MATPOWER or PSS/e files" => "how_to/parse_matpower_psse.md",
             "...parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
             "...build a `System` using .csv files" => "how_to/build_system_with_files.md",
@@ -39,7 +38,7 @@ pages = OrderedDict(
             "...write and read data with a JSON" => "how_to/serialize_data.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...create Hydro Power datasets" => "how_to/create_hydro_datasets.md",
-            "...handle 3 WT Transformers" => "how_to/handle_3W_transformers.md",
+            "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
             "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
             "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
             "...migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md"
