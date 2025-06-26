@@ -574,6 +574,33 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 end
 
+function apply_tap_correction!(
+    windv_value,
+    transformer,
+    cod_key,
+    rmi_key,
+    rma_key,
+    ntp_key,
+    cw_value,
+    winding_name,
+)
+    if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 3]
+        tap_positions = collect(
+            range(
+                transformer[rmi_key],
+                transformer[rma_key];
+                length = Int(transformer[ntp_key]),
+            ),
+        )
+        closest_tap_ix = argmin(abs.(tap_positions .- windv_value))
+        if !isapprox(windv_value, tap_positions[closest_tap_ix]; atol = 1e-5)
+            @warn "Transformer $winding_name winding tap setting is not on a step; $windv_value set to $(tap_positions[closest_tap_ix])"
+            return tap_positions[closest_tap_ix]
+        end
+    end
+    return windv_value
+end
+
 """
     _psse2pm_transformer!(pm_data, pti_data)
 
@@ -770,20 +797,16 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
 
                 windv1 = pop!(transformer, "WINDV1")
-                if abs(transformer["COD1"]) ∈ [1, 2] && transformer["CW"] ∈ [1, 3]
-                    tap_positions = collect(
-                        range(
-                            transformer["RMI1"],
-                            transformer["RMA1"];
-                            length = Int(transformer["NTP1"]),
-                        ),
-                    )
-                    closest_tap_ix = argmin(abs.(tap_positions .- windv1))
-                    if !isapprox(windv1, tap_positions[closest_tap_ix]; atol = 1e-5)
-                        @warn "Transformer winding tap setting is not on a step; converting original data ($windv1) to nearest step ($(tap_positions[closest_tap_ix]))"
-                        windv1 = tap_positions[closest_tap_ix]
-                    end
-                end
+                windv1 = apply_tap_correction!(
+                    windv1,
+                    transformer,
+                    "COD1",
+                    "RMI1",
+                    "RMA1",
+                    "NTP1",
+                    transformer["CW"],
+                    "primary",
+                )
                 sub_data["tap"] = windv1 / pop!(transformer, "WINDV2")
                 sub_data["shift"] = pop!(transformer, "ANG1")
 
@@ -1096,10 +1119,45 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["secondary_correction_table"] = transformer["TAB2"]
                 sub_data["tertiary_correction_table"] = transformer["TAB3"]
 
+                windv1 = transformer["WINDV1"]
+                windv2 = transformer["WINDV2"]
+                windv3 = transformer["WINDV3"]
+
+                windv1 = apply_tap_correction!(
+                    windv1,
+                    transformer,
+                    "COD1",
+                    "RMI1",
+                    "RMA1",
+                    "NTP1",
+                    transformer["CW"],
+                    "primary",
+                )
+                windv2 = apply_tap_correction!(
+                    windv2,
+                    transformer,
+                    "COD2",
+                    "RMI2",
+                    "RMA2",
+                    "NTP2",
+                    transformer["CW"],
+                    "secondary",
+                )
+                windv3 = apply_tap_correction!(
+                    windv3,
+                    transformer,
+                    "COD3",
+                    "RMI3",
+                    "RMA3",
+                    "NTP3",
+                    transformer["CW"],
+                    "tertiary",
+                )
+
                 if transformer["CW"] == 1
-                    sub_data["primary_turns_ratio"] = transformer["WINDV1"]
-                    sub_data["secondary_turns_ratio"] = transformer["WINDV2"]
-                    sub_data["tertiary_turns_ratio"] = transformer["WINDV3"]
+                    sub_data["primary_turns_ratio"] = windv1
+                    sub_data["secondary_turns_ratio"] = windv2
+                    sub_data["tertiary_turns_ratio"] = windv3
                 else
                     sub_data["primary_turns_ratio"] =
                         transformer["WINDV1"] / sub_data["base_voltage_primary"]
