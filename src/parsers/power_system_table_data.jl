@@ -776,7 +776,7 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
     elseif gen_type == SynchronousCondenser
-        generator = make_synchronous_condenser(gen, bus)
+        generator = make_synchronous_condenser_generator(gen, bus)
     elseif gen_type <: HydroGen
         generator =
             make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
@@ -1100,7 +1100,7 @@ function make_reactive_params(
     return reactive_power, reactive_power_limits
 end
 
-function make_synchronous_condenser(
+function make_synchronous_condenser_generator(
     gen,
     bus,
 )
@@ -1109,8 +1109,6 @@ function make_synchronous_condenser(
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
-
-    println(active_power_limits, "   ", reactive_power_limits, "   ", rating)
 
     return SynchronousCondenser(;
         name = gen.name,
