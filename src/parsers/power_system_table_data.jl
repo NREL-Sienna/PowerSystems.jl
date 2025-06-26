@@ -702,11 +702,13 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                sys_gen = get_component(
-                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
-                    sys,
-                    gen.name,
-                )
+                sys_gen = get_component(gen_type, sys, gen.name)
+                if isnothing(sys_gen)
+                    error(
+                        "Failed to find generator: type = $gen_type name = $(gen.name) " *
+                        "fuel = $(gen.fuel) unit_type = $(gen.unit_type)",
+                    )
+                end
                 area = string(
                     buses[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1],
                 )
