@@ -767,7 +767,7 @@ end
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
     generator = nothing
     gen_type =
-        get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
+        get_generator_type(uppercase(gen.fuel), get(gen, :unit_type, nothing), data.generator_mapping)
 
     if isnothing(gen_type)
         @error "Cannot recognize generator type" gen.name
@@ -775,6 +775,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
+    elseif gen_type == SynchronousCondenser
+        generator = make_synchronous_condenser(gen, bus)
     elseif gen_type <: HydroGen
         generator =
             make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
@@ -1096,6 +1098,29 @@ function make_reactive_params(
             (min = reactive_power_limits_min, max = reactive_power_limits_max)
     end
     return reactive_power, reactive_power_limits
+end
+
+function make_synchronous_condenser(
+    gen,
+    bus,
+)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    rating = calculate_rating(active_power_limits,reactive_power_limits)
+    base_power = gen.base_mva
+
+    println(active_power_limits, "   ", reactive_power_limits, "   ", rating)
+
+    return SynchronousCondenser(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        reactive_power = reactive_power,
+        rating = rating,
+        reactive_power_limits = reactive_power_limits,
+        base_power = base_power,
+    )
 end
 
 function make_thermal_generator(
