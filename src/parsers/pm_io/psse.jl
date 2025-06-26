@@ -1536,80 +1536,6 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     return
 end
 
-function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::Bool)
-    @info "Parsing PSS(R)E Multi-section Lines data into a PowerModels Dict..."
-
-    # Lookup for branches status (br_status)
-    branch_status_lookup = Dict{Tuple{Int, Int, String}, Int}()
-    if haskey(pm_data, "branch")
-        for branch in pm_data["branch"]
-            branch_id = branch["source_id"][end]
-            branch_status_lookup[(branch["f_bus"], branch["t_bus"], branch_id)] =
-                branch["br_status"]
-        end
-    end
-
-    pm_data["multisection_line"] = []
-
-    if haskey(pti_data, "MULTI-SECTION LINE")
-        for multisec_line in pti_data["MULTI-SECTION LINE"]
-            sub_data = Dict{String, Any}()
-
-            sub_data["f_bus"] = pop!(multisec_line, "I")
-            sub_data["t_bus"] = pop!(multisec_line, "J")
-            if pm_data["has_isolated_buses"]
-                push!(pm_data["connected_buses"], sub_data["f_bus"])
-                push!(pm_data["connected_buses"], sub_data["t_bus"])
-            end
-            sub_data["id"] = pop!(multisec_line, "ID")
-            sub_data["section_number"] = pop!(multisec_line, "MET")
-
-            dummy_buses =
-                Dict(k => v for (k, v) in multisec_line if startswith(k, "DUM") && v != "")
-            for (k, v) in dummy_buses
-                pm_data["bus"][v]["skip_add"] = true
-            end
-            sub_data["ext"] = dummy_buses
-
-            # Check if the multisection line is available based on branch status
-            # Multi-section lines are treated as a single entity regarding its status
-            sub_data["available"] =
-                get(
-                    branch_status_lookup,
-                    (sub_data["f_bus"], sub_data["t_bus"], sub_data["id"]),
-                    1,
-                ) == 1
-            sub_data["source_id"] =
-                ["multisection_line", sub_data["f_bus"], sub_data["t_bus"]]
-            sub_data["index"] = length(pm_data["multisection_line"]) + 1
-
-            if import_all
-                _import_remaining_keys!(sub_data, multisec_line)
-            end
-            # If from or to bus is isolated, make multi-section line unavailabe:
-            bus_data = pm_data["bus"]
-            from_bus_no = sub_data["f_bus"]
-            to_bus_no = sub_data["t_bus"]
-            from_bus = bus_data[from_bus_no]
-            to_bus = bus_data[to_bus_no]
-            if from_bus["bus_type"] == 4 || to_bus["bus_type"] == 4
-                sub_data["available"] = 0
-            end
-            if from_bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], from_bus_no)
-                from_bus["bus_status"] = false
-            end
-            if to_bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], to_bus_no)
-                to_bus["bus_status"] = false
-            end
-
-            push!(pm_data["multisection_line"], sub_data)
-        end
-    end
-    return
-end
-
 function sort_values_by_key_prefix(imp_correction::Dict{String, <:Any}, prefix::String)
     sorted_values = [
         last(pair) for pair in sort(
@@ -1695,7 +1621,6 @@ function _pti_to_powermodels!(
     _psse2pm_generator!(pm_data, pti_data, import_all)
     _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
-    _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
