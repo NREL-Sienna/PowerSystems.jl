@@ -767,7 +767,7 @@ end
 function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
     generator = nothing
     gen_type =
-        get_generator_type(uppercase(gen.fuel), get(gen, :unit_type, nothing), data.generator_mapping)
+        get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
 
     if isnothing(gen_type)
         @error "Cannot recognize generator type" gen.name
@@ -1107,7 +1107,7 @@ function make_synchronous_condenser(
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    rating = calculate_rating(active_power_limits,reactive_power_limits)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
     base_power = gen.base_mva
 
     println(active_power_limits, "   ", reactive_power_limits, "   ", rating)
