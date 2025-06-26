@@ -1,4 +1,4 @@
-# [Handle 3-windig transformer data](@id 3wtdata)
+# [Handle 3-winding transformer data](@id 3wtdata)
 
 PowerSystems.jl stores the topological data for the [`Transformer3W`](@ref) as the common equivalent circuit in the star (or wye) configuration. In this representation, the series impedances of each winding are transformed into an equivalent star network with a common star bus.
 
@@ -16,7 +16,7 @@ graph TD
     end
 ```
 
-## Representing 3-windig transformer PSSe Data in PowerSystems.jl
+## Representing 3-winding transformer PSSe Data in `PowerSystems.jl`
 
 PSS®E represents a [`Transformer3W`](@ref) as a single element with a dedicated data record. This record contains several fields that define the transformer's characteristics and connections. The key information stored includes:
 
