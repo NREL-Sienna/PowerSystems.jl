@@ -25,23 +25,31 @@ pages = OrderedDict(
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
-            "...parse data from MATPOWER or PSS/e files" => "how_to/parse_matpower_psse.md",
-            "...parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
-            "...build a `System` using .csv files" => "how_to/build_system_with_files.md",
-            "...parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
+            "...import data" => Any[
+                "Parse a MATPOWER or PSS/e file" => "how_to/parse_matpower_psse.md",
+                "Parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
+                "Build a `System` using .csv files" => "how_to/build_system_with_files.md",
+                "Save and read data with a JSON" => "how_to/serialize_data.md",
+            ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
-            "...add an Operating Cost" => "how_to/add_cost_curve.md",
-            "...add a market bid" => "how_to/market_bid_cost.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
+            "...add time-series data" => Any[
+                "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
+                "Improve performance with time series data" => "how_to/improve_ts_performance.md",
+            ],
+            "...add cost data" => Any[
+                "Add an Operating Cost" => "how_to/add_cost_curve.md",
+                "Add a market bid" => "how_to/market_bid_cost.md",
+            ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
-            "...improve performance with time series data" => "how_to/improve_ts_performance.md",
-            "...write and read data with a JSON" => "how_to/serialize_data.md",
-            "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...create Hydro Power datasets" => "how_to/create_hydro_datasets.md",
             "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
             "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
-            "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
-            "...migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md"
+            "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
+            "...update to a new `PowerSystems.jl` version" => Any[
+                "Migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
+                "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md"
+            ],
         ],
         "Explanation" =>
             Any[
