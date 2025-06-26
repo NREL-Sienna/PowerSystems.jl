@@ -860,6 +860,48 @@ function make_thermal_gen(
     return thermal_gen
 end
 
+function make_synchronous_condenser(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    ext = Dict{String, Float64}()
+    if haskey(d, "r_source") && haskey(d, "x_source")
+        ext["r"] = d["r_source"]
+        ext["x"] = d["x_source"]
+    end
+
+    if haskey(d, "rt_source") && haskey(d, "xt_source")
+        ext["rt"] = d["rt_source"]
+        ext["xt"] = d["xt_source"]
+    end
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
+    synchronous_condenser = SynchronousCondenser(;
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        reactive_power = d["qg"] * base_conversion,
+        rating = d["qmax"] * base_conversion,
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        base_power = mbase,
+        ext = ext,
+    )
+
+    return synchronous_condenser
+end
+
 """
 Transfer generators to ps_dict according to their classification
 """
@@ -896,6 +938,8 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == SynchronousCondenser
+            generator = make_synchronous_condenser(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == EnergyReservoirStorage
             @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue

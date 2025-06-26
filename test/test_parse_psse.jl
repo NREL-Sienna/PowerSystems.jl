@@ -174,6 +174,15 @@ end
     @test get_control_mode(facts) == FACTSOperationModes.NML
 end
 
+@testset "PSSE Generators as Synchronous Condensers" begin
+    sys = build_system(PSSEParsingTestSystems, "case11_with_synchronous_condensers")
+    sc_gen = get_component(SynchronousCondenser, sys)
+
+    @test !hasproperty(sc_gen, :active_power)
+    @test get_available(sc_gen) == true
+    @test get_bustype(get_bus(sc_gen)) == ACBusTypes.PV
+end
+
 @testset "PSSE Switches & Breakers Parsing" begin
     sys = build_system(PSSEParsingTestSystems, "pti_case24_sys")
     line1 = first(get_components(Line, sys))

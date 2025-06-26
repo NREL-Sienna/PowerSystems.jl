@@ -306,6 +306,11 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["r_source"] = pop!(gen, "ZR")
             sub_data["x_source"] = pop!(gen, "ZX")
 
+            if sub_data["gen_status"] == 1 && sub_data["pg"] == 0.0 &&
+               pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2
+                sub_data["fuel"] = "SYNC_COND"
+                sub_data["type"] = "SYNC_COND"
+            end
             # Default Cost functions
             sub_data["model"] = 2
             sub_data["startup"] = 0.0
