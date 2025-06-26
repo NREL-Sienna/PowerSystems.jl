@@ -25,7 +25,6 @@ pages = OrderedDict(
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
-            "...install PowerSystems.jl" => "how_to/install.md",
             "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
             "...parse data from MATPOWER or PSS/e files" => "how_to/parse_matpower_psse.md",
             "...parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
@@ -33,8 +32,6 @@ pages = OrderedDict(
             "...parse tabular data from .csv files" => "how_to/parse_tabular_data.md",
             "...parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
-            "...get all the buses in a system" => "how_to/get_buses.md",
-            "...get the available generators in a system" => "how_to/get_available_generators.md",
             "...add an Operating Cost" => "how_to/add_cost_curve.md",
             "...add a market bid" => "how_to/market_bid_cost.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
@@ -68,8 +65,6 @@ pages = OrderedDict(
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
             ]
-
-
 )
 
 pages["Model Library"] = make_model_library(
