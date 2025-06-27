@@ -42,13 +42,13 @@ pages = OrderedDict(
                 "Add a market bid" => "how_to/market_bid_cost.md",
             ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
-            "...create Hydro Power datasets" => "how_to/create_hydro_datasets.md",
+            "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
             "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
             "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...update to a new `PowerSystems.jl` version" => Any[
+                "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md",
                 "Migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
-                "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md"
             ],
         ],
         "Explanation" =>
@@ -89,6 +89,7 @@ pages["Model Library"] = make_model_library(
                   PSY.OperationalCost,
                   PSY.DynamicInverter,
                   PSY.DynamicGenerator,
+                  PSY.HydroReservoir,
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
@@ -104,6 +105,7 @@ pages["Model Library"] = make_model_library(
         "LoadCost" =>"model_library/load_cost.md",
         "MarketBidCost" =>"model_library/market_bid_cost.md",
         "ImportExportCost" =>"model_library/import_export_cost.md"],
+        "HydroReservoir" => "model_library/hydro_reservoir.md",
         )
 )
 
