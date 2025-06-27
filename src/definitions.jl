@@ -157,7 +157,13 @@ IS.@scoped_enum(
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
-IS.@scoped_enum(ReservoirDataType, USABLE_VOLUME = 1, TOTAL_VOLUME = 2, HEAD = 3,)
+IS.@scoped_enum(
+    ReservoirDataType,
+    USABLE_VOLUME = 1,
+    TOTAL_VOLUME = 2,
+    HEAD = 3,
+    ENERGY = 4,
+)
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 const DEFAULT_BASE_MVA = 100.0

@@ -75,4 +75,14 @@
             gen2,
         ),
     ) == 0
+    planned_outages = collect(get_supplemental_attributes(PlannedOutage, gen2))
+    @test !isempty(planned_outages)
+    for outage in planned_outages
+        ts_keys = get_time_series_keys(outage)
+        @test !isempty(ts_keys)
+        for key in ts_keys
+            remove_time_series!(sys, key.time_series_type, outage, key.name)
+        end
+        @test isempty(get_time_series_keys(outage))
+    end
 end

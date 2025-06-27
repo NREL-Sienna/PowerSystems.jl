@@ -506,6 +506,9 @@ export get_base_power_12
 export get_base_power_13
 export get_base_power_23
 export get_base_voltage
+export get_base_voltage_primary
+export get_base_voltage_secondary
+export get_base_voltage_tertiary
 export get_battery_resistance
 export get_battery_voltage
 export get_bias
@@ -543,7 +546,6 @@ export get_dc_setpoint_to
 export get_dc_voltage_control_from
 export get_dc_voltage_control_to
 export get_delta_t
-export get_delta_winding_connection
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
@@ -630,7 +632,6 @@ export get_load_response
 export get_load_zone
 export get_loss
 export get_loss_function
-export get_lower_bound_active_power
 export get_lv
 export get_magnitude
 export get_max_active_power
@@ -759,7 +760,6 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
-export get_upper_bound_active_power
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1169,6 +1169,9 @@ export set_base_power_12!
 export set_base_power_13!
 export set_base_power_23!
 export set_base_voltage!
+export set_base_voltage_primary!
+export set_base_voltage_secondary!
+export set_base_voltage_tertiary!
 export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
@@ -1206,7 +1209,6 @@ export set_dc_setpoint_to!
 export set_dc_voltage_control_from!
 export set_dc_voltage_control_to!
 export set_delta_t!
-export set_delta_winding_connection!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
@@ -1293,7 +1295,6 @@ export set_load_response!
 export set_load_zone!
 export set_loss!
 export set_loss_function!
-export set_lower_bound_active_power!
 export set_lv!
 export set_magnitude!
 export set_max_active_power!
@@ -1422,7 +1423,6 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
-export set_upper_bound_active_power!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!

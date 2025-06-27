@@ -220,6 +220,7 @@ function System(
             number = 0,
             name = "init",
             bustype = ACBusTypes.REF,
+            available = true,
             angle = 0.0,
             magnitude = 0.0,
             voltage_limits = (min = 0.0, max = 0.0),
@@ -611,6 +612,41 @@ function with_units_base(f::Function, sys::System, units::Union{UnitSystem, Stri
     end
 end
 
+_set_units_base!(c::Component, settings::String) =
+    _set_units_base!(c::Component, UNIT_SYSTEM_MAPPING[uppercase(settings)])
+
+function _set_units_base!(c::Component, settings::UnitSystem)
+    units_info = get_internal(c).units_info
+    old_base_value = units_info.base_value
+    set_units_setting!(
+        c,
+        SystemUnitsSettings(old_base_value, settings),
+    )
+    return
+end
+
+"""
+A "context manager" that sets the [`Component`](@ref)'s [units base](@ref per_unit) to the
+given value, executes the function, then sets the units base back.
+
+# Examples
+```julia
+active_power_mw = with_units_base(component, UnitSystem.NATURAL_UNITS) do
+    get_active_power(component)
+end
+# now active_power_mw is in natural units no matter what units base the system is in
+```
+"""
+function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
+    old_unit_system = get_internal(c).units_info.unit_system
+    _set_units_base!(c, units)
+    try
+        f()
+    finally
+        _set_units_base!(c, old_unit_system)
+    end
+end
+
 function get_units_setting(component::T) where {T <: Component}
     return get_units_info(get_internal(component))
 end
@@ -764,6 +800,44 @@ function _add_service!(
         throw_if_not_attached(device, sys)
     end
 
+    set_units_setting!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+
+    for device in contributing_devices
+        add_service_internal!(device, service)
+    end
+end
+
+function _validate_types_for_interface(sys::System, contributing_devices)
+    device_types = Set{DataType}()
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Branch)
+            throw(ArgumentError("contributing_devices must be of type Branch"))
+        end
+        push!(device_types, device_type)
+        throw_if_not_attached(device, sys)
+    end
+    if length(device_types) > 1 && AreaInterchange in device_types
+        throw(
+            ArgumentError(
+                "contributing_devices can't mix AreaInterchange with other Branch types",
+            ),
+        )
+    end
+    return
+end
+
+function _add_service!(
+    sys::System,
+    service::TransmissionInterface,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
+    _validate_types_for_interface(sys, contributing_devices)
     set_units_setting!(service, sys.units_settings)
     # Since this isn't atomic, order is important. Add to system before adding to devices.
     IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
@@ -1640,15 +1714,15 @@ function clear_time_series!(sys::System)
 end
 
 """
-Remove the time series data for a component and time series type.
+Remove the time series data for a component or supplemental attribute and time series type.
 """
 function remove_time_series!(
     sys::System,
     ::Type{T},
-    component::Component,
+    owner::Union{Component, SupplementalAttribute},
     name::String,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(sys.data, T, component, name)
+    return IS.remove_time_series!(sys.data, T, owner, name)
 end
 
 """
@@ -1845,7 +1919,7 @@ Check system consistency and validity.
 function check(sys::System)
     buses = get_components(ACBus, sys)
     slack_bus_check(buses)
-    buscheck(buses)
+    buscheck(sys)
     critical_components_check(sys)
     adequacy_check(sys)
     check_subsystems(sys)
@@ -2315,6 +2389,19 @@ function check_component_removal(sys::System, static_injector::StaticInjection)
         name = get_name(static_injector)
         throw(ArgumentError("$name cannot be removed with an attached dynamic injector"))
     end
+end
+
+function check_component_removal(sys::System, area::Area)
+    for interchange in get_components(AreaInterchange, sys)
+        if area in [get_from_area(interchange), get_to_area(interchange)]
+            throw(
+                ArgumentError(
+                    "Area $(summary(area)) cannot be removed with attached AreaInterchange: $(summary(interchange))",
+                ),
+            )
+        end
+    end
+    return
 end
 
 """
@@ -2898,3 +2985,5 @@ attributes.
 function get_forecast_summary_table(sys::System)
     return IS.get_forecast_summary_table(sys.data)
 end
+
+IS.get_base_component_type(sys::System) = Component

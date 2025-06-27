@@ -2,6 +2,7 @@ nodes_OMIB = [
     ACBus(
         1, #number
         "Bus 1", #Name
+        true, #available
         "REF", #BusType (REF, PV, PQ)
         0, #Angle in radians
         1.06, #Voltage in pu
@@ -10,7 +11,7 @@ nodes_OMIB = [
         nothing,
         nothing,
     ), #Base voltage in kV
-    ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
+    ACBus(2, "Bus 2", true, "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
 static_gen = ThermalStandard(;

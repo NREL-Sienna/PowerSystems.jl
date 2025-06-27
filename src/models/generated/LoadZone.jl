@@ -58,17 +58,17 @@ end
 """Get [`LoadZone`](@ref) `name`."""
 get_name(value::LoadZone) = value.name
 """Get [`LoadZone`](@ref) `peak_active_power`."""
-get_peak_active_power(value::LoadZone) = get_value(value, value.peak_active_power)
+get_peak_active_power(value::LoadZone) = get_value(value, Val(:peak_active_power), Val(:mva))
 """Get [`LoadZone`](@ref) `peak_reactive_power`."""
-get_peak_reactive_power(value::LoadZone) = get_value(value, value.peak_reactive_power)
+get_peak_reactive_power(value::LoadZone) = get_value(value, Val(:peak_reactive_power), Val(:mva))
 """Get [`LoadZone`](@ref) `ext`."""
 get_ext(value::LoadZone) = value.ext
 """Get [`LoadZone`](@ref) `internal`."""
 get_internal(value::LoadZone) = value.internal
 
 """Set [`LoadZone`](@ref) `peak_active_power`."""
-set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, val)
+set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, Val(:peak_active_power), val, Val(:mva))
 """Set [`LoadZone`](@ref) `peak_reactive_power`."""
-set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, val)
+set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, Val(:peak_reactive_power), val, Val(:mva))
 """Set [`LoadZone`](@ref) `ext`."""
 set_ext!(value::LoadZone, val) = value.ext = val

@@ -50,7 +50,11 @@ end
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
-    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    sys3 =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
+            PSSEParsingTestSystems,
+            "psse_ACTIVSg2000_sys",
+        )
     sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
@@ -70,7 +74,7 @@ end
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
     tw3 = only(tw3s)
-    @test get_b(tw3) == 0.00251
+    @test isapprox(get_b(tw3), 0.0017430555555555556)
     @test get_primary_turns_ratio(tw3) == 1.0
     @test get_rating(tw3) == 0.0
 
@@ -168,6 +172,15 @@ end
     @test get_max_shunt_current(facts) == 9999.0
     @test get_reactive_power_required(facts) > 0
     @test get_control_mode(facts) == FACTSOperationModes.NML
+end
+
+@testset "PSSE Generators as Synchronous Condensers" begin
+    sys = build_system(PSSEParsingTestSystems, "case11_with_synchronous_condensers")
+    sc_gen = get_component(SynchronousCondenser, sys)
+
+    @test !hasproperty(sc_gen, :active_power)
+    @test get_available(sc_gen) == true
+    @test get_bustype(get_bus(sc_gen)) == ACBusTypes.PV
 end
 
 @testset "PSSE Switches & Breakers Parsing" begin
@@ -339,8 +352,8 @@ end
 
     @test get_base_power(original_sys) == get_base_power(deserialized_sys)
     @test get_frequency(original_sys) == get_frequency(deserialized_sys)
-    @test IS.get_num_components(original_sys.data.components) ==
-          IS.get_num_components(deserialized_sys.data.components)
+    @test get_num_components(original_sys) ==
+          get_num_components(deserialized_sys)
 
     gen1_names = sort(get_name.(get_components(ThermalStandard, original_sys)))
     gen2_names = sort(get_name.(get_components(ThermalStandard, deserialized_sys)))
@@ -351,4 +364,22 @@ end
     @test sa1_y == sa2_y
 
     @test IS.compare_values(original_sys, deserialized_sys)
+end
+
+@testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
+    sys = @test_logs (:error,) match_mode = :any build_system(
+        PSSEParsingTestSystems,
+        "isolated_bus_test_system";
+        force_build = true,
+    )
+    @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
+    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
+    @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0
+    @test length(get_components(x -> get_available(x), Generator, sys)) == 1  #Gen at reference bus
+    @test length(get_components(x -> get_available(x), Branch, sys)) == 0
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.ISOLATED, ACBus, sys)) ==
+          1
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.REF, ACBus, sys)) == 1
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 4
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
 end

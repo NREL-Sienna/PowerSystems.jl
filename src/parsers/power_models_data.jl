@@ -93,6 +93,10 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
             branch["base_power"] = pm_data.data["baseMVA"]
             branch["ext"] = Dict{String, Any}()
             @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) has different voltage levels endpoints (from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV) which exceed the $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% threshold; converting to transformer."
+            if !haskey(branch, "base_voltage_from")
+                branch["base_voltage_from"] = f_bus_bvolt
+                branch["base_voltage_to"] = t_bus_bvolt
+            end
         end
     end
 end
@@ -291,6 +295,7 @@ function make_bus(bus_dict::Dict{String, Any})
     bus = ACBus(
         bus_dict["number"],
         bus_dict["name"],
+        bus_dict["available"],
         bus_dict["bustype"],
         bus_dict["angle"],
         bus_dict["voltage"],
@@ -313,6 +318,7 @@ function make_bus(
         Dict{String, Any}(
             "name" => bus_name,
             "number" => bus_number,
+            "available" => d["bus_status"],
             "bustype" => bus_types[d["bus_type"]],
             "angle" => d["va"],
             "voltage" => d["vm"],
@@ -341,6 +347,7 @@ end
 
 function read_bus!(sys::System, data::Dict; kwargs...)
     @info "Reading bus data"
+
     bus_number_to_bus = Dict{Int, ACBus}()
 
     bus_types = instances(ACBusTypes)
@@ -406,7 +413,9 @@ function read_bus!(sys::System, data::Dict; kwargs...)
             end
         end
         set_ext!(area, ext)
-
+        if !haskey(d, "bus_status")
+            d["bus_status"] = true
+        end
         bus = make_bus(bus_name, bus_number, d, bus_types, area)
         has_component(ACBus, sys, bus_name) && throw(
             DataFormatError(
@@ -415,8 +424,10 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         )
 
         bus_number_to_bus[bus.number] = bus
-
-        add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+        # Multi-section dummy buses are in the dict, but should not be added to System
+        if !haskey(d, "skip_add")
+            add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
+        end
     end
 
     if data["source_type"] == "pti" && haskey(data, "interarea_transfer")
@@ -849,6 +860,48 @@ function make_thermal_gen(
     return thermal_gen
 end
 
+function make_synchronous_condenser(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    ext = Dict{String, Float64}()
+    if haskey(d, "r_source") && haskey(d, "x_source")
+        ext["r"] = d["r_source"]
+        ext["x"] = d["x_source"]
+    end
+
+    if haskey(d, "rt_source") && haskey(d, "xt_source")
+        ext["rt"] = d["rt_source"]
+        ext["xt"] = d["xt_source"]
+    end
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
+    synchronous_condenser = SynchronousCondenser(;
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        reactive_power = d["qg"] * base_conversion,
+        rating = d["qmax"] * base_conversion,
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        base_power = mbase,
+        ext = ext,
+    )
+
+    return synchronous_condenser
+end
+
 """
 Transfer generators to ps_dict according to their classification
 """
@@ -885,6 +938,8 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == SynchronousCondenser
+            generator = make_synchronous_condenser(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == EnergyReservoirStorage
             @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue
@@ -1049,11 +1104,14 @@ function make_transformer_2w(
         arc = Arc(bus_f, bus_t),
         r = d["br_r"],
         x = d["br_x"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
         rating_b = _get_rating("Transformer2W", name, d, "rate_b"),
         rating_c = _get_rating("Transformer2W", name, d, "rate_c"),
         base_power = d["base_power"],
+        # for psse inputs, these numbers may be different than the buses' base voltages
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
         ext = ext,
     )
 end
@@ -1097,6 +1155,9 @@ function make_3w_transformer(
         base_power_12 = d["base_power_12"],
         base_power_23 = d["base_power_23"],
         base_power_13 = d["base_power_13"],
+        base_voltage_primary = d["base_voltage_primary"],
+        base_voltage_secondary = d["base_voltage_secondary"],
+        base_voltage_tertiary = d["base_voltage_tertiary"],
         g = d["g"],
         b = d["b"],
         primary_turns_ratio = d["primary_turns_ratio"],
@@ -1108,11 +1169,6 @@ function make_3w_transformer(
         rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
         rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
         rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
-        delta_winding_connection = [
-            (get_number(bus_primary), get_number(bus_secondary)),
-            (get_number(bus_secondary), get_number(bus_tertiary)),
-            (get_number(bus_primary), get_number(bus_tertiary)),
-        ],
         ext = d["ext"],
     )
 end
@@ -1135,11 +1191,14 @@ function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         base_power = d["base_power"],
         rating = _get_rating("TapTransformer", name, d, "rate_a"),
         rating_b = _get_rating("TapTransformer", name, d, "rate_b"),
         rating_c = _get_rating("TapTransformer", name, d, "rate_c"),
+        # for psse inputs, these numbers may be different than the buses' base voltages
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
     )
 end
 
@@ -1167,12 +1226,15 @@ function make_phase_shifting_transformer(
         r = d["br_r"],
         x = d["br_x"],
         tap = d["tap"],
-        primary_shunt = d["b_fr"],  # TODO: which b ??
+        primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = alpha,
         base_power = d["base_power"],
         rating = _get_rating("PhaseShiftingTransformer", name, d, "rate_a"),
         rating_b = _get_rating("PhaseShiftingTransformer", name, d, "rate_b"),
         rating_c = _get_rating("PhaseShiftingTransformer", name, d, "rate_c"),
+        # for psse inputs, these numbers may be different than the buses' base voltages
+        base_voltage_primary = d["base_voltage_from"],
+        base_voltage_secondary = d["base_voltage_to"],
     )
 end
 
@@ -1343,7 +1405,6 @@ function read_multisection_line!(
     end
 
     branch_data = data["branch"]
-
     for (_, d) in data["multisection_line"]
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]

@@ -120,29 +120,29 @@ get_name(value::MonitoredLine) = value.name
 """Get [`MonitoredLine`](@ref) `available`."""
 get_available(value::MonitoredLine) = value.available
 """Get [`MonitoredLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::MonitoredLine) = get_value(value, value.active_power_flow)
+get_active_power_flow(value::MonitoredLine) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`MonitoredLine`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::MonitoredLine) = get_value(value, value.reactive_power_flow)
+get_reactive_power_flow(value::MonitoredLine) = get_value(value, Val(:reactive_power_flow), Val(:mva))
 """Get [`MonitoredLine`](@ref) `arc`."""
 get_arc(value::MonitoredLine) = value.arc
 """Get [`MonitoredLine`](@ref) `r`."""
-get_r(value::MonitoredLine) = value.r
+get_r(value::MonitoredLine) = get_value(value, Val(:r), Val(:ohm))
 """Get [`MonitoredLine`](@ref) `x`."""
-get_x(value::MonitoredLine) = value.x
+get_x(value::MonitoredLine) = get_value(value, Val(:x), Val(:ohm))
 """Get [`MonitoredLine`](@ref) `b`."""
-get_b(value::MonitoredLine) = value.b
+get_b(value::MonitoredLine) = get_value(value, Val(:b), Val(:siemens))
 """Get [`MonitoredLine`](@ref) `flow_limits`."""
-get_flow_limits(value::MonitoredLine) = get_value(value, value.flow_limits)
+get_flow_limits(value::MonitoredLine) = get_value(value, Val(:flow_limits), Val(:mva))
 """Get [`MonitoredLine`](@ref) `rating`."""
-get_rating(value::MonitoredLine) = get_value(value, value.rating)
+get_rating(value::MonitoredLine) = get_value(value, Val(:rating), Val(:mva))
 """Get [`MonitoredLine`](@ref) `angle_limits`."""
 get_angle_limits(value::MonitoredLine) = value.angle_limits
 """Get [`MonitoredLine`](@ref) `rating_b`."""
-get_rating_b(value::MonitoredLine) = get_value(value, value.rating_b)
+get_rating_b(value::MonitoredLine) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`MonitoredLine`](@ref) `rating_c`."""
-get_rating_c(value::MonitoredLine) = get_value(value, value.rating_c)
+get_rating_c(value::MonitoredLine) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`MonitoredLine`](@ref) `g`."""
-get_g(value::MonitoredLine) = value.g
+get_g(value::MonitoredLine) = get_value(value, Val(:g), Val(:siemens))
 """Get [`MonitoredLine`](@ref) `services`."""
 get_services(value::MonitoredLine) = value.services
 """Get [`MonitoredLine`](@ref) `ext`."""
@@ -153,29 +153,29 @@ get_internal(value::MonitoredLine) = value.internal
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, val)
+set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, val)
+set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
 """Set [`MonitoredLine`](@ref) `r`."""
-set_r!(value::MonitoredLine, val) = value.r = val
+set_r!(value::MonitoredLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`MonitoredLine`](@ref) `x`."""
-set_x!(value::MonitoredLine, val) = value.x = val
+set_x!(value::MonitoredLine, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`MonitoredLine`](@ref) `b`."""
-set_b!(value::MonitoredLine, val) = value.b = val
+set_b!(value::MonitoredLine, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
-set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, val)
+set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `rating`."""
-set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, val)
+set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
 """Set [`MonitoredLine`](@ref) `rating_b`."""
-set_rating_b!(value::MonitoredLine, val) = value.rating_b = set_value(value, val)
+set_rating_b!(value::MonitoredLine, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `rating_c`."""
-set_rating_c!(value::MonitoredLine, val) = value.rating_c = set_value(value, val)
+set_rating_c!(value::MonitoredLine, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `g`."""
-set_g!(value::MonitoredLine, val) = value.g = val
+set_g!(value::MonitoredLine, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `services`."""
 set_services!(value::MonitoredLine, val) = value.services = val
 """Set [`MonitoredLine`](@ref) `ext`."""

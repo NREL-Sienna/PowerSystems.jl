@@ -17,7 +17,9 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+
                 },
                 {
                     "name": "peak_reactive_power",
@@ -25,7 +27,8 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "load_response",
@@ -73,7 +76,8 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Area(nothing)",
@@ -92,7 +96,8 @@
                     "null_value": "(from_to=0.0, to_from=0.0)",
                     "comment": "Max flow between the areas. It ignores lines and other branches totals",
                     "data_type": "FromTo_ToFrom",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ext",
@@ -127,14 +132,16 @@
                     "comment": "Peak active power in the zone (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "peak_reactive_power",
                     "comment": "Peak reactive power in the zone (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ext",
@@ -175,7 +182,8 @@
                     "comment": "Minimum and maximum active power flow limits on the interface (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "violation_penalty",
@@ -219,6 +227,12 @@
                     "exclude_setter": true,
                     "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
                     "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)",
+                    "data_type": "Bool"
                 },
                 {
                     "name": "bustype",
@@ -410,14 +424,16 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow on the line (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -434,7 +450,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -445,7 +463,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "b",
@@ -456,14 +476,17 @@
                         "min": 0,
                         "max": 100
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "null_value": "0.0",
                     "name": "rating",
                     "comment": "Thermal rating (MVA). Flow on the line must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "angle_limits",
@@ -477,6 +500,7 @@
                     "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -485,6 +509,7 @@
                     "comment": "Third current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -497,7 +522,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -545,14 +572,16 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow on the line (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -569,7 +598,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -580,14 +611,17 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
                     "name": "rating",
                     "comment": "Thermal rating (MVA). Flow on the branch must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "discrete_branch_type",
@@ -642,14 +676,16 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow on the line (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -666,7 +702,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -677,7 +715,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "b",
@@ -688,21 +728,25 @@
                         "min": 0,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "flow_limits",
                     "null_value": "(from_to=0.0, to_from=0.0)",
                     "comment": "Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`",
                     "data_type": "FromTo_ToFrom",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
                     "name": "rating",
                     "data_type": "Float64",
                     "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "angle_limits",
@@ -716,6 +760,7 @@
                     "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -724,6 +769,7 @@
                     "comment": "Third current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -736,7 +782,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -784,14 +832,16 @@
                     "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -808,7 +858,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -819,18 +871,18 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "Comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
-                    "validation_action": "warn"
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -864,7 +916,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -878,11 +931,36 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -891,6 +969,7 @@
                     "comment": "Third current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -946,14 +1025,16 @@
                     "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -970,7 +1051,9 @@
                         "min": -2,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -981,18 +1064,18 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
-                    "validation_action": "warn"
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "tap",
@@ -1015,7 +1098,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -1029,11 +1113,36 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -1041,7 +1150,8 @@
                     "name": "rating_c",
                     "comment": "Third current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
-                    "needs_conversion": true,
+                   "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -1090,14 +1200,16 @@
                     "comment": "Initial condition of active power flow through the transformer (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow",
                     "comment": "Initial condition of reactive power flow through the transformer (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -1114,7 +1226,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1125,18 +1239,18 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Shunt reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
-                    "valid_range": {
-                        "min": 0,
-                        "max": 2
-                    },
-                    "validation_action": "warn"
+                    "data_type": "Complex{Float64}",  
+                    "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "rating",
@@ -1148,7 +1262,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                   "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -1162,11 +1277,36 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(arc))"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_to(arc))"
+                },
+                {
                     "null_value": "0.0",
                     "name": "rating_b",
                     "comment": "Second current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -1175,6 +1315,7 @@
                     "comment": "Third current rating; entered in MVA.",
                     "data_type": "Union{Nothing, Float64}",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "nothing"
                 },
                 {
@@ -1247,42 +1388,48 @@
                     "comment": "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow_primary",
                     "comment": "Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_flow_secondary",
                     "comment": "Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow_secondary",
                     "comment": "Initial condition of reactive power flow through the transformer secondary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_flow_tertiary",
                     "comment": "Initial condition of active power flow through the transformer tertiary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_flow_tertiary",
                     "comment": "Initial condition of reactive power flow through the transformer tertiary side to star (hidden) bus (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -1293,7 +1440,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1304,7 +1453,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1315,7 +1466,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1326,7 +1479,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1337,7 +1492,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1348,7 +1505,9 @@
                         "min": -2,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "rating",
@@ -1360,7 +1519,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -1371,7 +1531,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1382,7 +1544,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1393,7 +1557,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1404,7 +1570,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1415,7 +1583,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -1426,7 +1596,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "base_power_12",
@@ -1462,18 +1634,58 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "base_voltage_primary",
+                    "comment": "Primary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(primary_star_arc))"
+                },
+                {
+                    "name": "base_voltage_secondary",
+                    "comment": "Secondary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(secondary_star_arc))"
+                },
+                {
+                    "name": "base_voltage_tertiary",
+                    "comment": "Tertiary base voltage in kV",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "get_base_voltage(get_from(tertiary_star_arc))"
+                },
+                {
                     "name": "g",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "comment": "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG1 in PSS/E).",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "b",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "comment": "Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)) from star (hidden) bus to ground (MAG2 in PSS/E).",
-                    "default": "0.0"
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "null_value": "0.0",
@@ -1523,7 +1735,8 @@
                     "data_type": "Float64",
                     "comment": "Rating (in MVA) for primary winding.",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -1531,7 +1744,8 @@
                     "data_type": "Float64",
                     "comment": "Rating (in MVA) for secondary winding.",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -1539,14 +1753,8 @@
                     "data_type": "Float64",
                     "comment": "Rating (in MVA) for tertiary winding.",
                     "default": "0.0",
-                    "needs_conversion": true
-                },
-                {
-                    "name": "delta_winding_connection",
-                    "data_type": "Vector{Tuple}",
-                    "comment": "Delta winding bus connections [(primary_bus_number, secondary_bus_number), (secondary_bus_number, tertiary_bus_number), (primary_bus_number, tertiary_bus_number)]. This field mirrors the data that is stored in PSSE for exporting purposes, but the stored [`Arc`](@ref)s are defined relative to the star bus for modeling convenince.",
-                    "null_value": "Vector{Tuple}()",
-                    "default": "Vector{Tuple}()"
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "services",
@@ -1594,7 +1802,8 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
@@ -1607,28 +1816,32 @@
                     "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits_to",
                     "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_from",
                     "comment": "Minimum and maximum reactive power limits to the FROM node (MVAR)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_to",
                     "comment": "Minimum and maximum reactive power limits to the TO node (MVAR)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "loss",
@@ -1689,7 +1902,8 @@
                     "comment": "Initial condition of active power flowing from the from-bus to the to-bus in DC.",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -1701,21 +1915,24 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits_from",
                     "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits_to",
                     "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -1737,6 +1954,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "0.0"
                 },
                 {
@@ -1787,14 +2005,17 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "1e8",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_from",
                     "comment": "Limits on the Reactive Power at the `from` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_from",
@@ -1821,6 +2042,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "0.0"
                 },
                 {
@@ -1870,14 +2092,18 @@
                     "comment": "Converter rating in MVA in the `to` bus.",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "default": "1e8"
+                    "default": "1e8",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits_to",
                     "comment": "Limits on the Reactive Power at the `to` side.",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "default": "(min=0.0, max=0.0)"
+                    "default": "(min=0.0, max=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor_weighting_fraction_to",
@@ -1950,7 +2176,8 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "0.0",
@@ -2148,6 +2375,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2156,6 +2384,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2164,6 +2393,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2172,6 +2402,7 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "default": "(min=0.0, max=0.0)"
                 },
                 {
@@ -2227,7 +2458,8 @@
                     "comment": "Initial condition of active power flow on the line (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "null_value": "Arc(DCBus(nothing), DCBus(nothing))",
@@ -2258,14 +2490,16 @@
                     "comment": "Minimum and maximum active power flows to the FROM node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits_to",
                     "comment": "Minimum and maximum active power flows to the TO node (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "services",
@@ -2319,28 +2553,32 @@
                     "comment": "Initial steady state active power demand (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial steady state reactive power demand (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_active_power",
                     "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_reactive_power",
                     "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -2419,52 +2657,40 @@
                     "comment": "Initial steady state active power demand (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
-                    "name": "upper_bound_active_power",
-                    "comment": "Initial upper bound on the active power load (MW), validation range: `>= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": "active_power",
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true
-                },
-                {
-                    "name": "lower_bound_active_power",
-                    "comment": "Initial lower bound on the active power load (MW), validation range: `<= active_power`",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": null,
-                        "max": "active_power"
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true
+                    "name": "active_power_limits",
+                    "comment": "Minimum and maximum stable active power levels (MW)",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial steady state reactive power demand (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_active_power",
                     "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_reactive_power",
                     "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -2500,6 +2726,14 @@
                     "comment": "Services that this device contributes to",
                     "null_value": "Device[]",
                     "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
                 },
                 {
                     "name": "ext",
@@ -2767,14 +3001,16 @@
                     "comment": "Initial steady-state active power demand (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial steady-state reactive power demand (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -2792,14 +3028,16 @@
                     "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_reactive_power",
                     "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "conformity",
@@ -2879,7 +3117,8 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "constant_reactive_power",
@@ -2887,7 +3126,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "impedance_active_power",
@@ -2895,7 +3135,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "impedance_reactive_power",
@@ -2903,7 +3144,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "current_active_power",
@@ -2911,7 +3153,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "current_reactive_power",
@@ -2919,7 +3162,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_constant_active_power",
@@ -2927,7 +3171,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_constant_reactive_power",
@@ -2935,7 +3180,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_impedance_active_power",
@@ -2943,7 +3189,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_impedance_reactive_power",
@@ -2951,7 +3198,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_current_active_power",
@@ -2959,7 +3207,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_current_reactive_power",
@@ -2967,7 +3216,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "conformity",
@@ -3035,14 +3285,16 @@
                     "comment": "Active power coefficient, P0 (MW)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Reactive power coefficient, Q0 (MVAR)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "α",
@@ -3082,14 +3334,16 @@
                     "comment": "Maximum active power (MW) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "max_reactive_power",
                     "comment": "Maximum reactive power (MVAR) that this load can demand",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "conformity",
@@ -3815,7 +4069,8 @@
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -3827,14 +4082,16 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits",
                     "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -4092,7 +4349,8 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -4101,7 +4359,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -4113,7 +4372,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "prime_mover_type",
@@ -4126,7 +4386,8 @@
                     "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4134,7 +4395,8 @@
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ramp_limits",
@@ -4146,7 +4408,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "time_limits",
@@ -4180,7 +4443,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "inflow",
@@ -4192,7 +4456,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "initial_storage",
@@ -4204,7 +4469,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "operation_cost",
@@ -4301,7 +4567,8 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -4310,7 +4577,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -4322,7 +4590,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "prime_mover_type",
@@ -4340,7 +4609,8 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4348,7 +4618,8 @@
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ramp_limits",
@@ -4360,7 +4631,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "time_limits",
@@ -4451,7 +4723,8 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -4460,7 +4733,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -4472,7 +4746,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits",
@@ -4484,7 +4759,8 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4492,7 +4768,8 @@
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "outflow_limits",
@@ -4522,7 +4799,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "time_limits",
@@ -4639,7 +4917,8 @@
                     "comment": "Initial active power set point of the turbine unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -4648,7 +4927,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -4660,7 +4940,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits",
@@ -4672,7 +4953,8 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -4680,7 +4962,8 @@
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits_pump",
@@ -4692,7 +4975,8 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "outflow_limits",
@@ -4734,7 +5018,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "time_limits",
@@ -4771,7 +5056,8 @@
                     "null_value": "0.0",
                     "default": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "efficiency",
@@ -4875,14 +5161,16 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -4890,6 +5178,7 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
+                    "conversion_unit": ":mva",
                     "valid_range": {
                         "min": 0,
                         "max": null
@@ -4907,7 +5196,8 @@
                     "comment": "Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref acbustypes_list) bus. Set to `nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_factor",
@@ -4997,14 +5287,16 @@
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
                     "comment": "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -5016,7 +5308,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "prime_mover_type",
@@ -5114,7 +5407,8 @@
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -5123,7 +5417,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -5135,7 +5430,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits",
@@ -5147,14 +5443,16 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
                     "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ramp_limits",
@@ -5166,7 +5464,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "operation_cost",
@@ -5287,7 +5586,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -5299,14 +5599,16 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
                     "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -5337,7 +5639,8 @@
                         "max": null
                     },
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "services",
@@ -5407,7 +5710,8 @@
                     "data_type": "Float64",
                     "valid_range": "active_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -5416,7 +5720,8 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "rating",
@@ -5428,7 +5733,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "prime_mover_type",
@@ -5447,14 +5753,16 @@
                     "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
                     "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ramp_limits",
@@ -5465,7 +5773,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "power_trajectory",
@@ -5477,7 +5786,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "time_limits",
@@ -5615,7 +5925,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "storage_level_limits",
@@ -5644,14 +5955,16 @@
                     "comment": "Maximum output power rating of the unit (MVA)",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power",
                     "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "input_active_power_limits",
@@ -5663,7 +5976,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "output_active_power_limits",
@@ -5675,7 +5989,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "efficiency",
@@ -5695,14 +6010,16 @@
                     "data_type": "Float64",
                     "valid_range": "reactive_power_limits",
                     "validation_action": "warn",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
                     "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "base_power",
@@ -5814,7 +6131,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "sustained_time",
@@ -5919,7 +6237,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "sustained_time",
@@ -6014,7 +6333,8 @@
                         "max": null
                     },
                     "validation_action": "error",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "ext",
@@ -6262,7 +6582,8 @@
                     "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
                     "null_value": "0.0",
                     "data_type": "Float64",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "sustained_time",
@@ -18496,7 +18817,8 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power",
@@ -18504,7 +18826,8 @@
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "default": "0.0",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "active_power_limits",
@@ -18512,7 +18835,8 @@
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
                     "default": "(min=0.0, max=0.0)",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "reactive_power_limits",
@@ -18521,7 +18845,8 @@
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "default": "(min=0.0, max=0.0)",
-                    "needs_conversion": true
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
                 },
                 {
                     "name": "R_th",

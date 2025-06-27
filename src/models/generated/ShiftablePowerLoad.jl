@@ -10,8 +10,7 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         active_power::Float64
-        upper_bound_active_power::Float64
-        lower_bound_active_power::Float64
+        active_power_limits::MinMax
         reactive_power::Float64
         max_active_power::Float64
         max_reactive_power::Float64
@@ -19,6 +18,7 @@ This file is auto-generated. Do not edit.
         load_balance_time_horizon::Int
         operation_cost::Union{LoadCost, MarketBidCost}
         services::Vector{Service}
+        dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -32,8 +32,7 @@ A [static](@ref S) power load that can be partially or completed shifted to late
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady state active power demand (MW)
-- `upper_bound_active_power::Float64`: Initial upper bound on the active power load (MW), validation range: `>= active_power`, validation range: `(active_power, nothing)`
-- `lower_bound_active_power::Float64`: Initial lower bound on the active power load (MW), validation range: `<= active_power`, validation range: `(nothing, active_power)`
+- `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
@@ -41,6 +40,7 @@ A [static](@ref S) power load that can be partially or completed shifted to late
 - `load_balance_time_horizon::Int`: Number of time periods over which load must be balanced, validation range: `(1, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
+- `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -53,10 +53,8 @@ mutable struct ShiftablePowerLoad <: ControllableLoad
     bus::ACBus
     "Initial steady state active power demand (MW)"
     active_power::Float64
-    "Initial upper bound on the active power load (MW), validation range: `>= active_power`"
-    upper_bound_active_power::Float64
-    "Initial lower bound on the active power load (MW), validation range: `<= active_power`"
-    lower_bound_active_power::Float64
+    "Minimum and maximum stable active power levels (MW)"
+    active_power_limits::MinMax
     "Initial steady state reactive power demand (MVAR)"
     reactive_power::Float64
     "Maximum active power (MW) that this load can demand"
@@ -71,18 +69,20 @@ mutable struct ShiftablePowerLoad <: ControllableLoad
     operation_cost::Union{LoadCost, MarketBidCost}
     "Services that this device contributes to"
     services::Vector{Service}
+    "corresponding dynamic injection device"
+    dynamic_injector::Union{Nothing, DynamicInjection}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function ShiftablePowerLoad(name, available, bus, active_power, upper_bound_active_power, lower_bound_active_power, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services=Device[], ext=Dict{String, Any}(), )
-    ShiftablePowerLoad(name, available, bus, active_power, upper_bound_active_power, lower_bound_active_power, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services, ext, InfrastructureSystemsInternal(), )
+function ShiftablePowerLoad(name, available, bus, active_power, active_power_limits, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    ShiftablePowerLoad(name, available, bus, active_power, active_power_limits, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function ShiftablePowerLoad(; name, available, bus, active_power, upper_bound_active_power, lower_bound_active_power, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    ShiftablePowerLoad(name, available, bus, active_power, upper_bound_active_power, lower_bound_active_power, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services, ext, internal, )
+function ShiftablePowerLoad(; name, available, bus, active_power, active_power_limits, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ShiftablePowerLoad(name, available, bus, active_power, active_power_limits, reactive_power, max_active_power, max_reactive_power, base_power, load_balance_time_horizon, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -92,8 +92,7 @@ function ShiftablePowerLoad(::Nothing)
         available=false,
         bus=ACBus(nothing),
         active_power=0.0,
-        upper_bound_active_power=0.0,
-        lower_bound_active_power=0.0,
+        active_power_limits=(min=0.0, max=0.0),
         reactive_power=0.0,
         max_active_power=0.0,
         max_reactive_power=0.0,
@@ -101,6 +100,7 @@ function ShiftablePowerLoad(::Nothing)
         load_balance_time_horizon=1,
         operation_cost=LoadCost(nothing),
         services=Device[],
+        dynamic_injector=nothing,
         ext=Dict{String, Any}(),
     )
 end
@@ -112,17 +112,15 @@ get_available(value::ShiftablePowerLoad) = value.available
 """Get [`ShiftablePowerLoad`](@ref) `bus`."""
 get_bus(value::ShiftablePowerLoad) = value.bus
 """Get [`ShiftablePowerLoad`](@ref) `active_power`."""
-get_active_power(value::ShiftablePowerLoad) = get_value(value, value.active_power)
-"""Get [`ShiftablePowerLoad`](@ref) `upper_bound_active_power`."""
-get_upper_bound_active_power(value::ShiftablePowerLoad) = get_value(value, value.upper_bound_active_power)
-"""Get [`ShiftablePowerLoad`](@ref) `lower_bound_active_power`."""
-get_lower_bound_active_power(value::ShiftablePowerLoad) = get_value(value, value.lower_bound_active_power)
+get_active_power(value::ShiftablePowerLoad) = get_value(value, Val(:active_power), Val(:mva))
+"""Get [`ShiftablePowerLoad`](@ref) `active_power_limits`."""
+get_active_power_limits(value::ShiftablePowerLoad) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`ShiftablePowerLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::ShiftablePowerLoad) = get_value(value, value.reactive_power)
+get_reactive_power(value::ShiftablePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`ShiftablePowerLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::ShiftablePowerLoad) = get_value(value, value.max_active_power)
+get_max_active_power(value::ShiftablePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva))
 """Get [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
-get_max_reactive_power(value::ShiftablePowerLoad) = get_value(value, value.max_reactive_power)
+get_max_reactive_power(value::ShiftablePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva))
 """Get [`ShiftablePowerLoad`](@ref) `base_power`."""
 get_base_power(value::ShiftablePowerLoad) = value.base_power
 """Get [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""
@@ -131,6 +129,8 @@ get_load_balance_time_horizon(value::ShiftablePowerLoad) = value.load_balance_ti
 get_operation_cost(value::ShiftablePowerLoad) = value.operation_cost
 """Get [`ShiftablePowerLoad`](@ref) `services`."""
 get_services(value::ShiftablePowerLoad) = value.services
+"""Get [`ShiftablePowerLoad`](@ref) `dynamic_injector`."""
+get_dynamic_injector(value::ShiftablePowerLoad) = value.dynamic_injector
 """Get [`ShiftablePowerLoad`](@ref) `ext`."""
 get_ext(value::ShiftablePowerLoad) = value.ext
 """Get [`ShiftablePowerLoad`](@ref) `internal`."""
@@ -141,17 +141,15 @@ set_available!(value::ShiftablePowerLoad, val) = value.available = val
 """Set [`ShiftablePowerLoad`](@ref) `bus`."""
 set_bus!(value::ShiftablePowerLoad, val) = value.bus = val
 """Set [`ShiftablePowerLoad`](@ref) `active_power`."""
-set_active_power!(value::ShiftablePowerLoad, val) = value.active_power = set_value(value, val)
-"""Set [`ShiftablePowerLoad`](@ref) `upper_bound_active_power`."""
-set_upper_bound_active_power!(value::ShiftablePowerLoad, val) = value.upper_bound_active_power = set_value(value, val)
-"""Set [`ShiftablePowerLoad`](@ref) `lower_bound_active_power`."""
-set_lower_bound_active_power!(value::ShiftablePowerLoad, val) = value.lower_bound_active_power = set_value(value, val)
+set_active_power!(value::ShiftablePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
+"""Set [`ShiftablePowerLoad`](@ref) `active_power_limits`."""
+set_active_power_limits!(value::ShiftablePowerLoad, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, val)
+set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, val)
+set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `base_power`."""
 set_base_power!(value::ShiftablePowerLoad, val) = value.base_power = val
 """Set [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""

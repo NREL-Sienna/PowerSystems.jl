@@ -77,6 +77,7 @@ export get_value_curve, get_power_units
 
 export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
+export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
 export make_import_curve, make_export_curve
@@ -90,6 +91,9 @@ export get_charge_variable_cost, set_charge_variable_cost!
 export get_discharge_variable_cost, set_discharge_variable_cost!
 export get_energy_shortage_cost, set_energy_shortage_cost!
 export get_energy_surplus_cost, set_energy_surplus_cost!
+export get_level_shortage_cost, set_level_shortage_cost!
+export get_level_surplus_cost, set_level_surplus_cost!
+export get_spillage_cost, set_spillage_cost!
 
 export Generator
 export HydroGen
@@ -381,6 +385,7 @@ export ReservoirConnectedDevicesKey
 export ReservoirConnectedDevicesMapping
 export get_component
 export get_components
+export get_num_components
 export get_associated_components
 export show_components
 export get_subcomponents
@@ -497,7 +502,6 @@ export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
-export TamuSystem
 export PowerModelsData
 export PowerSystemTableData
 export add_dyn_injectors!
@@ -631,6 +635,7 @@ import InfrastructureSystems:
     get_resolution,
     get_window,
     get_name,
+    get_num_components,
     get_component_uuids,
     get_supplemental_attribute,
     get_supplemental_attributes,
@@ -727,6 +732,7 @@ import InfrastructureSystems:
     FuelCurve,
     get_value_curve,
     get_vom_cost,
+    get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost
 
@@ -796,6 +802,7 @@ include("models/cost_functions/LoadCost.jl")
 include("models/cost_functions/RenewableGenerationCost.jl")
 include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
+include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
 include("models/HydroReservoir.jl")
@@ -852,7 +859,6 @@ include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")
-include("parsers/TAMU_data.jl")
 include("parsers/psse_metadata_reimport.jl")
 
 # Better printing

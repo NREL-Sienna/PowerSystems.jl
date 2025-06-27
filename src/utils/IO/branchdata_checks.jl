@@ -170,3 +170,61 @@ function check_endpoint_voltages(line::Union{Line, MonitoredLine})
 
     return is_valid
 end
+
+const TYPICAL_XFRM_REACTANCE = (min = 0.05, max = 0.2) # per-unit
+
+function validate_component_with_system(
+    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+    sys::System,
+)
+    is_valid_reactance = check_transformer_reactance(xfrm)
+    is_valid_rating = check_rating_values(xfrm, get_base_power(sys))
+    return is_valid_reactance && is_valid_rating
+end
+
+function check_rating_values(
+    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+    ::Float64,
+)
+    arc = get_arc(xfrm)
+    v_from = get_base_voltage(get_from(arc))
+    v_to = get_base_voltage(get_to(arc))
+    vrated = maximum([v_from, v_to])
+    voltage_levels = collect(keys(MVA_LIMITS_TRANSFORMERS))
+    closestV_ix = findmin(abs.(voltage_levels .- vrated))
+    closest_v_level = voltage_levels[closestV_ix[2]]
+    closest_rate_range = MVA_LIMITS_TRANSFORMERS[closest_v_level]
+    device_base_power = get_base_power(xfrm)
+    # The rate is in device pu
+    for field in [:rating, :rating_b, :rating_c]
+        rating_value = getproperty(xfrm, field)
+        if isnothing(rating_value)
+            @assert field ∈ [:rating_b, :rating_c]
+            continue
+        end
+        if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
+            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
+                PS_MAX_LOG
+        elseif (rating_value * device_base_power >= closest_rate_range.max) ||
+               (rating_value * device_base_power <= closest_rate_range.min)
+            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
+                PS_MAX_LOG
+        end
+    end
+    return true
+end
+
+function check_transformer_reactance(
+    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+)
+    x_pu = getproperty(xfrm, :x)
+    if x_pu < TYPICAL_XFRM_REACTANCE.min
+        @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is lower than the typical range $(TYPICAL_XFRM_REACTANCE). \
+            Check if the reactance source data is correct." maxlog = PS_MAX_LOG
+    end
+    if x_pu > TYPICAL_XFRM_REACTANCE.max
+        @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is higher than the typical range $(TYPICAL_XFRM_REACTANCE). \
+            Check if the reactance source data is correct." maxlog = PS_MAX_LOG
+    end
+    return true
+end

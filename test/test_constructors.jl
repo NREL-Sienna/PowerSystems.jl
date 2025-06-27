@@ -5,6 +5,7 @@
     bus = ACBus(
         1,
         "test",
+        true,
         ACBusTypes.SLACK,
         0.0,
         0.0,

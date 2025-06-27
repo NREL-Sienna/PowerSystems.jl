@@ -487,6 +487,16 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
     # use once available
     arrays_to_dicts!(pm_data)
 
+    base_voltages = Dict{Int64, Float64}(
+        bus_ind => bus_data["base_kv"] for (bus_ind, bus_data) in pm_data["bus"]
+    )
+    for transf in values(pm_data["branch"])
+        if transf["transformer"] == true && !haskey(transf, "base_voltage_from")
+            transf["base_voltage_from"] = base_voltages[transf["f_bus"]]
+            transf["base_voltage_to"] = base_voltages[transf["t_bus"]]
+        end
+    end
+
     for optional in ["dcline", "load", "shunt", "storage", "switch"]
         if length(pm_data[optional]) == 0
             pm_data[optional] = Dict{String, Any}()
@@ -561,15 +571,22 @@ function _mp2pm_branch!(data::Dict{String, Any})
         if branch["tap"] == 0.0
             branch["transformer"] = false
             branch["tap"] = 1.0
+            branch["b_fr"] = branch["br_b"] / 2.0
+            branch["b_to"] = branch["br_b"] / 2.0
         else
             branch["transformer"] = true
+            if branch["br_b"] != 0.0
+                @warn "Reflecting transformer shunts to primary; the ybus matrix will differ from matpower" maxlog =
+                    5
+                branch["b_fr"] = (branch["br_b"] / branch["tap"]^2)
+            else
+                branch["b_fr"] = 0.0
+            end
+            branch["b_to"] = 0.0
         end
-
         branch["g_fr"] = 0.0
         branch["g_to"] = 0.0
 
-        branch["b_fr"] = branch["br_b"] / 2.0
-        branch["b_to"] = branch["br_b"] / 2.0
         branch["base_power"] = data["baseMVA"]
 
         delete!(branch, "br_b")

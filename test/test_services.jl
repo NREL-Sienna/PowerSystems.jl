@@ -408,4 +408,36 @@ end
     to_json(sys, tmp_path)
     sys = System(tmp_path)
     @test length(get_components(TransmissionInterface, sys)) == 3
+
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    area1 = get_component(Area, sys, "1")
+    area2 = get_component(Area, sys, "2")
+    area3 = get_component(Area, sys, "3")
+    area_interchange12 = AreaInterchange(;
+        name = "interchange_a1_a2",
+        available = true,
+        active_power_flow = 0.0,
+        from_area = area1,
+        to_area = area2,
+        flow_limits = (from_to = 100.0, to_from = 100.0),
+    )
+    area_interchange13 = AreaInterchange(;
+        name = "interchange_a1_a3",
+        available = true,
+        active_power_flow = 0.0,
+        from_area = area1,
+        to_area = area3,
+        flow_limits = (from_to = 100.0, to_from = 100.0),
+    )
+    line = first(get_components(Line, sys))
+    add_component!(sys, area_interchange12)
+    add_component!(sys, area_interchange13)
+    area_level_interface = TransmissionInterface("foo3", true, (min = -10.0, max = 10.0))
+    area_level_mixed = TransmissionInterface("foo4", true, (min = -10.0, max = 10.0))
+    add_service!(sys, area_level_interface, [area_interchange12, area_interchange13])
+    @test_throws ArgumentError add_service!(
+        sys,
+        area_level_mixed,
+        [area_interchange12, area_interchange13, line],
+    )
 end
