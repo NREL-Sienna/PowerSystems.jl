@@ -985,6 +985,14 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_s = 1 / 2 * (br_x23 - br_x31 + br_x12)
                 Zx_t = 1 / 2 * (br_x31 - br_x12 + br_x23)
 
+                Zr_p = Zr_p == 0.0 ? 0.0001 : Zr_p
+                Zr_s = Zr_s == 0.0 ? 0.0001 : Zr_s
+                Zr_t = Zr_t == 0.0 ? 0.0001 : Zr_t
+
+                Zx_p = Zx_p == 0.0 ? 0.0001 : Zx_p
+                Zx_s = Zx_s == 0.0 ? 0.0001 : Zx_s
+                Zx_t = Zx_t == 0.0 ? 0.0001 : Zx_t
+
                 sub_data["name"] = transformer["NAME"]
                 sub_data["bus_primary"] = bus_id1
                 sub_data["bus_secondary"] = bus_id2
