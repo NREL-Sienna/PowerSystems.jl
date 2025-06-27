@@ -366,6 +366,27 @@ end
     @test IS.compare_values(original_sys, deserialized_sys)
 end
 
+@testset "PSSE transformer tap position correction testing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "psse_14_tap_correction_test_system";
+        force_build = true,
+    )
+    #test 2W correction matches PSSE
+    trf = get_component(TapTransformer, sys, "BUS 104-BUS 107-i_1")
+    tap = get_tap(trf)
+    @test isapprox(tap, 0.979937; atol = 1e-6)
+
+    #test 3W correction matches PSSE
+    trf_3w = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w)
+    tap2 = get_secondary_turns_ratio(trf_3w)
+    tap3 = get_tertiary_turns_ratio(trf_3w)
+    @test isapprox(tap1, 0.98750; atol = 1e-6)
+    @test isapprox(tap2, 0.97500; atol = 1e-6)
+    @test isapprox(tap3, 0.96250; atol = 1e-6)
+end
+
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
     sys = @test_logs (:error,) match_mode = :any build_system(
         PSSEParsingTestSystems,
