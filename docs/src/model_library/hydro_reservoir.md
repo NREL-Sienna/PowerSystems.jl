@@ -1,4 +1,4 @@
-### Hydro Reservoir
+### `HydroReservoir`
 
 ```@autodocs
 Modules = [PowerSystems]

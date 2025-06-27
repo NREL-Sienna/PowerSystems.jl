@@ -4425,7 +4425,7 @@
         },
         {
             "struct_name": "HydroTurbine",
-            "docstring": "A hydropower generator that needs to be attached to a reservoir, suitable for modeling indenpendent turbines and reservoirs.",
+            "docstring": "A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suitable for modeling independent turbines and reservoirs.",
             "fields": [
                 {
                     "null_value": "init",
@@ -4574,7 +4574,7 @@
                 },
                 {
                     "name": "reservoirs",
-                    "comment": "Reservoir(s) that this component is connected to",
+                    "comment": "[`HydroReservoir`](@ref)(s) that this component is connected to",
                     "data_type": "Vector{HydroReservoir}",
                     "null_value": "Device[]",
                     "default": "Device[]"
@@ -4613,7 +4613,7 @@
         },
         {
             "struct_name": "HydroPumpTurbine",
-            "docstring": "A hydropower pumped turbine that needs to be attached to two reservoir, suitable for modeling independent pumped hydro with reservoirs.",
+            "docstring": "A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s attached, suitable for modeling independent pumped hydro with reservoirs.",
             "fields": [
                 {
                     "null_value": "init",
@@ -4703,13 +4703,13 @@
                 },
                 {
                     "name": "head_reservoir",
-                    "comment": "Head reservoir that this component is connected to",
+                    "comment": "Head [`HydroReservoir`](@ref) that this component is connected to",
                     "data_type": "HydroReservoir",
                     "null_value": "HydroReservoir(nothing)"
                 },
                 {
                     "name": "tail_reservoir",
-                    "comment": "Tail reservoir that this component is connected to",
+                    "comment": "Tail [`HydroReservoir`](@ref) that this component is connected to",
                     "data_type": "HydroReservoir",
                     "null_value": "HydroReservoir(nothing)"
                 },

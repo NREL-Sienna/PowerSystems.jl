@@ -1,4 +1,4 @@
-# [Create Hydropower Datasets with Reservoirs](@id hydro_resv)
+# [Define Hydro Generators with Reservoirs](@id hydro_resv)
 
 In the current version of `PowerSystems.jl` there is support and testing for hydropower generation plants with the following structures:
 
@@ -18,12 +18,12 @@ flowchart TB
 
 ```
 
-It is possible to attach an upstream reservoir to any number of turbines with different power house elevations to consider the effect of the elevation and pressure heads
+For this model, attach an upstream [`HydroReservoir`](@ref) to any number of [`HydroTurbine`](@ref)s. This can model different power house elevations to consider the effect of the elevation and pressure heads
 on the specific turbines inside of a power plant.
 
 ## Head and Tail Reservoirs for Pumped Hydropower Plants
 
-The turbine and reservoirs structs store the elevations in each case calculate adequately the elevation and pressure heads for
+For this model, attach two [`HydroReservoir`](@ref)s to any number of [`HydroPumpTurbine`](@ref)s. The turbine and reservoirs structs store the elevations in each case calculate adequately the elevation and pressure heads for
 the facility.
 
 ```mermaid
