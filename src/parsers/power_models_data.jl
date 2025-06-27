@@ -850,7 +850,7 @@ function make_thermal_gen(
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
         ),
-        ramp_limits = (up = ramp_lim, down = ramp_lim),
+        ramp_limits = (up = ramp_lim * base_conversion, down = ramp_lim * base_conversion),
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
