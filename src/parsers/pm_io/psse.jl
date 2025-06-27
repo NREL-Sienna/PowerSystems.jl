@@ -1536,6 +1536,42 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     return
 end
 
+function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Adding PSS(R)E Multi-section Lines data into the branches PowerModels Dict..."
+    branch_lookup = Dict{Tuple{Int, Int}, Int}()
+    if haskey(pm_data, "branch")
+        for branch in pm_data["branch"]
+            branch_lookup[(branch["f_bus"], branch["t_bus"])] = branch["index"]
+        end
+    end
+    if haskey(pti_data, "MULTI-SECTION LINE")
+        for multisec_line in pti_data["MULTI-SECTION LINE"]
+            filter!(x -> x.second != "", multisec_line)
+            f_bus = multisec_line["I"]
+            t_bus = multisec_line["J"]
+            id = filter(isdigit, multisec_line["ID"])
+            # Sort by dummy bus index
+            dummy_buses = sort([
+                (k, v) for (k, v) in multisec_line if startswith(k, "DUM") && v != ""
+            ])
+            dummy_bus_numbers = [x[2] for x in dummy_buses]
+            all_buses = [f_bus; dummy_bus_numbers; t_bus]
+            for ix in 1:(length(all_buses) - 1)
+                if haskey(branch_lookup, (all_buses[ix], all_buses[ix + 1]))
+                    branch_index = branch_lookup[(all_buses[ix], all_buses[ix + 1])]
+                else
+                    branch_index = branch_lookup[(all_buses[ix + 1], all_buses[ix])]
+                end
+                ext = get(pm_data["branch"][branch_index], "ext", Dict{String, Any}())
+                ext["from_multisection"] = true
+                ext["multisection_psse_entry"] = multisec_line
+                pm_data["branch"][branch_index]["ext"] = ext
+            end
+        end
+    end
+    return
+end
+
 function sort_values_by_key_prefix(imp_correction::Dict{String, <:Any}, prefix::String)
     sorted_values = [
         last(pair) for pair in sort(
@@ -1622,6 +1658,7 @@ function _pti_to_powermodels!(
     _psse2pm_facts!(pm_data, pti_data, import_all)
     _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
+    _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
