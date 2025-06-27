@@ -575,14 +575,14 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 end
 
 function apply_tap_correction!(
-    windv_value,
-    transformer,
-    cod_key,
-    rmi_key,
-    rma_key,
-    ntp_key,
-    cw_value,
-    winding_name,
+    windv_value::Float64,
+    transformer::Dict{String, Any},
+    cod_key::String,
+    rmi_key::String,
+    rma_key::String,
+    ntp_key::String,
+    cw_value::Int64,
+    winding_name::String,
 )
     if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 3]
         tap_positions = collect(
