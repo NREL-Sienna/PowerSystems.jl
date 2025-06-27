@@ -593,7 +593,11 @@ function apply_tap_correction!(
             ),
         )
         closest_tap_ix = argmin(abs.(tap_positions .- windv_value))
-        if !isapprox(windv_value, tap_positions[closest_tap_ix]; atol = 1e-5)
+        if !isapprox(
+            windv_value,
+            tap_positions[closest_tap_ix];
+            atol = PARSER_TAP_RATIO_CORRECTION_TOL,
+        )
             @warn "Transformer $winding_name winding tap setting is not on a step; $windv_value set to $(tap_positions[closest_tap_ix])"
             return tap_positions[closest_tap_ix]
         end
