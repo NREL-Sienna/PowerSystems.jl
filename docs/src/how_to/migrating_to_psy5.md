@@ -1,8 +1,13 @@
 # [Migrating from version 4.0 to 5.0](@id psy5_migration)
 
 This guide outlines the code updates required to upgrade from PowerSystems.jl version 4.0
-to 5.0, which was released in May 2025 and includes breaking changes. Most the changes are related
+to 5.0, which was released in Julia 2025 and includes breaking changes. Most the changes are related
 to modeling in more detail AC transmission technologies.
+
+!!! warning
+    
+    ***PowerSystems v5 is not backwards compatible with PowerSystems v4. The datasets created in PowerSystems v4 need to be converted using a separate script to be loaded
+    in version 5***
 
 The changes are:
 
@@ -11,6 +16,9 @@ The changes are:
   - [New and Eliminated Types](@ref)
   - [Updates to Hydro Storage related devices](@ref Hyd_updates)
   - [Updates to fuel categories](@ref)
+  - [Updates to Transformers](@ref)
+  - [Updates to ACBuses](@ref)
+  - [Updates to parsing PSSe files](@ref)
 
 ## AC Branches Type Hierarchy Change
 
@@ -52,6 +60,7 @@ Affected Types are:
   - [`ImpedanceCorrectionData`](@ref)
   - [`ImportExportCost`](@ref)
   - [`SynchronousCondenser`](@ref)
+  - [`InterruptibleStandardLoad`](@ref)
 
 These types are no longer part of PowerSystems.jl:
 
@@ -69,3 +78,19 @@ The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@r
 
 The fuel categories available in form EIA-923 have been expanded, the old categories are still
 valid and the expanded list can be explored in the documentation [`ThermalFuels`](@ref tf_list)
+
+## Updates to Transformers
+
+Most of the transformer changes are included to bring PowerSystems.jl closer to the data model employed in PSSe RAW files which tend to be the industry standard. The two notable changes are:
+
+  - All transformers now have additional fiedls for base quantities needed for the calculation of the impedances in adequate bases. See [`Transformer per unit transformations`](@ref transformers_pu) for more details.
+  - The shunt branch in the transformer now uses a `Complex{Float64}` to model core losses as well as the core inductance.
+
+We also added support for [`Transformer3W`](@ref). See [`Handle 3-winding transformer data`](@ref 3wtdata) for more details.
+
+These changes now provide the capability to obtain the impedance values for the transformer's
+depending on the [`Per-unit Conventions`](@ref per_unit).
+
+## Updates to ACBuses
+
+[`ACBus`](@ref) has a new field available to match the behavior of setting a bus to "isolated" in other simulation applications. A detailed explanation on how to handle this new field has been documented in [`Understanding ACBusTypes`](@ref bustypes)

@@ -1,4 +1,4 @@
-# Understanding [ACBusTypes](@ref)
+# [Understanding ACBusTypes](@id bustyped)
 
 When creating nodal datasets, the definitions for AC Buses can have a significant impact on the
 topology logic for the network.

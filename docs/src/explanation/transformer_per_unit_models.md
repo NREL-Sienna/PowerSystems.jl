@@ -1,4 +1,4 @@
-# [Transformer ](@id transformers_pu)
+# [Transformer per unit transformations](@id transformers_pu)
 
 The per-unit (p.u.) system is a fundamental tool in power system analysis, especially when dealing with transformers. It simplifies calculations by normalizing all quantities (voltage, current, power, impedance) to a common base. This effectively "retains" the ideal transformer from the circuit diagram because the per-unit impedance of a transformer remains the same when referred from one side to the other. This page is not a comprehensive guide on transformer per-unit calculations, a more in depth explanation can be found in [`this link`](https://en.wikipedia.org/wiki/Per-unit_system) or basic power system literature.
 
@@ -40,4 +40,4 @@ The most significant advantage of the per-unit system for transformers is that *
 
 !!! note
     
-    The return value of the getter functions, e.g., [`get_x`](@ref) for the transformer impedances will perform the transformations following the convention in [Per-unit Conventions](@ref per_unit).
+    The return value of the getter functions, e.g., [`get_x`](@ref) for the transformer impedances will perform the transformations following the convention in [`Per-unit Conventions`](@ref per_unit).
