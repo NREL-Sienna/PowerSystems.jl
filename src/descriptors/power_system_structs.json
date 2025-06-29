@@ -864,7 +864,7 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Complex{Float64}",  
+                    "data_type": "Complex{Float64}",
                     "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
@@ -1057,7 +1057,7 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Complex{Float64}",  
+                    "data_type": "Complex{Float64}",
                     "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
@@ -1232,7 +1232,7 @@
                 {
                     "name": "primary_shunt",
                     "null_value": "0.0",
-                    "data_type": "Complex{Float64}",  
+                    "data_type": "Complex{Float64}",
                     "comment": "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))",
                     "validation_action": "warn",
                     "needs_conversion": true,
@@ -2576,6 +2576,198 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "LoadCost(nothing)",
+                    "data_type": "Union{LoadCost, MarketBidCost}",
+                    "comment": "[`OperationalCost`](@ref) of interrupting load"
+                },
+                {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Services that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "ControllableLoad"
+        },
+        {
+            "struct_name": "InterruptibleStandardLoad",
+                "docstring": "A voltage-dependent [ZIP load](@ref Z), most commonly used for dynamics modeling.\n\nA `StandardLoad` breaks the ZIP into three pieces: Z (constant impedance), I (constant current), and P (constant power), according to `P = P_P * V^0 + P_I * V^1 + P_Z * V^2` for active power and `Q = Q_P * V^0 + Q_I * V^1 + Q_Z * V^2` for reactive power. (Voltage V is in per unit.)\n\nFor an alternative exponential formulation of the ZIP model, see [`ExponentialLoad`](@ref). For a simpler load model with no voltage dependency, see [`PowerLoad`](@ref)",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "bus",
+                    "comment": "Bus that this component is connected to",
+                    "null_value": "ACBus(nothing)",
+                    "data_type": "ACBus"
+                },
+                {
+                    "name": "base_power",
+                    "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "constant_active_power",
+                    "comment": "Constant active power demand in MW (P_P)",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "default": "0.0",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "constant_reactive_power",
+                    "comment": "Constant reactive power demand in MVAR (Q_P)",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "impedance_active_power",
+                    "comment": "Active power coefficient in MW for constant impedance load (P_Z)",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "impedance_reactive_power",
+                    "comment": "Reactive power coefficient in MVAR for constant impedance load (Q_Z)",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "current_active_power",
+                    "comment": "Active power coefficient in MW for constant current load (P_I)",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "current_reactive_power",
+                    "comment": "Reactive power coefficient in MVAR for constant current load (Q_I)",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_constant_active_power",
+                    "comment": "Maximum active power (MW) drawn by constant power load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_constant_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) drawn by constant power load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_impedance_active_power",
+                    "comment": "Maximum active power (MW) drawn by constant impedance load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_impedance_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) drawn by constant impedance load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_current_active_power",
+                    "comment": "Maximum active power (MW) drawn by constant current load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "max_current_reactive_power",
+                    "comment": "Maximum reactive power (MVAR) drawn by constant current load",
+                    "null_value": "0.0",
+                    "default": "0.0",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "operation_cost",
