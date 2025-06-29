@@ -114,6 +114,15 @@ function deserialize_uuid_handling(field_type, val, component_cache)
             value = _vals
         else
             uuid = deserialize(Base.UUID, val)
+            if !haskey(component_cache, uuid)
+                error(
+                    "UUID $uuid not found in component cache. \
+                     This may indicate that a timeseries was removed improperly \
+                     and the reference device is still has a reference to the timeseries object. \
+                     Check the documentation for the `remove_timeseries!` function. \
+                     ",
+                )
+            end
             component = component_cache[uuid]
             value = component
         end
