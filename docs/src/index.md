@@ -71,8 +71,7 @@ framework.
 
 !!! note
     
-    `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/)
-    as a utility library. Many methods are re-exported from `InfrastructureSystems.jl`.
+    `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/) as a utility library. Many methods are re-exported from `InfrastructureSystems.jl`.
     For most users there is no need to import `InfrastructureSystems.jl`.
 
   - [Sienna Documentation Hub](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/index.html):
