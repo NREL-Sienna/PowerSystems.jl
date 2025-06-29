@@ -532,6 +532,37 @@ function make_interruptible_powerload(d::Dict, bus::ACBus, sys_mbase::Float64; k
     )
 end
 
+function make_interruptible_standardload(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
+    operation_cost = LoadCost(;
+        variable = zero(CostCurve),
+        fixed = 0.0,
+    )
+
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return InterruptibleStandardLoad(;
+        name = _get_name(d),
+        available = d["status"],
+        bus = bus,
+        base_power = sys_mbase,
+        operation_cost = operation_cost,
+        constant_active_power = d["pd"],
+        constant_reactive_power = d["qd"],
+        current_active_power = d["pi"],
+        current_reactive_power = d["qi"],
+        impedance_active_power = d["py"],
+        impedance_reactive_power = d["qy"],
+        max_constant_active_power = d["pd"],
+        max_constant_reactive_power = d["qd"],
+        max_current_active_power = d["pi"],
+        max_current_reactive_power = d["qi"],
+        max_impedance_active_power = d["py"],
+        max_impedance_reactive_power = d["qy"],
+        base_power = sys_mbase,
+        conformity = d["conformity"],
+        ext = d["ext"],
+    )
+end
+
 function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
@@ -593,7 +624,7 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
                 ),
             )
         elseif data["source_type"] == "pti" && is_interruptible && d["interruptible"] == 1
-            load = make_interruptible_powerload(d, bus, sys_mbase; kwargs...)
+            load = make_interruptible_standardload(d, bus, sys_mbase; kwargs...)
             has_component(InterruptiblePowerLoad, sys, get_name(load)) && throw(
                 DataFormatError(
                     "Found duplicate interruptible load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
