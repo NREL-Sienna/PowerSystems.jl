@@ -85,6 +85,7 @@ Most of the transformer changes are included to bring PowerSystems.jl closer to 
 
   - All transformers now have additional fiedls for base quantities needed for the calculation of the impedances in adequate bases. See [`Transformer per unit transformations`](@ref transformers_pu) for more details.
   - The shunt branch in the transformer now uses a `Complex{Float64}` to model core losses as well as the core inductance.
+  - Shunt allocation in the transformer between the primary and secondary. We now allocate the shunt to the primary following PSSe's convention. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1411) for a description of the discrepancy with Matpower. Note that this mostly affect the results reporting between Matpower and PSSe.
 
 We also added support for [`Transformer3W`](@ref). See [`Handle 3-winding transformer data`](@ref 3wtdata) for more details.
 
@@ -94,3 +95,7 @@ depending on the [`Per-unit Conventions`](@ref per_unit).
 ## Updates to ACBuses
 
 [`ACBus`](@ref) has a new field available to match the behavior of setting a bus to "isolated" in other simulation applications. A detailed explanation on how to handle this new field has been documented in [`Understanding ACBusTypes`](@ref bustypes)
+
+## Updates to parsing PSSe files
+
+We have implemented new conventions to parsing PSSe files as well as the capability to load PSSe v35 files. See the details in the new documentation section [`Conventions when parsing MATPOWER or PSS/e Files`](@ref parse_conventions)
