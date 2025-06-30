@@ -377,8 +377,7 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
     else
         throw(DataFormatError("$sys_file is not a .raw file type"))
     end
-    bus_dict_gen = _parse_dyr_components(dyr_file)
-    add_dyn_injectors!(sys, bus_dict_gen)
+    add_dyn_injectors!(sys, dyr_file)
     return sys
 end
 

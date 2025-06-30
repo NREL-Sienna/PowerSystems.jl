@@ -52,6 +52,7 @@ Let's start with a reference bus:
 bus1 = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,
@@ -86,6 +87,7 @@ Let's create a second bus:
 bus2 = ACBus(;
     number = 2,
     name = "bus2",
+    available = true,
     bustype = ACBusTypes.PV,
     angle = 0.0,
     magnitude = 1.0,

@@ -593,14 +593,20 @@ end
 
     @test metadata["name"] == name
     @test metadata["description"] == description
-    found_component = false
+    found_component_thermal = false
+    found_component_condenser = false
     for item in metadata["component_counts"]
         if item["type"] == "ThermalStandard"
-            @test item["count"] == 76
-            found_component = true
+            @test item["count"] == 73
+            found_component_thermal = true
+        end
+        if item["type"] == "SynchronousCondenser"
+            @test item["count"] == 3
+            found_component_condenser = true
         end
     end
-    @test found_component
+    @test found_component_thermal
+    @test found_component_condenser
     @test metadata["time_series_counts"][1]["type"] == "DeterministicSingleTimeSeries"
     @test metadata["time_series_counts"][1]["count"] == 182
     @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"
