@@ -51,4 +51,5 @@ switch back to `"SYSTEM_BASE"` before solving an optimization problem (for examp
 [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
 
 !!! note
-  Check the [`Transformers per unit explanation`](@ref transformers_pu) for details on how
+    
+    Check the [`Transformers per unit explanation`](@ref transformers_pu) for details on how
