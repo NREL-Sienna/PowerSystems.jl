@@ -544,6 +544,7 @@ function make_interruptible_standardload(d::Dict, bus::ACBus, sys_mbase::Float64
         available = d["status"],
         bus = bus,
         base_power = sys_mbase,
+        conformity = d["conformity"],
         operation_cost = operation_cost,
         constant_active_power = d["pd"],
         constant_reactive_power = d["qd"],
@@ -557,8 +558,6 @@ function make_interruptible_standardload(d::Dict, bus::ACBus, sys_mbase::Float64
         max_current_reactive_power = d["qi"],
         max_impedance_active_power = d["py"],
         max_impedance_reactive_power = d["qy"],
-        base_power = sys_mbase,
-        conformity = d["conformity"],
         ext = d["ext"],
     )
 end
