@@ -2,6 +2,7 @@ using Documenter, PowerSystems
 import DataStructures: OrderedDict
 using Literate
 using DocumenterInterLinks
+using DocumenterMermaid
 
 links = InterLinks(
     "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
@@ -24,32 +25,43 @@ pages = OrderedDict(
             "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
-            "...install PowerSystems.jl" => "how_to/install.md",
-            "...load a `system` from `PowerSystemCaseBuilder`" => "how_to/powersystembuilder.md",
-            "...parse data from MATPOWER or PSS/e files" => "how_to/parse_matpower_psse.md",
-            "...parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
-            "...build a `System` using .csv files" => "how_to/build_system_with_files.md",
-            "...parse tabular data from .csv files" => "how_to/parse_tabular_data.md",
-            "...parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
+            "...import data" => Any[
+                "Parse a MATPOWER or PSS/e file" => "how_to/parse_matpower_psse.md",
+                "Parse PSS/e dynamic data" => "how_to/parse_dynamic_data.md",
+                "Build a `System` using .csv files" => "how_to/build_system_with_files.md",
+                "Save and read data with a JSON" => "how_to/serialize_data.md",
+            ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
-            "...get all the buses in a system" => "how_to/get_buses.md",
-            "...get the available generators in a system" => "how_to/get_available_generators.md",
-            "...add an Operating Cost" => "how_to/add_cost_curve.md",
-            "...add a market bid" => "how_to/market_bid_cost.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
+            "...add time-series data" => Any[
+                "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
+                "Improve performance with time series data" => "how_to/improve_ts_performance.md",
+            ],
+            "...add cost data" => Any[
+                "Add an Operating Cost" => "how_to/add_cost_curve.md",
+                "Add a market bid" => "how_to/market_bid_cost.md",
+            ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
-            "...improve performance with time series data" => "how_to/improve_ts_performance.md",
-            "...write and read data with a JSON" => "how_to/serialize_data.md",
+            "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
+            "...handle 3-Winding Transformers" => "how_to/handle_3W_transformers.md",
+            "...use PowerSystems.jl with JuMP.jl" => "how_to/jump.md",
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
-            "...migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md"
+            "...update to a new `PowerSystems.jl` version" => Any[
+                "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md",
+                "Migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
+            ],
         ],
         "Explanation" =>
             Any[
             "explanation/system.md",
             "explanation/type_structure.md",
+            "explanation/bus_type_explanation.md",
             "explanation/per_unit.md",
+            "explanation/conforming_and_non_conforming_loads.md",
+            "explanation/transformer_per_unit_models.md",
             "explanation/time_series.md",
             "explanation/dynamic_data.md",
+            "explanation/supplemental_attributes.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
@@ -62,8 +74,6 @@ pages = OrderedDict(
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
             ]
-
-
 )
 
 pages["Model Library"] = make_model_library(
@@ -82,6 +92,7 @@ pages["Model Library"] = make_model_library(
                   PSY.OperationalCost,
                   PSY.DynamicInverter,
                   PSY.DynamicGenerator,
+                  PSY.HydroReservoir,
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
@@ -95,7 +106,9 @@ pages["Model Library"] = make_model_library(
         "RenewableGenerationCost" =>"model_library/renewable_generation_cost.md",
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
-        "MarketBidCost" =>"model_library/market_bid_cost.md"],
+        "MarketBidCost" =>"model_library/market_bid_cost.md",
+        "ImportExportCost" =>"model_library/import_export_cost.md"],
+        "HydroReservoir" => "model_library/hydro_reservoir.md",
         )
 )
 
