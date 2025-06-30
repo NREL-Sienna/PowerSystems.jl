@@ -101,6 +101,7 @@ for row in eachrow(bus_params)
     bus = ACBus(;
         number = row[bus_number],
         name = "bus$(row[bus_number])",
+        available = true,
         bustype = ACBusTypes.PQ,
         angle = 0.0,
         magnitude = 1.0,

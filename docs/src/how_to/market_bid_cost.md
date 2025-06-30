@@ -20,7 +20,7 @@ Then a device with MarketBidCost can be directly instantiated using:
 
 ```@repl market_bid_cost
 using PowerSystems, Dates
-bus = ACBus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = ACBus(1, "nodeE", true, "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
 generator = ThermalStandard(;
     name = "Brighton",
@@ -67,7 +67,7 @@ The code below shows an example how we can create a thermal device with MarketBi
 
 ```@repl market_bid_cost
 using PowerSystems, Dates
-bus = ACBus(1, "nodeE", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+bus = ACBus(1, "nodeE", true, "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
 
 generator = ThermalStandard(;
     name = "Brighton",
