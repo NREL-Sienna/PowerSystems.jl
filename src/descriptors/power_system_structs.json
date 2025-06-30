@@ -2764,16 +2764,16 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
-                    "data_type": "LoadConformity",
-                    "default": "LoadConformity.UNDEFINED"
-                },
-                {
                     "name": "operation_cost",
                     "null_value": "LoadCost(nothing)",
                     "data_type": "Union{LoadCost, MarketBidCost}",
                     "comment": "[`OperationalCost`](@ref) of interrupting load"
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "services",

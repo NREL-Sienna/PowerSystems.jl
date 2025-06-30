@@ -63,6 +63,8 @@ end
     @test tLoad isa PowerSystems.Component
     tShiftableLoad = ShiftablePowerLoad(nothing)
     @test tShiftableLoad isa PowerSystems.Component
+    tInterruptibleStandardLoad = InterruptibleStandardLoad(nothing)
+    @test tInterruptibleStandardLoad isa PowerSystems.Component
 end
 
 @testset "Branch Constructors" begin
