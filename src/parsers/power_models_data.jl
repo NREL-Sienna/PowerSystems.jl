@@ -624,7 +624,7 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
             )
         elseif data["source_type"] == "pti" && is_interruptible && d["interruptible"] == 1
             load = make_interruptible_standardload(d, bus, sys_mbase; kwargs...)
-            has_component(InterruptiblePowerLoad, sys, get_name(load)) && throw(
+            has_component(InterruptibleStandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
                     "Found duplicate interruptible load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
