@@ -169,6 +169,15 @@ end
             "psse_ACTIVSg2000_sys",
         )
     for g in get_components(ThermalStandard, sys)
+        if isnothing(get_dynamic_injector(g))
+            @error "ThermalStandard $(get_name(g)) should have a dynamic injector"
+        end
+        @test !isnothing(get_dynamic_injector(g))
+    end
+    for g in get_components(SynchronousCondenser, sys)
+        if isnothing(get_dynamic_injector(g))
+            @error "SynchronousCondenser $(get_name(g)) should have a dynamic injector"
+        end
         @test !isnothing(get_dynamic_injector(g))
     end
     path = joinpath(test_dir, "test_dyn_system_serialization_2000.json")

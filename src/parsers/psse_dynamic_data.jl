@@ -490,13 +490,30 @@ add_dyn_injectors!(sys, dyr_file)
 """
 function add_dyn_injectors!(sys::System, dyr_file::AbstractString)
     bus_dict_gen = _parse_dyr_components(dyr_file)
-    add_dyn_injectors!(sys, bus_dict_gen)
+    _add_dyn_injectors!(sys, bus_dict_gen)
     return
 end
 
-function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
+# This function is future proofed to allow adding dynamic injector models to FACTS and other VAR control devices.
+# By dispatchting on specific types, we can add more injectors in the future.
+# We add new _add_dyn_injectors! methods for each new type of injector.
+function _add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
+    _add_dyn_injectors!(sys, bus_dict_gen, ThermalStandard)
+    _add_dyn_injectors!(sys, bus_dict_gen, SynchronousCondenser)
+    return
+end
+
+function _add_dyn_injectors!(::System, ::Dict, InjectorType::DataType)
+    error("Attaching dynamic injectors of type $InjectorType is not supported yet.")
+end
+
+function _add_dyn_injectors!(
+    sys::System,
+    bus_dict_gen::Dict,
+    InjectorType::Type{T},
+) where {T <: Union{ThermalStandard, SynchronousCondenser}}
     @info "Generators provided in .dyr, without a generator in .raw file will be skipped."
-    for g in collect(get_components(ThermalStandard, sys))
+    for g in get_components(InjectorType, sys)
         _num = get_number(get_bus(g))
         _name = get_name(g)
         _id = split(_name, "-")[end]
@@ -542,7 +559,7 @@ function add_dyn_injectors!(sys::System, bus_dict_gen::Dict)
                 dyn_inv = DynamicInverter(get_name(g), 1.0, temp_dict[_id]...)
                 add_component!(sys, dyn_inv, g)
             elseif length(temp_dict[_id]) == 1
-                #TODO: While we only have 1 thing (DERA1) it will work, 
+                #TODO: While we only have 1 thing (DERA1) it will work,
                 #TODO: but we need to generalize this for any generic dynamic injector
                 dyn_inj = temp_dict[_id][1]
                 set_name!(dyn_inj, get_name(g))

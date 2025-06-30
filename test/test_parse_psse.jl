@@ -176,7 +176,7 @@ end
 
 @testset "PSSE Generators as Synchronous Condensers" begin
     sys = build_system(PSSEParsingTestSystems, "pti_case11_with_synchronous_condensers_sys")
-    sc_gen1 = collect(get_component(SynchronousCondenser, sys))[1]
+    sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
 
     @test !hasproperty(sc_gen1, :active_power)
     @test get_available(sc_gen1) == true
