@@ -571,15 +571,22 @@ function _mp2pm_branch!(data::Dict{String, Any})
         if branch["tap"] == 0.0
             branch["transformer"] = false
             branch["tap"] = 1.0
+            branch["b_fr"] = branch["br_b"] / 2.0
+            branch["b_to"] = branch["br_b"] / 2.0
         else
             branch["transformer"] = true
+            if branch["br_b"] != 0.0
+                @warn "Reflecting transformer shunts to primary; the ybus matrix will differ from matpower" maxlog =
+                    5
+                branch["b_fr"] = (branch["br_b"] / branch["tap"]^2)
+            else
+                branch["b_fr"] = 0.0
+            end
+            branch["b_to"] = 0.0
         end
-
         branch["g_fr"] = 0.0
         branch["g_to"] = 0.0
 
-        branch["b_fr"] = branch["br_b"] / 2.0
-        branch["b_to"] = branch["br_b"] / 2.0
         branch["base_power"] = data["baseMVA"]
 
         delete!(branch, "br_b")

@@ -72,7 +72,6 @@ function System(pm_data::PowerModelsData; kwargs...)
     read_dcline!(sys, data, bus_number_to_bus, source_type; kwargs...)
     read_vscline!(sys, data, bus_number_to_bus; kwargs...)
     read_facts!(sys, data, bus_number_to_bus; kwargs...)
-    read_multisection_line!(sys, data, bus_number_to_bus; kwargs...)
     read_storage!(sys, data, bus_number_to_bus; kwargs...)
     read_3w_transformer!(sys, data, bus_number_to_bus; kwargs...)
     if runchecks
@@ -97,6 +96,10 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
             branch["base_power"] = pm_data.data["baseMVA"]
             branch["ext"] = Dict{String, Any}()
             @warn "Branch $(branch["f_bus"]) - $(branch["t_bus"]) has different voltage levels endpoints (from: $(f_bus_bvolt)kV, to: $(t_bus_bvolt)kV) which exceed the $(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL*100)% threshold; converting to transformer."
+            if !haskey(branch, "base_voltage_from")
+                branch["base_voltage_from"] = f_bus_bvolt
+                branch["base_voltage_to"] = t_bus_bvolt
+            end
         end
     end
 end
@@ -471,7 +474,6 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         )
 
         bus_number_to_bus[bus.number] = bus
-
         add_component!(sys, bus; skip_validation = SKIP_PM_VALIDATION)
     end
 
@@ -969,6 +971,48 @@ function make_thermal_gen(
     return thermal_gen
 end
 
+function make_synchronous_condenser(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    ext = Dict{String, Float64}()
+    if haskey(d, "r_source") && haskey(d, "x_source")
+        ext["r"] = d["r_source"]
+        ext["x"] = d["x_source"]
+    end
+
+    if haskey(d, "rt_source") && haskey(d, "xt_source")
+        ext["rt"] = d["rt_source"]
+        ext["xt"] = d["xt_source"]
+    end
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
+    synchronous_condenser = SynchronousCondenser(;
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        reactive_power = d["qg"] * base_conversion,
+        rating = d["qmax"] * base_conversion,
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        base_power = mbase,
+        ext = ext,
+    )
+
+    return synchronous_condenser
+end
+
 """
 Transfer generators to ps_dict according to their classification
 """
@@ -1005,6 +1049,8 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableNonDispatch
             generator = make_renewable_fix(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == SynchronousCondenser
+            generator = make_synchronous_condenser(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == EnergyReservoirStorage
             @warn "EnergyReservoirStorage should be defined as a PowerModels storage... Skipping"
             continue
@@ -1028,7 +1074,6 @@ function make_branch(
     bus_f::ACBus,
     bus_t::ACBus,
     source_type::String,
-    dummy_buses::Set,
 )
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
@@ -1047,7 +1092,7 @@ function make_branch(
             error("Unsupported branch type $branch_type")
         end
     else
-        value = make_line(name, d, bus_f, bus_t, dummy_buses)
+        value = make_line(name, d, bus_f, bus_t)
     end
 
     return value
@@ -1071,12 +1116,7 @@ function _get_rating(
     end
 end
 
-function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, dummy_buses::Set)
-    if get_number(bus_f) in dummy_buses || get_number(bus_t) in dummy_buses
-        @warn "Skipping line $name because it connects to a dummy bus"
-        return
-    end
-
+function make_line(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -1315,17 +1355,6 @@ function read_branch!(
         return
     end
 
-    dummy_buses = Set{Int}()
-    if haskey(data, "multisection_line")
-        msl_data = data["multisection_line"]
-        for key in keys(msl_data)
-            ext_dict = msl_data[key]["ext"]
-            for bus in values(ext_dict)
-                push!(dummy_buses, bus)
-            end
-        end
-    end
-
     _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
     ict_instances = _impedance_correction_table_lookup(data)
 
@@ -1333,7 +1362,7 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t, source_type, dummy_buses)
+        value = make_branch(name, d, bus_f, bus_t, source_type)
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
@@ -1350,135 +1379,6 @@ function read_branch!(
                 ict_instances,
             )
         end
-    end
-end
-
-function make_multisection_line(
-    name::String,
-    d::Dict,
-    bus_f::ACBus,
-    bus_t::ACBus,
-    facts_buses::Set{Int},
-    branch_data::Dict,
-)
-    @warn "Dummy buses are ignored. Each line group id is added as a regular line component..."
-
-    for (_, dbus) in d["ext"]
-        # Check if a FACTS device is connected to a dummy bus
-        if dbus in facts_buses
-            @warn "FACTS device is connected to a dummy bus $(dbus) in multi-section line $name."
-        end
-
-        # Check if any dummy bus is used as a converter bus
-        if haskey(d, "dc_converters")
-            if dbus in d["dc_converters"]
-                @warn "Dummy bus $(dbus) assigned as a DC line converter bus in multi-section line $(name)."
-            end
-        end
-    end
-
-    # Define equivalent parameters for line groupings
-    eq_r = 0.0
-    eq_x = 0.0
-    eq_b_fr = 0.0
-    eq_b_to = 0.0
-    ang_min_val = []
-    ang_max_val = []
-    ratings = []
-    ratings_b = []
-    ratings_c = []
-
-    sorted_dummy_buses = [bus for (_, bus) in sort(collect(d["ext"]))]
-    bus_path = [d["f_bus"]; sorted_dummy_buses; d["t_bus"]]
-
-    pairs = []
-    for i in 1:(length(bus_path) - 1)
-        push!(pairs, "$(bus_path[i])-$(bus_path[i+1])")
-        push!(pairs, "$(bus_path[i+1])-$(bus_path[i])")
-    end
-
-    for (_, d) in branch_data
-        if d["source_id"][1] == "branch"
-            line_path = "$(d["source_id"][2])-$(d["source_id"][3])"
-            if line_path in pairs
-                eq_r += d["br_r"]
-                eq_x += d["br_x"]
-                eq_b_fr += d["b_fr"]
-                eq_b_to += d["b_to"]
-                push!(ang_min_val, d["angmin"])
-                push!(ang_max_val, d["angmax"])
-                push!(ratings, d["rate_a"])
-
-                for (key, arr) in [("rate_b", ratings_b), ("rate_c", ratings_c)]
-                    push!(arr, get(d, key, INFINITE_BOUND))
-                end
-            else
-                continue
-            end
-        end
-    end
-
-    return Line(;
-        name = name,
-        available = d["available"],
-        active_power_flow = 0.0,
-        reactive_power_flow = 0.0,
-        arc = Arc(bus_f, bus_t),
-        r = eq_r,
-        x = eq_x,
-        b = (from = eq_b_fr, to = eq_b_to),
-        rating = maximum(ratings),
-        angle_limits = (min = minimum(ang_min_val), max = maximum(ang_max_val)),
-        rating_b = maximum(ratings_b),
-        rating_c = maximum(ratings_c),
-        ext = d["ext"],
-    )
-end
-
-function read_multisection_line!(
-    sys::System,
-    data::Dict,
-    bus_number_to_bus::Dict{Int, ACBus};
-    kwargs...,
-)
-    @info "Reading multi-section line data"
-    if !haskey(data, "multisection_line")
-        @info "There is no multi-section line data in this file"
-        return
-    end
-
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
-
-    # Collect all DC converter buses
-    dc_converters = Set{Int}()
-    for key in ["dcline", "vscline"]
-        if haskey(data, key)
-            for (_, d) in data[key]
-                push!(dc_converters, d["f_bus"])
-                push!(dc_converters, d["t_bus"])
-            end
-        end
-    end
-
-    # Collect all buses where FACTS devices are connected to
-    facts_buses = Set{Int}()
-    if haskey(data, "facts")
-        for (_, d) in data["facts"]
-            push!(facts_buses, d["bus"])
-        end
-    end
-
-    branch_data = data["branch"]
-
-    for (_, d) in data["multisection_line"]
-        bus_f = bus_number_to_bus[d["f_bus"]]
-        bus_t = bus_number_to_bus[d["t_bus"]]
-        name = _get_name(d, bus_f, bus_t)
-        d["dc_converters"] = dc_converters
-        msl_name = "$(name)-$(d["id"])"
-        value = make_multisection_line(msl_name, d, bus_f, bus_t, facts_buses, branch_data)
-
-        add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
     end
 end
 

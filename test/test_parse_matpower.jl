@@ -16,6 +16,7 @@ POWER_MODELS_KEYS = [
 
 badfiles = Dict("case30.m" => PSY.InvalidValue)
 voltage_inconsistent_files = ["RTS_GMLC_original.m", "case5_re.m", "case5_re_uc.m"]
+error_log_files = ["ACTIVSg2000.m", "case_ACTIVSg10k.m"]
 
 @testset "Parse Matpower data files" begin
     files = [x for x in readdir(joinpath(MATPOWER_DIR)) if splitext(x)[2] == ".m"]
@@ -43,6 +44,10 @@ voltage_inconsistent_files = ["RTS_GMLC_original.m", "case5_re.m", "case5_re_uc.
                 (:error, r"cannot create Line"),
                 match_mode = :any,
                 @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
+            )
+        elseif f in error_log_files
+            @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
+                PowerSystems.PowerModelsData(pm_dict),
             )
         else
             sys = System(PowerSystems.PowerModelsData(pm_dict))
@@ -80,6 +85,10 @@ end
                 (:error, r"cannot create Line"),
                 match_mode = :any,
                 @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
+            )
+        elseif f in error_log_files
+            @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
+                PowerSystems.PowerModelsData(pm_dict),
             )
         else
             sys = System(PowerSystems.PowerModelsData(pm_dict))

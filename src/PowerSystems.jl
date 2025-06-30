@@ -44,6 +44,7 @@ export TapTransformer
 export PhaseShiftingTransformer
 export FACTSControlDevice
 export Transformer3W
+export SynchronousCondenser
 
 # from IS function_data.jl
 export FunctionData
@@ -383,6 +384,7 @@ export ReservoirConnectedDevicesKey
 export ReservoirConnectedDevicesMapping
 export get_component
 export get_components
+export get_num_components
 export get_associated_components
 export show_components
 export get_subcomponents
@@ -632,6 +634,7 @@ import InfrastructureSystems:
     get_resolution,
     get_window,
     get_name,
+    get_num_components,
     get_component_uuids,
     get_supplemental_attribute,
     get_supplemental_attributes,

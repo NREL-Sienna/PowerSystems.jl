@@ -50,7 +50,11 @@ end
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
-    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
+    sys3 =
+        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
+            PSSEParsingTestSystems,
+            "psse_ACTIVSg2000_sys",
+        )
     sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
@@ -168,6 +172,15 @@ end
     @test get_max_shunt_current(facts) == 9999.0
     @test get_reactive_power_required(facts) > 0
     @test get_control_mode(facts) == FACTSOperationModes.NML
+end
+
+@testset "PSSE Generators as Synchronous Condensers" begin
+    sys = build_system(PSSEParsingTestSystems, "pti_case11_with_synchronous_condensers_sys")
+    sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
+
+    @test !hasproperty(sc_gen1, :active_power)
+    @test get_available(sc_gen1) == true
+    @test get_bustype(get_bus(sc_gen1)) == ACBusTypes.PV
 end
 
 @testset "PSSE Switches & Breakers Parsing" begin
@@ -339,8 +352,8 @@ end
 
     @test get_base_power(original_sys) == get_base_power(deserialized_sys)
     @test get_frequency(original_sys) == get_frequency(deserialized_sys)
-    @test IS.get_num_components(original_sys.data.components) ==
-          IS.get_num_components(deserialized_sys.data.components)
+    @test get_num_components(original_sys) ==
+          get_num_components(deserialized_sys)
 
     gen1_names = sort(get_name.(get_components(ThermalStandard, original_sys)))
     gen2_names = sort(get_name.(get_components(ThermalStandard, deserialized_sys)))
@@ -353,9 +366,33 @@ end
     @test IS.compare_values(original_sys, deserialized_sys)
 end
 
+@testset "PSSE transformer tap position correction testing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "psse_14_tap_correction_test_system";
+        force_build = true,
+    )
+    #test 2W correction matches PSSE
+    trf = get_component(TapTransformer, sys, "BUS 104-BUS 107-i_1")
+    tap = get_tap(trf)
+    @test isapprox(tap, 0.979937; atol = 1e-6)
+
+    #test 3W correction matches PSSE
+    trf_3w = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w)
+    tap2 = get_secondary_turns_ratio(trf_3w)
+    tap3 = get_tertiary_turns_ratio(trf_3w)
+    @test isapprox(tap1, 0.98750; atol = 1e-6)
+    @test isapprox(tap2, 0.97500; atol = 1e-6)
+    @test isapprox(tap3, 0.96250; atol = 1e-6)
+end
+
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    sys =
-        build_system(PSSEParsingTestSystems, "isolated_bus_test_system"; force_build = true)
+    sys = @test_logs (:error,) match_mode = :any build_system(
+        PSSEParsingTestSystems,
+        "isolated_bus_test_system";
+        force_build = true,
+    )
     @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
     @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0

@@ -702,11 +702,13 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                sys_gen = get_component(
-                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
-                    sys,
-                    gen.name,
-                )
+                sys_gen = get_component(gen_type, sys, gen.name)
+                if isnothing(sys_gen)
+                    error(
+                        "Failed to find generator: type = $gen_type name = $(gen.name) " *
+                        "fuel = $(gen.fuel) unit_type = $(gen.unit_type)",
+                    )
+                end
                 area = string(
                     buses[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1],
                 )
@@ -775,6 +777,8 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
+    elseif gen_type == SynchronousCondenser
+        generator = make_synchronous_condenser_generator(gen, bus)
     elseif gen_type <: HydroGen
         generator =
             make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
@@ -1096,6 +1100,27 @@ function make_reactive_params(
             (min = reactive_power_limits_min, max = reactive_power_limits_max)
     end
     return reactive_power, reactive_power_limits
+end
+
+function make_synchronous_condenser_generator(
+    gen,
+    bus,
+)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    base_power = gen.base_mva
+
+    return SynchronousCondenser(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        reactive_power = reactive_power,
+        rating = rating,
+        reactive_power_limits = reactive_power_limits,
+        base_power = base_power,
+    )
 end
 
 function make_thermal_generator(

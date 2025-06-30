@@ -41,6 +41,7 @@ system = System(100.0); # 100 MVA base power
 bus1 = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,

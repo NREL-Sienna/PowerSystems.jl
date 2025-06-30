@@ -522,7 +522,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -596,7 +598,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -607,7 +611,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -696,7 +702,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "null_value": "0.0",
@@ -707,7 +715,9 @@
                         "min": 0,
                         "max": 4
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "b",
@@ -718,7 +728,9 @@
                         "min": 0,
                         "max": 2
                     },
-                    "validation_action": "warn"
+                    "validation_action": "warn",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "flow_limits",
@@ -770,7 +782,9 @@
                         "max": 100
                     },
                     "validation_action": "warn",
-                    "default": "(from=0.0, to=0.0)"
+                    "default": "(from=0.0, to=0.0)",
+                    "needs_conversion": true,
+                    "conversion_unit": ":siemens"
                 },
                 {
                     "name": "services",
@@ -2904,6 +2918,14 @@
                     "comment": "Services that this device contributes to",
                     "null_value": "Device[]",
                     "default": "Device[]"
+                },
+                {
+                    "name": "dynamic_injector",
+                    "data_type": "Union{Nothing, DynamicInjection}",
+                    "comment": "corresponding dynamic injection device",
+                    "null_value": "nothing",
+                    "exclude_setter": true,
+                    "default": "nothing"
                 },
                 {
                     "name": "ext",

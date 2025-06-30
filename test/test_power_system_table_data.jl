@@ -72,6 +72,11 @@ end
             mp_iter = get_components(ThermalGen, mpsys)
             mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
             for cdmgen in get_components(ThermalGen, cdmsys)
+                if isnothing(cdmgen)
+                    # Skips generators parsed from Matpower as SynchCondensers in PSY5
+                    # The fields are different so those aren't valiated in this loop
+                    continue
+                end
                 mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
                 @test cdmgen.available == mpgen.available
                 @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
