@@ -10,6 +10,8 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         base_power::Float64
+        operation_cost::Union{LoadCost, MarketBidCost}
+        conformity::LoadConformity
         constant_active_power::Float64
         constant_reactive_power::Float64
         impedance_active_power::Float64
@@ -22,8 +24,6 @@ This file is auto-generated. Do not edit.
         max_impedance_reactive_power::Float64
         max_current_active_power::Float64
         max_current_reactive_power::Float64
-        operation_cost::Union{LoadCost, MarketBidCost}
-        conformity::LoadConformity
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -41,6 +41,8 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
 - `constant_reactive_power::Float64`: (default: `0.0`) Constant reactive power demand in MVAR (Q_P)
 - `impedance_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant impedance load (P_Z)
@@ -53,8 +55,6 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `max_impedance_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant impedance load
 - `max_current_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant current load
 - `max_current_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant current load
-- `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
-- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -69,6 +69,10 @@ mutable struct InterruptibleStandardLoad <: ControllableLoad
     bus::ACBus
     "Base power of the load (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
+    "[`OperationalCost`](@ref) of interrupting load"
+    operation_cost::Union{LoadCost, MarketBidCost}
+    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
+    conformity::LoadConformity
     "Constant active power demand in MW (P_P)"
     constant_active_power::Float64
     "Constant reactive power demand in MVAR (Q_P)"
@@ -93,10 +97,6 @@ mutable struct InterruptibleStandardLoad <: ControllableLoad
     max_current_active_power::Float64
     "Maximum reactive power (MVAR) drawn by constant current load"
     max_current_reactive_power::Float64
-    "[`OperationalCost`](@ref) of interrupting load"
-    operation_cost::Union{LoadCost, MarketBidCost}
-    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
-    conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -107,12 +107,12 @@ mutable struct InterruptibleStandardLoad <: ControllableLoad
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptibleStandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    InterruptibleStandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, operation_cost, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function InterruptibleStandardLoad(name, available, bus, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptibleStandardLoad(name, available, bus, base_power, operation_cost, conformity, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptibleStandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    InterruptibleStandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, operation_cost, conformity, services, dynamic_injector, ext, internal, )
+function InterruptibleStandardLoad(; name, available, bus, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptibleStandardLoad(name, available, bus, base_power, operation_cost, conformity, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -122,6 +122,8 @@ function InterruptibleStandardLoad(::Nothing)
         available=false,
         bus=ACBus(nothing),
         base_power=0.0,
+        operation_cost=LoadCost(nothing),
+        conformity=LoadConformity.UNDEFINED,
         constant_active_power=0.0,
         constant_reactive_power=0.0,
         impedance_active_power=0.0,
@@ -134,8 +136,6 @@ function InterruptibleStandardLoad(::Nothing)
         max_impedance_reactive_power=0.0,
         max_current_active_power=0.0,
         max_current_reactive_power=0.0,
-        operation_cost=LoadCost(nothing),
-        conformity=LoadConformity.UNDEFINED,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -150,6 +150,10 @@ get_available(value::InterruptibleStandardLoad) = value.available
 get_bus(value::InterruptibleStandardLoad) = value.bus
 """Get [`InterruptibleStandardLoad`](@ref) `base_power`."""
 get_base_power(value::InterruptibleStandardLoad) = value.base_power
+"""Get [`InterruptibleStandardLoad`](@ref) `operation_cost`."""
+get_operation_cost(value::InterruptibleStandardLoad) = value.operation_cost
+"""Get [`InterruptibleStandardLoad`](@ref) `conformity`."""
+get_conformity(value::InterruptibleStandardLoad) = value.conformity
 """Get [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
 get_constant_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva))
 """Get [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
@@ -174,10 +178,6 @@ get_max_impedance_reactive_power(value::InterruptibleStandardLoad) = get_value(v
 get_max_current_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva))
 """Get [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
 get_max_current_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `operation_cost`."""
-get_operation_cost(value::InterruptibleStandardLoad) = value.operation_cost
-"""Get [`InterruptibleStandardLoad`](@ref) `conformity`."""
-get_conformity(value::InterruptibleStandardLoad) = value.conformity
 """Get [`InterruptibleStandardLoad`](@ref) `services`."""
 get_services(value::InterruptibleStandardLoad) = value.services
 """Get [`InterruptibleStandardLoad`](@ref) `dynamic_injector`."""
@@ -193,6 +193,10 @@ set_available!(value::InterruptibleStandardLoad, val) = value.available = val
 set_bus!(value::InterruptibleStandardLoad, val) = value.bus = val
 """Set [`InterruptibleStandardLoad`](@ref) `base_power`."""
 set_base_power!(value::InterruptibleStandardLoad, val) = value.base_power = val
+"""Set [`InterruptibleStandardLoad`](@ref) `operation_cost`."""
+set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cost = val
+"""Set [`InterruptibleStandardLoad`](@ref) `conformity`."""
+set_conformity!(value::InterruptibleStandardLoad, val) = value.conformity = val
 """Set [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
 set_constant_active_power!(value::InterruptibleStandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
 """Set [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
@@ -217,10 +221,6 @@ set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value
 set_max_current_active_power!(value::InterruptibleStandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
 """Set [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
 set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `operation_cost`."""
-set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cost = val
-"""Set [`InterruptibleStandardLoad`](@ref) `conformity`."""
-set_conformity!(value::InterruptibleStandardLoad, val) = value.conformity = val
 """Set [`InterruptibleStandardLoad`](@ref) `services`."""
 set_services!(value::InterruptibleStandardLoad, val) = value.services = val
 """Set [`InterruptibleStandardLoad`](@ref) `ext`."""
