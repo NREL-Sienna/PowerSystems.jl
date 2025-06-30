@@ -49,3 +49,8 @@ By default, `PowerSystems.jl` uses `"SYSTEM_BASE"` because many optimization pro
 converge when using natural units. If you change the unit setting, it's suggested that you
 switch back to `"SYSTEM_BASE"` before solving an optimization problem (for example in
 [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
+
+!!! note
+    
+
+Check the [`Transformers per unit explanation`](ref transformers_pu) for details on how

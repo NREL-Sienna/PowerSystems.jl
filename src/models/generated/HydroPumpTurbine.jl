@@ -36,7 +36,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A hydropower pumped turbine that needs to be attached to two reservoir, suitable for modeling independent pumped hydro with reservoirs.
+A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s attached, suitable for modeling independent pumped hydro with reservoirs.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
@@ -49,8 +49,8 @@ A hydropower pumped turbine that needs to be attached to two reservoir, suitable
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `active_power_limits_pump::MinMax`: Minimum and maximum stable active power levels (MW) for the pump, validation range: `(0, nothing)`
 - `outflow_limits::Union{Nothing, MinMax}`: Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable
-- `head_reservoir::HydroReservoir`: Head reservoir that this component is connected to
-- `tail_reservoir::HydroReservoir`: Tail reservoir that this component is connected to
+- `head_reservoir::HydroReservoir`: Head [`HydroReservoir`](@ref) that this component is connected to
+- `tail_reservoir::HydroReservoir`: Tail [`HydroReservoir`](@ref) that this component is connected to
 - `powerhouse_elevation::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
@@ -89,9 +89,9 @@ mutable struct HydroPumpTurbine <: HydroGen
     active_power_limits_pump::MinMax
     "Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable"
     outflow_limits::Union{Nothing, MinMax}
-    "Head reservoir that this component is connected to"
+    "Head [`HydroReservoir`](@ref) that this component is connected to"
     head_reservoir::HydroReservoir
-    "Tail reservoir that this component is connected to"
+    "Tail [`HydroReservoir`](@ref) that this component is connected to"
     tail_reservoir::HydroReservoir
     "Height level in meters above the sea level of the powerhouse on which the turbine is installed."
     powerhouse_elevation::Float64

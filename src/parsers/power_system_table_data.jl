@@ -83,21 +83,104 @@ function PowerSystemTableData(
 end
 
 """
-Reads in all the data stored in csv files
-The general format for data is
-    folder:
-        gen.csv
-        branch.csv
-        bus.csv
-        ..
-        load.csv
+Reads in all the data stored in csv files in a `directory`
+
+!!! warning
+    
+    This parser is planned for deprecation. `PowerSystems.jl` will be
+    moving to a database solution for handling data. There are plans to eventually include
+    utility functions to translate from .csv files to the database, but there will probably
+    be a gap in support. **Users are recommended to write their own custom Julia code to
+    import data from their unique data formats, rather than relying on this parsing
+    code.** See [How-to Build a `System` from CSV Files](@ref system_from_csv) for an example.
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `base_power::Float64`: base power for System
-- `user_descriptor_file::AbstractString`: customized input descriptor file
-- `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
-- `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
+- `base_power::Float64`: base power for [`System`](@ref)
+- `user_descriptor_file::AbstractString`: customized input descriptor file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/user_descriptors.yaml)
+- `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: `PowerSystems.jl` descriptor file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json)
+- `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping.yaml)
+- `timeseries_metadata_file = joinpath(directory, "timeseries_pointers")`: Time series pointers .json file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/timeseries_pointers.json)
+
+The general format for data in the `directory` is:
+- bus.csv (required)
+    + columns specifying `area` and `zone` will create a corresponding set of `Area` and `LoadZone` objects.
+    + columns specifying `max_active_power` or `max_reactive_power` will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
+        corresponding `LoadZone` object.
+- branch.csv
+- dc_branch.csv
+- gen.csv
+- load.csv
+- reserves.csv
+- storage.csv
+
+# Custom construction of generators
+
+Each generator will be defined as a concrete subtype of [`Generator`](@ref),
+based on the `fuel` and `type` columns in `gen.csv` and the `generator_mapping_file`.
+The default mapping file
+is [`src/parsers/generator_mapping.yaml`](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping.yaml). You can override this behavior by specifying your own file.
+
+# Custom Column names
+
+`PowerSystems` provides am input mapping capability that allows you to keep your own
+column names. For example, when parsing raw data for a generator the code expects a column
+called `name`. If the raw data instead defines that column as `GEN UID` then
+you can change the `custom_name` field under the `generator` category to
+`GEN UID` in your YAML file.
+
+To enable the parsing of a custom set of csv files, you can generate a configuration
+file (such as `user_descriptors.yaml`) from the defaults, which are stored
+in [`src/descriptors/power_system_inputs.json`](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json).
+
+```python
+python ./bin/generate_config_file.py ./user_descriptors.yaml
+```
+
+Next, edit this file with your customizations.
+
+Note that the user-specific customizations are stored in YAML rather than JSON
+to allow for easier editing. The next few sections describe changes you can
+make to this YAML file.  Do not edit the default JSON file.
+
+## Per-unit conversion
+
+`PowerSystems` defines whether it expects a column value to be per-unit system base,
+per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
+per-unit convention that differs from your values then you can set the `unit_system` in
+`user_descriptors.yaml` and `PowerSystems` will automatically convert the values. For
+example, if you have a `max_active_power` value stored in natural units (MW), but
+`power_system_inputs.json` specifies `unit_system: device_base`, you can enter
+`unit_system: natural_units` in `user_descriptors.yaml` and `PowerSystems` will divide
+the value by the value of the corresponding entry in the column identified by the
+`base_reference` field in `power_system_inputs.json`. You can also override the
+`base_reference` setting by adding `base_reference: My Column` to make device base
+per-unit conversion by dividing the value by the entry in `My Column`. System base
+per-unit conversions always divide the value by the system `base_power` value
+instantiated when constructing a `System`.
+
+`PowerSystems` provides a limited set of unit conversions. For example, if
+`power_system_inputs.json` indicates that a value's unit is degrees but
+your values are in radians then you can set `unit: radian` in
+your YAML file. Other valid `unit` entries include `GW`, `GWh`, `MW`, `MWh`, `kW`,
+and `kWh`.
+
+# Examples
+```julia
+data_dir = "/data/my-data-dir"
+base_power = 100.0
+descriptors = "./user_descriptors.yaml"
+timeseries_metadata_file = "./timeseries_pointers.json"
+generator_mapping_file = "./generator_mapping.yaml"
+data = PowerSystemTableData(
+    data_dir,
+    base_power,
+    descriptors;
+    timeseries_metadata_file = timeseries_metadata_file,
+    generator_mapping_file = generator_mapping_file,
+)
+sys = System(data; time_series_in_memory = true)
+```
 """
 function PowerSystemTableData(
     directory::AbstractString,
@@ -231,7 +314,16 @@ function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true
 end
 
 """
-Construct a System from PowerSystemTableData data.
+Construct a System from [`PowerSystemTableData`](@ref) data.
+
+!!! warning
+    
+    This parser is planned for deprecation. `PowerSystems.jl` will be
+    moving to a database solution for handling data. There are plans to eventually include
+    utility functions to translate from .csv files to the database, but there will probably
+    be a gap in support. **Users are recommended to write their own custom Julia code to
+    import data from their unique data formats, rather than relying on this parsing
+    code.** See [How-to Build a `System` from CSV Files](@ref system_from_csv) for an example.
 
 # Arguments
 - `time_series_resolution::Union{DateTime, Nothing}=nothing`: only store time_series that match

@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A hydropower generator that needs to be attached to a reservoir, suitable for modeling indenpendent turbines and reservoirs.
+A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suitable for modeling independent turbines and reservoirs.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
@@ -48,7 +48,7 @@ A hydropower generator that needs to be attached to a reservoir, suitable for mo
 - `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
-- `reservoirs::Vector{HydroReservoir}`: (default: `Device[]`) Reservoir(s) that this component is connected to
+- `reservoirs::Vector{HydroReservoir}`: (default: `Device[]`) [`HydroReservoir`](@ref)(s) that this component is connected to
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -87,7 +87,7 @@ mutable struct HydroTurbine <: HydroGen
     efficiency::Float64
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
-    "Reservoir(s) that this component is connected to"
+    "[`HydroReservoir`](@ref)(s) that this component is connected to"
     reservoirs::Vector{HydroReservoir}
     "Services that this device contributes to"
     services::Vector{Service}
