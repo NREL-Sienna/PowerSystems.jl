@@ -96,12 +96,12 @@ function IS.deserialize(::Type{Device}, data::Dict)
     return
 end
 
-function _check_uuid_in_component_cache(uuid, component_cache)
+function _check_uuid_in_component_cache(uuid::Base.UUID, component_cache)
     if !haskey(component_cache, uuid)
         error(
             "UUID $uuid not found in component cache while deserializing system. \
              This may indicate that a component was removed improperly leaving a UUID \
-             reference inside the top level component. This can happen when removing Arc, Areas, ACBus or LoadZone \
+             reference inside the top level component. This can happen when removing Arc, Area, ACBus or LoadZone \
              components for example. \
              Check the documentation for the `remove_component!` function and review your workflow. \
              ",
