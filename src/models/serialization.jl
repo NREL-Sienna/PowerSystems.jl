@@ -96,6 +96,20 @@ function IS.deserialize(::Type{Device}, data::Dict)
     return
 end
 
+function _check_uuid_in_component_cache(uuid, component_cache)
+    if !haskey(component_cache, uuid)
+        error(
+            "UUID $uuid not found in component cache while deserializing system. \
+             This may indicate that a component was removed improperly leaving a UUID \
+             reference inside the top level component. This can happen when removing Arc, Areas, ACBus or LoadZone \
+             components for example. \
+             Check the documentation for the `remove_component!` function and review your workflow. \
+             ",
+        )
+    end
+    return
+end
+
 """
 Deserialize the value, converting UUIDs to components where necessary.
 """
@@ -108,21 +122,14 @@ function deserialize_uuid_handling(field_type, val, component_cache)
             _vals = field_type()
             for _val in val
                 uuid = deserialize(Base.UUID, _val)
+                _check_uuid_in_component_cache(uuid, component_cache)
                 component = component_cache[uuid]
                 push!(_vals, component)
             end
             value = _vals
         else
             uuid = deserialize(Base.UUID, val)
-            if !haskey(component_cache, uuid)
-                error(
-                    "UUID $uuid not found in component cache. \
-                     This may indicate that a timeseries was removed improperly \
-                     and the reference device is still has a reference to the timeseries object. \
-                     Check the documentation for the `remove_timeseries!` function. \
-                     ",
-                )
-            end
+            _check_uuid_in_component_cache(uuid, component_cache)
             component = component_cache[uuid]
             value = component
         end
