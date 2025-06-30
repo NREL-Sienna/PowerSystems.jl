@@ -117,6 +117,7 @@ export FixedAdmittance
 export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
+export InterruptibleStandardLoad
 export ShiftablePowerLoad
 export ExponentialLoad
 export LoadConformity
