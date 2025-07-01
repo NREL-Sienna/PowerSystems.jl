@@ -577,7 +577,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_reactive_power = d["qd"],
         base_power = sys_mbase,
         conformity = d["conformity"],
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
@@ -1217,7 +1217,7 @@ function make_transformer_2w(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
