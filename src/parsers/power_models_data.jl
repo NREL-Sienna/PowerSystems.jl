@@ -1331,9 +1331,9 @@ function make_3w_phase_shifting_transformer(
         available_primary = d["available_primary"],
         available_secondary = d["available_secondary"],
         available_tertiary = d["available_tertiary"],
-        rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
-        rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
-        rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
+        rating_primary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_primary"),
+        rating_secondary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_secondary"),
+        rating_tertiary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_tertiary"),
         ext = d["ext"],
     )
 end
@@ -1496,8 +1496,6 @@ function read_3w_transformer!(
                 star_bus,
             )
         end
-        value =
-            make_3w_transformer(name, d, bus_primary, bus_secondary, bus_tertiary, star_bus)
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
 
