@@ -1906,7 +1906,7 @@ function process_substation_data!(
 
         return updated_line_index
     catch message
-        throw(@error("Parsing failed at line $line_index: $(sprint(showerror, message))"))
+        error("Parsing failed at line $line_index: $(sprint(showerror, message))")
     end
 end
 
