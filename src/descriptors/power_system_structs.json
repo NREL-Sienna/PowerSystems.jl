@@ -2061,31 +2061,13 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "α_tertirary",
+                    "name": "α_tertiary",
                     "comment": "Initial condition of tertiary phase shift (radians) between the `from` and `to` buses ",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
                         "min": -1.571,
                         "max": 1.571
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "phase_angle_limits",
-                    "comment": "Minimum and maximum phase angle limits (radians)",
-                    "null_value": "(min=-3.1416, max=3.1416)",
-                    "data_type": "MinMax",
-                    "default": "(min=-3.1416, max=3.1416)"
-                },
-                {
-                    "name": "base_power_12",
-                    "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
                     },
                     "validation_action": "warn"
                 },
@@ -2244,6 +2226,13 @@
                     "default": "0.0",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
+                },
+                {
+                    "name": "phase_angle_limits",
+                    "comment": "Minimum and maximum phase angle limits (radians)",
+                    "null_value": "(min=-3.1416, max=3.1416)",
+                    "data_type": "MinMax",
+                    "default": "(min=-3.1416, max=3.1416)"
                 },
                 {
                     "name": "services",

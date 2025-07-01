@@ -783,7 +783,7 @@ export get_x_tertiary
 export get_α
 export get_α_primary
 export get_α_secondary
-export get_α_tertirary
+export get_α_tertiary
 export get_β
 export get_γ_d1
 export get_γ_d2
@@ -1450,7 +1450,7 @@ export set_x_tertiary!
 export set_α!
 export set_α_primary!
 export set_α_secondary!
-export set_α_tertirary!
+export set_α_tertiary!
 export set_β!
 export set_γ_d1!
 export set_γ_d2!

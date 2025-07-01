@@ -33,9 +33,7 @@ This file is auto-generated. Do not edit.
         x_13::Float64
         α_primary::Float64
         α_secondary::Float64
-        α_tertirary::Float64
-        phase_angle_limits::MinMax
-        base_power_12::Float64
+        α_tertiary::Float64
         base_power_12::Float64
         base_power_23::Float64
         base_power_13::Float64
@@ -53,6 +51,7 @@ This file is auto-generated. Do not edit.
         rating_primary::Float64
         rating_secondary::Float64
         rating_tertiary::Float64
+        phase_angle_limits::MinMax
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -92,9 +91,7 @@ This variant includes phase shift capabilities on each winding to control active
 - `x_13::Float64`: Measured reactance in pu ([`SYSTEM_BASE`](@ref per_unit)) from primary to tertiary windings (X1-3 with CZ = 1 in PSS/E)., validation range: `(0, 4)`
 - `α_primary::Float64`: Initial condition of primary phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
 - `α_secondary::Float64`: Initial condition of secondary phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
-- `α_tertirary::Float64`: Initial condition of tertiary phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
-- `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
-- `base_power_12::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings., validation range: `(0, nothing)`
+- `α_tertiary::Float64`: Initial condition of tertiary phase shift (radians) between the `from` and `to` buses , validation range: `(-1.571, 1.571)`
 - `base_power_12::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings., validation range: `(0, nothing)`
 - `base_power_23::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings., validation range: `(0, nothing)`
 - `base_power_13::Float64`: Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings., validation range: `(0, nothing)`
@@ -112,6 +109,7 @@ This variant includes phase shift capabilities on each winding to control active
 - `rating_primary::Float64`: (default: `0.0`) Rating (in MVA) for primary winding.
 - `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
 - `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
+- `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -172,11 +170,7 @@ mutable struct PhaseShiftingTransformer3W <: ACTransmission
     "Initial condition of secondary phase shift (radians) between the `from` and `to` buses "
     α_secondary::Float64
     "Initial condition of tertiary phase shift (radians) between the `from` and `to` buses "
-    α_tertirary::Float64
-    "Minimum and maximum phase angle limits (radians)"
-    phase_angle_limits::MinMax
-    "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings."
-    base_power_12::Float64
+    α_tertiary::Float64
     "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings."
     base_power_12::Float64
     "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings."
@@ -211,6 +205,8 @@ mutable struct PhaseShiftingTransformer3W <: ACTransmission
     rating_secondary::Float64
     "Rating (in MVA) for tertiary winding."
     rating_tertiary::Float64
+    "Minimum and maximum phase angle limits (radians)"
+    phase_angle_limits::MinMax
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -219,12 +215,12 @@ mutable struct PhaseShiftingTransformer3W <: ACTransmission
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertirary, phase_angle_limits=(min=-3.1416, max=3.1416), base_power_12, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertirary, phase_angle_limits, base_power_12, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertirary, phase_angle_limits=(min=-3.1416, max=3.1416), base_power_12, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertirary, phase_angle_limits, base_power_12, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
+function PhaseShiftingTransformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -257,9 +253,7 @@ function PhaseShiftingTransformer3W(::Nothing)
         x_13=0.0,
         α_primary=0.0,
         α_secondary=0.0,
-        α_tertirary=0.0,
-        phase_angle_limits=(min=-3.1416, max=3.1416),
-        base_power_12=0.0,
+        α_tertiary=0.0,
         base_power_12=0.0,
         base_power_23=0.0,
         base_power_13=0.0,
@@ -277,6 +271,7 @@ function PhaseShiftingTransformer3W(::Nothing)
         rating_primary=0.0,
         rating_secondary=0.0,
         rating_tertiary=0.0,
+        phase_angle_limits=(min=-3.1416, max=3.1416),
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -336,12 +331,8 @@ get_x_13(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_13), Val(:
 get_α_primary(value::PhaseShiftingTransformer3W) = value.α_primary
 """Get [`PhaseShiftingTransformer3W`](@ref) `α_secondary`."""
 get_α_secondary(value::PhaseShiftingTransformer3W) = value.α_secondary
-"""Get [`PhaseShiftingTransformer3W`](@ref) `α_tertirary`."""
-get_α_tertirary(value::PhaseShiftingTransformer3W) = value.α_tertirary
-"""Get [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
-get_phase_angle_limits(value::PhaseShiftingTransformer3W) = value.phase_angle_limits
-"""Get [`PhaseShiftingTransformer3W`](@ref) `base_power_12`."""
-get_base_power_12(value::PhaseShiftingTransformer3W) = value.base_power_12
+"""Get [`PhaseShiftingTransformer3W`](@ref) `α_tertiary`."""
+get_α_tertiary(value::PhaseShiftingTransformer3W) = value.α_tertiary
 """Get [`PhaseShiftingTransformer3W`](@ref) `base_power_12`."""
 get_base_power_12(value::PhaseShiftingTransformer3W) = value.base_power_12
 """Get [`PhaseShiftingTransformer3W`](@ref) `base_power_23`."""
@@ -376,6 +367,8 @@ get_rating_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:ra
 get_rating_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_secondary), Val(:mva))
 """Get [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`."""
 get_rating_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva))
+"""Get [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
+get_phase_angle_limits(value::PhaseShiftingTransformer3W) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer3W`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer3W) = value.services
 """Get [`PhaseShiftingTransformer3W`](@ref) `ext`."""
@@ -435,12 +428,8 @@ set_x_13!(value::PhaseShiftingTransformer3W, val) = value.x_13 = set_value(value
 set_α_primary!(value::PhaseShiftingTransformer3W, val) = value.α_primary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `α_secondary`."""
 set_α_secondary!(value::PhaseShiftingTransformer3W, val) = value.α_secondary = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `α_tertirary`."""
-set_α_tertirary!(value::PhaseShiftingTransformer3W, val) = value.α_tertirary = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
-set_phase_angle_limits!(value::PhaseShiftingTransformer3W, val) = value.phase_angle_limits = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `base_power_12`."""
-set_base_power_12!(value::PhaseShiftingTransformer3W, val) = value.base_power_12 = val
+"""Set [`PhaseShiftingTransformer3W`](@ref) `α_tertiary`."""
+set_α_tertiary!(value::PhaseShiftingTransformer3W, val) = value.α_tertiary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `base_power_12`."""
 set_base_power_12!(value::PhaseShiftingTransformer3W, val) = value.base_power_12 = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `base_power_23`."""
@@ -475,6 +464,8 @@ set_rating_primary!(value::PhaseShiftingTransformer3W, val) = value.rating_prima
 set_rating_secondary!(value::PhaseShiftingTransformer3W, val) = value.rating_secondary = set_value(value, Val(:rating_secondary), val, Val(:mva))
 """Set [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`."""
 set_rating_tertiary!(value::PhaseShiftingTransformer3W, val) = value.rating_tertiary = set_value(value, Val(:rating_tertiary), val, Val(:mva))
+"""Set [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
+set_phase_angle_limits!(value::PhaseShiftingTransformer3W, val) = value.phase_angle_limits = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer3W, val) = value.services = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `ext`."""
