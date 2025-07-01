@@ -25,7 +25,9 @@ an import error.
         internal::InfrastructureSystemsInternal
     end
 
-A hydropower reservoir that needs to have `HydroTurbine` attached to generate power, suitable for modeling independent turbines and reservoirs.
+A hydropower reservoir that needs to be attached to [`HydroTurbine`](@ref)(s) or [`HydroPumpTurbine`](@ref)(s) to generate power
+
+See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for supported configurations.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
