@@ -273,7 +273,7 @@ Function to attach ICTs to a single Transformer component.
 """
 function _attach_single_ict!(
     sys::System,
-    transformer::Union{Transformer2W, Transformer3W},
+    transformer::Union{Transformer2W, Transformer3W, PhaseShiftingTransformer3W},
     name::String,
     d::Dict,
     table_key::String,
@@ -324,7 +324,7 @@ Attaches the corresponding ICT data to a Transformer3W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
-    transformer::Transformer3W,
+    transformer::Union{Transformer3W, PhaseShiftingTransformer3W},
     name::String,
     d::Dict,
     ict_instances::Union{
