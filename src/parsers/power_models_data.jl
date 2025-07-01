@@ -966,7 +966,7 @@ function make_thermal_gen(
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 
     return thermal_gen
@@ -1157,7 +1157,7 @@ function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating = d["rating"],
         discrete_branch_type = d["discrete_branch_type"],
         branch_status = d["state"],
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
@@ -1217,7 +1217,7 @@ function make_transformer_2w(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
@@ -1274,7 +1274,7 @@ function make_3w_transformer(
         rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
         rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
         rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
@@ -1456,7 +1456,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             reactive_power_limits_from = d["reactive_power_limits_from"],
             reactive_power_limits_to = d["reactive_power_limits_to"],
             loss = LinearCurve(d["loss1"], d["loss0"]),
-            ext = d["ext"],
+            ext = get(d, "ext", Dict{String, Any}()),
         )
     elseif source_type == "matpower"
         return TwoTerminalGenericHVDCLine(;
@@ -1531,7 +1531,7 @@ function make_vscline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating_to = d["rating_to"],
         reactive_power_limits_to = (min = d["qmint"], max = d["qmaxt"]),
         power_factor_weighting_fraction_to = d["power_factor_weighting_fraction_to"],
-        ext = d["EXT"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
@@ -1632,7 +1632,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
         reactive_power_required = d["reactive_power_required"],
-        ext = d["ext"],
+        ext = get(d, "ext", Dict{String, Any}()),
     )
 end
 
