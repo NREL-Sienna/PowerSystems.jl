@@ -4,7 +4,7 @@ The difference between conforming and non-conforming loads is not particularly s
 
 ## Definitions and use cases
 
-At its core, the distinction is about forecastability. The De Facto-Criteria and Practical Uses of this distinction comes from CAISO's Energy Imbalance Market (EIM) definitions. This section draws from the CAISO EIM's "Non-Conforming Load FAQ" document.
+At its core, the distinction is about forecastability. The De Facto-Criteria and Practical Uses of this distinction comes from CAISO's Energy Imbalance Market (EIM) definitions. This section draws from the [CAISO EIM's "Non-Conforming Load FAQ"](https://www.westerneim.com/Documents/EIM-Non-Conforming-Load-FAQ.pdf) document.
 
 Conforming loads are the typically residential and commercial loads that, in aggregate, follow a predictable daily and seasonal pattern influenced by factors like time of day, day of the week, and weather conditions. This predictability allows modelers to use aggregate forecasts of the total area load with a high degree of accuracy and then desagregate the curve using participation factors.
 
@@ -25,7 +25,7 @@ Drawing again from CAISO's EIM procedures, the management of non-conforming load
  2. **Independent Forecasting**: While the system operator forecasts the aggregate conforming load, the entity responsible for the non-conforming load is often required to submit its own forecast or schedule.
  3. **Specialized Modeling**: In market and operational models, non-conforming loads are often treated as a type of resource. For instance, in the CAISO market, they are represented as "Dispatchable Demand Response" (DDR) resources, which are essentially modeled as negative generation. This allows their behavior to be explicitly accounted for in market clearing and dispatch instructions.
 
-If a modeler wants to account for the differences in behavior between various loads, they only need to assign a distinct time series to each load. In PowerSystems.jl, we keep track of data related to "conformity" for monitoring purposes. However, the behavioral variations described in the literature are already taken into consideration through the ways modelers can manage these time series assignments.
+If a modeler wants to account for the differences in behavior between various loads, they only need to assign a distinct time series to each load. In `PowerSystems.jl`, we keep track of data related to "conformity" for monitoring purposes. This data is defined in the `conformity` field for concrete subtypes of [`StaticLoad`](@ref) and has the [options listed here](@ref loadconform_list). However, the behavioral variations described in the literature are already taken into consideration through the ways modelers can manage these time series assignments.
 
 ### See also:
 

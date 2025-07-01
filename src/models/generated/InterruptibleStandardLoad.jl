@@ -42,7 +42,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `bus::ACBus`: Bus that this component is connected to
 - `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
-- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
 - `constant_reactive_power::Float64`: (default: `0.0`) Constant reactive power demand in MVAR (Q_P)
 - `impedance_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant impedance load (P_Z)
@@ -71,7 +71,7 @@ mutable struct InterruptibleStandardLoad <: ControllableLoad
     base_power::Float64
     "[`OperationalCost`](@ref) of interrupting load"
     operation_cost::Union{LoadCost, MarketBidCost}
-    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
+    "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list)."
     conformity::LoadConformity
     "Constant active power demand in MW (P_P)"
     constant_active_power::Float64

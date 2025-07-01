@@ -2599,7 +2599,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -2677,7 +2677,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -3240,7 +3240,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -3420,7 +3420,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -3546,7 +3546,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },

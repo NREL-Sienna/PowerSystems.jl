@@ -145,6 +145,17 @@ the different alternatives of `ReservoirDataType`, which has the options:
 | `NML` | Normal mode of operation, where Series and Shunt links are operating                            |
 | `BYP` | Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM |
 
+## [Load Conformity](@id loadconform_list)
+
+`LoadConformity` defines whether a load is
+[conforming or non-nonforming](@ref conf_loads). `LoadConformity` has the options:
+
+| Name             | Description                                                       |
+|:---------------- |:----------------------------------------------------------------- |
+| `NON_CONFORMING` | Non-conforming load                                               |
+| `CONFORMING`     | Conforming load                                                   |
+| `UNDEFINED`      | Undefined or unknown whether load is conforming or non-conforming |
+
 ## [Dynamic States](@id states_list)
 
 `StateTypes` are used to denote the type of dynamic equation a specific [state](@ref S) is subject

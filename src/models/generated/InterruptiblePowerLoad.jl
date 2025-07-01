@@ -36,7 +36,7 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
-- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -61,7 +61,7 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     base_power::Float64
     "[`OperationalCost`](@ref) of interrupting load"
     operation_cost::Union{LoadCost, MarketBidCost}
-    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
+    "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list)."
     conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}
