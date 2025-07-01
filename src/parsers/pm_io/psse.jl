@@ -205,9 +205,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["rate_b"] = pop!(branch, "RATEB")
                     sub_data["rate_c"] = pop!(branch, "RATEC")
                 else
-                    sub_data["rate_a"] = pop!(branch, "RATE1")
-                    sub_data["rate_b"] = pop!(branch, "RATE2")
-                    sub_data["rate_c"] = pop!(branch, "RATE3")
+                    sub_data["rate_a"] = pop!(branch, "RATE1", 0.0)
+                    sub_data["rate_b"] = pop!(branch, "RATE2", 0.0)
+                    sub_data["rate_c"] = pop!(branch, "RATE3", 0.0)
 
                     for i in 4:12
                         rate_key = "RATE$i"
@@ -329,9 +329,10 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
 
             if pm_data["source_version"] != "33"
+                # TODO: sensible defaults?
                 sub_data["ext"] = Dict{String, Any}(
-                    "NREG" => pop!(gen, "NREG"),
-                    "BASLOD" => pop!(gen, "BASLOD"),
+                    "NREG" => pop!(gen, "NREG", ""),
+                    "BASLOD" => pop!(gen, "BASLOD", ""),
                 )
             else
                 sub_data["ext"] = Dict{String, Any}()
@@ -506,7 +507,8 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if pm_data["source_version"] == "33"
                 sub_data["ext"]["LOADTYPE"] = ""
             else
-                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE")
+                # TODO: sensible default?
+                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
             end
 
             sub_data["status"] = pop!(load, "STATUS")
@@ -611,8 +613,8 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     [initial_ss_status[k] for k in initial_ss_status_sorted]
                 sub_data["initial_status"] =
                     sub_data["initial_status"][1:length(sub_data["step_number"])]
-
-                sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
+                # TODO: sensible default?
+                sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG", "")
             end
 
             sub_data["source_id"] =
@@ -851,9 +853,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["rate_b"] = pop!(transformer, "RATB1")
                     sub_data["rate_c"] = pop!(transformer, "RATC1")
                 else
-                    sub_data["rate_a"] = pop!(transformer, "RATE11")
-                    sub_data["rate_b"] = pop!(transformer, "RATE12")
-                    sub_data["rate_c"] = pop!(transformer, "RATE13")
+                    # TODO: sensible defaults?
+                    sub_data["rate_a"] = pop!(transformer, "RATE11", 0.0)
+                    sub_data["rate_b"] = pop!(transformer, "RATE12", 0.0)
+                    sub_data["rate_c"] = pop!(transformer, "RATE13", 0.0)
 
                     for i in 4:12
                         rate_key = "RATE1$i"
