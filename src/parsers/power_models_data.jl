@@ -177,15 +177,22 @@ function add_geographic_info_to_buses!(sys, substation_data)
         return
     end
 
-    bus_coords_lookup = Dict{Int, Tuple{Float64, Float64}}()
+    bus_coords_lookup = Dict{Int, GeographicInfo}()
 
     for (_, substation) in substation_data
         if haskey(substation, "nodes") && haskey(substation, "latitude") &&
            haskey(substation, "longitude")
             lat, lon = substation["latitude"], substation["longitude"]
+
+            geo_info = GeographicInfo(;
+                geo_json = Dict(
+                    "x" => lon,
+                    "y" => lat,
+                ),
+            )
             for node in substation["nodes"]
                 if haskey(node, "I")
-                    bus_coords_lookup[node["I"]] = (lat, lon)
+                    bus_coords_lookup[node["I"]] = geo_info
                 end
             end
         end
@@ -199,13 +206,7 @@ function add_geographic_info_to_buses!(sys, substation_data)
             bus_number = get_number(bus)
 
             if haskey(bus_coords_lookup, bus_number)
-                latitude, longitude = bus_coords_lookup[bus_number]
-                geo_info = GeographicInfo(;
-                    geo_json = Dict(
-                        "x" => longitude,
-                        "y" => latitude,
-                    ),
-                )
+                geo_info = bus_coords_lookup[bus_number]
                 add_supplemental_attribute!(sys, bus, geo_info)
                 buses_with_coords += 1
             else
@@ -213,7 +214,7 @@ function add_geographic_info_to_buses!(sys, substation_data)
             end
         end
 
-        @info "Added coordinates to $(buses_with_coords[]) buses, $(buses_without_coords[]) buses without coordinates"
+        @info "Added coordinates to $(buses_with_coords) buses, $(buses_without_coords) buses without coordinates"
     end
 end
 
@@ -621,21 +622,21 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
             load = make_standard_load(d, bus, sys_mbase; kwargs...)
             has_component(StandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    "Found duplicate load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         elseif data["source_type"] == "pti" && is_interruptible && d["interruptible"] == 1
             load = make_interruptible_standardload(d, bus, sys_mbase; kwargs...)
             has_component(InterruptibleStandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
-                    "Found duplicate interruptible load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    "Found duplicate interruptible load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         else
             load = make_power_load(d, bus, sys_mbase; kwargs...)
             has_component(PowerLoad, sys, get_name(load)) && throw(
                 DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    "Found duplicate load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         end
