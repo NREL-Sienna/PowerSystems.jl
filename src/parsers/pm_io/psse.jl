@@ -195,18 +195,34 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     else
                         pop!(branch, "BJ")
                     end
-                sub_data["rate_a"] = pop!(branch, "RATEA")
-                sub_data["rate_b"] = pop!(branch, "RATEB")
-                sub_data["rate_c"] = pop!(branch, "RATEC")
+
+                sub_data["ext"] = Dict{String, Any}(
+                    "LEN" => pop!(branch, "LEN"),
+                )
+
+                if pm_data["source_version"] == "33"
+                    sub_data["rate_a"] = pop!(branch, "RATEA")
+                    sub_data["rate_b"] = pop!(branch, "RATEB")
+                    sub_data["rate_c"] = pop!(branch, "RATEC")
+                else
+                    sub_data["rate_a"] = pop!(branch, "RATE1")
+                    sub_data["rate_b"] = pop!(branch, "RATE2")
+                    sub_data["rate_c"] = pop!(branch, "RATE3")
+
+                    for i in 4:12
+                        rate_key = "RATE$i"
+                        if haskey(branch, rate_key)
+                            sub_data["ext"][rate_key] = pop!(branch, rate_key)
+                        end
+                    end
+                end
+
                 sub_data["tap"] = 1.0
                 sub_data["shift"] = 0.0
                 sub_data["br_status"] = pop!(branch, "ST")
                 sub_data["angmin"] = 0.0
                 sub_data["angmax"] = 0.0
                 sub_data["transformer"] = false
-                sub_data["ext"] = Dict{String, Any}(
-                    "LEN" => pop!(branch, "LEN"),
-                )
 
                 sub_data["source_id"] =
                     ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
@@ -311,6 +327,16 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["fuel"] = "SYNC_COND"
                 sub_data["type"] = "SYNC_COND"
             end
+
+            if pm_data["source_version"] != "33"
+                sub_data["ext"] = Dict{String, Any}(
+                    "NREG" => pop!(gen, "NREG"),
+                    "BASLOD" => pop!(gen, "BASLOD"),
+                )
+            else
+                sub_data["ext"] = Dict{String, Any}()
+            end
+
             # Default Cost functions
             sub_data["model"] = 2
             sub_data["startup"] = 0.0
@@ -474,6 +500,15 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["qy"] = pop!(load, "YQ")
             sub_data["conformity"] = pop!(load, "SCALE")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
+            sub_data["interruptible"] = pop!(load, "INTRPT")
+            sub_data["ext"] = Dict{String, Any}()
+
+            if pm_data["source_version"] == "33"
+                sub_data["ext"]["LOADTYPE"] = ""
+            else
+                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE")
+            end
+
             sub_data["status"] = pop!(load, "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
             if import_all
@@ -486,6 +521,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 bus["bus_status"] = false
                 sub_data["status"] = false
             end
+
             push!(pm_data["load"], sub_data)
         end
     end
@@ -551,6 +587,8 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
 
+            sub_data["ext"] = Dict{String, Any}()
+
             y_increment = Dict(
                 k => v for
                 (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k))
@@ -559,6 +597,23 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
             sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]im
             sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
+
+            if pm_data["source_version"] != "33"
+                sub_data["sw_id"] = pop!(switched_shunt, "ID")
+
+                initial_ss_status = Dict(
+                    k => v for
+                    (k, v) in switched_shunt if startswith(k, "S") && isdigit(last(k))
+                )
+                initial_ss_status_sorted =
+                    sort(collect(keys(initial_ss_status)); by = x -> parse(Int, x[2:end]))
+                sub_data["initial_status"] =
+                    [initial_ss_status[k] for k in initial_ss_status_sorted]
+                sub_data["initial_status"] =
+                    sub_data["initial_status"][1:length(sub_data["step_number"])]
+
+                sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
+            end
 
             sub_data["source_id"] =
                 ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
@@ -784,9 +839,29 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["g_to"] = 0.0
                 sub_data["b_to"] = 0.0
 
-                sub_data["rate_a"] = pop!(transformer, "RATA1")
-                sub_data["rate_b"] = pop!(transformer, "RATB1")
-                sub_data["rate_c"] = pop!(transformer, "RATC1")
+                sub_data["ext"] = Dict{String, Any}(
+                    "psse_name" => transformer["NAME"],
+                    "CW" => transformer["CW"],
+                    "CZ" => transformer["CZ"],
+                    "CM" => transformer["CM"],
+                )
+
+                if pm_data["source_version"] == "33"
+                    sub_data["rate_a"] = pop!(transformer, "RATA1")
+                    sub_data["rate_b"] = pop!(transformer, "RATB1")
+                    sub_data["rate_c"] = pop!(transformer, "RATC1")
+                else
+                    sub_data["rate_a"] = pop!(transformer, "RATE11")
+                    sub_data["rate_b"] = pop!(transformer, "RATE12")
+                    sub_data["rate_c"] = pop!(transformer, "RATE13")
+
+                    for i in 4:12
+                        rate_key = "RATE1$i"
+                        if haskey(transformer, rate_key)
+                            sub_data["ext"][rate_key] = pop!(transformer, rate_key)
+                        end
+                    end
+                end
 
                 if sub_data["rate_a"] == 0.0
                     delete!(sub_data, "rate_a")
@@ -864,12 +939,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     pop!(transformer, "CKT"),
                     0,
                 ]
-                sub_data["ext"] = Dict{String, Any}(
-                    "psse_name" => transformer["NAME"],
-                    "CW" => transformer["CW"],
-                    "CZ" => transformer["CZ"],
-                    "CM" => transformer["CM"],
-                )
 
                 sub_data["transformer"] = true
                 sub_data["correction_table"] = transformer["TAB1"]
@@ -1079,17 +1148,55 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["r_tertiary"] = Zr_t
                 sub_data["x_tertiary"] = Zx_t
 
-                sub_data["rating_primary"] =
-                    min(transformer["RATA1"], transformer["RATB1"], transformer["RATC1"])
-                sub_data["rating_secondary"] =
-                    min(transformer["RATA2"], transformer["RATB2"], transformer["RATC2"])
-                sub_data["rating_tertiary"] =
-                    min(transformer["RATA3"], transformer["RATB3"], transformer["RATC3"])
-                sub_data["rating"] = min(
-                    sub_data["rating_primary"],
-                    sub_data["rating_secondary"],
-                    sub_data["rating_tertiary"],
-                )
+                if pm_data["source_version"] == "33"
+                    sub_data["rating_primary"] =
+                        min(
+                            transformer["RATA1"],
+                            transformer["RATB1"],
+                            transformer["RATC1"],
+                        )
+                    sub_data["rating_secondary"] =
+                        min(
+                            transformer["RATA2"],
+                            transformer["RATB2"],
+                            transformer["RATC2"],
+                        )
+                    sub_data["rating_tertiary"] =
+                        min(
+                            transformer["RATA3"],
+                            transformer["RATB3"],
+                            transformer["RATC3"],
+                        )
+                    sub_data["rating"] = min(
+                        sub_data["rating_primary"],
+                        sub_data["rating_secondary"],
+                        sub_data["rating_tertiary"],
+                    )
+                else
+                    sub_data["rating_primary"] =
+                        min(
+                            transformer["RATE11"],
+                            transformer["RATE12"],
+                            transformer["RATE13"],
+                        )
+                    sub_data["rating_secondary"] =
+                        min(
+                            transformer["RATE21"],
+                            transformer["RATE22"],
+                            transformer["RATE23"],
+                        )
+                    sub_data["rating_tertiary"] =
+                        min(
+                            transformer["RATE31"],
+                            transformer["RATE32"],
+                            transformer["RATE33"],
+                        )
+                    sub_data["rating"] = min(
+                        sub_data["rating_primary"],
+                        sub_data["rating_secondary"],
+                        sub_data["rating_tertiary"],
+                    )
+                end
 
                 sub_data["r_12"] = br_r12
                 sub_data["x_12"] = br_x12
@@ -1356,6 +1463,15 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
             sub_data["r"] = dcline["RDC"] / ZbaseR
 
+            if pm_data["source_version"] == "33"
+                sub_data["ext"] = Dict{String, Any}()
+            else
+                sub_data["ext"] = Dict{String, Any}(
+                    "NDR" => dcline["NDI"],
+                    "NDI" => dcline["NDI"],
+                )
+            end
+
             sub_data["source_id"] = [
                 "two-terminal dc",
                 sub_data["f_bus"],
@@ -1532,6 +1648,13 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["reactive_power_required"] = facts["RMPCT"]
 
+            sub_data["ext"] = Dict{String, Any}()
+
+            if pm_data["source_version"] != "33"
+                sub_data["ext"]["NREG"] = facts["NREG"]
+                sub_data["ext"]["MNAME"] = facts["MNAME"]
+            end
+
             sub_data["source_id"] =
                 ["facts", sub_data["bus"], sub_data["name"]]
             sub_data["index"] = length(pm_data["facts"]) + 1
@@ -1555,30 +1678,47 @@ end
 
 function _build_switch_breaker_sub_data(
     pm_data::Dict,
-    branch::Dict,
-    branch_type::String,
-    discrete_branch_type::Int,
+    dict_object::Dict,
+    device_type::String,
+    discrete_device_type::Int,
     index::Int,
 )
     sub_data = Dict{String, Any}()
 
-    sub_data["f_bus"] = pop!(branch, "I")
-    sub_data["t_bus"] = pop!(branch, "J")
+    sub_data["f_bus"] = pop!(dict_object, "I")
+    sub_data["t_bus"] = pop!(dict_object, "J")
     if pm_data["has_isolated_buses"]
         push!(pm_data["connected_buses"], sub_data["f_bus"])
         push!(pm_data["connected_buses"], sub_data["t_bus"])
     end
-    sub_data["r"] = pop!(branch, "R")
-    sub_data["x"] = pop!(branch, "X")
-    sub_data["state"] = pop!(branch, "ST")
+
+    sub_data["x"] = pop!(dict_object, "X")
     sub_data["active_power_flow"] = 0.0
     sub_data["reactive_power_flow"] = 0.0
     sub_data["psw"] = sub_data["active_power_flow"]
     sub_data["qsw"] = sub_data["reactive_power_flow"]
-    sub_data["rating"] = pop!(branch, "RATEA")
-    sub_data["discrete_branch_type"] = discrete_branch_type
+    sub_data["discrete_branch_type"] = discrete_device_type
+    sub_data["ext"] = Dict{String, Any}()
+
+    if pm_data["source_version"] == "33"
+        sub_data["r"] = pop!(dict_object, "R")
+        sub_data["state"] = pop!(dict_object, "ST")
+        sub_data["rating"] = pop!(dict_object, "RATEA")
+    else
+        sub_data["r"] = 0.0
+        sub_data["state"] = pop!(dict_object, "STAT")
+        sub_data["rating"] = pop!(dict_object, "RATE1")
+
+        for i in 2:12
+            rate_key = "RATE$i"
+            if haskey(dict_object, rate_key)
+                sub_data["ext"][rate_key] = pop!(dict_object, rate_key)
+            end
+        end
+    end
+
     sub_data["source_id"] =
-        [branch_type, sub_data["f_bus"], sub_data["t_bus"], branch["CKT"]]
+        [device_type, sub_data["f_bus"], sub_data["t_bus"], dict_object["CKT"]]
     sub_data["index"] = index
 
     return sub_data
@@ -1589,28 +1729,54 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     pm_data["breaker"] = []
     pm_data["switch"] = []
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
+    mapping_v35 = Dict(2 => "breaker", 3 => "switch")
 
-    if haskey(pti_data, "BRANCH")
-        for branch in pti_data["BRANCH"]
-            branch_init = first(branch["CKT"])
+    if pm_data["source_version"] == "33"
+        if haskey(pti_data, "BRANCH")
+            for branch in pti_data["BRANCH"]
+                branch_init = first(branch["CKT"])
 
-            # Check if character is in the mapping
-            if haskey(mapping, branch_init)
-                branch_type, discrete_branch_type = mapping[branch_init]
+                # Check if character is in the mapping
+                if haskey(mapping, branch_init)
+                    branch_type, discrete_branch_type = mapping[branch_init]
+
+                    sub_data = _build_switch_breaker_sub_data(
+                        pm_data,
+                        branch,
+                        branch_type,
+                        discrete_branch_type,
+                        length(pm_data[branch_type]) + 1,
+                    )
+
+                    if import_all
+                        _import_remaining_keys!(sub_data, branch)
+                    end
+                    branch_isolated_bus_modifications!(pm_data, sub_data)
+                    push!(pm_data[branch_type], sub_data)
+                end
+            end
+        end
+    else
+        if haskey(pti_data, "SWITCHING DEVICE")
+            for switching_device in pti_data["SWITCHING DEVICE"]
+                device_type = get(mapping_v35, switching_device["STYPE"], "other")
+                discrete_branch_type =
+                    device_type == "breaker" ? 1 : (device_type == "switch" ? 0 : 2)
 
                 sub_data = _build_switch_breaker_sub_data(
                     pm_data,
-                    branch,
-                    branch_type,
+                    switching_device,
+                    device_type,
                     discrete_branch_type,
-                    length(pm_data[branch_type]) + 1,
+                    length(pm_data[device_type]) + 1,
                 )
 
                 if import_all
                     _import_remaining_keys!(sub_data, branch)
                 end
+
                 branch_isolated_bus_modifications!(pm_data, sub_data)
-                push!(pm_data[branch_type], sub_data)
+                push!(pm_data[device_type], sub_data)
             end
         end
     end
@@ -1670,6 +1836,26 @@ function sort_values_by_key_prefix(imp_correction::Dict{String, <:Any}, prefix::
     return sorted_values
 end
 
+function sort_values_by_key_prefix_v35(imp_correction::Dict{String, <:Any}, prefix::String)
+    # For v35, we need to handle "Re(F1)", "Im(F1)" format
+    sorted_values = [
+        last(pair) for pair in sort(
+            [
+                (parse(Int, match(r"\d+", k).match), v) for
+                (k, v) in imp_correction if startswith(k, prefix) && contains(k, r"\d+")
+            ];
+            by = first,
+        )
+    ]
+
+    first_non_zero_index = findfirst(x -> x != 0.0, reverse(sorted_values))
+    if first_non_zero_index !== nothing
+        sorted_values = sorted_values[1:(length(sorted_values) - first_non_zero_index + 1)]
+    end
+
+    return sorted_values
+end
+
 function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Transformer Impedance Correction Tables data into a PowerModels Dict..."
 
@@ -1681,8 +1867,19 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
 
             sub_data["table_number"] = imp_correction["I"]
 
-            sub_data["scaling_factor"] = sort_values_by_key_prefix(imp_correction, "F")
-            sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
+            is_v35 =
+                any(k -> contains(k, "Re(F") || contains(k, "Im(F"), keys(imp_correction))
+
+            if is_v35
+                sub_data["scaling_factor"] =
+                    sort_values_by_key_prefix_v35(imp_correction, "Re(F")
+                sub_data["scaling_factor_imag"] =
+                    sort_values_by_key_prefix_v35(imp_correction, "Im(F")
+                sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
+            else
+                sub_data["scaling_factor"] = sort_values_by_key_prefix(imp_correction, "F")
+                sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
+            end
 
             sub_data["index"] = length(pm_data["impedance_correction"]) + 1
 
@@ -1694,6 +1891,31 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
         end
     end
     return
+end
+
+function _psse2pm_substation_data!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @warn "Parsing PSS(R)E Substation data into a PowerModels Dict..."
+    pm_data["substation_data"] = []
+
+    if haskey(pti_data, "SUBSTATION DATA")
+        for substation_data in pti_data["SUBSTATION DATA"]
+            sub_data = Dict{String, Any}()
+
+            sub_data["name"] = substation_data["NAME"]
+            sub_data["substation_is"] = substation_data["IS"]
+
+            sub_data["latitude"] = substation_data["LATITUDE"]
+            sub_data["longitude"] = substation_data["LONGITUDE"]
+            sub_data["nodes"] = substation_data["NODES"]
+
+            if import_all
+                _import_remaining_keys!(sub_data, substation_data)
+            end
+
+            sub_data["index"] = length(pm_data["substation_data"]) + 1
+            push!(pm_data["substation_data"], sub_data)
+        end
+    end
 end
 
 function _psse2pm_storage!(pm_data::Dict, pti_data::Dict, import_all::Bool)
@@ -1743,6 +1965,7 @@ function _pti_to_powermodels!(
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
+    _psse2pm_substation_data!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
 
     if pm_data["has_isolated_buses"]
@@ -1822,7 +2045,7 @@ Parses directly from iostream
 """
 function parse_psse(io::IO; kwargs...)::Dict
     @info(
-        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, switches, breakers, transformers, facts, and dc lines",
+        "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, switches, breakers, IC tables, transformers, facts, and dc lines",
     )
     pti_data = parse_pti(io)
     pm = _pti_to_powermodels!(pti_data; kwargs...)

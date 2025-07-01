@@ -77,6 +77,10 @@ function System(pm_data::PowerModelsData; kwargs...)
     if runchecks
         check(sys)
     end
+
+    substation_data = get(data, "substation_data", [])
+    add_geographic_info_to_buses!(sys, substation_data)
+
     return sys
 end
 
@@ -164,6 +168,54 @@ function _get_pm_3w_name(
 )
     ckt = device_dict["circuit"]
     return "$(get_name(bus_primary))-$(get_name(bus_secondary))-$(get_name(bus_tertiary))-i_$ckt"
+end
+
+"""Add geographic coordinates to all buses using pre-built lookup"""
+function add_geographic_info_to_buses!(sys, substation_data)
+    if isempty(substation_data)
+        @warn "No substation data found"
+        return
+    end
+
+    bus_coords_lookup = Dict{Int, GeographicInfo}()
+
+    for (_, substation) in substation_data
+        if haskey(substation, "nodes") && haskey(substation, "latitude") &&
+           haskey(substation, "longitude")
+            lat, lon = substation["latitude"], substation["longitude"]
+
+            geo_info = GeographicInfo(;
+                geo_json = Dict(
+                    "x" => lon,
+                    "y" => lat,
+                ),
+            )
+            for node in substation["nodes"]
+                if haskey(node, "I")
+                    bus_coords_lookup[node["I"]] = geo_info
+                end
+            end
+        end
+    end
+
+    begin_supplemental_attributes_update(sys) do
+        buses_with_coords = 0
+        buses_without_coords = 0
+
+        for bus in get_components(ACBus, sys)
+            bus_number = get_number(bus)
+
+            if haskey(bus_coords_lookup, bus_number)
+                geo_info = bus_coords_lookup[bus_number]
+                add_supplemental_attribute!(sys, bus, geo_info)
+                buses_with_coords += 1
+            else
+                buses_without_coords += 1
+            end
+        end
+
+        @info "Added coordinates to $(buses_with_coords) buses, $(buses_without_coords) buses without coordinates"
+    end
 end
 
 """
@@ -462,6 +514,57 @@ function read_bus!(sys::System, data::Dict; kwargs...)
     return bus_number_to_bus
 end
 
+function make_interruptible_powerload(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
+    operation_cost = LoadCost(;
+        variable = zero(CostCurve),
+        fixed = 0.0,
+    )
+
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return InterruptiblePowerLoad(;
+        name = _get_name(d),
+        available = d["status"],
+        bus = bus,
+        active_power = d["pd"],
+        reactive_power = d["qd"],
+        max_active_power = d["pd"],
+        max_reactive_power = d["qd"],
+        base_power = sys_mbase,
+        operation_cost = operation_cost,
+        ext = d["ext"],
+    )
+end
+
+function make_interruptible_standardload(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
+    operation_cost = LoadCost(;
+        variable = zero(CostCurve),
+        fixed = 0.0,
+    )
+
+    _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
+    return InterruptibleStandardLoad(;
+        name = _get_name(d),
+        available = d["status"],
+        bus = bus,
+        base_power = sys_mbase,
+        conformity = d["conformity"],
+        operation_cost = operation_cost,
+        constant_active_power = d["pd"],
+        constant_reactive_power = d["qd"],
+        current_active_power = d["pi"],
+        current_reactive_power = d["qi"],
+        impedance_active_power = d["py"],
+        impedance_reactive_power = d["qy"],
+        max_constant_active_power = d["pd"],
+        max_constant_reactive_power = d["qd"],
+        max_current_active_power = d["pi"],
+        max_current_reactive_power = d["qi"],
+        max_impedance_active_power = d["py"],
+        max_impedance_reactive_power = d["qy"],
+        ext = d["ext"],
+    )
+end
+
 function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
     _get_name = get(kwargs, :load_name_formatter, x -> strip(join(x["source_id"])))
     return PowerLoad(;
@@ -474,6 +577,7 @@ function make_power_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_reactive_power = d["qd"],
         base_power = sys_mbase,
         conformity = d["conformity"],
+        ext = d["ext"],
     )
 end
 
@@ -497,6 +601,7 @@ function make_standard_load(d::Dict, bus::ACBus, sys_mbase::Float64; kwargs...)
         max_impedance_reactive_power = d["qy"],
         base_power = sys_mbase,
         conformity = d["conformity"],
+        ext = d["ext"],
     )
 end
 
@@ -512,18 +617,26 @@ function read_loads!(sys::System, data, bus_number_to_bus::Dict{Int, ACBus}; kwa
     for d_key in keys(data["load"])
         d = data["load"][d_key]
         bus = bus_number_to_bus[d["load_bus"]]
-        if data["source_type"] == "pti"
+        is_interruptible = haskey(d, "interruptible")
+        if data["source_type"] == "pti" && is_interruptible && d["interruptible"] != 1
             load = make_standard_load(d, bus, sys_mbase; kwargs...)
             has_component(StandardLoad, sys, get_name(load)) && throw(
                 DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    "Found duplicate load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
+                ),
+            )
+        elseif data["source_type"] == "pti" && is_interruptible && d["interruptible"] == 1
+            load = make_interruptible_standardload(d, bus, sys_mbase; kwargs...)
+            has_component(InterruptibleStandardLoad, sys, get_name(load)) && throw(
+                DataFormatError(
+                    "Found duplicate interruptible load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         else
             load = make_power_load(d, bus, sys_mbase; kwargs...)
             has_component(PowerLoad, sys, get_name(load)) && throw(
                 DataFormatError(
-                    "Found duplicate load names of $(get_name(load)), consider formatting names with `load_name_formatter` kwarg",
+                    "Found duplicate load names of $(summary(load)), consider formatting names with `load_name_formatter` kwarg",
                 ),
             )
         end
@@ -809,15 +922,18 @@ function make_thermal_gen(
         shut_down = shutdn,
     )
 
-    ext = Dict{String, Float64}()
+    if !haskey(d, "ext")
+        d["ext"] = Dict{String, Float64}()
+    end
+
     if haskey(d, "r_source") && haskey(d, "x_source")
-        ext["r"] = d["r_source"]
-        ext["x"] = d["x_source"]
+        d["ext"]["r"] = d["r_source"]
+        d["ext"]["x"] = d["x_source"]
     end
 
     if haskey(d, "rt_source") && haskey(d, "xt_source")
-        ext["rt"] = d["rt_source"]
-        ext["xt"] = d["xt_source"]
+        d["ext"]["rt"] = d["rt_source"]
+        d["ext"]["xt"] = d["xt_source"]
     end
 
     if d["mbase"] != 0.0
@@ -850,7 +966,7 @@ function make_thermal_gen(
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
-        ext = ext,
+        ext = d["ext"],
     )
 
     return thermal_gen
@@ -1041,6 +1157,7 @@ function make_switch_breaker(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         rating = d["rating"],
         discrete_branch_type = d["discrete_branch_type"],
         branch_status = d["state"],
+        ext = d["ext"],
     )
 end
 
@@ -1084,8 +1201,6 @@ function make_transformer_2w(
         available_value = false
     end
 
-    ext = source_type == "pti" ? d["ext"] : Dict{String, Any}()
-
     return Transformer2W(;
         name = name,
         available = available_value,
@@ -1102,7 +1217,7 @@ function make_transformer_2w(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        ext = ext,
+        ext = d["ext"],
     )
 end
 
@@ -1341,6 +1456,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             reactive_power_limits_from = d["reactive_power_limits_from"],
             reactive_power_limits_to = d["reactive_power_limits_to"],
             loss = LinearCurve(d["loss1"], d["loss0"]),
+            ext = d["ext"],
         )
     elseif source_type == "matpower"
         return TwoTerminalGenericHVDCLine(;
@@ -1444,15 +1560,22 @@ function read_vscline!(
 end
 
 function make_switched_shunt(name::String, d::Dict, bus::ACBus)
-    return SwitchedAdmittance(;
-        name = name,
-        available = Bool(d["status"]),
-        bus = bus,
-        Y = (d["gs"] + d["bs"]im),
-        number_of_steps = d["step_number"],
-        Y_increase = d["y_increment"],
-        admittance_limits = d["admittance_limits"],
+    params = Dict(
+        :name => name,
+        :available => Bool(d["status"]),
+        :bus => bus,
+        :Y => (d["gs"] + d["bs"]im),
+        :number_of_steps => d["step_number"],
+        :Y_increase => d["y_increment"],
+        :admittance_limits => d["admittance_limits"],
+        :ext => d["ext"],
     )
+
+    if haskey(d, "initial_status")
+        params[:initial_status] = d["initial_status"]
+    end
+
+    return SwitchedAdmittance(; params...)
 end
 
 function read_switched_shunt!(
@@ -1509,6 +1632,7 @@ function make_facts(name::String, d::Dict, bus::ACBus)
         voltage_setpoint = d["voltage_setpoint"],
         max_shunt_current = d["max_shunt_current"],
         reactive_power_required = d["reactive_power_required"],
+        ext = d["ext"],
     )
 end
 
