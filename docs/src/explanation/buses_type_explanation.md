@@ -1,6 +1,8 @@
 # [Understanding ACBusTypes](@id bustyped)
 
-`PowerSystems.jl` supports multiple types of AC buses, [listed here](@ref acbustypes_list).When creating nodal datasets, the definitions for AC Buses can have a significant impact on the
+`PowerSystems.jl` supports multiple types of AC buses, [listed here](@ref acbustypes_list).
+When creating nodal datasets, the definitions for AC Buses can have a significant impact on the
+topology logic for the network.
 
 ## Voltage Control Types
 
