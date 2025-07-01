@@ -70,7 +70,7 @@ These types are no longer part of PowerSystems.jl:
 
 ## [Updates to hydro storage related devices](@id Hyd_updates)
 
-In previous versions of PowerSystems.jl hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model just kept track of the total energy in the reservoir. In this version of PowerSystems a new structs [`HydroTurbine`](@ref) and [`HydroReservoir`](@ref) has been included to enable individual unit dispatch modeling as well as a shared reservoir.
+In previous versions of `PowerSystems.jl`, hydropower connected to reservoirs was modeled as a single plant connected to a single reservoir. Further, the model just kept track of the total energy in the reservoir. In this version of `PowerSystems.jl`, new structs [`HydroTurbine`](@ref) and [`HydroReservoir`](@ref) have been included to enable individual unit dispatch modeling as well as a shared reservoir.
 
 The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@ref) to model the head and tail reservoirs for Hydro Pump Storage facilities. Check the section [Define Hydro Generators with Reservoirs](@ref hydro_resv)
 
@@ -83,7 +83,7 @@ valid and the expanded list can be explored in the documentation [`ThermalFuels`
 
 Most of the transformer changes are included to bring PowerSystems.jl closer to the data model employed in PSSe RAW files which tend to be the industry standard. The two notable changes are:
 
-  - All transformers now have additional fiedls for base quantities needed for the calculation of the impedances in adequate bases. See [`Transformer per unit transformations`](@ref transformers_pu) for more details.
+  - All transformers now have additional fields for base quantities needed for the calculation of the impedances in adequate bases. See [`Transformer per unit transformations`](@ref transformers_pu) for more details.
   - The shunt branch in the transformer now uses a `Complex{Float64}` to model core losses as well as the core inductance.
   - Shunt allocation in the transformer between the primary and secondary. We now allocate the shunt to the primary following PSSe's convention. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1411) for a description of the discrepancy with Matpower. Note that this mostly affect the results reporting between Matpower and PSSe.
 
@@ -94,7 +94,7 @@ depending on the [`Per-unit Conventions`](@ref per_unit).
 
 ## Updates to ACBuses
 
-[`ACBus`](@ref) has a new field available to match the behavior of setting a bus to "isolated" in other simulation applications. A detailed explanation on how to handle this new field has been documented in [`Understanding ACBusTypes`](@ref bustypes)
+[`ACBus`](@ref) has a new field `available` to match the behavior of setting a bus to "isolated" in other simulation applications. A detailed explanation on how to handle this new field has been documented in [`Understanding ACBusTypes`](@ref bustypes)
 
 ## Updates to parsing PSSe files
 
