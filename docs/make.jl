@@ -103,6 +103,7 @@ pages["Model Library"] = make_model_library(
         "Branch" => ["Dynamic Lines" => "model_library/dynamic_branch.md"],
         "Operating Costs" => ["ThermalGenerationCost" =>"model_library/thermal_generation_cost.md",
         "HydroGenerationCost" =>"model_library/hydro_generation_cost.md",
+        "HydroReservoirCost" =>"model_library/hydro_reservoir_cost.md",
         "RenewableGenerationCost" =>"model_library/renewable_generation_cost.md",
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
