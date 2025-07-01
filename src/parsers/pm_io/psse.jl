@@ -200,11 +200,11 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "LEN" => pop!(branch, "LEN"),
                 )
 
-                if pm_data["source_version"] == "33"
+                if pm_data["source_version"] ∈ ("32", "33")
                     sub_data["rate_a"] = pop!(branch, "RATEA")
                     sub_data["rate_b"] = pop!(branch, "RATEB")
                     sub_data["rate_c"] = pop!(branch, "RATEC")
-                else
+                elseif pm_data["source_version"] == "35"
                     sub_data["rate_a"] = pop!(branch, "RATE1")
                     sub_data["rate_b"] = pop!(branch, "RATE2")
                     sub_data["rate_c"] = pop!(branch, "RATE3")
@@ -215,6 +215,10 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             sub_data["ext"][rate_key] = pop!(branch, rate_key)
                         end
                     end
+                else
+                    error(
+                        "Unsupported PSS(R)E source version: $(pm_data["source_version"])",
+                    )
                 end
 
                 sub_data["tap"] = 1.0
@@ -328,13 +332,16 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["type"] = "SYNC_COND"
             end
 
-            if pm_data["source_version"] != "33"
+            if pm_data["source_version"] == "35"
                 sub_data["ext"] = Dict{String, Any}(
                     "NREG" => pop!(gen, "NREG"),
                     "BASLOD" => pop!(gen, "BASLOD"),
                 )
-            else
+            elseif pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"] = Dict{String, Any}()
+            else
+                @show pm_data["source_version"] ∈ ("32", "33")
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
             # Default Cost functions
@@ -503,10 +510,12 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["interruptible"] = pop!(load, "INTRPT")
             sub_data["ext"] = Dict{String, Any}()
 
-            if pm_data["source_version"] == "33"
+            if pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"]["LOADTYPE"] = ""
+            elseif pm_data["source_version"] == "35"
+                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
             else
-                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE")
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
             sub_data["status"] = pop!(load, "STATUS")
@@ -598,7 +607,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]im
             sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
 
-            if pm_data["source_version"] != "33"
+            if pm_data["source_version"] == "35"
                 sub_data["sw_id"] = pop!(switched_shunt, "ID")
 
                 initial_ss_status = Dict(
@@ -613,6 +622,10 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["initial_status"][1:length(sub_data["step_number"])]
 
                 sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
+            elseif pm_data["source_version"] ∈ ("32", "33")
+                sub_data["ext"] = Dict{String, Any}()
+            else
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
             sub_data["source_id"] =
@@ -846,11 +859,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CM" => transformer["CM"],
                 )
 
-                if pm_data["source_version"] == "33"
+                if pm_data["source_version"] ∈ ("32", "33")
                     sub_data["rate_a"] = pop!(transformer, "RATA1")
                     sub_data["rate_b"] = pop!(transformer, "RATB1")
                     sub_data["rate_c"] = pop!(transformer, "RATC1")
-                else
+                elseif pm_data["source_version"] == "35"
                     sub_data["rate_a"] = pop!(transformer, "RATE11")
                     sub_data["rate_b"] = pop!(transformer, "RATE12")
                     sub_data["rate_c"] = pop!(transformer, "RATE13")
@@ -861,6 +874,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             sub_data["ext"][rate_key] = pop!(transformer, rate_key)
                         end
                     end
+                else
+                    error(
+                        "Unsupported PSS(R)E source version: $(pm_data["source_version"])",
+                    )
                 end
 
                 if sub_data["rate_a"] == 0.0
@@ -1148,7 +1165,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["r_tertiary"] = Zr_t
                 sub_data["x_tertiary"] = Zx_t
 
-                if pm_data["source_version"] == "33"
+                if pm_data["source_version"] ∈ ("32", "33")
                     sub_data["rating_primary"] =
                         min(
                             transformer["RATA1"],
@@ -1172,7 +1189,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         sub_data["rating_secondary"],
                         sub_data["rating_tertiary"],
                     )
-                else
+                elseif pm_data["source_version"] == "35"
                     sub_data["rating_primary"] =
                         min(
                             transformer["RATE11"],
@@ -1195,6 +1212,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         sub_data["rating_primary"],
                         sub_data["rating_secondary"],
                         sub_data["rating_tertiary"],
+                    )
+                else
+                    error(
+                        "Unsupported PSS(R)E source version: $(pm_data["source_version"])",
                     )
                 end
 
@@ -1463,13 +1484,15 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["inverter_capacitor_reactance"] = dcline["XCAPI"] / ZbaseI
             sub_data["r"] = dcline["RDC"] / ZbaseR
 
-            if pm_data["source_version"] == "33"
+            if pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"] = Dict{String, Any}()
-            else
+            elseif pm_data["source_version"] == "35"
                 sub_data["ext"] = Dict{String, Any}(
                     "NDR" => dcline["NDI"],
                     "NDI" => dcline["NDI"],
                 )
+            else
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
             sub_data["source_id"] = [
@@ -1650,9 +1673,13 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["ext"] = Dict{String, Any}()
 
-            if pm_data["source_version"] != "33"
+            if pm_data["source_version"] == "35"
                 sub_data["ext"]["NREG"] = facts["NREG"]
                 sub_data["ext"]["MNAME"] = facts["MNAME"]
+            elseif pm_data["source_version"] ∈ ("32", "33")
+                sub_data["ext"] = Dict{String, Any}()
+            else
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
             sub_data["source_id"] =
@@ -1700,7 +1727,7 @@ function _build_switch_breaker_sub_data(
     sub_data["discrete_branch_type"] = discrete_device_type
     sub_data["ext"] = Dict{String, Any}()
 
-    if pm_data["source_version"] == "33"
+    if pm_data["source_version"] ∈ ("32", "33")
         sub_data["r"] = pop!(dict_object, "R")
         sub_data["state"] = pop!(dict_object, "ST")
         sub_data["rating"] = pop!(dict_object, "RATEA")
@@ -1731,7 +1758,7 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
     mapping_v35 = Dict(2 => "breaker", 3 => "switch")
 
-    if pm_data["source_version"] == "33"
+    if pm_data["source_version"] ∈ ("32", "33")
         if haskey(pti_data, "BRANCH")
             for branch in pti_data["BRANCH"]
                 branch_init = first(branch["CKT"])
@@ -1756,7 +1783,7 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
                 end
             end
         end
-    else
+    elseif pm_data["source_version"] == "35"
         if haskey(pti_data, "SWITCHING DEVICE")
             for switching_device in pti_data["SWITCHING DEVICE"]
                 device_type = get(mapping_v35, switching_device["STYPE"], "other")
@@ -1779,6 +1806,8 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
                 push!(pm_data[device_type], sub_data)
             end
         end
+    else
+        error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
     end
     return
 end
