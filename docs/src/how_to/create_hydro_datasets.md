@@ -37,17 +37,3 @@ flowchart TB
     C --- D
     B --- D["Tail Reservoir"]
 ```
-
-## Units for the [`HydroReservoir`](@ref) objects
-
-The [`HydroReservoir`](@ref) can specify which units of measurement are used perform the energy balance calculations. The reservoir limits can take level units which affect how the totals and
-targets are calculated.
-
-  - USABLE_VOLUME: The volume of water that can be stored for levels between the penstock
-    intetake and the top reservoir level:
-  - TOTAL_VOLUME: The total volume of the reservoir considering a total depletion of the
-    water levels. This unit system usually requires the specification of a valid minimum volume level.
-  - HEAD: The difference in elevations between the top water levels. It requiers a valid conversion constant to go from head to potential energy stored.
-  - ENERGY: Uses energy units in MWh to approximate the water storage as a generic energy reservoir.
-
-The user is responsible for managing correctly the conversions between the different alternatives.
