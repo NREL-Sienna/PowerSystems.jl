@@ -136,7 +136,7 @@ the different alternatives of `ReservoirDataType`, which has the options:
 
 ## [Facts Control Devices](@id factsmodes_list)
 
-`FACTSOperationModes` define the operation modes the FACTS Control Devices have.
+`FACTSOperationModes` define the operation modes of a [`FACTSControlDevice`](@ref).
 `FACTSOperationModes` has the options:
 
 | Name  | Description                                                                                     |
