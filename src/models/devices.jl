@@ -191,3 +191,22 @@ function clear_reservoirs!(device::Device)
     empty!(reservoirs)
     return
 end
+
+"""
+Check if a device has attribute 'active_power' for active power consumption or generation.
+"""
+has_active_power(d::Device) = throw(
+    IS.NotImplementedError(
+        "has_active_power not implemented for this device type: $(typeof(d))!",
+    ),
+)
+
+"""
+Most StaticInjection models have active power consumption or generation, so return true
+"""
+has_active_power(::StaticInjection) = true
+
+"""
+SynchronousCondenser does not have active power consumption / generation, so return false
+"""
+has_active_power(::SynchronousCondenser) = false
