@@ -1,6 +1,6 @@
 # [Supplemental Attributes](@id supplemental_attributes)
 
-While the `ext` field is a mechanism for adding arbitrary metadata. PowerSystems.jl, has moved towards a more structured and formalized way of handling supplemental data using `SupplementalAttribute` structs. This is designed to store metadata in a more organized fashion than a generic dictionary. These attributes are intended to be attached to a [`Component`](@ref) types.
+While the [`ext` field is a mechanism](@ref additional_fields) for adding arbitrary metadata. PowerSystems.jl, has moved towards a more structured and formalized way of handling supplemental data using `SupplementalAttribute` structs. This is designed to store metadata in a more organized fashion than a generic dictionary. These attributes are intended to be attached to a [`Component`](@ref) types.
 
 Supplemmental attributes can be shared between components or have 1-1 relationships. This is particularly
 useful to represent components in the same geographic location or outages for multiple components. Conversely, components can contain many attributes.

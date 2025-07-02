@@ -32,13 +32,20 @@ Private = false
 ## Supplemental Attributes
 
 ```@autodocs
-Modules = [PowerSystems, InfrastructureSystems]
+Modules = [PowerSystems]
 Pages   = ["outages.jl",
            "impedance_correction.jl",
-           "GeographicInfo.jl"
            ]
 Public = true
 Private = false
+```
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["geographic_supplemental_attribute.jl"
+        ]
+Order = [:type, :function]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ## Operating Costs
