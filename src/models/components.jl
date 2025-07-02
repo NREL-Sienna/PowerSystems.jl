@@ -282,16 +282,16 @@ TertiaryPower = Union{
 ###### Multipliers ######
 
 _get_winding_base_power(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     ::Union{PrimaryImpedances, PrimaryAdmittances, PrimaryPower},
 ) = get_base_power_12(c)
-_get_winding_base_power(c::Transformer3W, ::Union{SecondaryImpedances, SecondaryPower}) =
+_get_winding_base_power(c::Union{Transformer3W, PhaseShiftingTransformer3W}, ::Union{SecondaryImpedances, SecondaryPower}) =
     get_base_power_23(c)
-_get_winding_base_power(c::Transformer3W, ::Union{TertiaryImpedances, TertiaryPower}) =
+_get_winding_base_power(c::Union{Transformer3W, PhaseShiftingTransformer3W}, ::Union{TertiaryImpedances, TertiaryPower}) =
     get_base_power_13(c)
 
 function _get_winding_base_voltage(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     ::Union{PrimaryImpedances, PrimaryAdmittances},
 )
     base_voltage = get_base_voltage_primary(c)
@@ -301,7 +301,7 @@ function _get_winding_base_voltage(
     return base_voltage
 end
 
-function _get_winding_base_voltage(c::Transformer3W, ::SecondaryImpedances)
+function _get_winding_base_voltage(c::Union{Transformer3W, PhaseShiftingTransformer3W}, ::SecondaryImpedances)
     base_voltage = get_base_voltage_secondary(c)
     if isnothing(base_voltage)
         error("Base voltage is not defined for $(summary(c)).")
@@ -309,7 +309,7 @@ function _get_winding_base_voltage(c::Transformer3W, ::SecondaryImpedances)
     return base_voltage
 end
 
-function _get_winding_base_voltage(c::Transformer3W, ::TertiaryImpedances)
+function _get_winding_base_voltage(c::Union{Transformer3W, PhaseShiftingTransformer3W}, ::TertiaryImpedances)
     base_voltage = get_base_voltage_tertiary(c)
     if isnothing(base_voltage)
         error("Base voltage is not defined for $(summary(c)).")
@@ -319,7 +319,7 @@ end
 
 # DEVICE_BASE
 function _get_multiplier(
-    ::Transformer3W,
+    ::Union{Transformer3W, PhaseShiftingTransformer3W},
     ::Any,
     ::Val{IS.UnitSystem.DEVICE_BASE},
     ::Float64,
@@ -334,7 +334,7 @@ end
 
 # SYSTEM_BASE
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.SYSTEM_BASE},
     base_mva::Float64,
@@ -345,7 +345,7 @@ end
 
 # NATURAL_UNITS
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.NATURAL_UNITS},
     base_mva::Float64,
@@ -360,7 +360,7 @@ end
 
 # SYSTEM_BASE
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.SYSTEM_BASE},
     base_mva::Float64,
@@ -371,7 +371,7 @@ end
 
 # NATURAL_UNITS
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.NATURAL_UNITS},
     base_mva::Float64,
@@ -386,7 +386,7 @@ end
 
 # SYSTEM_BASE
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.SYSTEM_BASE},
     base_mva::Float64,
@@ -397,7 +397,7 @@ end
 
 # NATURAL_UNITS
 function _get_multiplier(
-    c::Transformer3W,
+    c::Union{Transformer3W, PhaseShiftingTransformer3W},
     field::Any,
     ::Val{IS.UnitSystem.NATURAL_UNITS},
     base_mva::Float64,
@@ -406,7 +406,7 @@ function _get_multiplier(
     return _get_winding_base_power(c, field) / _get_winding_base_voltage(c, field)^2
 end
 
-function get_value(c::Transformer3W, field::Val{T}, conversion_unit) where {T}
+function get_value(c::Union{Transformer3W, PhaseShiftingTransformer3W}, field::Val{T}, conversion_unit) where {T}
     value = Base.getproperty(c, T)
     if isnothing(value)
         return nothing
@@ -421,7 +421,7 @@ function get_value(c::Transformer3W, field::Val{T}, conversion_unit) where {T}
     return value * multiplier
 end
 
-function set_value(c::Transformer3W, field, val::Float64, conversion_unit)
+function set_value(c::Union{Transformer3W, PhaseShiftingTransformer3W}, field, val::Float64, conversion_unit)
     settings = get_internal(c).units_info
     if isnothing(settings)
         return val

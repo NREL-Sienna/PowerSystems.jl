@@ -32,7 +32,7 @@ Returns the series susceptance of a 3 winding transformer as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 """
-function get_series_susceptance(b::Transformer3W)
+function get_series_susceptance(b::Union{Transformer3W, PhaseShiftingTransformer3W})
     Z1s = get_r_primary(b) + get_x_primary(b) * 1im
     Z2s = get_r_secondary(b) + get_x_secondary(b) * 1im
     Z3s = get_r_tertiary(b) + get_x_tertiary(b) * 1im
