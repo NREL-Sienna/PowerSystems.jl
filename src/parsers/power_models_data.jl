@@ -1331,9 +1331,24 @@ function make_3w_phase_shifting_transformer(
         available_primary = d["available_primary"],
         available_secondary = d["available_secondary"],
         available_tertiary = d["available_tertiary"],
-        rating_primary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_primary"),
-        rating_secondary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_secondary"),
-        rating_tertiary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_tertiary"),
+        rating_primary = _get_rating(
+            "PhaseShiftingTransformer3W",
+            name,
+            d,
+            "rating_primary",
+        ),
+        rating_secondary = _get_rating(
+            "PhaseShiftingTransformer3W",
+            name,
+            d,
+            "rating_secondary",
+        ),
+        rating_tertiary = _get_rating(
+            "PhaseShiftingTransformer3W",
+            name,
+            d,
+            "rating_tertiary",
+        ),
         ext = d["ext"],
     )
 end

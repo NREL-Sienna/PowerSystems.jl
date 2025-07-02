@@ -190,7 +190,10 @@ function _check_branch_consistency(sys::System, branch::Branch)
     _check_subsystem_assignments(sys, branch, get_arc(branch), msg; symmetric_diff = true)
 end
 
-function _check_branch_consistency(sys::System, branch::Union{Transformer3W, PhaseShiftingTransformer3W})
+function _check_branch_consistency(
+    sys::System,
+    branch::Union{Transformer3W, PhaseShiftingTransformer3W},
+)
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [
         get_primary_star_arc(branch),
