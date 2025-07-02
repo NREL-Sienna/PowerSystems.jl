@@ -1,7 +1,7 @@
 # [Migrating from version 4.0 to 5.0](@id psy5_migration)
 
 This guide outlines the code updates required to upgrade from PowerSystems.jl version 4.0
-to 5.0, which was released in Julia 2025 and includes breaking changes. Most the changes are related
+to 5.0, which was released in July 2025 and includes breaking changes. Most the changes are related
 to modeling in more detail AC transmission technologies.
 
 !!! warning
