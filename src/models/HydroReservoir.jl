@@ -25,22 +25,24 @@ an import error.
         internal::InfrastructureSystemsInternal
     end
 
-A hydropower reservoir that needs to have `HydroTurbine` attached to generate power, suitable for modeling independent turbines and reservoirs.
+A hydropower reservoir that needs to be attached to [`HydroTurbine`](@ref)(s) or [`HydroPumpTurbine`](@ref)(s) to generate power
+
+See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for supported configurations.
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3 (if data type is volume), m (if data type is head) or MWh (if data type is energy).
+- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`.
 - `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits.max`.
 - `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.
-- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if data type is energy).
-- `outflow::Float64`: Amount of water going to the turbine(s) in m^3/h or MW (if data type is energy).
-- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the storage_level_limits.max.
+- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
+- `outflow::Float64`: Amount of water going to the turbine(s) in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
+- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
 - `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours
 - `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
-- `operation_cost::HydroReservoirCost`: [`OperationalCost`](@ref) of reservoir.
-- `level_data_type::ReservoirDataType`: Reservoir level data type. (default: ReservoirDataType.USABLE_VOLUME)
+- `operation_cost::HydroReservoirCost`: [`HydroReservoirCost`](@ref) of reservoir.
+- `level_data_type::`[`ReservoirDataType`](@ref hydroreservoir_list): (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir data type, which defines units for `level` parameters. Options are listed [here](@ref hydroreservoir_list). 
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """

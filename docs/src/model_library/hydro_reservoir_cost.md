@@ -1,8 +1,8 @@
-### `HydroReservoir`
+### `HydroReservoirCost`
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["HydroReservoir.jl"]
+Pages   = ["cost_functions/HydroReservoirCost.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

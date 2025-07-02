@@ -2,7 +2,7 @@
 
 PowerSystems.jl provides a type hierarchy to contain power system data.
 
-### Types in PowerSystems
+## Types in PowerSystems
 
 In PowerSystems.jl, data that describes infrastructure components is held in `struct`s.
 For example, an `ACBus` is a `struct` with the following parameters to describe a bus
@@ -16,7 +16,7 @@ include(joinpath(docs_dir, "docs_utils.jl")); #hide
 print_struct(ACBus) #hide
 ```
 
-### Type Hierarchy
+## Type Hierarchy
 
 PowerSystems is intended to organize data by the behavior of the devices that
 the data represents. A type hierarchy has been defined with several levels of

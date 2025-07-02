@@ -39,7 +39,7 @@ end
 """
 A power system
 
-`System` is the main data container in PowerSystems.jl, including basic metadata (base
+`System` is the main data container in `PowerSystems.jl`, including basic metadata (base
 power, frequency), components (network topology, loads, generators, and services), and
 time series data.
 
@@ -58,6 +58,7 @@ System(; kwargs...)
 - `buses::Vector{ACBus}`: an array of buses
 - `components...`: Each element (e.g., `buses`, `generators`, ...) must be an iterable
     containing subtypes of `Component`.
+- `file::AbstractString`: Path to a Matpower, PSSE, or JSON file ending with .m, .raw, or .json
 
 # Keyword arguments
 - `name::String`: System name.
@@ -82,7 +83,7 @@ System(; kwargs...)
 - `load_name_formatter`: A function that takes an [`ElectricLoad`](@ref) and returns a string to use as the load names when [parsing PSSe or Matpower files](@ref pm_data).
 - `loadzone_name_formatter`: A function that takes a [`LoadZone`](@ref) and returns a string to use as the load zone name when [parsing PSSe or Matpower files](@ref pm_data).
 - `gen_name_formatter`: A function that takes a [`Generator`](@ref) and returns a string to use as the generator name when [parsing PSSe or Matpower files](@ref pm_data).
-- `shunt_name_formatter`: A function that takes a [`FixedShunt`](@ref) and returns a string to use as the shunt name when [parsing PSSe or Matpower files](@ref pm_data).
+- `shunt_name_formatter`: A function that takes the fixed shunt data and returns a string to use as the [`FixedAdmittance`](@ref) name when [parsing PSSe or Matpower files](@ref pm_data).
 - `branch_name_formatter`: A function that takes a [`Branch`](@ref) and returns a string to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
 - `pm_data_corrections::Bool`: A function that applies the correction to the data from [`PowerModels.jl`](https://lanl-ansi.github.io/PowerModels.jl/stable/).
 - `import_all::Bool`: A boolean flag to indicate whether to import all available data when [parsing PSSe or Matpower files](@ref pm_data). The additional data will be stored in the `ext` dictionary and can be retrieved using [`get_ext`](@ref)
@@ -106,6 +107,9 @@ performance by storing it in memory with `time_series_in_memory`.
 ```julia
 sys = System(100.0; name = "My Power System")
 sys = System(100.0; name = "My Power System", description = "System corresponds to scenario A")
+sys= System(path_to_my_psse_raw_file; # PSSE file bus names are not unique
+    bus_name_formatter = x -> strip(string(x["name"])) * "-" * string(x["index"]),
+)
 sys = System(100.0; enable_compression = true)
 sys = System(100.0; compression = CompressionSettings(
     enabled = true,
@@ -379,6 +383,13 @@ end
 
 """
 Construct a System from a subsystem of an existing system.
+
+# Arguments
+- `sys::System`: the base system from which the subsystems are derived
+- `subsystem::String`: the name of the subsystem to extract from the original system
+
+# Keyword arguments
+- `runchecks::Bool`: (default = true) whether to run system validation checks.
 """
 function from_subsystem(sys::System, subsystem::AbstractString; runchecks = true)
     if !in(subsystem, get_subsystems(sys))
@@ -1441,7 +1452,7 @@ function get_reservoir_device_mapping(sys::System)
 end
 
 """
-Return a vector of components with buses in the AggregationTopology.
+Return a vector of components with buses in the [`AggregationTopology`](@ref).
 """
 function get_components_in_aggregation_topology(
     ::Type{T},
@@ -1461,7 +1472,7 @@ function get_components_in_aggregation_topology(
     return components
 end
 
-"Return whether the given component's bus is in the AggregationTopology."
+"Return whether the given component's bus is in the [`AggregationTopology`](@ref)"
 function is_component_in_aggregation_topology(
     comp::Component,
     aggregator::T,
@@ -1471,7 +1482,7 @@ function is_component_in_aggregation_topology(
 end
 
 """
-Return a mapping of AggregationTopology name to vector of buses within it.
+Return a mapping of [`AggregationTopology`](@ref) name to vector of [`ACBus`](@ref)es within it.
 """
 function get_aggregation_topology_mapping(
     ::Type{T},
@@ -1494,7 +1505,13 @@ function get_aggregation_topology_mapping(
 end
 
 """
-Return a vector of buses contained within the AggregationTopology.
+Return a vector of buses contained within an [`AggregationTopology`](@ref).
+
+# Examples
+```julia
+area = get_component(Area, system, "my_area"); # Get an Area named my_area
+area_buses = get_buses(system, area)
+```
 """
 function get_buses(sys::System, aggregator::AggregationTopology)
     return _get_buses(sys.data, aggregator)
@@ -2228,14 +2245,14 @@ handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = no
 #end
 
 """
-Return bus with name.
+Return [`ACBus`](@ref) with `name`.
 """
 function get_bus(sys::System, name::AbstractString)
     return get_component(ACBus, sys, name)
 end
 
 """
-Return bus with bus_number.
+Return [`ACBus`](@ref) with `bus_number`.
 """
 function get_bus(sys::System, bus_number::Int)
     for bus in get_components(ACBus, sys)
@@ -2248,7 +2265,15 @@ function get_bus(sys::System, bus_number::Int)
 end
 
 """
-Return all buses values with bus_numbers.
+Return [`ACBus`](@ref)es from a set of identification `number`s
+
+# Examples
+```julia
+# View all the bus ID numbers in the System
+get_number.(get_components(ACBus, system)) 
+# Select a subset
+buses_by_ID = get_buses(system, Set(101:110))
+```
 """
 function get_buses(sys::System, bus_numbers::Set{Int})
     buses = Vector{ACBus}()

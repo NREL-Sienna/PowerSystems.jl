@@ -15,7 +15,6 @@ Pages   = ["PowerSystems.jl",
            "reserves.jl",
            "storage.jl",
            "services.jl",
-           "outages.jl",
            "topological_elements.jl",
            "dynamic_models.jl",
            "static_models.jl",
@@ -24,9 +23,29 @@ Pages   = ["PowerSystems.jl",
            "dynamic_models.jl",
            "operational_cost.jl",
            "cost_function_timeseries.jl",
-           "definitions.jl"]
+           "definitions.jl"
+           ]
 Public = true
 Private = false
+```
+
+## Supplemental Attributes
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["outages.jl",
+           "impedance_correction.jl",
+           ]
+Public = true
+Private = false
+```
+
+```@autodocs
+Modules = [InfrastructureSystems]
+Pages   = ["geographic_supplemental_attribute.jl"
+        ]
+Order = [:type, :function]
+Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ## Operating Costs
@@ -125,6 +144,15 @@ Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && ge
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["supplemental_accessors.jl"]
+Public = true
+Private = false
+```
+
+## [Deprecated Methods](@id deprecated)
+
+```@autodocs
+Modules = [PowerSystems]
+Pages   = ["deprecated.jl"]
 Public = true
 Private = false
 ```

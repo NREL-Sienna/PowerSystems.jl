@@ -1,6 +1,10 @@
 # BEGIN 4.0.0  deprecations
 export TwoTerminalHVDCLine
 
+"""
+Deprecated method for the old TwoTerminalHVDCLine that returns the new TwoTerminalGenericHVDCLine.
+This constructor is used for some backward compatibility and will be removed in a future version.
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -16,6 +20,9 @@ function TwoTerminalHVDCLine(
     internal,
 )
     new_loss = LinearCurve(loss.l0, loss.l1)
+    @warn(
+        "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
+         This constructor will be removed in a future version.",)
     TwoTerminalGenericHVDCLine(
         name,
         available,
@@ -32,6 +39,10 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for the old TwoTerminalHVDCLine that returns the new [`TwoTerminalGenericHVDCLine`](@ref).
+This constructor is used for some backward compatibility and will be removed in a future version.
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -45,6 +56,9 @@ function TwoTerminalHVDCLine(
     services = Device[],
     ext = Dict{String, Any}(),
 )
+    @warn(
+        "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
+         This constructor will be removed in a future version.",)
     new_loss = LinearCurve(loss.l0, loss.l1)
     TwoTerminalGenericHVDCLine(
         name,
@@ -63,7 +77,8 @@ function TwoTerminalHVDCLine(
 end
 
 """
-Deprecated method for TwoTerminalHVDCLine
+Deprecated method for the old TwoTerminalHVDCLine that returns the new [`TwoTerminalGenericHVDCLine`](@ref).
+This constructor is used for some backward compatibility and will be removed in a future version.
 """
 function TwoTerminalHVDCLine(
     name,
@@ -78,6 +93,9 @@ function TwoTerminalHVDCLine(
     services = Device[],
     ext = Dict{String, Any}(),
 )
+    @warn(
+        "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
+         This constructor will be removed in a future version.",)
     return TwoTerminalGenericHVDCLine(
         name,
         available,
@@ -94,6 +112,10 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for the old TwoTerminalHVDCLine that returns the new [`TwoTerminalGenericHVDCLine`](@ref).
+This constructor is used for some backward compatibility and will be removed in a future version.
+"""
 function TwoTerminalHVDCLine(
     name,
     available,
@@ -107,6 +129,9 @@ function TwoTerminalHVDCLine(
     services = Device[],
     ext = Dict{String, Any}(),
 )
+    @warn(
+        "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
+         This constructor will be removed in a future version.",)
     TwoTerminalGenericHVDCLine(
         name,
         available,
@@ -123,6 +148,10 @@ function TwoTerminalHVDCLine(
     )
 end
 
+"""
+Deprecated method for the old TwoTerminalHVDCLine that returns the new [`TwoTerminalGenericHVDCLine`](@ref).
+This constructor is used for some backward compatibility and will be removed in a future version.
+"""
 function TwoTerminalHVDCLine(;
     name,
     available,
@@ -137,6 +166,9 @@ function TwoTerminalHVDCLine(;
     ext = Dict{String, Any}(),
     internal = InfrastructureSystemsInternal(),
 )
+    @warn(
+        "The TwoTerminalHVDCLine constructor is deprecated. Use TwoTerminalGenericHVDCLine instead. \
+         This constructor will be removed in a future version.",)
     TwoTerminalGenericHVDCLine(
         name,
         available,
