@@ -1,8 +1,8 @@
-### `HydroReservoir`
+# ImportExportCost
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["HydroReservoir.jl"]
+Pages   = ["cost_functions/ImportExportCost.jl"]
 Order = [:type, :function]
 Public = true
 Private = false

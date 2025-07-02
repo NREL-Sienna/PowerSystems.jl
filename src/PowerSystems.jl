@@ -32,6 +32,8 @@ export StaticInjection
 export StaticInjectionSubsystem
 export DiscreteControlledACBranch
 export ACBranch
+export ACTransmission
+export TwoTerminalHVDC
 export Line
 export MonitoredLine
 export DCBranch

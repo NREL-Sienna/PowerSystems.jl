@@ -52,7 +52,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `max_impedance_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant impedance load
 - `max_current_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant current load
 - `max_current_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant current load
-- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming.
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -91,7 +91,7 @@ mutable struct StandardLoad <: StaticLoad
     max_current_active_power::Float64
     "Maximum reactive power (MVAR) drawn by constant current load"
     max_current_reactive_power::Float64
-    "Indicator of scalability of the load. Indicates whether the specified load is conforming or non-conforming."
+    "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list)."
     conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}

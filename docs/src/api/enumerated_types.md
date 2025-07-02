@@ -118,9 +118,25 @@ on the options in [EIA form 923](https://www.eia.gov/survey/form/eia_923/instruc
 | `OTHER_MECH`  | Other Mechanical Storage      |
 | `OTHER_THERM` | Other Thermal Storage         |
 
+## [Hydro Reservoir Units](@id hydroreservoir_list)
+
+`ReservoirDataType` specifies which units of measurement for a
+[`HydroReservoir`](@ref)'s `level`-related parameters (e.g., `level_targets`,
+`storage_level_limits`). It defines the units used to perform energy balance
+calculations for a [`HydroReservoir`](@ref) and affects how the totals and targets are calculated.
+The user is responsible for correctly managing data conversions when switching between
+the different alternatives of `ReservoirDataType`, which has the options:
+
+| Name            | Units | Description                                                                                                                                                              |
+|:--------------- |:----- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `USABLE_VOLUME` | m^3   | The volume of water that can be stored for levels between the penstock intake and the top reservoir level                                                                |
+| `TOTAL_VOLUME`  | m^3   | The total volume of the reservoir considering a total depletion of the water levels. This unit system usually requires the specification of a valid minimum volume level |
+| `HEAD`          | m     | The difference in elevations between the top water levels. It requires a valid conversion constant to go from head to potential energy stored.                           |
+| `ENERGY`        | MWh   | Uses energy units in MWh to approximate the water storage as a generic energy reservoir.                                                                                 |
+
 ## [Facts Control Devices](@id factsmodes_list)
 
-`FACTSOperationModes` define the operation modes the FACTS Control Devices have.
+`FACTSOperationModes` define the operation modes of a [`FACTSControlDevice`](@ref).
 `FACTSOperationModes` has the options:
 
 | Name  | Description                                                                                     |
@@ -128,6 +144,17 @@ on the options in [EIA form 923](https://www.eia.gov/survey/form/eia_923/instruc
 | `OOS` | Out-Of-Service (i.e., Series and Shunt links open)                                              |
 | `NML` | Normal mode of operation, where Series and Shunt links are operating                            |
 | `BYP` | Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM |
+
+## [Load Conformity](@id loadconform_list)
+
+`LoadConformity` defines whether a load is
+[conforming or non-nonforming](@ref conf_loads). `LoadConformity` has the options:
+
+| Name             | Description                                                       |
+|:---------------- |:----------------------------------------------------------------- |
+| `NON_CONFORMING` | Non-conforming load                                               |
+| `CONFORMING`     | Conforming load                                                   |
+| `UNDEFINED`      | Undefined or unknown whether load is conforming or non-conforming |
 
 ## [Dynamic States](@id states_list)
 
