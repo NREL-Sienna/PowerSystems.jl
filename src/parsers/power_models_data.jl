@@ -273,7 +273,7 @@ Function to attach ICTs to a single Transformer component.
 """
 function _attach_single_ict!(
     sys::System,
-    transformer::Union{Transformer2W, Transformer3W},
+    transformer::Union{Transformer2W, Union{Transformer3W, PhaseShiftingTransformer3W}},
     name::String,
     d::Dict,
     table_key::String,
@@ -324,7 +324,7 @@ Attaches the corresponding ICT data to a Transformer3W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
-    transformer::Transformer3W,
+    transformer::Union{Transformer3W, PhaseShiftingTransformer3W},
     name::String,
     d::Dict,
     ict_instances::Union{
@@ -1278,6 +1278,66 @@ function make_3w_transformer(
     )
 end
 
+function make_3w_phase_shifting_transformer(
+    name::String,
+    d::Dict,
+    bus_primary::ACBus,
+    bus_secondary::ACBus,
+    bus_tertiary::ACBus,
+    star_bus::ACBus,
+)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
+    return PhaseShiftingTransformer3W(;
+        name = name,
+        available = d["available"],
+        primary_star_arc = Arc(bus_primary, star_bus),
+        secondary_star_arc = Arc(bus_secondary, star_bus),
+        tertiary_star_arc = Arc(bus_tertiary, star_bus),
+        star_bus = star_bus,
+        active_power_flow_primary = pf,
+        reactive_power_flow_primary = qf,
+        active_power_flow_secondary = pf,
+        reactive_power_flow_secondary = qf,
+        active_power_flow_tertiary = pf,
+        reactive_power_flow_tertiary = qf,
+        r_primary = d["r_primary"],
+        x_primary = d["x_primary"],
+        r_secondary = d["r_secondary"],
+        x_secondary = d["x_secondary"],
+        r_tertiary = d["r_tertiary"],
+        x_tertiary = d["x_tertiary"],
+        rating = d["rating"],
+        r_12 = d["r_12"],
+        x_12 = d["x_12"],
+        r_23 = d["r_23"],
+        x_23 = d["x_23"],
+        r_13 = d["r_13"],
+        x_13 = d["x_13"],
+        α_primary = d["primary_phase_shift_angle"],
+        α_secondary = d["secondary_phase_shift_angle"],
+        α_tertiary = d["tertiary_phase_shift_angle"],
+        base_power_12 = d["base_power_12"],
+        base_power_23 = d["base_power_23"],
+        base_power_13 = d["base_power_13"],
+        base_voltage_primary = d["base_voltage_primary"],
+        base_voltage_secondary = d["base_voltage_secondary"],
+        base_voltage_tertiary = d["base_voltage_tertiary"],
+        g = d["g"],
+        b = d["b"],
+        primary_turns_ratio = d["primary_turns_ratio"],
+        secondary_turns_ratio = d["secondary_turns_ratio"],
+        tertiary_turns_ratio = d["tertiary_turns_ratio"],
+        available_primary = d["available_primary"],
+        available_secondary = d["available_secondary"],
+        available_tertiary = d["available_tertiary"],
+        rating_primary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_primary"),
+        rating_secondary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_secondary"),
+        rating_tertiary = _get_rating("PhaseShiftingTransformer3W", name, d, "rating_tertiary"),
+        ext = d["ext"],
+    )
+end
+
 function make_tap_transformer(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1406,8 +1466,36 @@ function read_3w_transformer!(
         star_bus = bus_number_to_bus[d["star_bus"]]
 
         name = _get_name(d, bus_primary, bus_secondary, bus_tertiary)
-        value =
-            make_3w_transformer(name, d, bus_primary, bus_secondary, bus_tertiary, star_bus)
+        if (
+               haskey(d, "primary_phase_shift_angle") &&
+               d["primary_phase_shift_angle"] != 0.0
+           ) ||
+           (
+               haskey(d, "secondary_phase_shift_angle") &&
+               d["secondary_phase_shift_angle"] != 0.0
+           ) ||
+           (
+               haskey(d, "tertiary_phase_shift_angle") &&
+               d["tertiary_phase_shift_angle"] != 0.0
+           )
+            value = make_3w_phase_shifting_transformer(
+                name,
+                d,
+                bus_primary,
+                bus_secondary,
+                bus_tertiary,
+                star_bus,
+            )
+        else
+            value = make_3w_transformer(
+                name,
+                d,
+                bus_primary,
+                bus_secondary,
+                bus_tertiary,
+                star_bus,
+            )
+        end
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
 

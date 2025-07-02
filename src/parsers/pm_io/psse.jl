@@ -1256,6 +1256,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["secondary_correction_table"] = transformer["TAB2"]
                 sub_data["tertiary_correction_table"] = transformer["TAB3"]
 
+                sub_data["primary_phase_shift_angle"] = transformer["ANG1"]
+                sub_data["secondary_phase_shift_angle"] = transformer["ANG2"]
+                sub_data["tertiary_phase_shift_angle"] = transformer["ANG3"]
+
                 windv1 = transformer["WINDV1"]
                 windv2 = transformer["WINDV2"]
                 windv3 = transformer["WINDV3"]
