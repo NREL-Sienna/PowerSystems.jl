@@ -195,11 +195,13 @@ end
 """
 Check if a device has attribute 'active_power' for active power consumption or generation.
 """
-has_active_power(d::Device) = throw(
+function has_active_power(::T) = where {T <: Device} 
+throw(
     IS.NotImplementedError(
-        "has_active_power not implemented for this device type: $(typeof(d))!",
+        "has_active_power not implemented for this device type $(T)",
     ),
 )
+end 
 
 """
 Most StaticInjection models have active power consumption or generation, so return true
