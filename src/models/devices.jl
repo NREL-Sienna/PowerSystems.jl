@@ -210,3 +210,13 @@ has_active_power(::StaticInjection) = true
 SynchronousCondenser does not have active power consumption / generation, so return false
 """
 has_active_power(::SynchronousCondenser) = false
+
+"""
+FixedAdmittance does not have active power consumption / generation, so return false
+"""
+has_active_power(::FixedAdmittance) = false
+
+"""
+SwitchedAdmittance does not have active power consumption / generation, so return false
+"""
+has_active_power(::SwitchedAdmittance) = false
