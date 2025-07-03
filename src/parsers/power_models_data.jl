@@ -1080,8 +1080,7 @@ function make_branch(
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
     if d["br_r"] == 0.0 && d["br_x"] == 0.0
-        @warn "Branch $name has zero impedance; converting to a closed switch"
-        value = _make_closed_switch(name, d, bus_f, bus_t)
+        value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
     elseif d["transformer"]
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
@@ -1101,7 +1100,12 @@ function make_branch(
     return value
 end
 
-function _make_closed_switch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
+function _make_switch_from_zero_impedance_line(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+)
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
     available_value = d["br_status"] == 1
@@ -1109,6 +1113,12 @@ function _make_closed_switch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+    if available_value == true
+        status_value = DiscreteControlledBranchStatus.CLOSED
+    else
+        status_value = DiscreteControlledBranchStatus.OPEN
+    end
+    @warn "Branch $name has zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
     return DiscreteControlledACBranch(;
         name = name,
         available = Bool(available_value),
@@ -1119,7 +1129,7 @@ function _make_closed_switch(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus)
         x = d["br_x"],
         rating = _get_rating("Line", name, d, "rate_a"),
         discrete_branch_type = DiscreteControlledBranchType.SWITCH,
-        branch_status = DiscreteControlledBranchStatus.CLOSED,
+        branch_status = status_value,
     )
 end
 
