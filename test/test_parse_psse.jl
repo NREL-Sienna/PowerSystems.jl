@@ -404,3 +404,15 @@ end
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 4
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
 end
+
+@testset "Test conversion zero impedance branch to switch" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "psse_14_zero_impedance_branch_test_system";
+        force_build = true,
+    )
+    @test length(get_components(DiscreteControlledACBranch, sys)) == 6
+    @test length(
+        get_components(x -> get_r(x) == get_x(x) == 0.0, DiscreteControlledACBranch, sys),
+    ) == 4
+end
