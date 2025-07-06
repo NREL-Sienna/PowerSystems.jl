@@ -1079,8 +1079,9 @@ function make_branch(
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
     branch_type = get_branch_type(d["tap"], alpha, d["transformer"])
-
-    if d["transformer"]
+    if d["br_r"] == 0.0 && d["br_x"] == 0.0
+        value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
+    elseif d["transformer"]
         if branch_type == Line
             throw(DataFormatError("Data is mismatched; this cannot be a line. $d"))
         elseif branch_type == Transformer2W
@@ -1097,6 +1098,39 @@ function make_branch(
     end
 
     return value
+end
+
+function _make_switch_from_zero_impedance_line(
+    name::String,
+    d::Dict,
+    bus_f::ACBus,
+    bus_t::ACBus,
+)
+    pf = get(d, "pf", 0.0)
+    qf = get(d, "qf", 0.0)
+    available_value = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available_value = false
+    end
+    if available_value == true
+        status_value = DiscreteControlledBranchStatus.CLOSED
+    else
+        status_value = DiscreteControlledBranchStatus.OPEN
+    end
+    @warn "Branch $name has zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
+    return DiscreteControlledACBranch(;
+        name = name,
+        available = Bool(available_value),
+        active_power_flow = pf,
+        reactive_power_flow = qf,
+        arc = Arc(bus_f, bus_t),
+        r = d["br_r"],
+        x = d["br_x"],
+        rating = _get_rating("Line", name, d, "rate_a"),
+        discrete_branch_type = DiscreteControlledBranchType.SWITCH,
+        branch_status = status_value,
+    )
 end
 
 function _get_rating(
