@@ -94,6 +94,25 @@ end
 
     @test length(get_components(Transformer3W, sys5)) == 5
 
+    @info "Testing Phase Shifting Three-Winding Transformer Parsing"
+    sys_pst3w = build_system(PSSEParsingTestSystems, "pti_case14_with_pst3w_sys")
+
+    pst3w_1 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[1]
+    pst3w_2 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[2]
+
+    @test get_available(pst3w_1) == true
+    @test get_available(pst3w_2) == true
+
+    @test isapprox(get_α_primary(pst3w_1), -0.5236; atol = 1e-4)
+    @test isapprox(get_α_secondary(pst3w_1), 2.6179; atol = 1e-4)
+    @test isapprox(get_α_tertiary(pst3w_1), -1.3962; atol = 1e-4)
+
+    @test isapprox(get_α_primary(pst3w_2), 1.0471; atol = 1e-4)
+    @test isapprox(get_α_secondary(pst3w_2), 0.0; atol = 1e-4)
+    @test isapprox(get_α_tertiary(pst3w_2), -2.0943; atol = 1e-4)
+
+    @test length(get_components(PhaseShiftingTransformer3W, sys_pst3w)) == 2
+
     @info "Testing Switched Shunt Parsing"
     @test get_available(get_component(SwitchedAdmittance, sys3, "1030-9")) == false
     @test only(
