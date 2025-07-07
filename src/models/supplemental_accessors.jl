@@ -37,11 +37,11 @@ function get_series_susceptance(b::PhaseShiftingTransformer3W)
     y1 = 1 / get_x_primary(b)
     y2 = 1 / get_x_secondary(b)
     y3 = 1 / get_x_tertiary(b)
-    
+
     y1_a = y1 / get_primary_turns_ratio(b)
     y2_a = y2 / get_secondary_turns_ratio(b)
     y3_a = y3 / get_tertiary_turns_ratio(b)
-    
+
     return (y1_a, y2_a, y3_a)
 end
 
