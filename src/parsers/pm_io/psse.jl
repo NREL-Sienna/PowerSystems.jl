@@ -1284,15 +1284,14 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             (transformer["MAG2"] / Z_base_sys_1) * Z_base_device_1
                     end
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
+                    @assert transformer["CM"] == 2
                     G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power_12"]
                     B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
                     sub_data["g"] = G_pu
                     sub_data["b"] = B_pu
                 end
-                sub_data["g"] = transformer["MAG1"] # M. conductance MAG1 is saved in "g"
                 # If CM = 1 & MAG2 != 0 -> MAG2 < 0
                 # If CM = 2 & MAG2 != 0 -> MAG2 > 0
-                sub_data["b"] = transformer["MAG2"] # M. susceptance MAG2 is saved in "b"
 
                 sub_data["primary_correction_table"] = transformer["TAB1"]
                 sub_data["secondary_correction_table"] = transformer["TAB2"]
