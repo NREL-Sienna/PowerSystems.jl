@@ -366,7 +366,7 @@ function _get_multiplier(
     base_mva::Float64,
     ::Val{:ohm},
 )
-    return _get_winding_base_power(c, field) / base_mva
+    return base_mva / _get_winding_base_power(c, field)
 end
 
 # NATURAL_UNITS
@@ -392,7 +392,7 @@ function _get_multiplier(
     base_mva::Float64,
     ::Val{:siemens},
 )
-    return base_mva / _get_winding_base_power(c, field)
+    return _get_winding_base_power(c, field) / base_mva
 end
 
 # NATURAL_UNITS
