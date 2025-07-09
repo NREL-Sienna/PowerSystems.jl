@@ -33,6 +33,8 @@ export StaticInjectionSubsystem
 export DiscreteControlledACBranch
 export ACBranch
 export ACTransmission
+export TwoWindingTransformer
+export ThreeWindingTransformer
 export TwoTerminalHVDC
 export Line
 export MonitoredLine
@@ -46,6 +48,7 @@ export TapTransformer
 export PhaseShiftingTransformer
 export FACTSControlDevice
 export Transformer3W
+export PhaseShiftingTransformer3W
 export SynchronousCondenser
 
 # from IS function_data.jl

@@ -5,6 +5,12 @@ abstract type Branch <: Device end
 """ Supertype for all AC branches (branches connecting AC nodes or Areas)"""
 abstract type ACBranch <: Branch end
 
+""" Supertype for all Two Winding Transformer types"""
+abstract type TwoWindingTransformer <: ACTransmission end
+
+""" Supertype for all Three Winding Transformer types"""
+abstract type ThreeWindingTransformer <: ACTransmission end
+
 """ Supertype for all AC transmission devices (devices connecting AC nodes only)"""
 abstract type ACTransmission <: ACBranch end
 

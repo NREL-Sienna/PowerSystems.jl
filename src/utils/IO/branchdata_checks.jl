@@ -174,7 +174,7 @@ end
 const TYPICAL_XFRM_REACTANCE = (min = 0.05, max = 0.2) # per-unit
 
 function validate_component_with_system(
-    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+    xfrm::TwoWindingTransformer,
     sys::System,
 )
     is_valid_reactance = check_transformer_reactance(xfrm)
@@ -183,7 +183,7 @@ function validate_component_with_system(
 end
 
 function check_rating_values(
-    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+    xfrm::TwoWindingTransformer,
     ::Float64,
 )
     arc = get_arc(xfrm)
@@ -215,7 +215,7 @@ function check_rating_values(
 end
 
 function check_transformer_reactance(
-    xfrm::Union{Transformer2W, TapTransformer, PhaseShiftingTransformer},
+    xfrm::TwoWindingTransformer,
 )
     x_pu = getproperty(xfrm, :x)
     if x_pu < TYPICAL_XFRM_REACTANCE.min

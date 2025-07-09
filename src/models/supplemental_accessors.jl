@@ -21,10 +21,28 @@ Returns the series susceptance of a controllable transformer following the conve
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 In the case of phase shifter transformers the angle is ignored.
 """
-function get_series_susceptance(b::Union{PhaseShiftingTransformer, TapTransformer})
+function get_series_susceptance(b::TwoWindingTransformer)
     y = 1 / get_x(b)
     y_a = y / (get_tap(b))
     return y_a
+end
+
+"""
+Returns the series susceptance of a 3 winding phase shifting transformer as three values 
+(for each of the 3 branches) following the convention
+in power systems to define susceptance as the inverse of the imaginary part of the impedance.
+The phase shift angles are ignored in the susceptance calculation.
+"""
+function get_series_susceptance(b::PhaseShiftingTransformer3W)
+    y1 = 1 / get_x_primary(b)
+    y2 = 1 / get_x_secondary(b)
+    y3 = 1 / get_x_tertiary(b)
+
+    y1_a = y1 / get_primary_turns_ratio(b)
+    y2_a = y2 / get_secondary_turns_ratio(b)
+    y3_a = y3 / get_tertiary_turns_ratio(b)
+
+    return (y1_a, y2_a, y3_a)
 end
 
 """
