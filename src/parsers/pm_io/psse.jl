@@ -1055,6 +1055,17 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["base_voltage_tertiary"] = transformer["NOMV3"]
                 end
 
+                mva_ratio_12 = sub_data["base_power_12"] / pm_data["baseMVA"]
+                mva_ratio_23 = sub_data["base_power_23"] / pm_data["baseMVA"]
+                mva_ratio_31 = sub_data["base_power_13"] / pm_data["baseMVA"]
+                Z_base_device_1 = transformer["NOMV1"]^2 / sub_data["base_power_12"]
+                Z_base_device_2 = transformer["NOMV2"]^2 / sub_data["base_power_23"]
+                Z_base_device_3 = transformer["NOMV3"]^2 / sub_data["base_power_13"]
+                Z_base_sys_1 = (sub_data["base_voltage_primary"])^2 / pm_data["baseMVA"]
+                Z_base_sys_2 =
+                    (sub_data["base_voltage_secondary"])^2 / pm_data["baseMVA"]
+                Z_base_sys_3 =
+                    (sub_data["base_voltage_tertiary"])^2 / pm_data["baseMVA"]
                 # Create 3 branches from a three winding transformer (one for each winding, which will each connect to the starbus)
                 br_r12, br_r23, br_r31 =
                     transformer["R1-2"], transformer["R2-3"], transformer["R3-1"]
@@ -1071,21 +1082,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     br_x12 = sqrt(br_x12^2 - br_r12^2)
                     br_x23 = sqrt(br_x23^2 - br_r23^2)
                     br_x31 = sqrt(br_x31^2 - br_r31^2)
-                end
-
-                # Unit Transformations
-                if transformer["CZ"] == 1  # "for resistance and reactance in pu on system MVA base (transform to device base)"
-                    mva_ratio_12 = sub_data["base_power_12"] / pm_data["baseMVA"]
-                    mva_ratio_23 = sub_data["base_power_23"] / pm_data["baseMVA"]
-                    mva_ratio_31 = sub_data["base_power_13"] / pm_data["baseMVA"]
-                    Z_base_device_1 = transformer["NOMV1"]^2 / sub_data["base_power_12"]
-                    Z_base_device_2 = transformer["NOMV2"]^2 / sub_data["base_power_23"]
-                    Z_base_device_3 = transformer["NOMV3"]^2 / sub_data["base_power_13"]
-                    Z_base_sys_1 = (sub_data["base_voltage_primary"])^2 / pm_data["baseMVA"]
-                    Z_base_sys_2 =
-                        (sub_data["base_voltage_secondary"])^2 / pm_data["baseMVA"]
-                    Z_base_sys_3 =
-                        (sub_data["base_voltage_tertiary"])^2 / pm_data["baseMVA"]
+                    # Unit Transformations
+                elseif transformer["CZ"] == 1  # "for resistance and reactance in pu on system MVA base (transform to device base)"
                     if iszero(Z_base_device_1) # NOMV1 = 0.0: use the power ratios
                         br_r12 *= mva_ratio_12
                         br_x12 *= mva_ratio_12
@@ -1109,13 +1107,57 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     end
                 end
 
+                # Compute primary,secondary, tertiary impedances in system base, then convert to base power of appropriate winding
+                if iszero(Z_base_device_1)
+                    br_r12_sysbase = br_r12 / mva_ratio_12
+                    br_x12_sysbase = br_x12 / mva_ratio_12
+                else
+                    br_r12_sysbase = br_r12 * (Z_base_device_1 / Z_base_sys_1)
+                    br_x12_sysbase = br_x12 * (Z_base_device_1 / Z_base_sys_1)
+                end
+                if iszero(Z_base_device_2)
+                    br_r23_sysbase = br_r23 / mva_ratio_23
+                    br_x23_sysbase = br_x23 / mva_ratio_23
+                else
+                    br_r23_sysbase = br_r23 * (Z_base_device_2 / Z_base_sys_2)
+                    br_x23_sysbase = br_x23 * (Z_base_device_2 / Z_base_sys_2)
+                end
+                if iszero(Z_base_device_3)
+                    br_r31_sysbase = br_r31 / mva_ratio_31
+                    br_x31_sysbase = br_x31 / mva_ratio_31
+                else
+                    br_r31_sysbase = br_r31 * (Z_base_device_3 / Z_base_sys_3)
+                    br_x31_sysbase = br_x31 * (Z_base_device_3 / Z_base_sys_3)
+                end
                 # See "Power System Stability and Control", ISBN: 0-07-035958-X, Eq. 6.72
-                Zr_p = 1 / 2 * (br_r12 - br_r23 + br_r31)
-                Zr_s = 1 / 2 * (br_r23 - br_r31 + br_r12)
-                Zr_t = 1 / 2 * (br_r31 - br_r12 + br_r23)
-                Zx_p = 1 / 2 * (br_x12 - br_x23 + br_x31)
-                Zx_s = 1 / 2 * (br_x23 - br_x31 + br_x12)
-                Zx_t = 1 / 2 * (br_x31 - br_x12 + br_x23)
+                Zr_p = 1 / 2 * (br_r12_sysbase - br_r23_sysbase + br_r31_sysbase)
+                Zr_s = 1 / 2 * (br_r23_sysbase - br_r31_sysbase + br_r12_sysbase)
+                Zr_t = 1 / 2 * (br_r31_sysbase - br_r12_sysbase + br_r23_sysbase)
+                Zx_p = 1 / 2 * (br_x12_sysbase - br_x23_sysbase + br_x31_sysbase)
+                Zx_s = 1 / 2 * (br_x23_sysbase - br_x31_sysbase + br_x12_sysbase)
+                Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
+
+                if iszero(Z_base_device_1)
+                    Zr_p *= mva_ratio_12
+                    Zx_p *= mva_ratio_12
+                else
+                    Zr_p *= Z_base_sys_1 / Z_base_device_1
+                    Zx_p *= Z_base_sys_1 / Z_base_device_1
+                end
+                if iszero(Z_base_device_2)
+                    Zr_s *= mva_ratio_23
+                    Zx_s *= mva_ratio_23
+                else
+                    Zr_s *= Z_base_sys_2 / Z_base_device_2
+                    Zx_s *= Z_base_sys_2 / Z_base_device_2
+                end
+                if iszero(Z_base_device_3)
+                    Zr_t *= mva_ratio_31
+                    Zx_t *= mva_ratio_31
+                else
+                    Zr_t *= Z_base_sys_3 / Z_base_device_3
+                    Zx_t *= Z_base_sys_3 / Z_base_device_3
+                end
 
                 sub_data["name"] = transformer["NAME"]
                 sub_data["bus_primary"] = bus_id1
@@ -1242,15 +1284,14 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                             (transformer["MAG2"] / Z_base_sys_1) * Z_base_device_1
                     end
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
+                    @assert transformer["CM"] == 2
                     G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power_12"]
                     B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
                     sub_data["g"] = G_pu
                     sub_data["b"] = B_pu
                 end
-                sub_data["g"] = transformer["MAG1"] # M. conductance MAG1 is saved in "g"
                 # If CM = 1 & MAG2 != 0 -> MAG2 < 0
                 # If CM = 2 & MAG2 != 0 -> MAG2 > 0
-                sub_data["b"] = transformer["MAG2"] # M. susceptance MAG2 is saved in "b"
 
                 sub_data["primary_correction_table"] = transformer["TAB1"]
                 sub_data["secondary_correction_table"] = transformer["TAB2"]
@@ -1295,15 +1336,31 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["primary_turns_ratio"] = windv1
                     sub_data["secondary_turns_ratio"] = windv2
                     sub_data["tertiary_turns_ratio"] = windv3
-                else
+                elseif transformer["CW"] == 2
                     sub_data["primary_turns_ratio"] =
                         transformer["WINDV1"] / sub_data["base_voltage_primary"]
                     sub_data["secondary_turns_ratio"] =
                         transformer["WINDV2"] / sub_data["base_voltage_secondary"]
                     sub_data["tertiary_turns_ratio"] =
                         transformer["WINDV3"] / sub_data["base_voltage_tertiary"]
+                else
+                    @assert transformer["CW"] == 3
+                    sub_data["primary_turns_ratio"] =
+                        windv1 * (
+                            sub_data["base_voltage_primary"] /
+                            _get_bus_value(transformer["I"], "base_kv", pm_data)
+                        )
+                    sub_data["secondary_turns_ratio"] =
+                        windv2 * (
+                            sub_data["base_voltage_secondary"] /
+                            _get_bus_value(transformer["J"], "base_kv", pm_data)
+                        )
+                    sub_data["tertiary_turns_ratio"] =
+                        windv3 * (
+                            sub_data["base_voltage_tertiary"] /
+                            _get_bus_value(transformer["K"], "base_kv", pm_data)
+                        )
                 end
-
                 sub_data["circuit"] = strip(transformer["CKT"])
 
                 sub_data["ext"] = Dict{String, Any}(
