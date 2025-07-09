@@ -192,7 +192,7 @@ end
 
 function _check_branch_consistency(
     sys::System,
-    branch::Union{Transformer3W, PhaseShiftingTransformer3W},
+    branch::ThreeWindingTransformer,
 )
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [

@@ -2349,7 +2349,7 @@ end
 
 function check_attached_buses(
     sys::System,
-    component::Union{Transformer3W, PhaseShiftingTransformer3W},
+    component::ThreeWindingTransformer
 )
     bus_primary = get_from(get_primary_star_arc(component))
     bus_secondary = get_from(get_secondary_star_arc(component))
@@ -2428,7 +2428,7 @@ end
 
 function check_component_addition(
     sys::System,
-    component::Union{Transformer3W, PhaseShiftingTransformer3W};
+    component::ThreeWindingTransformer;
     kwargs...,
 )
     bus_primary = get_from(get_primary_star_arc(component))
@@ -2550,7 +2550,7 @@ end
 
 function _handle_branch_addition_common!(
     sys::System,
-    component::Union{Transformer3W, PhaseShiftingTransformer3W},
+    component::ThreeWindingTransformer,
 )
     # If this arc is already attached to the system, assign it to the 3W XFRM.
     # Else, add it to the system.

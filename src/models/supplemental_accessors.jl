@@ -21,7 +21,7 @@ Returns the series susceptance of a controllable transformer following the conve
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 In the case of phase shifter transformers the angle is ignored.
 """
-function get_series_susceptance(b::Union{PhaseShiftingTransformer, TapTransformer})
+function get_series_susceptance(b::TwoWindingTransformer)
     y = 1 / get_x(b)
     y_a = y / (get_tap(b))
     return y_a
