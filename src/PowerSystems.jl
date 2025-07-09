@@ -33,6 +33,8 @@ export StaticInjectionSubsystem
 export DiscreteControlledACBranch
 export ACBranch
 export ACTransmission
+export TwoWindingTransformer
+export ThreeWindingTransformer
 export TwoTerminalHVDC
 export Line
 export MonitoredLine

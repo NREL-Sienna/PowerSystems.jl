@@ -1001,7 +1001,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACTransmission"
+            "supertype": "TwoWindingTransformer"
         },
         {
             "struct_name": "TapTransformer",
@@ -1176,7 +1176,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACTransmission"
+            "supertype": "TwoWindingTransformer"
         },
         {
             "struct_name": "Transformer2W",
@@ -1340,7 +1340,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACTransmission"
+            "supertype": "TwoWindingTransformer"
         },
         {
             "struct_name": "Transformer3W",
@@ -1778,7 +1778,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACTransmission"
+            "supertype": "ThreeWindingTransformer"
         },
         {
             "struct_name": "PhaseShiftingTransformer3W",
@@ -2256,7 +2256,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "ACTransmission"
+            "supertype": "ThreeWindingTransformer"
         },
         {
             "struct_name": "TwoTerminalGenericHVDCLine",

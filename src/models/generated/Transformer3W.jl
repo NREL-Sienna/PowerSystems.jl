@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct Transformer3W <: ACTransmission
+    mutable struct Transformer3W <: ThreeWindingTransformer
         name::String
         available::Bool
         primary_star_arc::Arc
@@ -104,7 +104,7 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct Transformer3W <: ACTransmission
+mutable struct Transformer3W <: ThreeWindingTransformer
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
