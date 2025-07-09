@@ -2349,7 +2349,7 @@ end
 
 function check_attached_buses(
     sys::System,
-    component::ThreeWindingTransformer
+    component::ThreeWindingTransformer,
 )
     bus_primary = get_from(get_primary_star_arc(component))
     bus_secondary = get_from(get_secondary_star_arc(component))
