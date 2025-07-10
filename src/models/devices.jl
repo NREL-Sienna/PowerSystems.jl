@@ -191,3 +191,44 @@ function clear_reservoirs!(device::Device)
     empty!(reservoirs)
     return
 end
+
+"""
+Check if a device has attribute 'active_power' for active power consumption or generation.
+"""
+function supports_active_power_injecton(::T) where {T <: Device}
+    throw(
+        IS.NotImplementedError(
+            "supports_active_power_injecton not implemented for this device type $(T)",
+        ),
+    )
+end
+
+"""
+Most Generator models have active power consumption or generation, so return true
+"""
+supports_active_power_injecton(::Generator) = true
+
+"""
+Most Load models have active power consumption or generation, so return true
+"""
+supports_active_power_injecton(::ElectricLoad) = true
+
+"""
+SynchronousCondenser does not have active power consumption / generation, so return false
+"""
+supports_active_power_injecton(::SynchronousCondenser) = false
+
+"""
+FixedAdmittance does not have active power consumption / generation, so return false
+"""
+supports_active_power_injecton(::FixedAdmittance) = false
+
+"""
+SwitchedAdmittance does not have active power consumption / generation, so return false
+"""
+supports_active_power_injecton(::SwitchedAdmittance) = false
+
+"""
+FACTSControlDevice does not have active power consumption / generation, so return false
+"""
+supports_active_power_injecton(::FACTSControlDevice) = false
