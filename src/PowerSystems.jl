@@ -494,7 +494,6 @@ export set_bus_number!
 export set_number!  # Remove this in v5.0.
 export get_name
 export set_name!
-export get_uuid
 export get_component_uuids
 export get_description
 export set_description!
@@ -645,7 +644,6 @@ import InfrastructureSystems:
     get_resolution,
     get_window,
     get_name,
-    get_uuid,
     get_num_components,
     get_component_uuids,
     get_supplemental_attribute,

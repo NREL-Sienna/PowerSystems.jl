@@ -1334,11 +1334,6 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-# PSY availability is a pure function of the component and the system is not needed; here we
-# implement the required IS.ComponentContainer interface
-get_available(::System, component::Component) =
-    get_available(component)
-
 """
 Return true if the component is attached to the system.
 """
@@ -1884,7 +1879,7 @@ end
 
 """
 Return a vector of NamedTuples with pairs of components and supplemental attributes that
-are associated with each other. Limit by `component_uuids` and `attribute_uuids` if provided.
+are associated with each other. Limit by `components` and `attributes` if provided.
 
 The return type is `NamedTuple{(:component, :supplemental_attribute), Tuple{T, U}}[]`
 where `T` is the component type and `U` is the supplemental attribute type.
@@ -1894,10 +1889,10 @@ where `T` is the component type and `U` is the supplemental attribute type.
 - `::Type{T}`: Type of the components to filter by. Can be concrete or abstract.
 - `::Type{U}`: Type of the supplemental attributes to filter by. Can be concrete or abstract.
 - `only_available_components::Bool`: If true, filter components that are available.
-- `component_uuids::Union{Nothing, Set{Base.UUID}}`: If set, filter pairs where the
-  component's UUID is in this set.
-- `attribute_uuids::Union{Nothing, Set{Base.UUID}}`: If set, filter pairs where the
-  supplemental attribute's UUID is in this set.
+- `components`: Optional iterable. If set, filter pairs where the component is in this
+  iterable.
+- `attributes`: Optional iterable. If set, filter pairs where the supplemental attribute is
+  in this iterable.
 
 # Examples
 ```julia
@@ -1911,13 +1906,13 @@ for (gen, attr) in gen_attr_pairs
     @show summary(gen) summary(attr)
 end
 
-my_generators = Set(get_uuid.([gen1, gen2, gen3]))
+my_generators = [gen1, gen2, gen3]
 gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
     GeometricDistributionForcedOutage,
     ThermalStandard,
     sys;
     only_available_components = true,
-    component_uuids = my_generators,
+    components = my_generators,
 )
 for (gen, attr) in gen_attr_pairs_limited
     @show summary(gen) summary(attr)
@@ -1929,16 +1924,16 @@ function get_component_supplemental_attribute_pairs(
     ::Type{U},
     sys::System;
     only_available_components::Bool = false,
-    component_uuids::Union{Nothing, Set{Base.UUID}} = nothing,
-    attribute_uuids::Union{Nothing, Set{Base.UUID}} = nothing,
+    components = nothing,
+    attributes = nothing,
 ) where {T <: Component, U <: SupplementalAttribute}
     return IS.get_component_supplemental_attribute_pairs(
         T,
         U,
         sys.data;
         only_available_components = only_available_components,
-        component_uuids = component_uuids,
-        attribute_uuids = attribute_uuids,
+        components = components,
+        attributes = attributes,
     )
 end
 
