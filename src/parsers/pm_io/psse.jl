@@ -1137,6 +1137,14 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_s = 1 / 2 * (br_x23_sysbase - br_x31_sysbase + br_x12_sysbase)
                 Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
 
+                Zr_p = Zr_p == 0.0 ? 1e-4 : Zr_p
+                Zr_s = Zr_s == 0.0 ? 1e-4 : Zr_s
+                Zr_t = Zr_t == 0.0 ? 1e-4 : Zr_t
+
+                Zx_p = Zx_p == 0.0 ? 1e-4 : Zx_p
+                Zx_s = Zx_s == 0.0 ? 1e-4 : Zx_s
+                Zx_t = Zx_t == 0.0 ? 1e-4 : Zx_t
+
                 if iszero(Z_base_device_1)
                     Zr_p *= mva_ratio_12
                     Zx_p *= mva_ratio_12
