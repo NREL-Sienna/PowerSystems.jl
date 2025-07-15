@@ -59,9 +59,24 @@ get_components(::Type{T}, sys::System; subsystem_name = nothing) where {T <: Com
 
 """
 Return a vector of components that are attached to the supplemental attribute.
+
+# Arguments
+- `sys::System`: the `System` to search
+- `attribute::SupplementalAttribute`: Only return components associated with this attribute.
+- `component_type::Union{Nothing, <:Component}`: Optional type of the components to return.
+  Can be concrete or abstract. If not provided, all components associated with the attribute
+  will be returned.
 """
-function get_associated_components(sys::System, attribute::SupplementalAttribute)
-    return IS.get_associated_components(sys.data, attribute)
+function get_associated_components(
+    sys::System,
+    attribute::SupplementalAttribute;
+    component_type::Union{Nothing, Type{<:Component}} = nothing,
+)
+    return IS.get_associated_components(
+        sys.data,
+        attribute;
+        component_type = component_type,
+    )
 end
 
 @deprecate get_components(sys::System, attribute::SupplementalAttribute) get_associated_components(
@@ -69,31 +84,20 @@ end
     attribute,
 )
 
-function get_associated_components(
-    filter_func::Function,
-    sys::System,
-    attribute::SupplementalAttribute,
-)
-    return IS.get_associated_components(filter_func, sys.data, attribute)
-end
-
 """
-Return a vector of components that are attached to one or more supplemental attributes of
+Return a vector of components that are associated to one or more supplemental attributes of
 the given type.
 """
 function get_associated_components(
     sys::System,
-    attribute_type::Type{<:SupplementalAttribute},
+    attribute_type::Type{<:SupplementalAttribute};
+    component_type::Union{Nothing, Type{<:Component}} = nothing,
 )
-    return IS.get_associated_components(sys.data, attribute_type)
-end
-
-function get_associated_components(
-    filter_func::Function,
-    sys::System,
-    attribute_type::Type{<:SupplementalAttribute},
-)
-    return IS.get_associated_components(filter_func, sys.data, attribute_type)
+    return IS.get_associated_components(
+        sys.data,
+        attribute_type;
+        component_type = component_type,
+    )
 end
 
 """
