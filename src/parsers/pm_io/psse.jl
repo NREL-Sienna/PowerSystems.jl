@@ -311,8 +311,7 @@ function _is_synch_condenser(sub_data::Dict{String, Any}, pm_data::Dict{String, 
     has_q_limits = (sub_data["qmax"] != 0.0 || sub_data["qmin"] != 0.0)
     has_zero_p_limits = (sub_data["pmax"] == 0.0 && sub_data["pmin"] == 0.0)
 
-    return is_available && zero_control_mode && is_zero_pg && is_pv_bus && has_q_limits &&
-           has_zero_p_limits
+    return zero_control_mode && is_zero_pg && is_pv_bus && has_q_limits && has_zero_p_limits
 end
 
 """
