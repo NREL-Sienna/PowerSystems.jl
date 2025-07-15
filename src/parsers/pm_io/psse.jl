@@ -298,6 +298,22 @@ function transformer3W_isolated_bus_modifications!(pm_data::Dict, branch_data::D
     end
     return
 end
+
+"""
+    _is_synch_condenser(sub_data, pm_data)
+
+Returns `true` if the generator described by `sub_data` and `pm_data` meets the criteria for a synchronous condenser.
+"""
+function _is_synch_condenser(sub_data::Dict{String,Any}, pm_data::Dict{String,Any})
+    is_available = sub_data["gen_status"] == 1
+    is_zero_pg = sub_data["pg"] == 0.0
+    is_pv_bus = pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2
+    has_q_limits = (sub_data["qmax"] != 0.0 || sub_data["qmin"] != 0.0)
+    has_zero_p_limits = (sub_data["pmax"] == 0.0 && sub_data["pmin"] == 0.0)
+
+    return is_available && is_zero_pg && is_pv_bus && has_q_limits && has_zero_p_limits
+end
+
 """
     _psse2pm_generator!(pm_data, pti_data)
 
@@ -326,11 +342,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["r_source"] = pop!(gen, "ZR")
             sub_data["x_source"] = pop!(gen, "ZX")
 
-            if sub_data["gen_status"] == 1 &&
-               sub_data["pg"] == 0.0 &&
-               pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2 &&
-               (sub_data["qmax"] != 0.0 || sub_data["qmin"] != 0.0) &&
-               sub_data["pmax"] == 0.0 && sub_data["pmin"] == 0.0
+            if _is_synch_condenser(sub_data, pm_data)
                 sub_data["fuel"] = "SYNC_COND"
                 sub_data["type"] = "SYNC_COND"
             end
