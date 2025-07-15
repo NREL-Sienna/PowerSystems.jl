@@ -996,6 +996,7 @@ function make_synchronous_condenser(
         mbase = sys_mbase
     end
 
+    # NOTE: qmax and qmin can be both negatives, so this approach is taken for the rating.
     base_conversion = sys_mbase / mbase
     synchronous_condenser = SynchronousCondenser(;
         name = gen_name,
