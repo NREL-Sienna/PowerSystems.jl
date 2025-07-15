@@ -462,11 +462,13 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
     end
 
     # Add conformity key to bus data if not present
-    for bus in pm_data["bus"]
-        if !haskey(bus, "conformity")
-            @info "No conformity field found. Setting to default value of 1 (Conforming Load)."
-            bus["conformity"] = 1
-        end
+    missing_field_in_buses = [bus for bus in pm_data["bus"] if !haskey(bus, "conformity")]
+    for bus in missing_field_in_buses
+        bus["conformity"] = 1
+    end
+    missing_conformity_field = length(missing_field_in_buses)
+    if missing_conformity_field > 0
+        @info "No conformity field found for $missing_conformity_field bus(es). Setting to default value of 1 (Conforming Load)."
     end
 
     # translate component models
