@@ -86,3 +86,17 @@
         @test isempty(get_time_series_keys(outage))
     end
 end
+
+@testset "Test get_component_supplemental_attribute_pairs" begin
+    sys = create_system_with_outages()
+    # This function is properly tested in InfrastructureSystems.
+    for (gen, outage) in get_component_supplemental_attribute_pairs(
+        ThermalStandard,
+        GeometricDistributionForcedOutage,
+        sys;
+        only_available_components = true,
+    )
+        @test gen isa ThermalStandard
+        @test outage isa GeometricDistributionForcedOutage
+    end
+end
