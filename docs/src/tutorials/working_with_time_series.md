@@ -265,7 +265,7 @@ show_time_series(load1)
     
     Notice that each load now has two references to `max_active_power`. This is intentional.
     There is the parameter, `max_active_power`, which is  the
-    maximum demand of each load at any time (10 MW and 30 MW). There is also
+    maximum demand of each load at any time (10 MW or 30 MW). There is also
     `max_active_power` the time series, which is the time varying demand over the 2-hour
     window, calculated using the scaling factors and the `max_active_power` parameter.
     
