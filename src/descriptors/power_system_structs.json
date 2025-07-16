@@ -2752,7 +2752,7 @@
                 {
                     "name": "compounding_resistance",
                     "data_type": "Float64",
-                    "comment": "Compounding Resistance Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.",
+                    "comment": "Compounding Resistance, in ohms. This parameter is for control of the DC voltage in the rectifier or inverter end. For inverter DC voltage control, the paremeter is set to zero; for rectifier DC voltage control, the paremeter is set to the DC line resistance; otherwise, set to a fraction of the DC line resistance.",
                     "null_value": "0.0",
                     "default": "0.0"
                 },
