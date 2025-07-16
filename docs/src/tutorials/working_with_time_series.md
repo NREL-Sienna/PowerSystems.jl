@@ -239,7 +239,7 @@ load_time_series = SingleTimeSeries(;
 Notice that we assigned the
 [`get_max_active_power`](@ref get_max_active_power(value::PowerLoad)) *function*
 to scale the time series, rather than a value, making the time series reusable for multiple
-components or multiple fields in a component. Note that the values are per-unitized using
+components or multiple fields in a component. Note that the values are normalized using
 each device’s `max_active_power` parameter, not the system-wide `base_power`.
 
 Now, add the scaling factor time series to both loads to save memory and avoid data
