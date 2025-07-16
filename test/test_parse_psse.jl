@@ -198,6 +198,8 @@ end
     sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
 
     @test !hasproperty(sc_gen1, :active_power)
+    @test get_rating(sc_gen1) >= 0.0
+    @test get_reactive_power(sc_gen1) != 0.0
     @test get_available(sc_gen1) == true
     @test get_bustype(get_bus(sc_gen1)) == ACBusTypes.PV
 end
