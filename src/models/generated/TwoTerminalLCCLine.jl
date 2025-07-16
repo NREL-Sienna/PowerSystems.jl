@@ -73,7 +73,7 @@ As implemented in PSS/E.
 - `inverter_base_voltage::Float64`: Inverter primary base AC voltage in kV, entered in kV.
 - `power_mode::Bool`: (default: `true`) Boolean flag to identify if the LCC line is in power mode or current mode. If `power_mode = true`, setpoint values must be specified in MW, and if `power_mode = false` setpoint values must be specified in Amperes.
 - `switch_mode_voltage::Float64`: (default: `0.0`) Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.
-- `compounding_resistance::Float64`: (default: `0.0`) Compounding Resistance Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control.
+- `compounding_resistance::Float64`: (default: `0.0`) Compounding Resistance, in ohms. This parameter is for control of the DC voltage in the rectifier or inverter end. For inverter DC voltage control, the paremeter is set zero; for rectifier DC voltage control, the paremeter is set to the DC line resistance; otherwise, set to a fraction of the DC line resistance.
 - `min_compounding_voltage::Float64`: (default: `0.0`) Minimum compounded voltage, in kV. This parameter must not be added in per-unit. Only used in constant gamma operation (γ_min = γ_max), and the AC transformer is used to control the DC voltage.
 - `rectifier_transformer_ratio::Float64`: (default: `1.0`) Rectifier transformer ratio between the primary and secondary side AC voltages.
 - `rectifier_tap_setting::Float64`: (default: `1.0`) Rectifier transformer tap setting.
@@ -135,7 +135,7 @@ mutable struct TwoTerminalLCCLine <: TwoTerminalHVDC
     power_mode::Bool
     "Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control."
     switch_mode_voltage::Float64
-    "Compounding Resistance Mode switch DC voltage, in kV. This parameter must not be added in per-unit. If LCC line is in power mode control, and DC voltage falls below this value, the line switch to current mode control."
+    "Compounding Resistance, in ohms. This parameter is for control of the DC voltage in the rectifier or inverter end. For inverter DC voltage control, the paremeter is set zero; for rectifier DC voltage control, the paremeter is set to the DC line resistance; otherwise, set to a fraction of the DC line resistance."
     compounding_resistance::Float64
     "Minimum compounded voltage, in kV. This parameter must not be added in per-unit. Only used in constant gamma operation (γ_min = γ_max), and the AC transformer is used to control the DC voltage."
     min_compounding_voltage::Float64

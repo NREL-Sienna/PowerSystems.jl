@@ -1565,7 +1565,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"] = Dict{String, Any}()
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"] = Dict{String, Any}(
-                    "NDR" => dcline["NDI"],
+                    "NDR" => dcline["NDR"],
                     "NDI" => dcline["NDI"],
                 )
             else
@@ -1685,7 +1685,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pf"] = flow_setpoint / baseMVA
             sub_data["if"] = 1000.0 * (flow_setpoint / base_voltage)
 
-            sub_data["EXT"] = Dict{String, Any}(
+            sub_data["ext"] = Dict{String, Any}(
                 "REMOT_FROM" => from_bus["REMOT"],
                 "REMOT_TO" => to_bus["REMOT"],
                 "RMPCT_FROM" => from_bus["RMPCT"],
