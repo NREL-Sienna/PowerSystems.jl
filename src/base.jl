@@ -1888,7 +1888,6 @@ where `T` is the component type and `U` is the supplemental attribute type.
 - `sys::System`: System containing the components and attributes.
 - `::Type{T}`: Type of the components to filter by. Can be concrete or abstract.
 - `::Type{U}`: Type of the supplemental attributes to filter by. Can be concrete or abstract.
-- `only_available_components::Bool`: If true, filter components that are available.
 - `components`: Optional iterable. If set, filter pairs where the component is in this
   iterable.
 - `attributes`: Optional iterable. If set, filter pairs where the supplemental attribute is
@@ -1899,8 +1898,7 @@ where `T` is the component type and `U` is the supplemental attribute type.
 gen_attr_pairs = get_component_supplemental_attribute_pairs(
     GeometricDistributionForcedOutage,
     ThermalStandard,
-    sys;
-    only_available_components = true,
+    sys,
 )
 for (gen, attr) in gen_attr_pairs
     @show summary(gen) summary(attr)
@@ -1910,8 +1908,7 @@ my_generators = [gen1, gen2, gen3]
 gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
     GeometricDistributionForcedOutage,
     ThermalStandard,
-    sys;
-    only_available_components = true,
+    sys,
     components = my_generators,
 )
 for (gen, attr) in gen_attr_pairs_limited
@@ -1923,7 +1920,6 @@ function get_component_supplemental_attribute_pairs(
     ::Type{T},
     ::Type{U},
     sys::System;
-    only_available_components::Bool = false,
     components = nothing,
     attributes = nothing,
 ) where {T <: Component, U <: SupplementalAttribute}
@@ -1931,7 +1927,6 @@ function get_component_supplemental_attribute_pairs(
         T,
         U,
         sys.data;
-        only_available_components = only_available_components,
         components = components,
         attributes = attributes,
     )

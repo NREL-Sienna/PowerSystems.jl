@@ -68,6 +68,51 @@ for outage in get_supplemental_attributes(
 end
 ```
 
+## Getting the components associated with an attribute
+
+You can retrieve the components associated with a single supplemental attribute using the
+function [`get_associated_components`](@ref).
+
+ 1. Get all components associated with a single supplemental attribute.
+    
+    ```julia
+    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
+    for component in get_associated_components(system, outage)
+        @show summary(component)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
+    
+    ```julia
+    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
+    for component in get_associated_components(system, outage; component_type = ThermalStandard)
+        @show summary(component)
+    end
+    ```
+
+## Getting the components associated with an attribute type
+
+You can retrieve the components associated with any supplemental attribute of a given type
+using the function [`get_associated_components`](@ref).
+
+ 1. Get all components associated with any supplemental attribute of a given type.
+    
+    ```julia
+    for component in get_associated_components(system, FixedForcedOutage)
+        @show summary(component)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
+    
+    ```julia
+    for component in
+        get_associated_components(system, FixedForcedOutage; component_type = ThermalStandard)
+        @show summary(component)
+    end
+    ```
+
 ## Getting component / supplemental attribute pairs
 
 The function [`get_component_supplemental_attribute_pairs`](@ref) returns a vector of component / supplemental
@@ -78,8 +123,7 @@ that iterate over components and their associated attributes independently.
 for (gen, outage) in get_component_supplemental_attribute_pairs(
     ThermalStandard,
     FixedForcedOutage,
-    system;
-    only_available_components = true,
+    system,
 )
     @show summary(gen) summary(outage)
 end
