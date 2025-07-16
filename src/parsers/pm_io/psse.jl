@@ -1137,7 +1137,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_s = 1 / 2 * (br_x23_sysbase - br_x31_sysbase + br_x12_sysbase)
                 Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
 
-                # See PSSE Manual 1.15.1 on T3W Notes
+                # See PSSE Manual (Section 1.15.1 "Three-Winding Transformer Notes" of Data Formats file)
                 Zr_p = Zr_p == 0.0 ? 1e-4 : Zr_p
                 Zr_s = Zr_s == 0.0 ? 1e-4 : Zr_s
                 Zr_t = Zr_t == 0.0 ? 1e-4 : Zr_t
