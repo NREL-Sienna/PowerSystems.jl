@@ -435,3 +435,15 @@ end
         get_components(x -> get_r(x) == get_x(x) == 0.0, DiscreteControlledACBranch, sys),
     ) == 4
 end
+
+@testset "Test threshold setting for zero impedance 3WT winding" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "psse_4_zero_impedance_3wt_test_system";
+        force_build = true,
+    )
+    trf_3w = collect(get_components(Transformer3W, sys))[1]
+    @test get_available(trf_3w) == true
+    @test get_available_tertiary(trf_3w) == true
+    @test get_x_tertiary(trf_3w) == 1e-4
+end
