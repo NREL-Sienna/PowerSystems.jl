@@ -1137,13 +1137,20 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
 
                 # See PSSE Manual (Section 1.15.1 "Three-Winding Transformer Notes" of Data Formats file)
-                if Zx_p == 0.0 || Zx_s == 0.0 || Zx_t == 0.0
-                    @info "Zero impedance detected, setting value to zero impedance threshold $(ZERO_IMPEDANCE_THRESHOLD)"
+                zero_names = []
+                if isapprox(Zx_p, 0.0; atol = eps(Float32))
+                    push!(zero_names, "primary")
+                    Zx_p = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
-
-                Zx_p = Zx_p == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_p
-                Zx_s = Zx_s == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_s
-                Zx_t = Zx_t == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_t
+                if isapprox(Zx_s, 0.0; atol = eps(Float32))
+                    push!(zero_names, "secondary")
+                    Zx_s = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                end
+                if isapprox(Zx_t, 0.0; atol = eps(Float32))
+                    push!(zero_names, "tertiary")
+                    Zx_t = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                end
+                @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
 
                 if iszero(Z_base_device_1)
                     Zr_p *= mva_ratio_12
