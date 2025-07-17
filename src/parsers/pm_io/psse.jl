@@ -1,5 +1,4 @@
 # Parse PSS(R)E data from PTI file into PowerModels data format
-
 """
     _init_bus!(bus, id)
 
@@ -1138,13 +1137,13 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
 
                 # See PSSE Manual (Section 1.15.1 "Three-Winding Transformer Notes" of Data Formats file)
-                Zr_p = Zr_p == 0.0 ? 1e-4 : Zr_p
-                Zr_s = Zr_s == 0.0 ? 1e-4 : Zr_s
-                Zr_t = Zr_t == 0.0 ? 1e-4 : Zr_t
+                if Zx_p == 0.0 || Zx_s == 0.0 || Zx_t == 0.0
+                    @info "Zero impedance detected, setting value to zero impedance threshold $(ZERO_IMPEDANCE_THRESHOLD)"
+                end
 
-                Zx_p = Zx_p == 0.0 ? 1e-4 : Zx_p
-                Zx_s = Zx_s == 0.0 ? 1e-4 : Zx_s
-                Zx_t = Zx_t == 0.0 ? 1e-4 : Zx_t
+                Zx_p = Zx_p == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_p
+                Zx_s = Zx_s == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_s
+                Zx_t = Zx_t == 0.0 ? ZERO_IMPEDANCE_THRESHOLD : Zx_t
 
                 if iszero(Z_base_device_1)
                     Zr_p *= mva_ratio_12
