@@ -81,7 +81,7 @@ load2 = PowerLoad(;
     active_power = 0.0, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
     base_power = 30.0, # MVA
-    max_active_power = 1.0, # 10 MW per-unitized by device base_power
+    max_active_power = 1.0, # 30 MW per-unitized by device base_power
     max_reactive_power = 0.0,
 );
 
@@ -240,7 +240,8 @@ load_time_series = SingleTimeSeries(;
 Notice that we assigned the
 [`get_max_active_power`](@ref get_max_active_power(value::PowerLoad)) *function*
 to scale the time series, rather than a value, making the time series reusable for multiple
-components or multiple fields in a component.
+components or multiple fields in a component. Note that the values are normalized using
+each device’s `max_active_power` parameter, not the system-wide `base_power`.
 
 Now, add the scaling factor time series to both loads to save memory and avoid data
 duplication:
@@ -265,9 +266,9 @@ show_time_series(load1)
     
     Notice that each load now has two references to `max_active_power`. This is intentional.
     There is the parameter, `max_active_power`, which is  the
-    maximum demand of each load at any time (10 MW). There is also `max_active_power` the time
-    series, which is the time varying demand over the 2-hour window, calculated using the
-    scaling factors and the `max_active_power` parameter.
+    maximum demand of each load at any time (10 MW or 30 MW). There is also
+    `max_active_power` the time series, which is the time varying demand over the 2-hour
+    window, calculated using the scaling factors and the `max_active_power` parameter.
     
     This means that if we change the `max_active_power` parameter, the time series will
     also change when we retrieve it! This is also true when we apply the same scaling factors
