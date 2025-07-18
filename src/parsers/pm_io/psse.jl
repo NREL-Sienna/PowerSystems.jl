@@ -1,5 +1,4 @@
 # Parse PSS(R)E data from PTI file into PowerModels data format
-
 """
     _init_bus!(bus, id)
 
@@ -1152,6 +1151,22 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 Zx_p = 1 / 2 * (br_x12_sysbase - br_x23_sysbase + br_x31_sysbase)
                 Zx_s = 1 / 2 * (br_x23_sysbase - br_x31_sysbase + br_x12_sysbase)
                 Zx_t = 1 / 2 * (br_x31_sysbase - br_x12_sysbase + br_x23_sysbase)
+
+                # See PSSE Manual (Section 1.15.1 "Three-Winding Transformer Notes" of Data Formats file)
+                zero_names = []
+                if isapprox(Zx_p, 0.0; atol = eps(Float32))
+                    push!(zero_names, "primary")
+                    Zx_p = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                end
+                if isapprox(Zx_s, 0.0; atol = eps(Float32))
+                    push!(zero_names, "secondary")
+                    Zx_s = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                end
+                if isapprox(Zx_t, 0.0; atol = eps(Float32))
+                    push!(zero_names, "tertiary")
+                    Zx_t = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                end
+                @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
 
                 if iszero(Z_base_device_1)
                     Zr_p *= mva_ratio_12
