@@ -426,6 +426,20 @@ end
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
 end
 
+@testset "Test PSSE interruptible loads parsing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "pti_case14_with_interruptible_loads_sys";
+        force_build = true,
+    )
+    isl = collect(get_components(InterruptibleStandardLoad, sys))[1]
+    @test length(collect(get_components(InterruptibleStandardLoad, sys))) == 4
+    @test get_available(isl) == true
+    @test isl isa InterruptibleStandardLoad
+    @test get_constant_active_power(isl) == 0.11485
+    @test get_max_active_power(isl) == 0.11485
+end
+
 @testset "Test conversion zero impedance branch to switch" begin
     sys = build_system(
         PSSEParsingTestSystems,
