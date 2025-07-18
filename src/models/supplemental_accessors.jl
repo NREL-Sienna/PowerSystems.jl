@@ -110,6 +110,14 @@ function get_max_active_power(d::StandardLoad)
     return total_load
 end
 
+function get_max_active_power(d::InterruptibleStandardLoad)
+    total_load = get_max_constant_active_power(d)
+    # TODO: consider voltage
+    total_load += get_max_impedance_active_power(d)
+    total_load += get_max_current_active_power(d)
+    return total_load
+end
+
 function get_from_to_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).from_to
 end
