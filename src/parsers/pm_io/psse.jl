@@ -672,7 +672,7 @@ function apply_tap_correction!(
     cw_value::Int64,
     winding_name::String,
 )
-    if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 3]
+    if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 2, 3]
         tap_positions = collect(
             range(
                 transformer[rmi_key],
