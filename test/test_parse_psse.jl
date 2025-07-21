@@ -406,6 +406,24 @@ end
     @test isapprox(tap1, 0.98750; atol = 1e-6)
     @test isapprox(tap2, 0.97500; atol = 1e-6)
     @test isapprox(tap3, 0.96250; atol = 1e-6)
+
+    sys2 = build_system(
+        PSSEParsingTestSystems,
+        "pti_case8_voltage_wind_correction_sys";
+        force_build = true,
+    )
+    trf_3w_v = get_component(Transformer3W, sys2, "NODE F-NODE G-NODE D-i_1")
+    @test get_available_primary(trf_3w_v) == true
+    @test get_available_secondary(trf_3w_v) == true
+    @test get_available_tertiary(trf_3w_v) == true
+
+    #test 3W correction matches PSSE
+    tap1 = get_primary_turns_ratio(trf_3w_v)
+    tap2 = get_secondary_turns_ratio(trf_3w_v)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v)
+    @test isapprox(tap1, 0.988; atol = 1e-6)
+    @test isapprox(tap2, 0.9807518; atol = 1e-6)
+    @test isapprox(tap3, 0.992; atol = 1e-6)
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
