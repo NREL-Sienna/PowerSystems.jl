@@ -19,7 +19,7 @@ abstract type TwoTerminalHVDC <: ACBranch end
 """ Supertype for all DC branches (branches that connect only DC nodes)"""
 abstract type DCBranch <: Branch end
 
-function supports_services(::T) where {T <: ACBranch}
+function supports_services(::ACBranch)
     return true
 end
 
