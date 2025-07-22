@@ -10,10 +10,19 @@ as an optional add-on for conducting [dynamic](@ref D) simulations.
 abstract type StaticInjection <: Device end
 
 function supports_services(::T) where {T <: Device}
+    return false
+end
+
+function supports_services(::T) where {T <: StaticInjection}
     return true
 end
 
 function get_services(::Device)
+    if !supports_services(device)
+        error(ArgumentError(
+            "Device $(get_name(device)) does not support services",
+        ))
+    end
     return Vector{Service}()
 end
 

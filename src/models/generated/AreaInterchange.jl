@@ -12,6 +12,7 @@ This file is auto-generated. Do not edit.
         from_area::Area
         to_area::Area
         flow_limits::FromTo_ToFrom
+        services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -25,6 +26,7 @@ Flow exchanged between Areas. This Interchange is agnostic to the lines connecti
 - `from_area::Area`: Area from which the power is extracted
 - `to_area::Area`: Area to which the power is injected
 - `flow_limits::FromTo_ToFrom`: Max flow between the areas. It ignores lines and other branches totals
+- `services::Vector{Service}`: (default: `Service[]`) Service interfaces that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -41,18 +43,20 @@ mutable struct AreaInterchange <: Branch
     to_area::Area
     "Max flow between the areas. It ignores lines and other branches totals"
     flow_limits::FromTo_ToFrom
+    "Service interfaces that this device contributes to"
+    services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, ext=Dict{String, Any}(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, ext, InfrastructureSystemsInternal(), )
+function AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services=Service[], ext=Dict{String, Any}(), )
+    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function AreaInterchange(; name, available, active_power_flow, from_area, to_area, flow_limits, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, ext, internal, )
+function AreaInterchange(; name, available, active_power_flow, from_area, to_area, flow_limits, services=Service[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    AreaInterchange(name, available, active_power_flow, from_area, to_area, flow_limits, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -64,6 +68,7 @@ function AreaInterchange(::Nothing)
         from_area=Area(nothing),
         to_area=Area(nothing),
         flow_limits=(from_to=0.0, to_from=0.0),
+        services=Service[],
         ext=Dict{String, Any}(),
     )
 end
@@ -80,6 +85,8 @@ get_from_area(value::AreaInterchange) = value.from_area
 get_to_area(value::AreaInterchange) = value.to_area
 """Get [`AreaInterchange`](@ref) `flow_limits`."""
 get_flow_limits(value::AreaInterchange) = get_value(value, Val(:flow_limits), Val(:mva))
+"""Get [`AreaInterchange`](@ref) `services`."""
+get_services(value::AreaInterchange) = value.services
 """Get [`AreaInterchange`](@ref) `ext`."""
 get_ext(value::AreaInterchange) = value.ext
 """Get [`AreaInterchange`](@ref) `internal`."""
@@ -95,5 +102,7 @@ set_from_area!(value::AreaInterchange, val) = value.from_area = val
 set_to_area!(value::AreaInterchange, val) = value.to_area = val
 """Set [`AreaInterchange`](@ref) `flow_limits`."""
 set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
+"""Set [`AreaInterchange`](@ref) `services`."""
+set_services!(value::AreaInterchange, val) = value.services = val
 """Set [`AreaInterchange`](@ref) `ext`."""
 set_ext!(value::AreaInterchange, val) = value.ext = val
