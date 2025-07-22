@@ -278,7 +278,7 @@ end
     @test Set(get_name.(get_groups(each_selector, test_sys2))) ==
           Set((
         component_to_qualified_string.(Ref(ThermalStandard),
-            get_name.(get_components_rt(each_selector, test_sys2)))
+        get_name.(get_components_rt(each_selector, test_sys2)))
     ))
     @test length(
         collect(
