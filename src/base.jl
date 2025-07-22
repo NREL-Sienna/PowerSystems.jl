@@ -1360,6 +1360,14 @@ function get_contributing_devices(sys::System, service::T) where {T <: Service}
     return [x for x in get_components(Device, sys) if has_service(x, service)]
 end
 
+"""
+Return a vector of devices contributing to the service.
+"""
+function get_contributing_devices(sys::System, service::TransmissionInterface)
+    throw_if_not_attached(service, sys)
+    return [x for x in get_components(Branch, sys) if has_service(x, service)]
+end
+
 struct ServiceContributingDevices
     service::Service
     contributing_devices::Vector{Device}
