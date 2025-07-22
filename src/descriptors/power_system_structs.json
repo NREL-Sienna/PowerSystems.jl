@@ -100,6 +100,13 @@
                     "conversion_unit": ":mva"
                 },
                 {
+                    "name": "services",
+                    "data_type": "Vector{Service}",
+                    "comment": "Service interfaces that this device contributes to",
+                    "null_value": "Service[]",
+                    "default": "Service[]"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",
