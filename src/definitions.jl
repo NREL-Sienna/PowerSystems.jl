@@ -64,6 +64,13 @@ IS.@scoped_enum(
     TAP_RATIO = 2,
 )
 
+IS.@scoped_enum(
+    MotorLoadTechnology,
+    INDUCTION = 1,
+    SYNCHRONOUS = 2,
+    UNDETERMINED = 3,
+)
+
 "From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
 
 IS.@scoped_enum(
