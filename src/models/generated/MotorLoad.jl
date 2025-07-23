@@ -15,6 +15,7 @@ This file is auto-generated. Do not edit.
         rating::Float64
         max_active_power::Float64
         reactive_power_limits::Union{Nothing, MinMax}
+        motor_technology::MotorLoadTechnology
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -34,7 +35,8 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
-- `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `reactive_power_limits::Union{Nothing, MinMax}`: (default: `nothing`) Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
+- `motor_technology::MotorLoadTechnology`: (default: `MotorLoadTechnology.UNDETERMINED`) AC Motor type. Options are listed [here](@ref motor_list)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -59,6 +61,8 @@ mutable struct MotorLoad <: StaticLoad
     max_active_power::Float64
     "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}
+    "AC Motor type. Options are listed [here](@ref motor_list)"
+    motor_technology::MotorLoadTechnology
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -69,12 +73,12 @@ mutable struct MotorLoad <: StaticLoad
     internal::InfrastructureSystemsInternal
 end
 
-function MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits=nothing, motor_technology=MotorLoadTechnology.UNDETERMINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, motor_technology, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function MotorLoad(; name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, services, dynamic_injector, ext, internal, )
+function MotorLoad(; name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits=nothing, motor_technology=MotorLoadTechnology.UNDETERMINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MotorLoad(name, available, bus, active_power, reactive_power, base_power, rating, max_active_power, reactive_power_limits, motor_technology, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,6 +93,7 @@ function MotorLoad(::Nothing)
         rating=0.0,
         max_active_power=0.0,
         reactive_power_limits=nothing,
+        motor_technology=MotorLoadTechnology.UNDETERMINED,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -113,6 +118,8 @@ get_rating(value::MotorLoad) = get_value(value, Val(:rating), Val(:mva))
 get_max_active_power(value::MotorLoad) = get_value(value, Val(:max_active_power), Val(:mva))
 """Get [`MotorLoad`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::MotorLoad) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`MotorLoad`](@ref) `motor_technology`."""
+get_motor_technology(value::MotorLoad) = value.motor_technology
 """Get [`MotorLoad`](@ref) `services`."""
 get_services(value::MotorLoad) = value.services
 """Get [`MotorLoad`](@ref) `dynamic_injector`."""
@@ -138,6 +145,8 @@ set_rating!(value::MotorLoad, val) = value.rating = set_value(value, Val(:rating
 set_max_active_power!(value::MotorLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`MotorLoad`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::MotorLoad, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
+"""Set [`MotorLoad`](@ref) `motor_technology`."""
+set_motor_technology!(value::MotorLoad, val) = value.motor_technology = val
 """Set [`MotorLoad`](@ref) `services`."""
 set_services!(value::MotorLoad, val) = value.services = val
 """Set [`MotorLoad`](@ref) `ext`."""

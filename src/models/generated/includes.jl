@@ -654,6 +654,7 @@ export get_max_reactive_power
 export get_max_shunt_current
 export get_min_compounding_voltage
 export get_minimum_time
+export get_motor_technology
 export get_must_run
 export get_n_states
 export get_name
@@ -1321,6 +1322,7 @@ export set_max_reactive_power!
 export set_max_shunt_current!
 export set_min_compounding_voltage!
 export set_minimum_time!
+export set_motor_technology!
 export set_must_run!
 export set_n_states!
 export set_name!

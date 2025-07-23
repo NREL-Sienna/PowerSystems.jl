@@ -3837,8 +3837,16 @@
                     "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
+                    "default": "nothing",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
+                },
+            {
+                    "name": "motor_technology",
+                    "comment": "AC Motor type. Options are listed [here](@ref motor_list)",
+                    "null_value": "MotorLoadTechnology.UNDETERMINED",
+                    "data_type": "MotorLoadTechnology",
+                    "default": "MotorLoadTechnology.UNDETERMINED"
                 },
                 {
                     "name": "services",
