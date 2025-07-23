@@ -126,6 +126,7 @@ export InterruptiblePowerLoad
 export InterruptibleStandardLoad
 export ShiftablePowerLoad
 export ExponentialLoad
+export MotorLoad
 export LoadConformity
 
 export Storage
