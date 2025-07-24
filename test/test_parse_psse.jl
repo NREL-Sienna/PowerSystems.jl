@@ -409,7 +409,7 @@ end
 
     sys2 = build_system(
         PSSEParsingTestSystems,
-        "pti_case8_voltage_wind_correction_sys";
+        "pti_case8_voltage_winding_correction_sys";
         force_build = true,
     )
     trf_3w_v = get_component(Transformer3W, sys2, "NODE F-NODE G-NODE D-i_1")
