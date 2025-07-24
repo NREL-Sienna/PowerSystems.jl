@@ -178,9 +178,15 @@ function _convert_data!(
     ::Val{Symbol("4.0.0")},
     ::Val{Symbol("5.0.0")},
 )
+    @show "converting"
     for component in raw["data"]["components"]
         if component["__metadata__"]["type"] == "TwoTerminalHVDCLine"
             component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
+            continue
+        end
+        if component["__metadata__"]["type"] ∈ ("Transformer2W", "TapTransformer") &&
+           "phase_shift" ∉ keys(component)
+            component["phase_shift"] = 0.0
             continue
         end
     end

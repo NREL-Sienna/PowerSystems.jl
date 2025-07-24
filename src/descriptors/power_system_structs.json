@@ -1085,6 +1085,17 @@
                     "conversion_unit": ":siemens"
                 },
                 {
+                    "name": "phase_shift",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "comment": "Phase shift (radians) between the `from` and `to` buses",
+                    "valid_range": {
+                        "min": -1.571,
+                        "max": 1.571
+                    },
+                    "validation_action": "warn"
+                },
+                {
                     "name": "tap",
                     "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
                     "null_value": "1.0",
@@ -1258,6 +1269,17 @@
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
+                },
+                {
+                    "name": "phase_shift",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "comment": "Phase shift (radians) between the `from` and `to` buses",
+                    "valid_range": {
+                        "min": -1.571,
+                        "max": 1.571
+                    },
+                    "validation_action": "warn"
                 },
                 {
                     "name": "rating",

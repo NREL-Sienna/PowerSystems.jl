@@ -664,6 +664,7 @@ export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
+export get_phase_shift
 export get_power_factor
 export get_power_factor_weighting_fraction_from
 export get_power_factor_weighting_fraction_to
@@ -1331,6 +1332,7 @@ export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
+export set_phase_shift!
 export set_power_factor!
 export set_power_factor_weighting_fraction_from!
 export set_power_factor_weighting_fraction_to!
