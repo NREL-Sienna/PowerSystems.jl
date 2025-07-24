@@ -176,3 +176,11 @@ to in [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulat
 |:--------- |
 | `DEGREES` |
 | `RADIANS` |
+
+## [Motor Load Technologies](@id motor_list)
+
+| Name           |
+|:-------------- |
+| `INDUCTION`    |
+| `SYNCHRONOUS`  |
+| `UNDETERMINED` |

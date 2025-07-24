@@ -854,6 +854,22 @@ function make_generic_battery(
     return storage
 end
 
+function _is_likely_motor_load(d::Dict, gen_name::Union{SubString{String}, String})
+    # A motor load is likely if it has a negative active power and a non-zero reactive power.
+    # This is a heuristic and may not be accurate for all cases.
+    # likely_motor_load
+    if d["pmin"] < 0 && d["pmax"] < 0 && d["pg"] < 0
+        @warn "Generator $gen_name is likely a motor load with negative active power: $(d["pg"]) and negative power limits: (min = $(d["pmin"]), max = $(d["pmax"])) \
+        this component will be parsed as a thermal generator with negative active power limits. You can convert the device to a MotorLoad for more accurate modeling."
+    end
+
+    if d["pmin"] == 0 && d["pmax"] == 0 && d["pg"] < 0
+        @warn "Generator $gen_name is likely a motor load with negative active power: $(d["pg"]) and undefined active power limits \
+        this component will be parsed as a thermal generator with negative active power injection. You can convert the device to a MotorLoad for more accurate modeling."
+    end
+    return
+end
+
 # TODO test this more directly?
 """
 The polynomial term follows the convention that for an n-degree polynomial, at least n + 1 components are needed.
@@ -944,6 +960,7 @@ function make_thermal_gen(
     end
 
     base_conversion = sys_mbase / mbase
+    _is_likely_motor_load(d, gen_name)
     thermal_gen = ThermalStandard(;
         name = gen_name,
         status = Bool(d["gen_status"]),
