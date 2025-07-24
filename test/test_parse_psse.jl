@@ -424,6 +424,36 @@ end
     @test isapprox(tap1, 0.988; atol = 1e-6)
     @test isapprox(tap2, 0.9807518; atol = 1e-6)
     @test isapprox(tap3, 0.992; atol = 1e-6)
+
+    sys3 = build_system(
+        PSSEParsingTestSystems,
+        "pti_case10_voltage_winding_correction_sys";
+        force_build = true,
+    )
+
+    trf_3w_v1 = get_component(Transformer3W, sys3, "BUS 108-BUS 110-BUS 109-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v1)
+    tap2 = get_secondary_turns_ratio(trf_3w_v1)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v1)
+    @test isapprox(tap1, 1.05; atol = 1e-6)
+    @test isapprox(tap2, 0.956; atol = 1e-6)
+    @test isapprox(tap3, 0.95625; atol = 1e-6)
+
+    trf_3w_v2 = get_component(Transformer3W, sys3, "BUS 104-BUS 109-BUS 111-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v2)
+    tap2 = get_secondary_turns_ratio(trf_3w_v2)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v2)
+    @test isapprox(tap1, 1.0; atol = 1e-6)
+    @test isapprox(tap2, 1.0; atol = 1e-6)
+    @test isapprox(tap3, 1.0; atol = 1e-6)
+
+    trf_3w_v3 = get_component(Transformer3W, sys3, "BUS 102-BUS 104-BUS 103-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v3)
+    tap2 = get_secondary_turns_ratio(trf_3w_v3)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v3)
+    @test isapprox(tap1, 1.0250; atol = 1e-6)
+    @test isapprox(tap2, 0.9256; atol = 1e-6)
+    @test isapprox(tap3, 0.9150; atol = 1e-6)
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
