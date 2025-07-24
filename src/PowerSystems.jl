@@ -126,6 +126,7 @@ export InterruptiblePowerLoad
 export InterruptibleStandardLoad
 export ShiftablePowerLoad
 export ExponentialLoad
+export MotorLoad
 export LoadConformity
 
 export Storage
@@ -320,6 +321,7 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 export ReservoirDataType
+export MotorLoadTechnology
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
