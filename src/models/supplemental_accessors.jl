@@ -132,3 +132,7 @@ end
 function get_max_active_power_flow_limit(tx::TransmissionInterface)
     return get_active_power_flow_limits(tx).max
 end
+
+function get_phase_shift(t::Union{TapTransformer, Transformer2W})
+    return get_winding_group_number(t).value * π / 6
+end

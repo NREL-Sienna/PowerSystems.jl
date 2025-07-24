@@ -461,7 +461,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-        # this is using the old logic of assigning branch type as PST instead of checxking the control mode
+        # this is using the old logic of assigning branch type as PST instead of checking the control mode
         is_pst = alpha != 0.0
         branch_type =
             get_branch_type(branch.tap, get(branch, :is_transformer, nothing), is_pst)
@@ -492,7 +492,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                phase_shift = alpha,
+                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
@@ -506,7 +506,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                phase_shift = alpha,
+                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
                 tap = branch.tap,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power

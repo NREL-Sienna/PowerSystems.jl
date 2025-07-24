@@ -14,7 +14,7 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         primary_shunt::Complex{Float64}
-        phase_shift::Float64
+        winding_group_number::WindingGroupNumber
         tap::Float64
         rating::Union{Nothing, Float64}
         base_power::Float64
@@ -40,7 +40,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `r::Float64`: Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 2)`
 - `x::Float64`: Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
-- `phase_shift::Float64`: Phase shift (radians) between the `from` and `to` buses, validation range: `(-1.571, 1.571)`
+- `winding_group_number::WindingGroupNumber`: Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -69,8 +69,8 @@ mutable struct TapTransformer <: TwoWindingTransformer
     x::Float64
     "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Complex{Float64}
-    "Phase shift (radians) between the `from` and `to` buses"
-    phase_shift::Float64
+    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+    winding_group_number::WindingGroupNumber
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
     "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
@@ -93,12 +93,12 @@ mutable struct TapTransformer <: TwoWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, phase_shift, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, phase_shift, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, phase_shift, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, phase_shift, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -112,7 +112,7 @@ function TapTransformer(::Nothing)
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
-        phase_shift=0.0,
+        winding_group_number=0,
         tap=1.0,
         rating=0.0,
         base_power=0.0,
@@ -141,8 +141,8 @@ get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
 get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`TapTransformer`](@ref) `primary_shunt`."""
 get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
-"""Get [`TapTransformer`](@ref) `phase_shift`."""
-get_phase_shift(value::TapTransformer) = value.phase_shift
+"""Get [`TapTransformer`](@ref) `winding_group_number`."""
+get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
 """Get [`TapTransformer`](@ref) `rating`."""
@@ -178,8 +178,8 @@ set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Va
 set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
-"""Set [`TapTransformer`](@ref) `phase_shift`."""
-set_phase_shift!(value::TapTransformer, val) = value.phase_shift = val
+"""Set [`TapTransformer`](@ref) `winding_group_number`."""
+set_winding_group_number!(value::TapTransformer, val) = value.winding_group_number = val
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""

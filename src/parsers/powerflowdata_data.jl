@@ -510,7 +510,7 @@ function read_branch!(
                 r = branches.r[ix],
                 x = branches.x[ix],
                 primary_shunt = 0.0,
-                phase_shift = 0.0,
+                winding_group_number = WindingGroupNumber(0),
                 rating = max_rate,
                 base_power = get_base_power(sys), # add system base power
                 ext = Dict(
@@ -683,7 +683,7 @@ function read_branch!(
             x = br_x,
             tap = tap_value,
             primary_shunt = transformers.mag2[ix],
-            phase_shift = 0.0,
+            winding_group_number = WindingGroupNumber(0),
             base_power = get_base_power(sys),
             rating = max_rate,
         )

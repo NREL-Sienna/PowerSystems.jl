@@ -664,7 +664,6 @@ export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
-export get_phase_shift
 export get_power_factor
 export get_power_factor_weighting_fraction_from
 export get_power_factor_weighting_fraction_to
@@ -774,6 +773,7 @@ export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
 export get_voltage_setpoint
+export get_winding_group_number
 export get_x
 export get_x_12
 export get_x_13
@@ -1332,7 +1332,6 @@ export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
-export set_phase_shift!
 export set_power_factor!
 export set_power_factor_weighting_fraction_from!
 export set_power_factor_weighting_fraction_to!
@@ -1442,6 +1441,7 @@ export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
 export set_voltage_setpoint!
+export set_winding_group_number!
 export set_x!
 export set_x_12!
 export set_x_13!

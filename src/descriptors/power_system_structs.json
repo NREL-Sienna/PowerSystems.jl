@@ -1085,15 +1085,10 @@
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "phase_shift",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Phase shift (radians) between the `from` and `to` buses",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
+                    "name": "winding_group_number",
+                    "null_value": "0",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
                 },
                 {
                     "name": "tap",
@@ -1271,15 +1266,10 @@
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "phase_shift",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "comment": "Phase shift (radians) between the `from` and `to` buses",
-                    "valid_range": {
-                        "min": -1.571,
-                        "max": 1.571
-                    },
-                    "validation_action": "warn"
+                    "name": "winding_group_number",
+                    "null_value": "0",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses"
                 },
                 {
                     "name": "rating",

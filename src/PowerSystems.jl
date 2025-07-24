@@ -286,6 +286,7 @@ export get_outage_schedule
 # Impedance Correction Data
 export ImpedanceCorrectionData
 export WindingCategory
+export WindingGroupNumber
 export TransformerControlMode
 
 export get_table_number
