@@ -1085,6 +1085,12 @@
                     "conversion_unit": ":siemens"
                 },
                 {
+                    "name": "winding_group_number",
+                    "null_value": "0",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+                },
+                {
                     "name": "tap",
                     "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
                     "null_value": "1.0",
@@ -1258,6 +1264,12 @@
                     "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":siemens"
+                },
+                {
+                    "name": "winding_group_number",
+                    "null_value": "0",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses"
                 },
                 {
                     "name": "rating",

@@ -58,6 +58,17 @@ IS.@scoped_enum(
     TERTIARY_WINDING = 3,   # Tertiary winding of Trasnformer3W associated with a TICT
 )
 
+# valid clock numbers are: 0, 1, 5, 6, 7, 11
+IS.@scoped_enum(
+    WindingGroupNumber,
+    GROUP_0 = 0,
+    GROUP_1 = 1,
+    GROUP_5 = 5,
+    GROUP_6 = 6,
+    GROUP_7 = 7,
+    GROUP_11 = 11,
+)
+
 IS.@scoped_enum(
     TransformerControlMode,
     PHASE_SHIFT_ANGLE = 1,

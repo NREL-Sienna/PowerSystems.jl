@@ -775,6 +775,7 @@ export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
 export get_voltage_setpoint
+export get_winding_group_number
 export get_x
 export get_x_12
 export get_x_13
@@ -1443,6 +1444,7 @@ export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
 export set_voltage_setpoint!
+export set_winding_group_number!
 export set_x!
 export set_x_12!
 export set_x_13!

@@ -86,7 +86,7 @@ end
 Reads in all the data stored in csv files in a `directory`
 
 !!! warning
-    
+
     This parser is planned for deprecation. `PowerSystems.jl` will be
     moving to a database solution for handling data. There are plans to eventually include
     utility functions to translate from .csv files to the database, but there will probably
@@ -317,7 +317,7 @@ end
 Construct a System from [`PowerSystemTableData`](@ref) data.
 
 !!! warning
-    
+
     This parser is planned for deprecation. `PowerSystems.jl` will be
     moving to a database solution for handling data. There are plans to eventually include
     utility functions to translate from .csv files to the database, but there will probably
@@ -461,8 +461,14 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
         #TODO: noop math...Phase-Shifting Transformer angle
         alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
+        # this is using the old logic of assigning branch type as PST instead of checking the control mode
+        is_phase_shift_transformer = alpha != 0.0
         branch_type =
-            get_branch_type(branch.tap, alpha, get(branch, :is_transformer, nothing))
+            get_branch_type(
+                branch.tap,
+                get(branch, :is_transformer, nothing),
+                is_phase_shift_transformer,
+            )
         if branch_type == Line
             b = branch.primary_shunt / 2
             value = Line(;
@@ -490,6 +496,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
@@ -503,6 +510,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
                 tap = branch.tap,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
