@@ -2371,9 +2371,13 @@ end
 
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
-function check_for_services_on_addition(sys::System, component::Device)
+function check_for_services_on_addition(sys::System, component::T) where {T <: Device}
     if supports_services(component) && length(get_services(component)) > 0
-        throw(ArgumentError("type Device cannot be added with services"))
+        throw(
+            ArgumentError(
+                "type $(IS.strip_module_name(string(T))) cannot be added with services",
+            ),
+        )
     end
     return
 end
