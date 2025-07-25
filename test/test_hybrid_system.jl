@@ -79,9 +79,13 @@ end
 
     @test !has_time_series(thermal_unit)
     @test has_time_series(electric_load)
-    remove_time_series!(sys, Deterministic, electric_load, "max_active_power")
-    remove_time_series!(sys, SingleTimeSeries, electric_load, "max_active_power")
-    @test !has_time_series(electric_load)
+    remove_time_series!(
+        sys,
+        DeterministicSingleTimeSeries,
+        electric_load,
+        "max_active_power",
+    )
+    @test !has_time_series(electric_load, DeterministicSingleTimeSeries, "max_active_power")
 
     # Can't set the units when the HybridSystem is attached to system.
     @test_throws ArgumentError PSY.set_thermal_unit!(h_sys, thermal_unit)
