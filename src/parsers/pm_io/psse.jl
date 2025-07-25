@@ -672,7 +672,7 @@ function apply_tap_correction!(
     cw_value::Int64,
     winding_name::String,
 )
-    if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 3]
+    if abs(transformer[cod_key]) ∈ [1, 2] && cw_value ∈ [1, 2, 3]
         tap_positions = collect(
             range(
                 transformer[rmi_key],
@@ -1166,7 +1166,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     push!(zero_names, "tertiary")
                     Zx_t = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
-                @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
+                if !isempty(zero_names)
+                    @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
+                end
 
                 if iszero(Z_base_device_1)
                     Zr_p *= mva_ratio_12
@@ -1373,11 +1375,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["tertiary_turns_ratio"] = windv3
                 elseif transformer["CW"] == 2
                     sub_data["primary_turns_ratio"] =
-                        transformer["WINDV1"] / sub_data["base_voltage_primary"]
+                        windv1 / sub_data["base_voltage_primary"]
                     sub_data["secondary_turns_ratio"] =
-                        transformer["WINDV2"] / sub_data["base_voltage_secondary"]
+                        windv2 / sub_data["base_voltage_secondary"]
                     sub_data["tertiary_turns_ratio"] =
-                        transformer["WINDV3"] / sub_data["base_voltage_tertiary"]
+                        windv3 / sub_data["base_voltage_tertiary"]
                 else
                     @assert transformer["CW"] == 3
                     sub_data["primary_turns_ratio"] =
