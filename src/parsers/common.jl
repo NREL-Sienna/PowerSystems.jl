@@ -108,7 +108,7 @@ function get_branch_type(
 
     is_transformer || return Line
 
-    is_pst && return PhaseShiftingTransformer
+    is_phase_shift_transformer && return PhaseShiftingTransformer
 
     return tap == 1.0 ? Transformer2W : TapTransformer
 end

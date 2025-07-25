@@ -1095,8 +1095,9 @@ function make_branch(
 )
     primary_shunt = d["b_fr"]
     alpha = d["shift"]
-    is_pst = get(d, "COD1", nothing) ∈ [3, 5] || get(d, "COD2", nothing) ∈ [3, 5]
-    branch_type = get_branch_type(d["tap"], d["transformer"], is_pst)
+    is_phase_shift_transformer =
+        get(d, "COD1", nothing) ∈ [3, 5] || get(d, "COD2", nothing) ∈ [3, 5]
+    branch_type = get_branch_type(d["tap"], d["transformer"], is_phase_shift_transformer)
 
     if d["br_r"] == 0.0 && d["br_x"] == 0.0
         value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
