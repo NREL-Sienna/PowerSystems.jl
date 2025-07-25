@@ -100,7 +100,7 @@ end
 function get_branch_type(
     tap::Float64,
     is_transformer::Union{Nothing, Bool},
-    is_pst::Bool,
+    is_phase_shift_transformer::Bool,
 )
     if isnothing(is_transformer)
         is_transformer = (tap != 0.0) && (tap != 1.0)
