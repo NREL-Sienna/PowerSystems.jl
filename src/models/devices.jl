@@ -113,6 +113,10 @@ end
 Remove all services attached to the device.
 """
 function clear_services!(device::Device)
+    if !supports_services(device)
+        return
+    end
+    @debug "Clearing all services from $(get_name(device))" _group = IS.LOG_GROUP_SYSTEM
     services = get_services(device)
     empty!(services)
     return
