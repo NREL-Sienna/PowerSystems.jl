@@ -2375,7 +2375,7 @@ function check_for_services_on_addition(sys::System, component::T) where {T <: D
     if supports_services(component) && length(get_services(component)) > 0
         throw(
             ArgumentError(
-                "type $(strip_module_name(string(T))) cannot be added with services",
+                "type $(IS.strip_module_name(string(T))) cannot be added with services",
             ),
         )
     end
