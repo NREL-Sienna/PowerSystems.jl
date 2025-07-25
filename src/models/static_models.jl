@@ -17,7 +17,7 @@ function supports_services(::T) where {T <: StaticInjection}
     return true
 end
 
-function get_services(::Device)
+function get_services(device::Device)
     if !supports_services(device)
         error(ArgumentError(
             "Device $(get_name(device)) does not support services",
