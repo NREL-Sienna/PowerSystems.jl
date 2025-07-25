@@ -251,6 +251,9 @@ function _check_topological_consistency(sys::System, component::Component)
 end
 
 function _check_device_service_consistency(sys::System, device::Device)
+    if !supports_services(device)
+        return
+    end
     for service in get_services(device)
         _check_subsystem_assignments(
             sys,
@@ -260,6 +263,7 @@ function _check_device_service_consistency(sys::System, device::Device)
             symmetric_diff = true,
         )
     end
+    return
 end
 
 function _check_subsystem_assignments(
