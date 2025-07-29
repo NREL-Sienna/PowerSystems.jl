@@ -22,7 +22,7 @@ const ENUMS = (
     DiscreteControlledBranchType,
     DiscreteControlledBranchStatus,
     WindingCategory,
-    TransformerControlMode,
+    ImpedanceCorrectionTransformerControlMode,
     GeneratorCostModels,
     InputCategory,
     PrimeMovers,
@@ -71,8 +71,8 @@ Base.convert(::Type{WindingCategory}, val::AbstractString) =
     get_enum_value(WindingCategory, val)
 Base.convert(::Type{WindingGroupNumber}, val::AbstractString) =
     get_enum_value(WindingGroupNumber, val)
-Base.convert(::Type{TransformerControlMode}, val::AbstractString) =
-    get_enum_value(TransformerControlMode, val)
+Base.convert(::Type{ImpedanceCorrectionTransformerControlMode}, val::AbstractString) =
+    get_enum_value(ImpedanceCorrectionTransformerControlMode, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)

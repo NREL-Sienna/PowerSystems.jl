@@ -23,6 +23,8 @@ This file is auto-generated. Do not edit.
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
         phase_angle_limits::MinMax
+        control_objective_primary::TransformerControlObjective
+        control_objective_secondary::TransformerControlObjective
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -50,6 +52,8 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
+- `control_objective_primary::TransformerControlObjective`: Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_secondary::TransformerControlObjective`: Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -89,6 +93,10 @@ mutable struct PhaseShiftingTransformer <: TwoWindingTransformer
     rating_c::Union{Nothing, Float64}
     "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
+    "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_primary::TransformerControlObjective
+    "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_secondary::TransformerControlObjective
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -97,12 +105,12 @@ mutable struct PhaseShiftingTransformer <: TwoWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), control_objective_primary, control_objective_secondary, services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, control_objective_primary, control_objective_secondary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, services, ext, internal, )
+function PhaseShiftingTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, phase_angle_limits=(min=-3.1416, max=3.1416), control_objective_primary, control_objective_secondary, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, α, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, phase_angle_limits, control_objective_primary, control_objective_secondary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -125,6 +133,8 @@ function PhaseShiftingTransformer(::Nothing)
         rating_b=0.0,
         rating_c=0.0,
         phase_angle_limits=(min=-3.1416, max=3.1416),
+        control_objective_primary=TransformerControlObjective.UNDEFINED,
+        control_objective_secondary=TransformerControlObjective.UNDEFINED,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -164,6 +174,10 @@ get_rating_b(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_b),
 get_rating_c(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
+"""Get [`PhaseShiftingTransformer`](@ref) `control_objective_primary`."""
+get_control_objective_primary(value::PhaseShiftingTransformer) = value.control_objective_primary
+"""Get [`PhaseShiftingTransformer`](@ref) `control_objective_secondary`."""
+get_control_objective_secondary(value::PhaseShiftingTransformer) = value.control_objective_secondary
 """Get [`PhaseShiftingTransformer`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer) = value.services
 """Get [`PhaseShiftingTransformer`](@ref) `ext`."""
@@ -203,6 +217,10 @@ set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value
 set_rating_c!(value::PhaseShiftingTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val
+"""Set [`PhaseShiftingTransformer`](@ref) `control_objective_primary`."""
+set_control_objective_primary!(value::PhaseShiftingTransformer, val) = value.control_objective_primary = val
+"""Set [`PhaseShiftingTransformer`](@ref) `control_objective_secondary`."""
+set_control_objective_secondary!(value::PhaseShiftingTransformer, val) = value.control_objective_secondary = val
 """Set [`PhaseShiftingTransformer`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer, val) = value.services = val
 """Set [`PhaseShiftingTransformer`](@ref) `ext`."""

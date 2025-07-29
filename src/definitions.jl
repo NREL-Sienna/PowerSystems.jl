@@ -61,18 +61,29 @@ IS.@scoped_enum(
 # valid clock numbers are: 0, 1, 5, 6, 7, 11
 IS.@scoped_enum(
     WindingGroupNumber,
-    GROUP_0 = 0,
-    GROUP_1 = 1,
-    GROUP_5 = 5,
-    GROUP_6 = 6,
-    GROUP_7 = 7,
-    GROUP_11 = 11,
+    GROUP_0 = 0, # 0 Degrees
+    GROUP_1 = 1, # -30 Degrees
+    GROUP_5 = 5, # -150 Degrees
+    GROUP_6 = 6, # 180 Degrees
+    GROUP_7 = 7, # 150 Degrees
+    GROUP_11 = 11, # 30 Degrees
 )
 
 IS.@scoped_enum(
-    TransformerControlMode,
+    ImpedanceCorrectionTransformerControlMode,
     PHASE_SHIFT_ANGLE = 1,
     TAP_RATIO = 2,
+)
+
+IS.@scoped_enum(
+    TransformerControlObjective, # COD1 or COD2 in PSS\e
+    UNDEFINED = -1,
+    FIXED = 0,
+    VOLTAGE = 1,
+    REACTIVE_POWER_FLOW = 2,
+    ACTIVE_POWER_FLOW = 3,
+    CONTROL_OF_DC_LINE = 4,
+    ASYMMETRIC_ACTIVE_POWER_FLOW = 5,
 )
 
 IS.@scoped_enum(

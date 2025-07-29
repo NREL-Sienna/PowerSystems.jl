@@ -987,6 +987,20 @@
                     "default": "(min=-3.1416, max=3.1416)"
                 },
                 {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1166,6 +1180,20 @@
                    "needs_conversion": true,
                     "conversion_unit": ":mva",
                     "default": "nothing"
+                },
+                {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "services",
@@ -1775,6 +1803,27 @@
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
                 },
+                                {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_tertiary",
+                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
                 {
                     "name": "services",
                     "data_type": "Vector{Service}",
@@ -2252,6 +2301,27 @@
                     "null_value": "(min=-3.1416, max=3.1416)",
                     "data_type": "MinMax",
                     "default": "(min=-3.1416, max=3.1416)"
+                },
+                {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_tertiary",
+                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default_value": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "services",

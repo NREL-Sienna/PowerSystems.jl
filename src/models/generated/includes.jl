@@ -529,6 +529,9 @@ export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_control_mode
+export get_control_objective_primary
+export get_control_objective_secondary
+export get_control_objective_tertiary
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -1198,6 +1201,9 @@ export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_control_mode!
+export set_control_objective_primary!
+export set_control_objective_secondary!
+export set_control_objective_tertiary!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
