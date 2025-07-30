@@ -505,7 +505,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
@@ -519,7 +519,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 tap = branch.tap,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
