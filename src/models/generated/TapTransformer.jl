@@ -14,7 +14,6 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         primary_shunt::Complex{Float64}
-        winding_group_number::WindingGroupNumber
         tap::Float64
         rating::Union{Nothing, Float64}
         base_power::Float64
@@ -22,6 +21,7 @@ This file is auto-generated. Do not edit.
         base_voltage_secondary::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
+        winding_group_number::WindingGroupNumber
         control_objective_primary::TransformerControlObjective
         control_objective_secondary::TransformerControlObjective
         services::Vector{Service}
@@ -42,7 +42,6 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `r::Float64`: Resistance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 2)`
 - `x::Float64`: Reactance in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
-- `winding_group_number::WindingGroupNumber`: Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -50,8 +49,9 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_to(arc))`) Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
-- `control_objective_primary::TransformerControlObjective`: Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
-- `control_objective_secondary::TransformerControlObjective`: Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `winding_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
+- `control_objective_primary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_secondary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -73,8 +73,6 @@ mutable struct TapTransformer <: TwoWindingTransformer
     x::Float64
     "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Complex{Float64}
-    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
-    winding_group_number::WindingGroupNumber
     "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage"
     tap::Float64
     "Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
@@ -89,6 +87,8 @@ mutable struct TapTransformer <: TwoWindingTransformer
     rating_b::Union{Nothing, Float64}
     "Third current rating; entered in MVA."
     rating_c::Union{Nothing, Float64}
+    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+    winding_group_number::WindingGroupNumber
     "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
     control_objective_primary::TransformerControlObjective
     "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
@@ -101,12 +101,12 @@ mutable struct TapTransformer <: TwoWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, control_objective_primary, control_objective_secondary, services=Device[], ext=Dict{String, Any}(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, control_objective_primary, control_objective_secondary, services, ext, InfrastructureSystemsInternal(), )
+function TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective_primary, control_objective_secondary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, control_objective_primary, control_objective_secondary, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, control_objective_primary, control_objective_secondary, services, ext, internal, )
+function TapTransformer(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    TapTransformer(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, tap, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, control_objective_primary, control_objective_secondary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -120,7 +120,6 @@ function TapTransformer(::Nothing)
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
-        winding_group_number=0,
         tap=1.0,
         rating=0.0,
         base_power=0.0,
@@ -128,6 +127,7 @@ function TapTransformer(::Nothing)
         base_voltage_secondary=nothing,
         rating_b=0.0,
         rating_c=0.0,
+        winding_group_number=WindingGroupNumber.UNDEFINED,
         control_objective_primary=TransformerControlObjective.UNDEFINED,
         control_objective_secondary=TransformerControlObjective.UNDEFINED,
         services=Device[],
@@ -151,8 +151,6 @@ get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
 get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
 """Get [`TapTransformer`](@ref) `primary_shunt`."""
 get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
-"""Get [`TapTransformer`](@ref) `winding_group_number`."""
-get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
 """Get [`TapTransformer`](@ref) `rating`."""
@@ -167,6 +165,8 @@ get_base_voltage_secondary(value::TapTransformer) = value.base_voltage_secondary
 get_rating_b(value::TapTransformer) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`TapTransformer`](@ref) `rating_c`."""
 get_rating_c(value::TapTransformer) = get_value(value, Val(:rating_c), Val(:mva))
+"""Get [`TapTransformer`](@ref) `winding_group_number`."""
+get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `control_objective_primary`."""
 get_control_objective_primary(value::TapTransformer) = value.control_objective_primary
 """Get [`TapTransformer`](@ref) `control_objective_secondary`."""
@@ -192,8 +192,6 @@ set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Va
 set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`TapTransformer`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
-"""Set [`TapTransformer`](@ref) `winding_group_number`."""
-set_winding_group_number!(value::TapTransformer, val) = value.winding_group_number = val
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""
@@ -208,6 +206,8 @@ set_base_voltage_secondary!(value::TapTransformer, val) = value.base_voltage_sec
 set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `rating_c`."""
 set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
+"""Set [`TapTransformer`](@ref) `winding_group_number`."""
+set_winding_group_number!(value::TapTransformer, val) = value.winding_group_number = val
 """Set [`TapTransformer`](@ref) `control_objective_primary`."""
 set_control_objective_primary!(value::TapTransformer, val) = value.control_objective_primary = val
 """Set [`TapTransformer`](@ref) `control_objective_secondary`."""

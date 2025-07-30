@@ -14,13 +14,13 @@ This file is auto-generated. Do not edit.
         r::Float64
         x::Float64
         primary_shunt::Complex{Float64}
-        winding_group_number::WindingGroupNumber
         rating::Union{Nothing, Float64}
         base_power::Float64
         base_voltage_primary::Union{Nothing, Float64}
         base_voltage_secondary::Union{Nothing, Float64}
         rating_b::Union{Nothing, Float64}
         rating_c::Union{Nothing, Float64}
+        winding_group_number::WindingGroupNumber
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -39,13 +39,13 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `r::Float64`: Resistance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
-- `winding_group_number::WindingGroupNumber`: Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `base_voltage_primary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_from(arc))`) Primary base voltage in kV, validation range: `(0, nothing)`
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_to(arc))`) Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
 - `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
+- `winding_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -67,8 +67,6 @@ mutable struct Transformer2W <: TwoWindingTransformer
     x::Float64
     "Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))"
     primary_shunt::Complex{Float64}
-    "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses"
-    winding_group_number::WindingGroupNumber
     "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to"
     rating::Union{Nothing, Float64}
     "Base power (MVA) for [per unitization](@ref per_unit)"
@@ -81,6 +79,8 @@ mutable struct Transformer2W <: TwoWindingTransformer
     rating_b::Union{Nothing, Float64}
     "Third current rating; entered in MVA."
     rating_c::Union{Nothing, Float64}
+    "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses"
+    winding_group_number::WindingGroupNumber
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -89,12 +89,12 @@ mutable struct Transformer2W <: TwoWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, InfrastructureSystemsInternal(), )
+function Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, services=Device[], ext=Dict{String, Any}(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, winding_group_number, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, services, ext, internal, )
+function Transformer2W(; name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary=get_base_voltage(get_from(arc)), base_voltage_secondary=get_base_voltage(get_to(arc)), rating_b=nothing, rating_c=nothing, winding_group_number=WindingGroupNumber.UNDEFINED, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer2W(name, available, active_power_flow, reactive_power_flow, arc, r, x, primary_shunt, rating, base_power, base_voltage_primary, base_voltage_secondary, rating_b, rating_c, winding_group_number, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -108,13 +108,13 @@ function Transformer2W(::Nothing)
         r=0.0,
         x=0.0,
         primary_shunt=0.0,
-        winding_group_number=0,
         rating=nothing,
         base_power=0.0,
         base_voltage_primary=nothing,
         base_voltage_secondary=nothing,
         rating_b=0.0,
         rating_c=0.0,
+        winding_group_number=WindingGroupNumber.UNDEFINED,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -136,8 +136,6 @@ get_r(value::Transformer2W) = get_value(value, Val(:r), Val(:ohm))
 get_x(value::Transformer2W) = get_value(value, Val(:x), Val(:ohm))
 """Get [`Transformer2W`](@ref) `primary_shunt`."""
 get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), Val(:siemens))
-"""Get [`Transformer2W`](@ref) `winding_group_number`."""
-get_winding_group_number(value::Transformer2W) = value.winding_group_number
 """Get [`Transformer2W`](@ref) `rating`."""
 get_rating(value::Transformer2W) = get_value(value, Val(:rating), Val(:mva))
 """Get [`Transformer2W`](@ref) `base_power`."""
@@ -150,6 +148,8 @@ get_base_voltage_secondary(value::Transformer2W) = value.base_voltage_secondary
 get_rating_b(value::Transformer2W) = get_value(value, Val(:rating_b), Val(:mva))
 """Get [`Transformer2W`](@ref) `rating_c`."""
 get_rating_c(value::Transformer2W) = get_value(value, Val(:rating_c), Val(:mva))
+"""Get [`Transformer2W`](@ref) `winding_group_number`."""
+get_winding_group_number(value::Transformer2W) = value.winding_group_number
 """Get [`Transformer2W`](@ref) `services`."""
 get_services(value::Transformer2W) = value.services
 """Get [`Transformer2W`](@ref) `ext`."""
@@ -171,8 +171,6 @@ set_r!(value::Transformer2W, val) = value.r = set_value(value, Val(:r), val, Val
 set_x!(value::Transformer2W, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`Transformer2W`](@ref) `primary_shunt`."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
-"""Set [`Transformer2W`](@ref) `winding_group_number`."""
-set_winding_group_number!(value::Transformer2W, val) = value.winding_group_number = val
 """Set [`Transformer2W`](@ref) `rating`."""
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
@@ -185,6 +183,8 @@ set_base_voltage_secondary!(value::Transformer2W, val) = value.base_voltage_seco
 set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `rating_c`."""
 set_rating_c!(value::Transformer2W, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
+"""Set [`Transformer2W`](@ref) `winding_group_number`."""
+set_winding_group_number!(value::Transformer2W, val) = value.winding_group_number = val
 """Set [`Transformer2W`](@ref) `services`."""
 set_services!(value::Transformer2W, val) = value.services = val
 """Set [`Transformer2W`](@ref) `ext`."""

@@ -61,6 +61,7 @@ IS.@scoped_enum(
 # valid clock numbers are: 0, 1, 5, 6, 7, 11
 IS.@scoped_enum(
     WindingGroupNumber,
+    UNDEFINED = -99,
     GROUP_0 = 0, # 0 Degrees
     GROUP_1 = 1, # -30 Degrees
     GROUP_5 = 5, # -150 Degrees
@@ -77,7 +78,12 @@ IS.@scoped_enum(
 
 IS.@scoped_enum(
     TransformerControlObjective, # COD1 or COD2 in PSS\e
-    UNDEFINED = -1,
+    UNDEFINED = -99,
+    VOLTAGE_DISABLED = -1,
+    REACTIVE_POWER_FLOW_DISABLED = -2,
+    ACTIVE_POWER_FLOW_DISABLED = -3,
+    CONTROL_OF_DC_LINE_DISABLED = -4,
+    ASYMMETRIC_ACTIVE_POWER_FLOW_DISABLED = -5,
     FIXED = 0,
     VOLTAGE = 1,
     REACTIVE_POWER_FLOW = 2,
