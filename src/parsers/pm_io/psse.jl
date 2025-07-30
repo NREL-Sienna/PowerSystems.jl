@@ -709,7 +709,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TRANSFORMER")
         starbus_id = 10^ceil(Int, log10(abs(_find_max_bus_id(pm_data)))) + 1
-
         for transformer in pti_data["TRANSFORMER"]
             if !(transformer["CZ"] in [1, 2, 3])
                 @warn(
@@ -925,6 +924,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 )
                 sub_data["tap"] = windv1 / pop!(transformer, "WINDV2")
                 sub_data["shift"] = pop!(transformer, "ANG1")
+                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD2"] = pop!(transformer, "COD2")
 
                 if transformer["CW"] != 1  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
                     sub_data["tap"] *=
@@ -1086,6 +1087,10 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     transformer["R1-2"], transformer["R2-3"], transformer["R3-1"]
                 br_x12, br_x23, br_x31 =
                     transformer["X1-2"], transformer["X2-3"], transformer["X3-1"]
+
+                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD2"] = pop!(transformer, "COD2")
+                sub_data["COD3"] = pop!(transformer, "COD2")
 
                 # Unit Transformations
                 if transformer["CZ"] == 3  # "for transformer load loss in watts and impedance magnitude in pu on a specified MVA base and winding voltage base."
@@ -1431,6 +1436,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
         end
     end
+    return
 end
 
 """

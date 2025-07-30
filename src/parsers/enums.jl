@@ -32,6 +32,7 @@ const ENUMS = (
     UnitSystem,
     LoadConformity,
     WindingGroupNumber,
+    TransformerControlObjective,
 )
 
 const ENUM_MAPPINGS = Dict()
@@ -78,3 +79,5 @@ Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
 Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateTypes, val)
 Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)
+Base.convert(::Type{TransformerControlObjective}, val::AbstractString) =
+    get_enum_value(TransformerControlObjective, val)
