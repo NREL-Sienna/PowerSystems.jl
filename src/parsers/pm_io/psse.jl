@@ -1087,10 +1087,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 br_x12, br_x23, br_x31 =
                     transformer["X1-2"], transformer["X2-3"], transformer["X3-1"]
 
-                sub_data["COD1"] = pop!(transformer, "COD1")
-                sub_data["COD2"] = pop!(transformer, "COD2")
-                sub_data["COD3"] = pop!(transformer, "COD3")
-
                 # Unit Transformations
                 if transformer["CZ"] == 3  # "for transformer load loss in watts and impedance magnitude in pu on a specified MVA base and winding voltage base."
                     # In device base
@@ -1403,6 +1399,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         )
                 end
                 sub_data["circuit"] = strip(transformer["CKT"])
+                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD2"] = pop!(transformer, "COD2")
+                sub_data["COD3"] = pop!(transformer, "COD3")
 
                 sub_data["ext"] = Dict{String, Any}(
                     "psse_name" => transformer["NAME"],

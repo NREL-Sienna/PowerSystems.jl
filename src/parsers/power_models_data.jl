@@ -1172,15 +1172,17 @@ function get_branch_type_psse(
         is_tap_controllable = true
         is_alpha_controllable = true
     else
-        @warn "Can't determine control objective for the transformer. Parsing as a PhaseShifter with default parameters"
+        @error "Can't determine control objective for the transformer. Parsing as a PhaseShifter with default parameters"
         error(d)
         return PhaseShiftingTransformer
     end
 
-    if is_tap_controllable
+    if is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
         return TapTransformer
-    elseif is_alpha_controllable
+    elseif d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         return PhaseShiftingTransformer
+    elseif !is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
+        return Transformer2W
     else
         error("Couldn't infer the branch type for branch $d")
     end
