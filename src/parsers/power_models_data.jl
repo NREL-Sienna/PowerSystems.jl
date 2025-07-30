@@ -1177,12 +1177,13 @@ function get_branch_type_psse(
         return PhaseShiftingTransformer
     end
 
-    if d["group_number"] != WindingGroupNumber.UNDEFINED && is_tap_controllable
+    if is_tap_controllable
         return TapTransformer
-    elseif d["group_number"] == WindingGroupNumber.UNDEFINED && is_alpha_controllable
+    elseif is_alpha_controllable
         return PhaseShiftingTransformer
+    else
+        error("Couldn't infer the branch type for branch $d")
     end
-    error("Couldn't infer the branch type for branch $d")
 end
 
 function make_branch(
