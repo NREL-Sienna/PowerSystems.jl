@@ -1111,7 +1111,7 @@ function get_branch_type_matpower(
 )
     tap = d["tap"]
     is_transformer = d["transformer"]
-    if isnothing(is_transformer)
+    if !is_transformer
         is_transformer = (tap != 0.0) && (tap != 1.0)
     end
 
