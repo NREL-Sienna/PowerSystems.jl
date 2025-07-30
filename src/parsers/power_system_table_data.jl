@@ -524,9 +524,6 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
-        elseif branch_type == PhaseShiftingTransformer
-            # TODO create PhaseShiftingTransformer
-            error("Unsupported branch type $branch_type")
         else
             error("Unsupported branch type $branch_type")
         end
