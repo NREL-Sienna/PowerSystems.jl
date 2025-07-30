@@ -1171,10 +1171,17 @@ function get_branch_type_psse(
     elseif control_code_primary ∈ [5, -5]
         is_tap_controllable = true
         is_alpha_controllable = true
+    elseif control_code_primary == -99
+        @warn "Can't determine control objective for the transformer from the COD1 field for $d"
+        if d["shift"] != 0.0
+            is_alpha_controllable = true
+        elseif (tap != 0.0) || (tap != 1.0)
+            is_tap_controllable = true
+        else
+            @warn "Can't determine control objective for the other fields. Will return a Transformer2W"
+        end
     else
-        @error "Can't determine control objective for the transformer. Parsing as a PhaseShifter with default parameters"
         error(d)
-        return PhaseShiftingTransformer
     end
 
     if is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
