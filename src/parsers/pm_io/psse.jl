@@ -925,7 +925,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["tap"] = windv1 / pop!(transformer, "WINDV2")
                 sub_data["shift"] = pop!(transformer, "ANG1")
                 sub_data["COD1"] = pop!(transformer, "COD1")
-                sub_data["COD2"] = pop!(transformer, "COD2")
 
                 if transformer["CW"] != 1  # NOT "for off-nominal turns ratio in pu of winding bus base voltage"
                     sub_data["tap"] *=
@@ -1090,7 +1089,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["COD1"] = pop!(transformer, "COD1")
                 sub_data["COD2"] = pop!(transformer, "COD2")
-                sub_data["COD3"] = pop!(transformer, "COD2")
+                sub_data["COD3"] = pop!(transformer, "COD3")
 
                 # Unit Transformations
                 if transformer["CZ"] == 3  # "for transformer load loss in watts and impedance magnitude in pu on a specified MVA base and winding voltage base."

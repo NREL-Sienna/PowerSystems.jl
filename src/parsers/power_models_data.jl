@@ -1143,7 +1143,6 @@ function get_branch_type_psse(
 
     _add_vector_control_group(d)
     control_code_primary = get(d, "COD1", -99)
-    control_code_secondary = get(d, "COD2", -99)
 
     is_tap_controllable = false
     is_alpha_controllable = false
@@ -1153,23 +1152,23 @@ function get_branch_type_psse(
         is_tap_controllable = false
         is_alpha_controllable = false
         # Reactive Power Control
-    elseif control_code_primary ∈ [0, 1, -1] && control_code_secondary ∈ [0, 1, -1]
+    elseif control_code_primary ∈ [0, 1, -1]
         is_tap_controllable = true
         is_alpha_controllable = false
         # Voltage Control
-    elseif control_code_primary ∈ [0, 2, -2] && control_code_secondary ∈ [0, 2, -2]
+    elseif control_code_primary ∈ [0, 2, -2]
         is_tap_controllable = true
         is_alpha_controllable = false
         # Active Power Control
-    elseif control_code_primary ∈ [0, 3, -3] && control_code_secondary ∈ [0, 3, -3]
+    elseif control_code_primary ∈ [0, 3, -3]
         is_tap_controllable = true
         is_alpha_controllable = true
         # DC Line Control
-    elseif control_code_primary ∈ [0, 4, -4] && control_code_secondary ∈ [0, 4, -4]
+    elseif control_code_primary ∈ [0, 4, -4]
         is_tap_controllable = true
         is_alpha_controllable = true
         # Asymmetric Active Power Control
-    elseif control_code_primary ∈ [0, 5, -5] && control_code_secondary ∈ [0, 5, -5]
+    elseif control_code_primary ∈ [0, 5, -5]
         is_tap_controllable = true
         is_alpha_controllable = true
     else
@@ -1545,8 +1544,7 @@ function make_tap_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective_primary = get(d, "COD1", -99),
-        control_objective_secondary = get(d, "COD2", -99),
+        control_objective = get(d, "COD1", -99),
     )
 end
 
@@ -1582,8 +1580,7 @@ function make_phase_shifting_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective_primary = get(d, "COD1", -99),
-        control_objective_secondary = get(d, "COD2", -99),
+        control_objective = get(d, "COD1", -99),
     )
 end
 
@@ -1624,6 +1621,7 @@ function read_branch!(
             )
         end
     end
+    return
 end
 
 function read_3w_transformer!(

@@ -529,6 +529,7 @@ export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_control_mode
+export get_control_objective
 export get_control_objective_primary
 export get_control_objective_secondary
 export get_control_objective_tertiary
@@ -1204,6 +1205,7 @@ export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_control_mode!
+export set_control_objective!
 export set_control_objective_primary!
 export set_control_objective_secondary!
 export set_control_objective_tertiary!
