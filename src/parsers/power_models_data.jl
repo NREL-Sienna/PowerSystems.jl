@@ -1148,27 +1148,27 @@ function get_branch_type_psse(
     is_alpha_controllable = false
 
     # There is no control
-    if control_code_primary == 0 && control_code_secondary == 0
+    if control_code_primary == 0
         is_tap_controllable = false
         is_alpha_controllable = false
         # Reactive Power Control
-    elseif control_code_primary ∈ [0, 1, -1]
+    elseif control_code_primary ∈ [1, -1]
         is_tap_controllable = true
         is_alpha_controllable = false
         # Voltage Control
-    elseif control_code_primary ∈ [0, 2, -2]
+    elseif control_code_primary ∈ [2, -2]
         is_tap_controllable = true
         is_alpha_controllable = false
         # Active Power Control
-    elseif control_code_primary ∈ [0, 3, -3]
+    elseif control_code_primary ∈ [3, -3]
         is_tap_controllable = true
         is_alpha_controllable = true
         # DC Line Control
-    elseif control_code_primary ∈ [0, 4, -4]
+    elseif control_code_primary ∈ [4, -4]
         is_tap_controllable = true
         is_alpha_controllable = true
         # Asymmetric Active Power Control
-    elseif control_code_primary ∈ [0, 5, -5]
+    elseif control_code_primary ∈ [5, -5]
         is_tap_controllable = true
         is_alpha_controllable = true
     else
