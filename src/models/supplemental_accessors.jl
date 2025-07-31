@@ -138,6 +138,6 @@ function get_phase_shift(t::Union{TapTransformer, Transformer2W})
         @warn "winding group number for summary (t) is undefined, assuming zero phase shift"
         return 0.0
     else
-        return get_winding_group_number(t).value * π / 6
+        return get_winding_group_number(t).value * -(π / 6)
     end
 end
