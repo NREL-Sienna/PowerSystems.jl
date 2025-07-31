@@ -1191,11 +1191,11 @@ function get_branch_type_psse(
     else
         error(d)
     end
-
-    if is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
-        return TapTransformer
-    elseif d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
+    if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         return PhaseShiftingTransformer
+    elseif (is_tap_controllable || (tap != 1.0)) &&
+           d["group_number"] != WindingGroupNumber.UNDEFINED
+        return TapTransformer
     elseif !is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
         return Transformer2W
     else
