@@ -134,5 +134,10 @@ function get_max_active_power_flow_limit(tx::TransmissionInterface)
 end
 
 function get_phase_shift(t::Union{TapTransformer, Transformer2W})
-    return get_winding_group_number(t).value * π / 6
+    if get_winding_group_number(t) == WindingGroupNumber.UNDEFINED
+        @warn "winding group number for summary (t) is undefined, assuming zero phase shift"
+        return 0.0
+    else
+        return get_winding_group_number(t).value * π / 6
+    end
 end
