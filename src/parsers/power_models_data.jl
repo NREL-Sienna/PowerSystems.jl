@@ -1098,11 +1098,13 @@ const _SHIFT_TO_GROUP_MAP = Dict{Float64, WindingGroupNumber}(
 
 function _add_vector_control_group(d::Dict)
     angle = d["shift"]
-    if haskey(_SHIFT_TO_GROUP_MAP, angle)
-        d["group_number"] = _SHIFT_TO_GROUP_MAP[angle]
-    else
-        d["group_number"] = WindingGroupNumber.UNDEFINED
+    for (angle_key_deg, group) in _SHIFT_TO_GROUP_MAP
+        if isapprox(rad2deg(angle), angle_key_deg)
+            d["group_number"] = group
+            return
+        end
     end
+    d["group_number"] = WindingGroupNumber.UNDEFINED
     return
 end
 
