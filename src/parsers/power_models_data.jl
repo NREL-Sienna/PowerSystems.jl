@@ -1110,15 +1110,23 @@ function get_branch_type_matpower(
     d::Dict,
 )
     tap = d["tap"]
+    shift = d["shift"]
     is_transformer = d["transformer"]
     if !is_transformer
-        is_transformer = (tap != 0.0) && (tap != 1.0)
+        is_transformer = (tap != 0.0) && (tap != 1.0) || (shift != 0.0)
     end
 
     is_transformer || return Line
 
     _add_vector_control_group(d)
-    return tap == 1.0 ? Transformer2W : TapTransformer
+
+    if d["group_number"] == WindingGroupNumber.UNDEFINED
+        return PhaseShiftingTransformer
+    elseif tap != 1.0
+        return TapTransformer
+    else
+        return Transformer2W
+    end
 end
 
 function get_branch_type_psse(
