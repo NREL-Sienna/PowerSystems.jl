@@ -1096,15 +1096,15 @@ const _SHIFT_TO_GROUP_MAP = Dict{Float64, WindingGroupNumber}(
     30.0 => WindingGroupNumber.GROUP_11,
 )
 
-function _add_vector_control_group(d::Dict)
-    angle = d["shift"]
+function _add_vector_control_group(d::Dict, angle_key::String, group_key::String)
+    angle = d[angle_key]
     for (angle_key_deg, group) in _SHIFT_TO_GROUP_MAP
         if isapprox(rad2deg(angle), angle_key_deg)
-            d["group_number"] = group
+            d[group_key] = group
             return
         end
     end
-    d["group_number"] = WindingGroupNumber.UNDEFINED
+    d[group_key] = WindingGroupNumber.UNDEFINED
     return
 end
 
@@ -1120,7 +1120,7 @@ function get_branch_type_matpower(
 
     is_transformer || return Line
 
-    _add_vector_control_group(d)
+    _add_vector_control_group(d, "shift", "group_number")
 
     if d["group_number"] == WindingGroupNumber.UNDEFINED
         return PhaseShiftingTransformer
@@ -1145,54 +1145,14 @@ function get_branch_type_psse(
         if (tap != 0.0) && (tap != 1.0)
             @show "Transformer $d has tap ratio $tap, which is not 0.0 or 1.0; this is not a valid value for a Line. Parsing entry as a Transformer"
             is_transformer = true
-            _add_vector_control_group(d)
+            _add_vector_control_group(d, "shift", "group_number")
         else
             return Line
         end
     end
 
-    _add_vector_control_group(d)
-    control_code_primary = get(d, "COD1", -99)
-
-    is_tap_controllable = false
-    is_alpha_controllable = false
-
-    # There is no control
-    if control_code_primary == 0
-        is_tap_controllable = false
-        is_alpha_controllable = false
-        # Reactive Power Control
-    elseif control_code_primary ∈ [1, -1]
-        is_tap_controllable = true
-        is_alpha_controllable = false
-        # Voltage Control
-    elseif control_code_primary ∈ [2, -2]
-        is_tap_controllable = true
-        is_alpha_controllable = false
-        # Active Power Control
-    elseif control_code_primary ∈ [3, -3]
-        is_tap_controllable = true
-        is_alpha_controllable = true
-        # DC Line Control
-    elseif control_code_primary ∈ [4, -4]
-        is_tap_controllable = true
-        is_alpha_controllable = true
-        # Asymmetric Active Power Control
-    elseif control_code_primary ∈ [5, -5]
-        is_tap_controllable = true
-        is_alpha_controllable = true
-    elseif control_code_primary == -99
-        @warn "Can't determine control objective for the transformer from the COD1 field for $d"
-        if d["shift"] != 0.0
-            is_alpha_controllable = true
-        elseif (tap != 0.0) || (tap != 1.0)
-            is_tap_controllable = true
-        else
-            @warn "Can't determine control objective for the other fields. Will return a Transformer2W"
-        end
-    else
-        error(d)
-    end
+    _add_vector_control_group(d, "shift", "group_number")
+    is_tap_controllable, is_alpha_controllable = _determine_control_modes(d, "COD1", "tap")
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         return PhaseShiftingTransformer
     elseif (is_tap_controllable || (tap != 1.0)) &&
@@ -1450,6 +1410,12 @@ function make_3w_transformer(
         rating_primary = _get_rating("Transformer3W", name, d, "rating_primary"),
         rating_secondary = _get_rating("Transformer3W", name, d, "rating_secondary"),
         rating_tertiary = _get_rating("Transformer3W", name, d, "rating_tertiary"),
+        primary_group_number = d["primary_group_number"],
+        secondary_group_number = d["secondary_group_number"],
+        tertiary_group_number = d["tertiary_group_number"],
+        control_objective_primary = get(d, "COD1", -99),
+        control_objective_secondary = get(d, "COD2", -99),
+        control_objective_tertiary = get(d, "COD3", -99),
         ext = get(d, "ext", Dict{String, Any}()),
     )
 end
@@ -1667,18 +1633,8 @@ function read_3w_transformer!(
         star_bus = bus_number_to_bus[d["star_bus"]]
 
         name = _get_name(d, bus_primary, bus_secondary, bus_tertiary)
-        if (
-               haskey(d, "primary_phase_shift_angle") &&
-               d["primary_phase_shift_angle"] != 0.0
-           ) ||
-           (
-               haskey(d, "secondary_phase_shift_angle") &&
-               d["secondary_phase_shift_angle"] != 0.0
-           ) ||
-           (
-               haskey(d, "tertiary_phase_shift_angle") &&
-               d["tertiary_phase_shift_angle"] != 0.0
-           )
+        three_winding_transformer_type = get_three_winding_transformer_type(d)
+        if three_winding_transformer_type == PhaseShiftingTransformer3W
             value = make_3w_phase_shifting_transformer(
                 name,
                 d,
@@ -1687,7 +1643,7 @@ function read_3w_transformer!(
                 bus_tertiary,
                 star_bus,
             )
-        else
+        elseif three_winding_transformer_type == Transformer3W
             value = make_3w_transformer(
                 name,
                 d,
@@ -1696,11 +1652,83 @@ function read_3w_transformer!(
                 bus_tertiary,
                 star_bus,
             )
+        else
+            error(
+                "Unsupported three winding transformer type $three_winding_transformer_type",
+            )
         end
 
         add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
 
         _attach_impedance_correction_tables!(sys, value, name, d, ict_instances)
+    end
+end
+
+function _determine_control_modes(d::Dict, control_flag::String, tap_key::String)
+    control_code = get(d, control_flag, -99)
+    tap = d[tap_key]
+
+    is_tap_controllable = false
+    is_alpha_controllable = false
+
+    # There is no control
+    if control_code == 0
+        is_tap_controllable = false
+        is_alpha_controllable = false
+        # Reactive Power Control
+    elseif control_code ∈ [1, -1]
+        is_tap_controllable = true
+        is_alpha_controllable = false
+        # Voltage Control
+    elseif control_code ∈ [2, -2]
+        is_tap_controllable = true
+        is_alpha_controllable = false
+        # Active Power Control
+    elseif control_code ∈ [3, -3]
+        is_tap_controllable = true
+        is_alpha_controllable = true
+        # DC Line Control
+    elseif control_code ∈ [4, -4]
+        is_tap_controllable = true
+        is_alpha_controllable = true
+        # Asymmetric Active Power Control
+    elseif control_code ∈ [5, -5]
+        is_tap_controllable = true
+        is_alpha_controllable = true
+    elseif control_code == -99
+        @warn "Can't determine control objective for the transformer from the $(control_flag) field for $d"
+        if d["shift"] != 0.0
+            is_alpha_controllable = true
+        elseif (tap != 0.0) || (tap != 1.0)
+            is_tap_controllable = true
+        else
+            @warn "Can't determine control objective for the other fields. Will return a Transformer2W"
+        end
+    else
+        error(d)
+    end
+    return is_tap_controllable, is_alpha_controllable
+end
+
+function get_three_winding_transformer_type(d::Dict)
+    _add_vector_control_group(d, "primary_phase_shift_angle", "primary_group_number")
+    _add_vector_control_group(d, "secondary_phase_shift_angle", "secondary_group_number")
+    _add_vector_control_group(d, "tertiary_phase_shift_angle", "tertiary_group_number")
+    # NOTE: with current three winding transformer type hierarchy, tap controllable and not controllable three winding transformers are Transformer3W
+    _, primary_is_alpha_controllable =
+        _determine_control_modes(d, "COD1", "primary_turns_ratio")
+    _, secondary_is_alpha_controllable =
+        _determine_control_modes(d, "COD2", "secondary_turns_ratio")
+    _, tertiary_is_alpha_controllable =
+        _determine_control_modes(d, "COD3", "tertiary_turns_ratio")
+    if d["primary_group_number"] == WindingGroupNumber.UNDEFINED ||
+       d["secondary_group_number"] == WindingGroupNumber.UNDEFINED ||
+       d["tertiary_group_number"] == WindingGroupNumber.UNDEFINED ||
+       primary_is_alpha_controllable || secondary_is_alpha_controllable ||
+       tertiary_is_alpha_controllable
+        return PhaseShiftingTransformer3W
+    else
+        return Transformer3W
     end
 end
 
