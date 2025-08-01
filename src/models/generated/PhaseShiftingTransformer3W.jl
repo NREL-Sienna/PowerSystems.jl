@@ -52,6 +52,9 @@ This file is auto-generated. Do not edit.
         rating_secondary::Float64
         rating_tertiary::Float64
         phase_angle_limits::MinMax
+        control_objective_primary::TransformerControlObjective
+        control_objective_secondary::TransformerControlObjective
+        control_objective_tertiary::TransformerControlObjective
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -108,6 +111,9 @@ A 3-winding phase-shifting transformer.
 - `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
 - `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
 - `phase_angle_limits::MinMax`: (default: `(min=-3.1416, max=3.1416)`) Minimum and maximum phase angle limits (radians)
+- `control_objective_primary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_secondary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_tertiary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -205,6 +211,12 @@ mutable struct PhaseShiftingTransformer3W <: ThreeWindingTransformer
     rating_tertiary::Float64
     "Minimum and maximum phase angle limits (radians)"
     phase_angle_limits::MinMax
+    "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_primary::TransformerControlObjective
+    "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_secondary::TransformerControlObjective
+    "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_tertiary::TransformerControlObjective
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -213,12 +225,12 @@ mutable struct PhaseShiftingTransformer3W <: ThreeWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), )
-    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, services, ext, InfrastructureSystemsInternal(), )
+function PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, control_objective_tertiary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), )
+    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, control_objective_primary, control_objective_secondary, control_objective_tertiary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function PhaseShiftingTransformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, services, ext, internal, )
+function PhaseShiftingTransformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, phase_angle_limits=(min=-3.1416, max=3.1416), control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, control_objective_tertiary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    PhaseShiftingTransformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, α_primary, α_secondary, α_tertiary, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, phase_angle_limits, control_objective_primary, control_objective_secondary, control_objective_tertiary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -270,6 +282,9 @@ function PhaseShiftingTransformer3W(::Nothing)
         rating_secondary=0.0,
         rating_tertiary=0.0,
         phase_angle_limits=(min=-3.1416, max=3.1416),
+        control_objective_primary=TransformerControlObjective.UNDEFINED,
+        control_objective_secondary=TransformerControlObjective.UNDEFINED,
+        control_objective_tertiary=TransformerControlObjective.UNDEFINED,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -367,6 +382,12 @@ get_rating_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:
 get_rating_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva))
 """Get [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer3W) = value.phase_angle_limits
+"""Get [`PhaseShiftingTransformer3W`](@ref) `control_objective_primary`."""
+get_control_objective_primary(value::PhaseShiftingTransformer3W) = value.control_objective_primary
+"""Get [`PhaseShiftingTransformer3W`](@ref) `control_objective_secondary`."""
+get_control_objective_secondary(value::PhaseShiftingTransformer3W) = value.control_objective_secondary
+"""Get [`PhaseShiftingTransformer3W`](@ref) `control_objective_tertiary`."""
+get_control_objective_tertiary(value::PhaseShiftingTransformer3W) = value.control_objective_tertiary
 """Get [`PhaseShiftingTransformer3W`](@ref) `services`."""
 get_services(value::PhaseShiftingTransformer3W) = value.services
 """Get [`PhaseShiftingTransformer3W`](@ref) `ext`."""
@@ -464,6 +485,12 @@ set_rating_secondary!(value::PhaseShiftingTransformer3W, val) = value.rating_sec
 set_rating_tertiary!(value::PhaseShiftingTransformer3W, val) = value.rating_tertiary = set_value(value, Val(:rating_tertiary), val, Val(:mva))
 """Set [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer3W, val) = value.phase_angle_limits = val
+"""Set [`PhaseShiftingTransformer3W`](@ref) `control_objective_primary`."""
+set_control_objective_primary!(value::PhaseShiftingTransformer3W, val) = value.control_objective_primary = val
+"""Set [`PhaseShiftingTransformer3W`](@ref) `control_objective_secondary`."""
+set_control_objective_secondary!(value::PhaseShiftingTransformer3W, val) = value.control_objective_secondary = val
+"""Set [`PhaseShiftingTransformer3W`](@ref) `control_objective_tertiary`."""
+set_control_objective_tertiary!(value::PhaseShiftingTransformer3W, val) = value.control_objective_tertiary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `services`."""
 set_services!(value::PhaseShiftingTransformer3W, val) = value.services = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `ext`."""

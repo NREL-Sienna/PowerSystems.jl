@@ -529,6 +529,10 @@ export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_control_mode
+export get_control_objective
+export get_control_objective_primary
+export get_control_objective_secondary
+export get_control_objective_tertiary
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -673,6 +677,7 @@ export get_power_gate_openings
 export get_power_mode
 export get_power_trajectory
 export get_powerhouse_elevation
+export get_primary_group_number
 export get_primary_shunt
 export get_primary_star_arc
 export get_primary_turns_ratio
@@ -732,6 +737,7 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
+export get_secondary_group_number
 export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
@@ -753,6 +759,7 @@ export get_tF_delay
 export get_tV_delay
 export get_tail_reservoir
 export get_tap
+export get_tertiary_group_number
 export get_tertiary_star_arc
 export get_tertiary_turns_ratio
 export get_tfh
@@ -1198,6 +1205,10 @@ export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_control_mode!
+export set_control_objective!
+export set_control_objective_primary!
+export set_control_objective_secondary!
+export set_control_objective_tertiary!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
@@ -1342,6 +1353,7 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
+export set_primary_group_number!
 export set_primary_shunt!
 export set_primary_star_arc!
 export set_primary_turns_ratio!
@@ -1401,6 +1413,7 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
+export set_secondary_group_number!
 export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
@@ -1422,6 +1435,7 @@ export set_tF_delay!
 export set_tV_delay!
 export set_tail_reservoir!
 export set_tap!
+export set_tertiary_group_number!
 export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!
 export set_tfh!
