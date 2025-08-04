@@ -7,7 +7,11 @@
 #   bus_number_mapping: maps Sienna number to PSS/E number for all buses
 #   load_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all loads
 #   shunt_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all shunts
+#   switched_shunt_name_mapping: maps (Sienna bus, Sienna name) to PSS/E name for all switched shunts
 #   generator_name_mapping: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all generators
+#   xfrm_3w_name_formatter: maps (Sienna bus 1, Sienna bus 2, Sienna bus 3, Sienna name) to PSS/E name for all 3W transformers 
+#   dcline_name_formatter: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all DC lines
+#   vscline_name_formatter: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all VSC lines
 #   branch_name_mapping: maps (Sienna bus 1, Sienna bus 2, Sienna name) to PSS/E name for all non-transformer branches
 #   transformer_ckt_mapping: maps (Sienna bus1, Sienna bus2, Sienna name) to PSS/E CKT field for all transformers
 
@@ -62,6 +66,7 @@ function name_formatter_from_component_ids(raw_name_mapping, bus_number_mapping,
         deserialize_reverse_component_ids(raw_name_mapping, bus_number_mapping, sig)
     function component_id_formatter(device_dict)
         (p_bus_n, p_name) = device_dict["source_id"][2:3]
+        p_name = string(p_name)
         (p_bus_n isa Integer) || (p_bus_n = parse(Int64, p_bus_n))
         new_name = reversed_name_mapping[(p_bus_n, p_name)]
         return new_name
@@ -92,12 +97,22 @@ retransformation.
 function parse_export_metadata_dict(md::Dict)
     bus_name_map = reverse_dict(md["bus_name_mapping"])  # PSS/E bus name -> Sienna bus name
     all_branch_name_map = deserialize_reverse_component_ids(
-        merge(md["branch_name_mapping"], md["transformer_ckt_mapping"]),
+        merge(
+            md["branch_name_mapping"],
+            md["transformer_ckt_mapping"],
+        ),
         md["bus_number_mapping"],
         Tuple{Int64, Int64},
     )
 
-    bus_name_formatter = device_dict -> bus_name_map[device_dict["name"]]
+    bus_name_formatter = device_dict -> begin
+        name = device_dict["name"]
+        if startswith(name, "starbus_")
+            name  # always use the original name for starbus buses
+        else
+            get(bus_name_map, name, name)
+        end
+    end
     gen_name_formatter = name_formatter_from_component_ids(
         md["generator_name_mapping"],
         md["bus_number_mapping"],
@@ -108,6 +123,7 @@ function parse_export_metadata_dict(md::Dict)
         md["bus_number_mapping"],
         Int64,
     )
+
     function branch_name_formatter(
         device_dict::Dict,
         bus_f::ACBus,
@@ -119,13 +135,21 @@ function parse_export_metadata_dict(md::Dict)
             (length(sid) == 6) ? [sid[2], sid[3], sid[5]] : last(sid, 3)
 
         if sid[1] in ["switch", "breaker"]
-            p_name = lstrip(p_name, ['@', '*'])
+            p_name = replace(p_name, r"[@*]" => "_")
+        end
+
+        if sid[1] == "transformer"
+            p_name = "_" * String(p_name)
         end
 
         return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
     end
+
     function xfrm_3w_name_formatter(
         device_dict::Dict,
+        p_bus::ACBus,
+        s_bus::ACBus,
+        t_bus::ACBus,
     )::String
         bus_primary = device_dict["bus_primary"]
         bus_secondary = device_dict["bus_secondary"]
@@ -134,10 +158,55 @@ function parse_export_metadata_dict(md::Dict)
 
         return "$(bus_primary)-$(bus_secondary)-$(bus_tertiary)_i-$(ckt)"
     end
+
+    function make_switched_shunt_name_formatter(mapping, bus_number_mapping)
+        reversed_name_mapping = Dict{Tuple{Int, String}, String}()
+        for (s_bus_n_s_name, p_name) in mapping
+            parts = split(s_bus_n_s_name, "_")
+            s_bus_n = parts[1]
+            s_shunt_name = join(parts[2:end], "_")
+            p_bus_n = bus_number_mapping[s_bus_n]
+            reversed_name_mapping[(p_bus_n, s_shunt_name)] = p_name
+        end
+        return function (device_dict)
+            sid = device_dict["source_id"]
+            p_bus_n = sid[2]
+            p_shunt_name = string(p_bus_n, "-", sid[3])
+            new_name = get(
+                reversed_name_mapping,
+                (p_bus_n, p_shunt_name),
+                "$(p_bus_n)_$(p_shunt_name)",
+            )
+            return new_name
+        end
+    end
+
+    function make_hvdc_name_formatter(mapping)
+        reversed_mapping = reverse_dict(mapping)
+        return function (device_dict, bus_f::ACBus, bus_t::ACBus)
+            bus_f_num = bus_f.number
+            bus_t_num = bus_t.number
+            name = device_dict["name"]
+            key = string(bus_f_num, "-", bus_t_num, "_", name)
+            new_name = get(reversed_mapping, key, key)
+            return new_name
+        end
+    end
+
     shunt_name_formatter = name_formatter_from_component_ids(
         md["shunt_name_mapping"],
         md["bus_number_mapping"],
         Int64,
+    )
+    switched_shunt_name_formatter = make_switched_shunt_name_formatter(
+        md["switched_shunt_name_mapping"],
+        md["bus_number_mapping"],
+    )
+    dcline_name_formatter = make_hvdc_name_formatter(
+        md["dcline_name_mapping"],
+    )
+    vscline_name_formatter = make_hvdc_name_formatter(
+        md["vsc_line_name_mapping"],
     )
     loadzone_name_map = reverse_dict(md["zone_mapping"])
     get!(loadzone_name_map, 1, "1")
@@ -145,7 +214,6 @@ function parse_export_metadata_dict(md::Dict)
     area_name_map = reverse_dict(md["area_mapping"])
     get!(area_name_map, 1, "1")
     area_name_formatter = name -> area_name_map[name]
-
     sys_kwargs = Dict(
         :area_name_formatter => area_name_formatter,
         :loadzone_name_formatter => loadzone_name_formatter,
@@ -155,6 +223,9 @@ function parse_export_metadata_dict(md::Dict)
         :gen_name_formatter => gen_name_formatter,
         :branch_name_formatter => branch_name_formatter,
         :xfrm_3w_name_formatter => xfrm_3w_name_formatter,
+        :switched_shunt_name_formatter => switched_shunt_name_formatter,
+        :dcline_name_formatter => dcline_name_formatter,
+        :vscline_name_formatter => vscline_name_formatter,
     )
     bus_number_mapping = reverse_dict(md["bus_number_mapping"])  # PSS/E bus name -> Sienna bus name
 
