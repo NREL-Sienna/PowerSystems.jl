@@ -872,6 +872,13 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
+                    "COD1" => transformer["COD1"],
+                    "CONT1" => transformer["CONT1"],
+                    "WINDV1" => transformer["WINDV1"],
+                    "WINDV2" => transformer["WINDV2"],
+                    "RMI1" => transformer["RMI1"],
+                    "RMA1" => transformer["RMA1"],
+                    "NTP1" => transformer["NTP1"],
                 )
 
                 if pm_data["source_version"] ∈ ("32", "33")
@@ -1707,6 +1714,10 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 "REMOT_TO" => to_bus["REMOT"],
                 "RMPCT_FROM" => from_bus["RMPCT"],
                 "RMPCT_TO" => to_bus["RMPCT"],
+                "ALOSS_from" => from_bus["ALOSS"],
+                "ALOSS_to" => to_bus["ALOSS"],
+                "MINLOSS_from" => from_bus["MINLOSS"],
+                "MINLOSS_to" => to_bus["MINLOSS"],
             )
 
             sub_data["source_id"] =
