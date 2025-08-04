@@ -1473,7 +1473,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["transfer_setpoint"] = dcline["SETVL"]
 
-            sub_data["name"] = dcline["NAME"]
+            sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
             if pm_data["has_isolated_buses"]
@@ -1624,7 +1624,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # artificial generators from a VSC, but it is not clear to me how
             # the value of "pg" is determined and adds shunt to the DC-side bus.
             sub_data = Dict{String, Any}()
-            sub_data["name"] = dcline["NAME"]
+            sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
 
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = from_bus["IBUS"]
@@ -1751,7 +1751,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             )
             sub_data = Dict{String, Any}()
 
-            sub_data["name"] = facts["NAME"]
+            sub_data["name"] = strip(facts["NAME"], ['"', '\''])
             sub_data["control_mode"] = facts["MODE"]
 
             # MODE = 0 -> Unavailable
