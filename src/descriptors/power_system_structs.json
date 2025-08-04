@@ -987,6 +987,13 @@
                     "default": "(min=-3.1416, max=3.1416)"
                 },
                 {
+                    "name": "control_objective",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -1085,12 +1092,6 @@
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "winding_group_number",
-                    "null_value": "0",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
-                },
-                {
                     "name": "tap",
                     "comment": "Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage",
                     "null_value": "1.0",
@@ -1166,6 +1167,20 @@
                    "needs_conversion": true,
                     "conversion_unit": ":mva",
                     "default": "nothing"
+                },
+                {
+                    "name": "winding_group_number",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
+                    "default": "WindingGroupNumber.UNDEFINED"
+                },
+                {
+                    "name": "control_objective",
+                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "services",
@@ -1266,12 +1281,6 @@
                     "conversion_unit": ":siemens"
                 },
                 {
-                    "name": "winding_group_number",
-                    "null_value": "0",
-                    "data_type": "WindingGroupNumber",
-                    "comment": "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses"
-                },
-                {
                     "name": "rating",
                     "comment": "Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
                     "null_value": "nothing",
@@ -1336,6 +1345,13 @@
                     "needs_conversion": true,
                     "conversion_unit": ":mva",
                     "default": "nothing"
+                },
+                {
+                    "name": "winding_group_number",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating phase shift (radians) between the `from` and `to` buses",
+                    "default": "WindingGroupNumber.UNDEFINED"
                 },
                 {
                     "name": "services",
@@ -1774,6 +1790,48 @@
                     "default": "0.0",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
+                },
+                {
+                    "name": "primary_group_number",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
+                    "default": "WindingGroupNumber.UNDEFINED"
+                },
+                {
+                    "name": "secondary_group_number",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
+                    "default": "WindingGroupNumber.UNDEFINED"
+                },
+                {
+                    "name": "tertiary_group_number",
+                    "null_value": "WindingGroupNumber.UNDEFINED",
+                    "data_type": "WindingGroupNumber",
+                    "comment": "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration",
+                    "default": "WindingGroupNumber.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_tertiary",
+                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "services",
@@ -2252,6 +2310,27 @@
                     "null_value": "(min=-3.1416, max=3.1416)",
                     "data_type": "MinMax",
                     "default": "(min=-3.1416, max=3.1416)"
+                },
+                {
+                    "name": "control_objective_primary",
+                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_secondary",
+                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
+                },
+                {
+                    "name": "control_objective_tertiary",
+                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "data_type": "TransformerControlObjective",
+                    "null_value": "TransformerControlObjective.UNDEFINED",
+                    "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "services",

@@ -22,7 +22,7 @@ const ENUMS = (
     DiscreteControlledBranchType,
     DiscreteControlledBranchStatus,
     WindingCategory,
-    TransformerControlMode,
+    ImpedanceCorrectionTransformerControlMode,
     GeneratorCostModels,
     InputCategory,
     PrimeMovers,
@@ -32,6 +32,7 @@ const ENUMS = (
     UnitSystem,
     LoadConformity,
     WindingGroupNumber,
+    TransformerControlObjective,
 )
 
 const ENUM_MAPPINGS = Dict()
@@ -71,10 +72,12 @@ Base.convert(::Type{WindingCategory}, val::AbstractString) =
     get_enum_value(WindingCategory, val)
 Base.convert(::Type{WindingGroupNumber}, val::AbstractString) =
     get_enum_value(WindingGroupNumber, val)
-Base.convert(::Type{TransformerControlMode}, val::AbstractString) =
-    get_enum_value(TransformerControlMode, val)
+Base.convert(::Type{ImpedanceCorrectionTransformerControlMode}, val::AbstractString) =
+    get_enum_value(ImpedanceCorrectionTransformerControlMode, val)
 Base.convert(::Type{GeneratorCostModels}, val::AbstractString) =
     get_enum_value(GeneratorCostModels, val)
 Base.convert(::Type{PrimeMovers}, val::AbstractString) = get_enum_value(PrimeMovers, val)
 Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateTypes, val)
 Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)
+Base.convert(::Type{TransformerControlObjective}, val::AbstractString) =
+    get_enum_value(TransformerControlObjective, val)

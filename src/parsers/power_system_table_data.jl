@@ -444,9 +444,21 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     end
 end
 
+function get_branch_type(
+    tap::Float64,
+    is_transformer::Union{Bool, Nothing},
+)
+    if isnothing(is_transformer)
+        is_transformer = (tap != 0.0) && (tap != 1.0)
+    end
+
+    is_transformer || return Line
+
+    return tap == 1.0 ? Transformer2W : TapTransformer
+end
+
 """
 Add branches to the System from the raw data.
-
 """
 function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     available = true
@@ -459,16 +471,13 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
         pf = branch.active_power_flow
         qf = branch.reactive_power_flow
 
-        #TODO: noop math...Phase-Shifting Transformer angle
-        alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
-        # this is using the old logic of assigning branch type as PST instead of checking the control mode
-        is_phase_shift_transformer = alpha != 0.0
+        # Table Model doesn't support PhaseShifters
         branch_type =
             get_branch_type(
                 branch.tap,
                 get(branch, :is_transformer, nothing),
-                is_phase_shift_transformer,
             )
+
         if branch_type == Line
             b = branch.primary_shunt / 2
             value = Line(;
@@ -496,7 +505,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
@@ -510,14 +519,11 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
-                winding_group_number = WindingGroupNumber(round(alpha / (π / 6))),
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 tap = branch.tap,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
-        elseif branch_type == PhaseShiftingTransformer
-            # TODO create PhaseShiftingTransformer
-            error("Unsupported branch type $branch_type")
         else
             error("Unsupported branch type $branch_type")
         end
