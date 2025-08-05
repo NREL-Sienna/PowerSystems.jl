@@ -1586,7 +1586,9 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["r"] = dcline["RDC"] / ZbaseR
 
             if pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"] = Dict{String, Any}(
+                    "psse_name" => dcline["NAME"],
+                )
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"] = Dict{String, Any}(
                     "NDR" => dcline["NDR"],
