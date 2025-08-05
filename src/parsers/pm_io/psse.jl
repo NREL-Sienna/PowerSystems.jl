@@ -879,6 +879,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "RMI1" => transformer["RMI1"],
                     "RMA1" => transformer["RMA1"],
                     "NTP1" => transformer["NTP1"],
+                    "R1-2" => transformer["R1-2"],
+                    "X1-2" => transformer["X1-2"]
                 )
 
                 if pm_data["source_version"] ∈ ("32", "33")
@@ -1412,6 +1414,15 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
+                    "COD1" => transformer["COD1"],
+                    "COD2" => transformer["COD2"],
+                    "COD3" => transformer["COD3"],
+                    "R1-2" => transformer["R1-2"],
+                    "R2-3" => transformer["R2-3"],
+                    "R3-1" => transformer["R3-1"],
+                    "X1-2" => transformer["X1-2"],
+                    "X2-3" => transformer["X2-3"],
+                    "X3-1" => transformer["X3-1"],
                 )
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
