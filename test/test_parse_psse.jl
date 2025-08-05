@@ -34,7 +34,7 @@ end
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          5.83546
+          -5.83546
     @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
           LoadConformity.CONFORMING
 
@@ -43,6 +43,20 @@ end
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
     @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
           LoadConformity.CONFORMING
+
+    @info "Testing ZIP Load Parsing"
+    wecc_sys = build_system(PSYTestSystems, "psse_240_parsing_sys")
+    test_load1 = get_component(StandardLoad, wecc_sys, "load24091")
+    impedance_q = get_impedance_reactive_power(test_load1)
+    # Negative for capacitive loads
+    @test impedance_q < 0
+    @test isapprox(impedance_q, -0.75; atol = 1e-4)
+
+    test_load2 = get_component(StandardLoad, wecc_sys, "load10031")
+    impedance_q = get_impedance_reactive_power(test_load2)
+    # Positive for inductance loads
+    @test impedance_q > 0
+    @test isapprox(impedance_q, 3.873; atol = 1e-3)
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
@@ -75,7 +89,7 @@ end
     @test length(tw3s) == 1
     tw3 = only(tw3s)
     @test isapprox(get_b(tw3), 0.0036144)
-    @test get_primary_turns_ratio(tw3) == 1.0
+    @test get_primary_turns_ratio(tw3) == 1.5
     @test get_rating(tw3) == 0.0
 
     @test get_available(

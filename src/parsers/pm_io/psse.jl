@@ -509,7 +509,10 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
-            sub_data["qy"] = pop!(load, "YQ")
+            # Reactive power component of constant Y load.
+            # Positive for an inductive load (consumes Q)
+            # Negative for a capacitive load (injects Q)
+            sub_data["qy"] = -pop!(load, "YQ")
             sub_data["conformity"] = pop!(load, "SCALE")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
             sub_data["interruptible"] = pop!(load, "INTRPT")
