@@ -78,7 +78,9 @@ end
 function remap_bus_numbers!(sys::System, bus_number_mapping)
     for bus in collect(get_components(Bus, sys))
         old_number = get_number(bus)
-        new_number = parse(Int, bus_number_mapping[old_number])
+        # new_number = parse(Int, bus_number_mapping[old_number])
+        new_number_str = get(bus_number_mapping, old_number, string(old_number))
+        new_number = parse(Int, new_number_str)
         if new_number != old_number
             # This will throw an exception if one bus's PSS/E number is another bus's
             # Sienna number. That never happens because _psse_bus_numbers on the
@@ -142,7 +144,8 @@ function parse_export_metadata_dict(md::Dict)
             p_name = "_" * String(p_name)
         end
 
-        return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
+        key = ((p_bus_1, p_bus_2), p_name)
+        return get(all_branch_name_map, key, "$(p_bus_1)_$(p_bus_2)_$(p_name)")
     end
 
     function xfrm_3w_name_formatter(
