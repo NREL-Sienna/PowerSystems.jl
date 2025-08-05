@@ -22,6 +22,10 @@ export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
 export get_geo_json
+export ThermalPowerPlant
+export CombinedCycleBlock
+export HydroPowerPlant
+export PumpedHydroPowerPlant
 
 export Component
 export Device
@@ -840,6 +844,7 @@ include("models/supplemental_accessors.jl")
 # Supplemental attributes
 include("contingencies.jl")
 include("outages.jl")
+include("plant_attribute.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
