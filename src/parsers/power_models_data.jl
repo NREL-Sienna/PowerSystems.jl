@@ -1882,6 +1882,7 @@ function make_switched_shunt(name::String, d::Dict, bus::ACBus)
         :available => Bool(d["status"]),
         :bus => bus,
         :Y => (d["gs"] + d["bs"]im),
+        :initial_status => ones(Int, length(d["step_number"])),
         :number_of_steps => d["step_number"],
         :Y_increase => d["y_increment"],
         :admittance_limits => d["admittance_limits"],
