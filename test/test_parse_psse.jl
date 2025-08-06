@@ -137,6 +137,10 @@ end
         get_component(SwitchedAdmittance, sys3, "3147-42"),
     ).min ==
           1.03
+    ss_comp = get_component(SwitchedAdmittance, sys3, "1027-7")
+    @test get_available(ss_comp) == true
+    @test length(get_initial_status(ss_comp) ) == 1
+    @test get_initial_status(ss_comp) == [1]
     @test only(
         get_number_of_steps(
             get_component(SwitchedAdmittance, sys3, "7075-119"),
