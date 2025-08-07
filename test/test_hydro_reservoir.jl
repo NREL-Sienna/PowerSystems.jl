@@ -80,6 +80,9 @@ end
 
     remove_component!(sys, reservoir)
     @test_throws ArgumentError get_connected_devices(sys, reservoir)
+
+    _, result = validate_serialization(sys)
+    @test result
 end
 
 @testset "Test multiple `HydroTurbine` with single `HydroReservoir`" begin
@@ -116,6 +119,9 @@ end
     mapping = get_reservoir_device_mapping(sys)
     @test mapping isa ReservoirConnectedDevicesMapping
     @test length(get_connected_devices(sys, hydro_reservoir)) == 5
+
+    _, result = validate_serialization(sys)
+    @test result
 end
 
 @testset "Test single `HydroTurbine` with multiple `HydroReservoir`" begin
@@ -142,4 +148,7 @@ end
     clear_reservoirs!(turbine)
     @test !has_reservoir(turbine)
     @test length(get_reservoirs(turbine)) == 0
+
+    _, result = validate_serialization(sys)
+    @test result
 end
