@@ -1384,10 +1384,12 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
     uuid = IS.get_uuid(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
-        for _service in get_services(device)
-            if IS.get_uuid(_service) == uuid
-                push!(devices.contributing_devices, device)
-                break
+        if supports_services(device)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
             end
         end
     end
