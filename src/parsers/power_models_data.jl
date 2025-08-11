@@ -995,7 +995,7 @@ function make_synchronous_condenser(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ext = Dict{String, Float64}()
+    ext = get(d, "ext", Dict{String, Any}())
     if haskey(d, "r_source") && haskey(d, "x_source")
         ext["r"] = d["r_source"]
         ext["x"] = d["x_source"]

@@ -353,7 +353,13 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "BASLOD" => pop!(gen, "BASLOD"),
                 )
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"] = Dict{String, Any}(
+                    "IREG" => pop!(gen, "IREG"),
+                    "WPF" => pop!(gen, "WPF"),
+                    "WMOD" => sub_data["m_control_mode"],
+                    "GTAP" => pop!(gen, "GTAP"),
+                    "RMPCT" => pop!(gen, "RMPCT"),
+                )
             else
                 @show pm_data["source_version"] ∈ ("32", "33")
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
@@ -611,7 +617,12 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
 
-            sub_data["ext"] = Dict{String, Any}()
+            sub_data["ext"] = Dict{String, Any}(
+                "MODSW" => switched_shunt["MODSW"],
+                "ADJM" => switched_shunt["ADJM"],
+                "RMPCT" => switched_shunt["RMPCT"],
+                "RMIDNT" => switched_shunt["RMIDNT"],
+            )
 
             y_increment = Dict(
                 k => v for
@@ -638,13 +649,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}(
-                    "MODSW" => switched_shunt["MODSW"],
-                    "ADJM" => switched_shunt["ADJM"],
-                    "SWREM" => switched_shunt["SWREM"],
-                    "RMPCT" => switched_shunt["RMPCT"],
-                    "RMIDNT" => switched_shunt["RMIDNT"],
-                )
+                sub_data["ext"]["SWREM"] = switched_shunt["SWREM"]
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
@@ -886,7 +891,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "RMA1" => transformer["RMA1"],
                     "NTP1" => transformer["NTP1"],
                     "R1-2" => transformer["R1-2"],
-                    "X1-2" => transformer["X1-2"]
+                    "X1-2" => transformer["X1-2"],
                 )
 
                 if pm_data["source_version"] ∈ ("32", "33")
@@ -1737,6 +1742,11 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 "ALOSS_to" => to_bus["ALOSS"],
                 "MINLOSS_from" => from_bus["MINLOSS"],
                 "MINLOSS_to" => to_bus["MINLOSS"],
+                "TYPE_from" => from_bus["TYPE"],
+                "TYPE_to" => to_bus["TYPE"],
+                "MODE_from" => from_bus["MODE"],
+                "MODE_to" => to_bus["MODE"],
+                "RDC" => dcline["RDC"],
             )
 
             sub_data["source_id"] =
@@ -1794,6 +1804,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
 
             sub_data["reactive_power_required"] = facts["RMPCT"]
+            sub_data["ext"] = Dict{String, Any}()
 
             if pm_data["source_version"] == "35"
                 sub_data["ext"]["NREG"] = facts["NREG"]
