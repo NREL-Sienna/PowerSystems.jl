@@ -48,6 +48,12 @@ This file is auto-generated. Do not edit.
         rating_primary::Float64
         rating_secondary::Float64
         rating_tertiary::Float64
+        primary_group_number::WindingGroupNumber
+        secondary_group_number::WindingGroupNumber
+        tertiary_group_number::WindingGroupNumber
+        control_objective_primary::TransformerControlObjective
+        control_objective_secondary::TransformerControlObjective
+        control_objective_tertiary::TransformerControlObjective
         services::Vector{Service}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
@@ -100,6 +106,12 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `rating_primary::Float64`: (default: `0.0`) Rating (in MVA) for primary winding.
 - `rating_secondary::Float64`: (default: `0.0`) Rating (in MVA) for secondary winding.
 - `rating_tertiary::Float64`: (default: `0.0`) Rating (in MVA) for tertiary winding.
+- `primary_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
+- `secondary_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
+- `tertiary_group_number::WindingGroupNumber`: (default: `WindingGroupNumber.UNDEFINED`) Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration
+- `control_objective_primary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_secondary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
+- `control_objective_tertiary::TransformerControlObjective`: (default: `TransformerControlObjective.UNDEFINED`) Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -189,6 +201,18 @@ mutable struct Transformer3W <: ThreeWindingTransformer
     rating_secondary::Float64
     "Rating (in MVA) for tertiary winding."
     rating_tertiary::Float64
+    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+    primary_group_number::WindingGroupNumber
+    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+    secondary_group_number::WindingGroupNumber
+    "Vector group number ('clock number') indicating fixed phase shift (radians) between the `from` and `to` buses due to the connection group configuration"
+    tertiary_group_number::WindingGroupNumber
+    "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_primary::TransformerControlObjective
+    "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_secondary::TransformerControlObjective
+    "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)"
+    control_objective_tertiary::TransformerControlObjective
     "Services that this device contributes to"
     services::Vector{Service}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
@@ -197,12 +221,12 @@ mutable struct Transformer3W <: ThreeWindingTransformer
     internal::InfrastructureSystemsInternal
 end
 
-function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, InfrastructureSystemsInternal(), )
+function Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, primary_group_number=WindingGroupNumber.UNDEFINED, secondary_group_number=WindingGroupNumber.UNDEFINED, tertiary_group_number=WindingGroupNumber.UNDEFINED, control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, control_objective_tertiary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, primary_group_number, secondary_group_number, tertiary_group_number, control_objective_primary, control_objective_secondary, control_objective_tertiary, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, services, ext, internal, )
+function Transformer3W(; name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary=get_base_voltage(get_from(primary_star_arc)), base_voltage_secondary=get_base_voltage(get_from(secondary_star_arc)), base_voltage_tertiary=get_base_voltage(get_from(tertiary_star_arc)), g=0.0, b=0.0, primary_turns_ratio=1.0, secondary_turns_ratio=1.0, tertiary_turns_ratio=1.0, available_primary=true, available_secondary=true, available_tertiary=true, rating_primary=0.0, rating_secondary=0.0, rating_tertiary=0.0, primary_group_number=WindingGroupNumber.UNDEFINED, secondary_group_number=WindingGroupNumber.UNDEFINED, tertiary_group_number=WindingGroupNumber.UNDEFINED, control_objective_primary=TransformerControlObjective.UNDEFINED, control_objective_secondary=TransformerControlObjective.UNDEFINED, control_objective_tertiary=TransformerControlObjective.UNDEFINED, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    Transformer3W(name, available, primary_star_arc, secondary_star_arc, tertiary_star_arc, star_bus, active_power_flow_primary, reactive_power_flow_primary, active_power_flow_secondary, reactive_power_flow_secondary, active_power_flow_tertiary, reactive_power_flow_tertiary, r_primary, x_primary, r_secondary, x_secondary, r_tertiary, x_tertiary, rating, r_12, x_12, r_23, x_23, r_13, x_13, base_power_12, base_power_23, base_power_13, base_voltage_primary, base_voltage_secondary, base_voltage_tertiary, g, b, primary_turns_ratio, secondary_turns_ratio, tertiary_turns_ratio, available_primary, available_secondary, available_tertiary, rating_primary, rating_secondary, rating_tertiary, primary_group_number, secondary_group_number, tertiary_group_number, control_objective_primary, control_objective_secondary, control_objective_tertiary, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -250,6 +274,12 @@ function Transformer3W(::Nothing)
         rating_primary=0.0,
         rating_secondary=0.0,
         rating_tertiary=0.0,
+        primary_group_number=WindingGroupNumber.UNDEFINED,
+        secondary_group_number=WindingGroupNumber.UNDEFINED,
+        tertiary_group_number=WindingGroupNumber.UNDEFINED,
+        control_objective_primary=TransformerControlObjective.UNDEFINED,
+        control_objective_secondary=TransformerControlObjective.UNDEFINED,
+        control_objective_tertiary=TransformerControlObjective.UNDEFINED,
         services=Device[],
         ext=Dict{String, Any}(),
     )
@@ -339,6 +369,18 @@ get_rating_primary(value::Transformer3W) = get_value(value, Val(:rating_primary)
 get_rating_secondary(value::Transformer3W) = get_value(value, Val(:rating_secondary), Val(:mva))
 """Get [`Transformer3W`](@ref) `rating_tertiary`."""
 get_rating_tertiary(value::Transformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva))
+"""Get [`Transformer3W`](@ref) `primary_group_number`."""
+get_primary_group_number(value::Transformer3W) = value.primary_group_number
+"""Get [`Transformer3W`](@ref) `secondary_group_number`."""
+get_secondary_group_number(value::Transformer3W) = value.secondary_group_number
+"""Get [`Transformer3W`](@ref) `tertiary_group_number`."""
+get_tertiary_group_number(value::Transformer3W) = value.tertiary_group_number
+"""Get [`Transformer3W`](@ref) `control_objective_primary`."""
+get_control_objective_primary(value::Transformer3W) = value.control_objective_primary
+"""Get [`Transformer3W`](@ref) `control_objective_secondary`."""
+get_control_objective_secondary(value::Transformer3W) = value.control_objective_secondary
+"""Get [`Transformer3W`](@ref) `control_objective_tertiary`."""
+get_control_objective_tertiary(value::Transformer3W) = value.control_objective_tertiary
 """Get [`Transformer3W`](@ref) `services`."""
 get_services(value::Transformer3W) = value.services
 """Get [`Transformer3W`](@ref) `ext`."""
@@ -428,6 +470,18 @@ set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_valu
 set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, Val(:rating_secondary), val, Val(:mva))
 """Set [`Transformer3W`](@ref) `rating_tertiary`."""
 set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, Val(:rating_tertiary), val, Val(:mva))
+"""Set [`Transformer3W`](@ref) `primary_group_number`."""
+set_primary_group_number!(value::Transformer3W, val) = value.primary_group_number = val
+"""Set [`Transformer3W`](@ref) `secondary_group_number`."""
+set_secondary_group_number!(value::Transformer3W, val) = value.secondary_group_number = val
+"""Set [`Transformer3W`](@ref) `tertiary_group_number`."""
+set_tertiary_group_number!(value::Transformer3W, val) = value.tertiary_group_number = val
+"""Set [`Transformer3W`](@ref) `control_objective_primary`."""
+set_control_objective_primary!(value::Transformer3W, val) = value.control_objective_primary = val
+"""Set [`Transformer3W`](@ref) `control_objective_secondary`."""
+set_control_objective_secondary!(value::Transformer3W, val) = value.control_objective_secondary = val
+"""Set [`Transformer3W`](@ref) `control_objective_tertiary`."""
+set_control_objective_tertiary!(value::Transformer3W, val) = value.control_objective_tertiary = val
 """Set [`Transformer3W`](@ref) `services`."""
 set_services!(value::Transformer3W, val) = value.services = val
 """Set [`Transformer3W`](@ref) `ext`."""

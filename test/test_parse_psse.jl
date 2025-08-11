@@ -34,7 +34,7 @@ end
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          5.83546
+          -5.83546
     @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
           LoadConformity.CONFORMING
 
@@ -43,6 +43,20 @@ end
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
     @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
           LoadConformity.CONFORMING
+
+    @info "Testing ZIP Load Parsing"
+    wecc_sys = build_system(PSYTestSystems, "psse_240_parsing_sys")
+    test_load1 = get_component(StandardLoad, wecc_sys, "load24091")
+    impedance_q = get_impedance_reactive_power(test_load1)
+    # Negative for capacitive loads
+    @test impedance_q < 0
+    @test isapprox(impedance_q, -0.75; atol = 1e-4)
+
+    test_load2 = get_component(StandardLoad, wecc_sys, "load10031")
+    impedance_q = get_impedance_reactive_power(test_load2)
+    # Positive for inductance loads
+    @test impedance_q > 0
+    @test isapprox(impedance_q, 3.873; atol = 1e-3)
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
@@ -75,7 +89,7 @@ end
     @test length(tw3s) == 1
     tw3 = only(tw3s)
     @test isapprox(get_b(tw3), 0.0036144)
-    @test get_primary_turns_ratio(tw3) == 1.0
+    @test get_primary_turns_ratio(tw3) == 1.5
     @test get_rating(tw3) == 0.0
 
     @test get_available(
@@ -291,7 +305,7 @@ end
           (x = 24.1, y = 1.27)
     @test get_transformer_winding(suppl_attr_tr2w_1) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_1) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr2w_2 = get_component(Transformer2W, sys, "BUS 109-BUS 104-i_1")
     suppl_attr_tr2w_2 = only(get_supplemental_attributes(tr2w_2))
@@ -302,7 +316,7 @@ end
           (x = 1.17, y = 0.916)
     @test get_transformer_winding(suppl_attr_tr2w_2) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
-          TransformerControlMode.TAP_RATIO
+          ImpedanceCorrectionTransformerControlMode.TAP_RATIO
 
     tr2w_3 = get_component(Transformer2W, sys, "BUS 106-BUS 105-i_1")
     suppl_attr_tr2w_3 = only(get_supplemental_attributes(tr2w_3))
@@ -313,7 +327,7 @@ end
           (x = 45.0, y = 2.073)
     @test get_transformer_winding(suppl_attr_tr2w_3) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_3) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr3w_1 = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
     suppl_attr_tr3w_1 = collect(get_supplemental_attributes(tr3w_1))
@@ -330,7 +344,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_tertiary_tr3w_1))[end] ==
           (x = 1.17, y = 0.916)
     @test get_transformer_control_mode(filtered_tertiary_tr3w_1) ==
-          TransformerControlMode.TAP_RATIO
+          ImpedanceCorrectionTransformerControlMode.TAP_RATIO
 
     filtered_secondary_tr3w_2 = only(
         filter(
@@ -344,7 +358,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_secondary_tr3w_2))[end] ==
           (x = 60.0, y = 1.5718)
     @test get_transformer_control_mode(filtered_secondary_tr3w_2) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr3w_2 = get_component(Transformer3W, sys, "BUS 113-BUS 110-BUS 114-i_1")
     suppl_attr_tr3w_2 = collect(get_supplemental_attributes(tr3w_2))
@@ -361,7 +375,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_primary_tr3w_2))[end] ==
           (x = 40.0, y = 1.4)
     @test get_transformer_control_mode(filtered_primary_tr3w_2) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 end
 
 @testset "PSSE System Serialization/Desearialization" begin

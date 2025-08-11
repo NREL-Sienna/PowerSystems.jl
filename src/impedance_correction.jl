@@ -12,7 +12,7 @@ struct ImpedanceCorrectionData <: SupplementalAttribute
     table_number::Int64
     impedance_correction_curve::PiecewiseLinearData
     transformer_winding::WindingCategory
-    transformer_control_mode::TransformerControlMode
+    transformer_control_mode::ImpedanceCorrectionTransformerControlMode
     internal::InfrastructureSystemsInternal
 end
 

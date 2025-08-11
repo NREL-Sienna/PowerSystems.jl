@@ -181,19 +181,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
                 sub_data["g_fr"] = pop!(branch, "GI")
-                sub_data["b_fr"] =
-                    if branch["BI"] == 0.0 && branch["B"] != 0.0
-                        branch["B"] / 2
-                    else
-                        pop!(branch, "BI")
-                    end
+                sub_data["b_fr"] = (branch["B"] / 2) + pop!(branch, "BI")
                 sub_data["g_to"] = pop!(branch, "GJ")
-                sub_data["b_to"] =
-                    if branch["BJ"] == 0.0 && branch["B"] != 0.0
-                        branch["B"] / 2
-                    else
-                        pop!(branch, "BJ")
-                    end
+                sub_data["b_to"] = (branch["B"] / 2) + pop!(branch, "BJ")
 
                 sub_data["ext"] = Dict{String, Any}(
                     "LEN" => pop!(branch, "LEN"),
@@ -525,7 +515,10 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
-            sub_data["qy"] = pop!(load, "YQ")
+            # Reactive power component of constant Y load.
+            # Positive for an inductive load (consumes Q)
+            # Negative for a capacitive load (injects Q)
+            sub_data["qy"] = -pop!(load, "YQ")
             sub_data["conformity"] = pop!(load, "SCALE")
             sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
             sub_data["interruptible"] = pop!(load, "INTRPT")
@@ -720,7 +713,6 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "TRANSFORMER")
         starbus_id = 10^ceil(Int, log10(abs(_find_max_bus_id(pm_data)))) + 1
-
         for transformer in pti_data["TRANSFORMER"]
             if !(transformer["CZ"] in [1, 2, 3])
                 @warn(
@@ -855,19 +847,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if transformer["CM"] == 1
                     # Transform admittance to device per unit
                     mva_ratio_12 = sub_data["base_power"] / pm_data["baseMVA"]
-                    Z_base_device_1 = transformer["NOMV1"]^2 / sub_data["base_power"]
-                    Z_base_sys_1 =
-                        _get_bus_value(transformer["I"], "base_kv", pm_data)^2 /
-                        pm_data["baseMVA"]
-                    if iszero(Z_base_device_1) # NOMV1 = 0.0: use the power ratios
-                        sub_data["g_fr"] = transformer["MAG1"] / mva_ratio_12
-                        sub_data["b_fr"] = transformer["MAG2"] / mva_ratio_12
-                    else # NOMV1 could potentially be different than the bus_voltage, use impedance ratios
-                        sub_data["g_fr"] =
-                            (transformer["MAG1"] / Z_base_sys_1) * Z_base_device_1
-                        sub_data["b_fr"] =
-                            (transformer["MAG2"] / Z_base_sys_1) * Z_base_device_1
-                    end
+                    sub_data["g_fr"] = transformer["MAG1"] / mva_ratio_12
+                    sub_data["b_fr"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
                     G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power"]
@@ -996,7 +977,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["correction_table"] = transformer["TAB1"]
 
                 sub_data["index"] = length(pm_data["branch"]) + 1
-
+                sub_data["COD1"] = pop!(transformer, "COD1")
                 if import_all
                     _import_remaining_keys!(
                         sub_data,
@@ -1323,19 +1304,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if transformer["CM"] == 1
                     # Transform admittance to device per unit
                     mva_ratio_12 = sub_data["base_power_12"] / pm_data["baseMVA"]
-                    Z_base_device_1 = transformer["NOMV1"]^2 / sub_data["base_power_12"]
-                    Z_base_sys_1 =
-                        _get_bus_value(transformer["I"], "base_kv", pm_data)^2 /
-                        pm_data["baseMVA"]
-                    if iszero(Z_base_device_1) # NOMV1 = 0.0: use the power ratios
-                        sub_data["g"] = transformer["MAG1"] / mva_ratio_12
-                        sub_data["b"] = transformer["MAG2"] / mva_ratio_12
-                    else # NOMV1 could potentially be different than the bus_voltage, use impedance ratios
-                        sub_data["g"] =
-                            (transformer["MAG1"] / Z_base_sys_1) * Z_base_device_1
-                        sub_data["b"] =
-                            (transformer["MAG2"] / Z_base_sys_1) * Z_base_device_1
-                    end
+                    sub_data["g"] = transformer["MAG1"] / mva_ratio_12
+                    sub_data["b"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
                     G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power_12"]
@@ -1395,11 +1365,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["tertiary_turns_ratio"] = windv3
                 elseif transformer["CW"] == 2
                     sub_data["primary_turns_ratio"] =
-                        windv1 / sub_data["base_voltage_primary"]
+                        windv1 / _get_bus_value(transformer["I"], "base_kv", pm_data)
                     sub_data["secondary_turns_ratio"] =
-                        windv2 / sub_data["base_voltage_secondary"]
+                        windv2 / _get_bus_value(transformer["J"], "base_kv", pm_data)
                     sub_data["tertiary_turns_ratio"] =
-                        windv3 / sub_data["base_voltage_tertiary"]
+                        windv3 / _get_bus_value(transformer["K"], "base_kv", pm_data)
                 else
                     @assert transformer["CW"] == 3
                     sub_data["primary_turns_ratio"] =
@@ -1419,6 +1389,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         )
                 end
                 sub_data["circuit"] = strip(transformer["CKT"])
+                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD2"] = pop!(transformer, "COD2")
+                sub_data["COD3"] = pop!(transformer, "COD3")
 
                 sub_data["ext"] = Dict{String, Any}(
                     "psse_name" => transformer["NAME"],
@@ -1460,6 +1433,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
         end
     end
+    return
 end
 
 """
