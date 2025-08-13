@@ -873,6 +873,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "NTP1" => transformer["NTP1"],
                     "R1-2" => transformer["R1-2"],
                     "X1-2" => transformer["X1-2"],
+                    "MAG1" => transformer["MAG1"],
+                    "MAG2" => transformer["MAG2"],
                 )
 
                 if pm_data["source_version"] ∈ ("32", "33")
@@ -1398,16 +1400,21 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
-                    "COD1" => transformer["COD1"],
-                    "COD2" => transformer["COD2"],
-                    "COD3" => transformer["COD3"],
-                    "R1-2" => transformer["R1-2"],
-                    "R2-3" => transformer["R2-3"],
-                    "R3-1" => transformer["R3-1"],
-                    "X1-2" => transformer["X1-2"],
-                    "X2-3" => transformer["X2-3"],
-                    "X3-1" => transformer["X3-1"],
+                    "MAG1" => transformer["MAG1"],
+                    "MAG2" => transformer["MAG2"],
                 )
+
+                for prefix in ["COD", "CONT", "RMA", "RMI", "NTP", "VMA", "VMI"]
+                    for i in 1:length(WINDING_NAMES)
+                        key = "$prefix$i"
+                        sub_data["ext"][key] = transformer[key]
+                    end
+                end
+
+                for suffix in ["1-2", "2-3", "3-1"]
+                    sub_data["ext"]["R$suffix"] = transformer["R$suffix"]
+                    sub_data["ext"]["X$suffix"] = transformer["X$suffix"]
+                end
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
 
@@ -1712,14 +1719,14 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 "REMOT_TO" => to_bus["REMOT"],
                 "RMPCT_FROM" => from_bus["RMPCT"],
                 "RMPCT_TO" => to_bus["RMPCT"],
-                "ALOSS_from" => from_bus["ALOSS"],
-                "ALOSS_to" => to_bus["ALOSS"],
-                "MINLOSS_from" => from_bus["MINLOSS"],
-                "MINLOSS_to" => to_bus["MINLOSS"],
-                "TYPE_from" => from_bus["TYPE"],
-                "TYPE_to" => to_bus["TYPE"],
-                "MODE_from" => from_bus["MODE"],
-                "MODE_to" => to_bus["MODE"],
+                "ALOSS_FROM" => from_bus["ALOSS"],
+                "ALOSS_TO" => to_bus["ALOSS"],
+                "MINLOSS_FROM" => from_bus["MINLOSS"],
+                "MINLOSS_TO" => to_bus["MINLOSS"],
+                "TYPE_FROM" => from_bus["TYPE"],
+                "TYPE_TO" => to_bus["TYPE"],
+                "MODE_FROM" => from_bus["MODE"],
+                "MODE_TO" => to_bus["MODE"],
                 "RDC" => dcline["RDC"],
             )
 
