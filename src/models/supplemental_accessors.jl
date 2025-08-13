@@ -144,7 +144,7 @@ end
 
 function get_α_primary(t::Transformer3W)
     if get_primary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "primary winding group number for summary (t) is undefined, assuming zero phase shift"
+        @warn "primary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
         return 0.0
     else
         return get_primary_group_number(t).value * -(π / 6)
@@ -152,7 +152,7 @@ function get_α_primary(t::Transformer3W)
 end
 function get_α_secondary(t::Transformer3W)
     if get_secondary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "secondary winding group number for summary (t) is undefined, assuming zero phase shift"
+        @warn "secondary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
         return 0.0
     else
         return get_secondary_group_number(t).value * -(π / 6)
@@ -160,7 +160,7 @@ function get_α_secondary(t::Transformer3W)
 end
 function get_α_tertiary(t::Transformer3W)
     if get_tertiary_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "tertiary winding group number for summary (t) is undefined, assuming zero phase shift"
+        @warn "tertiary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
         return 0.0
     else
         return get_tertiary_group_number(t).value * -(π / 6)
