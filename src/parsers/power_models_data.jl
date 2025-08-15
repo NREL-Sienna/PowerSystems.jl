@@ -300,7 +300,7 @@ Attaches the corresponding ICT data to a Transformer2W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
-    transformer::Transformer2W,
+    transformer::TwoWindingTransformer,
     name::String,
     d::Dict,
     ict_instances::Union{
@@ -995,7 +995,7 @@ function make_synchronous_condenser(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ext = Dict{String, Float64}()
+    ext = get(d, "ext", Dict{String, Any}())
     if haskey(d, "r_source") && haskey(d, "x_source")
         ext["r"] = d["r_source"]
         ext["x"] = d["x_source"]
@@ -1512,6 +1512,8 @@ function make_tap_transformer(
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+
     return TapTransformer(;
         name = name,
         available = available_value,
@@ -1531,6 +1533,7 @@ function make_tap_transformer(
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
         control_objective = get(d, "COD1", -99),
+        ext = ext,
     )
 end
 
@@ -1547,6 +1550,8 @@ function make_phase_shifting_transformer(
        get_bustype(bus_t) == ACBusTypes.ISOLATED
         available_value = false
     end
+
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
 
     return PhaseShiftingTransformer(;
         name = name,
@@ -1567,6 +1572,7 @@ function make_phase_shifting_transformer(
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
         control_objective = get(d, "COD1", -99),
+        ext = ext,
     )
 end
 
@@ -1597,7 +1603,7 @@ function read_branch!(
             continue
         end
 
-        if isa(value, Transformer2W)
+        if isa(value, TwoWindingTransformer)
             _attach_impedance_correction_tables!(
                 sys,
                 value,
@@ -1805,7 +1811,7 @@ function read_dcline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :dcline_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["dcline"]
         d["name"] = get(d, "name", d_key)
@@ -1864,7 +1870,7 @@ function read_vscline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :vsc_line_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["vscline"]
         d["name"] = get(d, "name", d_key)
@@ -1907,7 +1913,7 @@ function read_switched_shunt!(
         return
     end
 
-    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :switched_shunt_name_formatter, _get_pm_dict_name)
 
     for (d_key, d) in data["switched_shunt"]
         d["name"] = get(d, "name", d_key)
