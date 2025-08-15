@@ -141,11 +141,10 @@ function parse_export_metadata_dict(md::Dict)
         end
 
         if sid[1] == "transformer"
-            p_name = "_" * String(p_name)
+            p_name = String(p_name)
         end
 
-        key = ((p_bus_1, p_bus_2), p_name)
-        return get(all_branch_name_map, key, "$(p_bus_1)_$(p_bus_2)_$(p_name)")
+        return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
     end
 
     function xfrm_3w_name_formatter(

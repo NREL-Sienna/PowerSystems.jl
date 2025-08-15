@@ -979,7 +979,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["correction_table"] = transformer["TAB1"]
 
                 sub_data["index"] = length(pm_data["branch"]) + 1
-                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD1"] = transformer["COD1"]
                 if import_all
                     _import_remaining_keys!(
                         sub_data,
@@ -1391,9 +1391,9 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         )
                 end
                 sub_data["circuit"] = strip(transformer["CKT"])
-                sub_data["COD1"] = pop!(transformer, "COD1")
-                sub_data["COD2"] = pop!(transformer, "COD2")
-                sub_data["COD3"] = pop!(transformer, "COD3")
+                sub_data["COD1"] = transformer["COD1"]
+                sub_data["COD2"] = transformer["COD2"]
+                sub_data["COD3"] = transformer["COD3"]
 
                 sub_data["ext"] = Dict{String, Any}(
                     "psse_name" => transformer["NAME"],
