@@ -156,6 +156,26 @@ the different alternatives of `ReservoirDataType`, which has the options:
 | `CONFORMING`     | Conforming load                                                   |
 | `UNDEFINED`      | Undefined or unknown whether load is conforming or non-conforming |
 
+## [Tranformer Control Objectives](@id xtf_crtl)
+
+`TransformerControlObjective` is used to select the control objective for a transformer's
+tap changer, which can be used to determine the tap position during power flow calculations.
+
+| Name                                    | Description                                                               |
+|:--------------------------------------- |:------------------------------------------------------------------------- |
+| `UNDEFINED`                             | Undefined                                                                 |
+| `VOLTAGE_DISABLED`                      | Has voltage control capabilities, which are disabled                      |
+| `REACTIVE_POWER_FLOW_DISABLED`          | Has reactive power flow control capabilities, which are disabled          |
+| `ACTIVE_POWER_FLOW_DISABLED`            | Has active power flow control capabilities, which are disabled            |
+| `CONTROL_OF_DC_LINE_DISABLED`           | Has capabilities to control a DC line quantity, which are disabled        |
+| `ASYMMETRIC_ACTIVE_POWER_FLOW_DISABLED` | Has asymmetric active power flow control capabilities, which are disabled |
+| `FIXED`                                 | Fixed tap and fixed phase shift                                           |
+| `VOLTAGE`                               | Voltage control                                                           |
+| `REACTIVE_POWER_FLOW`                   | Reactive power flow control                                               |
+| `ACTIVE_POWER_FLOW`                     | Active power flow control                                                 |
+| `CONTROL_OF_DC_LINE`                    | Control of a DC line quantity                                             |
+| `ASYMMETRIC_ACTIVE_POWER_FLOW`          | Asymmetric active power flow control                                      |
+
 ## [Dynamic States](@id states_list)
 
 `StateTypes` are used to denote the type of dynamic equation a specific [state](@ref S) is subject
