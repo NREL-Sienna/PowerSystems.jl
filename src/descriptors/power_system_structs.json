@@ -988,7 +988,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1177,7 +1177,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1814,21 +1814,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -2313,21 +2313,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
