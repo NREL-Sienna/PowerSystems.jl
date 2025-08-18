@@ -6,7 +6,7 @@
 
 ## Viewing Components in the System
 
-We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](@ref psb):
+We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable/):
 
 ```@repl system
 using PowerSystems;

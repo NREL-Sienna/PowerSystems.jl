@@ -104,5 +104,5 @@ In this example the anonymous function `x -> strip(string(x["name"])) * "-" * st
 ### See also:
 
   - Parsing [Matpower or PSS/e RAW Files](@ref pm_data)
-  - Parsing [table data (CSV Files)](@ref table_data)
+  - [Build a `System` from CSV files](@ref system_from_csv)
   - Parsing [time series](@ref parsing_time_series)
