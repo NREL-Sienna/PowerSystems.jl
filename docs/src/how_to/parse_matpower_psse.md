@@ -27,7 +27,7 @@ PowerSystems.jl utilizes a data model that bridges the gap between operational s
 
 In PowerSystems v5, we have implemented the following conventions for parsing PSSe files:
 
-  - **BusType correction**: If a bus has a value set to ISOLATED in PSSe, we will confirm that the bus is not entirely disconnected from the network. If the bus is disconnected, it will be set to ISOLATED and set the field available to false. However, if the bus is connected to a generator, we will infer a bus of type PV and set the field 'available' to false. This correction also applies to Matpower. For any other device connected to the bus, we will set it to PQ and set the 'available' field to false. Check [`Understanding ACBusTypes`](@ref bustyped) for a detailed explanation.
+  - **BusType correction**: If a bus has a value set to ISOLATED in PSSe, we will confirm that the bus is not entirely disconnected from the network. If the bus is disconnected, it will be set to ISOLATED and set the field available to false. However, if the bus is connected to a generator, we will infer a bus of type PV and set the field 'available' to false. This correction also applies to Matpower. For any other device connected to the bus, we will set it to PQ and set the 'available' field to false. Check [`Understanding ACBusTypes`](@ref bustypes) for a detailed explanation.
   - **Parsing Synchronous Condensers**: If a generator is connected to a PV Bus with activer power set to 0.0, it will be parsed as a [`SynchronousCondenser`](@ref). This prevents for generators to be modeled as dispatchable [`ThermalStandard`](@ref) when it doesn't apply.
   - **Reading and Storing Transformer Data**: The transformer data is always stored in the devices
     ' base. See [`Transformer per unit transformations`](@ref transformers_pu) for additional details.
@@ -51,5 +51,5 @@ In PowerSystems v5, we have implemented the following conventions for parsing PS
 
   - Parsing [PSS/e .dyr Files](@ref dyr_data), which also includes an example of parsing a
     .raw file
-  - Parsing [table data (CSV Files)](@ref table_data)
+  - [Build a `System` from CSV files](@ref system_from_csv)
   - Parsing [time series](@ref parsing_time_series)
