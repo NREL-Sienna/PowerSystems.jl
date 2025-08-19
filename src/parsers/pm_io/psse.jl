@@ -866,8 +866,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CM" => transformer["CM"],
                     "COD1" => transformer["COD1"],
                     "CONT1" => transformer["CONT1"],
+                    "NOMV1" => transformer["NOMV1"],
+                    "NOMV2" => transformer["NOMV2"],
                     "WINDV1" => transformer["WINDV1"],
                     "WINDV2" => transformer["WINDV2"],
+                    "SBASE1-2" => transformer["SBASE1-2"],
                     "RMI1" => transformer["RMI1"],
                     "RMA1" => transformer["RMA1"],
                     "NTP1" => transformer["NTP1"],
@@ -1404,7 +1407,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "MAG2" => transformer["MAG2"],
                 )
 
-                for prefix in ["COD", "CONT", "RMA", "RMI", "NTP", "VMA", "VMI"]
+                for prefix in [
+                    "COD",
+                    "CONT",
+                    "RMA",
+                    "RMI",
+                    "NTP",
+                    "VMA",
+                    "VMI",
+                    "RATA",
+                    "RATB",
+                    "RATC",
+                ]
                     for i in 1:length(WINDING_NAMES)
                         key = "$prefix$i"
                         sub_data["ext"][key] = transformer[key]
