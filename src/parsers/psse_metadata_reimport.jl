@@ -140,10 +140,6 @@ function parse_export_metadata_dict(md::Dict)
             p_name = replace(p_name, r"[@*]" => "_")
         end
 
-        if sid[1] == "transformer"
-            p_name = String(p_name)
-        end
-
         return get(
             all_branch_name_map,
             ((p_bus_1, p_bus_2), p_name),
