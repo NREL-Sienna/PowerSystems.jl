@@ -11,14 +11,10 @@ to modeling in more detail AC transmission technologies.
 
 The changes are:
 
-  - [AC Branches Type Hierarchy Change](@ref)
-  - [Renamed Types and Parameters](@ref)
-  - [New and Eliminated Types](@ref)
-  - [Updates to Hydro Storage related devices](@ref Hyd_updates)
-  - [Updates to fuel categories](@ref)
-  - [Updates to Transformers](@ref)
-  - [Updates to ACBuses](@ref)
-  - [Updates to parsing PSSe files](@ref)
+```@contents
+Pages = ["migrating_to_psy5.md"]
+Depth = 2
+```
 
 ## AC Branches Type Hierarchy Change
 
