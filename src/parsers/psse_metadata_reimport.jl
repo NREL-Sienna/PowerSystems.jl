@@ -144,7 +144,11 @@ function parse_export_metadata_dict(md::Dict)
             p_name = String(p_name)
         end
 
-        return all_branch_name_map[((p_bus_1, p_bus_2), p_name)]
+        return get(
+            all_branch_name_map,
+            ((p_bus_1, p_bus_2), p_name),
+            "$(p_bus_1)_$(p_bus_2)_$(p_name)",
+        )
     end
 
     function xfrm_3w_name_formatter(
