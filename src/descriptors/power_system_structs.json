@@ -5451,6 +5451,12 @@
                     "data_type": "Bool"
                 },
                 {
+                    "null_value": "false",
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "Bool"
+                },
+                {
                     "name": "bus",
                     "comment": "Bus that this component is connected to",
                     "null_value": "ACBus(nothing)",

@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct HydroDispatch <: HydroGen
         name::String
         available::Bool
+        status::Bool
         bus::ACBus
         active_power::Float64
         reactive_power::Float64
@@ -32,6 +33,7 @@ For hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref)
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
+- `status::Bool`: Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
@@ -53,6 +55,8 @@ mutable struct HydroDispatch <: HydroGen
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
+    "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)"
+    status::Bool
     "Bus that this component is connected to"
     bus::ACBus
     "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
@@ -85,12 +89,12 @@ mutable struct HydroDispatch <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroDispatch(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroDispatch(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroDispatch(; name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroDispatch(name, available, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, internal, )
+function HydroDispatch(; name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroDispatch(name, available, status, bus, active_power, reactive_power, rating, prime_mover_type, active_power_limits, reactive_power_limits, ramp_limits, time_limits, base_power, operation_cost, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -98,6 +102,7 @@ function HydroDispatch(::Nothing)
     HydroDispatch(;
         name="init",
         available=false,
+        status=false,
         bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
@@ -119,6 +124,8 @@ end
 get_name(value::HydroDispatch) = value.name
 """Get [`HydroDispatch`](@ref) `available`."""
 get_available(value::HydroDispatch) = value.available
+"""Get [`HydroDispatch`](@ref) `status`."""
+get_status(value::HydroDispatch) = value.status
 """Get [`HydroDispatch`](@ref) `bus`."""
 get_bus(value::HydroDispatch) = value.bus
 """Get [`HydroDispatch`](@ref) `active_power`."""
@@ -152,6 +159,8 @@ get_internal(value::HydroDispatch) = value.internal
 
 """Set [`HydroDispatch`](@ref) `available`."""
 set_available!(value::HydroDispatch, val) = value.available = val
+"""Set [`HydroDispatch`](@ref) `status`."""
+set_status!(value::HydroDispatch, val) = value.status = val
 """Set [`HydroDispatch`](@ref) `bus`."""
 set_bus!(value::HydroDispatch, val) = value.bus = val
 """Set [`HydroDispatch`](@ref) `active_power`."""
