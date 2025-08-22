@@ -868,6 +868,11 @@ function _is_likely_motor_load(d::Dict, gen_name::Union{SubString{String}, Strin
         @warn "Generator $gen_name is likely a motor load with negative active power: $(d["pg"]) and undefined active power limits \
         this component will be parsed as a thermal generator with negative active power injection. You can convert the device to a MotorLoad for more accurate modeling."
     end
+
+    if d["pmin"] < 0 && d["pmax"] == 0
+        @warn "Generator $gen_name is likely something that is not a ThermalGenerators with negative power limits: (min = $(d["pmin"]), max = $(d["pmax"])) \
+        this component will be parsed as a thermal generator with negative active power limits. Check this entry for more accurate modeling."
+    end
     return
 end
 

@@ -103,7 +103,11 @@ function calculate_gen_rating(
     base_conversion::Float64,
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
-    return calculate_genrating(active_power_limits.max, reactive_power_max, base_conversion)
+    return calculate_gen_rating(
+        active_power_limits.max,
+        reactive_power_max,
+        base_conversion,
+    )
 end
 
 function calculate_gen_rating(
@@ -119,7 +123,10 @@ function calculate_gen_rating(
     return rating * base_conversion
 end
 
-function calculate_ramp_limit(d::Dict{String, Any}, gen_name::String)
+function calculate_ramp_limit(
+    d::Dict{String, Any},
+    gen_name::Union{SubString{String}, String},
+)
     if haskey(d, "ramp_agc")
         return (up = d["ramp_agc"], down = d["ramp_agc"])
     end
