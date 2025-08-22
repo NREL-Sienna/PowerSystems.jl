@@ -5451,12 +5451,6 @@
                     "data_type": "Bool"
                 },
                 {
-                    "null_value": "false",
-                    "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
-                    "data_type": "Bool"
-                },
-                {
                     "name": "bus",
                     "comment": "Bus that this component is connected to",
                     "null_value": "ACBus(nothing)",
@@ -5555,6 +5549,20 @@
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "null_value": "false",
+                    "default": "false",
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "Bool"
+                },
+                {
+                    "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
+                    "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "data_type": "Float64"
                 },
                 {
                     "name": "operation_cost",
@@ -5951,6 +5959,20 @@
                     "validation_action": "warn"
                 },
                 {
+                    "null_value": "false",
+                    "default": "false",
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "Bool"
+                },
+                {
+                    "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
+                    "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "data_type": "Float64"
+                },
+                {
                     "name": "operation_cost",
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
@@ -6000,13 +6022,6 @@
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
-                },
-                {
-                    "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
-                    "null_value": "PrimeMovers.PS",
-                    "data_type": "PrimeMovers",
-                    "default": "PrimeMovers.PS"
                 },
                 {
                     "name": "services",
