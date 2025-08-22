@@ -6516,13 +6516,6 @@
                     "validation_action": "warn"
                 },
                 {
-                    "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "false"
-                },
-                {
                     "name": "active_power_losses",
                     "comment": "Active Power Loss incurred by having the unit online.",
                     "null_value": "0.0",
