@@ -1215,8 +1215,7 @@ function make_synchronous_condenser_generator(
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
-    base_power = gen.base_mva
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
 
     return SynchronousCondenser(;
         name = gen.name,
@@ -1225,7 +1224,7 @@ function make_synchronous_condenser_generator(
         reactive_power = reactive_power,
         rating = rating,
         reactive_power_limits = reactive_power_limits,
-        base_power = base_power,
+        base_power = gen.base_mva,
     )
 end
 
@@ -1239,7 +1238,7 @@ function make_thermal_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
     primemover = parse_enum_mapping(PrimeMovers, gen.unit_type)
@@ -1373,7 +1372,7 @@ function make_hydro_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramp_limits = make_ramplimits(gen)
     min_up_time = gen.min_up_time
     min_down_time = gen.min_down_time
@@ -1433,7 +1432,11 @@ function make_hydro_generator(
                 maxfield = :pump_reactive_power_limits_max,
             )
             pump_rating =
-                calculate_rating(pump_active_power_limits, pump_reactive_power_limits)
+                calculate_gen_rating(
+                    pump_active_power_limits,
+                    pump_reactive_power_limits,
+                    1.0,
+                )
             pump_ramp_limits = make_ramplimits(
                 gen;
                 ramplimcol = :pump_ramp_limits,
@@ -1511,7 +1514,7 @@ function make_renewable_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     base_power = gen.base_mva
     operation_cost = make_cost(RenewableGen, data, gen, cost_colnames)
 
