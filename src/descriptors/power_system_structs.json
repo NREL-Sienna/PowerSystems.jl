@@ -5738,6 +5738,13 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "turbine_type",
+                    "comment": "Type of the turbine",
+                    "null_value": "HydroTurbineType.UNKNOWN",
+                    "data_type": "HydroTurbineType",
+                    "default": "HydroTurbineType.UNKNOWN"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
                     "null_value": "1.0",
