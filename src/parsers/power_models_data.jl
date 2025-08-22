@@ -228,7 +228,7 @@ function _impedance_correction_table_lookup(data::Dict)
     @info "Reading Impedance Correction Table data"
     if !haskey(data, "impedance_correction")
         @info "There is no Impedance Correction Table data in this file"
-        return
+        return ict_instances
     end
 
     for (table_number, table_data) in data["impedance_correction"]
@@ -278,11 +278,12 @@ function _attach_single_ict!(
     d::Dict,
     table_key::String,
     winding_idx::WindingCategory,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
+    if isempty(ict_instances)
+        @info "No Impedance Correction Tables found."
+        return
+    end
     if haskey(d, table_key)
         table_number = d[table_key]
         cache_key = (table_number, winding_idx)
@@ -290,9 +291,10 @@ function _attach_single_ict!(
             ict = ict_instances[cache_key]
             add_supplemental_attribute!(sys, transformer, ict)
         else
-            @info "No correction table associated with transformer $name for winding $winding_idx."
+            @debug "No correction table associated with transformer $name for winding $winding_idx."
         end
     end
+    return
 end
 
 """
@@ -303,10 +305,7 @@ function _attach_impedance_correction_tables!(
     transformer::Transformer2W,
     name::String,
     d::Dict,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     _attach_single_ict!(
         sys,
@@ -317,6 +316,7 @@ function _attach_impedance_correction_tables!(
         WindingCategory.TR2W_WINDING,
         ict_instances,
     )
+    return
 end
 
 """
@@ -327,16 +327,18 @@ function _attach_impedance_correction_tables!(
     transformer::ThreeWindingTransformer,
     name::String,
     d::Dict,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
+    if isempty(ict_instances)
+        @info "No Impedance Correction Tables found."
+        return
+    end
     for winding_category in instances(WindingCategory)
         winding_category == WindingCategory.TR2W_WINDING && continue
         key = "$(WINDING_NAMES[winding_category])_correction_table"
         _attach_single_ict!(sys, transformer, name, d, key, winding_category, ict_instances)
     end
+    return
 end
 
 """
@@ -721,7 +723,6 @@ function make_hydro_gen(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
     if d["mbase"] != 0.0
@@ -738,7 +739,7 @@ function make_hydro_gen(
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
@@ -748,7 +749,7 @@ function make_hydro_gen(
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
         ),
-        ramp_limits = (up = ramp_agc, down = ramp_agc),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
         time_limits = nothing,
         operation_cost = curtailcost,
         base_power = mbase,
@@ -772,7 +773,7 @@ function make_renewable_dispatch(
 
     base_conversion = sys_mbase / mbase
 
-    rating = calculate_rating(d["pmax"], d["qmax"])
+    rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion)
     if rating > mbase
         @warn "rating is larger than base power for $gen_name, setting to $mbase"
         rating = mbase
@@ -928,9 +929,6 @@ function make_thermal_gen(
         shutdn = tmpcost.shut_down
     end
 
-    # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
-    ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
-
     operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
@@ -968,7 +966,7 @@ function make_thermal_gen(
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         fuel = parse_enum_mapping(ThermalFuels, d["fuel"]),
         active_power_limits = (
@@ -979,7 +977,7 @@ function make_thermal_gen(
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
         ),
-        ramp_limits = (up = ramp_lim, down = ramp_lim),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
