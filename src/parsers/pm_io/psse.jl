@@ -294,7 +294,7 @@ end
 Returns `true` if the generator described by `sub_data` and `pm_data` meets the criteria for a synchronous condenser.
 """
 function _is_synch_condenser(sub_data::Dict{String, Any}, pm_data::Dict{String, Any})
-    is_available = sub_data["available"]
+    is_available = sub_data["gen_status"] == 1 ? true : false
     is_zero_pg = sub_data["pg"] == 0.0
     zero_control_mode = sub_data["m_control_mode"] == 0
     is_pv_bus = pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2
