@@ -5959,11 +5959,12 @@
                     "validation_action": "warn"
                 },
                 {
-                    "null_value": "false",
-                    "default": "false",
+
+                    "null_value": "PumpHydroStatus.OFF",
+                    "default": "PumpHydroStatus.OFF",
                     "name": "status",
-                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
-                    "data_type": "Bool"
+                    "comment": "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference",
+                    "data_type": "PumpHydroStatus"
                 },
                 {
                     "null_value": "INFINITE_TIME",
@@ -6015,13 +6016,6 @@
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "default": "1.0"
-                },
-                {
-                    "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "false"
                 },
                 {
                     "name": "services",
