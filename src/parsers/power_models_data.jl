@@ -231,8 +231,8 @@ function _impedance_correction_table_lookup(data::Dict)
         return
     end
 
-    for (table_number, table_data) in data["impedance_correction"]
-        table_number = parse(Int64, table_number)
+    for (_, table_data) in data["impedance_correction"]
+        table_number = table_data["table_number"]
         x = table_data["tap_or_angle"]
         y = table_data["scaling_factor"]
 
