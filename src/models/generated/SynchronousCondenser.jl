@@ -13,7 +13,6 @@ This file is auto-generated. Do not edit.
         rating::Float64
         reactive_power_limits::Union{Nothing, MinMax}
         base_power::Float64
-        must_run::Bool
         active_power_losses::Float64
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
@@ -31,7 +30,6 @@ A Synchronous Machine connected to the system to provide inertia or reactive pow
 - `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
-- `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
 - `active_power_losses::Float64`: (default: `0.0`) Active Power Loss incurred by having the unit online., validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -53,8 +51,6 @@ mutable struct SynchronousCondenser <: StaticInjection
     reactive_power_limits::Union{Nothing, MinMax}
     "Base power of the unit (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "Set to `true` if the unit is must run"
-    must_run::Bool
     "Active Power Loss incurred by having the unit online."
     active_power_losses::Float64
     "Services that this device contributes to"
@@ -67,12 +63,12 @@ mutable struct SynchronousCondenser <: StaticInjection
     internal::InfrastructureSystemsInternal
 end
 
-function SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, must_run=false, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, must_run, active_power_losses, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function SynchronousCondenser(; name, available, bus, reactive_power, rating, reactive_power_limits, base_power, must_run=false, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, must_run, active_power_losses, services, dynamic_injector, ext, internal, )
+function SynchronousCondenser(; name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SynchronousCondenser(name, available, bus, reactive_power, rating, reactive_power_limits, base_power, active_power_losses, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -85,7 +81,6 @@ function SynchronousCondenser(::Nothing)
         rating=0.0,
         reactive_power_limits=nothing,
         base_power=0.0,
-        must_run=false,
         active_power_losses=0.0,
         services=Device[],
         dynamic_injector=nothing,
@@ -107,8 +102,6 @@ get_rating(value::SynchronousCondenser) = get_value(value, Val(:rating), Val(:mv
 get_reactive_power_limits(value::SynchronousCondenser) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`SynchronousCondenser`](@ref) `base_power`."""
 get_base_power(value::SynchronousCondenser) = value.base_power
-"""Get [`SynchronousCondenser`](@ref) `must_run`."""
-get_must_run(value::SynchronousCondenser) = value.must_run
 """Get [`SynchronousCondenser`](@ref) `active_power_losses`."""
 get_active_power_losses(value::SynchronousCondenser) = get_value(value, Val(:active_power_losses), Val(:mva))
 """Get [`SynchronousCondenser`](@ref) `services`."""
@@ -132,8 +125,6 @@ set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, 
 set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `base_power`."""
 set_base_power!(value::SynchronousCondenser, val) = value.base_power = val
-"""Set [`SynchronousCondenser`](@ref) `must_run`."""
-set_must_run!(value::SynchronousCondenser, val) = value.must_run = val
 """Set [`SynchronousCondenser`](@ref) `active_power_losses`."""
 set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `services`."""
