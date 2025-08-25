@@ -66,7 +66,6 @@ function name_formatter_from_component_ids(raw_name_mapping, bus_number_mapping,
         deserialize_reverse_component_ids(raw_name_mapping, bus_number_mapping, sig)
     function component_id_formatter(device_dict)
         (p_bus_n, p_name) = device_dict["source_id"][2:3]
-        p_name = string(p_name)
         (p_bus_n isa Integer) || (p_bus_n = parse(Int64, p_bus_n))
         new_name = reversed_name_mapping[(p_bus_n, p_name)]
         return new_name
@@ -78,7 +77,6 @@ end
 function remap_bus_numbers!(sys::System, bus_number_mapping)
     for bus in collect(get_components(Bus, sys))
         old_number = get_number(bus)
-        # new_number = parse(Int, bus_number_mapping[old_number])
         new_number_str = get(bus_number_mapping, old_number, string(old_number))
         new_number = parse(Int, new_number_str)
         if new_number != old_number
@@ -107,6 +105,7 @@ function parse_export_metadata_dict(md::Dict)
         Tuple{Int64, Int64},
     )
 
+    # bus_name_formatter = device_dict -> bus_name_map[device_dict["name"]]
     bus_name_formatter = device_dict -> begin
         name = device_dict["name"]
         if startswith(name, "starbus_")
