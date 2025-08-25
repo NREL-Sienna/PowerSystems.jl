@@ -1,5 +1,7 @@
 abstract type Outage <: Contingency end
 
+abstract type UnplannedOutage <: Outage end
+
 supports_time_series(::Outage) = true
 
 """Get `internal`."""
@@ -15,7 +17,7 @@ series.
 - `outage_transition_probability::Float64`: Characterizes the probability of failure (1 - p) in the geometric distribution.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-struct GeometricDistributionForcedOutage <: Outage
+struct GeometricDistributionForcedOutage <: UnplannedOutage
     mean_time_to_recovery::Float64
     outage_transition_probability::Float64
     internal::InfrastructureSystemsInternal
@@ -73,7 +75,7 @@ The time series data for fixed outages can be obtained from the simulation of a 
 - `outage_status::String`: The forced outage status in the model. 1 represents outaged and 0 represents available.
 - `internal::InfrastructureSystemsInternal`: power system internal reference, do not modify
 """
-struct FixedForcedOutage <: Outage
+struct FixedForcedOutage <: UnplannedOutage
     outage_status::Float64
     internal::InfrastructureSystemsInternal
 end
