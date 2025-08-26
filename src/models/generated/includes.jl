@@ -772,6 +772,7 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
+export get_turbine_type
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1448,6 +1449,7 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
+export set_turbine_type!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!

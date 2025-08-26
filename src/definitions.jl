@@ -183,6 +183,20 @@ IS.@scoped_enum(
     OTHER_THERM = 11, # Thermal Storage
 )
 
+"""
+PumpHydroStatus
+
+Operating status of a pumped‑storage hydro unit.
+
+Values
+- OFF = 0: Unit is idle — neither generating nor pumping.
+- GEN = 1: Generating mode (turbine operation), producing active power.
+- PUMP = -1: Pumping mode, consuming active power to store energy.
+
+Notes
+- The sign of the value reflects the net direction of active power (positive = generation, negative = pumping).
+- Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
+"""
 IS.@scoped_enum(
     PumpHydroStatus,
     OFF = 0,
@@ -192,12 +206,61 @@ IS.@scoped_enum(
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
+"""
+ReservoirDataType
+
+Enumeration of reservoir accounting unit classes.
+
+This enum identifies the type of data recorded or tracked for a reservoir. Use these values when specifying
+the kind of measurement or accounting quantity associated with a reservoir (for example in time series,
+storage models, reporting, or data exchange).
+
+Values
+- USABLE_VOLUME: Volume available for operations and dispatch (active storage). Typically reported in cubic meters (m³) or other volumetric units.
+- TOTAL_VOLUME: Total reservoir volume including dead and active storage. Reported in the same volumetric units as USABLE_VOLUME.
+- HEAD: Hydraulic head or water surface elevation relative to a datum, typically reported in meters (m).
+- ENERGY: Stored or deliverable energy associated with the reservoir (e.g., potential energy or expected generation), often expressed in MWh, GWh, or joules.
+"""
 IS.@scoped_enum(
     ReservoirDataType,
     USABLE_VOLUME = 1,
     TOTAL_VOLUME = 2,
     HEAD = 3,
     ENERGY = 4,
+)
+
+"""
+Enumeration of hydro turbine types supported in `PowerSystems.jl`.
+
+This type is used to categorize hydroelectric generators by their
+turbine design and operating head. It provides a standardized set
+of turbine types to ensure consistent modeling and data handling
+across different systems.
+
+# Values
+- `UNKNOWN`   : Default value when the turbine type is not specified.
+- `PELTON`    : Impulse turbine, typically used for high-head, low-flow sites.
+- `FRANCIS`   : Reaction turbine, widely used for medium-head applications.
+- `KAPLAN`    : Adjustable-blade propeller turbine for low-head, high-flow sites.
+- `TURGO`     : Impulse turbine similar to Pelton but suitable for higher flow rates.
+- `CROSSFLOW` : Banki-Michell (crossflow) impulse turbine, robust for small hydro.
+- `BULB`      : Compact Kaplan variant, typically installed in low-head run-of-river plants.
+- `DERIAZ`    : Diagonal flow reaction turbine with variable pitch blades.
+- `PROPELLER` : Fixed-blade propeller turbine, simpler than Kaplan but less efficient at part load.
+- `OTHER`     : Placeholder for less common or custom turbine designs.
+"""
+IS.@scoped_enum(
+    HydroTurbineType,
+    UNKNOWN = 0,          # Default / unspecified
+    PELTON = 1,           # Impulse turbine for high head
+    FRANCIS = 2,          # Reaction turbine for medium head
+    KAPLAN = 3,           # Propeller-type turbine for low head
+    TURGO = 4,            # Impulse turbine similar to Pelton
+    CROSSFLOW = 5,        # Banki-Michell (crossflow) turbine
+    BULB = 6,             # Kaplan variation for very low head
+    DERIAZ = 7,           # Diagonal flow turbine
+    PROPELLER = 8,        # Simple propeller turbine
+    OTHER = 9             # Catch-all for less common designs
 )
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))

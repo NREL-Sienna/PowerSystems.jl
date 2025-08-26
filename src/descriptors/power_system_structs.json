@@ -5551,6 +5551,20 @@
                     "validation_action": "warn"
                 },
                 {
+                    "null_value": "false",
+                    "default": "false",
+                    "name": "status",
+                    "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
+                    "data_type": "Bool"
+                },
+                {
+                    "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
+                    "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "data_type": "Float64"
+                },
+                {
                     "name": "operation_cost",
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
@@ -5736,6 +5750,13 @@
                         "max": 1
                     },
                     "validation_action": "warn"
+                },
+                {
+                    "name": "turbine_type",
+                    "comment": "Type of the turbine",
+                    "null_value": "HydroTurbineType.UNKNOWN",
+                    "data_type": "HydroTurbineType",
+                    "default": "HydroTurbineType.UNKNOWN"
                 },
                 {
                     "name": "conversion_factor",
@@ -5938,6 +5959,21 @@
                     "validation_action": "warn"
                 },
                 {
+
+                    "null_value": "PumpHydroStatus.OFF",
+                    "default": "PumpHydroStatus.OFF",
+                    "name": "status",
+                    "comment": "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference",
+                    "data_type": "PumpHydroStatus"
+                },
+                {
+                    "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
+                    "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "data_type": "Float64"
+                },
+                {
                     "name": "operation_cost",
                     "null_value": "HydroGenerationCost(nothing)",
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
@@ -5980,20 +6016,6 @@
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "default": "1.0"
-                },
-                {
-                    "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "false"
-                },
-                {
-                    "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
-                    "null_value": "PrimeMovers.PS",
-                    "data_type": "PrimeMovers",
-                    "default": "PrimeMovers.PS"
                 },
                 {
                     "name": "services",
@@ -6514,13 +6536,6 @@
                         "max": null
                     },
                     "validation_action": "warn"
-                },
-                {
-                    "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "false"
                 },
                 {
                     "name": "active_power_losses",
