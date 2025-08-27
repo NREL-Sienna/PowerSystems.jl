@@ -294,15 +294,19 @@ end
 Returns `true` if the generator described by `sub_data` and `pm_data` meets the criteria for a synchronous condenser.
 """
 function _is_synch_condenser(sub_data::Dict{String, Any}, pm_data::Dict{String, Any})
-    is_available = sub_data["gen_status"] == 1 ? true : false
     is_zero_pg = sub_data["pg"] == 0.0
-    zero_control_mode = sub_data["m_control_mode"] == 0
-    is_pv_bus = pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2
     has_q_limits = (sub_data["qmax"] != 0.0 || sub_data["qmin"] != 0.0)
     has_zero_p_limits = (sub_data["pmax"] == 0.0 && sub_data["pmin"] == 0.0)
+    zero_control_mode = sub_data["m_control_mode"] == 0
+    is_pv_bus = pm_data["bus"][sub_data["gen_bus"]]["bus_type"] == 2
 
-    return zero_control_mode && is_zero_pg && is_pv_bus && has_q_limits &&
-           has_zero_p_limits && is_available
+    if is_zero_pg && has_q_limits && has_zero_p_limits && zero_control_mode
+        if !is_pv_bus
+            @warn "Generator $(sub_data["gen_bus"]) is likely a synchronous condenser but not connected to a PV bus."
+        end
+        return true
+    end
+    return false
 end
 
 """
@@ -353,7 +357,6 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "RMPCT" => pop!(gen, "RMPCT"),
                 )
             else
-                @show pm_data["source_version"] ∈ ("32", "33")
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
