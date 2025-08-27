@@ -210,6 +210,8 @@ Prime movers are the engines, turbines, water wheels, or similar machines that d
 electric generators or provide mechanical energy for other purposes. This enumeration
 provides standardized codes for different types of prime movers used in power plants.
 
+PVe is used for photovoltaic systems renaming from EIA PV to avoid conflict with BusType.PV
+
 # References
 - [EIA Form 923 Instructions](https://www.eia.gov/survey/form/eia_923/instructions.pdf)
 
