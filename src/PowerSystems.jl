@@ -323,6 +323,7 @@ export StorageTech
 export StateTypes
 export ReservoirDataType
 export MotorLoadTechnology
+export HydroTurbineType
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation

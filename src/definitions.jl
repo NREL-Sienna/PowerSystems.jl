@@ -102,6 +102,16 @@ IS.@scoped_enum(
     BREAKER = 1,
     OTHER = 2,
 )
+@doc"
+    DiscreteControlledBranchType
+
+An enumeration representing different types of discrete controlled branches in power systems.
+
+# Values
+- `SWITCH = 0`: Represents a switch device that can be opened or closed
+- `BREAKER = 1`: Represents a circuit breaker that can interrupt current flow
+- `OTHER = 2`: Represents other types of discrete controlled branch devices
+" DiscreteControlledBranchType
 
 IS.@scoped_enum(
     DiscreteControlledBranchStatus,
@@ -132,8 +142,21 @@ IS.@scoped_enum(
     SECONDARY_WINDING = 2,  # Secondary winding of Trasnformer3W associated with a TICT
     TERTIARY_WINDING = 3,   # Tertiary winding of Trasnformer3W associated with a TICT
 )
+@doc"
+    WindingCategory
 
-# valid clock numbers are: 0, 1, 5, 6, 7, 11
+An enumeration representing different types of transformer windings used in power system analysis.
+
+# Values
+- `TR2W_WINDING = 0`: Winding associated with a two-winding transformer (Transformer2W) connected to a tap-changing transformer (TICT)
+- `PRIMARY_WINDING = 1`: Primary winding of a three-winding transformer (Transformer3W) associated with a TICT
+- `SECONDARY_WINDING = 2`: Secondary winding of a three-winding transformer (Transformer3W) associated with a TICT
+- `TERTIARY_WINDING = 3`: Tertiary winding of a three-winding transformer (Transformer3W) associated with a TICT
+
+This enumeration is used to categorize transformer windings based on their role and configuration
+in the power system model, particularly in relation to tap-changing transformers.
+" WindingCategory
+
 IS.@scoped_enum(
     WindingGroupNumber,
     UNDEFINED = -99,
@@ -144,6 +167,27 @@ IS.@scoped_enum(
     GROUP_7 = 7, # 150 Degrees
     GROUP_11 = 11, # 30 Degrees
 )
+@doc"
+    WindingGroupNumber
+
+Enumeration defining transformer winding group numbers based on IEC 60076-1 standard.
+These numbers represent the phase displacement between primary and secondary windings
+of three-phase transformers.
+
+# Valid Values
+- `UNDEFINED = -99`: Undefined or unspecified winding group
+- `GROUP_0 = 0`: 0° phase displacement (Yy0, Dd0, Dz0)
+- `GROUP_1 = 1`: -30° phase displacement (Yy1, Dd1, Dz1)
+- `GROUP_5 = 5`: -150° phase displacement (Yy5, Dd5, Dz5)
+- `GROUP_6 = 6`: 180° phase displacement (Yy6, Dd6, Dz6)
+- `GROUP_7 = 7`: 150° phase displacement (Yy7, Dd7, Dz7)
+- `GROUP_11 = 11`: 30° phase displacement (Yy11, Dd11, Dz11)
+
+# Notes
+The phase displacement is measured from the primary to secondary winding, with
+positive angles representing a lead and negative angles representing a lag.
+Clock notation follows the convention where each hour represents 30°.
+" WindingGroupNumber
 
 IS.@scoped_enum(
     ImpedanceCorrectionTransformerControlMode,
@@ -166,6 +210,33 @@ IS.@scoped_enum(
     CONTROL_OF_DC_LINE = 4,
     ASYMMETRIC_ACTIVE_POWER_FLOW = 5,
 )
+@doc"
+    TransformerControlObjective
+
+Enumeration of transformer control objectives based on PSS/E COD1 and COD2 fields.
+
+This enumeration defines the control modes for transformer tap changers and phase shifters
+as specified in the PSS/E-35 manual.
+
+# Values
+- `UNDEFINED = -99`: Undefined control objective
+- `VOLTAGE_DISABLED = -1`: Voltage control disabled
+- `REACTIVE_POWER_FLOW_DISABLED = -2`: Reactive power flow control disabled
+- `ACTIVE_POWER_FLOW_DISABLED = -3`: Active power flow control disabled
+- `CONTROL_OF_DC_LINE_DISABLED = -4`: DC line control disabled
+- `ASYMMETRIC_ACTIVE_POWER_FLOW_DISABLED = -5`: Asymmetric active power flow control disabled
+- `FIXED = 0`: Fixed tap position (no automatic control)
+- `VOLTAGE = 1`: Voltage magnitude control at controlled bus
+- `REACTIVE_POWER_FLOW = 2`: Reactive power flow control through the transformer
+- `ACTIVE_POWER_FLOW = 3`: Active power flow control through the transformer
+- `CONTROL_OF_DC_LINE = 4`: Control of DC transmission line
+- `ASYMMETRIC_ACTIVE_POWER_FLOW = 5`: Asymmetric active power flow control
+
+# Notes
+Negative values indicate disabled control modes, while positive values represent active
+control objectives. The `FIXED` mode (0) indicates manual tap position control without
+automatic adjustment.
+" TransformerControlObjective
 
 IS.@scoped_enum(
     MotorLoadTechnology,
@@ -173,6 +244,16 @@ IS.@scoped_enum(
     SYNCHRONOUS = 2,
     UNDETERMINED = 3,
 )
+@doc"
+    MotorLoadTechnology
+
+An enumeration representing different motor load technologies used in industrial applications.
+
+# Values
+- `INDUCTION`: Induction motor technology, commonly used for general-purpose applications
+- `SYNCHRONOUS`: Synchronous motor technology, used for applications requiring constant speed
+- `UNDETERMINED`: Motor technology type is not specified or unknown
+" MotorLoadTechnology
 
 IS.@scoped_enum(
     PrimeMovers,
@@ -374,6 +455,8 @@ IS.@scoped_enum(
     OTHER = 9             # Catch-all for less common designs
 )
 @doc"
+    HydroTurbineType
+
 Enumeration of hydro turbine types supported in `PowerSystems.jl`.
 
 This type is used to categorize hydroelectric generators by their
