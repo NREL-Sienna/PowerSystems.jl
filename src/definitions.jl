@@ -215,7 +215,7 @@ provides standardized codes for different types of prime movers used in power pl
 
 # See Also
 - [`ThermalStandard`](@ref): Uses prime mover information for generator specifications
-- [`ThermalGen`](@ref): Thermal generators with specific prime mover types
+- [`ThermalMultiStart`](@ref): Uses prime mover information for generator specifications
 " PrimeMovers
 
 IS.@scoped_enum(
