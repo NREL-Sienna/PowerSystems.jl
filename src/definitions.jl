@@ -13,9 +13,12 @@ const StartUpStages = NamedTuple{(:hot, :warm, :cold), NTuple{3, Float64}}
 single_start_up_to_stages(start_up::Real) =
     (hot = Float64(start_up), warm = 0.0, cold = 0.0)
 
-"From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-4"
-
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
+@doc"
+    GeneratorCostModel
+
+Enumeration representing different cost models for generators in power system analysis.
+" GeneratorCostModels
 
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
 @doc"
@@ -80,6 +83,18 @@ IS.@scoped_enum(
     NML = 1, # Normal mode of operation, where Series and Shunt links are operating.
     BYP = 2, # Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM.
 )
+@doc"
+    FACTSOperationModes
+
+Enumeration defining the operational modes for FACTS (Flexible AC Transmission System) devices.
+Based on PSSE POM v33 Manual specifications.
+
+# Values
+- `OOS = 0`: Out-of-service mode where both Series and Shunt links are open
+- `NML = 1`: Normal mode of operation where both Series and Shunt links are operating
+- `BYP = 2`: Bypass mode where Series link is bypassed (acts like zero impedance line)
+  and Shunt link operates as a STATCOM
+" FACTSOperationModes
 
 IS.@scoped_enum(
     DiscreteControlledBranchType,
@@ -159,8 +174,6 @@ IS.@scoped_enum(
     UNDETERMINED = 3,
 )
 
-"From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
-
 IS.@scoped_enum(
     PrimeMovers,
     BA = 1,  # Energy Storage, Battery
@@ -187,8 +200,23 @@ IS.@scoped_enum(
     WT = 22,  # Wind Turbine, Onshore
     WS = 23,  # Wind Turbine, Offshore
 )
+@doc"
+    PrimeMovers
 
-"AER Aggregated Fuel Code From https://www.eia.gov/survey/form/eia_923/instructions.pdf"
+Enumeration of prime mover types used in electric power generation, as defined by the
+U.S. Energy Information Administration (EIA) Form 923 instructions.
+
+Prime movers are the engines, turbines, water wheels, or similar machines that drive
+electric generators or provide mechanical energy for other purposes. This enumeration
+provides standardized codes for different types of prime movers used in power plants.
+
+# References
+- [EIA Form 923 Instructions](https://www.eia.gov/survey/form/eia_923/instructions.pdf)
+
+# See Also
+- [`ThermalStandard`](@ref): Uses prime mover information for generator specifications
+- [`ThermalGen`](@ref): Thermal generators with specific prime mover types
+" PrimeMovers
 
 IS.@scoped_enum(
     ThermalFuels,
@@ -228,6 +256,26 @@ IS.@scoped_enum(
     OTHER = 35,  # OTH
 )
 
+@doc"
+    ThermalFuels
+
+Enumeration of thermal fuel types based on AER (Aggregated Energy Reporting) fuel codes
+as defined by the U.S. Energy Information Administration (EIA) Form 923.
+
+The fuel codes represent standardized categories for reporting fuel consumption in
+electric power generation, covering major thermal fuel types including:
+
+- Coal and coal-derived fuels
+- Natural gas and petroleum products
+- Nuclear fuel
+- Biomass and waste fuels
+- Other thermal energy sources
+
+Reference: EIA Form 923 Instructions (https://www.eia.gov/survey/form/eia_923/instructions.pdf)
+
+See also: [`ThermalStandard`](@ref)
+" ThermalFuels
+
 IS.@scoped_enum(
     StorageTech,
     PTES = 1, # Pumped thermal energy storage
@@ -242,6 +290,27 @@ IS.@scoped_enum(
     OTHER_MECH = 10, # Mechanical Storage
     OTHER_THERM = 11, # Thermal Storage
 )
+@doc"
+    StorageTech
+
+Enumeration of energy storage technologies used in power systems.
+
+# Values
+- `PTES`: Pumped thermal energy storage
+- `LIB`: Lithium-ion Battery
+- `LAB`: Lead Acid Battery
+- `FLWB`: Redox Flow Battery
+- `SIB`: Sodium Ion Battery
+- `ZIB`: Zinc Ion Battery
+- `HGS`: Hydrogen Gas Storage
+- `LAES`: Liquid Air Energy Storage
+- `OTHER_CHEM`: Chemical Storage (other than specified)
+- `OTHER_MECH`: Mechanical Storage (other than specified)
+- `OTHER_THERM`: Thermal Storage (other than specified)
+
+This enumeration is used to classify different types of energy storage systems
+based on their underlying technology and storage mechanism.
+" StorageTech
 
 IS.@scoped_enum(
     PumpHydroStatus,
@@ -249,7 +318,6 @@ IS.@scoped_enum(
     GEN = 1,
     PUMP = -1,
 )
-
 @doc"
 PumpHydroStatus
 
@@ -274,7 +342,6 @@ IS.@scoped_enum(
     HEAD = 3,
     ENERGY = 4,
 )
-
 @doc"
 ReservoirDataType
 
@@ -304,7 +371,6 @@ IS.@scoped_enum(
     PROPELLER = 8,        # Simple propeller turbine
     OTHER = 9             # Catch-all for less common designs
 )
-
 @doc"
 Enumeration of hydro turbine types supported in `PowerSystems.jl`.
 
