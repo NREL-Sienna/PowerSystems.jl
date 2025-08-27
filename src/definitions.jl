@@ -18,9 +18,53 @@ single_start_up_to_stages(start_up::Real) =
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
+@doc"
+AngleUnits
 
-# "From http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf Table B-1"
+An enumeration of angular measurement units used throughout the PowerSystems package.
+
+Values
+- `DEGREES`: Angles expressed in degrees.
+- `RADIANS`: Angles expressed in radians.
+
+Usage
+Use `AngleUnits` to make unit semantics explicit for functions, fields, and APIs that accept or return angular values. When performing trigonometric calculations with Base functions (`sin`, `cos`, etc.), convert degrees to radians (e.g., `θ * π/180`) if the unit is `DEGREES`.
+
+Examples
+julia> unit = AngleUnits.DEGREES
+AngleUnits.DEGREES
+
+julia> θ = 30.0
+julia> θ_rad = unit == AngleUnits.DEGREES ? θ * (π/180) : θ
+" AngleUnits
+
 IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
+@doc"
+ACBusTypes
+
+Enumeration of AC power system bus types (MATPOWER Table B‑1).
+Each variant corresponds to a standard bus classification used in power flow
+and steady‑state network models:
+
+- PQ (1): Load bus — active (P) and reactive (Q) power injections are specified;
+    the bus voltage magnitude and angle are solved by the power‑flow algorithm.
+- PV (2): Generator (PV) bus — active power (P) and voltage magnitude (V) are
+    specified; reactive power (Q) and voltage angle are solved.
+- REF (3): Reference bus — a named reference for the system voltage angle; often
+    equivalent to a slack bus in semantics but provided separately for clarity.
+- ISOLATED (4): Isolated bus — not connected to the main network (islanded or
+    disconnected); typically excluded from the global power‑flow solution.
+- SLACK (5): Slack bus — balances the system active and reactive power mismatch
+    and sets the reference voltage angle (commonly one per connected network).
+
+Notes
+- Numeric values follow the MATPOWER convention for bus type codes.
+- Use the enum members (e.g., `ACBusTypes.PQ`, `ACBusTypes.SLACK`) when
+    constructing or interpreting network data structures to ensure clarity and
+    compatibility with MATPOWER-based data conventions.
+
+Reference: MATPOWER manual, Table B‑1 (http://www.pserc.cornell.edu/matpower/MATPOWER-manual.pdf).
+" ACBusTypes
 
 IS.@scoped_enum(
     LoadConformity,
@@ -49,6 +93,22 @@ IS.@scoped_enum(
     OPEN = 0,
     CLOSED = 1,
 )
+@doc"
+DiscreteControlledBranchStatus
+
+Enumeration describing the controlled (commanded) status of a branch device
+(such as a breaker or a switch) in a power system model.
+
+Values
+- OPEN = 0: The device is open (interrupting state) — the branch is non-conducting.
+- CLOSED = 1: The device is closed (conducting state) — the branch provides a normal conduction path.
+
+Notes
+- This enum represents the intended or commanded state used by control and protection
+    logic; it may differ from actual measured/telemetry state during faults or failures.
+- The integer encoding (0/1) is chosen for compact storage and interop with serialization
+    or external data formats.
+" DiscreteControlledBranchStatus
 
 IS.@scoped_enum(
     WindingCategory,
@@ -183,7 +243,14 @@ IS.@scoped_enum(
     OTHER_THERM = 11, # Thermal Storage
 )
 
-"""
+IS.@scoped_enum(
+    PumpHydroStatus,
+    OFF = 0,
+    GEN = 1,
+    PUMP = -1,
+)
+
+@doc"
 PumpHydroStatus
 
 Operating status of a pumped‑storage hydro unit.
@@ -196,17 +263,19 @@ Values
 Notes
 - The sign of the value reflects the net direction of active power (positive = generation, negative = pumping).
 - Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
-"""
-IS.@scoped_enum(
-    PumpHydroStatus,
-    OFF = 0,
-    GEN = 1,
-    PUMP = -1,
-)
+" PumpHydroStatus
 
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
-"""
+IS.@scoped_enum(
+    ReservoirDataType,
+    USABLE_VOLUME = 1,
+    TOTAL_VOLUME = 2,
+    HEAD = 3,
+    ENERGY = 4,
+)
+
+@doc"
 ReservoirDataType
 
 Enumeration of reservoir accounting unit classes.
@@ -220,16 +289,23 @@ Values
 - TOTAL_VOLUME: Total reservoir volume including dead and active storage. Reported in the same volumetric units as USABLE_VOLUME.
 - HEAD: Hydraulic head or water surface elevation relative to a datum, typically reported in meters (m).
 - ENERGY: Stored or deliverable energy associated with the reservoir (e.g., potential energy or expected generation), often expressed in MWh, GWh, or joules.
-"""
+" ReservoirDataType
+
 IS.@scoped_enum(
-    ReservoirDataType,
-    USABLE_VOLUME = 1,
-    TOTAL_VOLUME = 2,
-    HEAD = 3,
-    ENERGY = 4,
+    HydroTurbineType,
+    UNKNOWN = 0,          # Default / unspecified
+    PELTON = 1,           # Impulse turbine for high head
+    FRANCIS = 2,          # Reaction turbine for medium head
+    KAPLAN = 3,           # Propeller-type turbine for low head
+    TURGO = 4,            # Impulse turbine similar to Pelton
+    CROSSFLOW = 5,        # Banki-Michell (crossflow) turbine
+    BULB = 6,             # Kaplan variation for very low head
+    DERIAZ = 7,           # Diagonal flow turbine
+    PROPELLER = 8,        # Simple propeller turbine
+    OTHER = 9             # Catch-all for less common designs
 )
 
-"""
+@doc"
 Enumeration of hydro turbine types supported in `PowerSystems.jl`.
 
 This type is used to categorize hydroelectric generators by their
@@ -248,20 +324,7 @@ across different systems.
 - `DERIAZ`    : Diagonal flow reaction turbine with variable pitch blades.
 - `PROPELLER` : Fixed-blade propeller turbine, simpler than Kaplan but less efficient at part load.
 - `OTHER`     : Placeholder for less common or custom turbine designs.
-"""
-IS.@scoped_enum(
-    HydroTurbineType,
-    UNKNOWN = 0,          # Default / unspecified
-    PELTON = 1,           # Impulse turbine for high head
-    FRANCIS = 2,          # Reaction turbine for medium head
-    KAPLAN = 3,           # Propeller-type turbine for low head
-    TURGO = 4,            # Impulse turbine similar to Pelton
-    CROSSFLOW = 5,        # Banki-Michell (crossflow) turbine
-    BULB = 6,             # Kaplan variation for very low head
-    DERIAZ = 7,           # Diagonal flow turbine
-    PROPELLER = 8,        # Simple propeller turbine
-    OTHER = 9             # Catch-all for less common designs
-)
+" HydroTurbineType
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 const DEFAULT_BASE_MVA = 100.0
