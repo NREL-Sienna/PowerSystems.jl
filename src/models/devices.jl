@@ -195,40 +195,56 @@ end
 """
 Check if a device has attribute 'active_power' for active power consumption or generation.
 """
-function supports_active_power_injecton(::T) where {T <: Device}
+function supports_active_power(::T) where {T <: Device}
     throw(
         IS.NotImplementedError(
-            "supports_active_power_injecton not implemented for this device type $(T)",
+            "supports_active_power not implemented for this device type $(T)",
         ),
     )
 end
 
-"""
-Most Generator models have active power consumption or generation, so return true
-"""
-supports_active_power_injecton(::Generator) = true
+function active_power_contribution_sign(::T) where {T <: Device}
+    throw(
+        IS.NotImplementedError(
+            "active_power_contribution_sign not implemented for this device type $(T)",
+        ),
+    )
+end
 
-"""
-Most Load models have active power consumption or generation, so return true
-"""
-supports_active_power_injecton(::ElectricLoad) = true
+# most static components inject power
+supports_active_power(::StaticInjection) = true
+active_power_contribution_sign(::StaticInjection) = 1
+# carve out the exceptions: we handle constant impedance/current loads separately
+supports_active_power(::SynchronousCondenser) = false
+supports_active_power(::FixedAdmittance) = false
+supports_active_power(::SwitchedAdmittance) = false
+supports_active_power(::FACTSControlDevice) = false
+# loads withdraw power.
+active_power_contribution_sign(::ElectricLoad) = -1
 
-"""
-SynchronousCondenser does not have active power consumption / generation, so return false
-"""
-supports_active_power_injecton(::SynchronousCondenser) = false
+function supports_reactive_power(::T) where {T <: Device}
+    throw(
+        IS.NotImplementedError(
+            "supports_reactive_power not implemented for this device type $(T)",
+        ),
+    )
+end
 
-"""
-FixedAdmittance does not have active power consumption / generation, so return false
-"""
-supports_active_power_injecton(::FixedAdmittance) = false
+function reactive_power_contribution_sign(::T) where {T <: Device}
+    throw(
+        IS.NotImplementedError(
+            "reactive_power_contribution_sign not implemented for this device type $(T)",
+        ),
+    )
+end
 
-"""
-SwitchedAdmittance does not have active power consumption / generation, so return false
-"""
-supports_active_power_injecton(::SwitchedAdmittance) = false
-
-"""
-FACTSControlDevice does not have active power consumption / generation, so return false
-"""
-supports_active_power_injecton(::FACTSControlDevice) = false
+# most static components contribute reactive power
+supports_reactive_power(::StaticInjection) = true
+reactive_power_contribution_sign(::StaticInjection) = 1
+# handle constant impedance loads separately
+supports_reactive_power(::FixedAdmittance) = false
+supports_reactive_power(::SwitchedAdmittance) = false
+# interconnecting converters do not support reactive power
+supports_reactive_power(::InterconnectingConverter) = false
+# loads withdraw reactive power
+reactive_power_contribution_sign(::ElectricLoad) = -1

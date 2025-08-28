@@ -106,3 +106,9 @@ end
 function get_max_active_power_flow_limit(tx::TransmissionInterface)
     return get_active_power_flow_limits(tx).max
 end
+
+# this way, we can handle all constant power contributions using the same function call.
+get_active_power(l::StandardLoad) = l.constant_active_power
+get_reactive_power(l::StandardLoad) = l.constant_reactive_power
+get_active_power(l::InterruptibleStandardLoad) = l.constant_active_power
+get_reactive_power(l::InterruptibleStandardLoad) = l.constant_reactive_power

@@ -87,3 +87,23 @@ end
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
     ).max == 0.10
 end
+
+@testset "supports get active/reactive power" begin
+    device_types = Type[PSY.StaticInjection]
+    while !isempty(device_types)
+        T = pop!(device_types)
+        if !isabstracttype(T)
+            instance = T(nothing)
+            if PSY.supports_active_power(instance)
+                @test hasmethod(PSY.get_active_power, Tuple{T})
+                @test hasmethod(PSY.active_power_contribution_sign, Tuple{T})
+            end
+            # awkward carve-out here, for FACTSControlDevice.
+            if PSY.supports_reactive_power(instance) && T != PSY.FACTSControlDevice
+                @test hasmethod(PSY.get_reactive_power, Tuple{T})
+                @test hasmethod(PSY.reactive_power_contribution_sign, Tuple{T})
+            end
+        end
+        append!(device_types, subtypes(T))
+    end
+end
