@@ -1334,11 +1334,6 @@ function get_components_by_name(
     return IS.get_components_by_name(T, sys.data, name)
 end
 
-# PSY availability is a pure function of the component and the system is not needed; here we
-# implement the required IS.ComponentContainer interface
-IS.get_available(::System, component::Component) =
-    get_available(component)
-
 """
 Return true if the component is attached to the system.
 """
@@ -1365,6 +1360,14 @@ function get_contributing_devices(sys::System, service::T) where {T <: Service}
     return [x for x in get_components(Device, sys) if has_service(x, service)]
 end
 
+"""
+Return a vector of devices contributing to the service.
+"""
+function get_contributing_devices(sys::System, service::TransmissionInterface)
+    throw_if_not_attached(service, sys)
+    return [x for x in get_components(Branch, sys) if has_service(x, service)]
+end
+
 struct ServiceContributingDevices
     service::Service
     contributing_devices::Vector{Device}
@@ -1381,10 +1384,12 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
     uuid = IS.get_uuid(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
-        for _service in get_services(device)
-            if IS.get_uuid(_service) == uuid
-                push!(devices.contributing_devices, device)
-                break
+        if supports_services(device)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
             end
         end
     end
@@ -1883,6 +1888,61 @@ function iterate_supplemental_attributes(sys::System)
 end
 
 """
+Return a vector of NamedTuples with pairs of components and supplemental attributes that
+are associated with each other. Limit by `components` and `attributes` if provided.
+
+The return type is `NamedTuple{(:component, :supplemental_attribute), Tuple{T, U}}[]`
+where `T` is the component type and `U` is the supplemental attribute type.
+
+# Arguments
+- `sys::System`: System containing the components and attributes.
+- `::Type{T}`: Type of the components to filter by. Can be concrete or abstract.
+- `::Type{U}`: Type of the supplemental attributes to filter by. Can be concrete or abstract.
+- `components`: Optional iterable. If set, filter pairs where the component is in this
+  iterable.
+- `attributes`: Optional iterable. If set, filter pairs where the supplemental attribute is
+  in this iterable.
+
+# Examples
+```julia
+gen_attr_pairs = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+)
+for (gen, attr) in gen_attr_pairs
+    @show summary(gen) summary(attr)
+end
+
+my_generators = [gen1, gen2, gen3]
+gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+    components = my_generators,
+)
+for (gen, attr) in gen_attr_pairs_limited
+    @show summary(gen) summary(attr)
+end
+```
+"""
+function get_component_supplemental_attribute_pairs(
+    ::Type{T},
+    ::Type{U},
+    sys::System;
+    components = nothing,
+    attributes = nothing,
+) where {T <: Component, U <: SupplementalAttribute}
+    return IS.get_component_supplemental_attribute_pairs(
+        T,
+        U,
+        sys.data;
+        components = components,
+        attributes = attributes,
+    )
+end
+
+"""
 Sanitize component values.
 """
 sanitize_component!(component::Component, sys::System) = true
@@ -2204,7 +2264,7 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
-        include_types = [Arc, Service],
+        include_types = [Arc, Service, HydroReservoir],
         skip_types = [ConstantReserveGroup],
     )
     deserialize_and_add!(; include_types = [Branch])
@@ -2270,7 +2330,7 @@ Return [`ACBus`](@ref)es from a set of identification `number`s
 # Examples
 ```julia
 # View all the bus ID numbers in the System
-get_number.(get_components(ACBus, system)) 
+get_number.(get_components(ACBus, system))
 # Select a subset
 buses_by_ID = get_buses(system, Set(101:110))
 ```
@@ -2313,9 +2373,13 @@ end
 
 check_for_services_on_addition(sys::System, component::Component) = nothing
 
-function check_for_services_on_addition(sys::System, component::Device)
+function check_for_services_on_addition(sys::System, component::T) where {T <: Device}
     if supports_services(component) && length(get_services(component)) > 0
-        throw(ArgumentError("type Device cannot be added with services"))
+        throw(
+            ArgumentError(
+                "type $(IS.strip_module_name(string(T))) cannot be added with services",
+            ),
+        )
     end
     return
 end
@@ -2347,7 +2411,10 @@ function check_attached_buses(sys::System, component::Branch)
     return
 end
 
-function check_attached_buses(sys::System, component::Transformer3W)
+function check_attached_buses(
+    sys::System,
+    component::ThreeWindingTransformer,
+)
     bus_primary = get_from(get_primary_star_arc(component))
     bus_secondary = get_from(get_secondary_star_arc(component))
     bus_tertiary = get_from(get_tertiary_star_arc(component))
@@ -2423,7 +2490,11 @@ function check_component_addition(sys::System, branch::Branch; kwargs...)
     return
 end
 
-function check_component_addition(sys::System, component::Transformer3W; kwargs...)
+function check_component_addition(
+    sys::System,
+    component::ThreeWindingTransformer;
+    kwargs...,
+)
     bus_primary = get_from(get_primary_star_arc(component))
     bus_secondary = get_from(get_secondary_star_arc(component))
     bus_tertiary = get_from(get_tertiary_star_arc(component))
@@ -2541,7 +2612,10 @@ function _handle_branch_addition_common!(sys::System, component::Branch)
     return
 end
 
-function _handle_branch_addition_common!(sys::System, component::Transformer3W)
+function _handle_branch_addition_common!(
+    sys::System,
+    component::ThreeWindingTransformer,
+)
     # If this arc is already attached to the system, assign it to the 3W XFRM.
     # Else, add it to the system.
     arcs = [

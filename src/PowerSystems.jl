@@ -33,6 +33,8 @@ export StaticInjectionSubsystem
 export DiscreteControlledACBranch
 export ACBranch
 export ACTransmission
+export TwoWindingTransformer
+export ThreeWindingTransformer
 export TwoTerminalHVDC
 export Line
 export MonitoredLine
@@ -46,6 +48,7 @@ export TapTransformer
 export PhaseShiftingTransformer
 export FACTSControlDevice
 export Transformer3W
+export PhaseShiftingTransformer3W
 export SynchronousCondenser
 
 # from IS function_data.jl
@@ -123,6 +126,7 @@ export InterruptiblePowerLoad
 export InterruptibleStandardLoad
 export ShiftablePowerLoad
 export ExponentialLoad
+export MotorLoad
 export LoadConformity
 
 export Storage
@@ -283,7 +287,8 @@ export get_outage_schedule
 # Impedance Correction Data
 export ImpedanceCorrectionData
 export WindingCategory
-export TransformerControlMode
+export WindingGroupNumber
+export ImpedanceCorrectionTransformerControlMode
 
 export get_table_number
 export get_impedance_correction_curve
@@ -317,6 +322,8 @@ export ThermalFuels
 export StorageTech
 export StateTypes
 export ReservoirDataType
+export MotorLoadTechnology
+export HydroTurbineType
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
@@ -391,6 +398,8 @@ export get_associated_components
 export show_components
 export get_subcomponents
 export get_components_by_name
+export get_available
+export set_available!
 export get_available_component
 export get_available_components
 export get_existing_device_types
@@ -402,6 +411,7 @@ export get_forecast_window_count
 export add_supplemental_attribute!
 export remove_supplemental_attribute!
 export remove_supplemental_attributes!
+export get_component_supplemental_attribute_pairs
 export get_supplemental_attribute
 export get_supplemental_attributes
 export has_supplemental_attributes
@@ -630,6 +640,8 @@ import InfrastructureSystems:
     GeographicInfo,
     get_geo_json,
     copy_time_series!,
+    get_available,
+    set_available!,
     get_count,
     get_data,
     get_horizon,
@@ -758,9 +770,6 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
-
-"Get whether this component is available for simulation or not."
-get_available(::Component) = true
 
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end

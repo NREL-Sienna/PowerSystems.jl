@@ -34,7 +34,7 @@ end
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          5.83546
+          -5.83546
     @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
           LoadConformity.CONFORMING
 
@@ -43,6 +43,20 @@ end
     @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
     @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
           LoadConformity.CONFORMING
+
+    @info "Testing ZIP Load Parsing"
+    wecc_sys = build_system(PSYTestSystems, "psse_240_parsing_sys")
+    test_load1 = get_component(StandardLoad, wecc_sys, "load24091")
+    impedance_q = get_impedance_reactive_power(test_load1)
+    # Negative for capacitive loads
+    @test impedance_q < 0
+    @test isapprox(impedance_q, -0.75; atol = 1e-4)
+
+    test_load2 = get_component(StandardLoad, wecc_sys, "load10031")
+    impedance_q = get_impedance_reactive_power(test_load2)
+    # Positive for inductance loads
+    @test impedance_q > 0
+    @test isapprox(impedance_q, 3.873; atol = 1e-3)
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
@@ -74,8 +88,8 @@ end
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
     tw3 = only(tw3s)
-    @test isapprox(get_b(tw3), 0.0017430555555555556)
-    @test get_primary_turns_ratio(tw3) == 1.0
+    @test isapprox(get_b(tw3), 0.0036144)
+    @test get_primary_turns_ratio(tw3) == 1.5
     @test get_rating(tw3) == 0.0
 
     @test get_available(
@@ -93,6 +107,25 @@ end
     )
 
     @test length(get_components(Transformer3W, sys5)) == 5
+
+    @info "Testing Phase Shifting Three-Winding Transformer Parsing"
+    sys_pst3w = build_system(PSSEParsingTestSystems, "pti_case14_with_pst3w_sys")
+
+    pst3w_1 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[1]
+    pst3w_2 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[2]
+
+    @test get_available(pst3w_1) == true
+    @test get_available(pst3w_2) == true
+
+    @test isapprox(get_α_primary(pst3w_1), -0.5236; atol = 1e-4)
+    @test isapprox(get_α_secondary(pst3w_1), 2.6179; atol = 1e-4)
+    @test isapprox(get_α_tertiary(pst3w_1), -1.3962; atol = 1e-4)
+
+    @test isapprox(get_α_primary(pst3w_2), 1.0471; atol = 1e-4)
+    @test isapprox(get_α_secondary(pst3w_2), 0.0; atol = 1e-4)
+    @test isapprox(get_α_tertiary(pst3w_2), -2.0943; atol = 1e-4)
+
+    @test length(get_components(PhaseShiftingTransformer3W, sys_pst3w)) == 2
 
     @info "Testing Switched Shunt Parsing"
     @test get_available(get_component(SwitchedAdmittance, sys3, "1030-9")) == false
@@ -179,6 +212,8 @@ end
     sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
 
     @test !hasproperty(sc_gen1, :active_power)
+    @test get_rating(sc_gen1) >= 0.0
+    @test get_reactive_power(sc_gen1) != 0.0
     @test get_available(sc_gen1) == true
     @test get_bustype(get_bus(sc_gen1)) == ACBusTypes.PV
 end
@@ -270,7 +305,7 @@ end
           (x = 24.1, y = 1.27)
     @test get_transformer_winding(suppl_attr_tr2w_1) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_1) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr2w_2 = get_component(Transformer2W, sys, "BUS 109-BUS 104-i_1")
     suppl_attr_tr2w_2 = only(get_supplemental_attributes(tr2w_2))
@@ -281,7 +316,7 @@ end
           (x = 1.17, y = 0.916)
     @test get_transformer_winding(suppl_attr_tr2w_2) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
-          TransformerControlMode.TAP_RATIO
+          ImpedanceCorrectionTransformerControlMode.TAP_RATIO
 
     tr2w_3 = get_component(Transformer2W, sys, "BUS 106-BUS 105-i_1")
     suppl_attr_tr2w_3 = only(get_supplemental_attributes(tr2w_3))
@@ -292,7 +327,7 @@ end
           (x = 45.0, y = 2.073)
     @test get_transformer_winding(suppl_attr_tr2w_3) == WindingCategory.TR2W_WINDING
     @test get_transformer_control_mode(suppl_attr_tr2w_3) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr3w_1 = get_component(Transformer3W, sys, "BUS 109-BUS 104-BUS 107-i_1")
     suppl_attr_tr3w_1 = collect(get_supplemental_attributes(tr3w_1))
@@ -309,7 +344,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_tertiary_tr3w_1))[end] ==
           (x = 1.17, y = 0.916)
     @test get_transformer_control_mode(filtered_tertiary_tr3w_1) ==
-          TransformerControlMode.TAP_RATIO
+          ImpedanceCorrectionTransformerControlMode.TAP_RATIO
 
     filtered_secondary_tr3w_2 = only(
         filter(
@@ -323,7 +358,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_secondary_tr3w_2))[end] ==
           (x = 60.0, y = 1.5718)
     @test get_transformer_control_mode(filtered_secondary_tr3w_2) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
     tr3w_2 = get_component(Transformer3W, sys, "BUS 113-BUS 110-BUS 114-i_1")
     suppl_attr_tr3w_2 = collect(get_supplemental_attributes(tr3w_2))
@@ -340,7 +375,7 @@ end
     @test get_points(get_impedance_correction_curve(filtered_primary_tr3w_2))[end] ==
           (x = 40.0, y = 1.4)
     @test get_transformer_control_mode(filtered_primary_tr3w_2) ==
-          TransformerControlMode.PHASE_SHIFT_ANGLE
+          ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 end
 
 @testset "PSSE System Serialization/Desearialization" begin
@@ -385,6 +420,54 @@ end
     @test isapprox(tap1, 0.98750; atol = 1e-6)
     @test isapprox(tap2, 0.97500; atol = 1e-6)
     @test isapprox(tap3, 0.96250; atol = 1e-6)
+
+    sys2 = build_system(
+        PSSEParsingTestSystems,
+        "pti_case8_voltage_winding_correction_sys";
+        force_build = true,
+    )
+    trf_3w_v = get_component(Transformer3W, sys2, "NODE F-NODE G-NODE D-i_1")
+    @test get_available_primary(trf_3w_v) == true
+    @test get_available_secondary(trf_3w_v) == true
+    @test get_available_tertiary(trf_3w_v) == true
+
+    #test 3W correction matches PSSE
+    tap1 = get_primary_turns_ratio(trf_3w_v)
+    tap2 = get_secondary_turns_ratio(trf_3w_v)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v)
+    @test isapprox(tap1, 0.988; atol = 1e-6)
+    @test isapprox(tap2, 0.9807518; atol = 1e-6)
+    @test isapprox(tap3, 0.992; atol = 1e-6)
+
+    sys3 = build_system(
+        PSSEParsingTestSystems,
+        "pti_case10_voltage_winding_correction_sys";
+        force_build = true,
+    )
+
+    trf_3w_v1 = get_component(Transformer3W, sys3, "BUS 108-BUS 110-BUS 109-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v1)
+    tap2 = get_secondary_turns_ratio(trf_3w_v1)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v1)
+    @test isapprox(tap1, 1.05; atol = 1e-6)
+    @test isapprox(tap2, 0.956; atol = 1e-6)
+    @test isapprox(tap3, 0.95625; atol = 1e-6)
+
+    trf_3w_v2 = get_component(Transformer3W, sys3, "BUS 104-BUS 109-BUS 111-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v2)
+    tap2 = get_secondary_turns_ratio(trf_3w_v2)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v2)
+    @test isapprox(tap1, 1.0; atol = 1e-6)
+    @test isapprox(tap2, 1.0; atol = 1e-6)
+    @test isapprox(tap3, 1.0; atol = 1e-6)
+
+    trf_3w_v3 = get_component(Transformer3W, sys3, "BUS 102-BUS 104-BUS 103-i_1")
+    tap1 = get_primary_turns_ratio(trf_3w_v3)
+    tap2 = get_secondary_turns_ratio(trf_3w_v3)
+    tap3 = get_tertiary_turns_ratio(trf_3w_v3)
+    @test isapprox(tap1, 1.0250; atol = 1e-6)
+    @test isapprox(tap2, 0.9256; atol = 1e-6)
+    @test isapprox(tap3, 0.9150; atol = 1e-6)
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
@@ -405,6 +488,20 @@ end
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
 end
 
+@testset "Test PSSE interruptible loads parsing" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "pti_case14_with_interruptible_loads_sys";
+        force_build = true,
+    )
+    isl = collect(get_components(InterruptibleStandardLoad, sys))[1]
+    @test length(collect(get_components(InterruptibleStandardLoad, sys))) == 4
+    @test get_available(isl) == true
+    @test isl isa InterruptibleStandardLoad
+    @test get_constant_active_power(isl) == 0.11485
+    @test get_max_active_power(isl) == 0.11485
+end
+
 @testset "Test conversion zero impedance branch to switch" begin
     sys = build_system(
         PSSEParsingTestSystems,
@@ -415,4 +512,16 @@ end
     @test length(
         get_components(x -> get_r(x) == get_x(x) == 0.0, DiscreteControlledACBranch, sys),
     ) == 4
+end
+
+@testset "Test threshold setting for zero impedance 3WT winding" begin
+    sys = build_system(
+        PSSEParsingTestSystems,
+        "psse_4_zero_impedance_3wt_test_system";
+        force_build = true,
+    )
+    trf_3w = collect(get_components(Transformer3W, sys))[1]
+    @test get_available(trf_3w) == true
+    @test get_available_tertiary(trf_3w) == true
+    @test get_x_tertiary(trf_3w) == 1e-4
 end

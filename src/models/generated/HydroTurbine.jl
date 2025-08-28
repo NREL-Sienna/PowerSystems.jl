@@ -21,6 +21,7 @@ This file is auto-generated. Do not edit.
         base_power::Float64
         operation_cost::Union{HydroGenerationCost, MarketBidCost}
         efficiency::Float64
+        turbine_type::HydroTurbineType
         conversion_factor::Float64
         reservoirs::Vector{HydroReservoir}
         services::Vector{Service}
@@ -47,6 +48,7 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
+- `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `reservoirs::Vector{HydroReservoir}`: (default: `Device[]`) [`HydroReservoir`](@ref)(s) that this component is connected to
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -85,6 +87,8 @@ mutable struct HydroTurbine <: HydroGen
     operation_cost::Union{HydroGenerationCost, MarketBidCost}
     "Turbine efficiency [0, 1.0]"
     efficiency::Float64
+    "Type of the turbine"
+    turbine_type::HydroTurbineType
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
     "[`HydroReservoir`](@ref)(s) that this component is connected to"
@@ -99,12 +103,12 @@ mutable struct HydroTurbine <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, turbine_type, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
+function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost=HydroGenerationCost(nothing), efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, operation_cost, efficiency, turbine_type, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -125,6 +129,7 @@ function HydroTurbine(::Nothing)
         base_power=0.0,
         operation_cost=HydroGenerationCost(nothing),
         efficiency=1.0,
+        turbine_type=HydroTurbineType.UNKNOWN,
         conversion_factor=1.0,
         reservoirs=Device[],
         services=Device[],
@@ -163,6 +168,8 @@ get_base_power(value::HydroTurbine) = value.base_power
 get_operation_cost(value::HydroTurbine) = value.operation_cost
 """Get [`HydroTurbine`](@ref) `efficiency`."""
 get_efficiency(value::HydroTurbine) = value.efficiency
+"""Get [`HydroTurbine`](@ref) `turbine_type`."""
+get_turbine_type(value::HydroTurbine) = value.turbine_type
 """Get [`HydroTurbine`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroTurbine) = value.conversion_factor
 """Get [`HydroTurbine`](@ref) `reservoirs`."""
@@ -204,6 +211,8 @@ set_base_power!(value::HydroTurbine, val) = value.base_power = val
 set_operation_cost!(value::HydroTurbine, val) = value.operation_cost = val
 """Set [`HydroTurbine`](@ref) `efficiency`."""
 set_efficiency!(value::HydroTurbine, val) = value.efficiency = val
+"""Set [`HydroTurbine`](@ref) `turbine_type`."""
+set_turbine_type!(value::HydroTurbine, val) = value.turbine_type = val
 """Set [`HydroTurbine`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroTurbine, val) = value.conversion_factor = val
 """Set [`HydroTurbine`](@ref) `reservoirs`."""

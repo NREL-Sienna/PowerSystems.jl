@@ -97,39 +97,51 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     return generator
 end
 
-function get_branch_type(
-    tap::Union{Float64, Int},
-    alpha::Union{Float64, Int},
-    is_transformer::Union{Bool, Nothing} = nothing,
-)
-    if isnothing(is_transformer)
-        is_transformer = (tap != 0.0) & (tap != 1.0)
-    end
-    if is_transformer
-        if tap == 1.0 && alpha == 0.0
-            branch_type = Transformer2W
-        elseif alpha == 0.0
-            branch_type = TapTransformer
-        else
-            branch_type = PhaseShiftingTransformer
-        end
-    else
-        branch_type = Line
-    end
-
-    return branch_type
-end
-
-function calculate_rating(
+function calculate_gen_rating(
     active_power_limits::Union{MinMax, Nothing},
     reactive_power_limits::Union{MinMax, Nothing},
+    base_conversion::Float64,
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
-    return calculate_rating(active_power_limits.max, reactive_power_max)
+    return calculate_gen_rating(
+        active_power_limits.max,
+        reactive_power_max,
+        base_conversion,
+    )
 end
 
-function calculate_rating(active_power_max::Float64, reactive_power_max::Float64)
-    return sqrt(active_power_max^2 + reactive_power_max^2)
+function calculate_gen_rating(
+    active_power_max::Float64,
+    reactive_power_max::Float64,
+    base_conversion::Float64,
+)
+    rating = sqrt(active_power_max^2 + reactive_power_max^2)
+    if rating == 0.0
+        @warn "Rating is calculation returned 0.0. Changing to 1.0 in the p.u. of the device."
+        return 1.0
+    end
+    return rating * base_conversion
+end
+
+function calculate_ramp_limit(
+    d::Dict{String, Any},
+    gen_name::Union{SubString{String}, String},
+)
+    if haskey(d, "ramp_agc")
+        return (up = d["ramp_agc"], down = d["ramp_agc"])
+    end
+    if haskey(d, "ramp_10")
+        return (up = d["ramp_10"], down = d["ramp_10"])
+    end
+    if haskey(d, "ramp_30")
+        return (up = d["ramp_30"], down = d["ramp_30"])
+    end
+    if abs(d["pmax"]) > 0.0
+        @warn "No ramp limits found for generator $(gen_name). Using pmax as ramp limit."
+        return (up = abs(d["pmax"]), down = abs(d["pmax"]))
+    end
+    @warn "Not enough information to determine ramp limit for generator $(gen_name). Returning nothing"
+    return nothing
 end
 
 function string_compare(str1, str2; casefold = true)

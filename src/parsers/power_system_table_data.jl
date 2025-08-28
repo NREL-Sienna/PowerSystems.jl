@@ -86,7 +86,7 @@ end
 Reads in all the data stored in csv files in a `directory`
 
 !!! warning
-    
+
     This parser is planned for deprecation. `PowerSystems.jl` will be
     moving to a database solution for handling data. There are plans to eventually include
     utility functions to translate from .csv files to the database, but there will probably
@@ -317,7 +317,7 @@ end
 Construct a System from [`PowerSystemTableData`](@ref) data.
 
 !!! warning
-    
+
     This parser is planned for deprecation. `PowerSystems.jl` will be
     moving to a database solution for handling data. There are plans to eventually include
     utility functions to translate from .csv files to the database, but there will probably
@@ -444,9 +444,21 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     end
 end
 
+function get_branch_type(
+    tap::Float64,
+    is_transformer::Union{Bool, Nothing},
+)
+    if isnothing(is_transformer)
+        is_transformer = (tap != 0.0) && (tap != 1.0)
+    end
+
+    is_transformer || return Line
+
+    return tap == 1.0 ? Transformer2W : TapTransformer
+end
+
 """
 Add branches to the System from the raw data.
-
 """
 function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     available = true
@@ -459,10 +471,13 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
         pf = branch.active_power_flow
         qf = branch.reactive_power_flow
 
-        #TODO: noop math...Phase-Shifting Transformer angle
-        alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
+        # Table Model doesn't support PhaseShifters
         branch_type =
-            get_branch_type(branch.tap, alpha, get(branch, :is_transformer, nothing))
+            get_branch_type(
+                branch.tap,
+                get(branch, :is_transformer, nothing),
+            )
+
         if branch_type == Line
             b = branch.primary_shunt / 2
             value = Line(;
@@ -490,6 +505,7 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
@@ -503,13 +519,11 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 tap = branch.tap,
                 rating = branch.rate,
                 base_power = data.base_power, # use system base power
             )
-        elseif branch_type == PhaseShiftingTransformer
-            # TODO create PhaseShiftingTransformer
-            error("Unsupported branch type $branch_type")
         else
             error("Unsupported branch type $branch_type")
         end
@@ -1201,8 +1215,7 @@ function make_synchronous_condenser_generator(
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
-    base_power = gen.base_mva
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
 
     return SynchronousCondenser(;
         name = gen.name,
@@ -1211,7 +1224,7 @@ function make_synchronous_condenser_generator(
         reactive_power = reactive_power,
         rating = rating,
         reactive_power_limits = reactive_power_limits,
-        base_power = base_power,
+        base_power = gen.base_mva,
     )
 end
 
@@ -1225,7 +1238,7 @@ function make_thermal_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
     primemover = parse_enum_mapping(PrimeMovers, gen.unit_type)
@@ -1359,7 +1372,7 @@ function make_hydro_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramp_limits = make_ramplimits(gen)
     min_up_time = gen.min_up_time
     min_down_time = gen.min_down_time
@@ -1419,7 +1432,11 @@ function make_hydro_generator(
                 maxfield = :pump_reactive_power_limits_max,
             )
             pump_rating =
-                calculate_rating(pump_active_power_limits, pump_reactive_power_limits)
+                calculate_gen_rating(
+                    pump_active_power_limits,
+                    pump_reactive_power_limits,
+                    1.0,
+                )
             pump_ramp_limits = make_ramplimits(
                 gen;
                 ramplimcol = :pump_ramp_limits,
@@ -1497,7 +1514,7 @@ function make_renewable_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     base_power = gen.base_mva
     operation_cost = make_cost(RenewableGen, data, gen, cost_colnames)
 

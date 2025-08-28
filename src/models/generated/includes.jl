@@ -12,6 +12,7 @@ include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
 include("Transformer3W.jl")
+include("PhaseShiftingTransformer3W.jl")
 include("TwoTerminalGenericHVDCLine.jl")
 include("TwoTerminalVSCLine.jl")
 include("TwoTerminalLCCLine.jl")
@@ -23,6 +24,7 @@ include("FACTSControlDevice.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
+include("MotorLoad.jl")
 include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
@@ -527,6 +529,10 @@ export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
 export get_control_mode
+export get_control_objective
+export get_control_objective_primary
+export get_control_objective_secondary
+export get_control_objective_tertiary
 export get_conversion_factor
 export get_converter_loss_from
 export get_converter_loss_to
@@ -652,6 +658,7 @@ export get_max_reactive_power
 export get_max_shunt_current
 export get_min_compounding_voltage
 export get_minimum_time
+export get_motor_technology
 export get_must_run
 export get_n_states
 export get_name
@@ -670,6 +677,7 @@ export get_power_gate_openings
 export get_power_mode
 export get_power_trajectory
 export get_powerhouse_elevation
+export get_primary_group_number
 export get_primary_shunt
 export get_primary_star_arc
 export get_primary_turns_ratio
@@ -729,6 +737,7 @@ export get_rrpwr
 export get_rv
 export get_saturation_coeffs
 export get_scheduled_dc_voltage
+export get_secondary_group_number
 export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
@@ -750,6 +759,7 @@ export get_tF_delay
 export get_tV_delay
 export get_tail_reservoir
 export get_tap
+export get_tertiary_group_number
 export get_tertiary_star_arc
 export get_tertiary_turns_ratio
 export get_tfh
@@ -762,6 +772,7 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
+export get_turbine_type
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -772,6 +783,7 @@ export get_voltage_limits
 export get_voltage_limits_from
 export get_voltage_limits_to
 export get_voltage_setpoint
+export get_winding_group_number
 export get_x
 export get_x_12
 export get_x_13
@@ -780,6 +792,9 @@ export get_x_primary
 export get_x_secondary
 export get_x_tertiary
 export get_α
+export get_α_primary
+export get_α_secondary
+export get_α_tertiary
 export get_β
 export get_γ_d1
 export get_γ_d2
@@ -1191,6 +1206,10 @@ export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
 export set_control_mode!
+export set_control_objective!
+export set_control_objective_primary!
+export set_control_objective_secondary!
+export set_control_objective_tertiary!
 export set_conversion_factor!
 export set_converter_loss_from!
 export set_converter_loss_to!
@@ -1316,6 +1335,7 @@ export set_max_reactive_power!
 export set_max_shunt_current!
 export set_min_compounding_voltage!
 export set_minimum_time!
+export set_motor_technology!
 export set_must_run!
 export set_n_states!
 export set_name!
@@ -1334,6 +1354,7 @@ export set_power_gate_openings!
 export set_power_mode!
 export set_power_trajectory!
 export set_powerhouse_elevation!
+export set_primary_group_number!
 export set_primary_shunt!
 export set_primary_star_arc!
 export set_primary_turns_ratio!
@@ -1393,6 +1414,7 @@ export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
 export set_scheduled_dc_voltage!
+export set_secondary_group_number!
 export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
@@ -1414,6 +1436,7 @@ export set_tF_delay!
 export set_tV_delay!
 export set_tail_reservoir!
 export set_tap!
+export set_tertiary_group_number!
 export set_tertiary_star_arc!
 export set_tertiary_turns_ratio!
 export set_tfh!
@@ -1426,6 +1449,7 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
+export set_turbine_type!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
@@ -1436,6 +1460,7 @@ export set_voltage_limits!
 export set_voltage_limits_from!
 export set_voltage_limits_to!
 export set_voltage_setpoint!
+export set_winding_group_number!
 export set_x!
 export set_x_12!
 export set_x_13!
@@ -1444,6 +1469,9 @@ export set_x_primary!
 export set_x_secondary!
 export set_x_tertiary!
 export set_α!
+export set_α_primary!
+export set_α_secondary!
+export set_α_tertiary!
 export set_β!
 export set_γ_d1!
 export set_γ_d2!

@@ -21,10 +21,28 @@ Returns the series susceptance of a controllable transformer following the conve
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 In the case of phase shifter transformers the angle is ignored.
 """
-function get_series_susceptance(b::Union{PhaseShiftingTransformer, TapTransformer})
+function get_series_susceptance(b::Union{TapTransformer, PhaseShiftingTransformer})
     y = 1 / get_x(b)
     y_a = y / (get_tap(b))
     return y_a
+end
+
+"""
+Returns the series susceptance of a 3 winding phase shifting transformer as three values 
+(for each of the 3 branches) following the convention
+in power systems to define susceptance as the inverse of the imaginary part of the impedance.
+The phase shift angles are ignored in the susceptance calculation.
+"""
+function get_series_susceptance(b::PhaseShiftingTransformer3W)
+    y1 = 1 / get_x_primary(b)
+    y2 = 1 / get_x_secondary(b)
+    y3 = 1 / get_x_tertiary(b)
+
+    y1_a = y1 / get_primary_turns_ratio(b)
+    y2_a = y2 / get_secondary_turns_ratio(b)
+    y3_a = y3 / get_tertiary_turns_ratio(b)
+
+    return (y1_a, y2_a, y3_a)
 end
 
 """
@@ -92,6 +110,14 @@ function get_max_active_power(d::StandardLoad)
     return total_load
 end
 
+function get_max_active_power(d::InterruptibleStandardLoad)
+    total_load = get_max_constant_active_power(d)
+    # TODO: consider voltage
+    total_load += get_max_impedance_active_power(d)
+    total_load += get_max_current_active_power(d)
+    return total_load
+end
+
 function get_from_to_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).from_to
 end
@@ -112,3 +138,37 @@ get_active_power(l::StandardLoad) = l.constant_active_power
 get_reactive_power(l::StandardLoad) = l.constant_reactive_power
 get_active_power(l::InterruptibleStandardLoad) = l.constant_active_power
 get_reactive_power(l::InterruptibleStandardLoad) = l.constant_reactive_power
+
+function get_α(t::Union{TapTransformer, Transformer2W})
+    if get_winding_group_number(t) == WindingGroupNumber.UNDEFINED
+        @warn "winding group number for summary (t) is undefined, assuming zero phase shift"
+        return 0.0
+    else
+        return get_winding_group_number(t).value * -(π / 6)
+    end
+end
+
+function get_α_primary(t::Transformer3W)
+    if get_primary_group_number(t) == WindingGroupNumber.UNDEFINED
+        @warn "primary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
+        return 0.0
+    else
+        return get_primary_group_number(t).value * -(π / 6)
+    end
+end
+function get_α_secondary(t::Transformer3W)
+    if get_secondary_group_number(t) == WindingGroupNumber.UNDEFINED
+        @warn "secondary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
+        return 0.0
+    else
+        return get_secondary_group_number(t).value * -(π / 6)
+    end
+end
+function get_α_tertiary(t::Transformer3W)
+    if get_tertiary_group_number(t) == WindingGroupNumber.UNDEFINED
+        @warn "tertiary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
+        return 0.0
+    else
+        return get_tertiary_group_number(t).value * -(π / 6)
+    end
+end

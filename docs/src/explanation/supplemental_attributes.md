@@ -15,11 +15,119 @@ flowchart LR
 
 Supplemental attributes can also contain timeseries in the same that a component can allowing the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
 
-## Getting the attributes in a component or system
+## Getting the attributes in a system
 
-You can retrieve the attributes in a component using the function [`get_supplemental_attributes`](@ref)
+You can retrieve the attributes in a system using the function [`get_supplemental_attributes`](@ref).
+You must pass a supplemental attribute type, which can be concrete or abstract. If you pass an abstract type, all concrete types
+that are subtypes of the abstract type will be returned.
 
-## Getting the components in an attribute
+```julia
+for outage in get_supplemental_attributes(FixedForcedOutage, system)
+    @show summary(outage)
+end
+```
+
+You can optionally pass a filter function to reduce the returned attributes. This example will
+return only FixedForcedOutage instances that have a mean time to recovery greater than or equal to 0.5.
+
+```julia
+for outage in get_supplemental_attributes(
+    x -> get_mean_time_to_recovery(x) >= 0.5,
+    FixedForcedOutage,
+    system,
+)
+    @show summary(outage)
+end
+```
+
+## Getting the attributes associated with a component
+
+You can retrieve the attributes associated with a component using the function [`get_supplemental_attributes`](@ref).
+This method signatures are identical to the versions above that operate on a system; just swap the system for a component.
+
+You must pass a supplemental attribute type, which can be concrete or abstract. If you pass an abstract type, all concrete types
+that are subtypes of the abstract type will be returned.
+
+```julia
+gen1 = get_component(ThermalStandard, system, "gen1")
+for outage in get_supplemental_attributes(FixedForcedOutage, gen)
+    @show summary(outage)
+end
+```
+
+You can optionally pass a filter function to reduce the returned attributes. This example will
+return only FixedForcedOutage instances that have a mean time to recovery greater than or equal to 0.5.
+
+```julia
+for outage in get_supplemental_attributes(
+    x -> get_mean_time_to_recovery(x) >= 0.5,
+    gen,
+    FixedForcedOutage,
+)
+    @show summary(outage)
+end
+```
+
+## Getting the components associated with an attribute
+
+You can retrieve the components associated with a single supplemental attribute using the
+function [`get_associated_components`](@ref).
+
+ 1. Get all components associated with a single supplemental attribute.
+    
+    ```julia
+    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
+    for component in get_associated_components(system, outage)
+        @show summary(component)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
+    
+    ```julia
+    outage = first(get_supplemental_attributes(FixedForcedOutage, system))
+    for component in get_associated_components(system, outage; component_type = ThermalStandard)
+        @show summary(component)
+    end
+    ```
+
+## Getting the components associated with an attribute type
+
+You can retrieve the components associated with any supplemental attribute of a given type
+using the function [`get_associated_components`](@ref).
+
+ 1. Get all components associated with any supplemental attribute of a given type.
+    
+    ```julia
+    for component in get_associated_components(system, FixedForcedOutage)
+        @show summary(component)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by component type, which can be concrete or abstract.
+    
+    ```julia
+    for component in
+        get_associated_components(system, FixedForcedOutage; component_type = ThermalStandard)
+        @show summary(component)
+    end
+    ```
+
+## Getting component / supplemental attribute pairs
+
+The function [`get_component_supplemental_attribute_pairs`](@ref) returns a vector of component / supplemental
+attribute pairs based on types and optional filters. This can be more efficient than double for loops
+that iterate over components and their associated attributes independently.
+
+```julia
+for (gen, outage) in get_component_supplemental_attribute_pairs(
+    ThermalStandard,
+    FixedForcedOutage,
+    system,
+)
+    @show summary(gen) summary(outage)
+end
+```
 
 ## Adding Time Series to an attribute
 
