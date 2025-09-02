@@ -1,8 +1,22 @@
 
+"""
+Return the appropriate accessor function for the given aggregation topology type.
+For Area types, returns get_area; for LoadZone types, returns get_load_zone.
+"""
 get_aggregation_topology_accessor(::Type{Area}) = get_area
+"""
+Return the appropriate accessor function for the given aggregation topology type.
+For Area types, returns get_area; for LoadZone types, returns get_load_zone.
+"""
 get_aggregation_topology_accessor(::Type{LoadZone}) = get_load_zone
 
+"""
+Set the load zone for an AC bus.
+"""
 set_load_zone!(bus::ACBus, load_zone::LoadZone) = bus.load_zone = load_zone
+"""
+Set the area for an AC bus.
+"""
 set_area!(bus::ACBus, area::Area) = bus.area = area
 
 """
@@ -28,7 +42,7 @@ function get_series_susceptance(b::Union{TapTransformer, PhaseShiftingTransforme
 end
 
 """
-Returns the series susceptance of a 3 winding phase shifting transformer as three values 
+Returns the series susceptance of a 3 winding phase shifting transformer as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 The phase shift angles are ignored in the susceptance calculation.
@@ -46,7 +60,7 @@ function get_series_susceptance(b::PhaseShiftingTransformer3W)
 end
 
 """
-Returns the series susceptance of a 3 winding transformer as three values 
+Returns the series susceptance of a 3 winding transformer as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 """
@@ -62,6 +76,10 @@ function get_series_susceptance(b::Transformer3W)
     return (b1s, b2s, b3s)
 end
 
+"""
+Calculate the series admittance of an AC branch as the inverse of the complex impedance.
+Returns 1/(R + jX) where R is resistance and X is reactance.
+"""
 get_series_admittance(b::ACBranch) = 1 / (get_r(b) + get_x(b) * 1im)
 
 """
@@ -93,15 +111,35 @@ function get_max_reactive_power(d::RenewableDispatch)
     return reactive_power_limits.max
 end
 
+"""
+Generic fallback function for getting active power limits. Throws ArgumentError for devices
+that don't implement this function.
+"""
 get_active_power_limits(::T) where {T <: Device} =
     throw(ArgumentError("get_active_power_limits not implemented for $T"))
+"""
+Generic fallback function for getting reactive power limits. Throws ArgumentError for devices
+that don't implement this function.
+"""
 get_reactive_power_limits(::T) where {T <: Device} =
     throw(ArgumentError("get_reactive_power_limits not implemented for $T"))
+"""
+Generic fallback function for getting device rating. Throws ArgumentError for devices
+that don't implement this function.
+"""
 get_rating(::T) where {T <: Device} =
     throw(ArgumentError("get_rating not implemented for $T"))
+"""
+Generic fallback function for getting power factor. Throws ArgumentError for devices
+that don't implement this function.
+"""
 get_power_factor(::T) where {T <: Device} =
     throw(ArgumentError("get_power_factor not implemented for $T"))
 
+"""
+Calculate the maximum active power for a standard load by summing the maximum
+constant, impedance, and current components.
+"""
 function get_max_active_power(d::StandardLoad)
     total_load = get_max_constant_active_power(d)
     # TODO: consider voltage
@@ -110,6 +148,10 @@ function get_max_active_power(d::StandardLoad)
     return total_load
 end
 
+"""
+Calculate the maximum active power for an interruptible standard load by summing
+the maximum constant, impedance, and current components.
+"""
 function get_max_active_power(d::InterruptibleStandardLoad)
     total_load = get_max_constant_active_power(d)
     # TODO: consider voltage
@@ -118,30 +160,52 @@ function get_max_active_power(d::InterruptibleStandardLoad)
     return total_load
 end
 
+"""
+Get the flow limit from source area to destination area for an area interchange.
+"""
 function get_from_to_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).from_to
 end
+"""
+Get the flow limit from destination area to source area for an area interchange.
+"""
 function get_to_from_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).to_from
 end
 
+"""
+Get the minimum active power flow limit for a transmission interface.
+"""
 function get_min_active_power_flow_limit(tx::TransmissionInterface)
     return get_active_power_flow_limits(tx).min
 end
 
+"""
+Get the maximum active power flow limit for a transmission interface.
+"""
 function get_max_active_power_flow_limit(tx::TransmissionInterface)
     return get_active_power_flow_limits(tx).max
 end
 
+"""
+Calculate the phase shift angle α for a 2-winding transformer based on its winding group number.
+Returns the angle in radians, calculated as -(π/6) * winding_group_number.
+If the winding group number is undefined, returns 0.0 and issues a warning.
+"""
 function get_α(t::Union{TapTransformer, Transformer2W})
     if get_winding_group_number(t) == WindingGroupNumber.UNDEFINED
-        @warn "winding group number for summary (t) is undefined, assuming zero phase shift"
+        @warn "winding group number for $(summary(t)) is undefined, assuming zero phase shift"
         return 0.0
     else
         return get_winding_group_number(t).value * -(π / 6)
     end
 end
 
+"""
+Calculate the phase shift angle α for the primary winding of a 3-winding transformer
+based on its primary winding group number. Returns the angle in radians, calculated
+as -(π/6) * primary_group_number. If undefined, returns 0.0 and issues a warning.
+"""
 function get_α_primary(t::Transformer3W)
     if get_primary_group_number(t) == WindingGroupNumber.UNDEFINED
         @warn "primary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
@@ -150,6 +214,11 @@ function get_α_primary(t::Transformer3W)
         return get_primary_group_number(t).value * -(π / 6)
     end
 end
+"""
+Calculate the phase shift angle α for the secondary winding of a 3-winding transformer
+based on its secondary winding group number. Returns the angle in radians, calculated
+as -(π/6) * secondary_group_number. If undefined, returns 0.0 and issues a warning.
+"""
 function get_α_secondary(t::Transformer3W)
     if get_secondary_group_number(t) == WindingGroupNumber.UNDEFINED
         @warn "secondary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
@@ -158,6 +227,11 @@ function get_α_secondary(t::Transformer3W)
         return get_secondary_group_number(t).value * -(π / 6)
     end
 end
+"""
+Calculate the phase shift angle α for the tertiary winding of a 3-winding transformer
+based on its tertiary winding group number. Returns the angle in radians, calculated
+as -(π/6) * tertiary_group_number. If undefined, returns 0.0 and issues a warning.
+"""
 function get_α_tertiary(t::Transformer3W)
     if get_tertiary_group_number(t) == WindingGroupNumber.UNDEFINED
         @warn "tertiary winding group number for $(summary(t)) is undefined, assuming zero phase shift"
