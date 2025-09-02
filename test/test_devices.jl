@@ -89,21 +89,23 @@ end
 end
 
 @testset "supports get active/reactive power" begin
+    # subtypes we added in test/common.jl (type piracy)
+    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent)
     device_types = Type[PSY.StaticInjection]
     while !isempty(device_types)
         T = pop!(device_types)
-        if !isabstracttype(T)
+        if !isabstracttype(T) && !(T in types_to_skip)
             instance = T(nothing)
             if PSY.supports_active_power(instance)
                 @test hasmethod(PSY.get_active_power, Tuple{T})
-                @test hasmethod(PSY.active_power_contribution_sign, Tuple{T})
+                @test hasmethod(PSY.active_power_contribution_type, Tuple{T})
             end
             # awkward carve-out here, for FACTSControlDevice.
             if PSY.supports_reactive_power(instance) && T != PSY.FACTSControlDevice
                 @test hasmethod(PSY.get_reactive_power, Tuple{T})
-                @test hasmethod(PSY.reactive_power_contribution_sign, Tuple{T})
+                @test hasmethod(PSY.reactive_power_contribution_type, Tuple{T})
             end
         end
-        append!(device_types, subtypes(T))
+        append!(device_types, InteractiveUtils.subtypes(T))
     end
 end

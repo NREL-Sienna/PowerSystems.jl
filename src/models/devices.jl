@@ -207,24 +207,25 @@ function supports_active_power(::T) where {T <: Device}
     )
 end
 
-function active_power_contribution_sign(::T) where {T <: Device}
+IS.@scoped_enum(PowerContributionType, INJECTION = 1, WITHDRAWAL = 2)
+function active_power_contribution_type(::T) where {T <: Device}
     throw(
         IS.NotImplementedError(
-            "active_power_contribution_sign not implemented for this device type $(T)",
+            "active_power_contribution_type not implemented for this device type $(T)",
         ),
     )
 end
 
 # most static components inject power
 supports_active_power(::StaticInjection) = true
-active_power_contribution_sign(::StaticInjection) = 1
+active_power_contribution_type(::StaticInjection) = PowerContributionType.INJECTION
 # carve out the exceptions: we handle constant impedance/current loads separately
 supports_active_power(::SynchronousCondenser) = false
 supports_active_power(::FixedAdmittance) = false
 supports_active_power(::SwitchedAdmittance) = false
 supports_active_power(::FACTSControlDevice) = false
 # loads withdraw power.
-active_power_contribution_sign(::ElectricLoad) = -1
+active_power_contribution_type(::ElectricLoad) = PowerContributionType.WITHDRAWAL
 
 function supports_reactive_power(::T) where {T <: Device}
     throw(
@@ -244,11 +245,11 @@ end
 
 # most static components contribute reactive power
 supports_reactive_power(::StaticInjection) = true
-reactive_power_contribution_sign(::StaticInjection) = 1
+reactive_power_contribution_type(::StaticInjection) = PowerContributionType.INJECTION
 # handle constant impedance loads separately
 supports_reactive_power(::FixedAdmittance) = false
 supports_reactive_power(::SwitchedAdmittance) = false
 # interconnecting converters do not support reactive power
 supports_reactive_power(::InterconnectingConverter) = false
 # loads withdraw reactive power
-reactive_power_contribution_sign(::ElectricLoad) = -1
+reactive_power_contribution_type(::ElectricLoad) = PowerContributionType.WITHDRAWAL
