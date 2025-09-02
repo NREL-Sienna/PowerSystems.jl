@@ -166,3 +166,9 @@ function get_α_tertiary(t::Transformer3W)
         return get_tertiary_group_number(t).value * -(π / 6)
     end
 end
+
+# this way, we can handle all constant power contributions using the same function call.
+get_active_power(l::StandardLoad) = l.constant_active_power
+get_reactive_power(l::StandardLoad) = l.constant_reactive_power
+get_active_power(l::InterruptibleStandardLoad) = l.constant_active_power
+get_reactive_power(l::InterruptibleStandardLoad) = l.constant_reactive_power
