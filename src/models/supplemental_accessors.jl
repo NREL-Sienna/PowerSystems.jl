@@ -28,7 +28,7 @@ function get_series_susceptance(b::Union{TapTransformer, PhaseShiftingTransforme
 end
 
 """
-Returns the series susceptance of a 3 winding phase shifting transformer as three values 
+Returns the series susceptance of a 3 winding phase shifting transformer as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 The phase shift angles are ignored in the susceptance calculation.
@@ -46,7 +46,7 @@ function get_series_susceptance(b::PhaseShiftingTransformer3W)
 end
 
 """
-Returns the series susceptance of a 3 winding transformer as three values 
+Returns the series susceptance of a 3 winding transformer as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 """
@@ -165,4 +165,8 @@ function get_α_tertiary(t::Transformer3W)
     else
         return get_tertiary_group_number(t).value * -(π / 6)
     end
+end
+
+function supports_services(::AreaInterchange)
+    return true
 end
