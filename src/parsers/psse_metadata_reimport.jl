@@ -104,16 +104,11 @@ function parse_export_metadata_dict(md::Dict)
         md["bus_number_mapping"],
         Tuple{Int64, Int64},
     )
-
-    # bus_name_formatter = device_dict -> bus_name_map[device_dict["name"]]
     bus_name_formatter = device_dict -> begin
-        name = device_dict["name"]
-        if startswith(name, "starbus_")
-            name  # always use the original name for starbus buses
-        else
-            get(bus_name_map, name, name)
-        end
+        bus_name = device_dict["name"]
+        get(bus_name_map, bus_name, bus_name)
     end
+
     gen_name_formatter = name_formatter_from_component_ids(
         md["generator_name_mapping"],
         md["bus_number_mapping"],
