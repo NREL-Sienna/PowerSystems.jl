@@ -1065,7 +1065,7 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == HydroEnergyReservoir
+        elseif gen_type == HydroDispatch
             generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
