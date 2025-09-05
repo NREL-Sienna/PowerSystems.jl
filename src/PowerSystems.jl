@@ -101,7 +101,6 @@ export get_spillage_cost, set_spillage_cost!
 export Generator
 export HydroGen
 export HydroDispatch
-export HydroEnergyReservoir
 export HydroTurbine
 export HydroReservoir
 export HydroPumpTurbine
