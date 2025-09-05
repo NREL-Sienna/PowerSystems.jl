@@ -1379,7 +1379,7 @@ function make_hydro_generator(
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
 
-    if gen_type == HydroEnergyReservoir || gen_type == HydroPumpTurbine
+    if gen_type == HydroTurbine || gen_type == HydroPumpTurbine
         if !haskey(data.category_to_df, InputCategory.STORAGE)
             throw(DataFormatError("Storage information must defined in storage.csv"))
         end
@@ -1394,11 +1394,11 @@ function make_hydro_generator(
 
         operation_cost = make_cost(HydroGen, data, gen, cost_colnames)
 
-        if gen_type == HydroEnergyReservoir
-            @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
+        if gen_type == HydroTurbine
+            @debug "Creating $(gen.name) as HydroTurbine" _group =
                 IS.LOG_GROUP_PARSING
-
-            hydro_gen = HydroEnergyReservoir(;
+            # TODO: Change HydroEnergyReservoir to HydroTurbine with Generic Reservoir
+            hydro_gen = HydroTurbine(;
                 name = gen.name,
                 available = gen.available,
                 bus = bus,
