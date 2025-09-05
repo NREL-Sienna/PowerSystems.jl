@@ -29,7 +29,7 @@ This file is auto-generated. Do not edit.
 
 A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.
 
-For hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref)
+For hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
