@@ -28,8 +28,6 @@ end
     @test tThermalGen isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
-    tHydroEnergyReservoir = HydroEnergyReservoir(nothing)
-    @test tHydroEnergyReservoir isa PowerSystems.Component
     tRenewableNonDispatch = RenewableNonDispatch(nothing)
     @test tRenewableNonDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
