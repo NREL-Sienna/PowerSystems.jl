@@ -43,8 +43,8 @@ LOG_LEVELS = Dict(
 )
 
 include("common.jl")
-include("data_5bus_pu.jl")
-include("data_14bus_pu.jl")
+include(joinpath(DATA_DIR, "psy_data", "data_5bus_pu.jl"))
+include(joinpath(DATA_DIR, "psy_data", "data_14bus_pu.jl"))
 
 """
 Copied @includetests from https://github.com/ssfrr/TestSetExtensions.jl.
