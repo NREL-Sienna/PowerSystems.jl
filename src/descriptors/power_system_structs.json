@@ -5800,6 +5800,13 @@
                     "default": "1.0"
                 },
                 {
+                    "name": "must_run",
+                    "comment": "Whether the unit must run (i.e., cannot be curtailed)",
+                    "null_value": "false",
+                    "data_type": "Bool",
+                    "default": "false"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
