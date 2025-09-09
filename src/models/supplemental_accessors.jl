@@ -242,3 +242,7 @@ function get_α_tertiary(t::Transformer3W)
         return get_tertiary_group_number(t).value * -(π / 6)
     end
 end
+
+function supports_services(::AreaInterchange)
+    return true
+end
