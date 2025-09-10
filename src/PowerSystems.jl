@@ -836,6 +836,7 @@ include("models/dynamic_branch.jl")
 include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
+include("models/supplemental_setters.jl")
 
 # Supplemental attributes
 include("contingencies.jl")
