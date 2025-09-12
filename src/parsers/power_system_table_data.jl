@@ -25,7 +25,7 @@ function PowerSystemTableData(
     directory::String,
     user_descriptors::Union{String, Dict},
     descriptors::Union{String, Dict},
-    generator_mapping::Union{String, Dict};
+    generator_mapping::Dict;
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
@@ -67,10 +67,6 @@ function PowerSystemTableData(
         descriptors = _read_config_file(descriptors)
     end
 
-    if generator_mapping isa AbstractString
-        generator_mapping = get_generator_mapping(generator_mapping)
-    end
-
     return PowerSystemTableData(
         base_power,
         category_to_df,
@@ -99,7 +95,7 @@ Reads in all the data stored in csv files in a `directory`
 - `base_power::Float64`: base power for [`System`](@ref)
 - `user_descriptor_file::AbstractString`: customized input descriptor file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/user_descriptors.yaml)
 - `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: `PowerSystems.jl` descriptor file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json)
-- `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping.yaml)
+- `generator_mapping_file=GENERATOR_MAPPING_FILE_CDM`: generator mapping configuration file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping_cdm.yaml)
 - `timeseries_metadata_file = joinpath(directory, "timeseries_pointers")`: Time series pointers .json file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/timeseries_pointers.json)
 
 The general format for data in the `directory` is:
@@ -187,7 +183,7 @@ function PowerSystemTableData(
     base_power::Float64,
     user_descriptor_file::AbstractString;
     descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
-    generator_mapping_file = GENERATOR_MAPPING_FILE,
+    generator_mapping_file = GENERATOR_MAPPING_FILE_CDM,
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
     files = readdir(directory)
@@ -239,12 +235,20 @@ function PowerSystemTableData(
         error("No csv files or folders in $directory")
     end
 
+    generator_mapping = Dict{NamedTuple, DataType}()
+    try
+        generator_mapping = get_generator_mapping(generator_mapping_file)
+    catch e
+        @error "Error loading generator mapping $(generator_mapping_file)"
+        rethrow(e)
+    end
+
     return PowerSystemTableData(
         data,
         directory,
         user_descriptor_file,
         descriptor_file,
-        generator_mapping_file;
+        generator_mapping;
         timeseries_metadata_file = timeseries_metadata_file,
     )
 end
@@ -1361,7 +1365,7 @@ function make_thermal_generator_multistart(
 end
 
 function make_hydro_generator(
-    gen_type,
+    gen_type::DataType,
     data::PowerSystemTableData,
     gen,
     cost_colnames,
@@ -1404,17 +1408,14 @@ function make_hydro_generator(
                 bus = bus,
                 active_power = gen.active_power,
                 reactive_power = reactive_power,
-                prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
                 rating = rating,
                 active_power_limits = active_power_limits,
                 reactive_power_limits = reactive_power_limits,
                 ramp_limits = ramp_limits,
                 time_limits = time_limits,
+                outflow_limits = nothing,
                 operation_cost = operation_cost,
                 base_power = base_power,
-                storage_capacity = storage.head.storage_capacity,
-                inflow = storage.head.input_active_power_limit_max,
-                initial_storage = storage.head.energy_level,
             )
 
         elseif gen_type == HydroPumpTurbine
