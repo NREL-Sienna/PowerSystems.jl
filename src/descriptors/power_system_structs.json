@@ -5462,48 +5462,6 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "outflow_limits",
-                    "comment": "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable",
-                    "validation_action": "warn",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}"
-                },
-                {
-                    "name": "powerhouse_elevation",
-                    "comment": "Height level in meters above the sea level of the powerhouse on which the turbine is installed.",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW/min",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, UpDown}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, UpDown}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "0.0",
@@ -5520,6 +5478,52 @@
                     "data_type": "Union{HydroGenerationCost, MarketBidCost}",
                     "default": "HydroGenerationCost(nothing)",
                     "comment": "[`OperationalCost`](@ref) of generation"
+                },
+                {
+                    "name": "powerhouse_elevation",
+                    "comment": "Height level in meters above the sea level of the powerhouse on which the turbine is installed.",
+                    "null_value": "0.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "default": "0.0",
+                    "validation_action": "error"
+                },
+                {
+                    "name": "ramp_limits",
+                    "comment": "ramp up and ramp down limits in MW/min",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, UpDown}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "needs_conversion": true,
+                    "default": "nothing",
+                    "conversion_unit": ":mva"
+                },
+                {
+                    "name": "time_limits",
+                    "comment": "Minimum up and Minimum down time limits in hours",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, UpDown}",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "error",
+                    "default": "nothing"
+                },
+                {
+                    "name": "outflow_limits",
+                    "comment": "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable",
+                    "validation_action": "warn",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}",
+                    "default": "nothing"
                 },
                 {
                     "name": "efficiency",
