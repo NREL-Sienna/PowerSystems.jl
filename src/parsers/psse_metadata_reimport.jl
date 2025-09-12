@@ -168,7 +168,6 @@ function parse_export_metadata_dict(md::Dict)
             sid = device_dict["source_id"]
             p_bus_n = sid[2]
             p_name = sid[3]
-            println(sid)
             get(reversed_name_mapping, (p_bus_n, p_name), "$(p_bus_n)-$(p_name)")
         end
     end
@@ -176,10 +175,10 @@ function parse_export_metadata_dict(md::Dict)
     function make_hvdc_name_formatter(mapping)
         reversed_mapping = reverse_dict(mapping)
         return function (device_dict, bus_f::ACBus, bus_t::ACBus)
-            bus_f_num = bus_f.number
-            bus_t_num = bus_t.number
+            bus_f_name = get_name(bus_f)
+            bus_t_name = get_name(bus_t)
             name = device_dict["name"]
-            key = string(bus_f_num, "-", bus_t_num, "_", name)
+            key = string(bus_f_name, "-", bus_t_name, "-i_", name)
             new_name = get(reversed_mapping, key, key)
             return new_name
         end
