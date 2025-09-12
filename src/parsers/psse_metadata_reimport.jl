@@ -133,12 +133,12 @@ function parse_export_metadata_dict(md::Dict)
         if sid[1] in ["switch", "breaker"]
             p_name = replace(p_name, r"[@*]" => "_")
         end
-
-        return get(
-            all_branch_name_map,
-            ((p_bus_1, p_bus_2), p_name),
-            "$(p_bus_1)_$(p_bus_2)_$(p_name)",
-        )
+        bus_f_name = get_name(bus_f)
+        bus_t_name = get_name(bus_t)
+        key = ((p_bus_1, p_bus_2), p_name)
+        def_name = "$(bus_f_name)-$(bus_t_name)-i_$(p_name)"
+        new_name = get(all_branch_name_map, key, def_name)
+        return new_name
     end
 
     function xfrm_3w_name_formatter(
