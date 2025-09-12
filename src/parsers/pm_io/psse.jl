@@ -652,9 +652,9 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
-            sub_data["source_id"] =
-                ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
             sub_data["index"] = length(pm_data["switched_shunt"]) + 1
+            sub_data["source_id"] =
+                ["switched shunt", sub_data["shunt_bus"], sub_data["index"]]
 
             if import_all
                 _import_remaining_keys!(sub_data, switched_shunt)

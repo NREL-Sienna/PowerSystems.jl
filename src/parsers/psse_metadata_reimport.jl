@@ -167,13 +167,9 @@ function parse_export_metadata_dict(md::Dict)
         return function (device_dict)
             sid = device_dict["source_id"]
             p_bus_n = sid[2]
-            p_shunt_name = string(p_bus_n, "-", sid[3])
-            new_name = get(
-                reversed_name_mapping,
-                (p_bus_n, p_shunt_name),
-                "$(p_bus_n)_$(p_shunt_name)",
-            )
-            return new_name
+            p_name = sid[3]
+            println(sid)
+            get(reversed_name_mapping, (p_bus_n, p_name), "$(p_bus_n)-$(p_name)")
         end
     end
 
