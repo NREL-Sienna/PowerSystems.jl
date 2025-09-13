@@ -974,7 +974,7 @@ function make_cost(
 ) where {T <: ThermalGen}
     fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost = create_pwl_cost(cost_pairs)
+    var_cost = create_pwl_cost(gen, cost_pairs)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
     parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
@@ -1011,7 +1011,7 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: HydroGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost = create_pwl_cost(cost_pairs)
+    var_cost = create_pwl_cost(gen, cost_pairs)
     op_cost = HydroGenerationCost(
         CostCurve(var_cost, UnitSystem.NATURAL_UNITS),
         gen.fixed_cost)
@@ -1080,6 +1080,7 @@ function get_cost_pairs(gen::NamedTuple, cost_colnames)
 end
 
 function create_pwl_cost(
+    gen,
     cost_pairs,
 )
     if length(cost_pairs) > 1
