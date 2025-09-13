@@ -2682,6 +2682,9 @@ end
 function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
+        if !supports_services(device)
+            continue
+        end
         _remove_service!(device, service)
     end
 end
