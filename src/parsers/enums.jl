@@ -28,10 +28,12 @@ const ENUMS = (
     PrimeMovers,
     StateTypes,
     ReservoirDataType,
+    ReservoirLocation,
     ThermalFuels,
     UnitSystem,
     LoadConformity,
     WindingGroupNumber,
+    HydroTurbineType,
     TransformerControlObjective,
 )
 
@@ -81,3 +83,7 @@ Base.convert(::Type{StateTypes}, val::AbstractString) = get_enum_value(StateType
 Base.convert(::Type{ThermalFuels}, val::AbstractString) = get_enum_value(ThermalFuels, val)
 Base.convert(::Type{TransformerControlObjective}, val::AbstractString) =
     get_enum_value(TransformerControlObjective, val)
+Base.convert(::Type{ReservoirLocation}, val::AbstractString) =
+    get_enum_value(ReservoirLocation, val)
+Base.convert(::Type{HydroTurbineType}, val::AbstractString) =
+    get_enum_value(ReservoirLocation, val)
