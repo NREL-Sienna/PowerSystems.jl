@@ -179,3 +179,5 @@ set_operation_cost!(value::HydroReservoir, val::HydroReservoirCost) = value.oper
 set_level_data_type!(value::HydroReservoir, val::ReservoirDataType) = value.level_data_type = val
 """Set [`HydroReservoir`](@ref) `ext`."""
 set_ext!(value::HydroReservoir, val) = value.ext = val
+
+supports_services(::HydroReservoir) = false
