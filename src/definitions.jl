@@ -477,6 +477,22 @@ across different systems.
 - `OTHER`     : Placeholder for less common or custom turbine designs.
 " HydroTurbineType
 
+IS.@scoped_enum(
+    ReservoirLocation,
+    HEAD = 1,
+    TAIL = 2,
+)
+@doc"
+ReservoirLocation
+
+Enumeration representing the location of a hydro reservoir relative to its associated turbine.
+
+# Values
+- `HEAD`: The reservoir is located upstream of the turbine, typically at a higher elevation.
+- `TAIL`: The reservoir is located downstream of the turbine at a lower or same elevation.
+
+" ReservoirLocation
+
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 const DEFAULT_BASE_MVA = 100.0
 
