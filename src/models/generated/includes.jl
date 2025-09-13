@@ -635,7 +635,6 @@ export get_lg
 export get_load_balance_time_horizon
 export get_load_response
 export get_load_zone
-export get_reservoir_location
 export get_loss
 export get_loss_function
 export get_lv
@@ -1311,7 +1310,6 @@ export set_lg!
 export set_load_balance_time_horizon!
 export set_load_response!
 export set_load_zone!
-export set_reservoir_location!
 export set_loss!
 export set_loss_function!
 export set_lv!

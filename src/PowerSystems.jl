@@ -375,6 +375,7 @@ export has_service
 export remove_reservoir!
 export clear_reservoirs!
 export get_reservoirs
+export get_reservoir_location
 export has_reservoir
 export has_time_series
 export get_buses
