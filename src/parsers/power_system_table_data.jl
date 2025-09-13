@@ -949,7 +949,7 @@ function make_cost(
             create_poly_cost(gen, ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"])
     else
         cost_pairs = get_cost_pairs(gen, cost_colnames)
-        var_cost, fixed = create_pwinc_cost(cost_pairs)
+        var_cost, fixed = create_pwinc_cost(gen, cost_pairs)
     end
     parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
@@ -997,7 +997,7 @@ function make_cost(
 ) where {T <: HydroGen}
     fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost, fixed = create_pwinc_cost(cost_pairs)
+    var_cost, fixed = create_pwinc_cost(gen, cost_pairs)
     op_cost = HydroGenerationCost(
         FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price),
         fixed * fuel_price)
@@ -1070,8 +1070,13 @@ function get_cost_pairs(gen::NamedTuple, cost_colnames)
         end
     end
 
-    last_increasing_point = findfirst(x -> x < 0.0, [diff(getfield.(vals, :x))..., -Inf])
-    return vals[1:last_increasing_point]
+    if isempty(vals)
+        return vals
+    else
+        last_increasing_point =
+            findfirst(x -> x < 0.0, [diff(getfield.(vals, :x))..., -Inf])
+        return vals[1:last_increasing_point]
+    end
 end
 
 function create_pwl_cost(
@@ -1130,6 +1135,7 @@ function create_poly_cost(
 end
 
 function create_pwinc_cost(
+    gen,
     cost_pairs,
 )
     if length(cost_pairs) > 1
@@ -1144,7 +1150,9 @@ function create_pwinc_cost(
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = LinearCurve(cost_pairs[1].y)
     else
-        @warn "Unable to calculate variable cost for $(gen.name)" cost_pairs maxlog = 5
+        @warn "Unable to calculate variable cost for $(gen.name), defaulting to LinearCurve(0.0)" cost_pairs maxlog =
+            5
+        var_cost = LinearCurve(0.0)
     end
 
     return var_cost, 0.0
