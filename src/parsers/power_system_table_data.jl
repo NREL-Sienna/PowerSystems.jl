@@ -815,6 +815,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         if isnothing(device_subcategories)
             @info("Adding contributing components for $(reserve.name) by component name")
             for device in devices
+                @assert supports_services(device)
                 _add_device!(contributing_devices, device_categories, device)
             end
         else
@@ -825,6 +826,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
                 sys_gen = get_component(gen_type, sys, gen.name)
+                @assert supports_services(sys_gen)
                 if isnothing(sys_gen)
                     error(
                         "Failed to find generator: type = $gen_type name = $(gen.name) " *
