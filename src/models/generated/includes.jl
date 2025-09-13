@@ -1311,7 +1311,7 @@ export set_lg!
 export set_load_balance_time_horizon!
 export set_load_response!
 export set_load_zone!
-export set_location!
+export set_reservoir_location!
 export set_loss!
 export set_loss_function!
 export set_lv!
