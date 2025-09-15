@@ -131,7 +131,7 @@ function get_max_reactive_power(d::RenewableDispatch)
 end
 
 """
-Generic fallback function for getting active power limits. Throws ArgumentError for devices
+Generic fallback function for getting active power limits. Throws `ArgumentError` for devices
 that don't implement this function.
 """
 get_active_power_limits(::T) where {T <: Device} =
