@@ -15,7 +15,7 @@ Set the [`LoadZone`](@ref) for an [`ACBus`](@ref).
 """
 set_load_zone!(bus::ACBus, load_zone::LoadZone) = bus.load_zone = load_zone
 """
-Set the area for an [`ACBus`](@ref).
+Set the [`Area`](@ref) for an [`ACBus`](@ref).
 """
 set_area!(bus::ACBus, area::Area) = bus.area = area
 
