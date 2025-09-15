@@ -109,7 +109,7 @@ function get_max_active_power(d::T) where {T <: StaticInjection}
 end
 
 """
-Return the max reactive power for a device as the max field in the named tupe returned by [`get_reactive_power_limits`](@ref).
+Return the max reactive power for a device as the max field in the named tuple returned by [`get_reactive_power_limits`](@ref).
 """
 function get_max_reactive_power(d::T)::Float64 where {T <: StaticInjection}
     if isnothing(get_reactive_power_limits(d))
