@@ -137,7 +137,7 @@ that don't implement this function.
 get_active_power_limits(::T) where {T <: Device} =
     throw(ArgumentError("get_active_power_limits not implemented for $T"))
 """
-Generic fallback function for getting reactive power limits. Throws ArgumentError for devices
+Generic fallback function for getting reactive power limits. Throws `ArgumentError` for devices
 that don't implement this function.
 """
 get_reactive_power_limits(::T) where {T <: Device} =
