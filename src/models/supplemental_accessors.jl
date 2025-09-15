@@ -194,7 +194,7 @@ end
 """
 Calculate the phase shift angle α for a [`TapTransformer`](@ref) or [`Transformer2W`](@ref) based on its winding group number.
 Returns the angle in radians, calculated as -(π/6) * winding_group_number.
-If the winding group number is undefined, returns 0.0 and issues a warning.
+If the `winding_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
 """
 function get_α(t::Union{TapTransformer, Transformer2W})
     if get_winding_group_number(t) == WindingGroupNumber.UNDEFINED
