@@ -208,7 +208,7 @@ end
 """
 Calculate the phase shift angle α for the primary winding of a [`Transformer3W`](@ref)
 based on its primary winding group number. Returns the angle in radians, calculated
-as -(π/6) * primary_group_number. If undefined, returns 0.0 and issues a warning.
+as -(π/6) * `primary_group_number`. If `primary_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
 """
 function get_α_primary(t::Transformer3W)
     if get_primary_group_number(t) == WindingGroupNumber.UNDEFINED
