@@ -53,6 +53,8 @@ end
 Returns the series susceptance of a [`PhaseShiftingTransformer3W`](@ref) as three values
 (for each of the 3 branches) following the convention in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 The phase shift angles are ignored in the susceptance calculation.
+
+See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::Transformer3W)) for [`Transformer3W`](@ref) 
 """
 function get_series_susceptances(b::PhaseShiftingTransformer3W)
     y1 = 1 / get_x_primary(b)
