@@ -173,7 +173,7 @@ function get_from_to_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).from_to
 end
 """
-Get the flow limit from destination area to source area for an [`AreaInterchange`](@ref).
+Get the flow limits from destination [`Area`](@ref) to source [`Area`](@ref) for an [`AreaInterchange`](@ref).
 """
 function get_to_from_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).to_from
