@@ -167,7 +167,7 @@ function get_max_active_power(d::Union{InterruptibleStandardLoad, StandardLoad})
 end
 
 """
-Get the flow limit from source area to destination area for an [`AreaInterchange`](@ref).
+Get the flow limits from source [`Area`](@ref) to destination [`Area`](@ref) for an [`AreaInterchange`](@ref).
 """
 function get_from_to_flow_limit(a::AreaInterchange)
     return get_flow_limits(a).from_to
