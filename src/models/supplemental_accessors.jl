@@ -72,6 +72,8 @@ end
 Returns the series susceptance of a [`Transformer3W`](@ref) as three values
 (for each of the 3 branches) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
+
+See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::PhaseShiftingTransformer3W)) for [`PhaseShiftingTransformer3W`](@ref) 
 """
 function get_series_susceptances(b::Transformer3W)
     Z1s = get_r_primary(b) + get_x_primary(b) * 1im
