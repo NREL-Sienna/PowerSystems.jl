@@ -119,7 +119,7 @@ function get_max_reactive_power(d::T)::Float64 where {T <: StaticInjection}
 end
 
 """
-Return the max reactive power for the [`RenewableDispatch`](@ref) calculated as the rating * power_factor if
+Return the max reactive power for a [`RenewableDispatch`](@ref) generator calculated as the `rating` * `power_factor` if
 the field reactive_power_limits is nothing
 """
 function get_max_reactive_power(d::RenewableDispatch)
