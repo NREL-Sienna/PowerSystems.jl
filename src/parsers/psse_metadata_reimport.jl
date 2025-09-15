@@ -147,12 +147,12 @@ function parse_export_metadata_dict(md::Dict)
         s_bus::ACBus,
         t_bus::ACBus,
     )::String
-        bus_primary = device_dict["bus_primary"]
-        bus_secondary = device_dict["bus_secondary"]
-        bus_tertiary = device_dict["bus_tertiary"]
+        bus_primary = get_name(p_bus)
+        bus_secondary = get_name(s_bus)
+        bus_tertiary = get_name(t_bus)
         ckt = device_dict["circuit"]
 
-        return "$(bus_primary)-$(bus_secondary)-$(bus_tertiary)_i-$(ckt)"
+        return "$(bus_primary)-$(bus_secondary)-$(bus_tertiary)-i_$(ckt)"
     end
 
     function make_switched_shunt_name_formatter(mapping, bus_number_mapping)
