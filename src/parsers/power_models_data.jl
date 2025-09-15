@@ -717,7 +717,46 @@ function read_loadzones!(
     end
 end
 
-function make_hydro_gen(
+function make_hydro_dispatch(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
+    return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        active_power = d["pg"] * base_conversion,
+        reactive_power = d["qg"] * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
+        prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
+        active_power_limits = (
+            min = d["pmin"] * base_conversion,
+            max = d["pmax"] * base_conversion,
+        ),
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
+        time_limits = nothing,
+        operation_cost = curtailcost,
+        base_power = mbase,
+    )
+end
+
+function make_hydro_reservoir(
     gen_name::Union{SubString{String}, String},
     d::Dict,
     bus::ACBus,
@@ -1046,9 +1085,12 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
         return nothing
     end
 
-    generator_mapping = get(kwargs, :generator_mapping, nothing)
-    if generator_mapping isa AbstractString || isnothing(generator_mapping)
+    generator_mapping = get(kwargs, :generator_mapping, GENERATOR_MAPPING_FILE_PM)
+    try
         generator_mapping = get_generator_mapping(generator_mapping)
+    catch e
+        @error "Error loading generator mapping $(generator_mapping)"
+        rethrow(e)
     end
 
     sys_mbase = data["baseMVA"]
@@ -1065,8 +1107,11 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == HydroEnergyReservoir
-            generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == HydroDispatch
+            generator = make_hydro_dispatch(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == HydroTurbine
+            # This method adds a
+            generator = make_hydro_reservoir(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableNonDispatch

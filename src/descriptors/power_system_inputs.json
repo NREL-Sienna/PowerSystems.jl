@@ -818,7 +818,6 @@
             "name": "generator_category",
             "value_options": [
                 "HydroDispatch",
-                "HydroEnergyReservoir",
                 "RenewableNonDispatch",
                 "RenewableDispatch",
                 "ThermalStandard",

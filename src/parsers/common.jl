@@ -1,5 +1,8 @@
-const GENERATOR_MAPPING_FILE =
-    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping.yaml")
+const GENERATOR_MAPPING_FILE_PM =
+    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping_pm.yaml")
+
+const GENERATOR_MAPPING_FILE_CDM =
+    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping_cdm.yaml")
 
 const PSSE_DYR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "psse_dynamic_mapping.yaml")
@@ -47,10 +50,7 @@ merge!(
 
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
 generator types."""
-function get_generator_mapping(filename = nothing)
-    if isnothing(filename)
-        filename = GENERATOR_MAPPING_FILE
-    end
+function get_generator_mapping(filename::String)
     genmap = open(filename) do file
         YAML.load(file)
     end

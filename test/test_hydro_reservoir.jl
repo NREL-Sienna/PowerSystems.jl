@@ -55,7 +55,7 @@ end
 @testset "Test single `HydroTurbine` with single `HydroReservoir`" begin
     sys = System(100.0)
 
-    bus = ACBus(nothing)
+    bus = nodes5()[4]
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -88,7 +88,7 @@ end
 @testset "Test multiple `HydroTurbine` with single `HydroReservoir`" begin
     sys = System(100.0)
 
-    bus = ACBus(nothing)
+    bus = nodes5()[4]
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)
@@ -127,7 +127,7 @@ end
 @testset "Test single `HydroTurbine` with multiple `HydroReservoir`" begin
     sys = System(100.0)
 
-    bus = ACBus(nothing)
+    bus = nodes5()[4]
     bus.name = "bus1"
     bus.number = 1
     add_component!(sys, bus)

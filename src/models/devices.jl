@@ -76,6 +76,9 @@ end
 Return true if a service with type T is attached to the device.
 """
 function has_service(device::Device, ::Type{T}) where {T <: Service}
+    if !supports_services(device)
+        return false
+    end
     for _service in get_services(device)
         if isa(_service, T)
             return true

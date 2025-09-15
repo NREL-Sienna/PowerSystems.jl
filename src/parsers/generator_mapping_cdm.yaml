@@ -1,6 +1,6 @@
 # Parsing code ignores type=null.
 
-HydroEnergyReservoir:
+HydroTurbine:
 - {fuel: HYDRO, type: null}
 - {fuel: HYDRO, type: HYDRO}
 

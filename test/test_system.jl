@@ -51,11 +51,14 @@
     @test get_time_series_resolutions(sys)[1] == Dates.Hour(1)
 
     # Get time_series with a name and without.
-    components = collect(get_components(HydroEnergyReservoir, sys))
+    components = collect(get_components(HydroTurbine, sys))
     @test !isempty(components)
     component = components[1]
     ts = get_time_series(SingleTimeSeries, component, "max_active_power")
     @test ts isa SingleTimeSeries
+
+    components = collect(get_components(HydroReservoir, sys))
+    @test !isempty(components)
 
     returned_it, returned_len = check_time_series_consistency(sys, SingleTimeSeries)
     @test returned_it == first(TimeSeries.timestamp(get_data(ts)))
