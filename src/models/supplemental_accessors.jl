@@ -31,9 +31,11 @@ Generic method to calculate the admittance of [`ACTransmission`](@ref) devices.
 get_series_susceptance(b::ACTransmission) = 1 / get_x(b)
 
 """
-Returns the series susceptance of a controllable 2-winding transformer (e.g., [`TapTransformer`](@ref), [`PhaseShiftingTransformer`](@ref))  following the convention
+Returns the series susceptance of a controllable 2-winding transformer (e.g., [`TapTransformer`](@ref), [`PhaseShiftingTransformer`](@ref)) following the convention
 in power systems to define susceptance as the inverse of the imaginary part of the impedance.
 In the case of phase shifter transformers the angle is ignored.
+
+See also: [`get_series_susceptances`](@ref) for 3-winding transformers
 """
 function get_series_susceptance(b::Union{TapTransformer, PhaseShiftingTransformer})
     y = 1 / get_x(b)

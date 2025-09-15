@@ -5,6 +5,7 @@ const _ENCODE_AS_UUID_A = (
     Union{Nothing, LoadZone},
     Union{Nothing, DynamicInjection},
     Union{Nothing, StaticInjection},
+    Union{Nothing, HydroReservoir},
     Vector{Service},
     Vector{HydroReservoir},
 )
@@ -17,6 +18,7 @@ const _ENCODE_AS_UUID_B =
         LoadZone,
         DynamicInjection,
         StaticInjection,
+        HydroReservoir,
         Vector{Service},
         Vector{HydroReservoir},
     )

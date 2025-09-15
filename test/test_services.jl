@@ -380,6 +380,18 @@ end
     end
 end
 
+@testset "Test Service Removal" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    res_up = PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up")
+    res_dn = PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down")
+    PSY.remove_component!(sys, res_dn)
+    PSY.remove_component!(sys, res_up)
+    @test isnothing(PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up"))
+    @test isnothing(
+        PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down"),
+    )
+end
+
 @testset "Test TransmissionInterface" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     lines = get_components(Line, sys)
