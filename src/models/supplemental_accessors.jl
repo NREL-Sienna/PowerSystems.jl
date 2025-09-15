@@ -120,7 +120,7 @@ end
 
 """
 Return the max reactive power for a [`RenewableDispatch`](@ref) generator calculated as the `rating` * `power_factor` if
-the field reactive_power_limits is nothing
+the field `reactive_power_limits` is `nothing`
 """
 function get_max_reactive_power(d::RenewableDispatch)
     reactive_power_limits = get_reactive_power_limits(d)
