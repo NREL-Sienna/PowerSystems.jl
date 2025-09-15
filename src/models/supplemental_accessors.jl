@@ -102,7 +102,7 @@ function get_series_admittance(::Union{PhaseShiftingTransformer3W, Transformer3W
 end
 
 """
-Return the max active power for a device as the max field in the named tupe returned by [`get_active_power_limits`](@ref).
+Return the max active power for a device as the max field in the named tuple returned by [`get_active_power_limits`](@ref).
 """
 function get_max_active_power(d::T) where {T <: StaticInjection}
     return get_active_power_limits(d).max
