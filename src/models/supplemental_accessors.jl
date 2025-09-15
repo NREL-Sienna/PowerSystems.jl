@@ -234,7 +234,7 @@ end
 """
 Calculate the phase shift angle α for the tertiary winding of a [`Transformer3W`](@ref)
 based on its tertiary winding group number. Returns the angle in radians, calculated
-as -(π/6) * tertiary_group_number. If undefined, returns 0.0 and issues a warning.
+as -(π/6) * `tertiary_group_number`. If `tertiary_group_number` is `WindingGroupNumber.UNDEFINED`, returns 0.0 and issues a warning.
 """
 function get_α_tertiary(t::Transformer3W)
     if get_tertiary_group_number(t) == WindingGroupNumber.UNDEFINED
