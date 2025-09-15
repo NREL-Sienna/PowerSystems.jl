@@ -11,7 +11,7 @@ For [`Area`](@ref) types, returns [`get_area`](@ref); for [`LoadZone`](@ref) typ
 get_aggregation_topology_accessor(::Type{LoadZone}) = get_load_zone
 
 """
-Set the load zone for an [`ACBus`](@ref).
+Set the [`LoadZone`](@ref) for an [`ACBus`](@ref).
 """
 set_load_zone!(bus::ACBus, load_zone::LoadZone) = bus.load_zone = load_zone
 """
