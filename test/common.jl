@@ -7,6 +7,10 @@ mutable struct TestRenDevice <: RenewableGen
     name::String
 end
 
+mutable struct TestInjector <: StaticInjection
+    name::String
+end
+
 struct NonexistentComponent <: StaticInjection end
 
 """Return the first component of type component_type that matches the name of other."""
