@@ -149,7 +149,7 @@ that don't implement this function.
 get_rating(::T) where {T <: Device} =
     throw(ArgumentError("get_rating not implemented for $T"))
 """
-Generic fallback function for getting power factor. Throws ArgumentError for devices
+Generic fallback function for getting power factor. Throws `ArgumentError` for devices
 that don't implement this function.
 """
 get_power_factor(::T) where {T <: Device} =
