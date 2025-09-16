@@ -1505,7 +1505,8 @@ function make_tap_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1516,6 +1517,10 @@ function make_tap_transformer(
     end
 
     ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective =
+        control_objective_formatter !== nothing ? control_objective_formatter(name) : -99
 
     return TapTransformer(;
         name = name,
@@ -1535,7 +1540,7 @@ function make_tap_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
         ext = ext,
     )
 end
@@ -1544,7 +1549,8 @@ function make_phase_shifting_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1555,6 +1561,10 @@ function make_phase_shifting_transformer(
     end
 
     ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective =
+        control_objective_formatter !== nothing ? control_objective_formatter(name) : -99
 
     return PhaseShiftingTransformer(;
         name = name,
@@ -1574,7 +1584,7 @@ function make_phase_shifting_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
         ext = ext,
     )
 end

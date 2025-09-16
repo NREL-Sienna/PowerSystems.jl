@@ -205,6 +205,9 @@ function parse_export_metadata_dict(md::Dict)
     area_name_map = reverse_dict(md["area_mapping"])
     get!(area_name_map, 1, "1")
     area_name_formatter = name -> area_name_map[name]
+    transformer_control_objective_map = md["transformer_control_objective_mapping"]
+    transformer_control_objective_formatter =
+        name -> get(transformer_control_objective_map, name, name)
     sys_kwargs = Dict(
         :area_name_formatter => area_name_formatter,
         :loadzone_name_formatter => loadzone_name_formatter,
@@ -215,6 +218,8 @@ function parse_export_metadata_dict(md::Dict)
         :branch_name_formatter => branch_name_formatter,
         :xfrm_3w_name_formatter => xfrm_3w_name_formatter,
         :switched_shunt_name_formatter => switched_shunt_name_formatter,
+        :transformer_control_objective_formatter =>
+            transformer_control_objective_formatter,
         :dcline_name_formatter => dcline_name_formatter,
         :vscline_name_formatter => vscline_name_formatter,
     )

@@ -6,6 +6,7 @@ const SYSTEM_KWARGS = Set((
     :branch_name_formatter,
     :xfrm_3w_name_formatter,
     :switched_shunt_name_formatter,
+    :transformer_control_objective_formatter,
     :dcline_name_formatter,
     :vscline_name_formatter,
     :bus_name_formatter,
