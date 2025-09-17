@@ -1415,6 +1415,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 for prefix in [
                     "COD",
                     "CONT",
+                    "NOMV",
+                    "WINDV",
                     "RMA",
                     "RMI",
                     "NTP",
