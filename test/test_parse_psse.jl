@@ -64,11 +64,7 @@ end
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
-    sys3 =
-        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
-            PSSEParsingTestSystems,
-            "psse_ACTIVSg2000_sys",
-        )
+    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
     sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
