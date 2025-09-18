@@ -1410,6 +1410,8 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CM" => transformer["CM"],
                     "MAG1" => transformer["MAG1"],
                     "MAG2" => transformer["MAG2"],
+                    "VMSTAR" => transformer["VMSTAR"],
+                    "ANSTAR" => transformer["ANSTAR"],
                 )
 
                 for prefix in [

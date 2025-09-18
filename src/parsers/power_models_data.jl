@@ -1173,7 +1173,8 @@ function make_branch(
     d::Dict,
     bus_f::ACBus,
     bus_t::ACBus,
-    source_type::String,
+    source_type::String;
+    kwargs...,
 )
     if source_type == "matpower"
         branch_type = get_branch_type_matpower(d)
@@ -1192,11 +1193,11 @@ function make_branch(
     elseif branch_type == DiscreteControlledACBranch
         value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
     elseif branch_type == Transformer2W
-        value = make_transformer_2w(name, d, bus_f, bus_t)
+        value = make_transformer_2w(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == TapTransformer
-        value = make_tap_transformer(name, d, bus_f, bus_t)
+        value = make_tap_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == PhaseShiftingTransformer
-        value = make_phase_shifting_transformer(name, d, bus_f, bus_t)
+        value = make_phase_shifting_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == Line
         value = make_line(name, d, bus_f, bus_t)
     else
@@ -1329,7 +1330,8 @@ function make_transformer_2w(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1339,14 +1341,19 @@ function make_transformer_2w(
         available_value = false
     end
 
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+
     return Transformer2W(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
+        r = r,
+        x = x,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
@@ -1520,7 +1527,17 @@ function make_tap_transformer(
     control_objective_formatter =
         get(kwargs, :transformer_control_objective_formatter, nothing)
     control_objective =
-        control_objective_formatter !== nothing ? control_objective_formatter(name) : -99
+        if control_objective_formatter !== nothing
+            control_objective_formatter(name)
+        else
+            get(d, "COD1", -99)
+        end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
 
     return TapTransformer(;
         name = name,
@@ -1528,9 +1545,9 @@ function make_tap_transformer(
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         base_power = d["base_power"],
@@ -1564,7 +1581,17 @@ function make_phase_shifting_transformer(
     control_objective_formatter =
         get(kwargs, :transformer_control_objective_formatter, nothing)
     control_objective =
-        control_objective_formatter !== nothing ? control_objective_formatter(name) : -99
+        if control_objective_formatter !== nothing
+            control_objective_formatter(name)
+        else
+            get(d, "COD1", -99)
+        end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
 
     return PhaseShiftingTransformer(;
         name = name,
@@ -1572,9 +1599,9 @@ function make_phase_shifting_transformer(
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = d["shift"],
         base_power = d["base_power"],
@@ -1608,7 +1635,7 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t, source_type)
+        value = make_branch(name, d, bus_f, bus_t, source_type; kwargs...)
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
