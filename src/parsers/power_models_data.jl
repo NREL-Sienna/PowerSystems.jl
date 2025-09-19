@@ -231,8 +231,8 @@ function _impedance_correction_table_lookup(data::Dict)
         return ict_instances
     end
 
-    for (table_number, table_data) in data["impedance_correction"]
-        table_number = parse(Int64, table_number)
+    for (_, table_data) in data["impedance_correction"]
+        table_number = table_data["table_number"]
         x = table_data["tap_or_angle"]
         y = table_data["scaling_factor"]
 
@@ -302,7 +302,7 @@ Attaches the corresponding ICT data to a Transformer2W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
-    transformer::Transformer2W,
+    transformer::TwoWindingTransformer,
     name::String,
     d::Dict,
     ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
@@ -1037,7 +1037,7 @@ function make_synchronous_condenser(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ext = Dict{String, Float64}()
+    ext = get(d, "ext", Dict{String, Any}())
     if haskey(d, "r_source") && haskey(d, "x_source")
         ext["r"] = d["r_source"]
         ext["x"] = d["x_source"]
@@ -1218,7 +1218,8 @@ function make_branch(
     d::Dict,
     bus_f::ACBus,
     bus_t::ACBus,
-    source_type::String,
+    source_type::String;
+    kwargs...,
 )
     if source_type == "matpower"
         branch_type = get_branch_type_matpower(d)
@@ -1237,11 +1238,11 @@ function make_branch(
     elseif branch_type == DiscreteControlledACBranch
         value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
     elseif branch_type == Transformer2W
-        value = make_transformer_2w(name, d, bus_f, bus_t)
+        value = make_transformer_2w(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == TapTransformer
-        value = make_tap_transformer(name, d, bus_f, bus_t)
+        value = make_tap_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == PhaseShiftingTransformer
-        value = make_phase_shifting_transformer(name, d, bus_f, bus_t)
+        value = make_phase_shifting_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == Line
         value = make_line(name, d, bus_f, bus_t)
     else
@@ -1374,7 +1375,8 @@ function make_transformer_2w(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1384,14 +1386,19 @@ function make_transformer_2w(
         available_value = false
     end
 
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+
     return Transformer2W(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
+        r = r,
+        x = x,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
@@ -1550,7 +1557,8 @@ function make_tap_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1560,15 +1568,31 @@ function make_tap_transformer(
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective =
+        if control_objective_formatter !== nothing
+            control_objective_formatter(name)
+        else
+            get(d, "COD1", -99)
+        end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
+
     return TapTransformer(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         base_power = d["base_power"],
@@ -1578,7 +1602,8 @@ function make_tap_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
+        ext = ext,
     )
 end
 
@@ -1586,7 +1611,8 @@ function make_phase_shifting_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1596,15 +1622,31 @@ function make_phase_shifting_transformer(
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective =
+        if control_objective_formatter !== nothing
+            control_objective_formatter(name)
+        else
+            get(d, "COD1", -99)
+        end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
+
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = d["shift"],
         base_power = d["base_power"],
@@ -1614,7 +1656,8 @@ function make_phase_shifting_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
+        ext = ext,
     )
 end
 
@@ -1637,7 +1680,7 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t, source_type)
+        value = make_branch(name, d, bus_f, bus_t, source_type; kwargs...)
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
@@ -1645,7 +1688,7 @@ function read_branch!(
             continue
         end
 
-        if isa(value, Transformer2W)
+        if isa(value, TwoWindingTransformer)
             _attach_impedance_correction_tables!(
                 sys,
                 value,
@@ -1853,7 +1896,7 @@ function read_dcline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :dcline_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["dcline"]
         d["name"] = get(d, "name", d_key)
@@ -1912,7 +1955,7 @@ function read_vscline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :vsc_line_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["vscline"]
         d["name"] = get(d, "name", d_key)
@@ -1955,7 +1998,7 @@ function read_switched_shunt!(
         return
     end
 
-    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :switched_shunt_name_formatter, _get_pm_dict_name)
 
     for (d_key, d) in data["switched_shunt"]
         d["name"] = get(d, "name", d_key)

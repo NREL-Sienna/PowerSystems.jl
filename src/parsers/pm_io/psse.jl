@@ -349,7 +349,13 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "BASLOD" => pop!(gen, "BASLOD"),
                 )
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"] = Dict{String, Any}(
+                    "IREG" => pop!(gen, "IREG"),
+                    "WPF" => pop!(gen, "WPF"),
+                    "WMOD" => sub_data["m_control_mode"],
+                    "GTAP" => pop!(gen, "GTAP"),
+                    "RMPCT" => pop!(gen, "RMPCT"),
+                )
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
@@ -609,7 +615,12 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
 
-            sub_data["ext"] = Dict{String, Any}()
+            sub_data["ext"] = Dict{String, Any}(
+                "MODSW" => switched_shunt["MODSW"],
+                "ADJM" => switched_shunt["ADJM"],
+                "RMPCT" => switched_shunt["RMPCT"],
+                "RMIDNT" => switched_shunt["RMIDNT"],
+            )
 
             y_increment = Dict(
                 k => v for
@@ -636,14 +647,14 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"]["SWREM"] = switched_shunt["SWREM"]
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
-            sub_data["source_id"] =
-                ["switched shunt", sub_data["shunt_bus"], pop!(switched_shunt, "SWREM")]
             sub_data["index"] = length(pm_data["switched_shunt"]) + 1
+            sub_data["source_id"] =
+                ["switched shunt", sub_data["shunt_bus"], sub_data["index"]]
 
             if import_all
                 _import_remaining_keys!(sub_data, switched_shunt)
@@ -858,6 +869,20 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
+                    "COD1" => transformer["COD1"],
+                    "CONT1" => transformer["CONT1"],
+                    "NOMV1" => transformer["NOMV1"],
+                    "NOMV2" => transformer["NOMV2"],
+                    "WINDV1" => transformer["WINDV1"],
+                    "WINDV2" => transformer["WINDV2"],
+                    "SBASE1-2" => transformer["SBASE1-2"],
+                    "RMI1" => transformer["RMI1"],
+                    "RMA1" => transformer["RMA1"],
+                    "NTP1" => transformer["NTP1"],
+                    "R1-2" => transformer["R1-2"],
+                    "X1-2" => transformer["X1-2"],
+                    "MAG1" => transformer["MAG1"],
+                    "MAG2" => transformer["MAG2"],
                 )
 
                 if pm_data["source_version"] ∈ ("32", "33")
@@ -962,7 +987,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["correction_table"] = transformer["TAB1"]
 
                 sub_data["index"] = length(pm_data["branch"]) + 1
-                sub_data["COD1"] = pop!(transformer, "COD1")
+                sub_data["COD1"] = transformer["COD1"]
                 if import_all
                     _import_remaining_keys!(
                         sub_data,
@@ -1374,16 +1399,32 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                         )
                 end
                 sub_data["circuit"] = strip(transformer["CKT"])
-                sub_data["COD1"] = pop!(transformer, "COD1")
-                sub_data["COD2"] = pop!(transformer, "COD2")
-                sub_data["COD3"] = pop!(transformer, "COD3")
+                sub_data["COD1"] = transformer["COD1"]
+                sub_data["COD2"] = transformer["COD2"]
+                sub_data["COD3"] = transformer["COD3"]
 
                 sub_data["ext"] = Dict{String, Any}(
                     "psse_name" => transformer["NAME"],
                     "CW" => transformer["CW"],
                     "CZ" => transformer["CZ"],
                     "CM" => transformer["CM"],
+                    "MAG1" => transformer["MAG1"],
+                    "MAG2" => transformer["MAG2"],
+                    "VMSTAR" => transformer["VMSTAR"],
+                    "ANSTAR" => transformer["ANSTAR"],
                 )
+
+                for prefix in TRANSFORMER3W_PARAMETER_NAMES
+                    for i in 1:length(WINDING_NAMES)
+                        key = "$prefix$i"
+                        sub_data["ext"][key] = transformer[key]
+                    end
+                end
+
+                for suffix in ["1-2", "2-3", "3-1"]
+                    sub_data["ext"]["R$suffix"] = transformer["R$suffix"]
+                    sub_data["ext"]["X$suffix"] = transformer["X$suffix"]
+                end
 
                 sub_data["index"] = length(pm_data["3w_transformer"]) + 1
 
@@ -1445,7 +1486,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             sub_data["transfer_setpoint"] = dcline["SETVL"]
 
-            sub_data["name"] = dcline["NAME"]
+            sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
             if pm_data["has_isolated_buses"]
@@ -1558,7 +1599,9 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["r"] = dcline["RDC"] / ZbaseR
 
             if pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"] = Dict{String, Any}(
+                    "psse_name" => dcline["NAME"],
+                )
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"] = Dict{String, Any}(
                     "NDR" => dcline["NDR"],
@@ -1596,7 +1639,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # artificial generators from a VSC, but it is not clear to me how
             # the value of "pg" is determined and adds shunt to the DC-side bus.
             sub_data = Dict{String, Any}()
-            sub_data["name"] = dcline["NAME"]
+            sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
 
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = from_bus["IBUS"]
@@ -1686,6 +1729,15 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 "REMOT_TO" => to_bus["REMOT"],
                 "RMPCT_FROM" => from_bus["RMPCT"],
                 "RMPCT_TO" => to_bus["RMPCT"],
+                "ALOSS_FROM" => from_bus["ALOSS"],
+                "ALOSS_TO" => to_bus["ALOSS"],
+                "MINLOSS_FROM" => from_bus["MINLOSS"],
+                "MINLOSS_TO" => to_bus["MINLOSS"],
+                "TYPE_FROM" => from_bus["TYPE"],
+                "TYPE_TO" => to_bus["TYPE"],
+                "MODE_FROM" => from_bus["MODE"],
+                "MODE_TO" => to_bus["MODE"],
+                "RDC" => dcline["RDC"],
             )
 
             sub_data["source_id"] =
@@ -1719,7 +1771,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             )
             sub_data = Dict{String, Any}()
 
-            sub_data["name"] = facts["NAME"]
+            sub_data["name"] = strip(facts["NAME"], ['"', '\''])
             sub_data["control_mode"] = facts["MODE"]
 
             # MODE = 0 -> Unavailable
@@ -1743,14 +1795,15 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
 
             sub_data["reactive_power_required"] = facts["RMPCT"]
-
             sub_data["ext"] = Dict{String, Any}()
 
             if pm_data["source_version"] == "35"
                 sub_data["ext"]["NREG"] = facts["NREG"]
                 sub_data["ext"]["MNAME"] = facts["MNAME"]
             elseif pm_data["source_version"] ∈ ("32", "33")
-                sub_data["ext"] = Dict{String, Any}()
+                sub_data["ext"] = Dict{String, Any}(
+                    "J" => facts["J"],
+                )
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
