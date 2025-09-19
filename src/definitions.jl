@@ -288,3 +288,8 @@ const WINDING_NAMES = Dict(
     WindingCategory.SECONDARY_WINDING => "secondary",
     WindingCategory.TERTIARY_WINDING => "tertiary",
 )
+
+const TRANSFORMER3W_PARAMETER_NAMES = [
+    "COD", "CONT", "NOMV", "WINDV", "RMA", "RMI",
+    "NTP", "VMA", "VMI", "RATA", "RATB", "RATC",
+]
