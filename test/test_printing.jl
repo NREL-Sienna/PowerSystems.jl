@@ -30,7 +30,11 @@ function are_type_and_fields_in_output(obj::T) where {T <: Component}
 
         # Account for the fact that type may be abstract.
         actual_type = typeof(val)
-        if actual_type <: IS.InfrastructureSystemsType || actual_type <: Vector{<:Service}
+        if actual_type <: IS.InfrastructureSystemsType
+            expected = string(actual_type)
+        elseif actual_type <: Vector{<:Service}
+            expected = string(actual_type)
+        elseif actual_type <: Vector{<:IS.InfrastructureSystemsType}
             expected = string(actual_type)
         else
             expected = string(val)

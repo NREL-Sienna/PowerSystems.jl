@@ -163,6 +163,7 @@ end
 
 @testset "2000-Bus Parsing" begin
     test_dir = mktempdir()
+    sys = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
     for g in get_components(ThermalStandard, sys)
         if isnothing(get_dynamic_injector(g))
             @error "ThermalStandard $(get_name(g)) should have a dynamic injector"
