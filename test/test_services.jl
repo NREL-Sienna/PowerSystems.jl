@@ -453,3 +453,21 @@ end
         [area_interchange12, area_interchange13, line],
     )
 end
+
+@testset "Test AGC" begin
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
+    thermals = get_components(ThermalStandard, sys)
+    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    agc = AGC(;
+        name = "agc",
+        available = true,
+        bias = 0.0,
+        K_p = 1.0,
+        K_i = 1.0,
+        K_d = 1.0,
+        delta_t = 1.0,
+    )
+    @test_throws ArgumentError add_service!(sys, agc, thermals)
+    add_service!(sys, agc, reserves)
+    @test_throws ArgumentError add_service!(sys, agc, reserves)
+end

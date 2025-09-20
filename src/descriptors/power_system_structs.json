@@ -7414,6 +7414,13 @@
                     "data_type": "Float64"
                 },
                 {
+                    "name": "reserves",
+                    "data_type": "Vector{Reserve}",
+                    "comment": "Reserves that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
+                },
+                {
                     "name": "ext",
                     "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
                     "data_type": "Dict{String, Any}",

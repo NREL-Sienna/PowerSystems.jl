@@ -835,6 +835,16 @@ function _validate_types_for_interface(sys::System, contributing_devices)
     return
 end
 
+function _validate_types_for_agc(contributing_devices)
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Reserve)
+            throw(ArgumentError("contributing_devices of AGC must be of type Reserve"))
+        end
+    end
+    return
+end
+
 function _add_service!(
     sys::System,
     service::TransmissionInterface,
@@ -850,6 +860,24 @@ function _add_service!(
 
     for device in contributing_devices
         add_service_internal!(device, service)
+    end
+end
+
+function _add_service!(
+    sys::System,
+    service::AGC,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
+    _validate_types_for_agc(contributing_devices)
+    set_units_setting!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+
+    for device in contributing_devices
+        add_service_internal!(service, device)
     end
 end
 
