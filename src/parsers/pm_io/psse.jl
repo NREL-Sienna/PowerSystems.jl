@@ -1417,7 +1417,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 for prefix in TRANSFORMER3W_PARAMETER_NAMES
                     for i in 1:length(WINDING_NAMES)
                         key = "$prefix$i"
-                        sub_data["ext"][key] = transformer[key]
+                        if pm_data["source_version"] ∈ ("32", "33")
+                            sub_data["ext"][key] = transformer[key]
+                        else
+                            continue
+                        end
                     end
                 end
 
