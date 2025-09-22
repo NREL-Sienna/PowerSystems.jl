@@ -2310,11 +2310,13 @@ function deserialize_components!(sys::System, raw)
     end
 
     # Run in order based on type composition.
-    # Bus and AGC instances can have areas and LoadZones.
+    # Bus instances can have areas and LoadZones.
+    # AGC instances can have areas and contributing reserves
     # Most components have buses.
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
     deserialize_and_add!(; include_types = [Area, LoadZone])
+    deserialize_and_add!(; include_types = [AbstractReserve])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
