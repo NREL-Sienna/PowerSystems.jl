@@ -2007,13 +2007,18 @@ function sort_values_by_key_prefix_v35(imp_correction::Dict{String, <:Any}, pref
         )
     ]
 
-    first_non_zero_index = findfirst(x -> x != 0.0, reverse(sorted_values))
-    if first_non_zero_index !== nothing
-        sorted_values = sorted_values[1:(length(sorted_values) - first_non_zero_index + 1)]
-    end
+    # Remove trailing zeros in IC data that indicate end of entry (0.00000,0.00000,0.00000)
+    # Acoording to PSSE DataFormat Section 1.18. TIC Tables
+    # Check if the last entry is all zeros across (T, Re(F), Im(F))
+    while !isempty(sorted_values)
+        last_index = length(sorted_values)
+        keys_to_check = ["T$last_index", "Re(F$last_index)", "Im(F$last_index)"]
 
-    if length(sorted_values) < 2
-        push!(sorted_values, 0.0)
+        if all(k -> haskey(imp_correction, k) && imp_correction[k] == 0.0, keys_to_check)
+            pop!(sorted_values)
+        else
+            break
+        end
     end
 
     return sorted_values
