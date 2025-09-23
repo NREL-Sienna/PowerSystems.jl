@@ -2035,9 +2035,12 @@ function _parse_pti_data(data_io::IO)
                                 im_str = strip(processing_elements[element_index + 2])
 
                                 if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
-                                    section_data_final["T$point_index"] = parse(Float64, t_str)
-                                    section_data_final["Re(F$point_index)"] = parse(Float64, re_str)
-                                    section_data_final["Im(F$point_index)"] = parse(Float64, im_str)
+                                    section_data_final["T$point_index"] =
+                                        parse(Float64, t_str)
+                                    section_data_final["Re(F$point_index)"] =
+                                        parse(Float64, re_str)
+                                    section_data_final["Im(F$point_index)"] =
+                                        parse(Float64, im_str)
                                     point_index += 1
                                 end
                                 element_index += 3
@@ -2091,8 +2094,10 @@ function _parse_pti_data(data_io::IO)
 
                             if !isempty(t_str) && !isempty(re_str) && !isempty(im_str)
                                 section_data_prev["T$point_index"] = parse(Float64, t_str)
-                                section_data_prev["Re(F$point_index)"] = parse(Float64, re_str)
-                                section_data_prev["Im(F$point_index)"] = parse(Float64, im_str)
+                                section_data_prev["Re(F$point_index)"] =
+                                    parse(Float64, re_str)
+                                section_data_prev["Im(F$point_index)"] =
+                                    parse(Float64, im_str)
                                 point_index += 1
                             end
                             element_index += 3

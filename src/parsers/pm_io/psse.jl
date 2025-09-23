@@ -2012,6 +2012,10 @@ function sort_values_by_key_prefix_v35(imp_correction::Dict{String, <:Any}, pref
         sorted_values = sorted_values[1:(length(sorted_values) - first_non_zero_index + 1)]
     end
 
+    if length(sorted_values) < 2
+        push!(sorted_values, 0.0)
+    end
+
     return sorted_values
 end
 
@@ -2034,7 +2038,8 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
                     sort_values_by_key_prefix_v35(imp_correction, "Re(F")
                 sub_data["scaling_factor_imag"] =
                     sort_values_by_key_prefix_v35(imp_correction, "Im(F")
-                sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
+                sub_data["tap_or_angle"] =
+                    sort_values_by_key_prefix_v35(imp_correction, "T")
             else
                 sub_data["scaling_factor"] = sort_values_by_key_prefix(imp_correction, "F")
                 sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
