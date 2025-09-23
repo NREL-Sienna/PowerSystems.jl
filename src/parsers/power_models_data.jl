@@ -237,8 +237,10 @@ function _impedance_correction_table_lookup(data::Dict)
         y = table_data["scaling_factor"]
 
         if length(x) == length(y)
-            if !issorted(x)
-                @warn "Skipping impedance correction entry due to non-ascending x-coordinates: $(x)"
+            # Check for sufficient data points, function_data in IS.jl requires at least 2 points
+            # to build the PiecewiseLinearData, this will fail for single entries in PSSE files
+            if length(x) < 2
+                @warn "Skipping impedance correction entry due to insufficient data points ($(length(x)) < 2): $(x)"
                 continue
             end
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
