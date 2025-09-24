@@ -237,6 +237,10 @@ function _impedance_correction_table_lookup(data::Dict)
         y = table_data["scaling_factor"]
 
         if length(x) == length(y)
+            if length(x) < 2
+                @warn "Skipping impedance correction entry due to insufficient data points ($(length(x)) < 2): $(x)"
+                continue
+            end
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
             table_type =
                 if (
