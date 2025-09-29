@@ -1742,7 +1742,7 @@ function _parse_line_element!(
         if !(section == "SWITCHED SHUNT" && startswith(missing_str, "N")) &&
            !(section == "MULTI-SECTION LINE" && startswith(missing_str, "DUM")) &&
            !(section == "IMPEDANCE CORRECTION" && startswith(missing_str, "T"))
-            @info("The following fields in $section are missing: $missing_str")
+            @debug "The following fields in $section are missing: $missing_str"
         end
     end
 end

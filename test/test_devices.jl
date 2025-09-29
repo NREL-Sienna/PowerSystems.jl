@@ -7,7 +7,8 @@
     @test get_max_active_power(re) <= get_rating(re)
     @test isa(get_max_reactive_power(re), Float64)
 
-    @test_throws ArgumentError get_max_active_power(TestDevice("foo"))
+    @test_throws MethodError get_max_active_power(TestDevice("foo"))
+    @test_throws ArgumentError get_max_active_power(TestInjector("foo"))
     @test_throws ArgumentError get_max_active_power(TestRenDevice("foo"))
 end
 

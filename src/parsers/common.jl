@@ -1,5 +1,8 @@
-const GENERATOR_MAPPING_FILE =
-    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping.yaml")
+const GENERATOR_MAPPING_FILE_PM =
+    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping_pm.yaml")
+
+const GENERATOR_MAPPING_FILE_CDM =
+    joinpath(dirname(pathof(PowerSystems)), "parsers", "generator_mapping_cdm.yaml")
 
 const PSSE_DYR_MAPPING_FILE =
     joinpath(dirname(pathof(PowerSystems)), "parsers", "psse_dynamic_mapping.yaml")
@@ -47,10 +50,7 @@ merge!(
 
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
 generator types."""
-function get_generator_mapping(filename = nothing)
-    if isnothing(filename)
-        filename = GENERATOR_MAPPING_FILE
-    end
+function get_generator_mapping(filename::String)
     genmap = open(filename) do file
         YAML.load(file)
     end
@@ -97,16 +97,51 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     return generator
 end
 
-function calculate_rating(
+function calculate_gen_rating(
     active_power_limits::Union{MinMax, Nothing},
     reactive_power_limits::Union{MinMax, Nothing},
+    base_conversion::Float64,
 )
     reactive_power_max = isnothing(reactive_power_limits) ? 0.0 : reactive_power_limits.max
-    return calculate_rating(active_power_limits.max, reactive_power_max)
+    return calculate_gen_rating(
+        active_power_limits.max,
+        reactive_power_max,
+        base_conversion,
+    )
 end
 
-function calculate_rating(active_power_max::Float64, reactive_power_max::Float64)
-    return sqrt(active_power_max^2 + reactive_power_max^2)
+function calculate_gen_rating(
+    active_power_max::Float64,
+    reactive_power_max::Float64,
+    base_conversion::Float64,
+)
+    rating = sqrt(active_power_max^2 + reactive_power_max^2)
+    if rating == 0.0
+        @warn "Rating is calculation returned 0.0. Changing to 1.0 in the p.u. of the device."
+        return 1.0
+    end
+    return rating * base_conversion
+end
+
+function calculate_ramp_limit(
+    d::Dict{String, Any},
+    gen_name::Union{SubString{String}, String},
+)
+    if haskey(d, "ramp_agc")
+        return (up = d["ramp_agc"], down = d["ramp_agc"])
+    end
+    if haskey(d, "ramp_10")
+        return (up = d["ramp_10"], down = d["ramp_10"])
+    end
+    if haskey(d, "ramp_30")
+        return (up = d["ramp_30"], down = d["ramp_30"])
+    end
+    if abs(d["pmax"]) > 0.0
+        @warn "No ramp limits found for generator $(gen_name). Using pmax as ramp limit."
+        return (up = abs(d["pmax"]), down = abs(d["pmax"]))
+    end
+    @warn "Not enough information to determine ramp limit for generator $(gen_name). Returning nothing"
+    return nothing
 end
 
 function string_compare(str1, str2; casefold = true)

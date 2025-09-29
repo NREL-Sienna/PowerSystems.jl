@@ -45,10 +45,6 @@ error_log_files = ["ACTIVSg2000.m", "case_ACTIVSg10k.m"]
                 match_mode = :any,
                 @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
             )
-        elseif f in error_log_files
-            @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
-                PowerSystems.PowerModelsData(pm_dict),
-            )
         else
             sys = System(PowerSystems.PowerModelsData(pm_dict))
             @info "Successfully parsed $path to System struct"
@@ -85,10 +81,6 @@ end
                 (:error, r"cannot create Line"),
                 match_mode = :any,
                 @test_throws(badfiles[f], System(PowerSystems.PowerModelsData(pm_dict)))
-            )
-        elseif f in error_log_files
-            @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
-                PowerSystems.PowerModelsData(pm_dict),
             )
         else
             sys = System(PowerSystems.PowerModelsData(pm_dict))

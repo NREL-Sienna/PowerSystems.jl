@@ -33,7 +33,6 @@ include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
 include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
-include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
 include("HydroTurbine.jl")
 include("HydroPumpTurbine.jl")
@@ -583,10 +582,8 @@ export get_head_reservoir
 export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
-export get_inflow
 export get_initial_ace
 export get_initial_status
-export get_initial_storage
 export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
@@ -772,6 +769,7 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
+export get_turbine_type
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1259,10 +1257,8 @@ export set_head_reservoir!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
-export set_inflow!
 export set_initial_ace!
 export set_initial_status!
-export set_initial_storage!
 export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
@@ -1448,6 +1444,7 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
+export set_turbine_type!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!

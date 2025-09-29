@@ -163,11 +163,7 @@ end
 
 @testset "2000-Bus Parsing" begin
     test_dir = mktempdir()
-    sys =
-        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
-            PSSEParsingTestSystems,
-            "psse_ACTIVSg2000_sys",
-        )
+    sys = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
     for g in get_components(ThermalStandard, sys)
         if isnothing(get_dynamic_injector(g))
             @error "ThermalStandard $(get_name(g)) should have a dynamic injector"
@@ -182,10 +178,7 @@ end
     end
     path = joinpath(test_dir, "test_dyn_system_serialization_2000.json")
     to_json(sys, path)
-    parsed_sys =
-        @test_logs (:error, r"no active generators found at bus") match_mode = :any System(
-            path,
-        )
+    parsed_sys = System(path)
     dyn_injectors = get_components(DynamicInjection, parsed_sys)
     @test length(dyn_injectors) == 435
     for g in get_components(ThermalStandard, parsed_sys)

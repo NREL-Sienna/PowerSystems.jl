@@ -5,6 +5,13 @@ const SYSTEM_KWARGS = Set((
     :area_name_formatter,
     :branch_name_formatter,
     :xfrm_3w_name_formatter,
+    :switched_shunt_name_formatter,
+    :transformer_control_objective_formatter,
+    :transformer_resistance_formatter,
+    :transformer_reactance_formatter,
+    :transformer_tap_formatter,
+    :dcline_name_formatter,
+    :vscline_name_formatter,
     :bus_name_formatter,
     :config_path,
     :frequency,
@@ -1397,6 +1404,25 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
 end
 
 """
+Returns a ServiceContributingDevices object.
+"""
+function _get_contributing_devices(sys::System, service::TransmissionInterface)
+    uuid = IS.get_uuid(service)
+    devices = ServiceContributingDevices(service, Vector{Device}())
+    for device in get_components(Branch, sys)
+        if supports_services(device)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
+            end
+        end
+    end
+    return devices
+end
+
+"""
 Return an instance of ServiceContributingDevicesMapping.
 """
 function get_contributing_device_mapping(sys::System)
@@ -2663,6 +2689,9 @@ end
 function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
+        if !supports_services(device)
+            continue
+        end
         _remove_service!(device, service)
     end
 end

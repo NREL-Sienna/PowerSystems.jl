@@ -101,7 +101,6 @@ export get_spillage_cost, set_spillage_cost!
 export Generator
 export HydroGen
 export HydroDispatch
-export HydroEnergyReservoir
 export HydroTurbine
 export HydroReservoir
 export HydroPumpTurbine
@@ -323,6 +322,8 @@ export StorageTech
 export StateTypes
 export ReservoirDataType
 export MotorLoadTechnology
+export HydroTurbineType
+export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
@@ -374,6 +375,7 @@ export has_service
 export remove_reservoir!
 export clear_reservoirs!
 export get_reservoirs
+export get_reservoir_location
 export has_reservoir
 export has_time_series
 export get_buses
@@ -836,6 +838,7 @@ include("models/dynamic_branch.jl")
 include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
+include("models/supplemental_setters.jl")
 
 # Supplemental attributes
 include("contingencies.jl")
