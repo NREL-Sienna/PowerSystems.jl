@@ -648,6 +648,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
             elseif pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"]["SWREM"] = switched_shunt["SWREM"]
+                sub_data["initial_status"] = ones(Int, length(sub_data["y_increment"]))
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
