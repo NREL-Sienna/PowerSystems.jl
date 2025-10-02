@@ -648,6 +648,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"]["NREG"] = pop!(switched_shunt, "NREG")
             elseif pm_data["source_version"] ∈ ("32", "33")
                 sub_data["ext"]["SWREM"] = switched_shunt["SWREM"]
+                sub_data["initial_status"] = ones(Int, length(sub_data["y_increment"]))
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
@@ -1417,7 +1418,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 for prefix in TRANSFORMER3W_PARAMETER_NAMES
                     for i in 1:length(WINDING_NAMES)
                         key = "$prefix$i"
-                        sub_data["ext"][key] = transformer[key]
+                        if pm_data["source_version"] ∈ ("32", "33")
+                            sub_data["ext"][key] = transformer[key]
+                        else
+                            continue
+                        end
                     end
                 end
 
@@ -2003,9 +2008,18 @@ function sort_values_by_key_prefix_v35(imp_correction::Dict{String, <:Any}, pref
         )
     ]
 
-    first_non_zero_index = findfirst(x -> x != 0.0, reverse(sorted_values))
-    if first_non_zero_index !== nothing
-        sorted_values = sorted_values[1:(length(sorted_values) - first_non_zero_index + 1)]
+    # Remove trailing zeros in IC data that indicate end of entry (0.00000,0.00000,0.00000)
+    # Acoording to PSSE DataFormat Section 1.18. TIC Tables
+    # Check if the last entry is all zeros across (T, Re(F), Im(F))
+    while !isempty(sorted_values)
+        last_index = length(sorted_values)
+        keys_to_check = ["T$last_index", "Re(F$last_index)", "Im(F$last_index)"]
+
+        if all(k -> haskey(imp_correction, k) && imp_correction[k] == 0.0, keys_to_check)
+            pop!(sorted_values)
+        else
+            break
+        end
     end
 
     return sorted_values
@@ -2030,7 +2044,8 @@ function _psse2pm_impedance_correction!(pm_data::Dict, pti_data::Dict, import_al
                     sort_values_by_key_prefix_v35(imp_correction, "Re(F")
                 sub_data["scaling_factor_imag"] =
                     sort_values_by_key_prefix_v35(imp_correction, "Im(F")
-                sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
+                sub_data["tap_or_angle"] =
+                    sort_values_by_key_prefix_v35(imp_correction, "T")
             else
                 sub_data["scaling_factor"] = sort_values_by_key_prefix(imp_correction, "F")
                 sub_data["tap_or_angle"] = sort_values_by_key_prefix(imp_correction, "T")
