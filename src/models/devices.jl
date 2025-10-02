@@ -125,6 +125,10 @@ function clear_services!(device::Device)
     return
 end
 
+""" Ensures that reservoirs cannot provide services """
+supports_services(::HydroReservoir) = false
+
+# TODO this the other way around
 """
 Remove a reservoir from a device.
 
@@ -169,21 +173,34 @@ end
 has_reservoir(T::Type{<:HydroReservoir}, device::Device) = has_reservoir(device, T)
 
 """
-Remove service from device if it is attached.
+Remove turbine from reservoir if it is attached.
 """
-function _remove_reservoir!(device::Device, reservoir::HydroReservoir)
+function _remove_turbine!(device::HydroUnit, reservoir::HydroReservoir)
     removed = false
-    reservoirs = get_reservoirs(device)
+    up_turbines = get_upstream_turbines(reservoir)
+    down_turbines = get_downstream_turbines(reservoir)
 
     # The expectation is that there won't be many services in each device, and so
     # a faster lookup method is not needed.
-    for (i, _reservoir) in enumerate(reservoirs)
-        if IS.get_uuid(_reservoir) == IS.get_uuid(reservoir)
-            deleteat!(reservoirs, i)
+    for (i, _turbine) in enumerate(down_turbines)
+        if IS.get_uuid(_turbine) == IS.get_uuid(device)
+            deleteat!(down_turbines, i)
             removed = true
-            @debug "Removed service $(get_name(reservoir)) from $(get_name(device))" _group =
+            @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =
                 IS.LOG_GROUP_SYSTEM
             break
+        end
+    end
+
+    if !removed
+        for (i, _turbine) in enumerate(up_turbines)
+            if IS.get_uuid(_turbine) == IS.get_uuid(device)
+                deleteat!(up_turbines, i)
+                removed = true
+                @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =
+                    IS.LOG_GROUP_SYSTEM
+                break
+            end
         end
     end
 
@@ -191,10 +208,12 @@ function _remove_reservoir!(device::Device, reservoir::HydroReservoir)
 end
 
 """
-Remove all services attached to the device.
+Remove all turbines attached to the reservoir.
 """
-function clear_reservoirs!(device::Device)
-    reservoirs = get_reservoirs(device)
-    empty!(reservoirs)
+function clear_turbines!(device::HydroReservoir)
+    turbines = get_upstream_turbines(device)
+    empty!(turbines)
+    turbines = get_downstream_turbines(device)
+    empty!(turbines)
     return
 end
