@@ -13,8 +13,8 @@ This file is auto-generated. Do not edit.
         spillage_limits::Union{Nothing, MinMax}
         inflow::Float64
         outflow::Float64
-        level_targets::Union{Nothing, MinMax}
-        travel_time::Union{Nothing, MinMax}
+        level_targets::Union{Nothing, Float64}
+        travel_time::Union{Nothing, Float64}
         intake_elevation::Float64
         head_to_volume_factor::ValueCurve
         upstream_turbines::Vector{HydroUnit}
@@ -36,8 +36,8 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.
 - `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
 - `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
-- `level_targets::Union{Nothing, MinMax}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
-- `travel_time::Union{Nothing, MinMax}`: Downstream travel time in hours.
+- `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
+- `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours.
 - `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
 - `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
@@ -63,9 +63,9 @@ mutable struct HydroReservoir <: Device
     "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`)."
     outflow::Float64
     "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`."
-    level_targets::Union{Nothing, MinMax}
+    level_targets::Union{Nothing, Float64}
     "Downstream travel time in hours."
-    travel_time::Union{Nothing, MinMax}
+    travel_time::Union{Nothing, Float64}
     "Height of the intake of the reservoir in meters above the sea level."
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
