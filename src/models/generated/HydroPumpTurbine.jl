@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct HydroPumpTurbine <: HydroGen
+    mutable struct HydroPumpTurbine <: HydroUnit
         name::String
         available::Bool
         bus::ACBus
@@ -16,8 +16,6 @@ This file is auto-generated. Do not edit.
         reactive_power_limits::Union{Nothing, MinMax}
         active_power_limits_pump::MinMax
         outflow_limits::Union{Nothing, MinMax}
-        head_reservoir::HydroReservoir
-        tail_reservoir::HydroReservoir
         powerhouse_elevation::Float64
         ramp_limits::Union{Nothing, UpDown}
         time_limits::Union{Nothing, UpDown}
@@ -50,8 +48,6 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `active_power_limits_pump::MinMax`: Minimum and maximum stable active power levels (MW) for the pump, validation range: `(0, nothing)`
 - `outflow_limits::Union{Nothing, MinMax}`: Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable
-- `head_reservoir::HydroReservoir`: Head [`HydroReservoir`](@ref) that this component is connected to
-- `tail_reservoir::HydroReservoir`: Tail [`HydroReservoir`](@ref) that this component is connected to
 - `powerhouse_elevation::Float64`: Height level in meters above the sea level of the powerhouse on which the turbine is installed., validation range: `(0, nothing)`
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
@@ -70,7 +66,7 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct HydroPumpTurbine <: HydroGen
+mutable struct HydroPumpTurbine <: HydroUnit
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -91,10 +87,6 @@ mutable struct HydroPumpTurbine <: HydroGen
     active_power_limits_pump::MinMax
     "Turbine/Pump outflow limits in m3/s. Set to `Nothing` if not applicable"
     outflow_limits::Union{Nothing, MinMax}
-    "Head [`HydroReservoir`](@ref) that this component is connected to"
-    head_reservoir::HydroReservoir
-    "Tail [`HydroReservoir`](@ref) that this component is connected to"
-    tail_reservoir::HydroReservoir
     "Height level in meters above the sea level of the powerhouse on which the turbine is installed."
     powerhouse_elevation::Float64
     "ramp up and ramp down limits in MW/min"
@@ -131,12 +123,12 @@ mutable struct HydroPumpTurbine <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, head_reservoir, tail_reservoir, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, services, dynamic_injector, ext, internal, )
+function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -152,8 +144,6 @@ function HydroPumpTurbine(::Nothing)
         reactive_power_limits=nothing,
         active_power_limits_pump=(min=0.0, max=0.0),
         outflow_limits=nothing,
-        head_reservoir=HydroReservoir(nothing),
-        tail_reservoir=HydroReservoir(nothing),
         powerhouse_elevation=0.0,
         ramp_limits=nothing,
         time_limits=nothing,
@@ -193,10 +183,6 @@ get_reactive_power_limits(value::HydroPumpTurbine) = get_value(value, Val(:react
 get_active_power_limits_pump(value::HydroPumpTurbine) = get_value(value, Val(:active_power_limits_pump), Val(:mva))
 """Get [`HydroPumpTurbine`](@ref) `outflow_limits`."""
 get_outflow_limits(value::HydroPumpTurbine) = value.outflow_limits
-"""Get [`HydroPumpTurbine`](@ref) `head_reservoir`."""
-get_head_reservoir(value::HydroPumpTurbine) = value.head_reservoir
-"""Get [`HydroPumpTurbine`](@ref) `tail_reservoir`."""
-get_tail_reservoir(value::HydroPumpTurbine) = value.tail_reservoir
 """Get [`HydroPumpTurbine`](@ref) `powerhouse_elevation`."""
 get_powerhouse_elevation(value::HydroPumpTurbine) = value.powerhouse_elevation
 """Get [`HydroPumpTurbine`](@ref) `ramp_limits`."""
@@ -250,10 +236,6 @@ set_reactive_power_limits!(value::HydroPumpTurbine, val) = value.reactive_power_
 set_active_power_limits_pump!(value::HydroPumpTurbine, val) = value.active_power_limits_pump = set_value(value, Val(:active_power_limits_pump), val, Val(:mva))
 """Set [`HydroPumpTurbine`](@ref) `outflow_limits`."""
 set_outflow_limits!(value::HydroPumpTurbine, val) = value.outflow_limits = val
-"""Set [`HydroPumpTurbine`](@ref) `head_reservoir`."""
-set_head_reservoir!(value::HydroPumpTurbine, val) = value.head_reservoir = val
-"""Set [`HydroPumpTurbine`](@ref) `tail_reservoir`."""
-set_tail_reservoir!(value::HydroPumpTurbine, val) = value.tail_reservoir = val
 """Set [`HydroPumpTurbine`](@ref) `powerhouse_elevation`."""
 set_powerhouse_elevation!(value::HydroPumpTurbine, val) = value.powerhouse_elevation = val
 """Set [`HydroPumpTurbine`](@ref) `ramp_limits`."""
