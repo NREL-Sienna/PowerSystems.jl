@@ -5556,7 +5556,7 @@
                     "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
-                    "default": "PrimeMovers.PS"
+                    "default": "PrimeMovers.HY"
                 },
                 {
                     "name": "services",
@@ -5797,6 +5797,14 @@
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
+                },
+
+                {
+                    "name": "prime_mover_type",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "null_value": "PrimeMovers.OT",
+                    "data_type": "PrimeMovers",
+                    "default": "PrimeMovers.PS"
                 },
                 {
                     "name": "services",

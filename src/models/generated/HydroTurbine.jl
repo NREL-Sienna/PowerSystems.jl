@@ -50,7 +50,7 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
-- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -103,11 +103,11 @@ mutable struct HydroTurbine <: HydroUnit
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.HY, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
     HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, prime_mover_type, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.HY, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
     HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, prime_mover_type, services, dynamic_injector, ext, internal, )
 end
 
