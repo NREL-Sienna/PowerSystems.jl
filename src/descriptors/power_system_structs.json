@@ -5889,13 +5889,13 @@
                     "name": "level_targets",
                     "comment": "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}"
+                    "data_type": "Union{Nothing, Float64}"
                 },
                 {
                     "name": "travel_time",
                     "comment": "Downstream travel time in hours.",
                     "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}"
+                    "data_type": "Union{Nothing, Float64}"
                 },
                 {
                     "name": "intake_elevation",
