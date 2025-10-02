@@ -1435,6 +1435,7 @@ function get_contributing_device_mapping(sys::System)
     return services
 end
 
+# TODO: We need this but the other way around. For a Turbine, obtain its upstream reservoir and downstream reservoir lists.
 """
 Return a vector of connected turbines to the reservoir
 """
@@ -1469,6 +1470,7 @@ function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroRese
     return devices
 end
 
+# TODO:
 """
 Return an instance of ReservoirConnectedDevicesMapping.
 """
