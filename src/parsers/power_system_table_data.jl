@@ -1539,6 +1539,7 @@ function make_hydro_turbine(
         outflow_limits = nothing,
         reservoirs = reservoirs,
     )
+    # TODO
     set_reservoirs!(hydro_gen, reservoirs)
     return hydro_gen, reservoirs
 end
