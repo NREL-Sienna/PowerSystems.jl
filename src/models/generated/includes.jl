@@ -36,6 +36,7 @@ include("CSVGN1.jl")
 include("HydroDispatch.jl")
 include("HydroTurbine.jl")
 include("HydroPumpTurbine.jl")
+include("HydroReservoir.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
@@ -555,6 +556,7 @@ export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
+export get_downstream_turbines
 export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
@@ -578,17 +580,20 @@ export get_fuel_flag
 export get_g
 export get_gate_openings
 export get_gate_position_limits
-export get_head_reservoir
+export get_head_to_volume_factor
 export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
+export get_inflow
 export get_initial_ace
+export get_initial_level
 export get_initial_status
 export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
 export get_input_code_1
 export get_input_code_2
+export get_intake_elevation
 export get_internal_angle
 export get_internal_angle_bias
 export get_internal_angle_coefficients
@@ -630,6 +635,8 @@ export get_kq
 export get_kw
 export get_kω
 export get_l
+export get_level_data_type
+export get_level_targets
 export get_lf
 export get_lg
 export get_load_balance_time_horizon
@@ -662,6 +669,7 @@ export get_name
 export get_number
 export get_number_of_steps
 export get_operation_cost
+export get_outflow
 export get_outflow_limits
 export get_output_active_power_limits
 export get_peak_active_power
@@ -740,6 +748,7 @@ export get_secondary_star_arc
 export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
+export get_spillage_limits
 export get_star_bus
 export get_start_time_limits
 export get_start_types
@@ -755,7 +764,6 @@ export get_switch
 export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
-export get_tail_reservoir
 export get_tap
 export get_tertiary_group_number
 export get_tertiary_star_arc
@@ -770,7 +778,9 @@ export get_to_area
 export get_to_branch_control
 export get_transfer_setpoint
 export get_transition_time
+export get_travel_time
 export get_turbine_type
+export get_upstream_turbines
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -1231,6 +1241,7 @@ export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
+export set_downstream_turbines!
 export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!
@@ -1254,17 +1265,20 @@ export set_fuel_flag!
 export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
-export set_head_reservoir!
+export set_head_to_volume_factor!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
+export set_inflow!
 export set_initial_ace!
+export set_initial_level!
 export set_initial_status!
 export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
 export set_input_code_1!
 export set_input_code_2!
+export set_intake_elevation!
 export set_internal_angle!
 export set_internal_angle_bias!
 export set_internal_angle_coefficients!
@@ -1306,6 +1320,8 @@ export set_kq!
 export set_kw!
 export set_kω!
 export set_l!
+export set_level_data_type!
+export set_level_targets!
 export set_lf!
 export set_lg!
 export set_load_balance_time_horizon!
@@ -1338,6 +1354,7 @@ export set_name!
 export set_number!
 export set_number_of_steps!
 export set_operation_cost!
+export set_outflow!
 export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
@@ -1416,6 +1433,7 @@ export set_secondary_star_arc!
 export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
+export set_spillage_limits!
 export set_star_bus!
 export set_start_time_limits!
 export set_start_types!
@@ -1431,7 +1449,6 @@ export set_switch!
 export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
-export set_tail_reservoir!
 export set_tap!
 export set_tertiary_group_number!
 export set_tertiary_star_arc!
@@ -1446,7 +1463,9 @@ export set_to_area!
 export set_to_branch_control!
 export set_transfer_setpoint!
 export set_transition_time!
+export set_travel_time!
 export set_turbine_type!
+export set_upstream_turbines!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
