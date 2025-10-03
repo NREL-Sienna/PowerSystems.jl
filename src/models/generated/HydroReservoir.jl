@@ -14,7 +14,6 @@ This file is auto-generated. Do not edit.
         inflow::Float64
         outflow::Float64
         level_targets::Union{Nothing, Float64}
-        travel_time::Union{Nothing, Float64}
         intake_elevation::Float64
         head_to_volume_factor::ValueCurve
         upstream_turbines::Vector{HydroUnit}
@@ -37,8 +36,7 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
 - `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
 - `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
-- `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours.
-- `intake_elevation::Float64`: Height of the intake of the reservoir in meters above the sea level.
+- `intake_elevation::Float64`: Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
 - `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
 - `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
@@ -64,9 +62,7 @@ mutable struct HydroReservoir <: Device
     outflow::Float64
     "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`."
     level_targets::Union{Nothing, Float64}
-    "Downstream travel time in hours."
-    travel_time::Union{Nothing, Float64}
-    "Height of the intake of the reservoir in meters above the sea level."
+    "Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level."
     intake_elevation::Float64
     "Head to volume relationship for the reservoir."
     head_to_volume_factor::ValueCurve
@@ -84,12 +80,12 @@ mutable struct HydroReservoir <: Device
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, travel_time, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, operation_cost, level_data_type, ext, internal, )
+function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, operation_cost, level_data_type, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -103,7 +99,6 @@ function HydroReservoir(::Nothing)
         inflow=0.0,
         outflow=0.0,
         level_targets=nothing,
-        travel_time=nothing,
         intake_elevation=0.0,
         head_to_volume_factor=LinearCurve(0.0),
         upstream_turbines=Device[],
@@ -130,8 +125,6 @@ get_inflow(value::HydroReservoir) = value.inflow
 get_outflow(value::HydroReservoir) = value.outflow
 """Get [`HydroReservoir`](@ref) `level_targets`."""
 get_level_targets(value::HydroReservoir) = value.level_targets
-"""Get [`HydroReservoir`](@ref) `travel_time`."""
-get_travel_time(value::HydroReservoir) = value.travel_time
 """Get [`HydroReservoir`](@ref) `intake_elevation`."""
 get_intake_elevation(value::HydroReservoir) = value.intake_elevation
 """Get [`HydroReservoir`](@ref) `head_to_volume_factor`."""
@@ -163,8 +156,6 @@ set_inflow!(value::HydroReservoir, val) = value.inflow = val
 set_outflow!(value::HydroReservoir, val) = value.outflow = val
 """Set [`HydroReservoir`](@ref) `level_targets`."""
 set_level_targets!(value::HydroReservoir, val) = value.level_targets = val
-"""Set [`HydroReservoir`](@ref) `travel_time`."""
-set_travel_time!(value::HydroReservoir, val) = value.travel_time = val
 """Set [`HydroReservoir`](@ref) `intake_elevation`."""
 set_intake_elevation!(value::HydroReservoir, val) = value.intake_elevation = val
 """Set [`HydroReservoir`](@ref) `head_to_volume_factor`."""
