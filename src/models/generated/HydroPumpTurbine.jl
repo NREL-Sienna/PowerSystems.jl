@@ -27,6 +27,7 @@ This file is auto-generated. Do not edit.
         efficiency::TurbinePump
         transition_time::TurbinePump
         minimum_time::TurbinePump
+        travel_time::Union{Nothing, Float64}
         conversion_factor::Float64
         must_run::Bool
         prime_mover_type::PrimeMovers
@@ -60,6 +61,7 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `efficiency::TurbinePump`: (default: `(turbine = 1.0, pump = 1.0)`) Turbine/Pump efficiency [0, 1.0]
 - `transition_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Transition time in hours to switch into the specific mode.
 - `minimum_time::TurbinePump`: (default: `(turbine = 0.0, pump = 0.0)`) Minimum operating time in hours for the specific mode.
+- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `must_run::Bool`: (default: `false`) Whether the unit must run (i.e., cannot be curtailed)
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
@@ -111,6 +113,8 @@ mutable struct HydroPumpTurbine <: HydroUnit
     transition_time::TurbinePump
     "Minimum operating time in hours for the specific mode."
     minimum_time::TurbinePump
+    "Downstream (from reservoir into turbine) travel time in hours."
+    travel_time::Union{Nothing, Float64}
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
     "Whether the unit must run (i.e., cannot be curtailed)"
@@ -127,12 +131,12 @@ mutable struct HydroPumpTurbine <: HydroUnit
     internal::InfrastructureSystemsInternal
 end
 
-function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, travel_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, internal, )
+function HydroPumpTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status=PumpHydroStatus.OFF, time_at_status=INFINITE_TIME, operation_cost=HydroGenerationCost(nothing), active_power_pump=0.0, efficiency=(turbine = 1.0, pump = 1.0), transition_time=(turbine = 0.0, pump = 0.0), minimum_time=(turbine = 0.0, pump = 0.0), travel_time=nothing, conversion_factor=1.0, must_run=false, prime_mover_type=PrimeMovers.PS, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroPumpTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, active_power_limits_pump, outflow_limits, powerhouse_elevation, ramp_limits, time_limits, base_power, status, time_at_status, operation_cost, active_power_pump, efficiency, transition_time, minimum_time, travel_time, conversion_factor, must_run, prime_mover_type, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -159,6 +163,7 @@ function HydroPumpTurbine(::Nothing)
         efficiency=(turbine = 1.0, pump = 1.0),
         transition_time=(turbine = 0.0, pump = 0.0),
         minimum_time=(turbine = 0.0, pump = 0.0),
+        travel_time=nothing,
         conversion_factor=1.0,
         must_run=false,
         prime_mover_type=PrimeMovers.OT,
@@ -210,6 +215,8 @@ get_efficiency(value::HydroPumpTurbine) = value.efficiency
 get_transition_time(value::HydroPumpTurbine) = value.transition_time
 """Get [`HydroPumpTurbine`](@ref) `minimum_time`."""
 get_minimum_time(value::HydroPumpTurbine) = value.minimum_time
+"""Get [`HydroPumpTurbine`](@ref) `travel_time`."""
+get_travel_time(value::HydroPumpTurbine) = value.travel_time
 """Get [`HydroPumpTurbine`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroPumpTurbine) = value.conversion_factor
 """Get [`HydroPumpTurbine`](@ref) `must_run`."""
@@ -265,6 +272,8 @@ set_efficiency!(value::HydroPumpTurbine, val) = value.efficiency = val
 set_transition_time!(value::HydroPumpTurbine, val) = value.transition_time = val
 """Set [`HydroPumpTurbine`](@ref) `minimum_time`."""
 set_minimum_time!(value::HydroPumpTurbine, val) = value.minimum_time = val
+"""Set [`HydroPumpTurbine`](@ref) `travel_time`."""
+set_travel_time!(value::HydroPumpTurbine, val) = value.travel_time = val
 """Set [`HydroPumpTurbine`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroPumpTurbine, val) = value.conversion_factor = val
 """Set [`HydroPumpTurbine`](@ref) `must_run`."""

@@ -5559,6 +5559,13 @@
                     "default": "PrimeMovers.HY"
                 },
                 {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
+                },
+                {
                     "name": "services",
                     "data_type": "Vector{Service}",
                     "comment": "Services that this device contributes to",
@@ -5785,6 +5792,13 @@
                     "default": "(turbine = 0.0, pump = 0.0)"
                 },
                 {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
                     "null_value": "1.0",
@@ -5798,7 +5812,6 @@
                     "data_type": "Bool",
                     "default": "false"
                 },
-
                 {
                     "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
@@ -5892,14 +5905,8 @@
                     "data_type": "Union{Nothing, Float64}"
                 },
                 {
-                    "name": "travel_time",
-                    "comment": "Downstream travel time in hours.",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, Float64}"
-                },
-                {
                     "name": "intake_elevation",
-                    "comment": "Height of the intake of the reservoir in meters above the sea level.",
+                    "comment": "Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
