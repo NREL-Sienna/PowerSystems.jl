@@ -1436,22 +1436,22 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-Return a vector of connected upstream reservoirs to the turbine
+Return a vector of connected head reservoirs to the turbine.  Reservoirs that have the turbine in their downstream_turbines field are head reservoirs of such turbine.
 """
-function get_connected_upstream_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+function get_connected_head_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
     throw_if_not_attached(turbine, sys)
     return [
-        x for x in get_components(HydroReservoir, sys) if has_upstream_turbine(x, turbine)
+        x for x in get_components(HydroReservoir, sys) if has_downstream_turbine(x, turbine)
     ]
 end
 
 """
-Return a vector of connected downstream reservoirs to the turbine
+Return a vector of connected tail reservoirs to the turbine. Reservoirs that have the turbine in their upstream_turbines field are tail reservoirs of such turbine.
 """
-function get_connected_downstream_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+function get_connected_tail_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
     throw_if_not_attached(turbine, sys)
     return [
-        x for x in get_components(HydroReservoir, sys) if has_downstream_turbine(x, turbine)
+        x for x in get_components(HydroReservoir, sys) if has_upstream_turbine(x, turbine)
     ]
 end
 
@@ -1467,11 +1467,13 @@ const TurbineConnectedDevicesMapping =
 """
 Returns a TurbineConnectedDevices object.
 """
-function _get_connected_upstream_devices(sys::System, turbine::T) where {T <: HydroUnit}
+function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
     uuid = IS.get_uuid(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
-        for _turbine in get_upstream_turbines(device)
+        # Only add reservoirs that have the turbine in their downstream_turbines field
+        # That is, those reservoirs are a head reservoir to that turbine
+        for _turbine in get_downstream_turbines(device)
             if IS.get_uuid(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
@@ -1484,11 +1486,13 @@ end
 """
 Returns a TurbineConnectedDevices object.
 """
-function _get_connected_downstream_devices(sys::System, turbine::T) where {T <: HydroUnit}
+function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
     uuid = IS.get_uuid(turbine)
     devices = TurbineConnectedDevices(turbine, Vector{Device}())
     for device in get_components(HydroReservoir, sys)
-        for _turbine in get_downstream_turbines(device)
+        # Only add reservoirs that have the turbine in their upstream_turbines field
+        # That is, those reservoirs are a tail reservoir to that turbine
+        for _turbine in get_upstream_turbines(device)
             if IS.get_uuid(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
@@ -1499,26 +1503,26 @@ function _get_connected_downstream_devices(sys::System, turbine::T) where {T <: 
 end
 
 """
-Return an instance of ReservoirConnectedDevicesMapping.
+Return an instance of TurbineConnectedDevicesMapping.
 """
-function get_turbine_upstream_device_mapping(sys::System)
+function get_turbine_head_reservoirs_mapping(sys::System)
     turbine_mapping = TurbineConnectedDevicesMapping()
     for turbine in get_components(HydroUnit, sys)
         key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
-        turbine_mapping[key] = _get_connected_upstream_devices(sys, turbine)
+        turbine_mapping[key] = _get_connected_head_devices(sys, turbine)
     end
 
     return turbine_mapping
 end
 
 """
-Return an instance of ReservoirConnectedDevicesMapping.
+Return an instance of TurbineConnectedDevicesMapping.
 """
-function get_turbine_downstream_device_mapping(sys::System)
+function get_turbine_tail_reservoirs_mapping(sys::System)
     turbine_mapping = TurbineConnectedDevicesMapping()
     for turbine in get_components(HydroUnit, sys)
         key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
-        turbine_mapping[key] = _get_connected_downstream_devices(sys, turbine)
+        turbine_mapping[key] = _get_connected_tail_devices(sys, turbine)
     end
 
     return turbine_mapping
