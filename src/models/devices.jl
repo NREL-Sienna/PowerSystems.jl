@@ -196,8 +196,6 @@ function has_downstream_turbine(reservoir::HydroReservoir)
     return false
 end
 
-has_reservoir(T::Type{<:HydroReservoir}, device::Device) = has_reservoir(device, T)
-
 """
 Remove turbine from reservoir if it is attached.
 """
