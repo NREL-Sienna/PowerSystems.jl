@@ -98,7 +98,6 @@ pages["Model Library"] = make_model_library(
                   PSY.OperationalCost,
                   PSY.DynamicInverter,
                   PSY.DynamicGenerator,
-                  PSY.HydroReservoir,
                   ],
     manual_additions =
         Dict("Service" => ["Reserves" => "model_library/reserves.md"],
