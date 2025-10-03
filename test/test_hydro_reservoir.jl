@@ -30,7 +30,7 @@ end
         level_targets = 0.0,
         travel_time = 0.0,
         intake_elevation = 0.0,
-        head_to_volume_factor = 0.0,
+        head_to_volume_factor = LinearCurve(0.0),
     )
     @test get_storage_level_limits(reservoir) == (min = 0.0, max = 1.0)
     @test get_initial_level(reservoir) == 1.0
@@ -52,7 +52,6 @@ end
     @test set_outflow!(reservoir, 10.0) == 10.0
 end
 
-# TODO:
 @testset "Test single `HydroTurbine` with single `HydroReservoir`" begin
     sys = System(100.0)
 
@@ -66,21 +65,23 @@ end
     turbine = HydroTurbine(nothing)
     turbine.bus = bus
     add_component!(sys, turbine)
-    set_reservoirs!(turbine, [reservoir])
+    set_downstream_turbines!(reservoir, turbine)
 
-    @test has_reservoir(turbine)
-    @test has_reservoir(turbine, reservoir)
+    @test !has_upstream_turbine(reservoir)
+    @test has_downstream_turbine(reservoir)
+    @test !has_upstream_turbine(reservoir, turbine)
+    @test has_downstream_turbine(reservoir, turbine)
     @test length(get_components(HydroTurbine, sys)) == 1
-    @test length(get_connected_devices(sys, reservoir)) == 1
+    @test length(get_connected_head_reservoirs(sys, turbine)) == 1
 
-    remove_reservoir!(turbine, reservoir)
-    @test_throws ArgumentError remove_reservoir!(turbine, reservoir)
-    @test !has_reservoir(turbine)
-    @test !has_reservoir(turbine, reservoir)
-    @test length(get_connected_devices(sys, reservoir)) == 0
+    remove_turbine!(reservoir, turbine)
+    @test_throws ArgumentError remove_turbine!(reservoir, turbine)
+    @test !has_downstream_turbine(reservoir)
+    @test !has_downstream_turbine(reservoir, turbine)
+    @test length(get_connected_head_reservoirs(sys, turbine)) == 0
 
-    remove_component!(sys, reservoir)
-    @test_throws ArgumentError get_connected_devices(sys, reservoir)
+    remove_component!(sys, turbine)
+    @test_throws ArgumentError get_connected_head_reservoirs(sys, turbine)
 
     _, result = validate_serialization(sys)
     @test result
@@ -101,28 +102,29 @@ end
         turbine = HydroTurbine(nothing)
         turbine.name = "Turbine" * string(i)
         turbine.bus = bus
-        set_reservoirs!(turbine, [hydro_reservoir])
         add_component!(sys, turbine)
         push!(turbines, turbine)
     end
+    set_downstream_turbines!(hydro_reservoir, turbines)
 
     collected_turbines = collect(get_components(HydroTurbine, sys))
     @test length(turbines) == length(collected_turbines)
-    for turbine in collected_turbines
-        @test has_reservoir(turbine)
-        @test has_reservoir(turbine, hydro_reservoir)
-        reservoir = get_reservoirs(turbine)
-        @test length(reservoir) == 1
-        @test reservoir[1] isa HydroReservoir
-        @test reservoir[1] == hydro_reservoir
-    end
+    @test !has_upstream_turbine(hydro_reservoir)
+    @test has_downstream_turbine(hydro_reservoir)
+    @test length(get_downstream_turbines(hydro_reservoir)) == 5
+    @test isempty(get_upstream_turbines(hydro_reservoir))
 
-    mapping = get_reservoir_device_mapping(sys)
-    @test mapping isa ReservoirConnectedDevicesMapping
-    @test length(get_connected_devices(sys, hydro_reservoir)) == 5
+    mapping = get_turbine_head_reservoirs_mapping(sys)
+    @test mapping isa TurbineConnectedDevicesMapping
+    @test length(get_connected_head_reservoirs(sys, turbines[1])) == 1
 
     _, result = validate_serialization(sys)
     @test result
+
+    remove_turbine!(hydro_reservoir, turbines[1])
+    @test length(get_downstream_turbines(hydro_reservoir)) == 4
+    clear_turbines!(hydro_reservoir)
+    @test isempty(get_downstream_turbines(hydro_reservoir))
 end
 
 @testset "Test single `HydroTurbine` with multiple `HydroReservoir`" begin
@@ -141,14 +143,10 @@ end
     turbine = HydroTurbine(nothing)
     turbine.bus = bus
     add_component!(sys, turbine)
-    set_reservoirs!(turbine, [hydro_reservoir_01, hydro_reservoir_02])
-    @test length(get_reservoirs(turbine)) == 2
-
-    remove_reservoir!(turbine, hydro_reservoir_02)
-    @test length(get_reservoirs(turbine)) == 1
-    clear_reservoirs!(turbine)
-    @test !has_reservoir(turbine)
-    @test length(get_reservoirs(turbine)) == 0
+    set_downstream_turbines!(hydro_reservoir_01, turbine)
+    set_downstream_turbines!(hydro_reservoir_02, turbine)
+    @test length(get_connected_head_reservoirs(sys, turbine)) == 2
+    @test isempty(get_connected_tail_reservoirs(sys, turbine))
 
     _, result = validate_serialization(sys)
     @test result
