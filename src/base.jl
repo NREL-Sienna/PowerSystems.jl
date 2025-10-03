@@ -2336,7 +2336,7 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
-        include_types = [Arc, Service, HydroReservoir],
+        include_types = [Arc, Service, HydroTurbine, HydroPumpTurbine],
         skip_types = [ConstantReserveGroup],
     )
     deserialize_and_add!(; include_types = [Branch])

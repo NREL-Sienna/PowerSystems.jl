@@ -7,7 +7,7 @@ const _ENCODE_AS_UUID_A = (
     Union{Nothing, StaticInjection},
     Union{Nothing, HydroReservoir},
     Vector{Service},
-    Vector{HydroReservoir},
+    Vector{HydroUnit},
 )
 
 const _ENCODE_AS_UUID_B =
@@ -20,7 +20,7 @@ const _ENCODE_AS_UUID_B =
         StaticInjection,
         HydroReservoir,
         Vector{Service},
-        Vector{HydroReservoir},
+        Vector{HydroUnit},
     )
 @assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
 
