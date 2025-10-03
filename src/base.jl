@@ -1436,7 +1436,7 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-Return a vector of connected head reservoirs to the turbine.  Reservoirs that have the turbine in their downstream_turbines field are head reservoirs of such turbine.
+Return a vector of connected head reservoirs to the turbine. Reservoirs that have the turbine in their downstream_turbines field are head reservoirs of such turbine.
 """
 function get_connected_head_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
     throw_if_not_attached(turbine, sys)
