@@ -556,6 +556,7 @@ export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
+export get_downstream_reservoirs
 export get_downstream_turbines
 export get_droop_flag
 export get_dynamic_injector
@@ -780,6 +781,7 @@ export get_transfer_setpoint
 export get_transition_time
 export get_travel_time
 export get_turbine_type
+export get_upstream_reservoirs
 export get_upstream_turbines
 export get_valve_position_limits
 export get_variable
@@ -1241,6 +1243,7 @@ export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
+export set_downstream_reservoirs!
 export set_downstream_turbines!
 export set_droop_flag!
 export set_dynamic_injector!
@@ -1465,6 +1468,7 @@ export set_transfer_setpoint!
 export set_transition_time!
 export set_travel_time!
 export set_turbine_type!
+export set_upstream_reservoirs!
 export set_upstream_turbines!
 export set_valve_position_limits!
 export set_variable!
