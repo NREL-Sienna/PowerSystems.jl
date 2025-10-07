@@ -19,7 +19,6 @@ This file is auto-generated. Do not edit.
         upstream_turbines::Vector{HydroUnit}
         downstream_turbines::Vector{HydroUnit}
         upstream_reservoirs::Vector{Device}
-        downstream_reservoirs::Vector{Device}
         operation_cost::HydroReservoirCost
         level_data_type::ReservoirDataType
         ext::Dict{String, Any}
@@ -43,7 +42,6 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `upstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir.
 - `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
 - `upstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs.
-- `downstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are downstream of this reservoir. This reservoir spillage flows into downstream_reservoirs.
 - `operation_cost::HydroReservoirCost`: (default: `HydroReservoirCost(nothing)`) [`OperationalCost`](@ref) of reservoir.
 - `level_data_type::ReservoirDataType`: (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir level data type. See [ReservoirDataType](@ref) for reference.
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -76,8 +74,6 @@ mutable struct HydroReservoir <: Device
     downstream_turbines::Vector{HydroUnit}
     "Vector of [Device](@ref)(s) reservoirs that are upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
     upstream_reservoirs::Vector{Device}
-    "Vector of [Device](@ref)(s) reservoirs that are downstream of this reservoir. This reservoir spillage flows into downstream_reservoirs."
-    downstream_reservoirs::Vector{Device}
     "[`OperationalCost`](@ref) of reservoir."
     operation_cost::HydroReservoirCost
     "Reservoir level data type. See [ReservoirDataType](@ref) for reference."
@@ -88,12 +84,12 @@ mutable struct HydroReservoir <: Device
     internal::InfrastructureSystemsInternal
 end
 
-function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], downstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, downstream_reservoirs, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
+function HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], downstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, downstream_reservoirs, operation_cost, level_data_type, ext, internal, )
+function HydroReservoir(; name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines=Device[], downstream_turbines=Device[], upstream_reservoirs=Device[], operation_cost=HydroReservoirCost(nothing), level_data_type=ReservoirDataType.USABLE_VOLUME, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroReservoir(name, available, storage_level_limits, initial_level, spillage_limits, inflow, outflow, level_targets, intake_elevation, head_to_volume_factor, upstream_turbines, downstream_turbines, upstream_reservoirs, operation_cost, level_data_type, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -112,7 +108,6 @@ function HydroReservoir(::Nothing)
         upstream_turbines=Device[],
         downstream_turbines=Device[],
         upstream_reservoirs=Device[],
-        downstream_reservoirs=Device[],
         operation_cost=HydroReservoirCost(nothing),
         level_data_type=ReservoirDataType.USABLE_VOLUME,
         ext=Dict{String, Any}(),
@@ -145,8 +140,6 @@ get_upstream_turbines(value::HydroReservoir) = value.upstream_turbines
 get_downstream_turbines(value::HydroReservoir) = value.downstream_turbines
 """Get [`HydroReservoir`](@ref) `upstream_reservoirs`."""
 get_upstream_reservoirs(value::HydroReservoir) = value.upstream_reservoirs
-"""Get [`HydroReservoir`](@ref) `downstream_reservoirs`."""
-get_downstream_reservoirs(value::HydroReservoir) = value.downstream_reservoirs
 """Get [`HydroReservoir`](@ref) `operation_cost`."""
 get_operation_cost(value::HydroReservoir) = value.operation_cost
 """Get [`HydroReservoir`](@ref) `level_data_type`."""
@@ -180,8 +173,6 @@ set_upstream_turbines!(value::HydroReservoir, val) = value.upstream_turbines = v
 set_downstream_turbines!(value::HydroReservoir, val) = value.downstream_turbines = val
 """Set [`HydroReservoir`](@ref) `upstream_reservoirs`."""
 set_upstream_reservoirs!(value::HydroReservoir, val) = value.upstream_reservoirs = val
-"""Set [`HydroReservoir`](@ref) `downstream_reservoirs`."""
-set_downstream_reservoirs!(value::HydroReservoir, val) = value.downstream_reservoirs = val
 """Set [`HydroReservoir`](@ref) `operation_cost`."""
 set_operation_cost!(value::HydroReservoir, val) = value.operation_cost = val
 """Set [`HydroReservoir`](@ref) `level_data_type`."""

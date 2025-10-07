@@ -5938,13 +5938,6 @@
                     "comment": "Vector of [Device](@ref)(s) reservoirs that are upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
                 },
                 {
-                    "name": "downstream_reservoirs",
-                    "null_value": "Device[]",
-                    "data_type": "Vector{Device}",
-                    "default": "Device[]",
-                    "comment": "Vector of [Device](@ref)(s) reservoirs that are downstream of this reservoir. This reservoir spillage flows into downstream_reservoirs."
-                },
-                {
                     "name": "operation_cost",
                     "null_value": "HydroReservoirCost(nothing)",
                     "data_type": "HydroReservoirCost",

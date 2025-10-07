@@ -556,7 +556,6 @@ export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
 export get_discrete_branch_type
-export get_downstream_reservoirs
 export get_downstream_turbines
 export get_droop_flag
 export get_dynamic_injector
@@ -1241,7 +1240,6 @@ export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
 export set_discrete_branch_type!
-export set_downstream_reservoirs!
 export set_downstream_turbines!
 export set_droop_flag!
 export set_dynamic_injector!
