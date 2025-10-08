@@ -1412,6 +1412,15 @@ const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType,
 const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
+struct AGCContributingReserves
+    agc::AGC
+    contributing_reserves::Vector{Reserve}
+end
+
+const AGCContributingReservesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const AGCContributingReservesMapping =
+    Dict{AGCContributingReservesKey, AGCContributingReserves}
+
 """
 Returns a ServiceContributingDevices object.
 """
@@ -1448,6 +1457,18 @@ function _get_contributing_devices(sys::System, service::TransmissionInterface)
         end
     end
     return devices
+end
+
+"""
+Return an instance of AGCContributingReservesMapping.
+"""
+function get_contributing_reserve_mapping(sys::System)
+    agcs = AGCContributingReservesMapping()
+    for agc in get_components(AGC, sys)
+        key = AGCContributingReservesKey((typeof(agc), get_name(agc)))
+        agcs[key] = AGCContributingReserves(agc, get_reserves(agc))
+    end
+    return agcs
 end
 
 """

@@ -469,6 +469,8 @@ end
     )
     @test_throws ArgumentError add_service!(sys, agc, thermals)
     add_service!(sys, agc, reserves)
+    mapping = get_contributing_reserve_mapping(sys)
+    @test length(mapping) == 1
     @test_throws ArgumentError add_service!(sys, agc, reserves)
 
     #Test serialization of system with AGC + contributing reserves
