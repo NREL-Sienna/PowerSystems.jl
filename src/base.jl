@@ -1392,7 +1392,9 @@ Return a vector of devices contributing to the service.
 """
 function get_contributing_devices(sys::System, service::T) where {T <: Service}
     throw_if_not_attached(service, sys)
-    return [x for x in get_components(Device, sys) if has_service(x, service)]
+    return [
+        x for x in get_components(supports_services, Device, sys) if has_service(x, service)
+    ]
 end
 
 """
