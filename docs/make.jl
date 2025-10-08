@@ -11,6 +11,12 @@ links = InterLinks(
     "PowerSystems" => "https://nrel-sienna.github.io/PowerSystems.jl/stable/",
 )
 
+# This is a fallback for the docstrings that are referenced within IS docstrings
+fallbacks = ExternalFallbacks(
+    "ComponentContainer" => "@extref InfrastructureSystems.ComponentContainer",
+    "InfrastructureSystemsComponent" => "@extref InfrastructureSystems.InfrastructureSystemsComponent"
+)
+
 # This is commented out because the output is not user-friendly. Deliberation on how to best
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
@@ -163,7 +169,7 @@ makedocs(
     authors = "Jose Daniel Lara, Daniel Thom, Kate Doubleday, Rodrigo Henriquez-Auba, and Clayton Barrows",
     pages = Any[p for p in pages],
     draft = false,
-    plugins = [links]
+    plugins = [links, fallbacks],
 )
 
 deploydocs(

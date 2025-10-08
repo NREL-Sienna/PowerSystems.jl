@@ -237,6 +237,10 @@ function _impedance_correction_table_lookup(data::Dict)
         y = table_data["scaling_factor"]
 
         if length(x) == length(y)
+            if length(x) < 2
+                @warn "Skipping impedance correction entry due to insufficient data points ($(length(x)) < 2): $(x)"
+                continue
+            end
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
             table_type =
                 if (
@@ -1571,18 +1575,33 @@ function make_tap_transformer(
     ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
     control_objective_formatter =
         get(kwargs, :transformer_control_objective_formatter, nothing)
-    control_objective =
-        if control_objective_formatter !== nothing
-            control_objective_formatter(name)
-        else
-            get(d, "COD1", -99)
-        end
+    control_objective = if control_objective_formatter !== nothing
+        result = control_objective_formatter(name)
+        result !== nothing ? result : get(d, "COD1", -99)
+    else
+        get(d, "COD1", -99)
+    end
     resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
-    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    r = if resistance_formatter !== nothing
+        result = resistance_formatter(name)
+        result !== nothing ? result : d["br_r"]
+    else
+        d["br_r"]
+    end
     reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
-    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    x = if reactance_formatter !== nothing
+        result = reactance_formatter(name)
+        result !== nothing ? result : d["br_x"]
+    else
+        d["br_x"]
+    end
     tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
-    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
+    tap = if tap_formatter !== nothing
+        result = tap_formatter(name)
+        result !== nothing ? result : d["tap"]
+    else
+        d["tap"]
+    end
 
     return TapTransformer(;
         name = name,
@@ -1625,12 +1644,12 @@ function make_phase_shifting_transformer(
     ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
     control_objective_formatter =
         get(kwargs, :transformer_control_objective_formatter, nothing)
-    control_objective =
-        if control_objective_formatter !== nothing
-            control_objective_formatter(name)
-        else
-            get(d, "COD1", -99)
-        end
+    control_objective = if control_objective_formatter !== nothing
+        result = control_objective_formatter(name)
+        result !== nothing ? result : get(d, "COD1", -99)
+    else
+        get(d, "COD1", -99)
+    end
     resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
     r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
     reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)

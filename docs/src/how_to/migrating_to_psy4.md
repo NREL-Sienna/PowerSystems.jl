@@ -3,14 +3,10 @@
 This guide outlines the code updates required to upgrade from PowerSystems.jl version 3.0
 to 4.0, which was released in June 2024 and includes breaking changes. These are:
 
-  - [Renamed Types and Parameters](@ref)
-  - [New and Eliminated Types](@ref)
-  - [Updates to Energy Storage Parameters](@ref esr_migration)
-  - [Hydropower `status` added](@ref)
-  - [New Cost Functions](@ref)
-  - [New Time Series Horizon Format](@ref)
-  - [Minor Type Hierarchy Change](@ref)
-  - [(Temporary) Use Version 3.0 for `HybridSystem` (+ new parameter)](@ref)
+```@contents
+Pages = ["migrating_to_psy4.md"]
+Depth = 2
+```
 
 ## Renamed Types and Parameters
 
