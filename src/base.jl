@@ -1888,6 +1888,15 @@ function get_supplemental_attributes(
     return IS.get_supplemental_attributes(T, sys.data)
 end
 
+# could support filter function for component types too.
+function get_supplemental_attributes(
+    ::Type{T},
+    sys::System;
+    attribute_type::Union{Nothing, Type{<:IS.SupplementalAttribute}} = nothing,
+) where {T <: IS.InfrastructureSystemsComponent}
+    return IS.get_supplemental_attributes(T, sys.data; attribute_type = attribute_type)
+end
+
 """
 Return the supplemental attribute with the given uuid.
 

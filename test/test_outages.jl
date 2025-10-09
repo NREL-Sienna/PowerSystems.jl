@@ -106,3 +106,45 @@ end
         @test outage isa GeometricDistributionForcedOutage
     end
 end
+
+@testset "Test get_supplemental_attributes with component type" begin
+    # the create_system_with_outages function creates a system with only ThermalStandard
+    # components, so we need a different system for this test.
+    c_sys5_bat = PSB.build_system(PSITestSystems, "c_sys5_bat")
+    renewables = collect(get_components(PSY.RenewableDispatch, c_sys5_bat))
+    thermals = collect(get_components(PSY.ThermalStandard, c_sys5_bat))
+
+    attr1 = IS.TestSupplemental(; value = 1.0)
+    attr2 = IS.TestSupplemental(; value = 2.0)
+    geo_attr1 = IS.GeographicInfo()
+    geo_attr2 = IS.GeographicInfo(; geo_json = Dict{String, Any}("foo" => 5))
+
+    comp_to_attributes = Dict{PSY.Component, Vector{IS.SupplementalAttribute}}(
+        renewables[1] => [geo_attr1],
+        renewables[2] => [geo_attr1, attr1],
+        thermals[1] => [geo_attr2],
+        thermals[2] => [geo_attr2, attr2],
+        thermals[3] => [geo_attr1],
+    )
+    for (comp, attrs) in comp_to_attributes
+        for attr in attrs
+            add_supplemental_attribute!(c_sys5_bat, comp, attr)
+        end
+    end
+
+    renewable_attrs = get_supplemental_attributes(PSY.RenewableDispatch, c_sys5_bat)
+    @test length(renewable_attrs) == 2 && geo_attr1 in renewable_attrs &&
+          attr1 in renewable_attrs
+
+    thermal_attrs = get_supplemental_attributes(PSY.ThermalStandard, c_sys5_bat)
+    @test length(thermal_attrs) == 3 && geo_attr2 in thermal_attrs &&
+          attr2 in thermal_attrs && geo_attr1 in thermal_attrs
+
+    thermal_geo_attrs = get_supplemental_attributes(
+        PSY.ThermalStandard,
+        c_sys5_bat;
+        attribute_type = IS.GeographicInfo,
+    )
+    @test length(thermal_geo_attrs) == 2 && geo_attr1 in thermal_geo_attrs &&
+          geo_attr2 in thermal_geo_attrs
+end
