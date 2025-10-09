@@ -453,3 +453,39 @@ end
         [area_interchange12, area_interchange13, line],
     )
 end
+
+@testset "Test AGC" begin
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
+    thermals = get_components(ThermalStandard, sys)
+    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    agc = AGC(;
+        name = "agc",
+        available = true,
+        bias = 0.0,
+        K_p = 1.0,
+        K_i = 1.0,
+        K_d = 1.0,
+        delta_t = 1.0,
+    )
+    @test_throws ArgumentError add_service!(sys, agc, thermals)
+    add_service!(sys, agc, reserves)
+    mapping = get_contributing_reserve_mapping(sys)
+    @test length(mapping) == 1
+    @test_throws ArgumentError add_service!(sys, agc, reserves)
+
+    #Test serialization of system with AGC + contributing reserves
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
+    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    agc = AGC(;
+        name = "agc",
+        available = true,
+        bias = 0.0,
+        K_p = 1.0,
+        K_i = 1.0,
+        K_d = 1.0,
+        delta_t = 1.0,
+    )
+    add_service!(sys, agc, reserves)
+    _, result = validate_serialization(sys)
+    @test result
+end

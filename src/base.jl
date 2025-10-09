@@ -835,6 +835,16 @@ function _validate_types_for_interface(sys::System, contributing_devices)
     return
 end
 
+function _validate_types_for_agc(contributing_devices)
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Reserve)
+            throw(ArgumentError("contributing_devices of AGC must be of type Reserve"))
+        end
+    end
+    return
+end
+
 function _add_service!(
     sys::System,
     service::TransmissionInterface,
@@ -850,6 +860,24 @@ function _add_service!(
 
     for device in contributing_devices
         add_service_internal!(device, service)
+    end
+end
+
+function _add_service!(
+    sys::System,
+    service::AGC,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
+    _validate_types_for_agc(contributing_devices)
+    set_units_setting!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+
+    for device in contributing_devices
+        add_service_internal!(service, device)
     end
 end
 
@@ -1364,7 +1392,9 @@ Return a vector of devices contributing to the service.
 """
 function get_contributing_devices(sys::System, service::T) where {T <: Service}
     throw_if_not_attached(service, sys)
-    return [x for x in get_components(Device, sys) if has_service(x, service)]
+    return [
+        x for x in get_components(supports_services, Device, sys) if has_service(x, service)
+    ]
 end
 
 """
@@ -1383,6 +1413,15 @@ end
 const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
 const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
+
+struct AGCContributingReserves
+    agc::AGC
+    contributing_reserves::Vector{Reserve}
+end
+
+const AGCContributingReservesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const AGCContributingReservesMapping =
+    Dict{AGCContributingReservesKey, AGCContributingReserves}
 
 """
 Returns a ServiceContributingDevices object.
@@ -1420,6 +1459,18 @@ function _get_contributing_devices(sys::System, service::TransmissionInterface)
         end
     end
     return devices
+end
+
+"""
+Return an instance of AGCContributingReservesMapping.
+"""
+function get_contributing_reserve_mapping(sys::System)
+    agcs = AGCContributingReservesMapping()
+    for agc in get_components(AGC, sys)
+        key = AGCContributingReservesKey((typeof(agc), get_name(agc)))
+        agcs[key] = AGCContributingReserves(agc, get_reserves(agc))
+    end
+    return agcs
 end
 
 """
@@ -2282,11 +2333,13 @@ function deserialize_components!(sys::System, raw)
     end
 
     # Run in order based on type composition.
-    # Bus and AGC instances can have areas and LoadZones.
+    # Bus instances can have areas and LoadZones.
+    # AGC instances can have areas and contributing reserves
     # Most components have buses.
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
     deserialize_and_add!(; include_types = [Area, LoadZone])
+    deserialize_and_add!(; include_types = [AbstractReserve])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;

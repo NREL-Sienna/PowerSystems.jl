@@ -385,6 +385,7 @@ export get_aggregation_topology_mapping
 export get_contributing_devices
 export get_connected_devices
 export get_contributing_device_mapping
+export get_contributing_reserve_mapping
 export get_reservoir_device_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
