@@ -89,6 +89,9 @@ end
             @error("Generator $g not supported")
         end
     end
+    static_injector = first(get_components(ThermalStandard, sys))
+    @test get_frequency_droop(static_injector) ==
+          static_injector.dynamic_injector.prime_mover.R
 end
 
 @testset "GENCLS dyr parsing" begin

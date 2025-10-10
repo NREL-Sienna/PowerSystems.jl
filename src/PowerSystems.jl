@@ -505,6 +505,7 @@ export get_description
 export set_description!
 export get_base_power
 export get_frequency
+export get_frequency_droop
 export set_units_base_system!
 export with_units_base
 export to_json
