@@ -132,17 +132,17 @@ end
         end
     end
 
-    renewable_attrs = get_supplemental_attributes(PSY.RenewableDispatch, c_sys5_bat)
+    renewable_attrs = get_supplemental_attributes(c_sys5_bat, PSY.RenewableDispatch)
     @test length(renewable_attrs) == 2 && geo_attr1 in renewable_attrs &&
           attr1 in renewable_attrs
 
-    thermal_attrs = get_supplemental_attributes(PSY.ThermalStandard, c_sys5_bat)
+    thermal_attrs = get_supplemental_attributes(c_sys5_bat, PSY.ThermalStandard)
     @test length(thermal_attrs) == 3 && geo_attr2 in thermal_attrs &&
           attr2 in thermal_attrs && geo_attr1 in thermal_attrs
 
     thermal_geo_attrs = get_supplemental_attributes(
-        PSY.ThermalStandard,
-        c_sys5_bat;
+        c_sys5_bat,
+        PSY.ThermalStandard;
         attribute_type = IS.GeographicInfo,
     )
     @test length(thermal_geo_attrs) == 2 && geo_attr1 in thermal_geo_attrs &&
