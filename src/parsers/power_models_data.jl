@@ -489,11 +489,12 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         for (k, d) in data["interarea_transfer"]
             area_from_name = _get_name_area(d["area_from"])
             area_to_name = _get_name_area(d["area_to"])
+            transfer_id = get(d, "transfer_id", "1") # 1 by default
 
             from_area = get_component(Area, sys, area_from_name)
             to_area = get_component(Area, sys, area_to_name)
 
-            name = "$(area_from_name)_$(area_to_name)"
+            name = "$(area_from_name)_$(area_to_name)_$(transfer_id)"
             available = true
             active_power_flow = d["power_transfer"]
             flow_limits = (from_to = -INFINITE_BOUND, to_from = INFINITE_BOUND)

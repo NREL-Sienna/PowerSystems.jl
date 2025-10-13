@@ -419,6 +419,7 @@ function _psse2pm_interarea_transfer!(pm_data::Dict, pti_data::Dict, import_all:
             sub_data = Dict{String, Any}()
             sub_data["area_from"] = pop!(interarea, "ARFROM")
             sub_data["area_to"] = pop!(interarea, "ARTO")
+            sub_data["transfer_id"] = pop!(interarea, "TRID")
             sub_data["power_transfer"] = pop!(interarea, "PTRAN")
 
             sub_data["index"] = length(pm_data["interarea_transfer"]) + 1
