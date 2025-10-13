@@ -703,6 +703,25 @@ function apply_tap_correction!(
     return windv_value
 end
 
+# Base Power has a different key in sub_data depending on the number of windings
+function _transformer_mag_pu_conversion(
+    transformer::Dict,
+    sub_data::Dict,
+    base_power::Float64,
+)
+    if isapprox(transformer["MAG1"], ZERO_IMPEDANCE_REACTANCE_THRESHOLD) &&
+       isapprox(transformer["MAG2"], ZERO_IMPEDANCE_REACTANCE_THRESHOLD)
+        @warn "Transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) has zero MAG1 and MAG2 values."
+        return 0.0, 0.0
+    else
+        G_pu = 1e-6 * transformer["MAG1"] / base_power
+        mag_diff = transformer["MAG2"]^2 - G_pu^2
+        @assert mag_diff >= -ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+        B_pu = sqrt(max(0.0, mag_diff))
+        return G_pu, B_pu
+    end
+end
+
 """
     _psse2pm_transformer!(pm_data, pti_data)
 
@@ -857,8 +876,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["b_fr"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
-                    G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power"]
-                    B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
+                    G_pu, B_pu = _transformer_mag_pu_conversion(
+                        transformer,
+                        sub_data,
+                        sub_data["base_power"],
+                    )
                     sub_data["g_fr"] = G_pu
                     sub_data["b_fr"] = B_pu
                 end
@@ -1319,8 +1341,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["b"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
-                    G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power_12"]
-                    B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
+                    G_pu, B_pu = _transformer_mag_pu_conversion(
+                        transformer,
+                        sub_data,
+                        sub_data["base_power_12"],
+                    )
                     sub_data["g"] = G_pu
                     sub_data["b"] = B_pu
                 end
@@ -1633,10 +1658,8 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 
     if haskey(pti_data, "VOLTAGE SOURCE CONVERTER")
-        @info(
-            "VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss."
-        )
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
+            @show dcline
             # Converter buses : is the distinction between ac and dc side meaningful?
             from_bus, to_bus = dcline["CONVERTER BUSES"]
 
