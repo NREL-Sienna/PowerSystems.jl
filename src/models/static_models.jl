@@ -27,3 +27,15 @@ function get_services(device::Device)
 end
 
 get_dynamic_injector(d::StaticInjection) = nothing
+
+function get_frequency_droop(static_injector::StaticInjection)
+    dynamic_injector = get_dynamic_injector(static_injector)
+    if isnothing(dynamic_injector)
+        throw(
+            ArgumentError(
+                "cannot get frequency droop for $(summary(static_injector)) because it does not have dynamic data.",
+            ),
+        )
+    end
+    return get_frequency_droop(dynamic_injector)
+end
