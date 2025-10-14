@@ -28,7 +28,6 @@ end
         inflow = 0.0,
         outflow = 0.0,
         level_targets = 0.0,
-        travel_time = 0.0,
         intake_elevation = 0.0,
         head_to_volume_factor = LinearCurve(0.0),
     )
@@ -65,7 +64,7 @@ end
     turbine = HydroTurbine(nothing)
     turbine.bus = bus
     add_component!(sys, turbine)
-    set_downstream_turbines!(reservoir, turbine)
+    set_downstream_turbine!(reservoir, turbine)
 
     @test !has_upstream_turbine(reservoir)
     @test has_downstream_turbine(reservoir)
@@ -143,8 +142,8 @@ end
     turbine = HydroTurbine(nothing)
     turbine.bus = bus
     add_component!(sys, turbine)
-    set_downstream_turbines!(hydro_reservoir_01, turbine)
-    set_downstream_turbines!(hydro_reservoir_02, turbine)
+    set_downstream_turbine!(hydro_reservoir_01, turbine)
+    set_downstream_turbine!(hydro_reservoir_02, turbine)
     @test length(get_connected_head_reservoirs(sys, turbine)) == 2
     @test isempty(get_connected_tail_reservoirs(sys, turbine))
 
