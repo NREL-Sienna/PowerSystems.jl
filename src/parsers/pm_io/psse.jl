@@ -1987,15 +1987,22 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
             dummy_bus_numbers = [x[2] for x in dummy_buses]
             all_buses = [f_bus; dummy_bus_numbers; t_bus]
             for ix in 1:(length(all_buses) - 1)
+                branch_index = nothing
                 if haskey(branch_lookup, (all_buses[ix], all_buses[ix + 1]))
                     branch_index = branch_lookup[(all_buses[ix], all_buses[ix + 1])]
-                else
+                elseif haskey(branch_lookup, (all_buses[ix + 1], all_buses[ix]))
                     branch_index = branch_lookup[(all_buses[ix + 1], all_buses[ix])]
+                else
+                    @warn "Branch between buses $(all_buses[ix]) and $(all_buses[ix + 1]) not found in branch data. Skipping segment."
+                    continue
                 end
-                ext = get(pm_data["branch"][branch_index], "ext", Dict{String, Any}())
-                ext["from_multisection"] = true
-                ext["multisection_psse_entry"] = multisec_line
-                pm_data["branch"][branch_index]["ext"] = ext
+                # Proceed if a valid branch is found
+                if branch_index !== nothing
+                    ext = get(pm_data["branch"][branch_index], "ext", Dict{String, Any}())
+                    ext["from_multisection"] = true
+                    ext["multisection_psse_entry"] = multisec_line
+                    pm_data["branch"][branch_index]["ext"] = ext
+                end
             end
         end
     end
