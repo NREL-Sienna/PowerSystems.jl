@@ -382,6 +382,8 @@ export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
+export set_upstream_turbine!
+export set_downstream_turbine!
 export get_connected_head_reservoirs
 export get_connected_tail_reservoirs
 export get_contributing_device_mapping
