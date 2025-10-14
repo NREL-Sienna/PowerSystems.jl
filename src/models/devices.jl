@@ -128,7 +128,6 @@ end
 """ Ensures that reservoirs cannot provide services """
 supports_services(::HydroReservoir) = false
 
-# TODO this the other way around
 """
 Remove a reservoir from a device.
 
@@ -174,26 +173,14 @@ end
 Return true if any upstream hydro unit is attached to the reservoir.
 """
 function has_upstream_turbine(reservoir::HydroReservoir)
-    for _turbine in get_upstream_turbines(reservoir)
-        if isa(_turbine, HydroUnit)
-            return true
-        end
-    end
-
-    return false
+    return !isempty(get_upstream_turbines(reservoir))
 end
 
 """
 Return true if any downstream hydro unit is attached to the reservoir.
 """
 function has_downstream_turbine(reservoir::HydroReservoir)
-    for _turbine in get_downstream_turbines(reservoir)
-        if isa(_turbine, HydroUnit)
-            return true
-        end
-    end
-
-    return false
+    return !isempty(get_downstream_turbines(reservoir))
 end
 
 """
