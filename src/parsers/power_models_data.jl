@@ -285,7 +285,6 @@ function _attach_single_ict!(
     ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     if isempty(ict_instances)
-        @info "No Impedance Correction Tables found."
         return
     end
     if haskey(d, table_key)
@@ -334,7 +333,6 @@ function _attach_impedance_correction_tables!(
     ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     if isempty(ict_instances)
-        @info "No Impedance Correction Tables found."
         return
     end
     for winding_category in instances(WindingCategory)
