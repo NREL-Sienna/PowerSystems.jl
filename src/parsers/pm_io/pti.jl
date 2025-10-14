@@ -1936,8 +1936,42 @@ function _parse_pti_data(data_io::IO)
         is_v35 = true
     end
 
-    header_line_start = is_v35 ? 2 : 1
-    bus_data_start = is_v35 ? 25 : 4
+    header_line_start = is_v35 ? 2 : 1 # Start in second line due to @! 
+    # Dynamically handle the start of BUS DATA section
+    # In v35 files, BUS DATA starts in different lines due to the fields GENERAL,GAUSS,NEWTON,ADJUST,TYSL,SOLVER,RATING
+    # This fields are optional in the file and when not found, the start of the reading vary a lot
+    bus_data_start = if is_v35
+        found_start = 25  # Default of most files
+        for i in 3:min(35, length(data_lines))
+            line = strip(data_lines[i])
+
+            # Skip comments and system-wide data
+            if startswith(
+                line,
+                r"@!|GENERAL,|GAUSS,|NEWTON,|ADJUST,|TYSL,|SOLVER,|RATING,",
+            ) || isempty(line)
+                continue
+            end
+
+            # Look for section marker of BUS DATA
+            if contains(line, "END OF SYSTEM-WIDE DATA") ||
+               (
+                tryparse(Int, split(line, ',')[1] |> strip) !== nothing &&
+                contains(line, "'")
+            )
+                found_start = if contains(line, "END OF SYSTEM-WIDE DATA")
+                    (i + (startswith(strip(data_lines[i + 1]), "@!") ? 2 : 1))
+                else
+                    i
+                end
+                break
+            end
+        end
+        # New updated start section 
+        found_start
+    else
+        4 # Start for all v33 files
+    end
 
     current_dtypes = is_v35 ? _pti_dtypes_v35 : _pti_dtypes
 
@@ -2262,7 +2296,13 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
-                if length(_get_line_elements(line)[1]) == 11
+                vsc_line_length = length(_get_line_elements(line)[1])
+                # VSC DC LINE DATA can have 5 or 11 elements in all cases possible
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000,,,,,,
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000,1.0,0.0,1.0,0.0,1.0,0.0
+                # This is how originally the parser was written
+                if vsc_line_length == 5 || vsc_line_length == 11
                     section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(

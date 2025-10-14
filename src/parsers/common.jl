@@ -137,7 +137,7 @@ function calculate_ramp_limit(
         return (up = d["ramp_30"], down = d["ramp_30"])
     end
     if abs(d["pmax"]) > 0.0
-        @warn "No ramp limits found for generator $(gen_name). Using pmax as ramp limit."
+        @debug "No ramp limits found for generator $(gen_name). Using pmax as ramp limit."
         return (up = abs(d["pmax"]), down = abs(d["pmax"]))
     end
     @warn "Not enough information to determine ramp limit for generator $(gen_name). Returning nothing"

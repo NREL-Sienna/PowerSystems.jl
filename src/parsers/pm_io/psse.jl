@@ -419,6 +419,7 @@ function _psse2pm_interarea_transfer!(pm_data::Dict, pti_data::Dict, import_all:
             sub_data = Dict{String, Any}()
             sub_data["area_from"] = pop!(interarea, "ARFROM")
             sub_data["area_to"] = pop!(interarea, "ARTO")
+            sub_data["transfer_id"] = pop!(interarea, "TRID")
             sub_data["power_transfer"] = pop!(interarea, "PTRAN")
 
             sub_data["index"] = length(pm_data["interarea_transfer"]) + 1
@@ -703,6 +704,25 @@ function apply_tap_correction!(
     return windv_value
 end
 
+# Base Power has a different key in sub_data depending on the number of windings
+function _transformer_mag_pu_conversion(
+    transformer::Dict,
+    sub_data::Dict,
+    base_power::Float64,
+)
+    if isapprox(transformer["MAG1"], ZERO_IMPEDANCE_REACTANCE_THRESHOLD) &&
+       isapprox(transformer["MAG2"], ZERO_IMPEDANCE_REACTANCE_THRESHOLD)
+        @warn "Transformer $(sub_data["f_bus"]) -> $(sub_data["t_bus"]) has zero MAG1 and MAG2 values."
+        return 0.0, 0.0
+    else
+        G_pu = 1e-6 * transformer["MAG1"] / base_power
+        mag_diff = transformer["MAG2"]^2 - G_pu^2
+        @assert mag_diff >= -ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+        B_pu = sqrt(max(0.0, mag_diff))
+        return G_pu, B_pu
+    end
+end
+
 """
     _psse2pm_transformer!(pm_data, pti_data)
 
@@ -857,8 +877,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["b_fr"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
-                    G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power"]
-                    B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
+                    G_pu, B_pu = _transformer_mag_pu_conversion(
+                        transformer,
+                        sub_data,
+                        sub_data["base_power"],
+                    )
                     sub_data["g_fr"] = G_pu
                     sub_data["b_fr"] = B_pu
                 end
@@ -1319,8 +1342,11 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     sub_data["b"] = transformer["MAG2"] / mva_ratio_12
                 else # CM=2: MAG1 are no load loss in Watts and MAG2 is the exciting current in pu, in device base.
                     @assert transformer["CM"] == 2
-                    G_pu = 1e-6 * transformer["MAG1"] / sub_data["base_power_12"]
-                    B_pu = sqrt(transformer["MAG2"]^2 - G_pu^2)
+                    G_pu, B_pu = _transformer_mag_pu_conversion(
+                        transformer,
+                        sub_data,
+                        sub_data["base_power_12"],
+                    )
                     sub_data["g"] = G_pu
                     sub_data["b"] = B_pu
                 end
@@ -1633,9 +1659,6 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     end
 
     if haskey(pti_data, "VOLTAGE SOURCE CONVERTER")
-        @info(
-            "VSC-HVDC lines are supported via a dc line model approximated by two generators and an associated loss."
-        )
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
             # Converter buses : is the distinction between ac and dc side meaningful?
             from_bus, to_bus = dcline["CONVERTER BUSES"]
@@ -1964,15 +1987,22 @@ function _psse2pm_multisection_line!(pm_data::Dict, pti_data::Dict, import_all::
             dummy_bus_numbers = [x[2] for x in dummy_buses]
             all_buses = [f_bus; dummy_bus_numbers; t_bus]
             for ix in 1:(length(all_buses) - 1)
+                branch_index = nothing
                 if haskey(branch_lookup, (all_buses[ix], all_buses[ix + 1]))
                     branch_index = branch_lookup[(all_buses[ix], all_buses[ix + 1])]
-                else
+                elseif haskey(branch_lookup, (all_buses[ix + 1], all_buses[ix]))
                     branch_index = branch_lookup[(all_buses[ix + 1], all_buses[ix])]
+                else
+                    @warn "Branch between buses $(all_buses[ix]) and $(all_buses[ix + 1]) not found in branch data. Skipping segment."
+                    continue
                 end
-                ext = get(pm_data["branch"][branch_index], "ext", Dict{String, Any}())
-                ext["from_multisection"] = true
-                ext["multisection_psse_entry"] = multisec_line
-                pm_data["branch"][branch_index]["ext"] = ext
+                # Proceed if a valid branch is found
+                if branch_index !== nothing
+                    ext = get(pm_data["branch"][branch_index], "ext", Dict{String, Any}())
+                    ext["from_multisection"] = true
+                    ext["multisection_psse_entry"] = multisec_line
+                    pm_data["branch"][branch_index]["ext"] = ext
+                end
             end
         end
     end
