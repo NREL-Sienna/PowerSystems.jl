@@ -5921,21 +5921,21 @@
                     "null_value": "Device[]",
                     "data_type": "Vector{HydroUnit}",
                     "default": "Device[]",
-                    "comment": "Vector of [HydroUnit](@ref)(s) that are upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
                 },
                 {
                     "name": "downstream_turbines",
                     "null_value": "Device[]",
                     "data_type": "Vector{HydroUnit}",
                     "default": "Device[]",
-                    "comment": "Vector of [HydroUnit](@ref)(s) that are downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
                 },
                 {
                     "name": "upstream_reservoirs",
                     "null_value": "Device[]",
                     "data_type": "Vector{Device}",
                     "default": "Device[]",
-                    "comment": "Vector of [Device](@ref)(s) reservoirs that are upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
+                    "comment": "Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
                 },
                 {
                     "name": "operation_cost",
