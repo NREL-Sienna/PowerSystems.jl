@@ -2262,7 +2262,13 @@ function _parse_pti_data(data_io::IO)
                 line_index += 1
 
             elseif section == "VOLTAGE SOURCE CONVERTER"
-                if length(_get_line_elements(line)[1]) == 11
+                vsc_line_length = length(_get_line_elements(line)[1])
+                # VSC DC LINE DATA can have 5 or 11 elements in all cases possible
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000,,,,,,
+                # "CSC-VSC     ",1, 1.5800,  28,1.0000,1.0,0.0,1.0,0.0,1.0,0.0
+                # This is how originally the parser was written
+                if vsc_line_length == 5 || vsc_line_length == 11
                     section_data = Dict{String, Any}()
                     try
                         _parse_line_element!(
