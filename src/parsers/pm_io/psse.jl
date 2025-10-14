@@ -1660,7 +1660,6 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
     if haskey(pti_data, "VOLTAGE SOURCE CONVERTER")
         for dcline in pti_data["VOLTAGE SOURCE CONVERTER"]
-            @show dcline
             # Converter buses : is the distinction between ac and dc side meaningful?
             from_bus, to_bus = dcline["CONVERTER BUSES"]
 
