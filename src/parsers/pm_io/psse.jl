@@ -338,7 +338,7 @@ function _determine_injector_status(
     # If device is off keep it off.
     if !device_status
         sub_data["gen_status"] = false
-        return
+        return false
     end
     # If device is on check the topology and status of the bus it is connected to.
     if pm_data["bus"][gen_bus]["bus_type"] == 4
@@ -348,13 +348,18 @@ function _determine_injector_status(
             push!(pm_data["candidate_isolated_to_pv_buses"], gen_bus)
             pm_data["bus"][gen_bus]["bus_status"] = true
             sub_data["gen_status"] = true
+            return true
         elseif !gen_bus_connected && device_status
             @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated. Setting device status to 0."
             pm_data["bus"][gen_bus]["bus_status"] = false
             sub_data["gen_status"] = false
+            return false
         else
             error("Unrecognized generator and bus status combination.")
         end
+    else
+        sub_data["gen_status"] = true
+        return true
     end
 end
 
