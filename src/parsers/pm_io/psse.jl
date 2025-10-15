@@ -1915,32 +1915,33 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
     mapping_v35 = Dict(2 => "breaker", 3 => "switch")
 
-    if pm_data["source_version"] ∈ ("32", "33")
-        if haskey(pti_data, "BRANCH")
-            for branch in pti_data["BRANCH"]
-                branch_init = first(branch["CKT"])
+    # Always check for legacy entries in PSSe 35 for switches and breakers set as @ or *
+    if haskey(pti_data, "BRANCH")
+        for branch in pti_data["BRANCH"]
+            branch_init = first(branch["CKT"])
 
-                # Check if character is in the mapping
-                if haskey(mapping, branch_init)
-                    branch_type, discrete_branch_type = mapping[branch_init]
+            # Check if character is in the mapping
+            if haskey(mapping, branch_init)
+                branch_type, discrete_branch_type = mapping[branch_init]
 
-                    sub_data = _build_switch_breaker_sub_data(
-                        pm_data,
-                        branch,
-                        branch_type,
-                        discrete_branch_type,
-                        length(pm_data[branch_type]) + 1,
-                    )
+                sub_data = _build_switch_breaker_sub_data(
+                    pm_data,
+                    branch,
+                    branch_type,
+                    discrete_branch_type,
+                    length(pm_data[branch_type]) + 1,
+                )
 
-                    if import_all
-                        _import_remaining_keys!(sub_data, branch)
-                    end
-                    branch_isolated_bus_modifications!(pm_data, sub_data)
-                    push!(pm_data[branch_type], sub_data)
+                if import_all
+                    _import_remaining_keys!(sub_data, branch)
                 end
+                branch_isolated_bus_modifications!(pm_data, sub_data)
+                push!(pm_data[branch_type], sub_data)
             end
         end
-    elseif pm_data["source_version"] == "35"
+    end
+
+    if pm_data["source_version"] == "35"
         if haskey(pti_data, "SWITCHING DEVICE")
             for switching_device in pti_data["SWITCHING DEVICE"]
                 device_type = get(mapping_v35, switching_device["STYPE"], "other")
