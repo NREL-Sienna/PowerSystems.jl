@@ -178,7 +178,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["base_voltage_from"] = bus_from["base_kv"]
                 bus_to = pm_data["bus"][sub_data["t_bus"]]
                 sub_data["base_voltage_to"] = bus_to["base_kv"]
-                if pm_data["has_isolated_buses"]
+                if pm_data["has_isolated_type_buses"]
                     push!(pm_data["connected_buses"], sub_data["f_bus"])
                     push!(pm_data["connected_buses"], sub_data["t_bus"])
                 end
@@ -261,11 +261,11 @@ function branch_isolated_bus_modifications!(pm_data::Dict, branch_data::Dict)
         branch_data["br_status"] = 0
     end
     if from_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], from_bus_no)
+        push!(pm_data["candidate_isolated_to_pq_buses"], from_bus_no)
         from_bus["bus_status"] = false
     end
     if to_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], to_bus_no)
+        push!(pm_data["candidate_isolated_to_pq_buses"], to_bus_no)
         to_bus["bus_status"] = false
     end
     return
@@ -284,15 +284,15 @@ function transformer3W_isolated_bus_modifications!(pm_data::Dict, branch_data::D
         branch_data["br_status"] = 0
     end
     if primary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], primary_bus_number)
+        push!(pm_data["candidate_isolated_to_pq_buses"], primary_bus_number)
         primary_bus["bus_status"] = false
     end
     if secondary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], secondary_bus_number)
+        push!(pm_data["candidate_isolated_to_pq_buses"], secondary_bus_number)
         secondary_bus["bus_status"] = false
     end
     if tertiary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], tertiary_bus_number)
+        push!(pm_data["candidate_isolated_to_pq_buses"], tertiary_bus_number)
         tertiary_bus["bus_status"] = false
     end
     return
@@ -387,7 +387,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             device_bus_number = sub_data["gen_bus"]
             bus = pm_data["bus"][device_bus_number]
             if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pv_buses"], device_bus_number)
+                push!(pm_data["candidate_isolated_to_pv_buses"], device_bus_number)
                 bus["bus_status"] = false
                 sub_data["gen_status"] = false
             end
@@ -469,7 +469,7 @@ by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
-    pm_data["has_isolated_buses"] = false
+    pm_data["has_isolated_type_buses"] = false
     pm_data["bus"] = Dict{Int, Any}()
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
@@ -479,11 +479,11 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["bus_type"] = pop!(bus, "IDE")
             if sub_data["bus_type"] == 4
                 @warn "The PSS(R)E data contains buses designated as isolated. The parser will check if the buses are connected or topologically isolated."
-                pm_data["has_isolated_buses"] = true
+                pm_data["has_isolated_type_buses"] = true
                 sub_data["bus_status"] = false
                 pm_data["connected_buses"] = Set{Int}()
-                pm_data["isolated_to_pq_buses"] = Set{Int}()
-                pm_data["isolated_to_pv_buses"] = Set{Int}()
+                pm_data["candidate_isolated_to_pq_buses"] = Set{Int}()
+                pm_data["candidate_isolated_to_pv_buses"] = Set{Int}()
             else
                 sub_data["bus_status"] = true
             end
@@ -556,7 +556,7 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             device_bus_number = sub_data["load_bus"]
             bus = pm_data["bus"][device_bus_number]
             if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
+                push!(pm_data["candidate_isolated_to_pq_buses"], device_bus_number)
                 bus["bus_status"] = false
                 sub_data["status"] = false
             end
@@ -597,7 +597,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             device_bus_number = sub_data["shunt_bus"]
             bus = pm_data["bus"][device_bus_number]
             if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
+                push!(pm_data["candidate_isolated_to_pq_buses"], device_bus_number)
                 bus["bus_status"] = false
                 sub_data["status"] = false
             end
@@ -674,7 +674,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             device_bus_number = sub_data["shunt_bus"]
             bus = pm_data["bus"][device_bus_number]
             if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
+                push!(pm_data["candidate_isolated_to_pq_buses"], device_bus_number)
                 bus["bus_status"] = false
                 sub_data["status"] = false
             end
@@ -776,7 +776,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["f_bus"] = transformer["I"]
                 sub_data["t_bus"] = transformer["J"]
-                if pm_data["has_isolated_buses"]
+                if pm_data["has_isolated_type_buses"]
                     push!(pm_data["connected_buses"], sub_data["f_bus"])
                     push!(pm_data["connected_buses"], sub_data["t_bus"])
                 end
@@ -1062,7 +1062,7 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
                 pm_data["bus"][starbus_id] = starbus
-                if pm_data["has_isolated_buses"]
+                if pm_data["has_isolated_type_buses"]
                     push!(pm_data["connected_buses"], bus_id1)
                     push!(pm_data["connected_buses"], bus_id2)
                     push!(pm_data["connected_buses"], bus_id3)
@@ -1530,7 +1530,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
-            if pm_data["has_isolated_buses"]
+            if pm_data["has_isolated_type_buses"]
                 push!(pm_data["connected_buses"], sub_data["f_bus"])
                 push!(pm_data["connected_buses"], sub_data["t_bus"])
             end
@@ -1682,7 +1682,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = from_bus["IBUS"]
             sub_data["t_bus"] = to_bus["IBUS"]
-            if pm_data["has_isolated_buses"]
+            if pm_data["has_isolated_type_buses"]
                 push!(pm_data["connected_buses"], sub_data["f_bus"])
                 push!(pm_data["connected_buses"], sub_data["t_bus"])
             end
@@ -1856,7 +1856,7 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             device_bus_number = sub_data["bus"]
             bus = pm_data["bus"][device_bus_number]
             if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
+                push!(pm_data["candidate_isolated_to_pq_buses"], device_bus_number)
                 bus["bus_status"] = false
                 sub_data["available"] = false
             end
@@ -1878,7 +1878,7 @@ function _build_switch_breaker_sub_data(
 
     sub_data["f_bus"] = pop!(dict_object, "I")
     sub_data["t_bus"] = pop!(dict_object, "J")
-    if pm_data["has_isolated_buses"]
+    if pm_data["has_isolated_type_buses"]
         push!(pm_data["connected_buses"], sub_data["f_bus"])
         push!(pm_data["connected_buses"], sub_data["t_bus"])
     end
@@ -2185,25 +2185,37 @@ function _pti_to_powermodels!(
     _psse2pm_substation_data!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
 
-    if pm_data["has_isolated_buses"]
-        bus_numbers = [v["bus_i"] for (_, v) in pm_data["bus"]]
-        topologically_isolated_buses = setdiff(Set(bus_numbers), pm_data["connected_buses"])
+    if pm_data["has_isolated_type_buses"]
+        bus_numbers = Set(v["bus_i"] for (_, v) in pm_data["bus"])
+        topologically_isolated_buses = setdiff(bus_numbers, pm_data["connected_buses"])
         convert_to_pq =
-            setdiff(pm_data["isolated_to_pq_buses"], pm_data["isolated_to_pv_buses"])
-        convert_to_pv = pm_data["isolated_to_pv_buses"]
-        for b in convert_to_pq
+            setdiff(
+                pm_data["candidate_isolated_to_pq_buses"],
+                pm_data["candidate_isolated_to_pv_buses"],
+            )
+        convert_to_pv = pm_data["candidate_isolated_to_pv_buses"]
+
+        for b in setdiff!(convert_to_pq, topologically_isolated_buses)
             pm_data["bus"][b]["bus_type"] = 1
         end
-        for b in convert_to_pv
+        for b in setdiff!(convert_to_pv, topologically_isolated_buses)
             pm_data["bus"][b]["bus_type"] = 2
         end
+
         if !isempty(topologically_isolated_buses)
-            @error "PSEE data file contains topologically isolated buses (numbers $(topologically_isolated_buses)) that are disconnected from the system. This does not include buses that are set to isolated to make components unavailable, and likely indicates an error in the data."
             for b in topologically_isolated_buses
-                pm_data["bus"][b]["bus_type"] = 4
+                if pm_data["bus"][b]["bus_type"] == 4
+                    continue
+                else
+                    b_number = pm_data["bus"][b]["bus_i"]
+                    b_type = pm_data["bus"][b]["bus_type"]
+                    @error "PSEE data file contains a topologically isolated bus $(b_number) that is disconnected from the system and set to bus_type = $(b_type) instead of 4. Likely indicates an error in the data."
+                    pm_data["bus"][b]["bus_type"] = 4
+                end
             end
         end
     end
+
     if import_all
         _import_remaining_comps!(
             pm_data,
