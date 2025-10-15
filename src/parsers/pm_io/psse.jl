@@ -236,9 +236,12 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data["branch"], sub_data)
+            else
+                @info "Branch $(branch["I"]) -> $(branch["J"]) with CKT=$(branch["CKT"]) will be parsed as DiscreteControlledACBranch"
             end
         end
     end
+    return
 end
 
 function branch_isolated_bus_modifications!(pm_data::Dict, branch_data::Dict)
