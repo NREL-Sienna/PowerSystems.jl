@@ -1201,18 +1201,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 zero_names = []
                 if isapprox(Zx_p, 0.0; atol = eps(Float32))
                     push!(zero_names, "primary")
-                    Zx_p = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_p = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if isapprox(Zx_s, 0.0; atol = eps(Float32))
                     push!(zero_names, "secondary")
-                    Zx_s = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_s = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if isapprox(Zx_t, 0.0; atol = eps(Float32))
                     push!(zero_names, "tertiary")
-                    Zx_t = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_t = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if !isempty(zero_names)
-                    @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
+                    @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
                 end
 
                 if iszero(Z_base_device_1)
