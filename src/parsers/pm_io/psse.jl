@@ -171,7 +171,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
             if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
                 sub_data = Dict{String, Any}()
-
+                connected_to_isolated_buses = false
                 sub_data["f_bus"] = pop!(branch, "I")
                 sub_data["t_bus"] = pop!(branch, "J")
                 bus_from = pm_data["bus"][sub_data["f_bus"]]
@@ -179,8 +179,12 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 bus_to = pm_data["bus"][sub_data["t_bus"]]
                 sub_data["base_voltage_to"] = bus_to["base_kv"]
                 if pm_data["has_isolated_type_buses"]
-                    push!(pm_data["connected_buses"], sub_data["f_bus"])
-                    push!(pm_data["connected_buses"], sub_data["t_bus"])
+                    if bus_from["bus_type"] == 4 || bus_to["bus_type"] == 4
+                        connected_to_isolated_buses = true
+                    else
+                        push!(pm_data["connected_buses"], sub_data["f_bus"])
+                        push!(pm_data["connected_buses"], sub_data["t_bus"])
+                    end
                 end
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
@@ -216,7 +220,13 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["tap"] = 1.0
                 sub_data["shift"] = 0.0
-                sub_data["br_status"] = pop!(branch, "ST")
+                if branch["ST"] == 1 && connected_to_isolated_buses
+                    @warn "Branch connected between buses $(bus_from) -> $(bus_to) is connected to an isolated bus. Setting branch status to 0."
+                    sub_data["br_status"] = 0
+                    pop(branch, "ST")
+                else
+                    sub_data["br_status"] = pop!(branch, "ST")
+                end
                 sub_data["angmin"] = 0.0
                 sub_data["angmax"] = 0.0
                 sub_data["transformer"] = false
@@ -319,6 +329,35 @@ function _is_synch_condenser(sub_data::Dict{String, Any}, pm_data::Dict{String, 
     return false
 end
 
+function _determine_injector_status(
+    sub_data::Dict{String, Any},
+    pm_data::Dict{String, Any},
+    gen_bus::Int,
+)
+    device_status = pop!(sub_data, "STAT") == 1 ? true : false
+    # If device is off keep it off.
+    if !device_status
+        sub_data["gen_status"] = false
+        return
+    end
+    # If device is on check the topology and status of the bus it is connected to.
+    if pm_data["bus"][gen_bus]["bus_type"] == 4
+        gen_bus_connected = gen_bus ∈ pm_data["connected_buses"]
+        if gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated and not topologically isolated. Setting device status to 1 and the bus added to candidate for conversion."
+            push!(pm_data["candidate_isolated_to_pv_buses"], gen_bus)
+            pm_data["bus"][gen_bus]["bus_status"] = true
+            sub_data["gen_status"] = true
+        elseif !gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated. Setting device status to 0."
+            pm_data["bus"][gen_bus]["bus_status"] = false
+            sub_data["gen_status"] = false
+        else
+            error("Unrecognized generator and bus status combination.")
+        end
+    end
+end
+
 """
     _psse2pm_generator!(pm_data, pti_data)
 
@@ -331,9 +370,9 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         pm_data["gen"] = Vector{Dict{String, Any}}(undef, length(pti_data["GENERATOR"]))
         for (ix, gen) in enumerate(pti_data["GENERATOR"])
             sub_data = Dict{String, Any}()
-
             sub_data["gen_bus"] = pop!(gen, "I")
-            sub_data["gen_status"] = pop!(gen, "STAT")
+            sub_data["gen_status"] =
+                _determine_injector_status(gen, pm_data, sub_data["gen_bus"])
             sub_data["pg"] = pop!(gen, "PG")
             sub_data["qg"] = pop!(gen, "QG")
             sub_data["vg"] = pop!(gen, "VS")
@@ -384,13 +423,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, gen)
             end
-            device_bus_number = sub_data["gen_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["candidate_isolated_to_pv_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["gen_status"] = false
-            end
+
             pm_data["gen"][ix] = sub_data
         end
     else
@@ -1954,8 +1987,8 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
         end
     end
 
-    if pm_data["source_version"] == "35"
-        if haskey(pti_data, "SWITCHING DEVICE")
+    if haskey(pti_data, "SWITCHING DEVICE")
+        if pm_data["source_version"] == "35"
             for switching_device in pti_data["SWITCHING DEVICE"]
                 device_type = get(mapping_v35, switching_device["STYPE"], "other")
                 discrete_branch_type =
@@ -1976,9 +2009,9 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data[device_type], sub_data)
             end
+        else
+            error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
         end
-    else
-        error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
     end
     return
 end
@@ -2171,15 +2204,19 @@ function _pti_to_powermodels!(
     _psse2pm_interarea_transfer!(pm_data, pti_data, import_all)
     _psse2pm_area_interchange!(pm_data, pti_data, import_all)
     _psse2pm_zone!(pm_data, pti_data, import_all)
+    # Order matters here. Buses need to parsed first
     _psse2pm_bus!(pm_data, pti_data, import_all)
-    _psse2pm_load!(pm_data, pti_data, import_all)
-    _psse2pm_shunt!(pm_data, pti_data, import_all)
-    _psse2pm_generator!(pm_data, pti_data, import_all)
-    _psse2pm_facts!(pm_data, pti_data, import_all)
+    # Branches need to be parsed after buses to find topologically connected buses
     _psse2pm_branch!(pm_data, pti_data, import_all)
     _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
+    # Injectors need to be parsed after branches and transformers to find topologically connected buses
+    _psse2pm_load!(pm_data, pti_data, import_all)
+    _psse2pm_shunt!(pm_data, pti_data, import_all)
+    _psse2pm_generator!(pm_data, pti_data, import_all)
+    _psse2pm_facts!(pm_data, pti_data, import_all)
+
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
     _psse2pm_substation_data!(pm_data, pti_data, import_all)
