@@ -169,9 +169,6 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 @error "Bus Data Incomplete for $(branch). Skipping branch creation"
                 continue
             end
-            from_bus = branch["I"]
-            to_bus = branch["J"]
-            ckt = branch["CKT"]
             if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
                 sub_data = Dict{String, Any}()
 
@@ -244,6 +241,9 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data["branch"], sub_data)
             else
+                from_bus = branch["I"]
+                to_bus = branch["J"]
+                ckt = branch["CKT"]
                 @info "Branch $from_bus -> $to_bus with CKT=$ckt will be parsed as DiscreteControlledACBranch"
             end
         end
