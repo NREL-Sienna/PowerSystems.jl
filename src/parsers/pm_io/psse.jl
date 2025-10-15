@@ -333,12 +333,12 @@ function _determine_injector_status(
     sub_data::Dict{String, Any},
     pm_data::Dict{String, Any},
     gen_bus::Int,
+    status_key::String,
 )
-    device_status = pop!(sub_data, "STAT") == 1 ? true : false
+    device_status = pop!(sub_data, status_key) == 1 ? true : false
     # If device is off keep it off.
     if !device_status
-        sub_data["gen_status"] = false
-        return
+        return false
     end
     # If device is on check the topology and status of the bus it is connected to.
     if pm_data["bus"][gen_bus]["bus_type"] == 4
@@ -347,11 +347,11 @@ function _determine_injector_status(
             @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated and not topologically isolated. Setting device status to 1 and the bus added to candidate for conversion."
             push!(pm_data["candidate_isolated_to_pv_buses"], gen_bus)
             pm_data["bus"][gen_bus]["bus_status"] = true
-            sub_data["gen_status"] = true
+            return true
         elseif !gen_bus_connected && device_status
             @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated. Setting device status to 0."
             pm_data["bus"][gen_bus]["bus_status"] = false
-            sub_data["gen_status"] = false
+            return false
         else
             error("Unrecognized generator and bus status combination.")
         end
@@ -372,7 +372,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data = Dict{String, Any}()
             sub_data["gen_bus"] = pop!(gen, "I")
             sub_data["gen_status"] =
-                _determine_injector_status(gen, pm_data, sub_data["gen_bus"])
+                _determine_injector_status(gen, pm_data, sub_data["gen_bus"], "ST")
             sub_data["pg"] = pop!(gen, "PG")
             sub_data["qg"] = pop!(gen, "QG")
             sub_data["vg"] = pop!(gen, "VS")
@@ -581,7 +581,8 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
-            sub_data["status"] = pop!(load, "STATUS")
+            sub_data["status"] =
+                _determine_injector_status(gen, pm_data, sub_data["gen_bus"], "STATUS")
             sub_data["index"] = length(pm_data["load"]) + 1
             if import_all
                 _import_remaining_keys!(sub_data, load)
