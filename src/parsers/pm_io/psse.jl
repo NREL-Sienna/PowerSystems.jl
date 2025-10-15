@@ -223,7 +223,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 if branch["ST"] == 1 && connected_to_isolated_buses
                     @warn "Branch connected between buses $(bus_from) -> $(bus_to) is connected to an isolated bus. Setting branch status to 0."
                     sub_data["br_status"] = 0
-                    pop(branch, "ST")
+                    delete!(branch, "ST")
                 else
                     sub_data["br_status"] = pop!(branch, "ST")
                 end
@@ -334,6 +334,7 @@ function _determine_injector_status(
     pm_data::Dict{String, Any},
     gen_bus::Int,
     status_key::String,
+    bus_conversion_list::String,
 )
     device_status = pop!(sub_data, status_key) == 1 ? true : false
     # If device is off keep it off.
@@ -345,7 +346,7 @@ function _determine_injector_status(
         gen_bus_connected = gen_bus ∈ pm_data["connected_buses"]
         if gen_bus_connected && device_status
             @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated and not topologically isolated. Setting device status to 1 and the bus added to candidate for conversion."
-            push!(pm_data["candidate_isolated_to_pv_buses"], gen_bus)
+            push!(pm_data[bus_conversion_list], gen_bus)
             pm_data["bus"][gen_bus]["bus_status"] = true
             return true
         elseif !gen_bus_connected && device_status
@@ -375,7 +376,13 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data = Dict{String, Any}()
             sub_data["gen_bus"] = pop!(gen, "I")
             sub_data["gen_status"] =
-                _determine_injector_status(gen, pm_data, sub_data["gen_bus"], "ST")
+                _determine_injector_status(
+                    gen,
+                    pm_data,
+                    sub_data["gen_bus"],
+                    "STAT",
+                    "candidate_isolated_to_pv_buses",
+                )
             sub_data["pg"] = pop!(gen, "PG")
             sub_data["qg"] = pop!(gen, "QG")
             sub_data["vg"] = pop!(gen, "VS")
@@ -585,19 +592,17 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             end
 
             sub_data["status"] =
-                _determine_injector_status(gen, pm_data, sub_data["gen_bus"], "STATUS")
+                _determine_injector_status(
+                    load,
+                    pm_data,
+                    sub_data["load_bus"],
+                    "STATUS",
+                    "candidate_isolated_to_pq_buses",
+                )
             sub_data["index"] = length(pm_data["load"]) + 1
             if import_all
                 _import_remaining_keys!(sub_data, load)
             end
-            device_bus_number = sub_data["load_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["candidate_isolated_to_pq_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["status"] = false
-            end
-
             push!(pm_data["load"], sub_data)
         end
     end

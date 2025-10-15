@@ -2603,6 +2603,10 @@ function parse_pti(io::IO)::Dict
 end
 
 function _split_breakers_and_branches!(data::Dict)
+    if !haskey(data, "BRANCH")
+        @info "No BRANCH section found in the system."
+        return data
+    end
     breakers = sizehint!(eltype(data["BRANCH"])[], length(data["BRANCH"]))
     delete_ixs = Int[]
     for (ix, item) in enumerate(data["BRANCH"])
