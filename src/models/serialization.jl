@@ -9,6 +9,7 @@ const _ENCODE_AS_UUID_A = (
     Vector{Service},
     Vector{Reserve},
     Vector{HydroUnit},
+    Vector{Device},
 )
 
 const _ENCODE_AS_UUID_B =
@@ -23,6 +24,7 @@ const _ENCODE_AS_UUID_B =
         Vector{Service},
         Vector{Reserve},
         Vector{HydroUnit},
+        Vector{Device},
     )
 @assert length(_ENCODE_AS_UUID_A) == length(_ENCODE_AS_UUID_B)
 
