@@ -165,6 +165,13 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for branch in pti_data["BRANCH"]
+            if !haskey(branch, "I") || !haskey(branch, "J")
+                @error "Bus Data Incomplete for $(branch). Skipping branch creation"
+                continue
+            end
+            from_bus = branch["I"]
+            to_bus = branch["J"]
+            ckt = branch["CKT"]
             if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
                 sub_data = Dict{String, Any}()
 
@@ -237,7 +244,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data["branch"], sub_data)
             else
-                @info "Branch $(branch["I"]) -> $(branch["J"]) with CKT=$(branch["CKT"]) will be parsed as DiscreteControlledACBranch"
+                @info "Branch $from_bus -> $to_bus with CKT=$ckt will be parsed as DiscreteControlledACBranch"
             end
         end
     end
@@ -1884,21 +1891,27 @@ function _build_switch_breaker_sub_data(
     sub_data["discrete_branch_type"] = discrete_device_type
     sub_data["ext"] = Dict{String, Any}()
 
-    if pm_data["source_version"] ∈ ("32", "33")
-        sub_data["r"] = pop!(dict_object, "R")
-        sub_data["state"] = pop!(dict_object, "ST")
-        sub_data["rating"] = pop!(dict_object, "RATEA")
-    else
-        sub_data["r"] = 0.0
+    if haskey(dict_object, "STAT")
         sub_data["state"] = pop!(dict_object, "STAT")
-        sub_data["rating"] = pop!(dict_object, "RATE1")
+    elseif haskey(dict_object, "ST")
+        sub_data["state"] = pop!(dict_object, "ST")
+    else
+        @warn "No STAT or ST field found in the data for switch/breaker. Assuming it is off."
+        sub_data["state"] = 0.0
+    end
 
+    if pm_data["source_version"] == ("35")
+        sub_data["r"] = 0.0
+        sub_data["rating"] = pop!(dict_object, "RATE1")
         for i in 2:12
             rate_key = "RATE$i"
             if haskey(dict_object, rate_key)
                 sub_data["ext"][rate_key] = pop!(dict_object, rate_key)
             end
         end
+    else
+        sub_data["r"] = pop!(dict_object, "R")
+        sub_data["rating"] = pop!(dict_object, "RATEA")
     end
 
     sub_data["source_id"] =
@@ -1916,8 +1929,8 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     mapping_v35 = Dict(2 => "breaker", 3 => "switch")
 
     # Always check for legacy entries in PSSe 35 for switches and breakers set as @ or *
-    if haskey(pti_data, "BRANCH")
-        for branch in pti_data["BRANCH"]
+    if haskey(pti_data, "SWITCHES_AS_BRANCHES")
+        for branch in pti_data["SWITCHES_AS_BRANCHES"]
             branch_init = first(branch["CKT"])
 
             # Check if character is in the mapping
@@ -2163,8 +2176,8 @@ function _pti_to_powermodels!(
     _psse2pm_shunt!(pm_data, pti_data, import_all)
     _psse2pm_generator!(pm_data, pti_data, import_all)
     _psse2pm_facts!(pm_data, pti_data, import_all)
-    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_branch!(pm_data, pti_data, import_all)
+    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
     _psse2pm_dcline!(pm_data, pti_data, import_all)

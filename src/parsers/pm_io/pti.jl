@@ -1936,7 +1936,7 @@ function _parse_pti_data(data_io::IO)
         is_v35 = true
     end
 
-    header_line_start = is_v35 ? 2 : 1 # Start in second line due to @! 
+    header_line_start = is_v35 ? 2 : 1 # Start in second line due to @!
     # Dynamically handle the start of BUS DATA section
     # In v35 files, BUS DATA starts in different lines due to the fields GENERAL,GAUSS,NEWTON,ADJUST,TYSL,SOLVER,RATING
     # This fields are optional in the file and when not found, the start of the reading vary a lot
@@ -1967,7 +1967,7 @@ function _parse_pti_data(data_io::IO)
                 break
             end
         end
-        # New updated start section 
+        # New updated start section
         found_start
     else
         4 # Start for all v33 files
@@ -2247,7 +2247,7 @@ function _parse_pti_data(data_io::IO)
                         )
                     end
                 else
-                    @warn("SWITCHING DEVICE DATA section found in non-v35 file, skipping.")
+                    @info("SWITCHING DEVICE DATA section found in non-v35 file, skipping.")
                 end
                 line_index += 1
 
@@ -2561,6 +2561,7 @@ function _parse_pti_data(data_io::IO)
         end
     end
 
+    _split_breakers_and_branches!(pti_data)
     _populate_defaults!(pti_data)
     _correct_nothing_values!(pti_data)
 
@@ -2599,6 +2600,26 @@ function parse_pti(io::IO)::Dict
     end
 
     return pti_data
+end
+
+function _split_breakers_and_branches!(data::Dict)
+    breakers = sizehint!(eltype(data["BRANCH"])[], length(data["BRANCH"]))
+    delete_ixs = Int[]
+    for (ix, item) in enumerate(data["BRANCH"])
+        if first(item["CKT"]) == '@' || first(item["CKT"]) == '*'
+            push!(breakers, item)
+            push!(delete_ixs, ix)
+        end
+    end
+    if isempty(delete_ixs)
+        @info "No breakers found in the system."
+        return data
+    else
+        @info "Found $(length(breakers)) breakers in the system modeled as branches."
+    end
+    deleteat!(data["BRANCH"], delete_ixs)
+    data["SWITCHES_AS_BRANCHES"] = breakers
+    return data
 end
 
 """
