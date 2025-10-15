@@ -2612,7 +2612,7 @@ function _split_breakers_and_branches!(data::Dict)
         end
     end
     if isempty(delete_ixs)
-        @info "No breakers found in the system."
+        @info "No breakers modeled as branches using @ or * found in the system."
         return data
     else
         @info "Found $(length(breakers)) breakers in the system modeled as branches."
