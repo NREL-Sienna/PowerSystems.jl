@@ -355,6 +355,9 @@ function _determine_injector_status(
         else
             error("Unrecognized generator and bus status combination.")
         end
+    else
+        sub_data["gen_status"] = true
+        return true
     end
 end
 
