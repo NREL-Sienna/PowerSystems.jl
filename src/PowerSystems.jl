@@ -387,6 +387,7 @@ export set_downstream_turbine!
 export get_connected_head_reservoirs
 export get_connected_tail_reservoirs
 export get_contributing_device_mapping
+export get_contributing_reserve_mapping
 export get_turbine_head_reservoirs_mapping
 export get_turbine_tail_reservoirs_mapping
 export ServiceContributingDevices
