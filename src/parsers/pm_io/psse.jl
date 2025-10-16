@@ -258,10 +258,12 @@ function branch_isolated_bus_modifications!(pm_data::Dict, branch_data::Dict)
     to_bus_no = branch_data["t_bus"]
     from_bus = bus_data[from_bus_no]
     to_bus = bus_data[to_bus_no]
+
+    status_field = haskey(branch_data, "br_status") ? "br_status" : "state"
     if (from_bus["bus_type"] == 4 || to_bus["bus_type"] == 4) &&
-       branch_data["br_status"] == 1
-        @warn "Branch connected between buses $(bus_from) -> $(bus_to) is connected to an isolated bus. Setting branch status to 0."
-        branch_data["br_status"] = 0
+       branch_data[status_field] == 1
+        @warn "Branch connected between buses $(from_bus_no) -> $(to_bus_no) is connected to an isolated bus. Setting branch status to 0."
+        branch_data[status_field] = 0
     end
     if from_bus["bus_type"] == 4
         push!(pm_data["candidate_isolated_to_pq_buses"], from_bus_no)
