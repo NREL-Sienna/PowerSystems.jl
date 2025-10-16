@@ -1462,10 +1462,8 @@ function _make_hydro_reservoirs(
         inflow = 0.0,
         outflow = 0.0,
         level_targets = reservoir_data.storage_target,
-        travel_time = nothing,
         intake_elevation = 0.0,
-        reservoir_location = ReservoirLocation.HEAD,
-        head_to_volume_factor = 1.0,
+        head_to_volume_factor = LinearCurve(1.0),
         operation_cost = HydroReservoirCost(),
         level_data_type = ReservoirDataType.ENERGY,
     )
@@ -1490,10 +1488,8 @@ function _make_hydro_reservoirs(
             inflow = 0.0,
             outflow = 0.0,
             level_targets = reservoir_data.storage_target,
-            travel_time = nothing,
             intake_elevation = 0.0,
-            reservoir_location = ReservoirLocation.TAIL,
-            head_to_volume_factor = 1.0,
+            head_to_volume_factor = LinearCurve(1.0),
             operation_cost = HydroReservoirCost(),
             level_data_type = ReservoirDataType.ENERGY,
         )
@@ -1537,10 +1533,7 @@ function make_hydro_turbine(
         ramp_limits = ramp_limits,
         time_limits = time_limits,
         outflow_limits = nothing,
-        reservoirs = reservoirs,
     )
-    # TODO
-    set_reservoirs!(hydro_gen, reservoirs)
     return hydro_gen, reservoirs
 end
 

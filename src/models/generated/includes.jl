@@ -736,7 +736,6 @@ export get_remote_bus_control_1
 export get_remote_bus_control_2
 export get_requirement
 export get_reserves
-export get_reservoirs
 export get_rf
 export get_rg
 export get_rrpwr
@@ -1422,7 +1421,6 @@ export set_remote_bus_control_1!
 export set_remote_bus_control_2!
 export set_requirement!
 export set_reserves!
-export set_reservoirs!
 export set_rf!
 export set_rg!
 export set_rrpwr!
