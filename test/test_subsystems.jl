@@ -215,6 +215,9 @@ end
     device = nothing
     service = nothing
     for dev in get_components(Device, sys)
+        if !PSY.supports_services(dev)
+            continue
+        end
         services = get_services(dev)
         if !isempty(services)
             device = dev

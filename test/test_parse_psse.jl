@@ -467,21 +467,23 @@ end
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    sys = @test_logs (:error,) match_mode = :any build_system(
+    sys = @test_logs (:error,) min_level = Logging.Error match_mode = :any build_system(
         PSSEParsingTestSystems,
         "isolated_bus_test_system";
         force_build = true,
     )
-    @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
-    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
+    @test length(get_components(x -> get_available(x), ACBus, sys)) == 2   #Bus 1 and 2
+    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 1 # Load at Bus 2 
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0
-    @test length(get_components(x -> get_available(x), Generator, sys)) == 1  #Gen at reference bus
-    @test length(get_components(x -> get_available(x), Branch, sys)) == 0
+    @test length(get_components(x -> get_available(x), Generator, sys)) == 2  #Gens at Bus 1 and 2
+    @test length(get_components(x -> get_available(x), Branch, sys)) == 1
+    @test length(get_components(x -> get_available(x), TapTransformer, sys)) == 0
+
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.ISOLATED, ACBus, sys)) ==
-          1
+          14
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.REF, ACBus, sys)) == 1
-    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 4
-    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 1
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 0
 end
 
 @testset "Test PSSE interruptible loads parsing" begin

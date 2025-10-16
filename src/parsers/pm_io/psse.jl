@@ -165,18 +165,23 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     pm_data["branch"] = []
     if haskey(pti_data, "BRANCH")
         for branch in pti_data["BRANCH"]
+            if !haskey(branch, "I") || !haskey(branch, "J")
+                @error "Bus Data Incomplete for $(branch). Skipping branch creation"
+                continue
+            end
             if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
                 sub_data = Dict{String, Any}()
-
                 sub_data["f_bus"] = pop!(branch, "I")
                 sub_data["t_bus"] = pop!(branch, "J")
                 bus_from = pm_data["bus"][sub_data["f_bus"]]
                 sub_data["base_voltage_from"] = bus_from["base_kv"]
                 bus_to = pm_data["bus"][sub_data["t_bus"]]
                 sub_data["base_voltage_to"] = bus_to["base_kv"]
-                if pm_data["has_isolated_buses"]
-                    push!(pm_data["connected_buses"], sub_data["f_bus"])
-                    push!(pm_data["connected_buses"], sub_data["t_bus"])
+                if pm_data["has_isolated_type_buses"]
+                    if !(bus_from["bus_type"] == 4 || bus_to["bus_type"] == 4)
+                        push!(pm_data["connected_buses"], sub_data["f_bus"])
+                        push!(pm_data["connected_buses"], sub_data["t_bus"])
+                    end
                 end
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
@@ -236,9 +241,15 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 end
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data["branch"], sub_data)
+            else
+                from_bus = branch["I"]
+                to_bus = branch["J"]
+                ckt = branch["CKT"]
+                @info "Branch $from_bus -> $to_bus with CKT=$ckt will be parsed as DiscreteControlledACBranch"
             end
         end
     end
+    return
 end
 
 function branch_isolated_bus_modifications!(pm_data::Dict, branch_data::Dict)
@@ -247,16 +258,18 @@ function branch_isolated_bus_modifications!(pm_data::Dict, branch_data::Dict)
     to_bus_no = branch_data["t_bus"]
     from_bus = bus_data[from_bus_no]
     to_bus = bus_data[to_bus_no]
-    if from_bus["bus_type"] == 4 || to_bus["bus_type"] == 4
-        branch_data["br_status"] = 0
+
+    status_field = haskey(branch_data, "br_status") ? "br_status" : "state"
+    if (from_bus["bus_type"] == 4 || to_bus["bus_type"] == 4) &&
+       branch_data[status_field] == 1
+        @warn "Branch connected between buses $(from_bus_no) -> $(to_bus_no) is connected to an isolated bus. Setting branch status to 0."
+        branch_data[status_field] = 0
     end
     if from_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], from_bus_no)
-        from_bus["bus_status"] = false
+        push!(pm_data["candidate_isolated_to_pq_buses"], from_bus_no)
     end
     if to_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], to_bus_no)
-        to_bus["bus_status"] = false
+        push!(pm_data["candidate_isolated_to_pq_buses"], to_bus_no)
     end
     return
 end
@@ -269,21 +282,21 @@ function transformer3W_isolated_bus_modifications!(pm_data::Dict, branch_data::D
     primary_bus = bus_data[primary_bus_number]
     secondary_bus = bus_data[secondary_bus_number]
     tertiary_bus = bus_data[tertiary_bus_number]
-    if primary_bus["bus_type"] == 4 || secondary_bus["bus_type"] == 4 ||
-       tertiary_bus["bus_type"] == 4
-        branch_data["br_status"] = 0
+    if (
+        primary_bus["bus_type"] == 4 || secondary_bus["bus_type"] == 4 ||
+        tertiary_bus["bus_type"] == 4
+    ) && branch_data["available"] == 1
+        @warn "Three winding transformer connected between buses $(primary_bus_number), $(secondary_bus_number), and $(tertiary_bus_number) is connected to an isolated bus. Setting branch status to 0."
+        branch_data["available"] = 0
     end
     if primary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], primary_bus_number)
-        primary_bus["bus_status"] = false
+        push!(pm_data["candidate_isolated_to_pq_buses"], primary_bus_number)
     end
     if secondary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], secondary_bus_number)
-        secondary_bus["bus_status"] = false
+        push!(pm_data["candidate_isolated_to_pq_buses"], secondary_bus_number)
     end
     if tertiary_bus["bus_type"] == 4
-        push!(pm_data["isolated_to_pq_buses"], tertiary_bus_number)
-        tertiary_bus["bus_status"] = false
+        push!(pm_data["candidate_isolated_to_pq_buses"], tertiary_bus_number)
     end
     return
 end
@@ -309,6 +322,44 @@ function _is_synch_condenser(sub_data::Dict{String, Any}, pm_data::Dict{String, 
     return false
 end
 
+function _determine_injector_status(
+    sub_data::Dict{String, Any},
+    pm_data::Dict{String, Any},
+    gen_bus::Int,
+    status_key::String,
+    bus_conversion_list::String,
+)
+    # Special case for FACTS:  MODE = 0 -> Unavailable, MODE = 1 -> Normal mode, MODE = 2 -> Link bypassed
+    if status_key == "MODE"
+        device_status = pop!(sub_data, status_key) != 0 ? true : false
+    else
+        device_status = pop!(sub_data, status_key) == 1 ? true : false
+    end
+    # If device is off keep it off.
+    if !device_status
+        return false
+    end
+    # If device is on check the topology and status of the bus it is connected to.
+    if pm_data["bus"][gen_bus]["bus_type"] == 4
+        gen_bus_connected = gen_bus ∈ pm_data["connected_buses"]
+        if gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated and not topologically isolated. Setting device status to 1 and the bus added to candidate for conversion."
+            push!(pm_data[bus_conversion_list], gen_bus)
+            pm_data["bus"][gen_bus]["bus_status"] = true
+            return true
+        elseif !gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated. Setting device status to 0."
+            pm_data["bus"][gen_bus]["bus_status"] = false
+            return false
+        else
+            error("Unrecognized generator and bus status combination.")
+        end
+    else
+        sub_data["gen_status"] = true
+        return true
+    end
+end
+
 """
     _psse2pm_generator!(pm_data, pti_data)
 
@@ -321,9 +372,15 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         pm_data["gen"] = Vector{Dict{String, Any}}(undef, length(pti_data["GENERATOR"]))
         for (ix, gen) in enumerate(pti_data["GENERATOR"])
             sub_data = Dict{String, Any}()
-
             sub_data["gen_bus"] = pop!(gen, "I")
-            sub_data["gen_status"] = pop!(gen, "STAT")
+            sub_data["gen_status"] =
+                _determine_injector_status(
+                    gen,
+                    pm_data,
+                    sub_data["gen_bus"],
+                    "STAT",
+                    "candidate_isolated_to_pv_buses",
+                )
             sub_data["pg"] = pop!(gen, "PG")
             sub_data["qg"] = pop!(gen, "QG")
             sub_data["vg"] = pop!(gen, "VS")
@@ -374,13 +431,7 @@ function _psse2pm_generator!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, gen)
             end
-            device_bus_number = sub_data["gen_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pv_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["gen_status"] = false
-            end
+
             pm_data["gen"][ix] = sub_data
         end
     else
@@ -459,7 +510,7 @@ by ["I", "NAME"] in PSS(R)E Bus specification.
 """
 function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
     @info "Parsing PSS(R)E Bus data into a PowerModels Dict..."
-    pm_data["has_isolated_buses"] = false
+    pm_data["has_isolated_type_buses"] = false
     pm_data["bus"] = Dict{Int, Any}()
     if haskey(pti_data, "BUS")
         for bus in pti_data["BUS"]
@@ -469,11 +520,11 @@ function _psse2pm_bus!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["bus_type"] = pop!(bus, "IDE")
             if sub_data["bus_type"] == 4
                 @warn "The PSS(R)E data contains buses designated as isolated. The parser will check if the buses are connected or topologically isolated."
-                pm_data["has_isolated_buses"] = true
+                pm_data["has_isolated_type_buses"] = true
                 sub_data["bus_status"] = false
                 pm_data["connected_buses"] = Set{Int}()
-                pm_data["isolated_to_pq_buses"] = Set{Int}()
-                pm_data["isolated_to_pv_buses"] = Set{Int}()
+                pm_data["candidate_isolated_to_pq_buses"] = Set{Int}()
+                pm_data["candidate_isolated_to_pv_buses"] = Set{Int}()
             else
                 sub_data["bus_status"] = true
             end
@@ -538,19 +589,18 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
 
-            sub_data["status"] = pop!(load, "STATUS")
+            sub_data["status"] =
+                _determine_injector_status(
+                    load,
+                    pm_data,
+                    sub_data["load_bus"],
+                    "STATUS",
+                    "candidate_isolated_to_pq_buses",
+                )
             sub_data["index"] = length(pm_data["load"]) + 1
             if import_all
                 _import_remaining_keys!(sub_data, load)
             end
-            device_bus_number = sub_data["load_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["status"] = false
-            end
-
             push!(pm_data["load"], sub_data)
         end
     end
@@ -575,7 +625,13 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["shunt_bus"] = pop!(shunt, "I")
             sub_data["gs"] = pop!(shunt, "GL")
             sub_data["bs"] = pop!(shunt, "BL")
-            sub_data["status"] = pop!(shunt, "STATUS")
+            sub_data["status"] = _determine_injector_status(
+                shunt,
+                pm_data,
+                sub_data["shunt_bus"],
+                "STATUS",
+                "candidate_isolated_to_pq_buses",
+            )
 
             sub_data["source_id"] =
                 ["fixed shunt", sub_data["shunt_bus"], pop!(shunt, "ID")]
@@ -583,13 +639,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             if import_all
                 _import_remaining_keys!(sub_data, shunt)
-            end
-            device_bus_number = sub_data["shunt_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["status"] = false
             end
             push!(pm_data["shunt"], sub_data)
         end
@@ -603,7 +652,13 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["shunt_bus"] = pop!(switched_shunt, "I")
             sub_data["gs"] = 0.0
             sub_data["bs"] = pop!(switched_shunt, "BINIT")
-            sub_data["status"] = pop!(switched_shunt, "STAT")
+            sub_data["status"] = _determine_injector_status(
+                switched_shunt,
+                pm_data,
+                sub_data["shunt_bus"],
+                "STAT",
+                "candidate_isolated_to_pq_buses",
+            )
             sub_data["admittance_limits"] =
                 (pop!(switched_shunt, "VSWLO"), pop!(switched_shunt, "VSWHI"))
 
@@ -660,13 +715,6 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
             if import_all
                 _import_remaining_keys!(sub_data, switched_shunt)
-            end
-            device_bus_number = sub_data["shunt_bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["status"] = false
             end
             push!(pm_data["switched_shunt"], sub_data)
         end
@@ -766,9 +814,13 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
 
                 sub_data["f_bus"] = transformer["I"]
                 sub_data["t_bus"] = transformer["J"]
-                if pm_data["has_isolated_buses"]
-                    push!(pm_data["connected_buses"], sub_data["f_bus"])
-                    push!(pm_data["connected_buses"], sub_data["t_bus"])
+                if pm_data["has_isolated_type_buses"]
+                    bus_from = pm_data["bus"][sub_data["f_bus"]]
+                    bus_to = pm_data["bus"][sub_data["t_bus"]]
+                    if !(bus_from["bus_type"] == 4 || bus_to["bus_type"] == 4)
+                        push!(pm_data["connected_buses"], sub_data["f_bus"])
+                        push!(pm_data["connected_buses"], sub_data["t_bus"])
+                    end
                 end
 
                 # Store base_power
@@ -1052,11 +1104,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 # Creates a starbus (or "dummy" bus) to which each winding of the transformer will connect
                 starbus = _create_starbus_from_transformer(pm_data, transformer, starbus_id)
                 pm_data["bus"][starbus_id] = starbus
-                if pm_data["has_isolated_buses"]
-                    push!(pm_data["connected_buses"], bus_id1)
-                    push!(pm_data["connected_buses"], bus_id2)
-                    push!(pm_data["connected_buses"], bus_id3)
-                    push!(pm_data["connected_buses"], starbus_id)
+                if pm_data["has_isolated_type_buses"]
+                    bus_primary = pm_data["bus"][bus_id1]
+                    bus_secondary = pm_data["bus"][bus_id2]
+                    bus_tertiary = pm_data["bus"][bus_id3]
+                    push!(pm_data["connected_buses"], starbus_id)   # Starbus should never be converted to isolated
+                    # If one bus winding is isolated, the other two buses should still be considered connected:
+                    !(bus_primary["bus_type"] == 4) &&
+                        push!(pm_data["connected_buses"], bus_id1)
+                    !(bus_secondary["bus_type"] == 4) &&
+                        push!(pm_data["connected_buses"], bus_id2)
+                    !(bus_tertiary["bus_type"] == 4) &&
+                        push!(pm_data["connected_buses"], bus_id3)
                 end
                 # Add parameters to the 3w-transformer key
                 sub_data = Dict{String, Any}()
@@ -1191,18 +1250,18 @@ function _psse2pm_transformer!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 zero_names = []
                 if isapprox(Zx_p, 0.0; atol = eps(Float32))
                     push!(zero_names, "primary")
-                    Zx_p = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_p = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if isapprox(Zx_s, 0.0; atol = eps(Float32))
                     push!(zero_names, "secondary")
-                    Zx_s = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_s = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if isapprox(Zx_t, 0.0; atol = eps(Float32))
                     push!(zero_names, "tertiary")
-                    Zx_t = T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+                    Zx_t = ZERO_IMPEDANCE_REACTANCE_THRESHOLD
                 end
                 if !isempty(zero_names)
-                    @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(T3W_ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
+                    @info "Zero impedance reactance detected in 3W Transformer $(transformer["NAME"]) for winding(s): $(join(zero_names, ", ")). Setting to threshold value $(ZERO_IMPEDANCE_REACTANCE_THRESHOLD)."
                 end
 
                 if iszero(Z_base_device_1)
@@ -1520,7 +1579,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["name"] = strip(dcline["NAME"], ['"', '\''])
             sub_data["f_bus"] = dcline["IPR"]
             sub_data["t_bus"] = dcline["IPI"]
-            if pm_data["has_isolated_buses"]
+            if pm_data["has_isolated_type_buses"]
                 push!(pm_data["connected_buses"], sub_data["f_bus"])
                 push!(pm_data["connected_buses"], sub_data["t_bus"])
             end
@@ -1672,7 +1731,7 @@ function _psse2pm_dcline!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             # VSC intended to be one or bi-directional?
             sub_data["f_bus"] = from_bus["IBUS"]
             sub_data["t_bus"] = to_bus["IBUS"]
-            if pm_data["has_isolated_buses"]
+            if pm_data["has_isolated_type_buses"]
                 push!(pm_data["connected_buses"], sub_data["f_bus"])
                 push!(pm_data["connected_buses"], sub_data["t_bus"])
             end
@@ -1802,17 +1861,15 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             sub_data["name"] = strip(facts["NAME"], ['"', '\''])
             sub_data["control_mode"] = facts["MODE"]
 
-            # MODE = 0 -> Unavailable
-            # MODE = 1 -> Normal mode
-            # MODE = 2 -> Link bypassed
-            if facts["MODE"] != 0
-                sub_data["available"] = 1
-            else
-                sub_data["available"] = 0
-            end
-
             sub_data["bus"] = facts["I"]  # Sending end bus number
             sub_data["tbus"] = facts["J"] # Terminal end bus number
+            sub_data["available"] = _determine_injector_status(
+                facts,
+                pm_data,
+                sub_data["bus"],
+                "MODE",
+                "candidate_isolated_to_pq_buses",
+            )
 
             sub_data["voltage_setpoint"] = facts["VSET"]
             sub_data["max_shunt_current"] = facts["SHMX"]
@@ -1843,14 +1900,6 @@ function _psse2pm_facts!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             if import_all
                 _import_remaining_keys!(sub_data, facts)
             end
-            device_bus_number = sub_data["bus"]
-            bus = pm_data["bus"][device_bus_number]
-            if bus["bus_type"] == 4
-                push!(pm_data["isolated_to_pq_buses"], device_bus_number)
-                bus["bus_status"] = false
-                sub_data["available"] = false
-            end
-
             push!(pm_data["facts"], sub_data)
         end
     end
@@ -1868,7 +1917,7 @@ function _build_switch_breaker_sub_data(
 
     sub_data["f_bus"] = pop!(dict_object, "I")
     sub_data["t_bus"] = pop!(dict_object, "J")
-    if pm_data["has_isolated_buses"]
+    if pm_data["has_isolated_type_buses"]
         push!(pm_data["connected_buses"], sub_data["f_bus"])
         push!(pm_data["connected_buses"], sub_data["t_bus"])
     end
@@ -1881,21 +1930,27 @@ function _build_switch_breaker_sub_data(
     sub_data["discrete_branch_type"] = discrete_device_type
     sub_data["ext"] = Dict{String, Any}()
 
-    if pm_data["source_version"] ∈ ("32", "33")
-        sub_data["r"] = pop!(dict_object, "R")
-        sub_data["state"] = pop!(dict_object, "ST")
-        sub_data["rating"] = pop!(dict_object, "RATEA")
-    else
-        sub_data["r"] = 0.0
+    if haskey(dict_object, "STAT")
         sub_data["state"] = pop!(dict_object, "STAT")
-        sub_data["rating"] = pop!(dict_object, "RATE1")
+    elseif haskey(dict_object, "ST")
+        sub_data["state"] = pop!(dict_object, "ST")
+    else
+        @warn "No STAT or ST field found in the data for switch/breaker. Assuming it is off."
+        sub_data["state"] = 0.0
+    end
 
+    if pm_data["source_version"] == ("35")
+        sub_data["r"] = 0.0
+        sub_data["rating"] = pop!(dict_object, "RATE1")
         for i in 2:12
             rate_key = "RATE$i"
             if haskey(dict_object, rate_key)
                 sub_data["ext"][rate_key] = pop!(dict_object, rate_key)
             end
         end
+    else
+        sub_data["r"] = pop!(dict_object, "R")
+        sub_data["rating"] = pop!(dict_object, "RATEA")
     end
 
     sub_data["source_id"] =
@@ -1912,33 +1967,34 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
     mapping_v35 = Dict(2 => "breaker", 3 => "switch")
 
-    if pm_data["source_version"] ∈ ("32", "33")
-        if haskey(pti_data, "BRANCH")
-            for branch in pti_data["BRANCH"]
-                branch_init = first(branch["CKT"])
+    # Always check for legacy entries in PSSe 35 for switches and breakers set as @ or *
+    if haskey(pti_data, "SWITCHES_AS_BRANCHES")
+        for branch in pti_data["SWITCHES_AS_BRANCHES"]
+            branch_init = first(branch["CKT"])
 
-                # Check if character is in the mapping
-                if haskey(mapping, branch_init)
-                    branch_type, discrete_branch_type = mapping[branch_init]
+            # Check if character is in the mapping
+            if haskey(mapping, branch_init)
+                branch_type, discrete_branch_type = mapping[branch_init]
 
-                    sub_data = _build_switch_breaker_sub_data(
-                        pm_data,
-                        branch,
-                        branch_type,
-                        discrete_branch_type,
-                        length(pm_data[branch_type]) + 1,
-                    )
+                sub_data = _build_switch_breaker_sub_data(
+                    pm_data,
+                    branch,
+                    branch_type,
+                    discrete_branch_type,
+                    length(pm_data[branch_type]) + 1,
+                )
 
-                    if import_all
-                        _import_remaining_keys!(sub_data, branch)
-                    end
-                    branch_isolated_bus_modifications!(pm_data, sub_data)
-                    push!(pm_data[branch_type], sub_data)
+                if import_all
+                    _import_remaining_keys!(sub_data, branch)
                 end
+                branch_isolated_bus_modifications!(pm_data, sub_data)
+                push!(pm_data[branch_type], sub_data)
             end
         end
-    elseif pm_data["source_version"] == "35"
-        if haskey(pti_data, "SWITCHING DEVICE")
+    end
+
+    if haskey(pti_data, "SWITCHING DEVICE")
+        if pm_data["source_version"] == "35"
             for switching_device in pti_data["SWITCHING DEVICE"]
                 device_type = get(mapping_v35, switching_device["STYPE"], "other")
                 discrete_branch_type =
@@ -1959,9 +2015,9 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
                 branch_isolated_bus_modifications!(pm_data, sub_data)
                 push!(pm_data[device_type], sub_data)
             end
+        else
+            error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
         end
-    else
-        error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
     end
     return
 end
@@ -2154,39 +2210,61 @@ function _pti_to_powermodels!(
     _psse2pm_interarea_transfer!(pm_data, pti_data, import_all)
     _psse2pm_area_interchange!(pm_data, pti_data, import_all)
     _psse2pm_zone!(pm_data, pti_data, import_all)
+    # Order matters here. Buses need to parsed first
     _psse2pm_bus!(pm_data, pti_data, import_all)
+    # Branches need to be parsed after buses to find topologically connected buses
+    _psse2pm_branch!(pm_data, pti_data, import_all)
+    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
+    _psse2pm_multisection_line!(pm_data, pti_data, import_all)
+    _psse2pm_transformer!(pm_data, pti_data, import_all)
+    # Injectors need to be parsed after branches and transformers to find topologically connected buses
     _psse2pm_load!(pm_data, pti_data, import_all)
     _psse2pm_shunt!(pm_data, pti_data, import_all)
     _psse2pm_generator!(pm_data, pti_data, import_all)
     _psse2pm_facts!(pm_data, pti_data, import_all)
-    _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
-    _psse2pm_branch!(pm_data, pti_data, import_all)
-    _psse2pm_multisection_line!(pm_data, pti_data, import_all)
-    _psse2pm_transformer!(pm_data, pti_data, import_all)
+
     _psse2pm_dcline!(pm_data, pti_data, import_all)
     _psse2pm_impedance_correction!(pm_data, pti_data, import_all)
     _psse2pm_substation_data!(pm_data, pti_data, import_all)
     _psse2pm_storage!(pm_data, pti_data, import_all)
 
-    if pm_data["has_isolated_buses"]
-        bus_numbers = [v["bus_i"] for (_, v) in pm_data["bus"]]
-        topologically_isolated_buses = setdiff(Set(bus_numbers), pm_data["connected_buses"])
+    if pm_data["has_isolated_type_buses"]
+        bus_numbers = Set(v["bus_i"] for (_, v) in pm_data["bus"])
+        topologically_isolated_buses = setdiff(bus_numbers, pm_data["connected_buses"])
         convert_to_pq =
-            setdiff(pm_data["isolated_to_pq_buses"], pm_data["isolated_to_pv_buses"])
-        convert_to_pv = pm_data["isolated_to_pv_buses"]
-        for b in convert_to_pq
+            setdiff(
+                pm_data["candidate_isolated_to_pq_buses"],
+                pm_data["candidate_isolated_to_pv_buses"],
+            )
+        convert_to_pv = pm_data["candidate_isolated_to_pv_buses"]
+
+        for b in setdiff!(convert_to_pq, topologically_isolated_buses)
             pm_data["bus"][b]["bus_type"] = 1
         end
-        for b in convert_to_pv
+        for b in setdiff!(convert_to_pv, topologically_isolated_buses)
             pm_data["bus"][b]["bus_type"] = 2
         end
+
         if !isempty(topologically_isolated_buses)
-            @error "PSEE data file contains topologically isolated buses (numbers $(topologically_isolated_buses)) that are disconnected from the system. This does not include buses that are set to isolated to make components unavailable, and likely indicates an error in the data."
             for b in topologically_isolated_buses
-                pm_data["bus"][b]["bus_type"] = 4
+                if pm_data["bus"][b]["bus_type"] == 4
+                    continue
+                else
+                    b_number = pm_data["bus"][b]["bus_i"]
+                    b_type = pm_data["bus"][b]["bus_type"]
+                    if b_type == 3
+                        error(
+                            "PSEE reference bus $(b_number) that is topologically isolated from the system. Indicates an error in the data.",
+                        )
+                    end
+                    @error "PSEE data file contains a topologically isolated bus $(b_number) that is disconnected from the system and set to bus_type = $(b_type) instead of 4. Likely indicates an error in the data."
+                    pm_data["bus"][b]["bus_type"] = 4
+                    pm_data["bus"][b]["bus_status"] = false
+                end
             end
         end
     end
+
     if import_all
         _import_remaining_comps!(
             pm_data,
