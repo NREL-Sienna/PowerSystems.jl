@@ -621,6 +621,9 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     cost_point_fields = Vector{Symbol}()
     fields = get_user_fields(data, InputCategory.GENERATOR)
 
+    # Check if we have quadratic heat rate coefficients (a0, a1, a2)
+    has_quadratic_heat_rate = any(f -> occursin(r"heat_rate_a[0-2]$", f), fields)
+    
     for field in fields
         if occursin("output_point", field)
             push!(output_point_fields, Symbol(field))
@@ -630,7 +633,12 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
             push!(cost_point_fields, Symbol(field))
         end
     end
-    @assert length(output_point_fields) > 0
+    
+    # Only require output points if we're using piecewise linear curves (not quadratic)
+    if !has_quadratic_heat_rate && length(output_point_fields) == 0
+        @assert length(output_point_fields) > 0
+    end
+    
     if length(heat_rate_fields) > 0 && length(cost_point_fields) > 0
         throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
     elseif length(heat_rate_fields) > 0
@@ -953,7 +961,7 @@ function make_cost(
         cost_pairs = get_cost_pairs(gen, cost_colnames)
         var_cost, fixed = create_pwinc_cost(gen, cost_pairs)
     end
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
 
@@ -978,7 +986,7 @@ function make_cost(
     cost_pairs = get_cost_pairs(gen, cost_colnames)
     var_cost = create_pwl_cost(gen, cost_pairs)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
 
@@ -1027,7 +1035,7 @@ function make_cost(
     cost_colnames::_HeatRateColumns,
 ) where {T <: RenewableGen}
     @warn "Heat rate parsing not valid for RenewableGen replacing with zero cost"
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
@@ -1046,7 +1054,7 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: RenewableGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
@@ -1112,7 +1120,7 @@ function create_poly_cost(
     gen, cost_colnames,
 )
     fixed_cost = 0.0
-    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    parse_maybe_nothing(x) = isnothing(x) ? nothing : (x isa Number ? Float64(x) : tryparse(Float64, x))
     a2 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a2")))
     a1 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a1")))
     a0 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a0")))
@@ -1322,19 +1330,11 @@ function make_thermal_generator_multistart(
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
 
     @debug "Making ThermalMultiStart" _group = IS.LOG_GROUP_PARSING gen.name
-    base_power = get_base_power(thermal_gen)
-    var_cost, fixed, fuel_cost =
-        create_pwl_cost(data, gen, cost_colnames, base_power)
-    if var_cost isa LinearFunctionData
-        no_load_cost = 0.0
-    else
-        (no_load_x, no_load_cost) = first(var_cost)
-        @warn "Strange math occurring here (part 1)"
-        var_cost =
-            PiecewiseLinearData([
-                (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
-            ])
-    end
+
+    # Get base operation cost from thermal generator
+    base_op_cost = get_operation_cost(thermal_gen)
+
+    # Extract time limits for hot/warm/cold starts
     lag_hot =
         if isnothing(gen.hot_start_time)
             get_time_limits(thermal_gen).down
@@ -1345,33 +1345,28 @@ function make_thermal_generator_multistart(
     lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
     start_types = sum(values(startup_timelimits) .> 0.0)
+
+    # Power trajectory for startup/shutdown ramps
     startup_ramp = isnothing(gen.startup_ramp) ? 0.0 : gen.startup_ramp
     shutdown_ramp = isnothing(gen.shutdown_ramp) ? 0.0 : gen.shutdown_ramp
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
-    hot_start_cost = isnothing(gen.hot_start_cost) ? gen.startup_cost : gen.hot_start_cost
-    if isnothing(hot_start_cost)
-        if hasfield(typeof(gen), :startup_heat_cold_cost)
-            hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
-        else
-            hot_start_cost = 0.0
-            @warn "No hot_start_cost or startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
-                5
-        end
-    end
-    warm_start_cost = isnothing(gen.warm_start_cost) ? START_COST : gen.hot_start_cost #TODO
-    cold_start_cost = isnothing(gen.cold_start_cost) ? START_COST : gen.cold_start_cost
+
+    # Multi-start costs - use base cost as fallback if not specified
+    # Convert to Float64 since CSV values may be parsed as Int64
+    base_start_cost = get_start_up(base_op_cost)
+    hot_start_cost = isnothing(gen.hot_start_cost) ? base_start_cost : Float64(gen.hot_start_cost)
+    warm_start_cost = isnothing(gen.warm_start_cost) ? hot_start_cost : Float64(gen.warm_start_cost)
+    cold_start_cost = isnothing(gen.cold_start_cost) ? warm_start_cost : Float64(gen.cold_start_cost)
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
 
-    shutdown_cost = gen.shutdown_cost
-    if isnothing(shutdown_cost)
-        @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
-        shutdown_cost = 0.0
-    end
+    # Shutdown cost
+    base_shutdown_cost = get_shut_down(base_op_cost)
+    shutdown_cost = isnothing(gen.shutdown_cost) ? base_shutdown_cost : Float64(gen.shutdown_cost)
 
-    @warn "Strange math occurring here (part 2)"
-    ThermalGenerationCost(
-        CostCurve(InputOutputCurve(var_cost)),
-        fixed + no_load_cost,
+    # Create new operation cost with multi-start stages
+    op_cost = ThermalGenerationCost(
+        get_variable(base_op_cost),
+        get_fixed(base_op_cost),
         startup_cost,
         shutdown_cost,
     )
