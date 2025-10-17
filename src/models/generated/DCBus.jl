@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct DCBus <: Bus
         number::Int
         name::String
+        available::Bool
         magnitude::Union{Nothing, Float64}
         voltage_limits::Union{Nothing, MinMax}
         base_voltage::Union{Nothing, Float64}
@@ -22,6 +23,7 @@ A DC bus
 # Arguments
 - `number::Int`: A unique bus identification number (positive integer)
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`
@@ -35,6 +37,8 @@ mutable struct DCBus <: Bus
     number::Int
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)"
+    available::Bool
     "voltage as a multiple of `base_voltage`"
     magnitude::Union{Nothing, Float64}
     "limits on the voltage variation as multiples of `base_voltage`"
@@ -51,12 +55,12 @@ mutable struct DCBus <: Bus
     internal::InfrastructureSystemsInternal
 end
 
-function DCBus(number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
-    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
+function DCBus(number, name, available, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
+    DCBus(number, name, available, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function DCBus(; number, name, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    DCBus(number, name, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+function DCBus(; number, name, available, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    DCBus(number, name, available, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -64,6 +68,7 @@ function DCBus(::Nothing)
     DCBus(;
         number=0,
         name="init",
+        available=false,
         magnitude=0.0,
         voltage_limits=(min=0.0, max=0.0),
         base_voltage=nothing,
@@ -77,6 +82,8 @@ end
 get_number(value::DCBus) = value.number
 """Get [`DCBus`](@ref) `name`."""
 get_name(value::DCBus) = value.name
+"""Get [`DCBus`](@ref) `available`."""
+get_available(value::DCBus) = value.available
 """Get [`DCBus`](@ref) `magnitude`."""
 get_magnitude(value::DCBus) = value.magnitude
 """Get [`DCBus`](@ref) `voltage_limits`."""
@@ -94,6 +101,8 @@ get_internal(value::DCBus) = value.internal
 
 """Set [`DCBus`](@ref) `number`."""
 set_number!(value::DCBus, val) = value.number = val
+"""Set [`DCBus`](@ref) `available`."""
+set_available!(value::DCBus, val) = value.available = val
 """Set [`DCBus`](@ref) `magnitude`."""
 set_magnitude!(value::DCBus, val) = value.magnitude = val
 """Set [`DCBus`](@ref) `voltage_limits`."""
