@@ -416,6 +416,7 @@ export remove_supplemental_attributes!
 export get_component_supplemental_attribute_pairs
 export get_supplemental_attribute
 export get_supplemental_attributes
+export get_associated_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export begin_supplemental_attributes_update

@@ -68,6 +68,33 @@ for outage in get_supplemental_attributes(
 end
 ```
 
+## Getting the attributes associated with a component type
+
+You can retrieve the attributes associated with any component of a given type
+using the function [`get_associated_supplemental_attributes`](@ref). If one attribute is attached to
+multiple components of the given type, it will still only appear once in the result.
+
+ 1. Get all the attributes associated with all components of a given type.
+    
+    ```julia
+    for outage in get_associated_supplemental_attributes(system, ThermalStandard)
+        @show summary(outage)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by attribute type, which can be concrete or abstract.
+    
+    ```julia
+    for outage in
+        get_associated_supplemental_attributes(
+        system,
+        ThermalStandard;
+        attribute_type = FixedForcedOutage,
+    )
+        @show summary(outage)
+    end
+    ```
+
 ## Getting the components associated with an attribute
 
 You can retrieve the components associated with a single supplemental attribute using the
