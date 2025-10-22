@@ -178,7 +178,8 @@ end
         () -> begin
             sys = PSB.build_system(PSB.PSITestSystems, "c_sys5")
             component_name = "Bus2"
-            ts_name = "max_active_power"
+            # We use this name to avoid conflicts with the existing time series in the system
+            ts_name = "max_active_power_test"
             old_component = get_component(PowerLoad, sys, component_name)
             dates = collect(
                 Dates.DateTime("2020-01-01T00:00:00"):Dates.Hour(1):Dates.DateTime(
