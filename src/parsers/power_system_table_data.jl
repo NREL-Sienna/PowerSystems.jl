@@ -1459,8 +1459,8 @@ function _make_hydro_reservoirs(
         ),
         initial_level = reservoir_data.energy_level,
         spillage_limits = nothing,
-        inflow = 0.0,
-        outflow = 0.0,
+        inflow = 1.0,
+        outflow = 1.0,
         level_targets = reservoir_data.storage_target,
         intake_elevation = 0.0,
         head_to_volume_factor = LinearCurve(1.0),
@@ -1485,8 +1485,8 @@ function _make_hydro_reservoirs(
             ),
             initial_level = reservoir_data.energy_level,
             spillage_limits = nothing,
-            inflow = 0.0,
-            outflow = 0.0,
+            inflow = 1.0,
+            outflow = 1.0,
             level_targets = reservoir_data.storage_target,
             intake_elevation = 0.0,
             head_to_volume_factor = LinearCurve(1.0),
@@ -1534,9 +1534,9 @@ function make_hydro_turbine(
         time_limits = time_limits,
         outflow_limits = nothing,
     )
-    set_downstream_turbines!(reservoirs[1], hydro_gen)
+    set_downstream_turbines!(reservoirs[1], [hydro_gen])
     if !isnothing(tail_reservoir)
-        set_upstream_turbines!(reservoirs[2], hydro_gen)
+        set_upstream_turbines!(reservoirs[2], [hydro_gen])
     end
     return hydro_gen, reservoirs
 end
@@ -1602,8 +1602,8 @@ function make_hydro_pump_storage(
         base_power = base_power,
         operation_cost = operation_cost,
     )
-    set_downstream_turbines!(head_reservoir, hydro_gen)
-    set_upstream_turbines!(tail_reservoir, hydro_gen)
+    set_downstream_turbines!(head_reservoir, [hydro_gen])
+    set_upstream_turbines!(tail_reservoir, [hydro_gen])
     return hydro_gen, [head_reservoir, tail_reservoir]
 end
 
