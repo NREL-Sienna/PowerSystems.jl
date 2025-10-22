@@ -1534,6 +1534,10 @@ function make_hydro_turbine(
         time_limits = time_limits,
         outflow_limits = nothing,
     )
+    set_downstream_turbines!(reservoirs[1], hydro_gen)
+    if !isnothing(tail_reservoir)
+        set_upstream_turbines!(reservoirs[2], hydro_gen)
+    end
     return hydro_gen, reservoirs
 end
 
@@ -1598,6 +1602,8 @@ function make_hydro_pump_storage(
         base_power = base_power,
         operation_cost = operation_cost,
     )
+    set_downstream_turbines!(head_reservoir, hydro_gen)
+    set_upstream_turbines!(tail_reservoir, hydro_gen)
     return hydro_gen, [head_reservoir, tail_reservoir]
 end
 
