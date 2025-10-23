@@ -372,27 +372,30 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
-export remove_reservoir!
-export clear_reservoirs!
-export get_reservoirs
-export get_reservoir_location
-export has_reservoir
+export remove_turbine!
+export clear_turbines!
+export has_upstream_turbine
+export has_downstream_turbine
 export has_time_series
 export get_buses
 export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
-export get_connected_devices
+export set_upstream_turbine!
+export set_downstream_turbine!
+export get_connected_head_reservoirs
+export get_connected_tail_reservoirs
 export get_contributing_device_mapping
 export get_contributing_reserve_mapping
-export get_reservoir_device_mapping
+export get_turbine_head_reservoirs_mapping
+export get_turbine_tail_reservoirs_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
-export ReservoirConnectedDevices
-export ReservoirConnectedDevicesKey
-export ReservoirConnectedDevicesMapping
+export TurbineConnectedDevices
+export TurbineConnectedDevicesKey
+export TurbineConnectedDevicesMapping
 export get_component
 export get_components
 export get_num_components
@@ -469,28 +472,6 @@ export validate_component_with_system
 export get_compression_settings
 export CompressionSettings
 export CompressionTypes
-
-# Export HydroReservoir functions
-export get_storage_level_limits
-export get_initial_level
-export get_spillage_limits
-export get_inflow
-export get_outflow
-export get_level_targets
-export get_travel_time
-export get_intake_elevation
-export get_head_to_volume_factor
-export get_level_data_type
-export set_initial_level!
-export set_level_targets!
-export set_storage_level_limits!
-export set_outflow!
-export set_inflow!
-export set_travel_time!
-export set_intake_elevation!
-export set_head_to_volume_factor!
-export set_spillage_limits!
-export set_level_data_type!
 
 # Parsing functions
 export create_poly_cost
@@ -819,7 +800,6 @@ include("models/cost_functions/ThermalGenerationCost.jl")
 include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
-include("models/HydroReservoir.jl")
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
 

@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct HydroTurbine <: HydroGen
+    mutable struct HydroTurbine <: HydroUnit
         name::String
         available::Bool
         bus::ACBus
@@ -23,7 +23,8 @@ This file is auto-generated. Do not edit.
         efficiency::Float64
         turbine_type::HydroTurbineType
         conversion_factor::Float64
-        reservoirs::Vector{HydroReservoir}
+        prime_mover_type::PrimeMovers
+        travel_time::Union{Nothing, Float64}
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -50,13 +51,14 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
-- `reservoirs::Vector{HydroReservoir}`: (default: `Device[]`) [`HydroReservoir`](@ref)(s) that this component is connected to
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct HydroTurbine <: HydroGen
+mutable struct HydroTurbine <: HydroUnit
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -91,8 +93,10 @@ mutable struct HydroTurbine <: HydroGen
     turbine_type::HydroTurbineType
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
-    "[`HydroReservoir`](@ref)(s) that this component is connected to"
-    reservoirs::Vector{HydroReservoir}
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
+    prime_mover_type::PrimeMovers
+    "Downstream (from reservoir into turbine) travel time in hours."
+    travel_time::Union{Nothing, Float64}
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
@@ -103,12 +107,12 @@ mutable struct HydroTurbine <: HydroGen
     internal::InfrastructureSystemsInternal
 end
 
-function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, reservoirs, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.HY, travel_time=nothing, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, prime_mover_type, travel_time, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, reservoirs=Device[], services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, reservoirs, services, dynamic_injector, ext, internal, )
+function HydroTurbine(; name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost=HydroGenerationCost(nothing), powerhouse_elevation=0.0, ramp_limits=nothing, time_limits=nothing, outflow_limits=nothing, efficiency=1.0, turbine_type=HydroTurbineType.UNKNOWN, conversion_factor=1.0, prime_mover_type=PrimeMovers.HY, travel_time=nothing, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    HydroTurbine(name, available, bus, active_power, reactive_power, rating, active_power_limits, reactive_power_limits, base_power, operation_cost, powerhouse_elevation, ramp_limits, time_limits, outflow_limits, efficiency, turbine_type, conversion_factor, prime_mover_type, travel_time, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -131,7 +135,8 @@ function HydroTurbine(::Nothing)
         efficiency=1.0,
         turbine_type=HydroTurbineType.UNKNOWN,
         conversion_factor=1.0,
-        reservoirs=Device[],
+        prime_mover_type=PrimeMovers.OT,
+        travel_time=nothing,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -172,8 +177,10 @@ get_efficiency(value::HydroTurbine) = value.efficiency
 get_turbine_type(value::HydroTurbine) = value.turbine_type
 """Get [`HydroTurbine`](@ref) `conversion_factor`."""
 get_conversion_factor(value::HydroTurbine) = value.conversion_factor
-"""Get [`HydroTurbine`](@ref) `reservoirs`."""
-get_reservoirs(value::HydroTurbine) = value.reservoirs
+"""Get [`HydroTurbine`](@ref) `prime_mover_type`."""
+get_prime_mover_type(value::HydroTurbine) = value.prime_mover_type
+"""Get [`HydroTurbine`](@ref) `travel_time`."""
+get_travel_time(value::HydroTurbine) = value.travel_time
 """Get [`HydroTurbine`](@ref) `services`."""
 get_services(value::HydroTurbine) = value.services
 """Get [`HydroTurbine`](@ref) `dynamic_injector`."""
@@ -215,8 +222,10 @@ set_efficiency!(value::HydroTurbine, val) = value.efficiency = val
 set_turbine_type!(value::HydroTurbine, val) = value.turbine_type = val
 """Set [`HydroTurbine`](@ref) `conversion_factor`."""
 set_conversion_factor!(value::HydroTurbine, val) = value.conversion_factor = val
-"""Set [`HydroTurbine`](@ref) `reservoirs`."""
-set_reservoirs!(value::HydroTurbine, val) = value.reservoirs = val
+"""Set [`HydroTurbine`](@ref) `prime_mover_type`."""
+set_prime_mover_type!(value::HydroTurbine, val) = value.prime_mover_type = val
+"""Set [`HydroTurbine`](@ref) `travel_time`."""
+set_travel_time!(value::HydroTurbine, val) = value.travel_time = val
 """Set [`HydroTurbine`](@ref) `services`."""
 set_services!(value::HydroTurbine, val) = value.services = val
 """Set [`HydroTurbine`](@ref) `ext`."""

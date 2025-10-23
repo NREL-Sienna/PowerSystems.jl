@@ -1487,31 +1487,45 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-Return a vector of connected turbines to the reservoir
+Return a vector of connected head reservoirs to the turbine. Reservoirs that have the turbine in their downstream_turbines field are head reservoirs of such turbine.
 """
-function get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
-    throw_if_not_attached(reservoir, sys)
-    return [x for x in get_components(HydroTurbine, sys) if has_reservoir(x, reservoir)]
+function get_connected_head_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+    throw_if_not_attached(turbine, sys)
+    return [
+        x for x in get_components(HydroReservoir, sys) if has_downstream_turbine(x, turbine)
+    ]
 end
 
-struct ReservoirConnectedDevices
-    reservoir::HydroReservoir
+"""
+Return a vector of connected tail reservoirs to the turbine. Reservoirs that have the turbine in their upstream_turbines field are tail reservoirs of such turbine.
+"""
+function get_connected_tail_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+    throw_if_not_attached(turbine, sys)
+    return [
+        x for x in get_components(HydroReservoir, sys) if has_upstream_turbine(x, turbine)
+    ]
+end
+
+struct TurbineConnectedDevices
+    turbine::HydroUnit
     connected_devices::Vector{Device}
 end
 
-const ReservoirConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
-const ReservoirConnectedDevicesMapping =
-    Dict{ReservoirConnectedDevicesKey, ReservoirConnectedDevices}
+const TurbineConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const TurbineConnectedDevicesMapping =
+    Dict{TurbineConnectedDevicesKey, TurbineConnectedDevices}
 
 """
-Returns a ReservoirConnectedDevices object.
+Returns a TurbineConnectedDevices object.
 """
-function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
-    uuid = IS.get_uuid(reservoir)
-    devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
-    for device in get_components(HydroTurbine, sys)
-        for _reservoir in get_reservoirs(device)
-            if IS.get_uuid(_reservoir) == uuid
+function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
+    uuid = IS.get_uuid(turbine)
+    devices = TurbineConnectedDevices(turbine, Vector{Device}())
+    for device in get_components(HydroReservoir, sys)
+        # Only add reservoirs that have the turbine in their downstream_turbines field
+        # That is, those reservoirs are a head reservoir to that turbine
+        for _turbine in get_downstream_turbines(device)
+            if IS.get_uuid(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1521,16 +1535,48 @@ function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroRese
 end
 
 """
-Return an instance of ReservoirConnectedDevicesMapping.
+Returns a TurbineConnectedDevices object.
 """
-function get_reservoir_device_mapping(sys::System)
-    reservoir_mapping = ReservoirConnectedDevicesMapping()
-    for reservoir in get_components(HydroReservoir, sys)
-        key = ReservoirConnectedDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
-        reservoir_mapping[key] = _get_connected_devices(sys, reservoir)
+function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
+    uuid = IS.get_uuid(turbine)
+    devices = TurbineConnectedDevices(turbine, Vector{Device}())
+    for device in get_components(HydroReservoir, sys)
+        # Only add reservoirs that have the turbine in their upstream_turbines field
+        # That is, those reservoirs are a tail reservoir to that turbine
+        for _turbine in get_upstream_turbines(device)
+            if IS.get_uuid(_turbine) == uuid
+                push!(devices.connected_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
+"""
+Return an instance of TurbineConnectedDevicesMapping.
+"""
+function get_turbine_head_reservoirs_mapping(sys::System)
+    turbine_mapping = TurbineConnectedDevicesMapping()
+    for turbine in get_components(HydroUnit, sys)
+        key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
+        turbine_mapping[key] = _get_connected_head_devices(sys, turbine)
     end
 
-    return reservoir_mapping
+    return turbine_mapping
+end
+
+"""
+Return an instance of TurbineConnectedDevicesMapping.
+"""
+function get_turbine_tail_reservoirs_mapping(sys::System)
+    turbine_mapping = TurbineConnectedDevicesMapping()
+    for turbine in get_components(HydroUnit, sys)
+        key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
+        turbine_mapping[key] = _get_connected_tail_devices(sys, turbine)
+    end
+
+    return turbine_mapping
 end
 
 """
@@ -2356,7 +2402,11 @@ function deserialize_components!(sys::System, raw)
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
-        include_types = [Arc, Service, HydroReservoir],
+        include_types = [Arc, Service],
+        skip_types = [ConstantReserveGroup],
+    )
+    deserialize_and_add!(;
+        include_types = [HydroTurbine, HydroPumpTurbine],
         skip_types = [ConstantReserveGroup],
     )
     deserialize_and_add!(; include_types = [Branch])

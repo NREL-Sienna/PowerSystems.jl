@@ -5558,11 +5558,18 @@
                     "default": "1.0"
                 },
                 {
-                    "name": "reservoirs",
-                    "comment": "[`HydroReservoir`](@ref)(s) that this component is connected to",
-                    "data_type": "Vector{HydroReservoir}",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
+                    "name": "prime_mover_type",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "null_value": "PrimeMovers.OT",
+                    "data_type": "PrimeMovers",
+                    "default": "PrimeMovers.HY"
+                },
+                {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
                 },
                 {
                     "name": "services",
@@ -5594,7 +5601,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "HydroGen"
+            "supertype": "HydroUnit"
         },
         {
             "struct_name": "HydroPumpTurbine",
@@ -5691,18 +5698,6 @@
                     "validation_action": "warn",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}"
-                },
-                {
-                    "name": "head_reservoir",
-                    "comment": "Head [`HydroReservoir`](@ref) that this component is connected to",
-                    "data_type": "HydroReservoir",
-                    "null_value": "HydroReservoir(nothing)"
-                },
-                {
-                    "name": "tail_reservoir",
-                    "comment": "Tail [`HydroReservoir`](@ref) that this component is connected to",
-                    "data_type": "HydroReservoir",
-                    "null_value": "HydroReservoir(nothing)"
                 },
                 {
                     "name": "powerhouse_elevation",
@@ -5803,6 +5798,13 @@
                     "default": "(turbine = 0.0, pump = 0.0)"
                 },
                 {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
                     "null_value": "1.0",
@@ -5815,6 +5817,13 @@
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
+                },
+                {
+                    "name": "prime_mover_type",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "null_value": "PrimeMovers.OT",
+                    "data_type": "PrimeMovers",
+                    "default": "PrimeMovers.PS"
                 },
                 {
                     "name": "services",
@@ -5846,7 +5855,124 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "HydroGen"
+            "supertype": "HydroUnit"
+        },
+        {
+            "struct_name": "HydroReservoir",
+            "docstring": "A hydropower reservoir that have attached [`HydroTurbine`](@ref)(s) or [`HydroPumpTurbine`](@ref)(s) used to generate power.\nSee [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for supported configurations.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "storage_level_limits",
+                    "comment": "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "initial_level",
+                    "comment": "Initial level of the reservoir relative to the `storage_level_limits.max`.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "spillage_limits",
+                    "comment": "Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}"
+                },
+                {
+                    "name": "inflow",
+                    "comment": "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "outflow",
+                    "comment": "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "level_targets",
+                    "comment": "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}"
+                },
+                {
+                    "name": "intake_elevation",
+                    "comment": "Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "head_to_volume_factor",
+                    "comment": "Head to volume relationship for the reservoir.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "ValueCurve"
+                },
+                {
+                    "name": "upstream_turbines",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{HydroUnit}",
+                    "default": "Device[]",
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
+                },
+                {
+                    "name": "downstream_turbines",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{HydroUnit}",
+                    "default": "Device[]",
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
+                },
+                {
+                    "name": "upstream_reservoirs",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{Device}",
+                    "default": "Device[]",
+                    "comment": "Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "HydroReservoirCost(nothing)",
+                    "data_type": "HydroReservoirCost",
+                    "default": "HydroReservoirCost(nothing)",
+                    "comment": "[`OperationalCost`](@ref) of reservoir."
+                },
+                {
+                    "name": "level_data_type",
+                    "null_value": "ReservoirDataType.USABLE_VOLUME",
+                    "data_type": "ReservoirDataType",
+                    "default": "ReservoirDataType.USABLE_VOLUME",
+                    "comment": "Reservoir level data type. See [ReservoirDataType](@ref) for reference."
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "Device"
         },
         {
             "struct_name": "RenewableDispatch",

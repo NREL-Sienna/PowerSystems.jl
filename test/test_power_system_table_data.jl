@@ -271,3 +271,26 @@ end
     @assert isapprox(get_proportional_term(cost_curve), 0.0, atol = 0.01)
     @assert isapprox(get_constant_term(cost_curve), 0.0, atol = 0.01)
 end
+
+@testset "Test Reservoirs and Turbines" begin
+    cdmsys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys";
+        force_build = true,
+    )
+    @test !isempty(get_components(HydroTurbine, cdmsys))
+    for turbine in get_components(HydroTurbine, cdmsys)
+        reservoir = get_connected_head_reservoirs(cdmsys, turbine)
+        @test !isempty(reservoir)
+        reservoir = get_connected_tail_reservoirs(cdmsys, turbine)
+        @test isempty(reservoir)
+    end
+
+    @test !isempty(get_components(HydroReservoir, cdmsys))
+
+    for reservoir in get_components(HydroReservoir, cdmsys)
+        turbines = get_downstream_turbines(reservoir)
+        @test !isempty(turbines)
+        @test isempty(get_upstream_turbines(reservoir))
+    end
+end
