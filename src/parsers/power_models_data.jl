@@ -1870,7 +1870,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             rectifier_tap_limits = d["rectifier_tap_limits"],
             rectifier_tap_step = d["rectifier_tap_step"],
             rectifier_delay_angle = d["rectifier_delay_angle"],
-            rectifier_capacitor_reactance = d["inverter_capacitor_reactance"],
+            rectifier_capacitor_reactance = d["rectifier_capacitor_reactance"],
             inverter_transformer_ratio = d["inverter_transformer_ratio"],
             inverter_tap_setting = d["inverter_tap_setting"],
             inverter_tap_limits = d["inverter_tap_limits"],
