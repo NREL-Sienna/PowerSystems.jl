@@ -282,12 +282,27 @@ function transformer3W_isolated_bus_modifications!(pm_data::Dict, branch_data::D
     primary_bus = bus_data[primary_bus_number]
     secondary_bus = bus_data[secondary_bus_number]
     tertiary_bus = bus_data[tertiary_bus_number]
-    if (
-        primary_bus["bus_type"] == 4 || secondary_bus["bus_type"] == 4 ||
-        tertiary_bus["bus_type"] == 4
-    ) && branch_data["available"] == 1
-        @warn "Three winding transformer connected between buses $(primary_bus_number), $(secondary_bus_number), and $(tertiary_bus_number) is connected to an isolated bus. Setting branch status to 0."
-        branch_data["available"] = 0
+    if branch_data["available"] == 1
+        if primary_bus["bus_type"] == 4
+            branch_data["available_primary"] = 0
+            @warn "Three winding transformer primary bus $(primary_bus_number) is isolated. Setting primary winding status to 0."
+        end
+        if secondary_bus["bus_type"] == 4
+            branch_data["available_secondary"] = 0
+            @warn "Three winding transformer secondary bus $(secondary_bus_number) is isolated. Setting secondary winding status to 0."
+        end
+        if tertiary_bus["bus_type"] == 4
+            branch_data["available_tertiary"] = 0
+            @warn "Three winding transformer tertiary bus $(tertiary_bus_number) is isolated. Setting tertiary winding status to 0."
+        end
+        if (
+            branch_data["available_primary"] == 0 &&
+            branch_data["available_secondary"] == 0 &&
+            branch_data["available_tertiary"] == 0
+        )
+            branch_data["available"] = 0
+            @warn "All three windings are unavailable. Setting overall transformer availability to 0"
+        end
     end
     if primary_bus["bus_type"] == 4
         push!(pm_data["candidate_isolated_to_pq_buses"], primary_bus_number)
