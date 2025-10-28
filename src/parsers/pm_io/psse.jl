@@ -297,7 +297,8 @@ function transformer3W_isolated_bus_modifications!(pm_data::Dict, branch_data::D
         end
         if (
             branch_data["available_primary"] == 0 &&
-            branch_data["available_secondary"] == 0 && branch_data["available_tertiary"] == 0
+            branch_data["available_secondary"] == 0 &&
+            branch_data["available_tertiary"] == 0
         )
             branch_data["available"] = 0
             @warn "All three windings are unavailable. Setting overall transformer availability to 0"
