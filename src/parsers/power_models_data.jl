@@ -1296,7 +1296,7 @@ function _get_rating(
     haskey(line_data, key) || return key == "rate_a" ? INFINITE_BOUND : nothing
 
     if isapprox(line_data[key], 0.0)
-        @warn(
+        @info(
             "$branch_type $name rating value: $(line_data[key]). Unbounded value implied as per PSSe Manual"
         )
         return INFINITE_BOUND
