@@ -74,7 +74,7 @@ function read_and_convert_ts(
 )
     isnothing(start_time) && (start_time = IS.get_initial_timestamp(ts))
     isnothing(transform_fn) && (transform_fn = (x -> x))
-    data = IS.get_time_series_array(component, ts, start_time; len = len)
+    data = IS.get_time_series_array(component, ts; start_time = start_time, len = len)
     time_stamps = TimeSeries.timestamp(data)
     return TimeSeries.TimeArray(
         time_stamps,
@@ -109,7 +109,7 @@ function _process_get_cost(::Type{T}, component::Component, cost::TimeSeriesKey,
     start_time::Union{Nothing, Dates.DateTime},
     len::Union{Nothing, Int},
 ) where {T}
-    ts = get_time_series(component, cost, start_time, len, 1)
+    ts = get_time_series(component, cost; start_time = start_time, len = len, count = 1)
     converted = read_and_convert_ts(ts, component, start_time, len, transform_fn)
     return converted
 end
