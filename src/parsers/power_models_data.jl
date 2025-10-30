@@ -1194,7 +1194,7 @@ function get_branch_type_psse(
 
     if !is_transformer
         if (tap != 0.0) && (tap != 1.0)
-            @show "Transformer $d has tap ratio $tap, which is not 0.0 or 1.0; this is not a valid value for a Line. Parsing entry as a Transformer"
+            @warn "Transformer $d has tap ratio $tap, which is not 0.0 or 1.0; this is not a valid value for a Line. Parsing entry as a Transformer"
             is_transformer = true
             _add_vector_control_group(d, "shift", "group_number")
         else
