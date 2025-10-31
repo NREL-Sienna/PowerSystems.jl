@@ -2010,7 +2010,44 @@ function get_supplemental_attributes(
     return IS.get_supplemental_attributes(T, sys.data)
 end
 
-# could support filter function for component types too.
+"""
+    get_associated_supplemental_attributes(obj)
+
+Retrieves supplemental attributes associated with the given object.
+
+This function extracts and returns additional metadata or auxiliary information
+that is linked to the specified object, typically used for extended functionality
+or configuration purposes.
+
+# Arguments
+- `obj`: The object for which to retrieve associated supplemental attributes
+
+# Returns
+- Collection of supplemental attributes associated with the input object
+
+# Examples
+```julia
+gen_attr_pairs = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+)
+for (gen, attr) in gen_attr_pairs
+    @show summary(gen) summary(attr)
+end
+
+my_generators = [gen1, gen2, gen3]
+gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+    components = my_generators,
+)
+for (gen, attr) in gen_attr_pairs_limited
+    @show summary(gen) summary(attr)
+end
+```
+"""
 function get_associated_supplemental_attributes(
     sys::System,
     ::Type{T};
