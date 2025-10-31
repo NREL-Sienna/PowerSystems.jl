@@ -10,7 +10,6 @@
         @info "Successfully parsed $f to PowerModelsData"
         sys = System(pm_data)
         for g in get_components(Generator, sys)
-            # @test haskey(get_ext(g), "z_source")
             @test haskey(get_ext(g), "r")
             @test haskey(get_ext(g), "x")
         end
@@ -473,7 +472,7 @@ end
         force_build = true,
     )
     @test length(get_components(x -> get_available(x), ACBus, sys)) == 2   #Bus 1 and 2
-    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 1 # Load at Bus 2 
+    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 1 # Load at Bus 2
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0
     @test length(get_components(x -> get_available(x), Generator, sys)) == 2  #Gens at Bus 1 and 2
     @test length(get_components(x -> get_available(x), Branch, sys)) == 1
