@@ -18,8 +18,8 @@ merge!(
         "oil" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "dfo" => ThermalFuels.DISTILLATE_FUEL_OIL,
         "sync_cond" => ThermalFuels.OTHER,
-        "geothermal " => ThermalFuels.GEOTHERMAL,
-        "ag_biproduct" => ThermalFuels.AG_BYPRODUCT,
+        "geothermal" => ThermalFuels.GEOTHERMAL,
+        "ag_byproduct" => ThermalFuels.AG_BYPRODUCT,
     ),
 )
 
