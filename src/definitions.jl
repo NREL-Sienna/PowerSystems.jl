@@ -75,6 +75,23 @@ IS.@scoped_enum(
     CONFORMING = 1,
     UNDEFINED = 2,
 )
+@doc"""
+    LoadConformity
+
+WECC-defined enumeration for load conformity classification used in dynamic modeling.
+
+Load conformity indicates whether a load follows system voltage and frequency variations
+according to WECC modeling standards:
+
+- `NON_CONFORMING = 0`: Load that does not respond predictably to voltage and frequency changes,
+  typically representing constant power loads or loads with complex control systems
+- `CONFORMING = 1`: Load that responds predictably to voltage and frequency variations,
+  following standard load modeling practices for dynamic studies
+- `UNDEFINED = 2`: Load conformity status is not specified or unknown
+
+This classification is essential for WECC dynamic studies as it determines how loads are
+modeled during system disturbances and stability analysis.
+""" LoadConformity
 
 # "From PSSE POM v33 Manual"
 IS.@scoped_enum(
@@ -194,6 +211,25 @@ IS.@scoped_enum(
     PHASE_SHIFT_ANGLE = 1,
     TAP_RATIO = 2,
 )
+@doc"""
+    ImpedanceCorrectionTransformerControlMode
+
+Enumeration defining the control modes for impedance correction in transformers,
+based on PSS/E transformer control definitions.
+
+# Values
+- `PHASE_SHIFT_ANGLE = 1`: Control mode for phase-shifting transformers where the
+  impedance correction is applied based on the phase shift angle. Used when the
+  transformer primarily controls power flow through phase angle adjustment.
+- `TAP_RATIO = 2`: Control mode for tap-changing transformers where the impedance
+  correction is applied based on the tap ratio. Used when the transformer primarily
+  controls voltage magnitude through tap position changes.
+
+# Notes
+This enumeration corresponds to PSS/E transformer control field definitions for
+determining how impedance corrections are calculated and applied in power flow
+and dynamic simulation studies.
+""" ImpedanceCorrectionTransformerControlMode
 
 IS.@scoped_enum(
     TransformerControlObjective, # COD1 or COD2 in PSS\e
