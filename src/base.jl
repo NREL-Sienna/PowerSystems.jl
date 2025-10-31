@@ -1659,10 +1659,35 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
 end
 
 """
-Add time series data to a component.
+Add time series data to a component. Assign optional features to differentiate time series
+of the same type with the same name but with different data.
+
+Returns a key that can later be used to retrieve the time series data.
 
 Throws ArgumentError if the component is not stored in the system.
 
+# Examples
+```julia
+ts1 = Deterministic(
+    name = "max_active_power",
+    data = deterministic_data,
+    resolution = Dates.Hour(1),
+)
+ts2 = SingleTimeSeries(
+    name = "max_active_power",
+    data = time_array_1,
+)
+ts3 = SingleTimeSeries(
+    name = "max_active_power",
+    data = time_array_2,
+)
+key1 = add_time_series!(system, component, ts1)
+key2 = add_time_series!(system, component, ts2, scenario = "high")
+key3 = add_time_series!(system, component, ts3, scenario = "low")
+ts1_b = get_time_series(component, key1)
+ts2_b = get_time_series(component, key2)
+ts3_b = get_time_series(component, key3)
+```
 """
 function add_time_series!(
     sys::System,

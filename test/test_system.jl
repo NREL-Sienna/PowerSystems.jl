@@ -256,7 +256,7 @@ end
     ta = TimeSeries.TimeArray(dates, data, ["1"])
     name = "max_active_power"
     ts = SingleTimeSeries(; name = name, data = ta)
-    add_time_series!(sys, components, ts)
+    res = add_time_series!(sys, components, ts)
 
     for i in 1:len
         component = get_component(ThermalStandard, sys, string(i))

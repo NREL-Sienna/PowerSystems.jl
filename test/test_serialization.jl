@@ -309,12 +309,12 @@ end
             @test get_time_series_values(
                 gen2,
                 ts1b,
-                initial_time;
+                start_time = initial_time;
             ) == expected1
             @test get_time_series_values(
                 gen2,
                 ts2b,
-                initial_time;
+                start_time = initial_time,
             ) == expected2
         end
     end
