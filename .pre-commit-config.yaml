@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: julia-formatter
+        name: Run Julia formatter
+        entry: julia scripts/formatter/formatter_code.jl
+        language: system
+        types: [file]
+        pass_filenames: false

@@ -44,7 +44,7 @@ Parameter of a full order flux stator-rotor model without zero sequence flux in 
 - `L_ff::Float64`: Field rotor winding inductance, in per unit, validation range: `(0, nothing)`
 - `L_1d::Float64`: Inductance of the d-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
 - `L_1q::Float64`: Inductance of the q-axis rotor damping circuit, in per unit, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `inv_d_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur
 - `inv_q_fluxlink::Array{Float64,2}`: (**Do not modify.**) Equations 3.128, 3.132 From Kundur
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
@@ -81,7 +81,7 @@ mutable struct FullMachine <: Machine
     L_1d::Float64
     "Inductance of the q-axis rotor damping circuit, in per unit"
     L_1q::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) Equations 3.127, 3.130, 3.131 From Kundur"
     inv_d_fluxlink::Array{Float64,2}

@@ -29,6 +29,7 @@ end
 function ACBus(
     number,
     name,
+    available,
     bustype::String,
     angle,
     voltage,
@@ -41,6 +42,7 @@ function ACBus(
     return ACBus(
         number,
         name,
+        available,
         get_enum_value(ACBusTypes, bustype),
         angle,
         voltage,
@@ -50,6 +52,66 @@ function ACBus(
         load_zone,
         ext,
         InfrastructureSystemsInternal(),
+    )
+end
+
+"""Allows construction with bus type specified as a string for legacy code."""
+function DiscreteControlledACBranch(
+    name,
+    available,
+    arc,
+    active_power_flow,
+    reactive_power_flow,
+    r,
+    x,
+    rating,
+    discrete_branch_type::String,
+    branch_status::String,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return DiscreteControlledACBranch(
+        name,
+        available,
+        arc,
+        active_power_flow,
+        reactive_power_flow,
+        r,
+        x,
+        rating,
+        get_enum_value(DiscreteControlledBranchType, discrete_branch_type),
+        get_enum_value(DiscreteControlledBranchStatus, branch_status),
+        ext,
+        internal,
+    )
+end
+
+"""Allows construction of FACT Devices with control modes."""
+function FACTSControlDevice(
+    name,
+    available,
+    bus,
+    control_mode::String,
+    voltage_setpoint,
+    max_shunt_current,
+    reactive_power_required,
+    services = Device[],
+    dynamic_injector = nothing,
+    ext = Dict{String, Any}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return FACTSControlDevice(
+        name,
+        available,
+        bus,
+        get_enum_value(FACTSOperationModes, control_mode),
+        voltage_setpoint,
+        max_shunt_current,
+        reactive_power_required,
+        services,
+        dynamic_injector,
+        ext,
+        internal,
     )
 end
 
@@ -72,79 +134,7 @@ function ConstantReserve(
     )
 end
 
-function InterruptibleLoad(
-    name,
-    available,
-    bus,
-    model,
-    active_power,
-    reactive_power,
-    max_active_power,
-    max_reactive_power,
-    base_power,
-    operation_cost,
-    services = Device[],
-    dynamic_injector = nothing,
-    ext = Dict{String, Any}(),
-)
-    @warn(
-        "The InterruptibleLoad constructor that accepts a model type has been removed and \\
-  is no longer used. Calling this method will automatically create an InterruptiblePowerLoad"
-    )
-    InterruptiblePowerLoad(
-        name,
-        available,
-        bus,
-        active_power,
-        reactive_power,
-        max_active_power,
-        max_reactive_power,
-        base_power,
-        operation_cost,
-        services,
-        dynamic_injector,
-        ext,
-        InfrastructureSystemsInternal(),
-    )
-end
-
-function InterruptibleLoad(;
-    name,
-    available,
-    bus,
-    model,
-    active_power,
-    reactive_power,
-    max_active_power,
-    max_reactive_power,
-    base_power,
-    operation_cost,
-    services = Device[],
-    dynamic_injector = nothing,
-    ext = Dict{String, Any}(),
-    internal = InfrastructureSystemsInternal(),
-)
-    @warn(
-        "The InterruptibleLoad constructor that accepts a model type has been removed and \\
-  is no longer used. Calling this method will automatically create an InterruptiblePowerLoad"
-    )
-    InterruptiblePowerLoad(
-        name,
-        available,
-        bus,
-        active_power,
-        reactive_power,
-        max_active_power,
-        max_reactive_power,
-        base_power,
-        operation_cost,
-        services,
-        dynamic_injector,
-        ext,
-        internal,
-    )
-end
-
+"""Allows construction of a EnergyReservoirStorage without the specification of a cost."""
 function EnergyReservoirStorage(
     name::AbstractString,
     available::Bool,
@@ -190,69 +180,5 @@ function EnergyReservoirStorage(
         dynamic_injector = dynamic_injector,
         ext = ext,
         internal = internal,
-    )
-end
-
-"""
-Deprecated method for TwoTerminalHVDCLine
-"""
-function TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}},
-    services,
-    ext,
-    internal,
-)
-    new_loss = LinearCurve(loss.l0, loss.l1)
-    TwoTerminalHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        new_loss,
-        services,
-        ext,
-        internal,
-    )
-end
-
-function TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::NamedTuple{(:l0, :l1), Tuple{Float64, Float64}},
-    services = Device[],
-    ext = Dict{String, Any}(),
-)
-    new_loss = LinearCurve(loss.l0, loss.l1)
-    TwoTerminalHVDCLine(
-        name,
-        available,
-        active_power_flow,
-        arc,
-        active_power_limits_from,
-        active_power_limits_to,
-        reactive_power_limits_from,
-        reactive_power_limits_to,
-        new_loss,
-        services,
-        ext,
-        InfrastructureSystemsInternal(),
     )
 end

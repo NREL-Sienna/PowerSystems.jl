@@ -21,6 +21,7 @@ export AreaInterchange
 export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
+export get_geo_json
 
 export Component
 export Device
@@ -29,16 +30,26 @@ export get_max_reactive_power
 export Branch
 export StaticInjection
 export StaticInjectionSubsystem
+export DiscreteControlledACBranch
 export ACBranch
+export ACTransmission
+export TwoWindingTransformer
+export ThreeWindingTransformer
+export TwoTerminalHVDC
 export Line
 export MonitoredLine
 export DCBranch
-export TwoTerminalHVDCLine
-export TwoTerminalVSCDCLine
+export TwoTerminalGenericHVDCLine
+export TwoTerminalVSCLine
+export TwoTerminalLCCLine
 export TModelHVDCLine
 export Transformer2W
 export TapTransformer
 export PhaseShiftingTransformer
+export FACTSControlDevice
+export Transformer3W
+export PhaseShiftingTransformer3W
+export SynchronousCondenser
 
 # from IS function_data.jl
 export FunctionData
@@ -67,10 +78,12 @@ export ProductionVariableCostCurve, CostCurve, FuelCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
-export OperationalCost, MarketBidCost, LoadCost, StorageCost
+export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
+export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
 export is_market_bid_curve, make_market_bid_curve
+export make_import_curve, make_export_curve
 export get_no_load_cost, set_no_load_cost!, get_start_up, set_start_up!
 export set_shut_down!
 export get_curtailment_cost
@@ -81,12 +94,16 @@ export get_charge_variable_cost, set_charge_variable_cost!
 export get_discharge_variable_cost, set_discharge_variable_cost!
 export get_energy_shortage_cost, set_energy_shortage_cost!
 export get_energy_surplus_cost, set_energy_surplus_cost!
+export get_level_shortage_cost, set_level_shortage_cost!
+export get_level_surplus_cost, set_level_surplus_cost!
+export get_spillage_cost, set_spillage_cost!
 
 export Generator
 export HydroGen
 export HydroDispatch
-export HydroEnergyReservoir
-export HydroPumpedStorage
+export HydroTurbine
+export HydroReservoir
+export HydroPumpTurbine
 export InterconnectingConverter
 
 export RenewableGen
@@ -105,7 +122,11 @@ export FixedAdmittance
 export SwitchedAdmittance
 export ControllableLoad
 export InterruptiblePowerLoad
+export InterruptibleStandardLoad
+export ShiftablePowerLoad
 export ExponentialLoad
+export MotorLoad
+export LoadConformity
 
 export Storage
 export EnergyReservoirStorage
@@ -256,11 +277,22 @@ export Contingency
 export Outage
 export GeometricDistributionForcedOutage
 export PlannedOutage
-export TimeSeriesForcedOutage
+export FixedForcedOutage
 
 export get_mean_time_to_recovery
 export get_outage_transition_probability
 export get_outage_schedule
+
+# Impedance Correction Data
+export ImpedanceCorrectionData
+export WindingCategory
+export WindingGroupNumber
+export ImpedanceCorrectionTransformerControlMode
+
+export get_table_number
+export get_impedance_correction_curve
+export get_transformer_winding
+export get_transformer_control_mode
 
 export Service
 export AbstractReserve
@@ -281,10 +313,17 @@ export TransmissionInterface
 
 export AngleUnits
 export ACBusTypes
+export FACTSOperationModes
+export DiscreteControlledBranchStatus
+export DiscreteControlledBranchType
 export PrimeMovers
 export ThermalFuels
 export StorageTech
 export StateTypes
+export ReservoirDataType
+export MotorLoadTechnology
+export HydroTurbineType
+export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
@@ -333,21 +372,39 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
+export remove_turbine!
+export clear_turbines!
+export has_upstream_turbine
+export has_downstream_turbine
 export has_time_series
 export get_buses
 export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
+export set_upstream_turbine!
+export set_downstream_turbine!
+export get_connected_head_reservoirs
+export get_connected_tail_reservoirs
 export get_contributing_device_mapping
+export get_contributing_reserve_mapping
+export get_turbine_head_reservoirs_mapping
+export get_turbine_tail_reservoirs_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
+export TurbineConnectedDevices
+export TurbineConnectedDevicesKey
+export TurbineConnectedDevicesMapping
 export get_component
 export get_components
+export get_num_components
+export get_associated_components
 export show_components
 export get_subcomponents
 export get_components_by_name
+export get_available
+export set_available!
 export get_available_component
 export get_available_components
 export get_existing_device_types
@@ -359,8 +416,10 @@ export get_forecast_window_count
 export add_supplemental_attribute!
 export remove_supplemental_attribute!
 export remove_supplemental_attributes!
+export get_component_supplemental_attribute_pairs
 export get_supplemental_attribute
 export get_supplemental_attributes
+export get_associated_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export begin_supplemental_attributes_update
@@ -396,6 +455,10 @@ export get_decremental_offer_curves, set_decremental_offer_curves!
 export get_incremental_initial_input, set_incremental_initial_input!
 export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
+export get_import_offer_curves, set_import_offer_curves!
+export get_export_offer_curves, set_export_offer_curves!
+export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
+export get_energy_export_weekly_limit, set_energy_export_weekly_limit!
 export get_services_bid
 export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
@@ -424,6 +487,7 @@ export get_description
 export set_description!
 export get_base_power
 export get_frequency
+export get_frequency_droop
 export set_units_base_system!
 export with_units_base
 export to_json
@@ -434,7 +498,6 @@ export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
-export TamuSystem
 export PowerModelsData
 export PowerSystemTableData
 export add_dyn_injectors!
@@ -485,7 +548,7 @@ export set_runchecks!
 export check
 export check_component
 export check_components
-export check_sil_values
+export check_ac_transmission_rate_values
 
 # From IS logging.jl, generate_struct_files.jl
 export configure_logging
@@ -560,13 +623,17 @@ import InfrastructureSystems:
     InvalidRange,
     InvalidValue,
     GeographicInfo,
+    get_geo_json,
     copy_time_series!,
+    get_available,
+    set_available!,
     get_count,
     get_data,
     get_horizon,
     get_resolution,
     get_window,
     get_name,
+    get_num_components,
     get_component_uuids,
     get_supplemental_attribute,
     get_supplemental_attributes,
@@ -643,6 +710,7 @@ import InfrastructureSystems:
     COMPONENT_NAME_DELIMITER,
     make_selector,
     rebuild_selector
+
 import InfrastructureSystems:
     ValueCurve,
     InputOutputCurve,
@@ -662,6 +730,7 @@ import InfrastructureSystems:
     FuelCurve,
     get_value_curve,
     get_vom_cost,
+    get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost
 
@@ -686,9 +755,6 @@ Subtypes should call InfrastructureSystemsInternal() by default, but also must
 provide a constructor that allows existing values to be deserialized.
 """
 abstract type Component <: IS.InfrastructureSystemsComponent end
-
-"Get whether this component is available for simulation or not."
-get_available(::Component) = true
 
 """ Supertype for "devices" (bus, line, etc.) """
 abstract type Device <: Component end
@@ -725,11 +791,13 @@ include("models/OuterControl.jl")
 # Costs
 include("models/cost_functions/operational_cost.jl")
 include("models/cost_functions/MarketBidCost.jl")
+include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
 include("models/cost_functions/LoadCost.jl")
 include("models/cost_functions/RenewableGenerationCost.jl")
 include("models/cost_functions/StorageCost.jl")
 include("models/cost_functions/ThermalGenerationCost.jl")
+include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
 include("models/generated/includes.jl")
@@ -750,8 +818,10 @@ include("models/SalientPoleExponential.jl")
 include("models/SalientPoleQuadratic.jl")
 include("models/dynamic_branch.jl")
 
+include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
+include("models/supplemental_setters.jl")
 
 # Supplemental attributes
 include("contingencies.jl")
@@ -784,7 +854,6 @@ include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")
-include("parsers/TAMU_data.jl")
 include("parsers/psse_metadata_reimport.jl")
 
 # Better printing

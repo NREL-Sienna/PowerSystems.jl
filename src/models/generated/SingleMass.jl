@@ -19,7 +19,7 @@ Parameters of single mass shaft model. Typically represents the rotor mass
 # Arguments
 - `H::Float64`: Rotor inertia constant in MWs/MVA, validation range: `(0, nothing)`
 - `D::Float64`: Rotor natural damping in pu, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	δ: rotor angle,
 	ω: rotor speed
@@ -31,7 +31,7 @@ mutable struct SingleMass <: Shaft
     H::Float64
     "Rotor natural damping in pu"
     D::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	δ: rotor angle,

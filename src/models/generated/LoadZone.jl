@@ -21,7 +21,7 @@ The load zone can be specified when defining each [`ACBus`](@ref) or [`DCBus`](@
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `peak_active_power::Float64`: Peak active power in the zone (MW)
 - `peak_reactive_power::Float64`: Peak reactive power in the zone (MVAR)
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct LoadZone <: AggregationTopology
@@ -31,7 +31,7 @@ mutable struct LoadZone <: AggregationTopology
     peak_active_power::Float64
     "Peak reactive power in the zone (MVAR)"
     peak_reactive_power::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -58,17 +58,17 @@ end
 """Get [`LoadZone`](@ref) `name`."""
 get_name(value::LoadZone) = value.name
 """Get [`LoadZone`](@ref) `peak_active_power`."""
-get_peak_active_power(value::LoadZone) = get_value(value, value.peak_active_power)
+get_peak_active_power(value::LoadZone) = get_value(value, Val(:peak_active_power), Val(:mva))
 """Get [`LoadZone`](@ref) `peak_reactive_power`."""
-get_peak_reactive_power(value::LoadZone) = get_value(value, value.peak_reactive_power)
+get_peak_reactive_power(value::LoadZone) = get_value(value, Val(:peak_reactive_power), Val(:mva))
 """Get [`LoadZone`](@ref) `ext`."""
 get_ext(value::LoadZone) = value.ext
 """Get [`LoadZone`](@ref) `internal`."""
 get_internal(value::LoadZone) = value.internal
 
 """Set [`LoadZone`](@ref) `peak_active_power`."""
-set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, val)
+set_peak_active_power!(value::LoadZone, val) = value.peak_active_power = set_value(value, Val(:peak_active_power), val, Val(:mva))
 """Set [`LoadZone`](@ref) `peak_reactive_power`."""
-set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, val)
+set_peak_reactive_power!(value::LoadZone, val) = value.peak_reactive_power = set_value(value, Val(:peak_reactive_power), val, Val(:mva))
 """Set [`LoadZone`](@ref) `ext`."""
 set_ext!(value::LoadZone, val) = value.ext = val

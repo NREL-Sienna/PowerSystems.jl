@@ -41,7 +41,7 @@ Parameters Woodward Diesel Governor Model. DEGOV1 in PSSE
 - `R::Float64`: Steady state droop parameter, validation range: `(0, 100)`
 - `Te::Float64`: Power transducer time constant in s, validation range: `(0, 100)`
 - `P_ref::Float64`: (default: `1.0`) Reference Load Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag
 - `n_states::Int`: (**Do not modify.**) The number of [states](@ref S) of the DEGOV1 model depends on the droop flag
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -73,7 +73,7 @@ mutable struct DEGOV1 <: TurbineGov
     Te::Float64
     "Reference Load Set-point (pu)"
     P_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag"
     states::Vector{Symbol}

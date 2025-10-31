@@ -16,6 +16,7 @@ POWER_MODELS_KEYS = [
 
 badfiles = Dict("case30.m" => PSY.InvalidValue)
 voltage_inconsistent_files = ["RTS_GMLC_original.m", "case5_re.m", "case5_re_uc.m"]
+error_log_files = ["ACTIVSg2000.m", "case_ACTIVSg10k.m"]
 
 @testset "Parse Matpower data files" begin
     files = [x for x in readdir(joinpath(MATPOWER_DIR)) if splitext(x)[2] == ".m"]
@@ -54,7 +55,7 @@ end
 @testset "Parse PowerModel Matpower data files" begin
     files = [
         x for x in readdir(MATPOWER_DIR) if
-        splitext(x)[2] == ".m"
+              splitext(x)[2] == ".m"
     ]
     if length(files) == 0
         @error "No test files in the folder"

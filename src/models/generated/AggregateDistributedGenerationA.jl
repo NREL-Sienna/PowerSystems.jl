@@ -97,7 +97,7 @@ Parameters of the DERA1 model in PSS/E
 - `Q_ref::Float64`: (default: `0.0`) Reference reactive power, in pu, validation range: `(0, nothing)`
 - `P_ref::Float64`: (default: `1.0`) Reference active power, in pu, validation range: `(0, nothing)`
 - `base_power::Float64`: (default: `100.0`) Base power (MVA) for [per unitization](@ref per_unit)
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags
 - `n_states::Int`: (**Do not modify.**) The states of AggregateDistributedGenerationA depends on the Flags
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -185,7 +185,7 @@ mutable struct AggregateDistributedGenerationA <: DynamicInjection
     P_ref::Float64
     "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of AggregateDistributedGenerationA depends on the Flags"
     states::Vector{Symbol}

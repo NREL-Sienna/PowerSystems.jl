@@ -10,11 +10,32 @@ as an optional add-on for conducting [dynamic](@ref D) simulations.
 abstract type StaticInjection <: Device end
 
 function supports_services(::T) where {T <: Device}
+    return false
+end
+
+function supports_services(::T) where {T <: StaticInjection}
     return true
 end
 
-function get_services(::Device)
+function get_services(device::Device)
+    if !supports_services(device)
+        error(ArgumentError(
+            "Device $(get_name(device)) does not support services",
+        ))
+    end
     return Vector{Service}()
 end
 
 get_dynamic_injector(d::StaticInjection) = nothing
+
+function get_frequency_droop(static_injector::StaticInjection)
+    dynamic_injector = get_dynamic_injector(static_injector)
+    if isnothing(dynamic_injector)
+        throw(
+            ArgumentError(
+                "cannot get frequency droop for $(summary(static_injector)) because it does not have dynamic data.",
+            ),
+        )
+    end
+    return get_frequency_droop(dynamic_injector)
+end

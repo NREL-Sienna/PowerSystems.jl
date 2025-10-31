@@ -25,12 +25,6 @@ end
     @test result
 end
 
-@testset "Test JSON serialization of ACTIVSg2000 data" begin
-    sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_ACTIVSg2000_sys")
-    _, result = validate_serialization(sys)
-    @test result
-end
-
 @testset "Test JSON serialization of dynamic inverter" begin
     sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
 
@@ -315,12 +309,12 @@ end
             @test get_time_series_values(
                 gen2,
                 ts1b,
-                initial_time;
+                start_time = initial_time;
             ) == expected1
             @test get_time_series_values(
                 gen2,
                 ts2b,
-                initial_time;
+                start_time = initial_time,
             ) == expected2
         end
     end

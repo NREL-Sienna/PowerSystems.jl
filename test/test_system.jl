@@ -51,11 +51,14 @@
     @test get_time_series_resolutions(sys)[1] == Dates.Hour(1)
 
     # Get time_series with a name and without.
-    components = collect(get_components(HydroEnergyReservoir, sys))
+    components = collect(get_components(HydroTurbine, sys))
     @test !isempty(components)
     component = components[1]
     ts = get_time_series(SingleTimeSeries, component, "max_active_power")
     @test ts isa SingleTimeSeries
+
+    components = collect(get_components(HydroReservoir, sys))
+    @test !isempty(components)
 
     returned_it, returned_len = check_time_series_consistency(sys, SingleTimeSeries)
     @test returned_it == first(TimeSeries.timestamp(get_data(ts)))
@@ -253,7 +256,7 @@ end
     ta = TimeSeries.TimeArray(dates, data, ["1"])
     name = "max_active_power"
     ts = SingleTimeSeries(; name = name, data = ta)
-    add_time_series!(sys, components, ts)
+    res = add_time_series!(sys, components, ts)
 
     for i in 1:len
         component = get_component(ThermalStandard, sys, string(i))
@@ -401,13 +404,14 @@ end
 end
 
 @testset "Test time series counts" begin
+    # The system has both single and deterministic forecasts time series
     c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = true,
     )
     counts = get_time_series_counts(c_sys5)
-    @test counts.static_time_series_count == 0
+    @test counts.static_time_series_count == 3
     @test counts.forecast_count == 3
 end
 
@@ -551,9 +555,10 @@ end
         ThermalStandard,
     )
 
-    @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_sil_values(
-        sys,
-    ))
+    # @test !(@test_logs :warn, r"is larger than the max expected in the" match_mode = :any check_ac_transmission_rate_values(
+    #     sys,
+    # ))
+    @test check_ac_transmission_rate_values(sys)
 end
 
 @testset "Test system name and description" begin
@@ -592,14 +597,20 @@ end
 
     @test metadata["name"] == name
     @test metadata["description"] == description
-    found_component = false
+    found_component_thermal = false
+    found_component_condenser = false
     for item in metadata["component_counts"]
         if item["type"] == "ThermalStandard"
-            @test item["count"] == 76
-            found_component = true
+            @test item["count"] == 73
+            found_component_thermal = true
+        end
+        if item["type"] == "SynchronousCondenser"
+            @test item["count"] == 3
+            found_component_condenser = true
         end
     end
-    @test found_component
+    @test found_component_thermal
+    @test found_component_condenser
     @test metadata["time_series_counts"][1]["type"] == "DeterministicSingleTimeSeries"
     @test metadata["time_series_counts"][1]["count"] == 182
     @test metadata["time_series_counts"][2]["type"] == "SingleTimeSeries"

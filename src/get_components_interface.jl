@@ -59,9 +59,46 @@ get_components(::Type{T}, sys::System; subsystem_name = nothing) where {T <: Com
 
 """
 Return a vector of components that are attached to the supplemental attribute.
+
+# Arguments
+- `sys::System`: the `System` to search
+- `attribute::SupplementalAttribute`: Only return components associated with this attribute.
+- `component_type::Union{Nothing, <:Component}`: Optional type of the components to return.
+  Can be concrete or abstract. If not provided, all components associated with the attribute
+  will be returned.
 """
-get_components(sys::System, attribute::SupplementalAttribute) =
-    IS.get_components(sys, attribute)
+function get_associated_components(
+    sys::System,
+    attribute::SupplementalAttribute;
+    component_type::Union{Nothing, Type{<:Component}} = nothing,
+)
+    return IS.get_associated_components(
+        sys.data,
+        attribute;
+        component_type = component_type,
+    )
+end
+
+@deprecate get_components(sys::System, attribute::SupplementalAttribute) get_associated_components(
+    sys,
+    attribute,
+)
+
+"""
+Return a vector of components that are associated to one or more supplemental attributes of
+the given type.
+"""
+function get_associated_components(
+    sys::System,
+    attribute_type::Type{<:SupplementalAttribute};
+    component_type::Union{Nothing, Type{<:Component}} = nothing,
+)
+    return IS.get_associated_components(
+        sys.data,
+        attribute_type;
+        component_type = component_type,
+    )
+end
 
 """
 Return an iterator of components of a given `Type` from a [`System`](@ref), using an
@@ -113,7 +150,13 @@ get_component(::Type{T}, sys::System, name::AbstractString) where {T <: Componen
 
 # get_available_components
 """
-Like [`get_components`](@ref) but returns only components that are [`get_available`](@ref).
+Like [`get_components`](@ref get_components(
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+    ) where {T <: Component}
+) but returns only components that are [`get_available`](@ref).
+```
 """
 get_available_components(
     ::Type{T},
@@ -122,9 +165,24 @@ get_available_components(
 ) where {T <: Component} =
     IS.get_available_components(T, sys; subsystem_name = subsystem_name)
 
+"""
+Like [`get_components`](@ref get_components(
+    sys::System,
+    attribute::SupplementalAttribute
+) but returns only components that are [`get_available`](@ref).
+"""
 get_available_components(sys::System, attribute::SupplementalAttribute) =
     IS.get_available_components(sys, attribute)
 
+"""
+Like [`get_components`](@ref get_components(
+    filter_func::Function,
+    ::Type{T},
+    sys::System;
+    subsystem_name = nothing,
+    ) where {T <: Component}
+) but returns only components that are [`get_available`](@ref).
+"""
 get_available_components(
     filter_func::Function,
     ::Type{T},

@@ -39,7 +39,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to the converter current
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterconnectingConverter <: StaticInjection
@@ -69,7 +69,7 @@ mutable struct InterconnectingConverter <: StaticInjection
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -112,11 +112,11 @@ get_bus(value::InterconnectingConverter) = value.bus
 """Get [`InterconnectingConverter`](@ref) `dc_bus`."""
 get_dc_bus(value::InterconnectingConverter) = value.dc_bus
 """Get [`InterconnectingConverter`](@ref) `active_power`."""
-get_active_power(value::InterconnectingConverter) = get_value(value, value.active_power)
+get_active_power(value::InterconnectingConverter) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`InterconnectingConverter`](@ref) `rating`."""
-get_rating(value::InterconnectingConverter) = get_value(value, value.rating)
+get_rating(value::InterconnectingConverter) = get_value(value, Val(:rating), Val(:mva))
 """Get [`InterconnectingConverter`](@ref) `active_power_limits`."""
-get_active_power_limits(value::InterconnectingConverter) = get_value(value, value.active_power_limits)
+get_active_power_limits(value::InterconnectingConverter) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`InterconnectingConverter`](@ref) `base_power`."""
 get_base_power(value::InterconnectingConverter) = value.base_power
 """Get [`InterconnectingConverter`](@ref) `dc_current`."""
@@ -141,11 +141,11 @@ set_bus!(value::InterconnectingConverter, val) = value.bus = val
 """Set [`InterconnectingConverter`](@ref) `dc_bus`."""
 set_dc_bus!(value::InterconnectingConverter, val) = value.dc_bus = val
 """Set [`InterconnectingConverter`](@ref) `active_power`."""
-set_active_power!(value::InterconnectingConverter, val) = value.active_power = set_value(value, val)
+set_active_power!(value::InterconnectingConverter, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `rating`."""
-set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, val)
+set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, val)
+set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `base_power`."""
 set_base_power!(value::InterconnectingConverter, val) = value.base_power = val
 """Set [`InterconnectingConverter`](@ref) `dc_current`."""

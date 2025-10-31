@@ -380,11 +380,23 @@ end
     end
 end
 
+@testset "Test Service Removal" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    res_up = PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up")
+    res_dn = PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down")
+    PSY.remove_component!(sys, res_dn)
+    PSY.remove_component!(sys, res_up)
+    @test isnothing(PSY.get_component(PSY.VariableReserve{PSY.ReserveUp}, sys, "Flex_Up"))
+    @test isnothing(
+        PSY.get_component(PSY.VariableReserve{PSY.ReserveDown}, sys, "Flex_Down"),
+    )
+end
+
 @testset "Test TransmissionInterface" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     lines = get_components(Line, sys)
     xfr = get_components(TapTransformer, sys)
-    hvdc = collect(get_components(TwoTerminalHVDCLine, sys))
+    hvdc = collect(get_components(TwoTerminalGenericHVDCLine, sys))
     some_lines = collect(lines)[1:2]
     other_lines_and_hvdc = vcat(collect(lines)[10:14], hvdc)
     lines_and_transformers = [some_lines; collect(xfr)[1:2]]
@@ -408,4 +420,72 @@ end
     to_json(sys, tmp_path)
     sys = System(tmp_path)
     @test length(get_components(TransmissionInterface, sys)) == 3
+
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    area1 = get_component(Area, sys, "1")
+    area2 = get_component(Area, sys, "2")
+    area3 = get_component(Area, sys, "3")
+    area_interchange12 = AreaInterchange(;
+        name = "interchange_a1_a2",
+        available = true,
+        active_power_flow = 0.0,
+        from_area = area1,
+        to_area = area2,
+        flow_limits = (from_to = 100.0, to_from = 100.0),
+    )
+    area_interchange13 = AreaInterchange(;
+        name = "interchange_a1_a3",
+        available = true,
+        active_power_flow = 0.0,
+        from_area = area1,
+        to_area = area3,
+        flow_limits = (from_to = 100.0, to_from = 100.0),
+    )
+    line = first(get_components(Line, sys))
+    add_component!(sys, area_interchange12)
+    add_component!(sys, area_interchange13)
+    area_level_interface = TransmissionInterface("foo3", true, (min = -10.0, max = 10.0))
+    area_level_mixed = TransmissionInterface("foo4", true, (min = -10.0, max = 10.0))
+    add_service!(sys, area_level_interface, [area_interchange12, area_interchange13])
+    @test_throws ArgumentError add_service!(
+        sys,
+        area_level_mixed,
+        [area_interchange12, area_interchange13, line],
+    )
+end
+
+@testset "Test AGC" begin
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
+    thermals = get_components(ThermalStandard, sys)
+    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    agc = AGC(;
+        name = "agc",
+        available = true,
+        bias = 0.0,
+        K_p = 1.0,
+        K_i = 1.0,
+        K_d = 1.0,
+        delta_t = 1.0,
+    )
+    @test_throws ArgumentError add_service!(sys, agc, thermals)
+    add_service!(sys, agc, reserves)
+    mapping = get_contributing_reserve_mapping(sys)
+    @test length(mapping) == 1
+    @test_throws ArgumentError add_service!(sys, agc, reserves)
+
+    #Test serialization of system with AGC + contributing reserves
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_reserves = true)
+    reserves = get_components(VariableReserve{ReserveUp}, sys)
+    agc = AGC(;
+        name = "agc",
+        available = true,
+        bias = 0.0,
+        K_p = 1.0,
+        K_i = 1.0,
+        K_d = 1.0,
+        delta_t = 1.0,
+    )
+    add_service!(sys, agc, reserves)
+    _, result = validate_serialization(sys)
+    @test result
 end

@@ -52,7 +52,7 @@ Parameters of IEEE Std 421.5 Type AC1A Excitacion System. EXAC1A in PSSE and PSL
 - `Vr_lim::MinMax`: Limits for exciter field voltage: `(Vr_min, Vr_max)`
 - `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `saturation_coeffs::Tuple{Float64, Float64}`: (default: `PowerSystems.get_avr_saturation(E_sat, Se)`) (**Do not modify.**) Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	Vr1: Lead-lag state,
@@ -98,7 +98,7 @@ mutable struct EXAC1A <: AVR
     V_ref::Float64
     "(**Do not modify.**) Coefficients (A,B) of the function: Se(x) = B(x - A)^2/x"
     saturation_coeffs::Tuple{Float64, Float64}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,

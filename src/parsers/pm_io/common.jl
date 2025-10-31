@@ -39,9 +39,6 @@ function parse_file(
     if filetype == "m"
         pm_data = parse_matpower(io; validate = validate)
     elseif filetype == "raw"
-        @info(
-            "The PSS(R)E parser currently supports buses, loads, shunts, generators, branches, transformers, and dc lines"
-        )
         pm_data = parse_psse(
             io;
             import_all = import_all,
@@ -65,7 +62,6 @@ Runs various data quality checks on a PowerModels data dictionary.
 Applies modifications in some cases.  Reports modified component ids.
 """
 function correct_network_data!(data::Dict{String, <:Any}; correct_branch_rating = true)
-    mod_bus = Dict{Symbol, Set{Int}}()
     mod_gen = Dict{Symbol, Set{Int}}()
     mod_branch = Dict{Symbol, Set{Int}}()
     mod_dcline = Dict{Symbol, Set{Int}}()
@@ -107,7 +103,6 @@ function correct_network_data!(data::Dict{String, <:Any}; correct_branch_rating 
 
     mod_dcline[:losses] = correct_dcline_limits!(data)
 
-    mod_bus[:type] = correct_bus_types!(data)
     check_voltage_setpoints(data)
 
     check_storage_parameters(data)
@@ -120,7 +115,6 @@ function correct_network_data!(data::Dict{String, <:Any}; correct_branch_rating 
     simplify_cost_terms!(data)
 
     return Dict(
-        "bus" => mod_bus,
         "gen" => mod_gen,
         "branch" => mod_branch,
         "dcline" => mod_dcline,

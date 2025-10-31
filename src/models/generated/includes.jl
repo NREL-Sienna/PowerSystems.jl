@@ -6,17 +6,25 @@ include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
+include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
 include("TapTransformer.jl")
 include("Transformer2W.jl")
-include("TwoTerminalHVDCLine.jl")
-include("TwoTerminalVSCDCLine.jl")
+include("Transformer3W.jl")
+include("PhaseShiftingTransformer3W.jl")
+include("TwoTerminalGenericHVDCLine.jl")
+include("TwoTerminalVSCLine.jl")
+include("TwoTerminalLCCLine.jl")
 include("TModelHVDCLine.jl")
 include("InterruptiblePowerLoad.jl")
+include("InterruptibleStandardLoad.jl")
+include("ShiftablePowerLoad.jl")
+include("FACTSControlDevice.jl")
 include("FixedAdmittance.jl")
 include("SwitchedAdmittance.jl")
 include("PowerLoad.jl")
+include("MotorLoad.jl")
 include("StandardLoad.jl")
 include("ExponentialLoad.jl")
 include("SingleCageInductionMachine.jl")
@@ -25,12 +33,14 @@ include("DynamicExponentialLoad.jl")
 include("ActiveConstantPowerLoad.jl")
 include("InterconnectingConverter.jl")
 include("CSVGN1.jl")
-include("HydroEnergyReservoir.jl")
 include("HydroDispatch.jl")
-include("HydroPumpedStorage.jl")
+include("HydroTurbine.jl")
+include("HydroPumpTurbine.jl")
+include("HydroReservoir.jl")
 include("RenewableDispatch.jl")
 include("RenewableNonDispatch.jl")
 include("ThermalStandard.jl")
+include("SynchronousCondenser.jl")
 include("ThermalMultiStart.jl")
 include("EnergyReservoirStorage.jl")
 include("ConstantReserve.jl")
@@ -468,35 +478,64 @@ export get_Y
 export get_Y_increase
 export get_Zerox
 export get_a
+export get_ac_setpoint_from
+export get_ac_setpoint_to
+export get_ac_voltage_control_from
+export get_ac_voltage_control_to
 export get_active_power
 export get_active_power_flow
 export get_active_power_flow_limits
+export get_active_power_flow_primary
+export get_active_power_flow_secondary
+export get_active_power_flow_tertiary
 export get_active_power_limits
 export get_active_power_limits_from
 export get_active_power_limits_pump
 export get_active_power_limits_to
+export get_active_power_losses
+export get_active_power_pump
+export get_admittance_limits
 export get_angle
 export get_angle_limits
 export get_arc
 export get_area
 export get_available
+export get_available_primary
+export get_available_secondary
+export get_available_tertiary
 export get_b
 export get_base_power
+export get_base_power_12
+export get_base_power_13
+export get_base_power_23
 export get_base_voltage
+export get_base_voltage_primary
+export get_base_voltage_secondary
+export get_base_voltage_tertiary
 export get_battery_resistance
 export get_battery_voltage
 export get_bias
 export get_branch_id_control
+export get_branch_status
 export get_bus
 export get_bus_control
 export get_bustype
 export get_c
 export get_c_dc
 export get_cf
+export get_compounding_resistance
+export get_conformity
 export get_constant_active_power
 export get_constant_reactive_power
 export get_contributing_services
+export get_control_mode
+export get_control_objective
+export get_control_objective_primary
+export get_control_objective_secondary
+export get_control_objective_tertiary
 export get_conversion_factor
+export get_converter_loss_from
+export get_converter_loss_to
 export get_current_active_power
 export get_current_reactive_power
 export get_cycle_limits
@@ -509,9 +548,15 @@ export get_dc_bus
 export get_dc_current
 export get_dc_dc_inductor
 export get_dc_link_capacitance
+export get_dc_setpoint_from
+export get_dc_setpoint_to
+export get_dc_voltage_control_from
+export get_dc_voltage_control_to
 export get_delta_t
 export get_deployed_fraction
 export get_direction_mapping
+export get_discrete_branch_type
+export get_downstream_turbines
 export get_droop_flag
 export get_dynamic_injector
 export get_e_lim
@@ -535,17 +580,20 @@ export get_fuel_flag
 export get_g
 export get_gate_openings
 export get_gate_position_limits
+export get_head_to_volume_factor
 export get_hysteresis_binary_logic
 export get_impedance_active_power
 export get_impedance_reactive_power
 export get_inflow
 export get_initial_ace
-export get_initial_storage
+export get_initial_level
+export get_initial_status
 export get_initial_storage_capacity_level
 export get_input_active_power_limits
 export get_input_code
 export get_input_code_1
 export get_input_code_2
+export get_intake_elevation
 export get_internal_angle
 export get_internal_angle_bias
 export get_internal_angle_coefficients
@@ -556,9 +604,17 @@ export get_internal_voltage_coefficients
 export get_internal_voltage_frequencies
 export get_inv_d_fluxlink
 export get_inv_q_fluxlink
+export get_inverter_base_voltage
+export get_inverter_bridges
+export get_inverter_capacitor_reactance
 export get_inverter_extinction_angle
+export get_inverter_extinction_angle_limits
+export get_inverter_rc
 export get_inverter_tap_limits
-export get_inverter_xrc
+export get_inverter_tap_setting
+export get_inverter_tap_step
+export get_inverter_transformer_ratio
+export get_inverter_xc
 export get_is_filter_differential
 export get_k1
 export get_k2
@@ -579,8 +635,11 @@ export get_kq
 export get_kw
 export get_kω
 export get_l
+export get_level_data_type
+export get_level_targets
 export get_lf
 export get_lg
+export get_load_balance_time_horizon
 export get_load_response
 export get_load_zone
 export get_loss
@@ -593,11 +652,17 @@ export get_max_constant_reactive_power
 export get_max_current_active_power
 export get_max_current_reactive_power
 export get_max_dc_current
+export get_max_dc_current_from
+export get_max_dc_current_to
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
 export get_max_output_fraction
 export get_max_participation_factor
 export get_max_reactive_power
+export get_max_shunt_current
+export get_min_compounding_voltage
+export get_minimum_time
+export get_motor_technology
 export get_must_run
 export get_n_states
 export get_name
@@ -605,47 +670,85 @@ export get_number
 export get_number_of_steps
 export get_operation_cost
 export get_outflow
+export get_outflow_limits
 export get_output_active_power_limits
 export get_peak_active_power
 export get_peak_reactive_power
 export get_phase_angle_limits
 export get_power_factor
+export get_power_factor_weighting_fraction_from
+export get_power_factor_weighting_fraction_to
 export get_power_gate_openings
+export get_power_mode
 export get_power_trajectory
+export get_powerhouse_elevation
+export get_primary_group_number
 export get_primary_shunt
+export get_primary_star_arc
+export get_primary_turns_ratio
 export get_prime_mover_type
-export get_pump_efficiency
 export get_q_nl
 export get_r
+export get_r_12
+export get_r_13
+export get_r_23
 export get_r_load
+export get_r_primary
+export get_r_secondary
+export get_r_tertiary
 export get_ramp_limits
-export get_ramp_limits_pump
 export get_rated_current
 export get_rated_voltage
 export get_rating
-export get_rating_pump
+export get_rating_b
+export get_rating_c
+export get_rating_from
+export get_rating_primary
+export get_rating_secondary
+export get_rating_tertiary
+export get_rating_to
 export get_rc_rfd
 export get_reactive_power
 export get_reactive_power_flow
+export get_reactive_power_flow_primary
+export get_reactive_power_flow_secondary
+export get_reactive_power_flow_tertiary
+export get_reactive_power_from
 export get_reactive_power_limits
 export get_reactive_power_limits_from
-export get_reactive_power_limits_pump
 export get_reactive_power_limits_to
-export get_rectifier_firing_angle
+export get_reactive_power_required
+export get_reactive_power_to
+export get_rectifier_base_voltage
+export get_rectifier_bridges
+export get_rectifier_capacitor_reactance
+export get_rectifier_delay_angle
+export get_rectifier_delay_angle_limits
+export get_rectifier_rc
 export get_rectifier_tap_limits
-export get_rectifier_xrc
+export get_rectifier_tap_setting
+export get_rectifier_tap_step
+export get_rectifier_transformer_ratio
+export get_rectifier_xc
 export get_reg
 export get_remote_bus_control
 export get_remote_bus_control_1
 export get_remote_bus_control_2
 export get_requirement
+export get_reserves
 export get_rf
 export get_rg
 export get_rrpwr
 export get_rv
 export get_saturation_coeffs
+export get_scheduled_dc_voltage
+export get_secondary_group_number
+export get_secondary_star_arc
+export get_secondary_turns_ratio
 export get_services
 export get_speed_error_signal
+export get_spillage_limits
+export get_star_bus
 export get_start_time_limits
 export get_start_types
 export get_states
@@ -657,18 +760,27 @@ export get_storage_target
 export get_storage_technology_type
 export get_sustained_time
 export get_switch
+export get_switch_mode_voltage
 export get_tF_delay
 export get_tV_delay
 export get_tap
+export get_tertiary_group_number
+export get_tertiary_star_arc
+export get_tertiary_turns_ratio
 export get_tfh
 export get_tfl
 export get_time_at_status
 export get_time_frame
 export get_time_limits
-export get_time_limits_pump
 export get_to
 export get_to_area
 export get_to_branch_control
+export get_transfer_setpoint
+export get_transition_time
+export get_travel_time
+export get_turbine_type
+export get_upstream_reservoirs
+export get_upstream_turbines
 export get_valve_position_limits
 export get_variable
 export get_vh_pnts
@@ -676,8 +788,21 @@ export get_violation_penalty
 export get_vl_pnts
 export get_voltage
 export get_voltage_limits
+export get_voltage_limits_from
+export get_voltage_limits_to
+export get_voltage_setpoint
+export get_winding_group_number
 export get_x
+export get_x_12
+export get_x_13
+export get_x_23
+export get_x_primary
+export get_x_secondary
+export get_x_tertiary
 export get_α
+export get_α_primary
+export get_α_secondary
+export get_α_tertiary
 export get_β
 export get_γ_d1
 export get_γ_d2
@@ -1038,35 +1163,64 @@ export set_Y!
 export set_Y_increase!
 export set_Zerox!
 export set_a!
+export set_ac_setpoint_from!
+export set_ac_setpoint_to!
+export set_ac_voltage_control_from!
+export set_ac_voltage_control_to!
 export set_active_power!
 export set_active_power_flow!
 export set_active_power_flow_limits!
+export set_active_power_flow_primary!
+export set_active_power_flow_secondary!
+export set_active_power_flow_tertiary!
 export set_active_power_limits!
 export set_active_power_limits_from!
 export set_active_power_limits_pump!
 export set_active_power_limits_to!
+export set_active_power_losses!
+export set_active_power_pump!
+export set_admittance_limits!
 export set_angle!
 export set_angle_limits!
 export set_arc!
 export set_area!
 export set_available!
+export set_available_primary!
+export set_available_secondary!
+export set_available_tertiary!
 export set_b!
 export set_base_power!
+export set_base_power_12!
+export set_base_power_13!
+export set_base_power_23!
 export set_base_voltage!
+export set_base_voltage_primary!
+export set_base_voltage_secondary!
+export set_base_voltage_tertiary!
 export set_battery_resistance!
 export set_battery_voltage!
 export set_bias!
 export set_branch_id_control!
+export set_branch_status!
 export set_bus!
 export set_bus_control!
 export set_bustype!
 export set_c!
 export set_c_dc!
 export set_cf!
+export set_compounding_resistance!
+export set_conformity!
 export set_constant_active_power!
 export set_constant_reactive_power!
 export set_contributing_services!
+export set_control_mode!
+export set_control_objective!
+export set_control_objective_primary!
+export set_control_objective_secondary!
+export set_control_objective_tertiary!
 export set_conversion_factor!
+export set_converter_loss_from!
+export set_converter_loss_to!
 export set_current_active_power!
 export set_current_reactive_power!
 export set_cycle_limits!
@@ -1079,9 +1233,15 @@ export set_dc_bus!
 export set_dc_current!
 export set_dc_dc_inductor!
 export set_dc_link_capacitance!
+export set_dc_setpoint_from!
+export set_dc_setpoint_to!
+export set_dc_voltage_control_from!
+export set_dc_voltage_control_to!
 export set_delta_t!
 export set_deployed_fraction!
 export set_direction_mapping!
+export set_discrete_branch_type!
+export set_downstream_turbines!
 export set_droop_flag!
 export set_dynamic_injector!
 export set_e_lim!
@@ -1105,17 +1265,20 @@ export set_fuel_flag!
 export set_g!
 export set_gate_openings!
 export set_gate_position_limits!
+export set_head_to_volume_factor!
 export set_hysteresis_binary_logic!
 export set_impedance_active_power!
 export set_impedance_reactive_power!
 export set_inflow!
 export set_initial_ace!
-export set_initial_storage!
+export set_initial_level!
+export set_initial_status!
 export set_initial_storage_capacity_level!
 export set_input_active_power_limits!
 export set_input_code!
 export set_input_code_1!
 export set_input_code_2!
+export set_intake_elevation!
 export set_internal_angle!
 export set_internal_angle_bias!
 export set_internal_angle_coefficients!
@@ -1126,9 +1289,17 @@ export set_internal_voltage_coefficients!
 export set_internal_voltage_frequencies!
 export set_inv_d_fluxlink!
 export set_inv_q_fluxlink!
+export set_inverter_base_voltage!
+export set_inverter_bridges!
+export set_inverter_capacitor_reactance!
 export set_inverter_extinction_angle!
+export set_inverter_extinction_angle_limits!
+export set_inverter_rc!
 export set_inverter_tap_limits!
-export set_inverter_xrc!
+export set_inverter_tap_setting!
+export set_inverter_tap_step!
+export set_inverter_transformer_ratio!
+export set_inverter_xc!
 export set_is_filter_differential!
 export set_k1!
 export set_k2!
@@ -1149,8 +1320,11 @@ export set_kq!
 export set_kw!
 export set_kω!
 export set_l!
+export set_level_data_type!
+export set_level_targets!
 export set_lf!
 export set_lg!
+export set_load_balance_time_horizon!
 export set_load_response!
 export set_load_zone!
 export set_loss!
@@ -1163,11 +1337,17 @@ export set_max_constant_reactive_power!
 export set_max_current_active_power!
 export set_max_current_reactive_power!
 export set_max_dc_current!
+export set_max_dc_current_from!
+export set_max_dc_current_to!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_output_fraction!
 export set_max_participation_factor!
 export set_max_reactive_power!
+export set_max_shunt_current!
+export set_min_compounding_voltage!
+export set_minimum_time!
+export set_motor_technology!
 export set_must_run!
 export set_n_states!
 export set_name!
@@ -1175,47 +1355,85 @@ export set_number!
 export set_number_of_steps!
 export set_operation_cost!
 export set_outflow!
+export set_outflow_limits!
 export set_output_active_power_limits!
 export set_peak_active_power!
 export set_peak_reactive_power!
 export set_phase_angle_limits!
 export set_power_factor!
+export set_power_factor_weighting_fraction_from!
+export set_power_factor_weighting_fraction_to!
 export set_power_gate_openings!
+export set_power_mode!
 export set_power_trajectory!
+export set_powerhouse_elevation!
+export set_primary_group_number!
 export set_primary_shunt!
+export set_primary_star_arc!
+export set_primary_turns_ratio!
 export set_prime_mover_type!
-export set_pump_efficiency!
 export set_q_nl!
 export set_r!
+export set_r_12!
+export set_r_13!
+export set_r_23!
 export set_r_load!
+export set_r_primary!
+export set_r_secondary!
+export set_r_tertiary!
 export set_ramp_limits!
-export set_ramp_limits_pump!
 export set_rated_current!
 export set_rated_voltage!
 export set_rating!
-export set_rating_pump!
+export set_rating_b!
+export set_rating_c!
+export set_rating_from!
+export set_rating_primary!
+export set_rating_secondary!
+export set_rating_tertiary!
+export set_rating_to!
 export set_rc_rfd!
 export set_reactive_power!
 export set_reactive_power_flow!
+export set_reactive_power_flow_primary!
+export set_reactive_power_flow_secondary!
+export set_reactive_power_flow_tertiary!
+export set_reactive_power_from!
 export set_reactive_power_limits!
 export set_reactive_power_limits_from!
-export set_reactive_power_limits_pump!
 export set_reactive_power_limits_to!
-export set_rectifier_firing_angle!
+export set_reactive_power_required!
+export set_reactive_power_to!
+export set_rectifier_base_voltage!
+export set_rectifier_bridges!
+export set_rectifier_capacitor_reactance!
+export set_rectifier_delay_angle!
+export set_rectifier_delay_angle_limits!
+export set_rectifier_rc!
 export set_rectifier_tap_limits!
-export set_rectifier_xrc!
+export set_rectifier_tap_setting!
+export set_rectifier_tap_step!
+export set_rectifier_transformer_ratio!
+export set_rectifier_xc!
 export set_reg!
 export set_remote_bus_control!
 export set_remote_bus_control_1!
 export set_remote_bus_control_2!
 export set_requirement!
+export set_reserves!
 export set_rf!
 export set_rg!
 export set_rrpwr!
 export set_rv!
 export set_saturation_coeffs!
+export set_scheduled_dc_voltage!
+export set_secondary_group_number!
+export set_secondary_star_arc!
+export set_secondary_turns_ratio!
 export set_services!
 export set_speed_error_signal!
+export set_spillage_limits!
+export set_star_bus!
 export set_start_time_limits!
 export set_start_types!
 export set_states!
@@ -1227,18 +1445,27 @@ export set_storage_target!
 export set_storage_technology_type!
 export set_sustained_time!
 export set_switch!
+export set_switch_mode_voltage!
 export set_tF_delay!
 export set_tV_delay!
 export set_tap!
+export set_tertiary_group_number!
+export set_tertiary_star_arc!
+export set_tertiary_turns_ratio!
 export set_tfh!
 export set_tfl!
 export set_time_at_status!
 export set_time_frame!
 export set_time_limits!
-export set_time_limits_pump!
 export set_to!
 export set_to_area!
 export set_to_branch_control!
+export set_transfer_setpoint!
+export set_transition_time!
+export set_travel_time!
+export set_turbine_type!
+export set_upstream_reservoirs!
+export set_upstream_turbines!
 export set_valve_position_limits!
 export set_variable!
 export set_vh_pnts!
@@ -1246,8 +1473,21 @@ export set_violation_penalty!
 export set_vl_pnts!
 export set_voltage!
 export set_voltage_limits!
+export set_voltage_limits_from!
+export set_voltage_limits_to!
+export set_voltage_setpoint!
+export set_winding_group_number!
 export set_x!
+export set_x_12!
+export set_x_13!
+export set_x_23!
+export set_x_primary!
+export set_x_secondary!
+export set_x_tertiary!
 export set_α!
+export set_α_primary!
+export set_α_secondary!
+export set_α_tertiary!
 export set_β!
 export set_γ_d1!
 export set_γ_d2!

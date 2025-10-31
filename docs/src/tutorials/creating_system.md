@@ -9,7 +9,8 @@ system settings.
 
 ## Setup
 
-To get started, ensure you have followed the [installation instructions](@ref install).
+To get started, ensure you have followed the
+[installation instructions](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/).
 
 Start Julia from the command line if you haven't already:
 
@@ -52,6 +53,7 @@ Let's start with a reference bus:
 bus1 = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,
@@ -86,6 +88,7 @@ Let's create a second bus:
 bus2 = ACBus(;
     number = 2,
     name = "bus2",
+    available = true,
     bustype = ACBusTypes.PV,
     angle = 0.0,
     magnitude = 1.0,
@@ -392,6 +395,6 @@ Next, you might want to:
   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
   - Import a `System` [from an existing Matpower or PSSE file](@ref pm_data) or
     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
-  - [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
+  - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
   - See a workaround for how to [Add a Component in Natural Units](@ref)

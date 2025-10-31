@@ -3,10 +3,10 @@ Extends the branch type to add the information required for dynamic modeling of 
 
 
 # Arguments
-- `branch::ACBranch`
+- `branch::ACTransmission`
 """
-mutable struct DynamicBranch <: ACBranch
-    branch::ACBranch
+mutable struct DynamicBranch <: ACTransmission
+    branch::ACTransmission
     n_states::Int
     states::Vector{Symbol}
     internal::IS.InfrastructureSystemsInternal
@@ -22,7 +22,7 @@ const DEFAULT_DYNAMIC_BRANCH_STATES = [:Il_R, :Il_I]
 function DynamicBranch(
     branch::T;
     internal = IS.InfrastructureSystemsInternal(),
-) where {T <: ACBranch}
+) where {T <: ACTransmission}
     states = DEFAULT_DYNAMIC_BRANCH_STATES
     n_states = length(states)
     return DynamicBranch(branch, n_states, states, internal)
@@ -65,10 +65,14 @@ get_r(value::DynamicBranch) = get_r(value.branch)
 get_x(value::DynamicBranch) = get_x(value.branch)
 """Get DynamicBranch b."""
 get_b(value::DynamicBranch) = get_b(value.branch)
-"""Get DynamicBranch rating."""
+"""Get DynamicBranch A rating."""
 get_rating(value::DynamicBranch) = get_rating(value.branch)
 """Get DynamicBranch angle_limits."""
 get_angle_limits(value::DynamicBranch) = get_angle_limits(value.branch)
+"""Get DynamicBranch B rating."""
+get_rating_b(value::DynamicBranch) = get_rating_b(value.branch)
+"""Get DynamicBranch C rating."""
+get_rating_c(value::DynamicBranch) = get_rating_c(value.branch)
 """Get DynamicBranch services."""
 get_services(value::DynamicBranch) = get_services(value.branch)
 """Get DynamicBranch ext."""
@@ -103,7 +107,7 @@ set_services!(value::DynamicBranch, val::Vector{Service}) = set_services!(value.
 set_ext!(value::DynamicBranch, val::Dict{String, Any}) = set_ext!(value.branch, val)
 
 "Set branch"
-set_branch!(value::DynamicBranch, val::ACBranch) = value.branch = val
+set_branch!(value::DynamicBranch, val::ACTransmission) = value.branch = val
 "Set n_states"
 set_n_states!(value::DynamicBranch, val::Int) = value.n_states = val
 "Set states"

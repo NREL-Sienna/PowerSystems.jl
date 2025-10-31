@@ -10,8 +10,10 @@ This file is auto-generated. Do not edit.
         available::Bool
         bus::ACBus
         Y::Complex{Float64}
-        number_of_steps::Int
-        Y_increase::Complex{Float64}
+        initial_status::Vector{Int}
+        number_of_steps::Vector{Int}
+        Y_increase::Vector{Complex{Float64}}
+        admittance_limits::MinMax
         dynamic_injector::Union{Nothing, DynamicInjection}
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -27,11 +29,13 @@ Most often used in power flow studies, iterating over the steps to see impacts o
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `Y::Complex{Float64}`: Initial admittance at N = 0
-- `number_of_steps::Int`: (default: `0`) Number of steps for adjustable shunt
-- `Y_increase::Complex{Float64}`: (default: `0`) Admittance increment for each of step increase
+- `initial_status::Vector{Int}`: (default: `Int[]`) Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)
+- `number_of_steps::Vector{Int}`: (default: `Int[]`) Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2.
+- `Y_increase::Vector{Complex{Float64}}`: (default: `Complex{Float64}[]`) Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2.
+- `admittance_limits::MinMax`: (default: `(min=1.0, max=1.0)`) Shunt admittance limits for switched shunt model
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection model for admittance
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct SwitchedAdmittance <: ElectricLoad
@@ -43,26 +47,30 @@ mutable struct SwitchedAdmittance <: ElectricLoad
     bus::ACBus
     "Initial admittance at N = 0"
     Y::Complex{Float64}
-    "Number of steps for adjustable shunt"
-    number_of_steps::Int
-    "Admittance increment for each of step increase"
-    Y_increase::Complex{Float64}
+    "Vector of initial switched shunt status, one for in-service and zero for out-of-service for block i (1 through 8)"
+    initial_status::Vector{Int}
+    "Vector with number of steps for each adjustable shunt block. For example, `number_of_steps[2]` are the number of available steps for admittance increment at block 2."
+    number_of_steps::Vector{Int}
+    "Vector with admittance increment step for each adjustable shunt block. For example, `Y_increase[2]` is the complex admittance increment for each step at block 2."
+    Y_increase::Vector{Complex{Float64}}
+    "Shunt admittance limits for switched shunt model"
+    admittance_limits::MinMax
     "corresponding dynamic injection model for admittance"
     dynamic_injector::Union{Nothing, DynamicInjection}
     "Services that this device contributes to"
     services::Vector{Service}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function SwitchedAdmittance(name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
+function SwitchedAdmittance(name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function SwitchedAdmittance(; name, available, bus, Y, number_of_steps=0, Y_increase=0, dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    SwitchedAdmittance(name, available, bus, Y, number_of_steps, Y_increase, dynamic_injector, services, ext, internal, )
+function SwitchedAdmittance(; name, available, bus, Y, initial_status=Int[], number_of_steps=Int[], Y_increase=Complex{Float64}[], admittance_limits=(min=1.0, max=1.0), dynamic_injector=nothing, services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    SwitchedAdmittance(name, available, bus, Y, initial_status, number_of_steps, Y_increase, admittance_limits, dynamic_injector, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -71,9 +79,11 @@ function SwitchedAdmittance(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        Y=0.0,
-        number_of_steps=0,
-        Y_increase=0,
+        Y=0.0 + 0.0im,
+        initial_status=Int[],
+        number_of_steps=Int[],
+        Y_increase=Complex{Float64}[],
+        admittance_limits=(min=0.0, max=0.0),
         dynamic_injector=nothing,
         services=Device[],
         ext=Dict{String, Any}(),
@@ -88,10 +98,14 @@ get_available(value::SwitchedAdmittance) = value.available
 get_bus(value::SwitchedAdmittance) = value.bus
 """Get [`SwitchedAdmittance`](@ref) `Y`."""
 get_Y(value::SwitchedAdmittance) = value.Y
+"""Get [`SwitchedAdmittance`](@ref) `initial_status`."""
+get_initial_status(value::SwitchedAdmittance) = value.initial_status
 """Get [`SwitchedAdmittance`](@ref) `number_of_steps`."""
 get_number_of_steps(value::SwitchedAdmittance) = value.number_of_steps
 """Get [`SwitchedAdmittance`](@ref) `Y_increase`."""
 get_Y_increase(value::SwitchedAdmittance) = value.Y_increase
+"""Get [`SwitchedAdmittance`](@ref) `admittance_limits`."""
+get_admittance_limits(value::SwitchedAdmittance) = value.admittance_limits
 """Get [`SwitchedAdmittance`](@ref) `dynamic_injector`."""
 get_dynamic_injector(value::SwitchedAdmittance) = value.dynamic_injector
 """Get [`SwitchedAdmittance`](@ref) `services`."""
@@ -107,10 +121,14 @@ set_available!(value::SwitchedAdmittance, val) = value.available = val
 set_bus!(value::SwitchedAdmittance, val) = value.bus = val
 """Set [`SwitchedAdmittance`](@ref) `Y`."""
 set_Y!(value::SwitchedAdmittance, val) = value.Y = val
+"""Set [`SwitchedAdmittance`](@ref) `initial_status`."""
+set_initial_status!(value::SwitchedAdmittance, val) = value.initial_status = val
 """Set [`SwitchedAdmittance`](@ref) `number_of_steps`."""
 set_number_of_steps!(value::SwitchedAdmittance, val) = value.number_of_steps = val
 """Set [`SwitchedAdmittance`](@ref) `Y_increase`."""
 set_Y_increase!(value::SwitchedAdmittance, val) = value.Y_increase = val
+"""Set [`SwitchedAdmittance`](@ref) `admittance_limits`."""
+set_admittance_limits!(value::SwitchedAdmittance, val) = value.admittance_limits = val
 """Set [`SwitchedAdmittance`](@ref) `services`."""
 set_services!(value::SwitchedAdmittance, val) = value.services = val
 """Set [`SwitchedAdmittance`](@ref) `ext`."""

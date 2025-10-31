@@ -72,6 +72,11 @@ end
             mp_iter = get_components(ThermalGen, mpsys)
             mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
             for cdmgen in get_components(ThermalGen, cdmsys)
+                if isnothing(cdmgen)
+                    # Skips generators parsed from Matpower as SynchCondensers in PSY5
+                    # The fields are different so those aren't valiated in this loop
+                    continue
+                end
                 mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
                 @test cdmgen.available == mpgen.available
                 @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
@@ -144,7 +149,8 @@ end
             @test get_rating(cdm_ac_branches[120]) ==
                   get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
-            cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
+            cdm_dc_branches =
+                collect(get_components(TwoTerminalGenericHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
                   get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
@@ -264,4 +270,27 @@ end
     @assert isapprox(get_quadratic_term(cost_curve), a2, atol = 0.01)
     @assert isapprox(get_proportional_term(cost_curve), 0.0, atol = 0.01)
     @assert isapprox(get_constant_term(cost_curve), 0.0, atol = 0.01)
+end
+
+@testset "Test Reservoirs and Turbines" begin
+    cdmsys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys";
+        force_build = true,
+    )
+    @test !isempty(get_components(HydroTurbine, cdmsys))
+    for turbine in get_components(HydroTurbine, cdmsys)
+        reservoir = get_connected_head_reservoirs(cdmsys, turbine)
+        @test !isempty(reservoir)
+        reservoir = get_connected_tail_reservoirs(cdmsys, turbine)
+        @test isempty(reservoir)
+    end
+
+    @test !isempty(get_components(HydroReservoir, cdmsys))
+
+    for reservoir in get_components(HydroReservoir, cdmsys)
+        turbines = get_downstream_turbines(reservoir)
+        @test !isempty(turbines)
+        @test isempty(get_upstream_turbines(reservoir))
+    end
 end

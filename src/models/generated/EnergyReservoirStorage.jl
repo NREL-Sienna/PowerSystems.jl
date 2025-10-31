@@ -34,7 +34,7 @@ This file is auto-generated. Do not edit.
 
 An energy storage device, modeled as a generic energy reservoir.
 
-This is suitable for modeling storage charging and discharging with average efficiency losses, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach. For pumped hydro storage, alternatively see [`HydroPumpedStorage`](@ref)
+This is suitable for modeling storage charging and discharging with average efficiency losses, ignoring the physical dynamics of the storage unit. A variety of energy storage types and chemistries can be modeled with this approach. For pumped hydro storage, alternatively see [`HydroPumpTurbine`](@ref) and [`HydroReservoir`](@ref)
 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
@@ -59,7 +59,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `cycle_limits::Int`: (default: `1e4`) Storage Maximum number of cycles per year
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct EnergyReservoirStorage <: Storage
@@ -107,7 +107,7 @@ mutable struct EnergyReservoirStorage <: Storage
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -161,25 +161,25 @@ get_prime_mover_type(value::EnergyReservoirStorage) = value.prime_mover_type
 """Get [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 get_storage_technology_type(value::EnergyReservoirStorage) = value.storage_technology_type
 """Get [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
-get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, value.storage_capacity)
+get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, Val(:storage_capacity), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::EnergyReservoirStorage) = value.storage_level_limits
 """Get [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initial_storage_capacity_level
 """Get [`EnergyReservoirStorage`](@ref) `rating`."""
-get_rating(value::EnergyReservoirStorage) = get_value(value, value.rating)
+get_rating(value::EnergyReservoirStorage) = get_value(value, Val(:rating), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `active_power`."""
-get_active_power(value::EnergyReservoirStorage) = get_value(value, value.active_power)
+get_active_power(value::EnergyReservoirStorage) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
-get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, value.input_active_power_limits)
+get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:input_active_power_limits), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
-get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, value.output_active_power_limits)
+get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:output_active_power_limits), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `efficiency`."""
 get_efficiency(value::EnergyReservoirStorage) = value.efficiency
 """Get [`EnergyReservoirStorage`](@ref) `reactive_power`."""
-get_reactive_power(value::EnergyReservoirStorage) = get_value(value, value.reactive_power)
+get_reactive_power(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, value.reactive_power_limits)
+get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`EnergyReservoirStorage`](@ref) `base_power`."""
 get_base_power(value::EnergyReservoirStorage) = value.base_power
 """Get [`EnergyReservoirStorage`](@ref) `operation_cost`."""
@@ -208,25 +208,25 @@ set_prime_mover_type!(value::EnergyReservoirStorage, val) = value.prime_mover_ty
 """Set [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 set_storage_technology_type!(value::EnergyReservoirStorage, val) = value.storage_technology_type = val
 """Set [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
-set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, val)
+set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
 """Set [`EnergyReservoirStorage`](@ref) `rating`."""
-set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, val)
+set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `active_power`."""
-set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, val)
+set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
-set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, val)
+set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
-set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, val)
+set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `efficiency`."""
 set_efficiency!(value::EnergyReservoirStorage, val) = value.efficiency = val
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power`."""
-set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, val)
+set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `base_power`."""
 set_base_power!(value::EnergyReservoirStorage, val) = value.base_power = val
 """Set [`EnergyReservoirStorage`](@ref) `operation_cost`."""

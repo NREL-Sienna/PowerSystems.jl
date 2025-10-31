@@ -5,7 +5,7 @@ This file is auto-generated. Do not edit.
 #! format: off
 
 """
-    mutable struct MonitoredLine <: ACBranch
+    mutable struct MonitoredLine <: ACTransmission
         name::String
         available::Bool
         active_power_flow::Float64
@@ -17,6 +17,8 @@ This file is auto-generated. Do not edit.
         flow_limits::FromTo_ToFrom
         rating::Float64
         angle_limits::MinMax
+        rating_b::Union{Nothing, Float64}
+        rating_c::Union{Nothing, Float64}
         g::FromTo
         services::Vector{Service}
         ext::Dict{String, Any}
@@ -38,13 +40,15 @@ For example, monitored lines can be used to restrict line flow following a conti
 - `b::FromTo`: Shunt susceptance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 2)`
 - `flow_limits::FromTo_ToFrom`: Minimum and maximum permissable flow on the line (MVA), if different from the thermal rating defined in `rating`
 - `rating::Float64`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a line before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to
-- `angle_limits::MinMax`: Minimum and maximum angle limits (radians), validation range: `(-1.571, 1.571)`
+- `angle_limits::MinMax`: Minimum and maximum angle limits (radians)
+- `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
+- `rating_c::Union{Nothing, Float64}`: (default: `nothing`) Third current rating; entered in MVA.
 - `g::FromTo`: (default: `(from=0.0, to=0.0)`) Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value, validation range: `(0, 100)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
-mutable struct MonitoredLine <: ACBranch
+mutable struct MonitoredLine <: ACTransmission
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
@@ -67,22 +71,26 @@ mutable struct MonitoredLine <: ACBranch
     rating::Float64
     "Minimum and maximum angle limits (radians)"
     angle_limits::MinMax
+    "Second current rating; entered in MVA."
+    rating_b::Union{Nothing, Float64}
+    "Third current rating; entered in MVA."
+    rating_c::Union{Nothing, Float64}
     "Shunt conductance in pu ([`SYSTEM_BASE`](@ref per_unit)), specified both on the `from` and `to` ends of the line. These are commonly modeled with the same value"
     g::FromTo
     "Services that this device contributes to"
     services::Vector{Service}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, g, services, ext, InfrastructureSystemsInternal(), )
+function MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, ext, InfrastructureSystemsInternal(), )
 end
 
-function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, g, services, ext, internal, )
+function MonitoredLine(; name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b=nothing, rating_c=nothing, g=(from=0.0, to=0.0), services=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    MonitoredLine(name, available, active_power_flow, reactive_power_flow, arc, r, x, b, flow_limits, rating, angle_limits, rating_b, rating_c, g, services, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -98,7 +106,9 @@ function MonitoredLine(::Nothing)
         b=(from=0.0, to=0.0),
         flow_limits=(from_to=0.0, to_from=0.0),
         rating=0.0,
-        angle_limits=(min=-1.571, max=1.571),
+        angle_limits=(min=-3.1416, max=3.1416),
+        rating_b=0.0,
+        rating_c=0.0,
         g=(from=0.0, to=0.0),
         services=Device[],
         ext=Dict{String, Any}(),
@@ -110,25 +120,29 @@ get_name(value::MonitoredLine) = value.name
 """Get [`MonitoredLine`](@ref) `available`."""
 get_available(value::MonitoredLine) = value.available
 """Get [`MonitoredLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::MonitoredLine) = get_value(value, value.active_power_flow)
+get_active_power_flow(value::MonitoredLine) = get_value(value, Val(:active_power_flow), Val(:mva))
 """Get [`MonitoredLine`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::MonitoredLine) = get_value(value, value.reactive_power_flow)
+get_reactive_power_flow(value::MonitoredLine) = get_value(value, Val(:reactive_power_flow), Val(:mva))
 """Get [`MonitoredLine`](@ref) `arc`."""
 get_arc(value::MonitoredLine) = value.arc
 """Get [`MonitoredLine`](@ref) `r`."""
-get_r(value::MonitoredLine) = value.r
+get_r(value::MonitoredLine) = get_value(value, Val(:r), Val(:ohm))
 """Get [`MonitoredLine`](@ref) `x`."""
-get_x(value::MonitoredLine) = value.x
+get_x(value::MonitoredLine) = get_value(value, Val(:x), Val(:ohm))
 """Get [`MonitoredLine`](@ref) `b`."""
-get_b(value::MonitoredLine) = value.b
+get_b(value::MonitoredLine) = get_value(value, Val(:b), Val(:siemens))
 """Get [`MonitoredLine`](@ref) `flow_limits`."""
-get_flow_limits(value::MonitoredLine) = get_value(value, value.flow_limits)
+get_flow_limits(value::MonitoredLine) = get_value(value, Val(:flow_limits), Val(:mva))
 """Get [`MonitoredLine`](@ref) `rating`."""
-get_rating(value::MonitoredLine) = get_value(value, value.rating)
+get_rating(value::MonitoredLine) = get_value(value, Val(:rating), Val(:mva))
 """Get [`MonitoredLine`](@ref) `angle_limits`."""
 get_angle_limits(value::MonitoredLine) = value.angle_limits
+"""Get [`MonitoredLine`](@ref) `rating_b`."""
+get_rating_b(value::MonitoredLine) = get_value(value, Val(:rating_b), Val(:mva))
+"""Get [`MonitoredLine`](@ref) `rating_c`."""
+get_rating_c(value::MonitoredLine) = get_value(value, Val(:rating_c), Val(:mva))
 """Get [`MonitoredLine`](@ref) `g`."""
-get_g(value::MonitoredLine) = value.g
+get_g(value::MonitoredLine) = get_value(value, Val(:g), Val(:siemens))
 """Get [`MonitoredLine`](@ref) `services`."""
 get_services(value::MonitoredLine) = value.services
 """Get [`MonitoredLine`](@ref) `ext`."""
@@ -139,25 +153,29 @@ get_internal(value::MonitoredLine) = value.internal
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
 """Set [`MonitoredLine`](@ref) `active_power_flow`."""
-set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, val)
+set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
-set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, val)
+set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
 """Set [`MonitoredLine`](@ref) `r`."""
-set_r!(value::MonitoredLine, val) = value.r = val
+set_r!(value::MonitoredLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
 """Set [`MonitoredLine`](@ref) `x`."""
-set_x!(value::MonitoredLine, val) = value.x = val
+set_x!(value::MonitoredLine, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
 """Set [`MonitoredLine`](@ref) `b`."""
-set_b!(value::MonitoredLine, val) = value.b = val
+set_b!(value::MonitoredLine, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `flow_limits`."""
-set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, val)
+set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `rating`."""
-set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, val)
+set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
+"""Set [`MonitoredLine`](@ref) `rating_b`."""
+set_rating_b!(value::MonitoredLine, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
+"""Set [`MonitoredLine`](@ref) `rating_c`."""
+set_rating_c!(value::MonitoredLine, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `g`."""
-set_g!(value::MonitoredLine, val) = value.g = val
+set_g!(value::MonitoredLine, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `services`."""
 set_services!(value::MonitoredLine, val) = value.services = val
 """Set [`MonitoredLine`](@ref) `ext`."""

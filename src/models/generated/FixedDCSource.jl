@@ -17,7 +17,7 @@ Parameters of a Fixed DC Source that returns a fixed DC voltage
 
 # Arguments
 - `voltage::Float64`: Voltage (V), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) FixedDCSource has no [states](@ref S)
 - `n_states::Int`: (**Do not modify.**) FixedDCSource has no states
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
@@ -25,7 +25,7 @@ Parameters of a Fixed DC Source that returns a fixed DC voltage
 mutable struct FixedDCSource <: DCSource
     "Voltage (V)"
     voltage::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) FixedDCSource has no [states](@ref S)"
     states::Vector{Symbol}

@@ -461,6 +461,19 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
         pm_data["switch"] = []
     end
 
+    # Add conformity key to bus data if not present
+    missing_conformity_loads = [
+        bus for bus in pm_data["bus"]
+        if (bus["pd"] != 0.0 || bus["qd"] != 0.0) && !haskey(bus, "conformity")
+    ]
+    for bus in missing_conformity_loads
+        bus["conformity"] = 1
+    end
+    missing_conformity_count = length(missing_conformity_loads)
+    if missing_conformity_count > 0
+        @info "No conformity field found for $missing_conformity_count load(s). Setting to default value of 1 (Conforming Load)."
+    end
+
     # translate component models
     _mp2pm_branch!(pm_data)
     _mp2pm_dcline!(pm_data)
@@ -478,6 +491,16 @@ function _matpower_to_powermodels!(mp_data::Dict{String, <:Any})
 
     # use once available
     arrays_to_dicts!(pm_data)
+
+    base_voltages = Dict{Int64, Float64}(
+        bus_ind => bus_data["base_kv"] for (bus_ind, bus_data) in pm_data["bus"]
+    )
+    for transf in values(pm_data["branch"])
+        if transf["transformer"] == true && !haskey(transf, "base_voltage_from")
+            transf["base_voltage_from"] = base_voltages[transf["f_bus"]]
+            transf["base_voltage_to"] = base_voltages[transf["t_bus"]]
+        end
+    end
 
     for optional in ["dcline", "load", "shunt", "storage", "switch"]
         if length(pm_data[optional]) == 0
@@ -511,6 +534,7 @@ function _split_loads_shunts!(data::Dict{String, Any})
                         "qd" => bus["qd"],
                         "load_bus" => bus["bus_i"],
                         "status" => convert(Int8, bus["bus_type"] != 4),
+                        "conformity" => get(bus, "conformity", 1),
                         "index" => load_num,
                         "source_id" => ["bus", bus["bus_i"]],
                     ),
@@ -552,15 +576,23 @@ function _mp2pm_branch!(data::Dict{String, Any})
         if branch["tap"] == 0.0
             branch["transformer"] = false
             branch["tap"] = 1.0
+            branch["b_fr"] = branch["br_b"] / 2.0
+            branch["b_to"] = branch["br_b"] / 2.0
         else
             branch["transformer"] = true
+            if branch["br_b"] != 0.0
+                @warn "Reflecting transformer shunts to primary; the ybus matrix will differ from matpower" maxlog =
+                    5
+                branch["b_fr"] = (branch["br_b"] / branch["tap"]^2)
+            else
+                branch["b_fr"] = 0.0
+            end
+            branch["b_to"] = 0.0
         end
-
         branch["g_fr"] = 0.0
         branch["g_to"] = 0.0
 
-        branch["b_fr"] = branch["br_b"] / 2.0
-        branch["b_to"] = branch["br_b"] / 2.0
+        branch["base_power"] = data["baseMVA"]
 
         delete!(branch, "br_b")
 

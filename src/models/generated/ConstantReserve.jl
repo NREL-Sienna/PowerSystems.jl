@@ -31,7 +31,7 @@ This reserve product includes online generators that can respond right away afte
 - `max_output_fraction::Float64`: (default: `1.0`) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
 - `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
 - `deployed_fraction::Float64`: (default: `0.0`) Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0, validation range: `(0, 1)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ConstantReserve{T <: ReserveDirection} <: Reserve{T}
@@ -51,7 +51,7 @@ mutable struct ConstantReserve{T <: ReserveDirection} <: Reserve{T}
     max_participation_factor::Float64
     "Fraction of service procurement that is assumed to be actually deployed. Most commonly, this is assumed to be either 0.0 or 1.0"
     deployed_fraction::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -87,7 +87,7 @@ get_available(value::ConstantReserve) = value.available
 """Get [`ConstantReserve`](@ref) `time_frame`."""
 get_time_frame(value::ConstantReserve) = value.time_frame
 """Get [`ConstantReserve`](@ref) `requirement`."""
-get_requirement(value::ConstantReserve) = get_value(value, value.requirement)
+get_requirement(value::ConstantReserve) = get_value(value, Val(:requirement), Val(:mva))
 """Get [`ConstantReserve`](@ref) `sustained_time`."""
 get_sustained_time(value::ConstantReserve) = value.sustained_time
 """Get [`ConstantReserve`](@ref) `max_output_fraction`."""
@@ -106,7 +106,7 @@ set_available!(value::ConstantReserve, val) = value.available = val
 """Set [`ConstantReserve`](@ref) `time_frame`."""
 set_time_frame!(value::ConstantReserve, val) = value.time_frame = val
 """Set [`ConstantReserve`](@ref) `requirement`."""
-set_requirement!(value::ConstantReserve, val) = value.requirement = set_value(value, val)
+set_requirement!(value::ConstantReserve, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`ConstantReserve`](@ref) `sustained_time`."""
 set_sustained_time!(value::ConstantReserve, val) = value.sustained_time = val
 """Set [`ConstantReserve`](@ref) `max_output_fraction`."""

@@ -21,11 +21,11 @@ function _convert_data!(
             continue
         end
         if component["__metadata__"]["type"] == "HVDCLine"
-            component["__metadata__"]["type"] = "TwoTerminalHVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
             continue
         end
         if component["__metadata__"]["type"] == "VSCDCLine"
-            component["__metadata__"]["type"] = "TwoTerminalVSCDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalLCCLine"
             continue
         end
         if haskey(component, "prime_mover") && haskey(component, "dynamic_injector")
@@ -99,9 +99,6 @@ _convert_op_cost(::Val{:GenericBattery}, ::Val{:StorageManagementCost}, op_cost:
         energy_surplus_cost = op_cost["energy_surplus_cost"],
     )
 
-_convert_op_cost(::Val{:HydroPumpedStorage}, ::Val{:TwoPartCost}, op_cost::Dict) =
-    HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
-
 _convert_op_cost(::Val{:HydroDispatch}, ::Val{:TwoPartCost}, op_cost::Dict) =
     HydroGenerationCost(CostCurve(InputOutputCurve(op_cost["variable"])), op_cost["fixed"])
 
@@ -173,6 +170,38 @@ function _convert_data!(
 )
     _convert_data!(raw, from, Val{Symbol("3.0.0")}())
     _convert_data!(raw, Val{Symbol("3.0.0")}(), Val{Symbol("4.0.0")}())
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    ::Val{Symbol("4.0.0")},
+    ::Val{Symbol("5.0.0")},
+)
+    error("Conversion from 4.0.0 to 5.0.0 JSON format is not supported yet.")
+    #=
+    for component in raw["data"]["components"]
+        if component["__metadata__"]["type"] == "TwoTerminalHVDCLine"
+            component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
+            continue
+        end
+        if component["__metadata__"]["type"] ∈ ("Transformer2W", "TapTransformer") &&
+           "winding_group_number" ∉ keys(component)
+            component["winding_group_number"] = WindingGroupNumber.GROUP_0
+            continue
+        end
+    end
+    =#
+    return
+end
+
+function _convert_data!(
+    raw::Dict{String, Any},
+    from::Val,
+    ::Val{Symbol("5.0.0")},
+)
+    _convert_data!(raw, from, Val{Symbol("4.0.0")}())
+    _convert_data!(raw, Val{Symbol("4.0.0")}(), Val{Symbol("5.0.0")}())
     return
 end
 

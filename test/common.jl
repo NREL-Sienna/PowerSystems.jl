@@ -7,6 +7,10 @@ mutable struct TestRenDevice <: RenewableGen
     name::String
 end
 
+mutable struct TestInjector <: StaticInjection
+    name::String
+end
+
 struct NonexistentComponent <: StaticInjection end
 
 """Return the first component of type component_type that matches the name of other."""
@@ -43,6 +47,7 @@ function create_system_with_dynamic_inverter()
         ACBus(
             1, #number
             "Bus 1", #Name
+            true, #available
             "REF", #ACBusType (REF, PV, PQ)
             0, #Angle in radians
             1.06, #Voltage in pu
@@ -51,7 +56,18 @@ function create_system_with_dynamic_inverter()
             nothing,
             nothing,
         ), #Base voltage in kV
-        ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
+        ACBus(
+            2,
+            "Bus 2",
+            true,
+            "PV",
+            0,
+            1.045,
+            (min = 0.94, max = 1.06),
+            69,
+            nothing,
+            nothing,
+        ),
     ]
 
     battery = EnergyReservoirStorage(;

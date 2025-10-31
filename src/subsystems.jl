@@ -190,6 +190,21 @@ function _check_branch_consistency(sys::System, branch::Branch)
     _check_subsystem_assignments(sys, branch, get_arc(branch), msg; symmetric_diff = true)
 end
 
+function _check_branch_consistency(
+    sys::System,
+    branch::ThreeWindingTransformer,
+)
+    msg = "A branch must be assigned to the same subystems as its arc."
+    arcs = [
+        get_primary_star_arc(branch),
+        get_secondary_star_arc(branch),
+        get_tertiary_star_arc(branch),
+    ]
+    for arc in arcs
+        _check_subsystem_assignments(sys, branch, arc, msg; symmetric_diff = true)
+    end
+end
+
 function _check_branch_consistency(sys::System, branch::AreaInterchange)
     msg = "An area interchange must be assigned to the same subystems as its areas."
     _check_subsystem_assignments(
@@ -236,6 +251,9 @@ function _check_topological_consistency(sys::System, component::Component)
 end
 
 function _check_device_service_consistency(sys::System, device::Device)
+    if !supports_services(device)
+        return
+    end
     for service in get_services(device)
         _check_subsystem_assignments(
             sys,
@@ -245,6 +263,7 @@ function _check_device_service_consistency(sys::System, device::Device)
             symmetric_diff = true,
         )
     end
+    return
 end
 
 function _check_subsystem_assignments(

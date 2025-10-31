@@ -2,6 +2,7 @@ nodes_OMIB = [
     ACBus(
         1, #number
         "Bus 1", #Name
+        true, #available
         "REF", #BusType (REF, PV, PQ)
         0, #Angle in radians
         1.06, #Voltage in pu
@@ -10,7 +11,7 @@ nodes_OMIB = [
         nothing,
         nothing,
     ), #Base voltage in kV
-    ACBus(2, "Bus 2", "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
+    ACBus(2, "Bus 2", true, "PV", 0, 1.045, (min = 0.94, max = 1.06), 69, nothing, nothing),
 ]
 
 static_gen = ThermalStandard(;
@@ -46,7 +47,7 @@ branch_OMIB = [
         0.01, #resistance in pu
         0.05, #reactance in pu
         (from = 0.0, to = 0.0), #susceptance in pu
-        18.046, #rate in MW
+        1.14, #rate in MW
         1.04,
     ),
 ]  #angle limits (-min and max)
@@ -249,9 +250,11 @@ end
         valve_position_limits = (min = 0.3, max = 1.2),
     )
     @test typeI_tg isa PowerSystems.DynamicComponent
+    @test get_frequency_droop(typeI_tg) == 0.02
 
     typeII_tg = TGTypeII(; R = 0.05, T1 = 0.3, T2 = 0.1, τ_limits = (min = 0.1, max = 1.0))
     @test typeII_tg isa PowerSystems.DynamicComponent
+    @test get_frequency_droop(typeII_tg) == 0.05
 
     gast_tg = GasTG(;
         R = 0.05,
@@ -264,6 +267,7 @@ end
         D_turb = 0.0,
     )
     @test gast_tg isa PowerSystems.DynamicComponent
+    @test get_frequency_droop(gast_tg) == 0.05
 
     degov_tg = PSY.DEGOV(;
         T1 = 0.0,
@@ -277,6 +281,7 @@ end
         P_ref = 0.0,
     )
     @test degov_tg isa PowerSystems.DynamicComponent
+    @test get_frequency_droop(degov_tg) == (1/18.0)
 end
 
 ################ AVR Data #####################
@@ -387,7 +392,15 @@ end
     sexs_avr = SEXS(; Ta_Tb = 0.1, Tb = 10.0, K = 100.0, Te = 0.1, V_lim = (-4.0, 5.0))
 
     fixed_tg = TGFixed(; efficiency = 1.0)
-
+    typeI_tg = TGTypeI(;
+        R = 0.02,
+        Ts = 0.1,
+        Tc = 0.45,
+        T3 = 0.0,
+        T4 = 0.0,
+        T5 = 50.0,
+        valve_position_limits = (min = 0.3, max = 1.2),
+    )
     no_pss = PSSFixed(; V_pss = 0.0)
 
     oneDoneQ = OneDOneQMachine(;
@@ -453,6 +466,17 @@ end
         pss = no_pss,
     )
     @test Gen3AVR isa PowerSystems.Component
+
+    Gen4AVR = DynamicGenerator(;
+        name = get_name(static_gen),
+        ω_ref = 1.0,
+        machine = oneDoneQ,
+        shaft = BaseShaft,
+        avr = sexs_avr,
+        prime_mover = typeI_tg,
+        pss = no_pss,
+    )
+    @test get_frequency_droop(Gen4AVR) == 0.02
 
     sys = System(100.0)
     for bus in nodes_OMIB
