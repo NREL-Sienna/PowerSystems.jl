@@ -163,12 +163,13 @@ IS.@scoped_enum(
     WindingCategory
 
 An enumeration representing different types of transformer windings used in power system analysis.
+Reflects how to interpret the Transformer Impedance Correction Table (TICT) winding association as described in [`ImpedanceCorrectionData`](@ref).
 
 # Values
-- `TR2W_WINDING = 0`: Winding associated with a two-winding transformer (Transformer2W) connected to a tap-changing transformer (TICT)
-- `PRIMARY_WINDING = 1`: Primary winding of a three-winding transformer (Transformer3W) associated with a TICT
-- `SECONDARY_WINDING = 2`: Secondary winding of a three-winding transformer (Transformer3W) associated with a TICT
-- `TERTIARY_WINDING = 3`: Tertiary winding of a three-winding transformer (Transformer3W) associated with a TICT
+- `TR2W_WINDING = 0`: Winding associated with a two-winding transformer (Transformer2W) connected to a tap-changing transformer's [`ImpedanceCorrectionData`](@ref)
+- `PRIMARY_WINDING = 1`: Primary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
+- `SECONDARY_WINDING = 2`: Secondary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
+- `TERTIARY_WINDING = 3`: Tertiary winding of a three-winding transformer (Transformer3W) associated with a [`ImpedanceCorrectionData`](@ref)
 
 This enumeration is used to categorize transformer windings based on their role and configuration
 in the power system model, particularly in relation to tap-changing transformers.
