@@ -411,8 +411,18 @@ end
         add_forecasts = true,
     )
     counts = get_time_series_counts(c_sys5)
-    @test counts.static_time_series_count == 3
+    @test counts.static_time_series_count == 0
     @test counts.forecast_count == 3
+
+    # The system has both single and deterministic forecasts time series
+    c_sys5 = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_forecasts = false,
+    )
+    counts = get_time_series_counts(c_sys5)
+    @test counts.static_time_series_count == 3
+    @test counts.forecast_count == 0
 end
 
 @testset "Test deepcopy with time series options" begin
