@@ -54,7 +54,6 @@ pages = OrderedDict(
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...update to a new `PowerSystems.jl` version" => Any[
                 "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md",
-                "Migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
             ],
         ],
         "Explanation" =>
