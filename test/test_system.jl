@@ -409,6 +409,7 @@ end
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = true,
+        skip_serialization = true,
     )
     counts = get_time_series_counts(c_sys5)
     @test counts.static_time_series_count == 0
@@ -418,7 +419,8 @@ end
     c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
-        add_forecasts = false,
+        add_single_time_series = true,
+        skip_serialization = true,
     )
     counts = get_time_series_counts(c_sys5)
     @test counts.static_time_series_count == 3
