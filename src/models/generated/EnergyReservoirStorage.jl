@@ -45,7 +45,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `storage_capacity::Float64`: Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen), validation range: `(0, nothing)`
 - `storage_level_limits::MinMax`: Minimum and maximum allowable storage levels [0, 1], which can be used to model derates or other restrictions, such as state-of-charge restrictions on battery cycling, validation range: `(0, 1)`
 - `initial_storage_capacity_level::Float64`: Initial storage capacity level as a ratio [0, 1.0] of `storage_capacity`, validation range: `(0, 1)`
-- `rating::Float64`: Maximum output power rating of the unit (MVA)
+- `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `input_active_power_limits::MinMax`: Minimum and maximum limits on the input active power (i.e., charging), validation range: `(0, nothing)`
 - `output_active_power_limits::MinMax`: Minimum and maximum limits on the output active power (i.e., discharging), validation range: `(0, nothing)`
@@ -79,7 +79,7 @@ mutable struct EnergyReservoirStorage <: Storage
     storage_level_limits::MinMax
     "Initial storage capacity level as a ratio [0, 1.0] of `storage_capacity`"
     initial_storage_capacity_level::Float64
-    "Maximum output power rating of the unit (MVA)"
+    "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
     "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used"
     active_power::Float64
