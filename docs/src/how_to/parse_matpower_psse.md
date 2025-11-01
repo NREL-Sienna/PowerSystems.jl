@@ -38,11 +38,11 @@ In PowerSystems v5, we have implemented the following conventions for parsing PS
   - **Treatment of conforming and non-conforming flags**: See the section [`Conforming and Non-Conforming Loads`](@ref conf_loads). PowerSystems.jl uses an enum to represent this data but it does not implement specific models for this behavior.
   - **Breakers and Switches**: From the perspective of PowerSystems.jl breakers and switches are modeled as [`DiscreteControlledACBranch`](@ref). We use an enum to separate between the two but from the data structure perspective both use the same object definition.
   - **Rate data correction**: For rates B and C are set as `nothing` if the value in the file is zero. On the other hand, for rating A, the value gets corrected. If the raw file is zero, then set up the rating to infinite bound first and then reduced according to the voltage values. This proceedure still can produce a large amount of warning for situations where a single line is used to model a double circuit or a whole transmission corridor.
+  - **Motor Loads**: We included a new device for explictly modeling motor loads. However, PSSe doesn't support explicit representations of these loads. The parser will print a warning in the log when we detect conditions commonly associated to motor load representations but won't be able to capture it directly.
 
 ### Pending parsing challenges
 
   - Managing the new format for rate data. In the old PSSe versions, there was Rate A, Rate B and Rate C. However, in newer versions there are 12 possible rates open to intepretation by the modeler. it can still be interpreted as A, B or C rates or a rate per month. PSSe doesn't provide any metada to interpret the rating bands provided.
-  - Detecting generation modeled as negative loads. In cases with old renewable generation modeled with unitary power factor or distribution circuits with injection into the transmission system, modelers commonly employ negative loads.
   - Detecting motor loads modeled as generators. Same as with the case for the negative loads, motors are known to be modeled as machines with negative injections (i.e., loads) to match modeling them in transient studies as machines.
   - Automated transformer direction swaping. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1423)
   - Parsing outage data.
