@@ -1,3 +1,5 @@
+const OfferCurveCost = Union{MarketBidCost, ImportExportCost}
+
 # VALIDATORS
 function _validate_market_bid_cost(cost, context)
     (cost isa MarketBidCost) || throw(TypeError(
@@ -339,6 +341,34 @@ get_decremental_offer_curves(
     len::Union{Nothing, Int} = nothing,
 ) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
     device, get_decremental_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `import_offer_curves` for a `StaticInjection` device with a
+`ImportExportCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `Nothing`.
+"""
+get_import_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_import_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `export_offer_curves` for a `StaticInjection` device with a
+`ImportExportCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `Nothing`.
+"""
+get_export_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_export_offer_curves(cost), nothing, start_time, len)
 
 """
 Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If
