@@ -71,21 +71,7 @@ dyn_system = System(RAW_dir, DYR_dir; runchecks = false)
 
 ## Supported PSS/e Models
 
-PSS/e's dynamic model library is extensive, we currently support parsing a limited amount
-of models out of the box.
-
-| Machine models | AVR Models | Prime Movers | PSS models |
-|:-------------- |:---------- |:------------ |:---------- |
-| GENSAE         | IEEET1     | HYGOV        | IEEEST     |
-| GENSAL         | ESDC1A     | IEEEG1       |            |
-| GENROE         | ESAC1A     | GGOV1        |            |
-| GENCLS         | ESST4B     |              |            |
-| GENROU         | EXAC2      |              |            |
-|                | EXPIC1     |              |            |
-|                | ESAC6A     |              |            |
-|                | EXAC1      |              |            |
-|                | SCRX       |              |            |
-|                | ESDC2A     |              |            |
+PSS/e's dynamic model library is extensive. For a complete list of supported models in PowerSystems.jl version 5.0, including machine models, AVR models, turbine governors, PSS models, inverter models, and additional models, see the [Supported PSS/e Models](@ref) reference page.
 
 # Common Issue: Unique Bus Names
 

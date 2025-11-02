@@ -75,6 +75,7 @@ pages = OrderedDict(
             "Type Tree" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
+            "Supported PSS/e Models" => "api/psse_models.md",
             "Citation" => "api/citation.md",
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
