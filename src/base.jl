@@ -2440,6 +2440,8 @@ function deserialize_components!(sys::System, raw)
             if !isnothing(include_types) && !is_matching_type(type, include_types)
                 continue
             end
+            components =
+                _handle_hydro_reservoirs_deserialization_special_cases(components, type)
             for component in components
                 handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
@@ -2469,8 +2471,9 @@ function deserialize_components!(sys::System, raw)
     )
     deserialize_and_add!(;
         include_types = [HydroTurbine, HydroPumpTurbine],
-        skip_types = [ConstantReserveGroup],
+        skip_types = [ConstantReserveGroup, HydroReservoir],
     )
+    deserialize_and_add!(; include_types = [HydroReservoir])
     deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
     deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
@@ -2508,6 +2511,89 @@ handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = no
 #    return
 #end
 
+# This function does an iterative union find to handle the ordering of the reservoir chains
+function _handle_hydro_reservoirs_deserialization_special_cases(
+    components::Vector{Dict},
+    ::Type{HydroReservoir},
+)
+
+    # Build a mapping from UUID to component for quick lookup
+    uuid_to_component = Dict{String, Dict}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        uuid_to_component[uuid_str] = component
+    end
+
+    # Build parent mapping for union-find (each reservoir points to its upstream reservoir)
+    parent = Dict{String, String}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        upstream_uuids = component["upstream_reservoirs"]
+
+        if isempty(upstream_uuids)
+            parent[uuid_str] = uuid_str  # Root of its own chain
+        else
+            # Assume single upstream reservoir for simplicity
+            parent[uuid_str] = string(upstream_uuids[1])
+        end
+    end
+
+    # Find root of each chain iteratively
+    function find_root(uuid_str)
+        current = uuid_str
+        while parent[current] != current
+            current = parent[current]
+        end
+        return current
+    end
+
+    # Group components by their chain root
+    chains = Dict{String, Vector{Dict}}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        root = find_root(uuid_str)
+
+        if !haskey(chains, root)
+            chains[root] = Vector{Dict}()
+        end
+        push!(chains[root], component)
+    end
+
+    # Order each chain from upstream (root) to downstream
+    ordered_components = Vector{Dict}()
+    for (root_uuid, chain) in chains
+        # Sort chain by dependency order - upstream reservoirs first
+        chain_ordered = Vector{Dict}()
+        remaining = Set(chain)
+
+        while !isempty(remaining)
+            # Find next component whose upstream is already processed or is a root
+            for component in remaining
+                upstream_uuids = component["upstream_reservoirs"]
+                can_add =
+                    isempty(upstream_uuids) ||
+                    all(
+                        string(uuid) in
+                        [string(c["internal"]["uuid"]) for c in chain_ordered] for
+                        uuid in upstream_uuids
+                    )
+
+                if can_add
+                    push!(chain_ordered, component)
+                    delete!(remaining, component)
+                    break
+                end
+            end
+        end
+
+        append!(ordered_components, chain_ordered)
+    end
+    return ordered_components
+end
+
+handle_hydro_reservoirs_deserialization_special_cases(
+    components::Vector{Dict},
+    ::Type{<:Component}) = components
 """
 Return [`ACBus`](@ref) with `name`.
 """
