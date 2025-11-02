@@ -23,6 +23,12 @@ for a `System` or `Component`, executes your code, then automatically restores t
 unit system. This is useful when you need to retrieve or set values in a specific unit system
 without permanently changing the system's configuration.
 
+!!! note
+    
+    You can specify the unit system using either the `UnitSystem` enum (e.g.,
+    `UnitSystem.NATURAL_UNITS`) or a string (e.g., `"NATURAL_UNITS"`). Both forms are
+    supported and equivalent.
+
 ### Example: Getting Component Data in Natural Units
 
 ```julia
