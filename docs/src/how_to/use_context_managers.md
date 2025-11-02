@@ -156,7 +156,7 @@ using Dates
 resolution = Dates.Hour(1)
 data = Dict(
     DateTime("2020-01-01T00:00:00") => ones(24),
-    DateTime("2020-01-01T01:00:00") => ones(24) * 1.1,
+    DateTime("2020-01-02T00:00:00") => ones(24) * 1.1,
 )
 
 # Get components
@@ -176,22 +176,24 @@ begin_time_series_update(sys) do
 end
 ```
 
-### Example: Combined with File-Based Time Series
+### Example: Adding Time Series from Multiple Sources
 
 ```julia
-using TimeSeries
-
-# Assume you have time series data in files
+# When you have time series data from multiple sources
 begin_time_series_update(sys) do
     for component in get_components(Generator, sys)
-        # Load time series from file for this component
-        ts_file = "data/$(get_name(component))_forecast.csv"
-        ts_data = load_time_series_data(ts_file)
+        # Create time series data specific to each component
+        # (In practice, this might come from CSV files, databases, or other sources)
+        component_data = Dict(
+            DateTime("2020-01-01T00:00:00") => rand(24),
+            DateTime("2020-01-02T00:00:00") => rand(24),
+        )
         
         forecast = Deterministic(
             "max_active_power",
-            ts_data,
-            resolution,
+            component_data,
+            resolution;
+            scaling_factor_multiplier = get_max_active_power,
         )
         add_time_series!(sys, component, forecast)
     end
