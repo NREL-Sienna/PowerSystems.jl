@@ -38,17 +38,17 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ### Turbine Governor Models
 
-| PSS/e Model | PowerSystems Component   |
-|:----------- |:------------------------ |
-| GAST        | GasTG                    |
-| GGOV1       | GeneralGovModel          |
-| HYGOV       | HydroTurbineGov          |
-| IEEEG1      | IEEETurbineGov1          |
-| TGOV1       | SteamTurbineGov1         |
-| TGOV1DU     | TGOV1DU                  |
-| DEGOV1      | DEGOV1                   |
-| PIDGOV      | PIDGOV                   |
-| WPIDHY      | WPIDHY                   |
+| PSS/e Model | PowerSystems Component |
+|:----------- |:---------------------- |
+| GAST        | GasTG                  |
+| GGOV1       | GeneralGovModel        |
+| HYGOV       | HydroTurbineGov        |
+| IEEEG1      | IEEETurbineGov1        |
+| TGOV1       | SteamTurbineGov1       |
+| TGOV1DU     | TGOV1DU                |
+| DEGOV1      | DEGOV1                 |
+| PIDGOV      | PIDGOV                 |
+| WPIDHY      | WPIDHY                 |
 
 ### Power System Stabilizer (PSS) Models
 
@@ -61,22 +61,22 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ### Converter Models
 
-| PSS/e Model | PowerSystems Component          |
-|:----------- |:------------------------------- |
-| REGCA1      | RenewableEnergyConverterTypeA   |
+| PSS/e Model | PowerSystems Component        |
+|:----------- |:----------------------------- |
+| REGCA1      | RenewableEnergyConverterTypeA |
 
 ### Active and Reactive Power Control Models
 
-| PSS/e Model | PowerSystems Component          |
-|:----------- |:------------------------------- |
+| PSS/e Model | PowerSystems Component                                                        |
+|:----------- |:----------------------------------------------------------------------------- |
 | REECB1      | ActiveRenewableControllerAB, ReactiveRenewableControllerAB, RECurrentControlB |
-| REPCA1      | ActiveRenewableControllerAB, ReactiveRenewableControllerAB |
+| REPCA1      | ActiveRenewableControllerAB, ReactiveRenewableControllerAB                    |
 
 ## Additional Models
 
-| PSS/e Model | PowerSystems Component              |
-|:----------- |:----------------------------------- |
-| DERA1       | AggregateDistributedGenerationA     |
+| PSS/e Model | PowerSystems Component          |
+|:----------- |:------------------------------- |
+| DERA1       | AggregateDistributedGenerationA |
 
 ## See also
 
