@@ -27,7 +27,7 @@ A Synchronous Machine connected to the system to provide inertia or reactive pow
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `active_power_losses::Float64`: (default: `0.0`) Active Power Loss incurred by having the unit online., validation range: `(0, nothing)`
@@ -45,7 +45,7 @@ mutable struct SynchronousCondenser <: StaticInjection
     bus::ACBus
     "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Maximum output power rating of the unit (MVA)"
+    "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
     "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable"
     reactive_power_limits::Union{Nothing, MinMax}

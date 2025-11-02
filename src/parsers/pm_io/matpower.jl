@@ -576,6 +576,7 @@ function _mp2pm_branch!(data::Dict{String, Any})
         if branch["tap"] == 0.0
             branch["transformer"] = false
             branch["tap"] = 1.0
+            # Evenly split the susceptance between the `from` and `to` ends
             branch["b_fr"] = branch["br_b"] / 2.0
             branch["b_to"] = branch["br_b"] / 2.0
         else
