@@ -12,9 +12,9 @@ ensuring cleanup even if errors occur.
 
 PowerSystems provides three main context managers:
 
-1. [`with_units_base`](@ref) - Temporarily change unit system for getting/setting component data
-2. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
-3. [`begin_time_series_update`](@ref) - Optimize bulk addition of time series data
+ 1. [`with_units_base`](@ref) - Temporarily change unit system for getting/setting component data
+ 2. [`begin_supplemental_attributes_update`](@ref) - Optimize bulk addition/removal of supplemental attributes
+ 3. [`begin_time_series_update`](@ref) - Optimize bulk addition of time series data
 
 ## Using `with_units_base`
 
@@ -194,7 +194,7 @@ begin_time_series_update(sys) do
             DateTime("2020-01-01T00:00:00") => rand(24),
             DateTime("2020-01-02T00:00:00") => rand(24),
         )
-        
+
         forecast = Deterministic(
             "max_active_power",
             component_data,
@@ -214,42 +214,40 @@ end
 
 ## Best Practices
 
-1. **Always use context managers for bulk operations**: When adding multiple supplemental
-   attributes or time series, use the appropriate context manager to improve performance.
+ 1. **Always use context managers for bulk operations**: When adding multiple supplemental
+    attributes or time series, use the appropriate context manager to improve performance.
 
-2. **Automatic cleanup**: Context managers ensure cleanup happens even if errors occur, so
-   your system state remains consistent.
-
-3. **Nested context managers**: You can nest context managers if needed:
-   
-   ```julia
-   with_units_base(sys, "NATURAL_UNITS") do
-       begin_time_series_update(sys) do
-           # Add time series with natural unit scaling factors
-           for gen in get_components(Generator, sys)
-               # ... add time series ...
-           end
-       end
-   end
-   ```
-
-4. **Error handling**: The context managers automatically handle cleanup, but you can still
-   use `try-catch` blocks for application-specific error handling:
-   
-   ```julia
-   try
-       begin_time_series_update(sys) do
-           # ... operations ...
-       end
-   catch e
-       @error "Time series update failed" exception=e
-       # Handle application-specific recovery
-   end
-   ```
+ 2. **Automatic cleanup**: Context managers ensure cleanup happens even if errors occur, so
+    your system state remains consistent.
+ 3. **Nested context managers**: You can nest context managers if needed:
+    
+    ```julia
+    with_units_base(sys, "NATURAL_UNITS") do
+        begin_time_series_update(sys) do
+            # Add time series with natural unit scaling factors
+            for gen in get_components(Generator, sys)
+                # ... add time series ...
+            end
+        end
+    end
+    ```
+ 4. **Error handling**: The context managers automatically handle cleanup, but you can still
+    use `try-catch` blocks for application-specific error handling:
+    
+    ```julia
+    try
+        begin_time_series_update(sys) do
+            # ... operations ...
+        end
+    catch e
+        @error "Time series update failed" exception=e
+        # Handle application-specific recovery
+    end
+    ```
 
 ## See Also
 
-- [Per-unit Conventions](@ref per_unit) - Learn more about unit systems
-- [Supplemental Attributes](@ref supplemental_attributes) - Details on supplemental attribute usage
-- [Working with Time Series Data](@ref tutorial_time_series) - Tutorial on time series handling
-- [Improve Performance with Time Series Data](@ref) - Additional time series performance tips
+  - [Per-unit Conventions](@ref per_unit) - Learn more about unit systems
+  - [Supplemental Attributes](@ref supplemental_attributes) - Details on supplemental attribute usage
+  - [Working with Time Series Data](@ref tutorial_time_series) - Tutorial on time series handling
+  - [Improve Performance with Time Series Data](@ref) - Additional time series performance tips
