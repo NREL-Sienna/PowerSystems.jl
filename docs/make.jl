@@ -150,8 +150,12 @@ folders = Dict(
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
 )
 
-# Clean up old generated files in all folders before creating new ones
+# Clean up old generated files in folders before Literate generates new ones
+# Note: model_library is cleaned by make_model_library.jl before it generates files,
+# so we only clean explanation and how_to directories here
 for (section, folder) in folders
+    # Skip model_library as it's already cleaned by make_model_library()
+    section == "Model Library" && continue
     section_folder_name = lowercase(replace(section, " " => "_"))
     outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
     clean_old_generated_files(outputdir)
