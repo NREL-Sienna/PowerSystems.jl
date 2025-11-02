@@ -38,6 +38,7 @@ pages = OrderedDict(
                 "Save and read data with a JSON" => "how_to/serialize_data.md",
             ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
+            "...use context managers for bulk operations" => "how_to/use_context_managers.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
