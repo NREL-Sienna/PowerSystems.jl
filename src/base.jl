@@ -2591,7 +2591,7 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     return ordered_components
 end
 
-handle_hydro_reservoirs_deserialization_special_cases(
+_handle_hydro_reservoirs_deserialization_special_cases(
     components::Vector{Dict},
     ::Type{<:Component}) = components
 """
