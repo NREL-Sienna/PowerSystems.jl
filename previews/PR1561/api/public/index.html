@@ -1467,42 +1467,6 @@ TwoTerminalHVDCLine(
     active_power_limits_to,
     reactive_power_limits_from,
     reactive_power_limits_to,
-    loss::@NamedTuple{l0::Float64, l1::Float64}
-) -&gt; TwoTerminalGenericHVDCLine
-TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::@NamedTuple{l0::Float64, l1::Float64},
-    services
-) -&gt; TwoTerminalGenericHVDCLine
-TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::@NamedTuple{l0::Float64, l1::Float64},
-    services,
-    ext
-) -&gt; TwoTerminalGenericHVDCLine
-</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/381758b9ec62dd71ff0ba94c49ff1a764cc44d14/src/deprecated.jl#L42">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
     loss::Union{LinearCurve, PiecewiseIncrementalCurve}
 ) -&gt; TwoTerminalGenericHVDCLine
 TwoTerminalHVDCLine(
@@ -1530,7 +1494,43 @@ TwoTerminalHVDCLine(
     services,
     ext
 ) -&gt; TwoTerminalGenericHVDCLine
-</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/381758b9ec62dd71ff0ba94c49ff1a764cc44d14/src/deprecated.jl#L79">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine-Tuple{Any, Any, Any, Any, Any, Any, Any, Any, @NamedTuple{l0::Float64, l1::Float64}, Any, Any, Any}" href="#PowerSystems.TwoTerminalHVDCLine-Tuple{Any, Any, Any, Any, Any, Any, Any, Any, @NamedTuple{l0::Float64, l1::Float64}, Any, Any, Any}"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
+</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/381758b9ec62dd71ff0ba94c49ff1a764cc44d14/src/deprecated.jl#L79">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::@NamedTuple{l0::Float64, l1::Float64}
+) -&gt; TwoTerminalGenericHVDCLine
+TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::@NamedTuple{l0::Float64, l1::Float64},
+    services
+) -&gt; TwoTerminalGenericHVDCLine
+TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::@NamedTuple{l0::Float64, l1::Float64},
+    services,
+    ext
+) -&gt; TwoTerminalGenericHVDCLine
+</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/381758b9ec62dd71ff0ba94c49ff1a764cc44d14/src/deprecated.jl#L42">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine-Tuple{Any, Any, Any, Any, Any, Any, Any, Any, @NamedTuple{l0::Float64, l1::Float64}, Any, Any, Any}" href="#PowerSystems.TwoTerminalHVDCLine-Tuple{Any, Any, Any, Any, Any, Any, Any, Any, @NamedTuple{l0::Float64, l1::Float64}, Any, Any, Any}"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
