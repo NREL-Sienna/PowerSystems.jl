@@ -6,6 +6,10 @@ const PSY = PowerSystems
 
 function _clean_old_generated_files(dir::String)
     # Remove old generated_*.md files before creating new ones
+    if !isdir(dir)
+        @warn "Directory does not exist: $dir"
+        return
+    end
     generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
     for file in generated_files
         rm(joinpath(dir, file), force=true)
