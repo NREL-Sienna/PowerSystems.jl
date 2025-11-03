@@ -128,6 +128,20 @@ function insert_md(content)
     return content
 end
 
+# Function to clean up old generated_*.md files
+function clean_old_generated_files(dir::String)
+    # Remove old generated_*.md files before creating new ones
+    if !isdir(dir)
+        @warn "Directory does not exist: $dir"
+        return
+    end
+    generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    for file in generated_files
+        rm(joinpath(dir, file), force=true)
+        @info "Removed old generated file: $file"
+    end
+end
+
 # This code performs the automated addition of Literate - Generated Markdowns. The desired
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
@@ -136,6 +150,18 @@ folders = Dict(
     "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
 )
+
+# Clean up old generated files in folders before Literate generates new ones
+# Note: model_library is cleaned by make_model_library.jl before it generates files,
+# so we only clean explanation and how_to directories here
+for (section, folder) in folders
+    # Skip model_library as it's already cleaned by make_model_library()
+    section == "Model Library" && continue
+    section_folder_name = lowercase(replace(section, " " => "_"))
+    outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
+    clean_old_generated_files(outputdir)
+end
+
 for (section, folder) in folders
     for file in folder
         @show file
