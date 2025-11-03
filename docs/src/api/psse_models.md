@@ -54,8 +54,8 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| IEEEST      | [`IEEEST`](@ref)                 |
-| STAB1       | [`STAB1`](@ref)                  |
+| IEEEST      | [`IEEEST`](@ref)       |
+| STAB1       | [`STAB1`](@ref)        |
 
 ## Dynamic Inverter Models
 
