@@ -36,6 +36,7 @@ variable cost.
 bus = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,
@@ -113,6 +114,13 @@ get_fuel_cost(generator)
 Now we'll create time series data representing fuel costs that vary throughout a day.
 This could represent hourly natural gas prices, for example.
 
+For time-varying fuel costs, PowerSystems supports two types of time series:
+
+- **SingleTimeSeries**: A single sequence of values over time (simplest option)
+- **Deterministic**: Forecast windows that can be useful for day-ahead scheduling
+
+Let's start with the simpler `SingleTimeSeries`:
+
 ```@repl fuelcosts
 # Define the initial time and resolution
 initial_time = DateTime("2024-01-01T00:00:00")
@@ -127,14 +135,16 @@ fuel_cost_data = [
     6.5, 6.0, 5.5, 5.0, 4.8, 4.6,  # 18:00 - 23:00 (evening decline)
 ]
 
-# Create a Deterministic time series
-# The SortedDict maps the initial time to the vector of data values
-data_dict = SortedDict(initial_time => fuel_cost_data)
+# Create timestamps for each data point
+timestamps = collect(initial_time:resolution:(initial_time + Hour(length(fuel_cost_data) - 1)))
 
-fuel_cost_timeseries = Deterministic(;
+# Create a TimeArray with timestamps and data
+time_array = TimeArray(timestamps, fuel_cost_data)
+
+# Create a SingleTimeSeries from the TimeArray
+fuel_cost_timeseries = SingleTimeSeries(;
     name = "fuel_cost",
-    data = data_dict,
-    resolution = resolution,
+    data = time_array,
 )
 ```
 
@@ -163,59 +173,65 @@ first(TimeSeries.values(fuel_forecast), 6)
 You can also query for a specific time window:
 
 ```@repl fuelcosts
-# Get fuel costs for a specific 12-hour period starting at noon
-noon_time = DateTime("2024-01-01T12:00:00")
-fuel_forecast_noon = get_fuel_cost(generator; start_time = noon_time, len = 12)
+# Get fuel costs for a specific 12-hour period starting at 6 AM
+morning_time = DateTime("2024-01-01T06:00:00")
+fuel_forecast_morning = get_fuel_cost(generator; start_time = morning_time, len = 12)
 
 # Display these values
-TimeSeries.values(fuel_forecast_noon)
+TimeSeries.values(fuel_forecast_morning)
 ```
 
-## Alternative: Using SingleTimeSeries
+## Alternative: Using Deterministic for Forecast Windows
 
-For simpler cases where you don't need forecast horizons, you can use
-[`SingleTimeSeries`](@ref) instead of [`Deterministic`](@ref):
+If you're doing day-ahead scheduling with rolling horizons, [`Deterministic`](@ref) time
+series can be more appropriate. Unlike `SingleTimeSeries`, `Deterministic` represents
+forecast windows where each forecast has a specific horizon length.
 
 ```@repl fuelcosts
-# Create timestamps for each hour
-timestamps = collect(initial_time:resolution:initial_time + Hour(23))
-
-# Create a SingleTimeSeries
-fuel_cost_single = SingleTimeSeries(;
-    name = "fuel_cost",
-    data = SortedDict(initial_time => fuel_cost_data),
-    resolution = resolution,
-)
-
-# Create a new generator with this time series
-generator2 = ThermalStandard(;
-    name = "generator2",
+# Create a new generator for this example
+generator3 = ThermalStandard(;
+    name = "generator3",
     available = true,
     status = true,
     bus = bus,
-    active_power = 200.0,
-    reactive_power = 40.0,
-    rating = 250.0,
-    prime_mover_type = PrimeMovers.CC,
+    active_power = 180.0,
+    reactive_power = 35.0,
+    rating = 200.0,
+    prime_mover_type = PrimeMovers.CT,
     fuel = ThermalFuels.NATURAL_GAS,
-    active_power_limits = (min = 40.0, max = 250.0),
-    reactive_power_limits = (min = -40.0, max = 80.0),
+    active_power_limits = (min = 30.0, max = 200.0),
+    reactive_power_limits = (min = -30.0, max = 60.0),
     ramp_limits = (up = 5.0, down = 5.0),
-    time_limits = (up = 1.0, down = 1.0),
+    time_limits = (up = 1.5, down = 1.0),
     operation_cost = ThermalGenerationCost(;
         variable = FuelCurve(;
-            value_curve = LinearCurve(7.5),  # Simpler heat rate
-            fuel_cost = 5.0,  # Will be replaced with time series
+            value_curve = LinearCurve(7.8),
+            fuel_cost = 5.0,
         ),
-        fixed = 8.0,
-        start_up = 3000.0,
-        shut_down = 1000.0,
+        fixed = 9.0,
+        start_up = 3500.0,
+        shut_down = 1500.0,
     ),
     base_power = 100.0,
 )
 
-add_component!(sys, generator2)
-set_fuel_cost!(sys, generator2, fuel_cost_single)
+add_component!(sys, generator3)
+
+# Create Deterministic time series with a 24-hour forecast horizon
+# For this example, we'll create a single forecast window
+deterministic_data = SortedDict(initial_time => fuel_cost_data)
+
+fuel_cost_deterministic = Deterministic(;
+    name = "fuel_cost",
+    data = deterministic_data,
+    resolution = resolution,
+)
+
+set_fuel_cost!(sys, generator3, fuel_cost_deterministic)
+
+# Retrieve the forecast starting at the initial time
+fuel_det_forecast = get_fuel_cost(generator3; start_time = initial_time)
+first(TimeSeries.values(fuel_det_forecast), 6)
 ```
 
 ## Key Points to Remember
@@ -229,15 +245,20 @@ set_fuel_cost!(sys, generator2, fuel_cost_single)
    time series fuel cost data. This function ensures the data is properly validated and
    attached to the correct component.
 
-3. **Match time series resolution**: Ensure your time series resolution matches the
+3. **Choose the right time series type**:
+   - Use [`SingleTimeSeries`](@ref) for simple time-varying data (e.g., historical prices)
+   - Use [`Deterministic`](@ref) for forecast windows (e.g., day-ahead scheduling with
+     rolling horizons)
+
+4. **Match time series resolution**: Ensure your time series resolution matches the
    intended simulation resolution. Common resolutions are hourly (Hour(1)) or sub-hourly
    (Minute(5), Minute(15)).
 
-4. **Units matter**: Fuel cost should be in \$/GJ (or \$/MBtu, etc.) and the heat rate
+5. **Units matter**: Fuel cost should be in \$/GJ (or \$/MBtu, etc.) and the heat rate
    in the `FuelCurve` should be in GJ/MWh (or MBtu/MWh). The product of these gives
    the effective cost in \$/MWh.
 
-5. **System must exist first**: You must add the component to the system before you can
+6. **System must exist first**: You must add the component to the system before you can
    attach time series data to it using `set_fuel_cost!`.
 
 ## See Also
