@@ -45,7 +45,7 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 | HYGOV       | [`HydroTurbineGov`](@ref)  |
 | IEEEG1      | [`IEEETurbineGov1`](@ref)  |
 | TGOV1       | [`SteamTurbineGov1`](@ref) |
-| TGOV1DU     | [`TGOV1DU`](@ref)          |
+| TGOV1DU     | [`SteamTurbineGov1`](@ref) |
 | DEGOV1      | [`DEGOV1`](@ref)           |
 | PIDGOV      | [`PIDGOV`](@ref)           |
 | WPIDHY      | [`WPIDHY`](@ref)           |
