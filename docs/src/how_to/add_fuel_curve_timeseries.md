@@ -16,14 +16,14 @@ using DataStructures: SortedDict
 
 When modeling thermal generators with fuel-based costs, you have two options:
 
-1. **Scalar fuel cost**: A single, constant fuel price (e.g., \$5.0/GJ)
-2. **Time series fuel cost**: Fuel prices that vary over time
+ 1. **Scalar fuel cost**: A single, constant fuel price (e.g., \$5.0/GJ)
+ 2. **Time series fuel cost**: Fuel prices that vary over time
 
 This guide focuses on the second option, showing you how to:
 
-- Create a thermal generator with a [`FuelCurve`](@ref)
-- Add time series data for fuel costs
-- Attach the time series to the correct component
+  - Create a thermal generator with a [`FuelCurve`](@ref)
+  - Add time series data for fuel costs
+  - Attach the time series to the correct component
 
 ## Step 1: Create a System and Components
 
@@ -116,8 +116,8 @@ This could represent hourly natural gas prices, for example.
 
 For time-varying fuel costs, PowerSystems supports two types of time series:
 
-- **SingleTimeSeries**: A single sequence of values over time (simplest option)
-- **Deterministic**: Forecast windows that can be useful for day-ahead scheduling
+  - **SingleTimeSeries**: A single sequence of values over time (simplest option)
+  - **Deterministic**: Forecast windows that can be useful for day-ahead scheduling
 
 Let's start with the simpler `SingleTimeSeries`:
 
@@ -136,7 +136,8 @@ fuel_cost_data = [
 ]
 
 # Create timestamps for each data point
-timestamps = collect(initial_time:resolution:(initial_time + Hour(length(fuel_cost_data) - 1)))
+timestamps =
+    collect(initial_time:resolution:(initial_time + Hour(length(fuel_cost_data) - 1)))
 
 # Create a TimeArray with timestamps and data
 time_array = TimeArray(timestamps, fuel_cost_data)
@@ -236,35 +237,32 @@ first(TimeSeries.values(fuel_det_forecast), 6)
 
 ## Key Points to Remember
 
-1. **Start with a FuelCurve**: When creating a [`ThermalGenerationCost`](@ref), you must
-   use a [`FuelCurve`](@ref) (not a [`CostCurve`](@ref)) if you want to add time series
-   fuel costs. The initial `fuel_cost` value in the `FuelCurve` will be replaced by the
-   time series.
+ 1. **Start with a FuelCurve**: When creating a [`ThermalGenerationCost`](@ref), you must
+    use a [`FuelCurve`](@ref) (not a [`CostCurve`](@ref)) if you want to add time series
+    fuel costs. The initial `fuel_cost` value in the `FuelCurve` will be replaced by the
+    time series.
 
-2. **Use `set_fuel_cost!`**: Always use the [`set_fuel_cost!`](@ref) function to attach
-   time series fuel cost data. This function ensures the data is properly validated and
-   attached to the correct component.
-
-3. **Choose the right time series type**:
-   - Use [`SingleTimeSeries`](@ref) for simple time-varying data (e.g., historical prices)
-   - Use [`Deterministic`](@ref) for forecast windows (e.g., day-ahead scheduling with
-     rolling horizons)
-
-4. **Match time series resolution**: Ensure your time series resolution matches the
-   intended simulation resolution. Common resolutions are hourly (Hour(1)) or sub-hourly
-   (Minute(5), Minute(15)).
-
-5. **Units matter**: Fuel cost should be in \$/GJ (or \$/MBtu, etc.) and the heat rate
-   in the `FuelCurve` should be in GJ/MWh (or MBtu/MWh). The product of these gives
-   the effective cost in \$/MWh.
-
-6. **System must exist first**: You must add the component to the system before you can
-   attach time series data to it using `set_fuel_cost!`.
+ 2. **Use `set_fuel_cost!`**: Always use the [`set_fuel_cost!`](@ref) function to attach
+    time series fuel cost data. This function ensures the data is properly validated and
+    attached to the correct component.
+ 3. **Choose the right time series type**:
+    
+      + Use [`SingleTimeSeries`](@ref) for simple time-varying data (e.g., historical prices)
+      + Use [`Deterministic`](@ref) for forecast windows (e.g., day-ahead scheduling with
+        rolling horizons)
+ 4. **Match time series resolution**: Ensure your time series resolution matches the
+    intended simulation resolution. Common resolutions are hourly (Hour(1)) or sub-hourly
+    (Minute(5), Minute(15)).
+ 5. **Units matter**: Fuel cost should be in \$/GJ (or \$/MBtu, etc.) and the heat rate
+    in the `FuelCurve` should be in GJ/MWh (or MBtu/MWh). The product of these gives
+    the effective cost in \$/MWh.
+ 6. **System must exist first**: You must add the component to the system before you can
+    attach time series data to it using `set_fuel_cost!`.
 
 ## See Also
 
-- [Add an Operating Cost](@ref cost_how_to) - General guide for adding operational costs
-- [Parse Time Series Data from .csv files](@ref parsing_time_series) - How to load time series from CSV files
-- [Working with Time Series](@ref) - Tutorial on time series data in PowerSystems
-- [`ThermalGenerationCost`](@ref) - API reference for thermal generation costs
-- [`FuelCurve`](@ref) - API reference for fuel curves
+  - [Add an Operating Cost](@ref cost_how_to) - General guide for adding operational costs
+  - [Parse Time Series Data from .csv files](@ref parsing_time_series) - How to load time series from CSV files
+  - [Working with Time Series](@ref) - Tutorial on time series data in PowerSystems
+  - [`ThermalGenerationCost`](@ref) - API reference for thermal generation costs
+  - [`FuelCurve`](@ref) - API reference for fuel curves
