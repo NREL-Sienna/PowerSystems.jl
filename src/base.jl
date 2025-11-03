@@ -2569,7 +2569,7 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
         while !isempty(remaining)
             # Find next component whose upstream is already processed or is a root
             for component in remaining
-                upstream_uuids = component["upstream_reservoirs"]
+                upstream_uuids = [] #component["upstream_reservoirs"]
                 can_add =
                     isempty(upstream_uuids) ||
                     all(
