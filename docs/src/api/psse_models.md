@@ -6,8 +6,8 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ### Machine Models
 
-| PSS/e Model | PowerSystems Component |
-|:----------- |:---------------------- |
+| PSS/e Model | PowerSystems Component           |
+|:----------- |:-------------------------------- |
 | GENSAE      | [`SalientPoleExponential`](@ref) |
 | GENSAL      | [`SalientPoleQuadratic`](@ref)   |
 | GENROE      | [`RoundRotorExponential`](@ref)  |
