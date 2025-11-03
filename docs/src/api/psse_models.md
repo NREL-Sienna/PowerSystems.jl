@@ -74,8 +74,8 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ## Additional Models
 
-| PSS/e Model | PowerSystems Component          |
-|:----------- |:------------------------------- |
+| PSS/e Model | PowerSystems Component                    |
+|:----------- |:----------------------------------------- |
 | DERA1       | [`AggregateDistributedGenerationA`](@ref) |
 
 ## See also
