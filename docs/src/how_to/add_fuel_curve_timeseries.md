@@ -263,6 +263,6 @@ first(TimeSeries.values(fuel_det_forecast), 6)
 
   - [Add an Operating Cost](@ref cost_how_to) - General guide for adding operational costs
   - [Parse Time Series Data from .csv files](@ref parsing_time_series) - How to load time series from CSV files
-  - [Working with Time Series](@ref) - Tutorial on time series data in PowerSystems
+  - [Working with Time Series Data](@ref tutorial_time_series) - Tutorial on time series data in PowerSystems
   - [`ThermalGenerationCost`](@ref) - API reference for thermal generation costs
   - [`FuelCurve`](@ref) - API reference for fuel curves
