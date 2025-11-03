@@ -1,4 +1,4 @@
-# Supported PSS/e Models
+# [Supported PSS/e Models](@id psse_models_ref)
 
 PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports parsing the following models for version 5.0:
 
