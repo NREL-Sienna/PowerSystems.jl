@@ -127,7 +127,7 @@ initial_time = DateTime("2024-01-01T00:00:00")
 resolution = Hour(1)
 
 # Create hourly fuel cost data for 24 hours
-# Prices are higher during peak hours (10am-8pm) and lower at night
+# Prices are higher during peak hours (midday to early evening) and lower at night
 fuel_cost_data = [
     4.5, 4.3, 4.2, 4.1, 4.2, 4.5,  # 00:00 - 05:00 (low overnight prices)
     5.0, 5.5, 6.0, 6.5, 7.0, 7.5,  # 06:00 - 11:00 (morning ramp)
@@ -264,8 +264,7 @@ first(TimeSeries.values(fuel_det_forecast), 6)
 ## See Also
 
 - [Add an Operating Cost](@ref cost_how_to) - General guide for adding operational costs
-- [Parse Time Series Data from .csv files](@ref parsing_time_series) - How to load time
-  series from CSV files
+- [Parse Time Series Data from .csv files](@ref parsing_time_series) - How to load time series from CSV files
 - [Working with Time Series](@ref) - Tutorial on time series data in PowerSystems
 - [`ThermalGenerationCost`](@ref) - API reference for thermal generation costs
 - [`FuelCurve`](@ref) - API reference for fuel curves
