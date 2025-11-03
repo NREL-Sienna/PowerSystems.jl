@@ -67,8 +67,8 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ### Active and Reactive Power Control Models
 
-| PSS/e Model | PowerSystems Component                                                        |
-|:----------- |:----------------------------------------------------------------------------- |
+| PSS/e Model | PowerSystems Component                                                                                      |
+|:----------- |:----------------------------------------------------------------------------------------------------------- |
 | REECB1      | [`ActiveRenewableControllerAB`](@ref), [`ReactiveRenewableControllerAB`](@ref), [`RECurrentControlB`](@ref) |
 | REPCA1      | [`ActiveRenewableControllerAB`](@ref), [`ReactiveRenewableControllerAB`](@ref)                    |
 
