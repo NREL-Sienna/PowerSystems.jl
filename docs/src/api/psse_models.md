@@ -18,23 +18,23 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| IEEET1      | [`IEEET1`](@ref)                 |
-| ESDC1A      | [`ESDC1A`](@ref)                 |
-| ESDC2A      | [`ESDC2A`](@ref)                 |
-| ESAC1A      | [`ESAC1A`](@ref)                 |
-| ESAC6A      | [`ESAC6A`](@ref)                 |
-| ESAC8B      | [`ESAC8B`](@ref)                 |
-| EXAC1       | [`EXAC1`](@ref)                  |
-| EXAC1A      | [`EXAC1A`](@ref)                 |
-| EXAC2       | [`EXAC2`](@ref)                  |
-| EXPIC1      | [`EXPIC1`](@ref)                 |
-| ESST1A      | [`ESST1A`](@ref)                 |
-| ESST4B      | [`ESST4B`](@ref)                 |
-| SCRX        | [`SCRX`](@ref)                   |
-| SEXS        | [`SEXS`](@ref)                   |
-| EXST1       | [`EXST1`](@ref)                  |
-| ST6B        | [`ST6B`](@ref)                   |
-| ST8C        | [`ST8C`](@ref)                   |
+| IEEET1      | [`IEEET1`](@ref)       |
+| ESDC1A      | [`ESDC1A`](@ref)       |
+| ESDC2A      | [`ESDC2A`](@ref)       |
+| ESAC1A      | [`ESAC1A`](@ref)       |
+| ESAC6A      | [`ESAC6A`](@ref)       |
+| ESAC8B      | [`ESAC8B`](@ref)       |
+| EXAC1       | [`EXAC1`](@ref)        |
+| EXAC1A      | [`EXAC1A`](@ref)       |
+| EXAC2       | [`EXAC2`](@ref)        |
+| EXPIC1      | [`EXPIC1`](@ref)       |
+| ESST1A      | [`ESST1A`](@ref)       |
+| ESST4B      | [`ESST4B`](@ref)       |
+| SCRX        | [`SCRX`](@ref)         |
+| SEXS        | [`SEXS`](@ref)         |
+| EXST1       | [`EXST1`](@ref)        |
+| ST6B        | [`ST6B`](@ref)         |
+| ST8C        | [`ST8C`](@ref)         |
 
 ### Turbine Governor Models
 
