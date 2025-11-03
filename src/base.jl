@@ -2528,7 +2528,7 @@ function _handle_hydro_reservoirs_deserialization_special_cases(
     parent = Dict{String, String}()
     for component in components
         uuid_str = string(component["internal"]["uuid"])
-        upstream_uuids = component["upstream_reservoirs"]
+        upstream_uuids = [] #component["upstream_reservoirs"]
 
         if isempty(upstream_uuids)
             parent[uuid_str] = uuid_str  # Root of its own chain
