@@ -61,8 +61,8 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 ### Converter Models
 
-| PSS/e Model | PowerSystems Component        |
-|:----------- |:----------------------------- |
+| PSS/e Model | PowerSystems Component                  |
+|:----------- |:--------------------------------------- |
 | REGCA1      | [`RenewableEnergyConverterTypeA`](@ref) |
 
 ### Active and Reactive Power Control Models
