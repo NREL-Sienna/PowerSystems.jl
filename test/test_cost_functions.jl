@@ -287,7 +287,6 @@ end
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     other_time = initial_time + resolution
-    horizon = 24
     
     # Create time varying PWL cost data using PiecewiseIncrementalCurve
     data_pwl_incremental = SortedDict(
@@ -298,7 +297,7 @@ end
     # Create system and reserve product
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(
-        nothing,
+        nothing,  # variable - will be set via set_variable_cost!
         "TestReserveProduct",
         true,
         10.0,  # time_frame
