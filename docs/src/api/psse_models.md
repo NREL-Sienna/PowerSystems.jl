@@ -8,54 +8,54 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| GENSAE      | SalientPoleExponential |
-| GENSAL      | SalientPoleQuadratic   |
-| GENROE      | RoundRotorExponential  |
-| GENCLS      | BaseMachine            |
-| GENROU      | RoundRotorQuadratic    |
+| GENSAE      | [`SalientPoleExponential`](@ref) |
+| GENSAL      | [`SalientPoleQuadratic`](@ref)   |
+| GENROE      | [`RoundRotorExponential`](@ref)  |
+| GENCLS      | [`BaseMachine`](@ref)            |
+| GENROU      | [`RoundRotorQuadratic`](@ref)    |
 
 ### Automatic Voltage Regulator (AVR) Models
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| IEEET1      | IEEET1                 |
-| ESDC1A      | ESDC1A                 |
-| ESDC2A      | ESDC2A                 |
-| ESAC1A      | ESAC1A                 |
-| ESAC6A      | ESAC6A                 |
-| ESAC8B      | ESAC8B                 |
-| EXAC1       | EXAC1                  |
-| EXAC1A      | EXAC1A                 |
-| EXAC2       | EXAC2                  |
-| EXPIC1      | EXPIC1                 |
-| ESST1A      | ESST1A                 |
-| ESST4B      | ESST4B                 |
-| SCRX        | SCRX                   |
-| SEXS        | SEXS                   |
-| EXST1       | EXST1                  |
-| ST6B        | ST6B                   |
-| ST8C        | ST8C                   |
+| IEEET1      | [`IEEET1`](@ref)                 |
+| ESDC1A      | [`ESDC1A`](@ref)                 |
+| ESDC2A      | [`ESDC2A`](@ref)                 |
+| ESAC1A      | [`ESAC1A`](@ref)                 |
+| ESAC6A      | [`ESAC6A`](@ref)                 |
+| ESAC8B      | [`ESAC8B`](@ref)                 |
+| EXAC1       | [`EXAC1`](@ref)                  |
+| EXAC1A      | [`EXAC1A`](@ref)                 |
+| EXAC2       | [`EXAC2`](@ref)                  |
+| EXPIC1      | [`EXPIC1`](@ref)                 |
+| ESST1A      | [`ESST1A`](@ref)                 |
+| ESST4B      | [`ESST4B`](@ref)                 |
+| SCRX        | [`SCRX`](@ref)                   |
+| SEXS        | [`SEXS`](@ref)                   |
+| EXST1       | [`EXST1`](@ref)                  |
+| ST6B        | [`ST6B`](@ref)                   |
+| ST8C        | [`ST8C`](@ref)                   |
 
 ### Turbine Governor Models
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| GAST        | GasTG                  |
-| GGOV1       | GeneralGovModel        |
-| HYGOV       | HydroTurbineGov        |
-| IEEEG1      | IEEETurbineGov1        |
-| TGOV1       | SteamTurbineGov1       |
-| TGOV1DU     | TGOV1DU                |
-| DEGOV1      | DEGOV1                 |
-| PIDGOV      | PIDGOV                 |
-| WPIDHY      | WPIDHY                 |
+| GAST        | [`GasTG`](@ref)                  |
+| GGOV1       | [`GeneralGovModel`](@ref)        |
+| HYGOV       | [`HydroTurbineGov`](@ref)        |
+| IEEEG1      | [`IEEETurbineGov1`](@ref)        |
+| TGOV1       | [`SteamTurbineGov1`](@ref)       |
+| TGOV1DU     | [`TGOV1DU`](@ref)                |
+| DEGOV1      | [`DEGOV1`](@ref)                 |
+| PIDGOV      | [`PIDGOV`](@ref)                 |
+| WPIDHY      | [`WPIDHY`](@ref)                 |
 
 ### Power System Stabilizer (PSS) Models
 
 | PSS/e Model | PowerSystems Component |
 |:----------- |:---------------------- |
-| IEEEST      | IEEEST                 |
-| STAB1       | STAB1                  |
+| IEEEST      | [`IEEEST`](@ref)                 |
+| STAB1       | [`STAB1`](@ref)                  |
 
 ## Dynamic Inverter Models
 
@@ -63,20 +63,20 @@ PSS/e's dynamic model library is extensive. `PowerSystems.jl` currently supports
 
 | PSS/e Model | PowerSystems Component        |
 |:----------- |:----------------------------- |
-| REGCA1      | RenewableEnergyConverterTypeA |
+| REGCA1      | [`RenewableEnergyConverterTypeA`](@ref) |
 
 ### Active and Reactive Power Control Models
 
 | PSS/e Model | PowerSystems Component                                                        |
 |:----------- |:----------------------------------------------------------------------------- |
-| REECB1      | ActiveRenewableControllerAB, ReactiveRenewableControllerAB, RECurrentControlB |
-| REPCA1      | ActiveRenewableControllerAB, ReactiveRenewableControllerAB                    |
+| REECB1      | [`ActiveRenewableControllerAB`](@ref), [`ReactiveRenewableControllerAB`](@ref), [`RECurrentControlB`](@ref) |
+| REPCA1      | [`ActiveRenewableControllerAB`](@ref), [`ReactiveRenewableControllerAB`](@ref)                    |
 
 ## Additional Models
 
 | PSS/e Model | PowerSystems Component          |
 |:----------- |:------------------------------- |
-| DERA1       | AggregateDistributedGenerationA |
+| DERA1       | [`AggregateDistributedGenerationA`](@ref) |
 
 ## See also
 

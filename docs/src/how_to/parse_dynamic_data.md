@@ -1,6 +1,7 @@
 # [Parsing PSS/e dynamic data](@id dyr_data)
 
-A `PowerSystems.jl` system can be created using a .RAW and a .DYR file.
+A `PowerSystems.jl` system can be created using a .RAW and a .DYR file. For a complete list of supported models in PowerSystems.jl version 5.0, including machine models, AVR models, turbine governors, PSS models, inverter models, and additional models, see the [Supported PSS/e Models](@ref psse_models_ref) reference page.
+
 In this example we will create a three bus system from these example files:
 
 ```@repl raw_dyr_system
@@ -68,10 +69,6 @@ To create the `System` in `PowerSystems.jl`, we pass both files directories:
 ```@repl raw_dyr_system
 dyn_system = System(RAW_dir, DYR_dir; runchecks = false)
 ```
-
-## Supported PSS/e Models
-
-PSS/e's dynamic model library is extensive. For a complete list of supported models in PowerSystems.jl version 5.0, including machine models, AVR models, turbine governors, PSS models, inverter models, and additional models, see the [Supported PSS/e Models](@ref psse_models_ref) reference page.
 
 # Common Issue: Unique Bus Names
 
