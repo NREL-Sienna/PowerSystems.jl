@@ -26,7 +26,7 @@ Construct an [`ImpedanceCorrectionData`](@ref).
 - `impedance_correction_curve::PiecewiseLinearData`: Function to define intervals (tap ratio/angle shift) in the Transformer component.
 - `transformer_winding::WindingCategory`: Indicates the winding to which the ICT is linked to for a Transformer component.
 - `transformer_control_mode::ImpedanceCorrectionTransformerControlMode`: Defines the control modes of the Transformer, whether is for off-nominal turns ratio or phase angle shifts.
-- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
+- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function ImpedanceCorrectionData(;
     table_number,
