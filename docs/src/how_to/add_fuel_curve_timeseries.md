@@ -133,7 +133,7 @@ fuel_cost_timeseries = SingleTimeSeries(;
 
 ## Step 2: Attach Time Series to the Generator
 
-Use the [`set_fuel_cost!`](@ref) function to attach the time series data to your 
+Use the [`set_fuel_cost!`](@ref) function to attach the time series data to your
 previously defined [`System`](@ref) and generator (e.g., [`ThermalStandard`](@ref)):
 
 ```@repl fuelcosts
