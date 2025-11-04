@@ -1401,7 +1401,7 @@ sel_each = rebuild_selector(sel; groupby = :each)</code></pre></div><a class="do
     tx::TransmissionInterface
 ) -&gt; Float64
 </code></pre><p>Get the minimum active power flow limit for a <a href="../../model_library/generated_TransmissionInterface/#TransmissionInterface"><code>TransmissionInterface</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L184">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.get_power_factor-Tuple{T} where T&lt;:Device" href="#PowerSystems.get_power_factor-Tuple{T} where T&lt;:Device"><code>PowerSystems.get_power_factor</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">get_power_factor(_::Device) -&gt; Float64
-</code></pre><p>Generic fallback function for getting power factor. Throws <code>ArgumentError</code> for devices that don&#39;t implement this function.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L153">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.get_rating-Tuple{T} where T&lt;:Device" href="#PowerSystems.get_rating-Tuple{T} where T&lt;:Device"><code>PowerSystems.get_rating</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">get_rating(_::Device) -&gt; Float64
+</code></pre><p>Generic fallback function for getting power factor. Throws <code>ArgumentError</code> for devices that don&#39;t implement this function.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L153">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.get_rating-Tuple{T} where T&lt;:Device" href="#PowerSystems.get_rating-Tuple{T} where T&lt;:Device"><code>PowerSystems.get_rating</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">get_rating(_::Device) -&gt; Union{Nothing, Float64}
 </code></pre><p>Generic fallback function for getting device rating. Throws <code>ArgumentError</code> for devices that don&#39;t implement this function.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L147">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.get_reactive_power_limits-Tuple{T} where T&lt;:Device" href="#PowerSystems.get_reactive_power_limits-Tuple{T} where T&lt;:Device"><code>PowerSystems.get_reactive_power_limits</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">get_reactive_power_limits(
     _::Device
 ) -&gt; Union{Nothing, @NamedTuple{min::Float64, max::Float64}}
@@ -1413,42 +1413,6 @@ sel_each = rebuild_selector(sel; groupby = :each)</code></pre></div><a class="do
 </code></pre><p>Calculate the phase shift angle α for the tertiary winding of a <a href="../../model_library/generated_Transformer3W/#Transformer3W"><code>Transformer3W</code></a> based on its tertiary winding group number. Returns the angle in radians, calculated as -(π/6) * <code>tertiary_group_number</code>. If <code>tertiary_group_number</code> is <code>WindingGroupNumber.UNDEFINED</code>, returns 0.0 and issues a warning.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L238">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.set_area!-Tuple{ACBus, Area}" href="#PowerSystems.set_area!-Tuple{ACBus, Area}"><code>PowerSystems.set_area!</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">set_area!(bus::ACBus, area::Area) -&gt; Area
 </code></pre><p>Set the <a href="../../model_library/generated_Area/#Area"><code>Area</code></a> for an <a href="../../model_library/generated_ACBus/#ACBus"><code>ACBus</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L17">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.set_load_zone!-Tuple{ACBus, LoadZone}" href="#PowerSystems.set_load_zone!-Tuple{ACBus, LoadZone}"><code>PowerSystems.set_load_zone!</code></a> — <span class="docstring-category">Method</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">set_load_zone!(bus::ACBus, load_zone::LoadZone) -&gt; LoadZone
 </code></pre><p>Set the <a href="../../model_library/generated_LoadZone/#LoadZone"><code>LoadZone</code></a> for an <a href="../../model_library/generated_ACBus/#ACBus"><code>ACBus</code></a>.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/models/supplemental_accessors.jl#L13">source</a></section></article><h2 id="deprecated"><a class="docs-heading-anchor" href="#deprecated">Deprecated Methods</a><a id="deprecated-1"></a><a class="docs-heading-anchor-permalink" href="#deprecated" title="Permalink"></a></h2><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::Union{LinearCurve, PiecewiseIncrementalCurve}
-) -&gt; TwoTerminalGenericHVDCLine
-TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::Union{LinearCurve, PiecewiseIncrementalCurve},
-    services
-) -&gt; TwoTerminalGenericHVDCLine
-TwoTerminalHVDCLine(
-    name,
-    available,
-    active_power_flow,
-    arc,
-    active_power_limits_from,
-    active_power_limits_to,
-    reactive_power_limits_from,
-    reactive_power_limits_to,
-    loss::Union{LinearCurve, PiecewiseIncrementalCurve},
-    services,
-    ext
-) -&gt; TwoTerminalGenericHVDCLine
-</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/deprecated.jl#L79">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
@@ -1495,6 +1459,42 @@ TwoTerminalHVDCLine(
     ext
 ) -&gt; TwoTerminalGenericHVDCLine
 </code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/deprecated.jl#L115">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::Union{LinearCurve, PiecewiseIncrementalCurve}
+) -&gt; TwoTerminalGenericHVDCLine
+TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::Union{LinearCurve, PiecewiseIncrementalCurve},
+    services
+) -&gt; TwoTerminalGenericHVDCLine
+TwoTerminalHVDCLine(
+    name,
+    available,
+    active_power_flow,
+    arc,
+    active_power_limits_from,
+    active_power_limits_to,
+    reactive_power_limits_from,
+    reactive_power_limits_to,
+    loss::Union{LinearCurve, PiecewiseIncrementalCurve},
+    services,
+    ext
+) -&gt; TwoTerminalGenericHVDCLine
+</code></pre><p>Deprecated method for the old TwoTerminalHVDCLine that returns the new <a href="../../model_library/generated_TwoTerminalGenericHVDCLine/#TwoTerminalGenericHVDCLine"><code>TwoTerminalGenericHVDCLine</code></a>. This constructor is used for some backward compatibility and will be removed in a future version.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/NREL-Sienna/PowerSystems.jl/blob/aca38749066d01ba86ecd4387c0de7607afbf012/src/deprecated.jl#L79">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerSystems.TwoTerminalHVDCLine" href="#PowerSystems.TwoTerminalHVDCLine"><code>PowerSystems.TwoTerminalHVDCLine</code></a> — <span class="docstring-category">Function</span><span class="is-flex-grow-1 docstring-article-toggle-button" title="Collapse docstring"></span></header><section><div><pre><code class="language-julia hljs">TwoTerminalHVDCLine(
     name,
     available,
     active_power_flow,
