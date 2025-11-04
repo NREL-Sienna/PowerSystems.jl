@@ -1,12 +1,14 @@
-# Create a System with a Source and ImportExportCost
+# Add costs for imported/exported power
 
-This how-to guide explains how to create a power system that includes a [`Source`](@ref)
-component with an [`ImportExportCost`](@ref) to model imports and exports with neighboring
-areas or external grids.
+This how-to guide explains how to add an [`ImportExportCost`](@ref) to a [`Source`](@ref)
+component to model imports and exports with neighboring areas or external grids.
+
+This guide assumes a [`System`](@ref) is already defined.
 
 ```@setup source_ie_cost
 using PowerSystems
 using PowerSystemCaseBuilder
+sys = build_system(PSITestSystems, "c_sys5_uc")
 ```
 
 ## Overview
@@ -24,19 +26,7 @@ The [`ImportExportCost`](@ref) operating cost allows you to specify:
   - Weekly energy limits for imports and exports
   - Ancillary service offers
 
-## Step 1: Create or Load a System
-
-Start by creating a new system or loading an existing one:
-
-```@repl source_ie_cost
-using PowerSystems
-using PowerSystemCaseBuilder
-
-# Load an existing system
-sys = build_system(PSITestSystems, "c_sys5_uc")
-```
-
-## Step 2: Define Import and Export Curves
+## Step 1: Define Import and Export Curves
 
 You can define import and export curves in several ways, depending on your data format.
 
@@ -76,7 +66,7 @@ export_curve = make_export_curve(;
       - Export curves must have non-increasing (concave) slopes
       - Power values must have one more entry than price values
 
-## Step 3: Create the ImportExportCost
+## Step 2: Create the ImportExportCost
 
 Use the curves to create an [`ImportExportCost`](@ref):
 
@@ -89,9 +79,10 @@ ie_cost = ImportExportCost(;
 )
 ```
 
-## Step 4: Create the Source Component
+## Step 3: Add the Cost to the Source Component
 
-Define a [`Source`](@ref) component with the import/export cost:
+Define a [`Source`](@ref) component with the import/export cost, or alternatively use
+[`set_operation_cost!`](@ref) to add the cost to an existing source:
 
 ```@repl source_ie_cost
 source = Source(;
@@ -116,7 +107,7 @@ source = Source(;
     The `active_power_limits` should span negative (for export) to positive (for import)
     values. Negative power indicates exporting power to the external grid.
 
-## Step 5: Add the Source to the System
+## Step 4: Add the Source to the System
 
 Add the source component to your system:
 
@@ -129,66 +120,6 @@ Verify the source was added correctly:
 ```@repl source_ie_cost
 get_component(Source, sys, "external_grid")
 get_operation_cost(get_component(Source, sys, "external_grid"))
-```
-
-## Complete Example
-
-Here's a complete example putting it all together:
-
-```julia
-using PowerSystems
-using PowerSystemCaseBuilder
-
-# Load or create a system
-sys = build_system(PSITestSystems, "c_sys5_uc")
-
-# Define piecewise linear import and export curves
-import_curve = make_import_curve(;
-    power = [0.0, 100.0, 105.0, 120.0, 200.0],
-    price = [5.0, 10.0, 20.0, 40.0],
-)
-
-export_curve = make_export_curve(;
-    power = [0.0, 100.0, 105.0, 120.0, 200.0],
-    price = [40.0, 20.0, 10.0, 5.0],
-)
-
-# Create the import/export cost
-ie_cost = ImportExportCost(;
-    import_offer_curves = import_curve,
-    export_offer_curves = export_curve,
-)
-
-# Create the source with import/export cost
-source = Source(;
-    name = "external_grid",
-    available = true,
-    bus = get_component(ACBus, sys, "nodeC"),
-    active_power_limits = (min = -200.0, max = 200.0),
-    reactive_power_limits = (min = -100.0, max = 100.0),
-    R_th = 0.01,
-    X_th = 0.02,
-    base_power = 100.0,
-    operation_cost = ie_cost,
-)
-
-# Add to system
-add_component!(sys, source)
-```
-
-## Adding or Updating Operating Costs
-
-You can also add or update the operating cost on an existing source:
-
-```@repl source_ie_cost
-# Create a new import/export cost
-new_ie_cost = ImportExportCost(;
-    import_offer_curves = make_import_curve(; power = 150.0, price = 28.0),
-    export_offer_curves = make_export_curve(; power = 150.0, price = 32.0),
-)
-
-# Update the operating cost
-set_operation_cost!(source, new_ie_cost)
 ```
 
 ## See Also
