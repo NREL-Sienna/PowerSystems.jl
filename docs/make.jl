@@ -114,7 +114,8 @@ pages["Model Library"] = make_model_library(
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
         "MarketBidCost" =>"model_library/market_bid_cost.md",
-        "ImportExportCost" =>"model_library/import_export_cost.md"],
+        "ImportExportCost" =>"model_library/import_export_cost.md",
+        "OfferCurveCost" =>"model_library/offer_curve_cost.md"],
         "HydroReservoir" => "model_library/hydro_reservoir.md",
         )
 )
