@@ -1,13 +1,17 @@
 """
 Supertype for operational cost representations
 
+Current abstract type for representing operational costs associated with power system devices.
+- [`OfferCostCurve`](@ref)
+
 Current concrete types include:
 - [`ThermalGenerationCost`](@ref)
 - [`HydroGenerationCost`](@ref)
 - [`RenewableGenerationCost`](@ref)
 - [`StorageCost`](@ref)
 - [`LoadCost`](@ref)
-- [`OfferCostCurve`](@ref)
+- [`ImportExportCost`](@ref)
+- [`MarketBidCost`](@ref)
 """
 abstract type OperationalCost <: DeviceParameter end
 
