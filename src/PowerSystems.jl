@@ -78,7 +78,8 @@ export ProductionVariableCostCurve, CostCurve, FuelCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
-export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
+export OperationalCost,
+    OfferCostCurve, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
@@ -790,6 +791,7 @@ include("models/OuterControl.jl")
 
 # Costs
 include("models/cost_functions/operational_cost.jl")
+include("models/cost_functions/OfferCostCurve.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")

@@ -1,17 +1,13 @@
-const OfferCurveCost = Union{MarketBidCost, ImportExportCost}
-
 # VALIDATORS
 function _validate_market_bid_cost(cost, context)
     (cost isa MarketBidCost) || throw(TypeError(
         StackTraces.stacktrace()[2].func, context, MarketBidCost, cost))
 end
 
-function _validate_reserve_demand_curve(cost, name)
-    !(cost isa CostCurve{PiecewiseIncrementalCurve}) && throw(
-        ArgumentError(
-            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
-        ),
-    )
+function _validate_reserve_demand_curve(
+    cost::CostCurve{PiecewiseIncrementalCurve},
+    name::String,
+)
     value_curve = get_value_curve(cost)
     function_data = get_function_data(value_curve)
     x_coords = get_x_coords(function_data)
@@ -28,6 +24,14 @@ function _validate_reserve_demand_curve(cost, name)
             )
         end
     end
+end
+
+function _validate_reserve_demand_curve(cost::T, name::String) where {T <: CostCurve}
+    throw(
+        ArgumentError(
+            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
+        ),
+    )
 end
 
 function _validate_fuel_curve(component::Component)
