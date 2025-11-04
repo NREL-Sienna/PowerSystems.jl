@@ -81,9 +81,9 @@ sys
 ```
 
 Notice that `System` now shows a summary of components in the system. The table shows
-"[Static](@ref S) Components", which refers to [steady state data](@ref S) used for power
-flow analysis, as opposed to [Dynamic](@ref D) components which would include differential
-equations for transient simulations (see the [Glossary and Acronyms](@ref) for more details).
+"[Static](@ref S) Components", which refers to steady state data used for power
+flow analysis or production cost modeling, as opposed to [Dynamic](@ref D) components
+which that can be used to define differential equations for transient simulations.
 
 Let's create a second bus:
 
