@@ -1,7 +1,7 @@
 # Create a System with a Source and ImportExportCost
 
-This how-to guide explains how to create a power system that includes a [`Source`](@ref) 
-component with an [`ImportExportCost`](@ref) to model imports and exports with neighboring 
+This how-to guide explains how to create a power system that includes a [`Source`](@ref)
+component with an [`ImportExportCost`](@ref) to model imports and exports with neighboring
 areas or external grids.
 
 ```@setup source_ie_cost
@@ -11,16 +11,18 @@ using PowerSystemCaseBuilder
 
 ## Overview
 
-A [`Source`](@ref) component represents an infinite bus with constant voltage output, 
+A [`Source`](@ref) component represents an infinite bus with constant voltage output,
 commonly used to represent:
-- Very large machines on a single bus in dynamics simulations
-- Import/export connections in operational simulations
+
+  - Very large machines on a single bus in dynamics simulations
+  - Import/export connections in operational simulations
 
 The [`ImportExportCost`](@ref) operating cost allows you to specify:
-- Import offer curves (buy prices for importing power)
-- Export offer curves (sell prices for exporting power)
-- Weekly energy limits for imports and exports
-- Ancillary service offers
+
+  - Import offer curves (buy prices for importing power)
+  - Export offer curves (sell prices for exporting power)
+  - Weekly energy limits for imports and exports
+  - Ancillary service offers
 
 ## Step 1: Create or Load a System
 
@@ -44,10 +46,10 @@ For a simple constant price over a power range:
 
 ```@repl source_ie_cost
 # Import curve: buy power at $25/MWh up to 200 MW
-import_curve = make_import_curve(power = 200.0, price = 25.0)
+import_curve = make_import_curve(; power = 200.0, price = 25.0)
 
 # Export curve: sell power at $30/MWh up to 200 MW
-export_curve = make_export_curve(power = 200.0, price = 30.0)
+export_curve = make_export_curve(; power = 200.0, price = 30.0)
 ```
 
 ### Option B: Piecewise Linear Curves
@@ -56,29 +58,30 @@ For more complex pricing with multiple segments:
 
 ```@repl source_ie_cost
 # Import curve with increasing prices as more power is imported
-import_curve = make_import_curve(
+import_curve = make_import_curve(;
     power = [0.0, 100.0, 105.0, 120.0, 200.0],
     price = [5.0, 10.0, 20.0, 40.0],
 )
 
 # Export curve with decreasing prices as more power is exported
-export_curve = make_export_curve(
+export_curve = make_export_curve(;
     power = [0.0, 100.0, 105.0, 120.0, 200.0],
     price = [40.0, 20.0, 10.0, 5.0],
 )
 ```
 
 !!! note
-    - Import curves must have non-decreasing (convex) slopes
-    - Export curves must have non-increasing (concave) slopes
-    - Power values must have one more entry than price values
+    
+      - Import curves must have non-decreasing (convex) slopes
+      - Export curves must have non-increasing (concave) slopes
+      - Power values must have one more entry than price values
 
 ## Step 3: Create the ImportExportCost
 
 Use the curves to create an [`ImportExportCost`](@ref):
 
 ```@repl source_ie_cost
-ie_cost = ImportExportCost(
+ie_cost = ImportExportCost(;
     import_offer_curves = import_curve,
     export_offer_curves = export_curve,
     energy_import_weekly_limit = 10000.0,  # MWh per week (optional)
@@ -91,7 +94,7 @@ ie_cost = ImportExportCost(
 Define a [`Source`](@ref) component with the import/export cost:
 
 ```@repl source_ie_cost
-source = Source(
+source = Source(;
     name = "external_grid",
     available = true,
     bus = get_component(ACBus, sys, "nodeC"),
@@ -109,7 +112,8 @@ source = Source(
 ```
 
 !!! tip
-    The `active_power_limits` should span negative (for export) to positive (for import) 
+    
+    The `active_power_limits` should span negative (for export) to positive (for import)
     values. Negative power indicates exporting power to the external grid.
 
 ## Step 5: Add the Source to the System
@@ -139,24 +143,24 @@ using PowerSystemCaseBuilder
 sys = build_system(PSITestSystems, "c_sys5_uc")
 
 # Define piecewise linear import and export curves
-import_curve = make_import_curve(
+import_curve = make_import_curve(;
     power = [0.0, 100.0, 105.0, 120.0, 200.0],
     price = [5.0, 10.0, 20.0, 40.0],
 )
 
-export_curve = make_export_curve(
+export_curve = make_export_curve(;
     power = [0.0, 100.0, 105.0, 120.0, 200.0],
     price = [40.0, 20.0, 10.0, 5.0],
 )
 
 # Create the import/export cost
-ie_cost = ImportExportCost(
+ie_cost = ImportExportCost(;
     import_offer_curves = import_curve,
     export_offer_curves = export_curve,
 )
 
 # Create the source with import/export cost
-source = Source(
+source = Source(;
     name = "external_grid",
     available = true,
     bus = get_component(ACBus, sys, "nodeC"),
@@ -178,9 +182,9 @@ You can also add or update the operating cost on an existing source:
 
 ```@repl source_ie_cost
 # Create a new import/export cost
-new_ie_cost = ImportExportCost(
-    import_offer_curves = make_import_curve(power = 150.0, price = 28.0),
-    export_offer_curves = make_export_curve(power = 150.0, price = 32.0),
+new_ie_cost = ImportExportCost(;
+    import_offer_curves = make_import_curve(; power = 150.0, price = 28.0),
+    export_offer_curves = make_export_curve(; power = 150.0, price = 32.0),
 )
 
 # Update the operating cost
