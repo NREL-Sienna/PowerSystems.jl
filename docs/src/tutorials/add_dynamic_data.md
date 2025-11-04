@@ -38,9 +38,8 @@ threebus_sys = build_system(PSIDSystems, "3 Bus Inverter Base")
 ```
 
 See that there is a table of "[Static](@ref S) Components", which contains the
-[steady state data](@ref S) needed for power flow analysis, but no "[Dynamic](@ref D)" data
-yet (differential equations for transient simulations). For more information about static
-and dynamic data, see the [Glossary and Acronyms](@ref).
+steady state data needed for power flow analysis, but no "[Dynamic](@ref D)" data
+yet to define the differential equations for transient simulations.
 
 Let's view the generators in the system with [`show_components`](@ref),
 including which bus they are connected at:
