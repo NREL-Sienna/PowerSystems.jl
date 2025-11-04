@@ -47,6 +47,7 @@ pages = OrderedDict(
             "...add cost data" => Any[
                 "Add an Operating Cost" => "how_to/add_cost_curve.md",
                 "Add a market bid" => "how_to/market_bid_cost.md",
+                "Add time series fuel costs" => "how_to/add_fuel_curve_timeseries.md",
             ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
             "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
