@@ -3910,7 +3910,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5264,7 +5264,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5434,7 +5434,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5646,7 +5646,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6015,7 +6015,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
@@ -6141,7 +6141,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6263,7 +6263,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6432,7 +6432,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6559,7 +6559,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6786,7 +6786,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,

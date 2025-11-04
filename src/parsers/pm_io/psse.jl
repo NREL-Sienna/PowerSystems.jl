@@ -186,6 +186,7 @@ function _psse2pm_branch!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["br_r"] = pop!(branch, "R")
                 sub_data["br_x"] = pop!(branch, "X")
                 sub_data["g_fr"] = pop!(branch, "GI")
+                # Evenly split the susceptance between the `from` and `to` ends
                 sub_data["b_fr"] = (branch["B"] / 2) + pop!(branch, "BI")
                 sub_data["g_to"] = pop!(branch, "GJ")
                 sub_data["b_to"] = (branch["B"] / 2) + pop!(branch, "BJ")

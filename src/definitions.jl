@@ -392,7 +392,7 @@ electric power generation, covering major thermal fuel types including:
 - Other thermal energy sources
 
 Reference: EIA Form 923 Instructions (https://www.eia.gov/survey/form/eia_923/instructions.pdf)
-
+General Coal and Geothermal codes not directly from the current EIA 923 form but kept for compatibility with older versions of the form.
 See also: [`ThermalStandard`](@ref)
 " ThermalFuels
 

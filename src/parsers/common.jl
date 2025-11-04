@@ -117,7 +117,7 @@ function calculate_gen_rating(
 )
     rating = sqrt(active_power_max^2 + reactive_power_max^2)
     if rating == 0.0
-        @warn "Rating is calculation returned 0.0. Changing to 1.0 in the p.u. of the device."
+        @warn "Rating calculation returned 0.0. Changing to 1.0 in the p.u. of the device."
         return 1.0
     end
     return rating * base_conversion

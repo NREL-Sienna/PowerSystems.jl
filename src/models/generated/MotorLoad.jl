@@ -33,7 +33,7 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 - `active_power::Float64`: Initial steady-state active power demand (MW). A positive value indicates power consumption.
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR). A positive value indicates reactive power consumption.
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `reactive_power_limits::Union{Nothing, MinMax}`: (default: `nothing`) Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `motor_technology::MotorLoadTechnology`: (default: `MotorLoadTechnology.UNDETERMINED`) AC Motor type. Options are listed [here](@ref motor_list)
@@ -55,7 +55,7 @@ mutable struct MotorLoad <: StaticLoad
     reactive_power::Float64
     "Base power (MVA) for [per unitization](@ref per_unit)"
     base_power::Float64
-    "Maximum output power rating of the unit (MVA)"
+    "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
     "Maximum active power (MW) that this load can demand"
     max_active_power::Float64

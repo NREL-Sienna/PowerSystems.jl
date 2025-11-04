@@ -38,6 +38,7 @@ pages = OrderedDict(
                 "Save and read data with a JSON" => "how_to/serialize_data.md",
             ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
+            "...use context managers for bulk operations" => "how_to/use_context_managers.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
@@ -54,7 +55,6 @@ pages = OrderedDict(
             "...reduce REPL printing" => "how_to/reduce_repl_printing.md",
             "...update to a new `PowerSystems.jl` version" => Any[
                 "Migrate from version 4.0 to 5.0" => "how_to/migrating_to_psy5.md",
-                "Migrate from version 3.0 to 4.0" => "how_to/migrating_to_psy4.md",
             ],
         ],
         "Explanation" =>
@@ -76,6 +76,7 @@ pages = OrderedDict(
             "Type Tree" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
+            "Supported PSS/e Models" => "api/psse_models.md",
             "Citation" => "api/citation.md",
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
@@ -128,6 +129,20 @@ function insert_md(content)
     return content
 end
 
+# Function to clean up old generated_*.md files
+function clean_old_generated_files(dir::String)
+    # Remove old generated_*.md files before creating new ones
+    if !isdir(dir)
+        @warn "Directory does not exist: $dir"
+        return
+    end
+    generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    for file in generated_files
+        rm(joinpath(dir, file), force=true)
+        @info "Removed old generated file: $file"
+    end
+end
+
 # This code performs the automated addition of Literate - Generated Markdowns. The desired
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
 julia_file_filter = x -> occursin(".jl", x)
@@ -136,6 +151,18 @@ folders = Dict(
     "Explanation" => filter(julia_file_filter, readdir("docs/src/explanation")),
     "How to..." => filter(julia_file_filter, readdir("docs/src/how_to")),
 )
+
+# Clean up old generated files in folders before Literate generates new ones
+# Note: model_library is cleaned by make_model_library.jl before it generates files,
+# so we only clean explanation and how_to directories here
+for (section, folder) in folders
+    # Skip model_library as it's already cleaned by make_model_library()
+    section == "Model Library" && continue
+    section_folder_name = lowercase(replace(section, " " => "_"))
+    outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
+    clean_old_generated_files(outputdir)
+end
+
 for (section, folder) in folders
     for file in folder
         @show file
