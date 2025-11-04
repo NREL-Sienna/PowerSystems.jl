@@ -7,6 +7,7 @@ Current concrete types include:
 - [`RenewableGenerationCost`](@ref)
 - [`StorageCost`](@ref)
 - [`LoadCost`](@ref)
+- [`OfferCostCurve`](@ref)
 """
 abstract type OperationalCost <: DeviceParameter end
 
