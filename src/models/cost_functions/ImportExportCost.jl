@@ -8,7 +8,7 @@ $(TYPEDFIELDS)
 An operating cost for imports/exports and ancillary services from neighboring areas. The data model
 employs a CostCurve{PiecewiseIncrementalCurve} with an implied zero cost at zero power.
 """
-mutable struct ImportExportCost <: OfferCostCurve
+mutable struct ImportExportCost <: OfferCurveCost
     "Buy Price Curves data to import power, which can be a time series of [`PiecewiseStepData`] or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     import_offer_curves::Union{
