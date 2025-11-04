@@ -37,7 +37,10 @@ To create the system, load pre-existing data for a 3-bus system using
 threebus_sys = build_system(PSIDSystems, "3 Bus Inverter Base")
 ```
 
-See that there is a table of "Static Components", but no "Dynamic" data yet.
+See that there is a table of "[Static](@ref S) Components", which contains the
+[steady state data](@ref S) needed for power flow analysis, but no "[Dynamic](@ref D)" data
+yet (differential equations for transient simulations). For more information about static
+and dynamic data, see the [Glossary and Acronyms](@ref).
 
 Let's view the generators in the system with [`show_components`](@ref),
 including which bus they are connected at:

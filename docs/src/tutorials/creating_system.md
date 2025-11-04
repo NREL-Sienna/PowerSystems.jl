@@ -80,7 +80,10 @@ We can see the impact this has on the `System` simply by printing it:
 sys
 ```
 
-Notice that `System` now shows a summary of components in the system.
+Notice that `System` now shows a summary of components in the system. The table shows
+"[Static](@ref S) Components", which refers to [steady state data](@ref S) used for power
+flow analysis, as opposed to [Dynamic](@ref D) components which would include differential
+equations for transient simulations (see the [Glossary and Acronyms](@ref) for more details).
 
 Let's create a second bus:
 
