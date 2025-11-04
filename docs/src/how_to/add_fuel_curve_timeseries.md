@@ -71,7 +71,7 @@ add_component!(sys, generator)
 
 ## Overview
 
-This guide assumes you have already defined a `System` with a thermal generator that has a
+This guide assumes you have already defined a [`System`](@ref) with a thermal generator (e.g., [`ThermalStandard`](@ref)) that has a
 [`ThermalGenerationCost`](@ref) containing a [`FuelCurve`](@ref). The generator's
 `FuelCurve` must specify a heat rate curve (fuel consumption at different power outputs)
 and an initial scalar fuel cost value, which will be replaced with time series data.
@@ -133,7 +133,8 @@ fuel_cost_timeseries = SingleTimeSeries(;
 
 ## Step 2: Attach Time Series to the Generator
 
-Use the [`set_fuel_cost!`](@ref) function to attach the time series data to the generator:
+Use the [`set_fuel_cost!`](@ref) function to attach the time series data to your 
+previously defined [`System`](@ref) and generator (e.g., [`ThermalStandard`](@ref)):
 
 ```@repl fuelcosts
 # Add the time series fuel cost to the generator
