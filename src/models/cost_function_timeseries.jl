@@ -4,12 +4,10 @@ function _validate_market_bid_cost(cost, context)
         StackTraces.stacktrace()[2].func, context, MarketBidCost, cost))
 end
 
-function _validate_reserve_demand_curve(cost, name)
-    !(cost isa CostCurve{PiecewiseIncrementalCurve}) && throw(
-        ArgumentError(
-            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
-        ),
-    )
+function _validate_reserve_demand_curve(
+    cost::CostCurve{PiecewiseIncrementalCurve},
+    name::String,
+)
     value_curve = get_value_curve(cost)
     function_data = get_function_data(value_curve)
     x_coords = get_x_coords(function_data)
@@ -26,6 +24,14 @@ function _validate_reserve_demand_curve(cost, name)
             )
         end
     end
+end
+
+function _validate_reserve_demand_curve(cost::T, name::String) where {T <: CostCurve}
+    throw(
+        ArgumentError(
+            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
+        ),
+    )
 end
 
 function _validate_fuel_curve(component::Component)
@@ -339,6 +345,34 @@ get_decremental_offer_curves(
     len::Union{Nothing, Int} = nothing,
 ) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
     device, get_decremental_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `import_offer_curves` for a `StaticInjection` device with a
+`ImportExportCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `Nothing`.
+"""
+get_import_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_import_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `export_offer_curves` for a `StaticInjection` device with a
+`ImportExportCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `Nothing`.
+"""
+get_export_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_export_offer_curves(cost), nothing, start_time, len)
 
 """
 Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If

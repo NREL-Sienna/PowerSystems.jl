@@ -9,10 +9,10 @@ $(TYPEDFIELDS)
 An operating cost for market bids of energy and ancilliary services for any asset.
 Compatible with most US Market bidding mechanisms that support demand and generation side.
 """
-mutable struct MarketBidCost <: OperationalCost
+mutable struct MarketBidCost <: OfferCurveCost
     "No load cost"
     no_load_cost::Union{TimeSeriesKey, Nothing, Float64}
-    "Start-up cost at different stages of the thermal cycle as the unit cools after a 
+    "Start-up cost at different stages of the thermal cycle as the unit cools after a
     shutdown (e.g., *hot*, *warm*, or *cold* starts). Warm is also referred to as
     intermediate in some markets. Can also accept a single value if there is only one
     start-up cost"
@@ -256,7 +256,7 @@ function make_market_bid_curve(data::PiecewiseStepData,
 end
 
 """
-Auxiliary make market bid curve for timeseries with nothing inputs. 
+Auxiliary make market bid curve for timeseries with nothing inputs.
 """
 function _make_market_bid_curve(data::PiecewiseStepData;
     initial_input::Union{Nothing, Float64} = nothing,
