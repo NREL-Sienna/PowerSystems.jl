@@ -324,8 +324,11 @@ Rather than unnecessarily duplicating and reformatting data, use PowerSystems.jl
 which saves memory while behaving just like a `Deterministic` forecast.
 
 Before we call `transform_single_time_series!`, we need to remove the `SingleTimeSeries` from
-the wind component, since it already has a `Deterministic` forecast and we don't want to
-create conflicting forecast data:
+the wind component. This is because the wind component already has a `Deterministic` forecast
+with the name `"max_active_power"`, and having both a `Deterministic` and a
+`DeterministicSingleTimeSeries` with the same name is not allowed. If we tried to keep both,
+functions like `get_time_series` wouldn't know which forecast to retrieve when you request
+`"max_active_power"`. Let's remove the `SingleTimeSeries` to avoid this conflict:
 
 ```@repl timeseries
 remove_time_series!(system, SingleTimeSeries, wind1, "max_active_power");
