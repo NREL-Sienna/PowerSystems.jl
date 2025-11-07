@@ -321,7 +321,20 @@ perfect forecast where the forecast is based on the `SingleTimeSeries` we just a
 
 Rather than unnecessarily duplicating and reformatting data, use PowerSystems.jl's dedicated
 [`transform_single_time_series!`](@ref) function to generate a [`DeterministicSingleTimeSeries`](@ref),
-which saves memory while behaving just like a `Deterministic` forecast:
+which saves memory while behaving just like a `Deterministic` forecast.
+
+Before we call `transform_single_time_series!`, we need to remove the `SingleTimeSeries` from
+the wind component. This is because the wind component already has a `Deterministic` forecast
+with the name `"max_active_power"`, and having both a `Deterministic` and a
+`DeterministicSingleTimeSeries` with the same name is not allowed. If we tried to keep both,
+functions like `get_time_series` wouldn't know which forecast to retrieve when you request
+`"max_active_power"`. Let's remove the `SingleTimeSeries` to avoid this conflict:
+
+```@repl timeseries
+remove_time_series!(system, SingleTimeSeries, wind1, "max_active_power");
+```
+
+Now we can transform the remaining `SingleTimeSeries` (the ones attached to the loads):
 
 ```@repl timeseries
 transform_single_time_series!(
@@ -353,9 +366,6 @@ get_time_series_array(
 
 See that `load1`'s scaling factor multiplier is still being applied as expected.
 
-Continue to the next section to address one more impact of calling
-`transform_single_time_series!` on the entire `System`.
-
 # Finding, Retrieving, and Inspecting Time Series
 
 Now, let's complete this tutorial by doing a few sanity checks on the data that we've added,
@@ -377,31 +387,18 @@ system
 Notice that a new table has been added -- the Time Series Summary, showing the count of
 each Type of component that has a given time series type.
 
-Additionally, see that there are both `Deterministic` and `DeterministicSingleTimeSeries`
-forecasts for our `RenewableDispatch` generator (`wind1`). This was a side effect of
-`transform_single_time_series!` which added `DeterministicSingleTimeSeries` for all
-`StaticTimeSeries` in the system, even though we don't need one for wind.
+Notice that the `RenewableDispatch` generator (`wind1`) only has its `Deterministic` forecast
+and no `DeterministicSingleTimeSeries`. This is because we removed the wind's `SingleTimeSeries`
+before calling `transform_single_time_series!`, preventing a conflict with its existing
+`Deterministic` forecast.
 
-Let's remove it with [`remove_time_series!`](@ref). Since we have one wind generator,
-we could easily do it for that component, but let's do programmatically instead by
-its Type:
-
-```@repl timeseries
-for g in get_components(x -> has_time_series(x), RenewableDispatch, system)
-    remove_time_series!(system, DeterministicSingleTimeSeries, g, "max_active_power")
-end
-```
-
-Notice that we also filtered for components where `has_time_series` is `true`,
-which is a simple way to find and manipulate components with time series.
-
-Let's double check `wind1` now:
+Let's verify `wind1`'s time series to confirm:
 
 ```@repl timeseries
 show_time_series(wind1)
 ```
 
-See the unnecessary data is gone.
+See that it only has the `Deterministic` forecast, as expected.
 
 Finally, let's do a last data sanity check on the forecasts. Since we defined the wind
 time series in MW instead of scaling factors, let's make sure none of our forecasts exceeds
