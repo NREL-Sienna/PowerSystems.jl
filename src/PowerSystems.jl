@@ -458,11 +458,13 @@ export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_import_offer_curves, set_import_offer_curves!
 export get_export_offer_curves, set_export_offer_curves!
+export get_import_variable_cost, get_export_variable_cost
 export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
 export get_energy_export_weekly_limit, set_energy_export_weekly_limit!
 export get_services_bid
 export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
+export set_import_variable_cost!, set_export_variable_cost!
 export set_service_bid!
 export iterate_windows
 export get_window
