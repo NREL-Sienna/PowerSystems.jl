@@ -377,6 +377,46 @@ function _determine_injector_status(
 end
 
 """
+Thread-safe version of _determine_injector_status that returns modifications
+instead of directly modifying shared state.
+
+Returns: (device_status, should_add_to_conversion_list, bus_status_update)
+"""
+function _determine_injector_status_parallel(
+    sub_data::Dict{String, Any},
+    pm_data::Dict{String, Any},
+    gen_bus::Int,
+    status_key::String,
+)
+    # Special case for FACTS:  MODE = 0 -> Unavailable, MODE = 1 -> Normal mode, MODE = 2 -> Link bypassed
+    if status_key == "MODE"
+        device_status = pop!(sub_data, status_key) != 0 ? true : false
+    else
+        device_status = pop!(sub_data, status_key) == 1 ? true : false
+    end
+    # If device is off keep it off.
+    if !device_status
+        return (false, false, nothing)
+    end
+    # If device is on check the topology and status of the bus it is connected to.
+    if pm_data["bus"][gen_bus]["bus_type"] == 4
+        gen_bus_connected = gen_bus ∈ pm_data["connected_buses"]
+        if gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated and not topologically isolated. Setting device status to 1 and the bus added to candidate for conversion."
+            return (true, true, true)  # Add to conversion list, set bus_status to true
+        elseif !gen_bus_connected && device_status
+            @warn "Device connected to bus $(gen_bus) is marked as available, but the bus is set isolated. Setting device status to 0."
+            return (false, false, false)  # Set bus_status to false
+        else
+            error("Unrecognized generator and bus status combination.")
+        end
+    else
+        sub_data["gen_status"] = true
+        return (true, false, nothing)
+    end
+end
+
+"""
     _psse2pm_generator!(pm_data, pti_data)
 
 Parses PSS(R)E-style Generator data in a PowerModels-style Dict. "source_id" is
@@ -2203,11 +2243,486 @@ Converts PSS(R)E-style data parsed from a PTI raw file, passed by `pti_data`
 into a format suitable for use internally in PowerModels. Imports all remaining
 data from the PTI file if `import_all` is true (Default: false).
 """
+"""
+Parallelized version of _psse2pm_branch! using thread-local collections.
+"""
+function _psse2pm_branch_parallel!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Branch data into a PowerModels Dict... (parallel mode)"
+    pm_data["branch"] = []
+
+    if haskey(pti_data, "BRANCH")
+        branches = pti_data["BRANCH"]
+        n = length(branches)
+
+        # Pre-allocate result array
+        results = Vector{Union{Dict{String,Any},Nothing}}(undef, n)
+
+        # Thread-local sets for connected buses
+        n_threads = Threads.nthreads()
+        thread_local_connected = [Set{Int}() for _ in 1:n_threads]
+        thread_local_candidates = [Set{Int}() for _ in 1:n_threads]
+
+        # Parallel processing
+        Threads.@threads for i in 1:n
+            branch = deepcopy(branches[i])  # Each thread gets its own copy
+            tid = Threads.threadid()
+
+            if !haskey(branch, "I") || !haskey(branch, "J")
+                @error "Bus Data Incomplete for $(branch). Skipping branch creation"
+                results[i] = nothing
+                continue
+            end
+
+            if first(branch["CKT"]) != '@' && first(branch["CKT"]) != '*'
+                sub_data = Dict{String, Any}()
+                sub_data["f_bus"] = pop!(branch, "I")
+                sub_data["t_bus"] = pop!(branch, "J")
+
+                # Read from shared pm_data["bus"] (thread-safe read)
+                bus_from = pm_data["bus"][sub_data["f_bus"]]
+                sub_data["base_voltage_from"] = bus_from["base_kv"]
+                bus_to = pm_data["bus"][sub_data["t_bus"]]
+                sub_data["base_voltage_to"] = bus_to["base_kv"]
+
+                # Store in thread-local sets
+                if pm_data["has_isolated_type_buses"]
+                    if !(bus_from["bus_type"] == 4 || bus_to["bus_type"] == 4)
+                        push!(thread_local_connected[tid], sub_data["f_bus"])
+                        push!(thread_local_connected[tid], sub_data["t_bus"])
+                    end
+
+                    # Track candidates for isolated bus modifications
+                    if bus_from["bus_type"] == 4
+                        push!(thread_local_candidates[tid], sub_data["f_bus"])
+                    end
+                    if bus_to["bus_type"] == 4
+                        push!(thread_local_candidates[tid], sub_data["t_bus"])
+                    end
+                end
+
+                sub_data["br_r"] = pop!(branch, "R")
+                sub_data["br_x"] = pop!(branch, "X")
+                sub_data["g_fr"] = pop!(branch, "GI")
+                sub_data["b_fr"] = (branch["B"] / 2) + pop!(branch, "BI")
+                sub_data["g_to"] = pop!(branch, "GJ")
+                sub_data["b_to"] = (branch["B"] / 2) + pop!(branch, "BJ")
+
+                sub_data["ext"] = Dict{String, Any}("LEN" => pop!(branch, "LEN"))
+
+                if pm_data["source_version"] ∈ ("32", "33")
+                    sub_data["rate_a"] = pop!(branch, "RATEA")
+                    sub_data["rate_b"] = pop!(branch, "RATEB")
+                    sub_data["rate_c"] = pop!(branch, "RATEC")
+                elseif pm_data["source_version"] == "35"
+                    sub_data["rate_a"] = pop!(branch, "RATE1")
+                    sub_data["rate_b"] = pop!(branch, "RATE2")
+                    sub_data["rate_c"] = pop!(branch, "RATE3")
+
+                    for j in 4:12
+                        rate_key = "RATE$j"
+                        if haskey(branch, rate_key)
+                            sub_data["ext"][rate_key] = pop!(branch, rate_key)
+                        end
+                    end
+                else
+                    error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
+                end
+
+                sub_data["tap"] = 1.0
+                sub_data["shift"] = 0.0
+                sub_data["br_status"] = pop!(branch, "ST")
+                sub_data["angmin"] = 0.0
+                sub_data["angmax"] = 0.0
+                sub_data["transformer"] = false
+
+                sub_data["source_id"] =
+                    ["branch", sub_data["f_bus"], sub_data["t_bus"], pop!(branch, "CKT")]
+                sub_data["index"] = i  # Use loop index directly
+
+                if import_all
+                    _import_remaining_keys!(sub_data, branch; exclude = ["B", "BI", "BJ"])
+                end
+
+                if sub_data["rate_a"] == 0.0
+                    delete!(sub_data, "rate_a")
+                end
+                if sub_data["rate_b"] == 0.0
+                    delete!(sub_data, "rate_b")
+                end
+                if sub_data["rate_c"] == 0.0
+                    delete!(sub_data, "rate_c")
+                end
+
+                # Note: branch_isolated_bus_modifications! will be applied after merging
+                results[i] = sub_data
+            else
+                from_bus = branch["I"]
+                to_bus = branch["J"]
+                ckt = branch["CKT"]
+                @info "Branch $from_bus -> $to_bus with CKT=$ckt will be parsed as DiscreteControlledACBranch"
+                results[i] = nothing
+            end
+        end
+
+        # Merge thread-local results sequentially
+        if pm_data["has_isolated_type_buses"]
+            for local_set in thread_local_connected
+                union!(pm_data["connected_buses"], local_set)
+            end
+            for local_set in thread_local_candidates
+                union!(pm_data["candidate_isolated_to_pq_buses"], local_set)
+            end
+        end
+
+        # Filter and apply isolated bus modifications
+        pm_data["branch"] = filter(!isnothing, results)
+        for branch_data in pm_data["branch"]
+            branch_isolated_bus_modifications!(pm_data, branch_data)
+        end
+
+        # Reindex
+        for (idx, branch_data) in enumerate(pm_data["branch"])
+            branch_data["index"] = idx
+        end
+    end
+    return
+end
+
+"""
+Parallelized version of _psse2pm_load! using thread-local collections.
+"""
+function _psse2pm_load_parallel!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Load data into a PowerModels Dict... (parallel mode)"
+    pm_data["load"] = []
+
+    if haskey(pti_data, "LOAD")
+        loads = pti_data["LOAD"]
+        n = length(loads)
+
+        results = Vector{Dict{String,Any}}(undef, n)
+        n_threads = Threads.nthreads()
+        thread_local_conversions = [Set{Int}() for _ in 1:n_threads]
+        thread_local_bus_status = [Dict{Int,Bool}() for _ in 1:n_threads]
+
+        Threads.@threads for i in 1:n
+            load = deepcopy(loads[i])
+            tid = Threads.threadid()
+            sub_data = Dict{String, Any}()
+
+            sub_data["load_bus"] = pop!(load, "I")
+            sub_data["pd"] = pop!(load, "PL")
+            sub_data["qd"] = pop!(load, "QL")
+            sub_data["pi"] = pop!(load, "IP")
+            sub_data["qi"] = pop!(load, "IQ")
+            sub_data["py"] = pop!(load, "YP")
+            sub_data["qy"] = -pop!(load, "YQ")
+            sub_data["conformity"] = pop!(load, "SCALE")
+            sub_data["source_id"] = ["load", sub_data["load_bus"], pop!(load, "ID")]
+            sub_data["interruptible"] = pop!(load, "INTRPT")
+            sub_data["ext"] = Dict{String, Any}()
+
+            if pm_data["source_version"] ∈ ("32", "33")
+                sub_data["ext"]["LOADTYPE"] = ""
+            elseif pm_data["source_version"] == "35"
+                sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
+            else
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
+            end
+
+            # Use parallel version of status determination
+            status, should_convert, bus_status =
+                _determine_injector_status_parallel(
+                    load,
+                    pm_data,
+                    sub_data["load_bus"],
+                    "STATUS"
+                )
+
+            sub_data["status"] = status
+
+            if should_convert
+                push!(thread_local_conversions[tid], sub_data["load_bus"])
+            end
+            if bus_status !== nothing
+                thread_local_bus_status[tid][sub_data["load_bus"]] = bus_status
+            end
+
+            sub_data["index"] = i
+
+            if import_all
+                _import_remaining_keys!(sub_data, load)
+            end
+
+            results[i] = sub_data
+        end
+
+        # Merge thread-local state changes
+        for local_conversions in thread_local_conversions
+            union!(pm_data["candidate_isolated_to_pq_buses"], local_conversions)
+        end
+        for local_status in thread_local_bus_status
+            for (bus, status) in local_status
+                pm_data["bus"][bus]["bus_status"] = status
+            end
+        end
+
+        pm_data["load"] = results
+    end
+end
+
+"""
+Parallelized version of _psse2pm_shunt! using thread-local collections.
+"""
+function _psse2pm_shunt_parallel!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Fixed & Switched Shunt data into a PowerModels Dict... (parallel mode)"
+
+    pm_data["shunt"] = []
+    if haskey(pti_data, "FIXED SHUNT")
+        shunts = pti_data["FIXED SHUNT"]
+        n = length(shunts)
+
+        results = Vector{Dict{String,Any}}(undef, n)
+        n_threads = Threads.nthreads()
+        thread_local_conversions = [Set{Int}() for _ in 1:n_threads]
+        thread_local_bus_status = [Dict{Int,Bool}() for _ in 1:n_threads]
+
+        Threads.@threads for i in 1:n
+            shunt = deepcopy(shunts[i])
+            tid = Threads.threadid()
+            sub_data = Dict{String, Any}()
+
+            sub_data["shunt_bus"] = pop!(shunt, "I")
+            sub_data["gs"] = pop!(shunt, "GL")
+            sub_data["bs"] = pop!(shunt, "BL")
+
+            status, should_convert, bus_status =
+                _determine_injector_status_parallel(
+                    shunt,
+                    pm_data,
+                    sub_data["shunt_bus"],
+                    "STATUS"
+                )
+
+            sub_data["status"] = status
+
+            if should_convert
+                push!(thread_local_conversions[tid], sub_data["shunt_bus"])
+            end
+            if bus_status !== nothing
+                thread_local_bus_status[tid][sub_data["shunt_bus"]] = bus_status
+            end
+
+            sub_data["source_id"] =
+                ["fixed shunt", sub_data["shunt_bus"], pop!(shunt, "ID")]
+            sub_data["index"] = i
+
+            if import_all
+                _import_remaining_keys!(sub_data, shunt)
+            end
+
+            results[i] = sub_data
+        end
+
+        # Merge thread-local state
+        for local_conversions in thread_local_conversions
+            union!(pm_data["candidate_isolated_to_pq_buses"], local_conversions)
+        end
+        for local_status in thread_local_bus_status
+            for (bus, status) in local_status
+                pm_data["bus"][bus]["bus_status"] = status
+            end
+        end
+
+        pm_data["shunt"] = results
+    end
+
+    # Note: SWITCHED SHUNT processing remains sequential for now
+    # Can be parallelized similarly if needed
+    pm_data["switched_shunt"] = []
+    if haskey(pti_data, "SWITCHED SHUNT")
+        for switched_shunt in pti_data["SWITCHED SHUNT"]
+            sub_data = Dict{String, Any}()
+
+            sub_data["shunt_bus"] = pop!(switched_shunt, "I")
+            sub_data["gs"] = 0.0
+            sub_data["bs"] = pop!(switched_shunt, "BINIT")
+            sub_data["status"] = _determine_injector_status(
+                switched_shunt,
+                pm_data,
+                sub_data["shunt_bus"],
+                "STAT",
+                "candidate_isolated_to_pq_buses",
+            )
+            sub_data["admittance_limits"] =
+                (pop!(switched_shunt, "VSWLO"), pop!(switched_shunt, "VSWHI"))
+
+            step_numbers = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k))
+            )
+            step_numbers_sorted =
+                sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
+            sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
+            sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
+
+            sub_data["ext"] = Dict{String, Any}(
+                "MODSW" => switched_shunt["MODSW"],
+                "ADJM" => switched_shunt["ADJM"],
+                "RMPCT" => switched_shunt["RMPCT"],
+                "RMIDNT" => switched_shunt["RMIDNT"],
+            )
+
+            y_increment = Dict(
+                k => v for
+                (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k))
+            )
+            y_increment_sorted =
+                sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
+            sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]
+            sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
+
+            if pm_data["source_version"] == "35"
+                sub_data["sw_id"] = pop!(switched_shunt, "ID")
+
+                initial_ss_status = Dict(
+                    k => v for
+                    (k, v) in switched_shunt if startswith(k, "S") && isdigit(last(k))
+                )
+                initial_ss_status_sorted =
+                    sort(collect(keys(initial_ss_status)); by = x -> parse(Int, x[2:end]))
+                sub_data["initial_ss_status"] =
+                    [initial_ss_status[k] for k in initial_ss_status_sorted]
+                sub_data["initial_ss_status"] =
+                    sub_data["initial_ss_status"][sub_data["initial_ss_status"] .!= 0]
+            end
+
+            sub_data["source_id"] =
+                ["switched shunt", sub_data["shunt_bus"], get(switched_shunt, "SWREM", "")]
+            sub_data["index"] = length(pm_data["switched_shunt"]) + 1
+
+            if import_all
+                _import_remaining_keys!(sub_data, switched_shunt)
+            end
+
+            push!(pm_data["switched_shunt"], sub_data)
+        end
+    end
+end
+
+"""
+Parallelized version of _psse2pm_generator! using thread-local collections.
+"""
+function _psse2pm_generator_parallel!(pm_data::Dict, pti_data::Dict, import_all::Bool)
+    @info "Parsing PSS(R)E Generator data into a PowerModels Dict... (parallel mode)"
+
+    if haskey(pti_data, "GENERATOR")
+        gens = pti_data["GENERATOR"]
+        n = length(gens)
+
+        results = Vector{Dict{String,Any}}(undef, n)
+        n_threads = Threads.nthreads()
+        thread_local_conversions = [Set{Int}() for _ in 1:n_threads]
+        thread_local_bus_status = [Dict{Int,Bool}() for _ in 1:n_threads]
+
+        Threads.@threads for i in 1:n
+            gen = deepcopy(gens[i])
+            tid = Threads.threadid()
+            sub_data = Dict{String, Any}()
+
+            sub_data["gen_bus"] = pop!(gen, "I")
+
+            gen_status, should_convert, bus_status =
+                _determine_injector_status_parallel(
+                    gen,
+                    pm_data,
+                    sub_data["gen_bus"],
+                    "STAT"
+                )
+
+            sub_data["gen_status"] = gen_status
+
+            if should_convert
+                push!(thread_local_conversions[tid], sub_data["gen_bus"])
+            end
+            if bus_status !== nothing
+                thread_local_bus_status[tid][sub_data["gen_bus"]] = bus_status
+            end
+
+            sub_data["pg"] = pop!(gen, "PG")
+            sub_data["qg"] = pop!(gen, "QG")
+            sub_data["vg"] = pop!(gen, "VS")
+            sub_data["mbase"] = pop!(gen, "MBASE")
+            sub_data["pmin"] = pop!(gen, "PB")
+            sub_data["pmax"] = pop!(gen, "PT")
+            sub_data["qmin"] = pop!(gen, "QB")
+            sub_data["qmax"] = pop!(gen, "QT")
+            sub_data["rt_source"] = pop!(gen, "RT")
+            sub_data["xt_source"] = pop!(gen, "XT")
+            sub_data["r_source"] = pop!(gen, "ZR")
+            sub_data["x_source"] = pop!(gen, "ZX")
+            sub_data["m_control_mode"] = pop!(gen, "WMOD")
+
+            if _is_synch_condenser(sub_data, pm_data)
+                sub_data["fuel"] = "SYNC_COND"
+                sub_data["type"] = "SYNC_COND"
+            end
+
+            if pm_data["source_version"] == "35"
+                sub_data["ext"] = Dict{String, Any}(
+                    "NREG" => pop!(gen, "NREG"),
+                    "BASLOD" => pop!(gen, "BASLOD"),
+                )
+            elseif pm_data["source_version"] ∈ ("32", "33")
+                sub_data["ext"] = Dict{String, Any}(
+                    "IREG" => pop!(gen, "IREG"),
+                    "WPF" => pop!(gen, "WPF"),
+                    "WMOD" => sub_data["m_control_mode"],
+                    "GTAP" => pop!(gen, "GTAP"),
+                    "RMPCT" => pop!(gen, "RMPCT"),
+                )
+            else
+                error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
+            end
+
+            sub_data["model"] = 2
+            sub_data["startup"] = 0.0
+            sub_data["shutdown"] = 0.0
+            sub_data["ncost"] = 2
+            sub_data["cost"] = [1.0, 0.0]
+
+            sub_data["source_id"] =
+                ["generator", string(sub_data["gen_bus"]), pop!(gen, "ID")]
+            sub_data["index"] = i
+
+            if import_all
+                _import_remaining_keys!(sub_data, gen)
+            end
+
+            results[i] = sub_data
+        end
+
+        # Merge thread-local state
+        for local_conversions in thread_local_conversions
+            union!(pm_data["candidate_isolated_to_pv_buses"], local_conversions)
+        end
+        for local_status in thread_local_bus_status
+            for (bus, status) in local_status
+                pm_data["bus"][bus]["bus_status"] = status
+            end
+        end
+
+        pm_data["gen"] = results
+    else
+        pm_data["gen"] = Vector{Dict{String,Any}}()
+    end
+end
+
 function _pti_to_powermodels!(
     pti_data::Dict;
     import_all = false,
     validate = true,
     correct_branch_rating = true,
+    parallel = false,  # New parameter
 )::Dict
     pm_data = Dict{String, Any}()
 
@@ -2226,17 +2741,33 @@ function _pti_to_powermodels!(
     _psse2pm_interarea_transfer!(pm_data, pti_data, import_all)
     _psse2pm_area_interchange!(pm_data, pti_data, import_all)
     _psse2pm_zone!(pm_data, pti_data, import_all)
+
     # Order matters here. Buses need to parsed first
     _psse2pm_bus!(pm_data, pti_data, import_all)
+
     # Branches need to be parsed after buses to find topologically connected buses
-    _psse2pm_branch!(pm_data, pti_data, import_all)
+    if parallel && Threads.nthreads() > 1
+        @info "Using parallel mode with $(Threads.nthreads()) threads"
+        _psse2pm_branch_parallel!(pm_data, pti_data, import_all)
+    else
+        _psse2pm_branch!(pm_data, pti_data, import_all)
+    end
+
     _psse2pm_switch_breaker!(pm_data, pti_data, import_all)
     _psse2pm_multisection_line!(pm_data, pti_data, import_all)
     _psse2pm_transformer!(pm_data, pti_data, import_all)
+
     # Injectors need to be parsed after branches and transformers to find topologically connected buses
-    _psse2pm_load!(pm_data, pti_data, import_all)
-    _psse2pm_shunt!(pm_data, pti_data, import_all)
-    _psse2pm_generator!(pm_data, pti_data, import_all)
+    if parallel && Threads.nthreads() > 1
+        _psse2pm_load_parallel!(pm_data, pti_data, import_all)
+        _psse2pm_shunt_parallel!(pm_data, pti_data, import_all)
+        _psse2pm_generator_parallel!(pm_data, pti_data, import_all)
+    else
+        _psse2pm_load!(pm_data, pti_data, import_all)
+        _psse2pm_shunt!(pm_data, pti_data, import_all)
+        _psse2pm_generator!(pm_data, pti_data, import_all)
+    end
+
     _psse2pm_facts!(pm_data, pti_data, import_all)
 
     _psse2pm_dcline!(pm_data, pti_data, import_all)
