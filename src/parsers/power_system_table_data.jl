@@ -1158,7 +1158,7 @@ function create_pwinc_cost(
         x_points = getfield.(cost_pairs, :x)
         y_points = getfield.(cost_pairs, :y)
         var_cost = PiecewiseIncrementalCurve(
-            first(y_points),
+            first(y_points) * first(x_points),
             x_points,
             y_points[2:end],
         )
