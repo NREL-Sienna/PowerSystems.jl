@@ -32,7 +32,7 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW). A positive value indicates power consumption.
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR). A positive value indicates reactive power consumption.
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `reactive_power_limits::Union{Nothing, MinMax}`: (default: `nothing`) Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
@@ -89,7 +89,7 @@ function MotorLoad(::Nothing)
         bus=ACBus(nothing),
         active_power=0.0,
         reactive_power=0.0,
-        base_power=0.0,
+        base_power=100.0,
         rating=0.0,
         max_active_power=0.0,
         reactive_power_limits=nothing,

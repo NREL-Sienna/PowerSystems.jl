@@ -34,7 +34,7 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -91,7 +91,7 @@ function InterruptiblePowerLoad(::Nothing)
         reactive_power=0.0,
         max_active_power=0.0,
         max_reactive_power=0.0,
-        base_power=0.0,
+        base_power=100.0,
         operation_cost=LoadCost(nothing),
         conformity=LoadConformity.UNDEFINED,
         services=Device[],
