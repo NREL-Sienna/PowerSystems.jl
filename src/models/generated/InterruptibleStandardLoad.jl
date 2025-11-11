@@ -40,7 +40,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
@@ -121,7 +121,7 @@ function InterruptibleStandardLoad(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        base_power=0.0,
+        base_power=100.0,
         operation_cost=LoadCost(nothing),
         conformity=LoadConformity.UNDEFINED,
         constant_active_power=0.0,

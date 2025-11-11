@@ -36,7 +36,7 @@ A [static](@ref S) power load that can be partially or completed shifted to late
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `load_balance_time_horizon::Int`: Number of time periods over which load must be balanced, validation range: `(1, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -96,7 +96,7 @@ function ShiftablePowerLoad(::Nothing)
         reactive_power=0.0,
         max_active_power=0.0,
         max_reactive_power=0.0,
-        base_power=0.0,
+        base_power=100.0,
         load_balance_time_horizon=1,
         operation_cost=LoadCost(nothing),
         services=Device[],

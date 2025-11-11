@@ -40,7 +40,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `x::Float64`: Reactance in pu ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(-2, 4)`
 - `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating` and `rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `base_voltage_primary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_from(arc))`) Primary base voltage in kV, validation range: `(0, nothing)`
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_to(arc))`) Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
@@ -109,7 +109,7 @@ function Transformer2W(::Nothing)
         x=0.0,
         primary_shunt=0.0,
         rating=nothing,
-        base_power=0.0,
+        base_power=100.0,
         base_voltage_primary=nothing,
         base_voltage_secondary=nothing,
         rating_b=0.0,

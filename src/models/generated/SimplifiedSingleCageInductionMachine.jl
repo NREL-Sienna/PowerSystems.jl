@@ -40,7 +40,7 @@ Parameters of 3-states three-phase single cage induction machine with quadratic 
 - `H::Float64`: Motor Inertia Constant [s], validation range: `(0, nothing)`
 - `A::Float64`: Torque-Speed Quadratic Term, validation range: `(0, 1)`
 - `B::Float64`: Torque-Speed Linear Term, validation range: `(0, 1)`
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `C::Float64`: (**Do not modify.**) Torque-Speed Constant Term
 - `τ_ref::Float64`: Reference torque parameter
@@ -121,7 +121,7 @@ function SimplifiedSingleCageInductionMachine(::Nothing)
         H=0,
         A=0.0,
         B=0.0,
-        base_power=0,
+        base_power=100,
         ext=Dict{String, Any}(),
     )
 end

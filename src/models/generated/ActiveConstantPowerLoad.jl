@@ -49,7 +49,7 @@ Parameters of 12-[states](@ref S) active power load based on the paper, ["Dynami
 - `kiv::Float64`: Integral constant for Voltage Control block, validation range: `(0, nothing)`
 - `kpc::Float64`: Proportional constant for Current Control block, validation range: `(0, nothing)`
 - `kic::Float64`: Integral constant for Current Control block, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `P_ref::Float64`: Reference active power (pu)
 - `Q_ref::Float64`: Reference reactive power (pu)
@@ -160,7 +160,7 @@ function ActiveConstantPowerLoad(::Nothing)
         kiv=0,
         kpc=0,
         kic=0,
-        base_power=0,
+        base_power=100,
         ext=Dict{String, Any}(),
     )
 end

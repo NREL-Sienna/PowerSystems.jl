@@ -29,7 +29,7 @@ A Synchronous Machine connected to the system to provide inertia or reactive pow
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
 - `active_power_losses::Float64`: (default: `0.0`) Active Power Loss incurred by having the unit online., validation range: `(0, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -80,7 +80,7 @@ function SynchronousCondenser(::Nothing)
         reactive_power=0.0,
         rating=0.0,
         reactive_power_limits=nothing,
-        base_power=0.0,
+        base_power=100.0,
         active_power_losses=0.0,
         services=Device[],
         dynamic_injector=nothing,
