@@ -1743,7 +1743,7 @@ struct _FieldInfo
         Tuple{UnitSystem, UnitSystem, String},
     }
     unit_conversion::Union{NamedTuple{(:From, :To), Tuple{String, String}}, Nothing}
-    default_value::Any
+    default_value::Union{Float64, Int, String}
     # TODO unit, value ranges and options
 end
 

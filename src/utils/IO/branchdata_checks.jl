@@ -85,30 +85,41 @@ const MVA_LIMITS_TRANSFORMERS = Dict(
     765.0 => (min = 2200.0, max = 6900.0), # This value is 3x the SIL value from https://neos-guide.org/wp-content/uploads/2022/04/line_flow_approximation.pdf
 )
 
+# Helper function to validate a single rating field without dynamic field access
+function _validate_line_rating_field(
+    field_name::Symbol,
+    rating_value::Union{Float64, Nothing},
+    line_name::String,
+    basemva::Float64,
+    closest_v_level::Float64,
+    closest_rate_range::NamedTuple,
+)
+    isnothing(rating_value) && return nothing
+
+    if (rating_value >= 2.0 * closest_rate_range.max / basemva)
+        @warn "$(field_name) $(round(rating_value*basemva; digits=2)) MW for $(line_name) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+            PS_MAX_LOG
+    elseif (rating_value >= closest_rate_range.max / basemva) ||
+           (rating_value <= closest_rate_range.min / basemva)
+        @info "$(field_name) $(round(rating_value*basemva; digits=2)) MW for $(line_name) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
+            PS_MAX_LOG
+    end
+    return nothing
+end
+
 function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
-    voltage_levels = collect(keys(MVA_LIMITS_LINES))
-    closestV_ix = findmin(abs.(voltage_levels .- vrated))
-    closest_v_level = voltage_levels[closestV_ix[2]]
+    voltage_levels = keys(MVA_LIMITS_LINES)
+    closestV_ix = findmin(abs(v - vrated) for v in voltage_levels)
+    closest_v_level = closestV_ix[2]
     closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
 
-    # Assuming that the rate is in pu
-    for field in [:rating, :rating_b, :rating_c]
-        rating_value = getfield(line, field)
-        if isnothing(rating_value)
-            @assert field ∈ [:rating_b, :rating_c]
-            continue
-        end
-        if (rating_value >= 2.0 * closest_rate_range.max / basemva)
-            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
-        elseif (rating_value >= closest_rate_range.max / basemva) ||
-               (rating_value <= closest_rate_range.min / basemva)
-            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
-        end
-    end
+    # Validate each rating field directly (no dynamic field access)
+    line_name = get_name(line)
+    _validate_line_rating_field(:rating, line.rating, line_name, basemva, closest_v_level, closest_rate_range)
+    _validate_line_rating_field(:rating_b, line.rating_b, line_name, basemva, closest_v_level, closest_rate_range)
+    _validate_line_rating_field(:rating_c, line.rating_c, line_name, basemva, closest_v_level, closest_rate_range)
 
     return true
 end
@@ -135,25 +146,35 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     return new_rate
 end
 
+# Helper function to correct a single rating field without dynamic field access
+function _correct_single_rate_limit!(
+    field_name::Symbol,
+    rating_value::Union{Float64, Nothing},
+    branch::Union{Line, MonitoredLine},
+    theoretical_line_rate_pu::Float64,
+)::Bool
+    isnothing(rating_value) && return true
+
+    if rating_value < 0.0
+        @error "PowerSystems does not support negative line rates. $(field_name): $(rating_value)"
+        return false
+    end
+    if rating_value == INFINITE_BOUND
+        @warn "Data for branch $(summary(branch)) $(field_name) is set to INFINITE_BOUND. \
+            PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" maxlog =
+            PS_MAX_LOG
+        setfield!(branch, field_name, theoretical_line_rate_pu)
+    end
+    return true
+end
+
 function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
     theoretical_line_rate_pu = line_rating_calculation(branch)
-    for field in [:rating, :rating_b, :rating_c]
-        rating_value = getfield(branch, field)
-        if isnothing(rating_value)
-            @assert field ∈ [:rating_b, :rating_c]
-            continue
-        end
-        if rating_value < 0.0
-            @error "PowerSystems does not support negative line rates. $(field): $(rating)"
-            return false
-        end
-        if rating_value == INFINITE_BOUND
-            @warn "Data for branch $(summary(branch)) $(field) is set to INFINITE_BOUND. \
-                PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" maxlog =
-                PS_MAX_LOG
-            setfield!(branch, field, theoretical_line_rate_pu)
-        end
-    end
+
+    # Correct each rating field directly (no dynamic field access in loop)
+    _correct_single_rate_limit!(:rating, branch.rating, branch, theoretical_line_rate_pu) || return false
+    _correct_single_rate_limit!(:rating_b, branch.rating_b, branch, theoretical_line_rate_pu) || return false
+    _correct_single_rate_limit!(:rating_c, branch.rating_c, branch, theoretical_line_rate_pu) || return false
 
     return check_rating_values(branch, basemva)
 end
@@ -184,6 +205,28 @@ function validate_component_with_system(
     return is_valid_reactance && is_valid_rating
 end
 
+# Helper function to validate a single transformer rating field without dynamic field access
+function _validate_transformer_rating_field(
+    field_name::Symbol,
+    rating_value::Union{Float64, Nothing},
+    xfrm_name::String,
+    device_base_power::Float64,
+    closest_v_level::Float64,
+    closest_rate_range::NamedTuple,
+)
+    isnothing(rating_value) && return nothing
+
+    if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
+        @warn "$(field_name) $(round(rating_value*device_base_power; digits=2)) MW for $(xfrm_name) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
+            PS_MAX_LOG
+    elseif (rating_value * device_base_power >= closest_rate_range.max) ||
+           (rating_value * device_base_power <= closest_rate_range.min)
+        @info "$(field_name) $(round(rating_value*device_base_power; digits=2)) MW for $(xfrm_name) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
+            PS_MAX_LOG
+    end
+    return nothing
+end
+
 function check_rating_values(
     xfrm::TwoWindingTransformer,
     ::Float64,
@@ -191,28 +234,19 @@ function check_rating_values(
     arc = get_arc(xfrm)
     v_from = get_base_voltage(get_from(arc))
     v_to = get_base_voltage(get_to(arc))
-    vrated = maximum([v_from, v_to])
-    voltage_levels = collect(keys(MVA_LIMITS_TRANSFORMERS))
-    closestV_ix = findmin(abs.(voltage_levels .- vrated))
-    closest_v_level = voltage_levels[closestV_ix[2]]
+    vrated = max(v_from, v_to)
+    voltage_levels = keys(MVA_LIMITS_TRANSFORMERS)
+    closestV_ix = findmin(abs(v - vrated) for v in voltage_levels)
+    closest_v_level = closestV_ix[2]
     closest_rate_range = MVA_LIMITS_TRANSFORMERS[closest_v_level]
     device_base_power = get_base_power(xfrm)
-    # The rate is in device pu
-    for field in [:rating, :rating_b, :rating_c]
-        rating_value = getproperty(xfrm, field)
-        if isnothing(rating_value)
-            @assert field ∈ [:rating_b, :rating_c]
-            continue
-        end
-        if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
-            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
-        elseif (rating_value * device_base_power >= closest_rate_range.max) ||
-               (rating_value * device_base_power <= closest_rate_range.min)
-            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
-        end
-    end
+
+    # Validate each rating field directly (no dynamic field access)
+    xfrm_name = get_name(xfrm)
+    _validate_transformer_rating_field(:rating, xfrm.rating, xfrm_name, device_base_power, closest_v_level, closest_rate_range)
+    _validate_transformer_rating_field(:rating_b, xfrm.rating_b, xfrm_name, device_base_power, closest_v_level, closest_rate_range)
+    _validate_transformer_rating_field(:rating_c, xfrm.rating_c, xfrm_name, device_base_power, closest_v_level, closest_rate_range)
+
     return true
 end
 
