@@ -897,7 +897,7 @@ function make_generator(
     gen,
     cost_colnames,
     bus,
-    gen_storage::Dict{String, Any},
+    gen_storage,
 )
     generator = nothing
     gen_type =
