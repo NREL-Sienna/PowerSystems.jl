@@ -621,9 +621,6 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     cost_point_fields = Vector{Symbol}()
     fields = get_user_fields(data, InputCategory.GENERATOR)
 
-    # Check if we have quadratic heat rate coefficients (a0, a1, a2)
-    has_quadratic_heat_rate = any(f -> occursin(r"heat_rate_a[0-2]$", f), fields)
-
     for field in fields
         if occursin("output_point", field)
             push!(output_point_fields, Symbol(field))
@@ -634,10 +631,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         end
     end
 
-    # Only require output points if we're using piecewise linear curves (not quadratic)
-    if !has_quadratic_heat_rate && length(output_point_fields) == 0
-        @assert length(output_point_fields) > 0
-    end
+    @assert length(output_point_fields) > 0
 
     if length(heat_rate_fields) > 0 && length(cost_point_fields) > 0
         throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
