@@ -533,6 +533,7 @@ end
     bus1 = ACBus(;
         number = 1,
         name = "test_bus",
+        available = true,
         bustype = ACBusTypes.REF,
         angle = 0.0,
         magnitude = 1.0,
