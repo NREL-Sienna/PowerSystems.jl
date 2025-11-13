@@ -186,8 +186,8 @@ function add_geographic_info_to_buses!(sys, substation_data)
 
             geo_info = GeographicInfo(;
                 geo_json = Dict(
-                    "x" => lon,
-                    "y" => lat,
+                    "type" => "Point",
+                    "coordinates" => [lon, lat],
                 ),
             )
             for node in substation["nodes"]
