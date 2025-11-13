@@ -527,7 +527,7 @@ end
     # Test that GeographicInfo uses proper GeoJSON Point format
     # According to RFC 7946, section 3.1.2, a Point should have:
     # {"type": "Point", "coordinates": [longitude, latitude]}
-    
+
     # Create a simple test using the common.jl helper
     sys = System(100.0)
     bus1 = ACBus(;
@@ -540,21 +540,21 @@ end
         base_voltage = 230.0,
     )
     add_component!(sys, bus1)
-    
+
     # Create GeographicInfo with proper GeoJSON format
     geo = IS.GeographicInfo(;
-        geo_json = Dict("type" => "Point", "coordinates" => [-105.0, 40.0])
+        geo_json = Dict("type" => "Point", "coordinates" => [-105.0, 40.0]),
     )
-    
+
     add_supplemental_attribute!(sys, bus1, geo)
-    
+
     # Retrieve and verify the GeoJSON format
     geo_attrs = get_supplemental_attributes(IS.GeographicInfo, sys)
     @test length(geo_attrs) == 1
-    
+
     retrieved_geo = first(geo_attrs)
     geo_json = IS.get_geo_json(retrieved_geo)
-    
+
     # Verify RFC 7946 compliance
     @test haskey(geo_json, "type")
     @test geo_json["type"] == "Point"
@@ -563,7 +563,7 @@ end
     @test length(geo_json["coordinates"]) == 2
     @test geo_json["coordinates"][1] == -105.0  # longitude
     @test geo_json["coordinates"][2] == 40.0    # latitude
-    
+
     # Verify old format is NOT present
     @test !haskey(geo_json, "x")
     @test !haskey(geo_json, "y")
