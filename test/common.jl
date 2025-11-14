@@ -191,8 +191,8 @@ function create_system_with_outages()
     gens = collect(get_components(ThermalStandard, sys))
     gen1 = gens[1]
     gen2 = gens[2]
-    geo1 = GeographicInfo(; geo_json = Dict("x" => 1.0, "y" => 2.0))
-    geo2 = GeographicInfo(; geo_json = Dict("x" => 3.0, "y" => 4.0))
+    geo1 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [1.0, 2.0]))
+    geo2 = GeographicInfo(; geo_json = Dict("type" => "Point", "coordinates" => [3.0, 4.0]))
     begin_time_series_update(sys) do
         begin_supplemental_attributes_update(sys) do
             add_supplemental_attribute!(sys, gen1, geo1)
