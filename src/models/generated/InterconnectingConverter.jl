@@ -33,7 +33,7 @@ Interconnecting Power Converter (IPC) for transforming power from an ACBus to a 
 - `active_power::Float64`: Active power (MW) on the DC side, validation range: `active_power_limits`
 - `rating::Float64`: Maximum output power rating of the converter (MVA), validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW)
-- `base_power::Float64`: Base power of the converter in MVA, validation range: `(1.0e-6, nothing)`
+- `base_power::Float64`: Base power of the converter in MVA, validation range: `(0.0001, nothing)`
 - `dc_current::Float64`: (default: `0.0`) DC current (A) on the converter
 - `max_dc_current::Float64`: (default: `1e8`) Maximum stable dc current limits (A)
 - `loss_function::Union{LinearCurve, QuadraticCurve}`: (default: `LinearCurve(0.0)`) Linear or quadratic loss function with respect to the converter current
