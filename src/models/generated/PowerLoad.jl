@@ -31,7 +31,7 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW)
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR)
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
 - `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
