@@ -2254,11 +2254,59 @@ end
 """
 Check the values of each component in an iterable of components.
 See [`check_component`](@ref) for exceptions thrown.
+
+Component checks are performed in parallel using multiple threads when available.
 """
 function check_components(sys::System, components)
-    for component in components
-        check_component(sys, component)
+    # Collect components into a vector for parallel iteration
+    components_vec = collect(components)
+
+    if isempty(components_vec)
+        return
     end
+
+    n_components = length(components_vec)
+    n_threads = Threads.nthreads()
+
+    # Use single-threaded execution if only one thread available or few components
+    if n_threads == 1 || n_components < n_threads
+        for component in components_vec
+            check_component(sys, component)
+        end
+        return
+    end
+
+    # Thread-safe storage for exceptions
+    exceptions = Vector{Union{Nothing, Exception}}(nothing, n_components)
+    exception_components = Vector{Union{Nothing, Component}}(nothing, n_components)
+
+    # Parallel execution with @threads
+    Threads.@threads for i in 1:n_components
+        component = components_vec[i]
+        try
+            check_component(sys, component)
+        catch e
+            exceptions[i] = e
+            exception_components[i] = component
+        end
+    end
+
+    # Collect and report all errors
+    error_indices = findall(!isnothing, exceptions)
+    if !isempty(error_indices)
+        # Throw the first exception to maintain backward compatibility
+        first_idx = error_indices[1]
+        first_exception = exceptions[first_idx]
+
+        if length(error_indices) > 1
+            # Log additional errors if multiple components failed
+            @warn "Multiple component validation errors occurred ($(length(error_indices)) total). Throwing first error."
+        end
+
+        throw(first_exception)
+    end
+
+    return
 end
 
 """
