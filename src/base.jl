@@ -2256,10 +2256,54 @@ Check the values of each component in an iterable of components.
 See [`check_component`](@ref) for exceptions thrown.
 
 Component checks are performed in parallel using multiple threads when available.
+
+# Arguments
+- `sys::System`: The system containing the components
+- `components`: An iterable of components to check
+
+# Keyword Arguments
+- `skip_unavailable::Union{Nothing, Bool} = nothing`: If true, skip components where
+  `get_available` returns false. If nothing, all components are checked regardless of availability.
+- `filter_func::Union{Nothing, Function} = nothing`: Optional filter function that takes a component
+  and returns true if the component should be checked, false to skip it
 """
-function check_components(sys::System, components)
+function check_components(
+    sys::System,
+    components;
+    skip_unavailable::Union{Nothing, Bool} = nothing,
+    filter_func::Union{Nothing, Function} = nothing,
+)
     # Collect components into a vector for parallel iteration
     components_vec = collect(components)
+
+    if isempty(components_vec)
+        return
+    end
+
+    # Apply filtering if requested
+    if skip_unavailable === true || filter_func !== nothing
+        filtered_components = Vector{eltype(components_vec)}()
+        for component in components_vec
+            # Check availability filter
+            if skip_unavailable === true
+                try
+                    if !get_available(component)
+                        continue
+                    end
+                catch
+                    # Component doesn't have get_available method, include it
+                end
+            end
+
+            # Check custom filter function
+            if filter_func !== nothing && !filter_func(component)
+                continue
+            end
+
+            push!(filtered_components, component)
+        end
+        components_vec = filtered_components
+    end
 
     if isempty(components_vec)
         return
