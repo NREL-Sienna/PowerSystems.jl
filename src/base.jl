@@ -2273,36 +2273,42 @@ function check_components(
     skip_unavailable::Union{Nothing, Bool} = nothing,
     filter_func::Union{Nothing, Function} = nothing,
 )
-    # Collect components into a vector for parallel iteration
-    components_vec = collect(components)
+    n_threads = Threads.nthreads()
 
-    if isempty(components_vec)
+    # Helper function to check if a component should be processed
+    function should_check(component)
+        if skip_unavailable === true
+            try
+                if !get_available(component)
+                    return false
+                end
+            catch
+                # Component doesn't have get_available method, include it
+            end
+        end
+
+        if filter_func !== nothing && !filter_func(component)
+            return false
+        end
+
+        return true
+    end
+
+    # Use single-threaded execution if only one thread available
+    if n_threads == 1
+        for component in components
+            if should_check(component)
+                check_component(sys, component)
+            end
+        end
         return
     end
 
-    # Apply filtering if requested
-    if skip_unavailable === true || filter_func !== nothing
-        filtered_components = Vector{eltype(components_vec)}()
-        for component in components_vec
-            # Check availability filter
-            if skip_unavailable === true
-                try
-                    if !get_available(component)
-                        continue
-                    end
-                catch
-                    # Component doesn't have get_available method, include it
-                end
-            end
-
-            # Check custom filter function
-            if filter_func !== nothing && !filter_func(component)
-                continue
-            end
-
-            push!(filtered_components, component)
-        end
-        components_vec = filtered_components
+    # For parallel execution, we need to collect components into a vector
+    components_vec = if skip_unavailable === true || filter_func !== nothing
+        [c for c in components if should_check(c)]
+    else
+        collect(components)
     end
 
     if isempty(components_vec)
@@ -2310,10 +2316,9 @@ function check_components(
     end
 
     n_components = length(components_vec)
-    n_threads = Threads.nthreads()
 
-    # Use single-threaded execution if only one thread available or few components
-    if n_threads == 1 || n_components < n_threads
+    # Use single-threaded execution if few components
+    if n_components < n_threads
         for component in components_vec
             check_component(sys, component)
         end
