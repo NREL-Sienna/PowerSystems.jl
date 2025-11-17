@@ -573,6 +573,90 @@ end
     @test check_ac_transmission_rate_values(sys)
 end
 
+@testset "Test check_components with skip_unavailable and filter_func" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+
+    # Test skip_unavailable kwarg
+    generators = collect(get_components(ThermalStandard, sys))
+    @test length(generators) > 2
+
+    # Set first generator to unavailable
+    gen1 = generators[1]
+    orig_available = get_available(gen1)
+    set_available!(gen1, false)
+
+    try
+        # Should work without skip_unavailable (checks all components)
+        check_components(sys, generators)
+
+        # Should work with skip_unavailable=true (skips unavailable)
+        check_components(sys, generators; skip_unavailable = true)
+
+        # Should work with skip_unavailable=nothing (default, checks all)
+        check_components(sys, generators; skip_unavailable = nothing)
+    finally
+        set_available!(gen1, orig_available)
+    end
+
+    # Test filter_func kwarg
+    # Filter to only check generators with name starting with specific prefix
+    gen_names = [get_name(g) for g in generators]
+    first_name = gen_names[1]
+
+    # Filter function that only allows the first generator
+    check_components(
+        sys,
+        generators;
+        filter_func = c -> get_name(c) == first_name,
+    )
+
+    # Filter function that excludes all components (empty result)
+    check_components(sys, generators; filter_func = c -> false)
+
+    # Test combining skip_unavailable and filter_func
+    set_available!(gen1, false)
+    try
+        # Should skip gen1 due to unavailable, then apply filter
+        check_components(
+            sys,
+            generators;
+            skip_unavailable = true,
+            filter_func = c -> get_name(c) != first_name,
+        )
+    finally
+        set_available!(gen1, orig_available)
+    end
+
+    # Test that errors still propagate correctly with filtering
+    bus = first(get_components(ACBus, sys))
+    orig_voltage = get_base_voltage(bus)
+    set_base_voltage!(bus, -1.0)
+    buses = collect(get_components(ACBus, sys))
+
+    try
+        # Filter includes the invalid bus - should throw
+        @test_throws IS.InvalidValue check_components(
+            sys,
+            buses;
+            filter_func = c -> get_name(c) == get_name(bus),
+        )
+
+        # Filter excludes the invalid bus - should pass
+        check_components(
+            sys,
+            buses;
+            filter_func = c -> get_name(c) != get_name(bus),
+        )
+    finally
+        set_base_voltage!(bus, orig_voltage)
+    end
+
+    # Test with empty input
+    check_components(sys, Component[])
+    check_components(sys, Component[]; skip_unavailable = true)
+    check_components(sys, Component[]; filter_func = c -> true)
+end
+
 @testset "Test system name and description" begin
     name = "test_system"
     description = "a system description"
