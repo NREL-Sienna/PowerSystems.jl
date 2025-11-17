@@ -2180,21 +2180,7 @@ function check(sys::System)
     critical_components_check(sys)
     adequacy_check(sys)
     check_subsystems(sys)
-    check_base_powers(sys)
     return
-end
-
-"""
-Check that base power on static injection components are nonzero.
-"""
-function check_base_powers(sys::System)
-    for component in get_components(StaticInjection, sys)
-        if abs(get_base_power(component)) < eps()
-            @warn "Base power for $(summary(component)) is zero. Changing device base " *
-                  "power to system base power." maxlog = PS_MAX_LOG
-            set_base_power!(component, get_base_power(sys))
-        end
-    end
 end
 
 """

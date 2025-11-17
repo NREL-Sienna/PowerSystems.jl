@@ -1,12 +1,11 @@
 @testset "Test zero base power correction" begin
-    # if the underlying data gets fixed at some later point, this @test_logs may fail.
     sys = @test_logs(
-        (:warn, r".*Changing device base power to system base power."),
+        (:warn, r".*changing device base power to match system base power.*"),
         match_mode = :any,
         build_system(PSISystems, "RTS_GMLC_DA_sys"; force_build = true)
     )
     for comp in get_components(PSY.SynchronousCondenser, sys)
-        @test get_base_power(comp) != 0.0
+        @test abs(get_base_power(comp)) > eps()
     end
 end
 
@@ -33,9 +32,6 @@ function thermal_with_base_power(bus::PSY.Bus, name::String, base_power::Float64
     )
 end
 
-# TODO it'd be better to just correct the zero base power to non-zero.
-# otherwise, save-then-load changes the system: any components that were added with zero 
-# will get fixed when `check(sys)` runs after de-serialization.
 @testset "Test adding component with zero base power" begin
     sys = build_system(PSISystems, "RTS_GMLC_DA_sys")
     bus = first(get_components(PSY.Bus, sys))
