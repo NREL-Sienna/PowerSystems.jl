@@ -1255,7 +1255,7 @@ end
 Check to see if the component of type T exists.
 """
 function has_components(sys::System, T::Type{<:Component})
-    return IS.has_components(sys.data, T)
+    return IS.has_components(sys.data.components, T)
 end
 
 """
