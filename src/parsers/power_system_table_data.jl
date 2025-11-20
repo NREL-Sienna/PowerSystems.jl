@@ -378,7 +378,7 @@ function System(
     end
 
     timeseries_metadata_file =
-        get(kwargs, :timeseries_metadata_file, getfield(data, :timeseries_metadata_file))
+        get(kwargs, :timeseries_metadata_file, data.timeseries_metadata_file)
 
     if !isnothing(timeseries_metadata_file)
         add_time_series!(sys, timeseries_metadata_file; resolution = time_series_resolution)

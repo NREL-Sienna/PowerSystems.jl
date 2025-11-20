@@ -254,7 +254,7 @@ end
 function check_transformer_reactance(
     xfrm::TwoWindingTransformer,
 )
-    x_pu = getproperty(xfrm, :x)
+    x_pu = xfrm.x  # Direct field access for compile-time known field
     if x_pu < TYPICAL_XFRM_REACTANCE.min
         @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is lower than the typical range $(TYPICAL_XFRM_REACTANCE). \
             Check if the reactance source data is correct." maxlog = PS_MAX_LOG
