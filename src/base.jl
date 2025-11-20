@@ -2442,13 +2442,40 @@ function deserialize_components!(sys::System, raw)
             end
             components =
                 _handle_hydro_reservoirs_deserialization_special_cases(components, type)
-            for component in components
-                handle_deserialization_special_cases!(component, type)
-                comp = deserialize(type, component, component_cache)
-                add_component!(sys, comp)
-                component_cache[IS.get_uuid(comp)] = comp
-                if !isnothing(post_add_func)
-                    post_add_func(comp)
+
+            # Parallelize deserialization if we have multiple components and multiple threads
+            # Only parallelize if we have enough components to benefit from parallelization
+            if length(components) > 10 && Threads.nthreads() > 1
+                # Phase 1: Deserialize components in parallel
+                # Dictionary reads are thread-safe in Julia, so we don't need a lock for reading
+                # component_cache during deserialization
+                deserialized_comps = Vector{Component}(undef, length(components))
+                Threads.@threads for i in eachindex(components)
+                    component = components[i]
+                    handle_deserialization_special_cases!(component, type)
+                    comp = deserialize(type, component, component_cache)
+                    deserialized_comps[i] = comp
+                end
+
+                # Phase 2: Add components to system and update cache sequentially
+                # This ensures thread-safety for add_component! and cache updates
+                for comp in deserialized_comps
+                    add_component!(sys, comp)
+                    component_cache[IS.get_uuid(comp)] = comp
+                    if !isnothing(post_add_func)
+                        post_add_func(comp)
+                    end
+                end
+            else
+                # Fall back to sequential processing for small batches or single thread
+                for component in components
+                    handle_deserialization_special_cases!(component, type)
+                    comp = deserialize(type, component, component_cache)
+                    add_component!(sys, comp)
+                    component_cache[IS.get_uuid(comp)] = comp
+                    if !isnothing(post_add_func)
+                        post_add_func(comp)
+                    end
                 end
             end
             push!(parsed_types, type)
