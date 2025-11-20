@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       should_run: ${{ steps.check.outputs.should_run }}
-      package_name: ${{ steps.parse.outputs.package_name }}
-      branch_name: ${{ steps.parse.outputs.branch_name }}
+      packages_json: ${{ steps.parse.outputs.packages_json }}
+      packages_display: ${{ steps.parse.outputs.packages_display }}
     steps:
       - name: Check if comment matches pattern
         id: check
@@ -28,24 +28,48 @@ jobs:
             echo "should_run=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Parse package and branch
+      - name: Parse packages and branches
         id: parse
         if: steps.check.outputs.should_run == 'true'
         run: |
           COMMENT="${{ github.event.comment.body }}"
-          # Extract package#branch pattern
-          PACKAGE_BRANCH=$(echo "$COMMENT" | grep -oE '[A-Za-z][A-Za-z0-9_]*#[A-Za-z0-9._/-]+' | head -n 1)
-          PACKAGE_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f1)
-          BRANCH_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f2)
 
-          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
-          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
-          echo "Testing with package: $PACKAGE_NAME on branch: $BRANCH_NAME"
+          # Extract all package#branch patterns
+          PACKAGES=$(echo "$COMMENT" | grep -oE '[A-Za-z][A-Za-z0-9_]*#[A-Za-z0-9._/-]+')
+
+          # Build JSON array for packages
+          JSON_ARRAY="["
+          DISPLAY_LIST=""
+          FIRST=true
+
+          while IFS= read -r PACKAGE_BRANCH; do
+            PACKAGE_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f1)
+            BRANCH_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f2)
+
+            if [ "$FIRST" = true ]; then
+              FIRST=false
+            else
+              JSON_ARRAY="${JSON_ARRAY},"
+              DISPLAY_LIST="${DISPLAY_LIST}, "
+            fi
+
+            JSON_ARRAY="${JSON_ARRAY}{\"package\":\"${PACKAGE_NAME}\",\"branch\":\"${BRANCH_NAME}\"}"
+            DISPLAY_LIST="${DISPLAY_LIST}${PACKAGE_NAME}#${BRANCH_NAME}"
+
+            echo "Found: $PACKAGE_NAME#$BRANCH_NAME"
+          done <<< "$PACKAGES"
+
+          JSON_ARRAY="${JSON_ARRAY}]"
+
+          echo "packages_json=$JSON_ARRAY" >> $GITHUB_OUTPUT
+          echo "packages_display=$DISPLAY_LIST" >> $GITHUB_OUTPUT
+          echo "Packages JSON: $JSON_ARRAY"
+          echo "Display: $DISPLAY_LIST"
 
   test:
     needs: check-comment
     if: needs.check-comment.outputs.should_run == 'true'
-    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} (Custom: ${{ needs.check-comment.outputs.package_name }}#${{ needs.check-comment.outputs.branch_name }})
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} (Custom: ${{ needs.check-comment.outputs.packages_display }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -76,35 +100,46 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
 
-      - name: Build package with custom dependency
+      - name: Build package with custom dependencies
         shell: julia --project=. {0}
         run: |
           using Pkg
+          using JSON3
 
           # First, instantiate the project
           Pkg.instantiate()
 
-          # Add the custom package with specific branch
-          package_name = "${{ needs.check-comment.outputs.package_name }}"
-          branch_name = "${{ needs.check-comment.outputs.branch_name }}"
+          # Parse the packages JSON
+          packages_json = """${{ needs.check-comment.outputs.packages_json }}"""
+          packages = JSON3.read(packages_json)
 
-          # Construct the package URL (assuming NREL-Sienna organization)
-          package_url = "https://github.com/NREL-Sienna/$(package_name).jl.git"
+          println("Adding $(length(packages)) custom package(s):")
 
-          println("Adding custom package: $package_name from branch: $branch_name")
-          println("URL: $package_url")
+          # Add each custom package with its specific branch
+          for pkg_info in packages
+            package_name = pkg_info.package
+            branch_name = pkg_info.branch
 
-          try
-            Pkg.add(url=package_url, rev=branch_name)
-            println("Successfully added $package_name#$branch_name")
-          catch e
-            @error "Failed to add custom package" exception=(e, catch_backtrace())
-            rethrow()
+            # Construct the package URL (assuming NREL-Sienna organization)
+            package_url = "https://github.com/NREL-Sienna/$(package_name).jl.git"
+
+            println("\n→ Adding custom package: $package_name from branch: $branch_name")
+            println("  URL: $package_url")
+
+            try
+              Pkg.add(url=package_url, rev=branch_name)
+              println("  ✓ Successfully added $package_name#$branch_name")
+            catch e
+              @error "Failed to add custom package $package_name#$branch_name" exception=(e, catch_backtrace())
+              rethrow()
+            end
           end
 
+          println("\nUpdating and building all packages...")
           # Update and build
           Pkg.update()
           Pkg.build()
+          println("✓ Build complete")
         env:
           PYTHON: ""
 
@@ -131,8 +166,7 @@ jobs:
         with:
           script: |
             const status = '${{ job.status }}';
-            const packageName = '${{ needs.check-comment.outputs.package_name }}';
-            const branchName = '${{ needs.check-comment.outputs.branch_name }}';
+            const packagesDisplay = '${{ needs.check-comment.outputs.packages_display }}';
             const os = '${{ matrix.os }}';
             const emoji = status === 'success' ? '✅' : '❌';
 
@@ -140,5 +174,5 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: ${{ github.event.issue.number }},
-              body: `${emoji} Test with \`${packageName}#${branchName}\` on ${os}: **${status}**`
+              body: `${emoji} Test with \`${packagesDisplay}\` on ${os}: **${status}**`
             })
