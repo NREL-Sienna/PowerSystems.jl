@@ -1254,8 +1254,8 @@ end
 """
 Check to see if the component of type T exists.
 """
-function has_component(sys::System, T::Type{<:Component})
-    return IS.has_component(sys.data, T)
+function has_components(sys::System, T::Type{<:Component})
+    return IS.has_components(sys.data, T)
 end
 
 """
