@@ -146,13 +146,14 @@ function line_rating_calculation(l::Union{Line, MonitoredLine})
     return new_rate
 end
 
-# Helper function to correct a single rating field without dynamic field access
+# Helper function to correct a single rating field
+# Accesses field directly to avoid stale value issues
 function _correct_single_rate_limit!(
     field_name::Symbol,
-    rating_value::Union{Float64, Nothing},
     branch::Union{Line, MonitoredLine},
     theoretical_line_rate_pu::Float64,
 )::Bool
+    rating_value = getfield(branch, field_name)
     isnothing(rating_value) && return true
 
     if rating_value < 0.0
@@ -171,10 +172,10 @@ end
 function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float64)
     theoretical_line_rate_pu = line_rating_calculation(branch)
 
-    # Correct each rating field directly (no dynamic field access in loop)
-    _correct_single_rate_limit!(:rating, branch.rating, branch, theoretical_line_rate_pu) || return false
-    _correct_single_rate_limit!(:rating_b, branch.rating_b, branch, theoretical_line_rate_pu) || return false
-    _correct_single_rate_limit!(:rating_c, branch.rating_c, branch, theoretical_line_rate_pu) || return false
+    # Process each rating field via helper function
+    _correct_single_rate_limit!(:rating, branch, theoretical_line_rate_pu) || return false
+    _correct_single_rate_limit!(:rating_b, branch, theoretical_line_rate_pu) || return false
+    _correct_single_rate_limit!(:rating_c, branch, theoretical_line_rate_pu) || return false
 
     return check_rating_values(branch, basemva)
 end
