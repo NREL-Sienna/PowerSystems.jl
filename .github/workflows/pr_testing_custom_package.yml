@@ -1,0 +1,144 @@
+name: PR-Test-Custom-Package
+
+on:
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Check if the comment contains a package#branch pattern and is on a PR
+  check-comment:
+    if: github.event.issue.pull_request
+    runs-on: ubuntu-latest
+    outputs:
+      should_run: ${{ steps.check.outputs.should_run }}
+      package_name: ${{ steps.parse.outputs.package_name }}
+      branch_name: ${{ steps.parse.outputs.branch_name }}
+    steps:
+      - name: Check if comment matches pattern
+        id: check
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          if echo "$COMMENT" | grep -qE '[A-Za-z][A-Za-z0-9_]*#[A-Za-z0-9._/-]+'; then
+            echo "should_run=true" >> $GITHUB_OUTPUT
+          else
+            echo "should_run=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Parse package and branch
+        id: parse
+        if: steps.check.outputs.should_run == 'true'
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          # Extract package#branch pattern
+          PACKAGE_BRANCH=$(echo "$COMMENT" | grep -oE '[A-Za-z][A-Za-z0-9_]*#[A-Za-z0-9._/-]+' | head -n 1)
+          PACKAGE_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f1)
+          BRANCH_NAME=$(echo "$PACKAGE_BRANCH" | cut -d'#' -f2)
+
+          echo "package_name=$PACKAGE_NAME" >> $GITHUB_OUTPUT
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "Testing with package: $PACKAGE_NAME on branch: $BRANCH_NAME"
+
+  test:
+    needs: check-comment
+    if: needs.check-comment.outputs.should_run == 'true'
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }} (Custom: ${{ needs.check-comment.outputs.package_name }}#${{ needs.check-comment.outputs.branch_name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        julia-version: ['1']
+        julia-arch: [x64]
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+      - name: Add reaction to comment
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: ${{ github.event.comment.id }},
+              content: 'rocket'
+            })
+
+      - name: Checkout PR code
+        uses: actions/checkout@v3
+        with:
+          ref: refs/pull/${{ github.event.issue.number }}/head
+
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@latest
+        with:
+          version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
+
+      - name: Build package with custom dependency
+        shell: julia --project=. {0}
+        run: |
+          using Pkg
+
+          # First, instantiate the project
+          Pkg.instantiate()
+
+          # Add the custom package with specific branch
+          package_name = "${{ needs.check-comment.outputs.package_name }}"
+          branch_name = "${{ needs.check-comment.outputs.branch_name }}"
+
+          # Construct the package URL (assuming NREL-Sienna organization)
+          package_url = "https://github.com/NREL-Sienna/$(package_name).jl.git"
+
+          println("Adding custom package: $package_name from branch: $branch_name")
+          println("URL: $package_url")
+
+          try
+            Pkg.add(url=package_url, rev=branch_name)
+            println("Successfully added $package_name#$branch_name")
+          catch e
+            @error "Failed to add custom package" exception=(e, catch_backtrace())
+            rethrow()
+          end
+
+          # Update and build
+          Pkg.update()
+          Pkg.build()
+        env:
+          PYTHON: ""
+
+      - name: Run tests
+        uses: julia-actions/julia-runtest@latest
+        env:
+          PYTHON: ""
+
+      - name: Process coverage
+        uses: julia-actions/julia-processcoverage@v1
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Comment result
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const status = '${{ job.status }}';
+            const packageName = '${{ needs.check-comment.outputs.package_name }}';
+            const branchName = '${{ needs.check-comment.outputs.branch_name }}';
+            const os = '${{ matrix.os }}';
+            const emoji = status === 'success' ? '✅' : '❌';
+
+            github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ github.event.issue.number }},
+              body: `${emoji} Test with \`${packageName}#${branchName}\` on ${os}: **${status}**`
+            })
