@@ -2419,8 +2419,6 @@ function deserialize_components!(sys::System, raw)
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
-    # Lock to protect component_cache from race conditions during parallel access
-    cache_lock = ReentrantLock()
 
     # Add each type to this as we parse.
     parsed_types = Set()
@@ -2448,27 +2446,28 @@ function deserialize_components!(sys::System, raw)
             # Parallelize deserialization if we have multiple components and multiple threads
             # Only parallelize if we have enough components to benefit from parallelization
             if length(components) > 10 && Threads.nthreads() > 1
-                # Phase 1: Deserialize components in parallel
-                # Use lock to protect component_cache from race conditions during concurrent reads
+                # Create an immutable snapshot of component_cache for thread-safe parallel reads
+                # Components of the same type typically only reference components from previous
+                # type batches (already in cache), not each other. This snapshot contains all
+                # previously deserialized components and won't be modified during parallel processing.
+                cache_snapshot = copy(component_cache)
+
+                # Phase 1: Deserialize components in parallel using the immutable snapshot
+                # No locks needed since each thread only reads from the snapshot
                 deserialized_comps = Vector{Component}(undef, length(components))
                 Threads.@threads for i in eachindex(components)
                     component = components[i]
                     handle_deserialization_special_cases!(component, type)
-                    # Lock is needed because deserialize() may read from component_cache
-                    # to resolve UUID references, and concurrent Dict access is not thread-safe
-                    comp = lock(cache_lock) do
-                        deserialize(type, component, component_cache)
-                    end
+                    # Use cache_snapshot for UUID resolution - no lock needed for reads
+                    comp = deserialize(type, component, cache_snapshot)
                     deserialized_comps[i] = comp
                 end
 
-                # Phase 2: Add components to system and update cache sequentially
-                # This ensures thread-safety for add_component! and cache updates
+                # Phase 2: Add all deserialized components to system and update cache sequentially
+                # This batch approach minimizes sequential overhead while maintaining thread-safety
                 for comp in deserialized_comps
                     add_component!(sys, comp)
-                    lock(cache_lock) do
-                        component_cache[IS.get_uuid(comp)] = comp
-                    end
+                    component_cache[IS.get_uuid(comp)] = comp
                     if !isnothing(post_add_func)
                         post_add_func(comp)
                     end
