@@ -1,15 +1,20 @@
+# Multiple dispatch version - handles Nothing case
 function orderedlimits(
-    limits::Union{NamedTuple{(:min, :max), Tuple{Float64, Float64}}, Nothing},
+    limits::Nothing,
     limitsname::String,
 )
-    if isa(limits, Nothing)
-        @info "'$limitsname' limits defined as nothing"
-    else
-        if limits.max < limits.min
-            throw(DataFormatError("$limitsname limits not in ascending order"))
-        end
-    end
+    @info "'$limitsname' limits defined as nothing"
+    return limits
+end
 
+# Multiple dispatch version - handles NamedTuple case
+function orderedlimits(
+    limits::NamedTuple{(:min, :max), Tuple{Float64, Float64}},
+    limitsname::String,
+)
+    if limits.max < limits.min
+        throw(DataFormatError("$limitsname limits not in ascending order"))
+    end
     return limits
 end
 

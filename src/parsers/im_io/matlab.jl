@@ -315,24 +315,27 @@ function _add_line_delimiter(mp_line::AbstractString, start_char, end_char)
 end
 
 "Checks if the given value is of a given type, if not tries to make it that type"
-function check_type(typ, value)
-    if isa(value, typ)
-        return value
-    elseif isa(value, String) || isa(value, SubString)
-        try
-            value = parse(typ, value)
-            return value
-        catch e
-            @error "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data"
-            rethrow(e)
-        end
-    else
-        try
-            value = typ(value)
-            return value
-        catch e
-            @error "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data"
-            rethrow(e)
-        end
+# Multiple dispatch version - value already has correct type
+function check_type(::Type{T}, value::T) where {T}
+    return value
+end
+
+# Multiple dispatch version - handle String/SubString by parsing
+function check_type(typ::Type{T}, value::Union{String, SubString}) where {T}
+    try
+        return parse(typ, value)
+    catch e
+        @error "parsing error, the matlab string \"$(value)\" can not be parsed to $(typ) data"
+        rethrow(e)
+    end
+end
+
+# Multiple dispatch version - fallback for type conversion
+function check_type(typ::Type{T}, value) where {T}
+    try
+        return typ(value)
+    catch e
+        @error "parsing error, the matlab value $(value) of type $(typeof(value)) can not be parsed to $(typ) data"
+        rethrow(e)
     end
 end

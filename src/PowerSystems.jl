@@ -1,5 +1,3 @@
-isdefined(Base, :__precompile__) && __precompile__()
-
 """
 Module for constructing self-contained power system objects.
 """

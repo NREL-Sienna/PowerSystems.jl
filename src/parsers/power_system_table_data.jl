@@ -1268,6 +1268,10 @@ function make_synchronous_condenser_generator(
     )
 end
 
+# Helper functions to parse boolean values with multiple dispatch
+_parse_bool_value(value::Bool) = value
+_parse_bool_value(value) = parse(Bool, lowercase(String(value)))
+
 function make_thermal_generator(
     data::PowerSystemTableData,
     gen,
@@ -1289,9 +1293,7 @@ function make_thermal_generator(
     op_cost = make_cost(ThermalStandard, data, gen, cost_colnames)
 
     gen_must_run = isnothing(gen.must_run) ? false : gen.must_run
-    if !isa(gen_must_run, Bool)
-        gen_must_run = parse(Bool, lowercase(String(gen_must_run)))
-    end
+    gen_must_run = _parse_bool_value(gen_must_run)
 
     return ThermalStandard(;
         name = gen.name,
