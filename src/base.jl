@@ -2419,6 +2419,8 @@ function deserialize_components!(sys::System, raw)
     # Maintain a lookup of UUID to component because some component types encode
     # composed types as UUIDs instead of actual types.
     component_cache = Dict{Base.UUID, Component}()
+    # Lock to protect component_cache from race conditions during parallel access
+    cache_lock = ReentrantLock()
 
     # Add each type to this as we parse.
     parsed_types = Set()
@@ -2447,13 +2449,16 @@ function deserialize_components!(sys::System, raw)
             # Only parallelize if we have enough components to benefit from parallelization
             if length(components) > 10 && Threads.nthreads() > 1
                 # Phase 1: Deserialize components in parallel
-                # Dictionary reads are thread-safe in Julia, so we don't need a lock for reading
-                # component_cache during deserialization
+                # Use lock to protect component_cache from race conditions during concurrent reads
                 deserialized_comps = Vector{Component}(undef, length(components))
                 Threads.@threads for i in eachindex(components)
                     component = components[i]
                     handle_deserialization_special_cases!(component, type)
-                    comp = deserialize(type, component, component_cache)
+                    # Lock is needed because deserialize() may read from component_cache
+                    # to resolve UUID references, and concurrent Dict access is not thread-safe
+                    comp = lock(cache_lock) do
+                        deserialize(type, component, component_cache)
+                    end
                     deserialized_comps[i] = comp
                 end
 
@@ -2461,7 +2466,9 @@ function deserialize_components!(sys::System, raw)
                 # This ensures thread-safety for add_component! and cache updates
                 for comp in deserialized_comps
                     add_component!(sys, comp)
-                    component_cache[IS.get_uuid(comp)] = comp
+                    lock(cache_lock) do
+                        component_cache[IS.get_uuid(comp)] = comp
+                    end
                     if !isnothing(post_add_func)
                         post_add_func(comp)
                     end
