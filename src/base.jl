@@ -2427,6 +2427,22 @@ function deserialize_components!(sys::System, raw)
         return any(x -> type <: x, types)
     end
 
+    # Helper function to deserialize a single component from its dictionary representation
+    function deserialize_component(component_dict, component_type, cache)
+        handle_deserialization_special_cases!(component_dict, component_type)
+        return deserialize(component_type, component_dict, cache)
+    end
+
+    # Helper function to add a deserialized component to the system and update cache
+    function add_and_cache_component!(comp, post_add_func)
+        add_component!(sys, comp)
+        component_cache[IS.get_uuid(comp)] = comp
+        if !isnothing(post_add_func)
+            post_add_func(comp)
+        end
+        return
+    end
+
     function deserialize_and_add!(;
         skip_types = nothing,
         include_types = nothing,
@@ -2456,32 +2472,23 @@ function deserialize_components!(sys::System, raw)
                 # No locks needed since each thread only reads from the snapshot
                 deserialized_comps = Vector{Component}(undef, length(components))
                 Threads.@threads for i in eachindex(components)
-                    component = components[i]
-                    handle_deserialization_special_cases!(component, type)
-                    # Use cache_snapshot for UUID resolution - no lock needed for reads
-                    comp = deserialize(type, component, cache_snapshot)
-                    deserialized_comps[i] = comp
+                    deserialized_comps[i] = deserialize_component(
+                        components[i],
+                        type,
+                        cache_snapshot,
+                    )
                 end
 
                 # Phase 2: Add all deserialized components to system and update cache sequentially
                 # This batch approach minimizes sequential overhead while maintaining thread-safety
                 for comp in deserialized_comps
-                    add_component!(sys, comp)
-                    component_cache[IS.get_uuid(comp)] = comp
-                    if !isnothing(post_add_func)
-                        post_add_func(comp)
-                    end
+                    add_and_cache_component!(comp, post_add_func)
                 end
             else
                 # Fall back to sequential processing for small batches or single thread
                 for component in components
-                    handle_deserialization_special_cases!(component, type)
-                    comp = deserialize(type, component, component_cache)
-                    add_component!(sys, comp)
-                    component_cache[IS.get_uuid(comp)] = comp
-                    if !isnothing(post_add_func)
-                        post_add_func(comp)
-                    end
+                    comp = deserialize_component(component, type, component_cache)
+                    add_and_cache_component!(comp, post_add_func)
                 end
             end
             push!(parsed_types, type)
