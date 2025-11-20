@@ -700,7 +700,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
             )
             y_increment_sorted =
                 sort(keys(y_increment); by = x -> parse(Int, x[2:end]))
-            sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]im
+            sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]
             sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
 
             if pm_data["source_version"] == "35"
