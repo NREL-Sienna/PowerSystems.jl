@@ -110,9 +110,9 @@ end
 function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
     arc = get_arc(line)
     vrated = get_base_voltage(get_to(arc))
-    voltage_levels = keys(MVA_LIMITS_LINES)
-    closestV_ix = findmin(abs(v - vrated) for v in voltage_levels)
-    closest_v_level = closestV_ix[2]
+    voltage_levels = collect(keys(MVA_LIMITS_LINES))
+    closestV_ix = findmin(abs.(voltage_levels .- vrated))
+    closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_LINES[closest_v_level]
 
     # Validate each rating field directly (no dynamic field access)
@@ -235,9 +235,9 @@ function check_rating_values(
     v_from = get_base_voltage(get_from(arc))
     v_to = get_base_voltage(get_to(arc))
     vrated = max(v_from, v_to)
-    voltage_levels = keys(MVA_LIMITS_TRANSFORMERS)
-    closestV_ix = findmin(abs(v - vrated) for v in voltage_levels)
-    closest_v_level = closestV_ix[2]
+    voltage_levels = collect(keys(MVA_LIMITS_TRANSFORMERS))
+    closestV_ix = findmin(abs.(voltage_levels .- vrated))
+    closest_v_level = voltage_levels[closestV_ix[2]]
     closest_rate_range = MVA_LIMITS_TRANSFORMERS[closest_v_level]
     device_base_power = get_base_power(xfrm)
 

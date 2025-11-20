@@ -683,7 +683,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 (k, v) in switched_shunt if startswith(k, "N") && isdigit(last(k))
             )
             step_numbers_sorted =
-                sort(keys(step_numbers); by = x -> parse(Int, x[2:end]))
+                sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
 
@@ -699,7 +699,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 (k, v) in switched_shunt if startswith(k, "B") && isdigit(last(k))
             )
             y_increment_sorted =
-                sort(keys(y_increment); by = x -> parse(Int, x[2:end]))
+                sort(collect(keys(y_increment)); by = x -> parse(Int, x[2:end]))
             sub_data["y_increment"] = [y_increment[k] for k in y_increment_sorted]
             sub_data["y_increment"] = sub_data["y_increment"][sub_data["y_increment"] .!= 0]
 
@@ -711,7 +711,7 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                     (k, v) in switched_shunt if startswith(k, "S") && isdigit(last(k))
                 )
                 initial_ss_status_sorted =
-                    sort(keys(initial_ss_status); by = x -> parse(Int, x[2:end]))
+                    sort(collect(keys(initial_ss_status)); by = x -> parse(Int, x[2:end]))
                 sub_data["initial_status"] =
                     [initial_ss_status[k] for k in initial_ss_status_sorted]
                 sub_data["initial_status"] =
