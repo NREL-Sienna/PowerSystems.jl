@@ -541,6 +541,7 @@ export get_subsystem_components
 export remove_component_from_subsystem!
 export remove_component_from_subsystems!
 export has_component
+export has_components
 export get_assigned_subsystems
 export has_subsystems
 export is_assigned_to_subsystem

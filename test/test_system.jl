@@ -638,6 +638,12 @@ end
     @test_throws ArgumentError add_service!(device2, service1, sys2)
 end
 
+@testset "Test has_components" begin
+    sys1 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    @test has_components(sys1, ThermalStandard)
+    @test !has_components(sys1, TransmissionInterface)
+end
+
 @testset "Test set_bus_number!" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     buses = collect(get_components(ACBus, sys))
