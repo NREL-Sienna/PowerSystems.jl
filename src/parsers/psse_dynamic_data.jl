@@ -46,37 +46,46 @@ function _parse_dyr_file(file::AbstractString)
     return parsed_values
 end
 
-function _parse_input_types(_v, val)
-    # If the parameter is a Float64, then use the value directly as the argument.
-    # Typically uses for the resistance that is not available in .dyr files.
-    if isa(_v, Float64)
-        if isnan(_v)
-            error("nan for $(_v)")
-        end
-        return _v
-        # If the parameter is an Int, then use the integer as the key of the value in the dictionary.
-    elseif isa(_v, Int)
-        return val[_v]
-    elseif _v == "NaN"
-        return NaN
-        # If the parameter is a tuple (as a string), then construct the tuple directly.
-    elseif isa(_v, String)
-        #TODO: Generalize n-length tuple
-        m = match(r"^\((\d+)\s*,\s*(\d+)\)$", _v)
-        m2 = match(r"^\((\d+)\s*,\s*(\d+),\s*(\d+)\)$", _v)
-        if m !== nothing
-            _tuple_ix = parse.(Int, m.captures)
-            return Tuple(val[_tuple_ix])
-        elseif m2 !== nothing
-            _tuple_ix = parse.(Int, m2.captures)
-            return Tuple(val[_tuple_ix])
-        else
-            error("String $(_v) not recognized for parsing")
-        end
-    else
-        error("invalid input value $val")
+# Multiple dispatch versions for type stability
+# Handle Float64 parameters - use value directly (e.g., resistance not in .dyr files)
+function _parse_input_types(v::Float64, val)
+    if isnan(v)
+        error("nan for $(v)")
     end
-    return
+    return v
+end
+
+# Handle Int parameters - use as key to index into val dictionary
+function _parse_input_types(v::Int, val)
+    return val[v]
+end
+
+# Handle String parameters - either "NaN" or tuple patterns like "(1,2)" or "(1,2,3)"
+function _parse_input_types(v::String, val)
+    if v == "NaN"
+        return NaN
+    end
+
+    # Try to parse as tuple pattern
+    # TODO: Generalize n-length tuple
+    m = match(r"^\((\d+)\s*,\s*(\d+)\)$", v)
+    if m !== nothing
+        _tuple_ix = parse.(Int, m.captures)
+        return Tuple(val[_tuple_ix])
+    end
+
+    m2 = match(r"^\((\d+)\s*,\s*(\d+),\s*(\d+)\)$", v)
+    if m2 !== nothing
+        _tuple_ix = parse.(Int, m2.captures)
+        return Tuple(val[_tuple_ix])
+    end
+
+    error("String $(v) not recognized for parsing")
+end
+
+# Fallback for unexpected types
+function _parse_input_types(v, val)
+    error("invalid input value $val with type $(typeof(v))")
 end
 
 """
