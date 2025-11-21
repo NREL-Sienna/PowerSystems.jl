@@ -292,5 +292,5 @@ Key fields specific to [`HydroPumpTurbine`](@ref):
 
 ### Removing Connections
 
-- `remove_turbine!(reservoir, turbine)`: Remove a specific turbine connection
-- `clear_turbines!(reservoir)`: Remove all turbine connections from reservoir
+  - `remove_turbine!(reservoir, turbine)`: Remove a specific turbine connection
+  - `clear_turbines!(reservoir)`: Remove all turbine connections from reservoir
