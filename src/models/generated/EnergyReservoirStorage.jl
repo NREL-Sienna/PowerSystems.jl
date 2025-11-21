@@ -52,7 +52,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `efficiency::NamedTuple{(:in, :out), Tuple{Float64, Float64}}`: Average efficiency [0, 1] `in` (charging/filling) and `out` (discharging/consuming) of the storage system, validation range: `(0, 1)`
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(1.0e-6, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `operation_cost::Union{StorageCost, MarketBidCost}`: (default: `StorageCost(nothing)`) [`OperationalCost`](@ref) of storage
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor of `storage_capacity` to MWh, if different than 1.0. For example, X MWh/liter hydrogen
 - `storage_target::Float64`: (default: `0.0`) Storage target at the end of simulation as ratio of storage capacity

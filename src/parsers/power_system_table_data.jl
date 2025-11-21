@@ -934,6 +934,12 @@ function make_generator(
         @error "Skipping unsupported generator" gen.name gen_type
     end
 
+    if abs(get_base_power(generator)) <= 1e-6
+        @warn "Generator $(summary(generator)) has base power of zero: changing device " *
+              "base power to match system base power, $(data.base_power)"
+        set_base_power!(generator, data.base_power)
+    end
+
     return generator, reservoirs
 end
 
