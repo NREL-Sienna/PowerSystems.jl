@@ -276,10 +276,10 @@ Key fields specific to [`HydroPumpTurbine`](@ref):
 
 ### Checking Connections
 
-- `has_downstream_turbine(reservoir)`: Check if any downstream turbines are attached
-- `has_downstream_turbine(reservoir, turbine)`: Check if specific turbine is downstream
-- `has_upstream_turbine(reservoir)`: Check if any upstream turbines are attached
-- `has_upstream_turbine(reservoir, turbine)`: Check if specific turbine is upstream
+  - `has_downstream_turbine(reservoir)`: Check if any downstream turbines are attached
+  - `has_downstream_turbine(reservoir, turbine)`: Check if specific turbine is downstream
+  - `has_upstream_turbine(reservoir)`: Check if any upstream turbines are attached
+  - `has_upstream_turbine(reservoir, turbine)`: Check if specific turbine is upstream
 
 ### Retrieving Connected Components
 
