@@ -269,10 +269,10 @@ Key fields specific to [`HydroPumpTurbine`](@ref):
 
 ### Linking Turbines to Reservoirs
 
-- `set_downstream_turbine!(reservoir, turbine)`: Link a single turbine as downstream of reservoir
-- `set_downstream_turbines!(reservoir, turbines)`: Link multiple turbines as downstream
-- `set_upstream_turbine!(reservoir, turbine)`: Link a single turbine as upstream of reservoir
-- `set_upstream_turbines!(reservoir, turbines)`: Link multiple turbines as upstream
+  - `set_downstream_turbine!(reservoir, turbine)`: Link a single turbine as downstream of reservoir
+  - `set_downstream_turbines!(reservoir, turbines)`: Link multiple turbines as downstream
+  - `set_upstream_turbine!(reservoir, turbine)`: Link a single turbine as upstream of reservoir
+  - `set_upstream_turbines!(reservoir, turbines)`: Link multiple turbines as upstream
 
 ### Checking Connections
 
