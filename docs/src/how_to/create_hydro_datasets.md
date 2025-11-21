@@ -230,12 +230,12 @@ set_upstream_turbine!(tail_reservoir, pump_turbine)
 
 Key fields for [`HydroTurbine`](@ref):
 
-- `powerhouse_elevation::Float64`: Height in meters above sea level of the powerhouse
-- `efficiency::Float64`: Turbine efficiency [0, 1.0]
-- `turbine_type::HydroTurbineType`: Type of turbine (e.g., `HydroTurbineType.UNKNOWN`, `HydroTurbineType.FRANCIS`, `HydroTurbineType.PELTON`, `HydroTurbineType.KAPLAN`)
-- `conversion_factor::Float64`: Conversion factor from flow/volume to energy (m³ -> p.u-hr)
-- `outflow_limits::Union{Nothing, MinMax}`: Turbine outflow limits in m³/s
-- `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours from reservoir to turbine
+  - `powerhouse_elevation::Float64`: Height in meters above sea level of the powerhouse
+  - `efficiency::Float64`: Turbine efficiency [0, 1.0]
+  - `turbine_type::HydroTurbineType`: Type of turbine (e.g., `HydroTurbineType.UNKNOWN`, `HydroTurbineType.FRANCIS`, `HydroTurbineType.PELTON`, `HydroTurbineType.KAPLAN`)
+  - `conversion_factor::Float64`: Conversion factor from flow/volume to energy (m³ -> p.u-hr)
+  - `outflow_limits::Union{Nothing, MinMax}`: Turbine outflow limits in m³/s
+  - `travel_time::Union{Nothing, Float64}`: Downstream travel time in hours from reservoir to turbine
 
 ### HydroReservoir
 
