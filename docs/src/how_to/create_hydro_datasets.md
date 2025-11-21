@@ -95,7 +95,7 @@ sys = System(100.0)
 set_units_base_system!(sys, "NATURAL_UNITS")
 
 # Create and add a bus
-bus = ACBus(
+bus = ACBus(;
     number = 1,
     name = "bus1",
     available = true,
