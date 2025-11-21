@@ -34,7 +34,7 @@ set_units_base_system!(sys, "NATURAL_UNITS")
 bus = ACBus(;
     number = 1,
     name = "bus1",
-    available = true, 
+    available = true,
     bustype = ACBusTypes.PV,
     angle = 0.0,
     magnitude = 1.0,
