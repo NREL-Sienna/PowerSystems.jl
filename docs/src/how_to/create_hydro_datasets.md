@@ -241,18 +241,18 @@ Key fields for [`HydroTurbine`](@ref):
 
 Key fields for [`HydroReservoir`](@ref):
 
-- `storage_level_limits::MinMax`: Storage level limits (in m³, m, or MWh based on `level_data_type`)
-- `initial_level::Float64`: Initial level as fraction of `storage_level_limits.max`
-- `inflow::Float64`: Water refilling the reservoir (m³/h or MW)
-- `outflow::Float64`: Water naturally leaving the reservoir (m³/h or MW)
-- `spillage_limits::Union{Nothing, MinMax}`: Water spillage limits
-- `level_targets::Union{Nothing, Float64}`: Target level at simulation end as fraction of max
-- `intake_elevation::Float64`: Height of intake in meters above sea level
-- `head_to_volume_factor::ValueCurve`: Head to volume relationship
-- `upstream_turbines::Vector{HydroUnit}`: Turbines feeding into this reservoir (tail reservoir)
-- `downstream_turbines::Vector{HydroUnit}`: Turbines fed by this reservoir (head reservoir)
-- `upstream_reservoirs::Vector{Device}`: Reservoirs feeding spillage into this reservoir
-- `level_data_type::ReservoirDataType`: Data type (e.g., `ReservoirDataType.USABLE_VOLUME`, `ReservoirDataType.HEAD`, `ReservoirDataType.ENERGY`)
+  - `storage_level_limits::MinMax`: Storage level limits (in m³, m, or MWh based on `level_data_type`)
+  - `initial_level::Float64`: Initial level as fraction of `storage_level_limits.max`
+  - `inflow::Float64`: Water refilling the reservoir (m³/h or MW)
+  - `outflow::Float64`: Water naturally leaving the reservoir (m³/h or MW)
+  - `spillage_limits::Union{Nothing, MinMax}`: Water spillage limits
+  - `level_targets::Union{Nothing, Float64}`: Target level at simulation end as fraction of max
+  - `intake_elevation::Float64`: Height of intake in meters above sea level
+  - `head_to_volume_factor::ValueCurve`: Head to volume relationship
+  - `upstream_turbines::Vector{HydroUnit}`: Turbines feeding into this reservoir (tail reservoir)
+  - `downstream_turbines::Vector{HydroUnit}`: Turbines fed by this reservoir (head reservoir)
+  - `upstream_reservoirs::Vector{Device}`: Reservoirs feeding spillage into this reservoir
+  - `level_data_type::ReservoirDataType`: Data type (e.g., `ReservoirDataType.USABLE_VOLUME`, `ReservoirDataType.HEAD`, `ReservoirDataType.ENERGY`)
 
 ### HydroPumpTurbine
 
