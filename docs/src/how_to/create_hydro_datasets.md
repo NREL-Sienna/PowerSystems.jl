@@ -24,14 +24,17 @@ For this model, attach an upstream [`HydroReservoir`](@ref) to any number of [`H
 
 ```julia
 using PowerSystems
+const PSY = PowerSystems
 
 # Create a system
 sys = System(100.0)
+set_units_base_system!(sys, "NATURAL_UNITS")
 
 # Create and add a bus
 bus = ACBus(
     number = 1,
     name = "bus1",
+    available = true, 
     bustype = ACBusTypes.PV,
     angle = 0.0,
     magnitude = 1.0,
@@ -87,6 +90,24 @@ set_downstream_turbine!(reservoir, turbine)
 ### Example: Multiple Turbines with Single Reservoir
 
 ```julia
+
+sys = System(100.0)
+set_units_base_system!(sys, "NATURAL_UNITS")
+
+# Create and add a bus
+bus = ACBus(
+    number = 1,
+    name = "bus1",
+    available = true, 
+    bustype = ACBusTypes.PV,
+    angle = 0.0,
+    magnitude = 1.0,
+    voltage_limits = (min = 0.9, max = 1.1),
+    base_voltage = 230.0,
+    area = nothing,
+    load_zone = nothing,
+)
+add_component!(sys, bus)
 # Create multiple turbines and connect them to a single reservoir
 turbines = []
 for i in 1:5
@@ -148,7 +169,9 @@ pump_turbine = HydroPumpTurbine(;
     outflow_limits = (min = 0.0, max = 500.0),
     powerhouse_elevation = 400.0,
     base_power = 100.0,
-    status = PumpHydroStatus.OFF,
+    ramp_limits = (up = 20.0, down = 20.0),
+    time_limits = nothing,
+    status = PSY.PumpHydroStatusModule.PumpHydroStatus.OFF,
     time_at_status = 0.0,
     efficiency = (turbine = 0.9, pump = 0.85),
     transition_time = (turbine = 0.25, pump = 0.25),  # hours
