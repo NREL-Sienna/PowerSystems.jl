@@ -283,12 +283,12 @@ Key fields specific to [`HydroPumpTurbine`](@ref):
 
 ### Retrieving Connected Components
 
-- `get_downstream_turbines(reservoir)`: Get vector of downstream turbines
-- `get_upstream_turbines(reservoir)`: Get vector of upstream turbines
-- `get_connected_head_reservoirs(sys, turbine)`: Get reservoirs where turbine is downstream
-- `get_connected_tail_reservoirs(sys, turbine)`: Get reservoirs where turbine is upstream
-- `get_turbine_head_reservoirs_mapping(sys)`: Get mapping of all turbines to head reservoirs
-- `get_turbine_tail_reservoirs_mapping(sys)`: Get mapping of all turbines to tail reservoirs
+  - `get_downstream_turbines(reservoir)`: Get vector of downstream turbines
+  - `get_upstream_turbines(reservoir)`: Get vector of upstream turbines
+  - `get_connected_head_reservoirs(sys, turbine)`: Get reservoirs where turbine is downstream
+  - `get_connected_tail_reservoirs(sys, turbine)`: Get reservoirs where turbine is upstream
+  - `get_turbine_head_reservoirs_mapping(sys)`: Get mapping of all turbines to head reservoirs
+  - `get_turbine_tail_reservoirs_mapping(sys)`: Get mapping of all turbines to tail reservoirs
 
 ### Removing Connections
 
