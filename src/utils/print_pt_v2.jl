@@ -91,7 +91,7 @@ function show_components_table(io::IO, sys::System; kwargs...)
             header = header,
             title = "Dynamic Components",
             alignment = :l,
-            kwargs...,
+            _handle_kwargs(kwargs)...,
         )
     end
 end
