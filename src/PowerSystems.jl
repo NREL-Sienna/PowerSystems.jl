@@ -863,6 +863,14 @@ include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")
+@static if pkgversion(PrettyTables).major == 2
+    # When PrettyTables v2 is more widely adopted in the ecosystem, we can remove this file.
+    # In this case, we should also update the compat bounds in Project.toml to list only
+    # PrettyTables v3.
+    include("utils/print_pt_v2.jl")
+else
+    include("utils/print_pt_v3.jl")
+end
 
 include("models/serialization.jl")
 
