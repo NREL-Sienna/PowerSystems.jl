@@ -1,3 +1,45 @@
+# The predefined table format recipes for HTML output got removed in PT v3.
+# This is the CSS recipe copie from PT v2 for simple HTML tables.
+const tf_html_simple = PrettyTables.HtmlTableFormat(;
+    css = """
+    table, td, th {
+        border-collapse: collapse;
+        font-family: sans-serif;
+    }
+
+    td, th {
+        border-bottom: 0;
+        padding: 4px
+    }
+
+    tr:nth-child(odd) {
+        background: #eee;
+    }
+
+    tr:nth-child(even) {
+        background: #fff;
+    }
+
+    tr.header {
+        background: #fff !important;
+        font-weight: bold;
+    }
+
+    tr.subheader {
+        background: #fff !important;
+        color: dimgray;
+    }
+
+    tr.headerLastRow {
+        border-bottom: 2px solid black;
+    }
+
+    th.rowNumber, td.rowNumber {
+        text-align: right;
+    }
+    """,
+)
+
 function show_system_table(io::IO, sys::System; kwargs...)
     column_labels = ["Property", "Value"]
     num_components = get_num_components(sys)
@@ -75,4 +117,28 @@ function show_components_table(io::IO, sys::System; kwargs...)
             kwargs...,
         )
     end
+end
+
+function Base.show(io::IO, ::MIME"text/html", sys::System)
+    show_system_table(io, sys; backend = :html, stand_alone = false)
+
+    if get_num_components(sys) > 0
+        show_components_table(
+            io,
+            sys;
+            backend = :html,
+            table_format = tf_html_simple,
+            stand_alone = false,
+        )
+    end
+
+    println(io)
+    IS.show_time_series_data(
+        io,
+        sys.data;
+        backend = :html,
+        table_format = tf_html_simple,
+        stand_alone = false,
+    )
+    return
 end
