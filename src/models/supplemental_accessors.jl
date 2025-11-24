@@ -226,9 +226,9 @@ function get_max_active_power(d::Union{InterruptibleStandardLoad, StandardLoad})
 end
 
 """
-Get the maximum storage capacity for HydroReservoir. Convenient getter for `get_storage_level_limits(reservoir).max` that matches [`EnergyReservoirStorage`](@ref)
+Get the maximum storage capacity for HydroReservoir.
 """
-function get_storage_capacity(reservoir::HydroReservoir)
+function get_max_storage_level(reservoir::HydroReservoir)
     return get_storage_level_limits(reservoir).max
 end
 
