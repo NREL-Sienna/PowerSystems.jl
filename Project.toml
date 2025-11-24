@@ -1,6 +1,6 @@
 name = "PowerSystems"
 uuid = "bcd98974-b02a-5e2f-9ee0-a103f5c450dd"
-authors = ["Jose Daniel Lara", "Daniel Thom", "Rodrigo Henriquez-Auba", "Gabriel Konar-Steenberg"]
+authors = ["Jose Daniel Lara", "Daniel Thom", "Rodrigo Henriquez-Auba", "Gabriel Konar-Steenberg", "Clayton Barrows"]
 version = "5.3.0"
 
 [deps]
