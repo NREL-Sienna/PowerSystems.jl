@@ -2254,11 +2254,108 @@ end
 """
 Check the values of each component in an iterable of components.
 See [`check_component`](@ref) for exceptions thrown.
+
+Component checks are performed in parallel using multiple threads when available.
+
+# Arguments
+- `sys::System`: The system containing the components
+- `components`: An iterable of components to check
+
+# Keyword Arguments
+- `skip_unavailable::Union{Nothing, Bool} = nothing`: If true, skip components where
+  `get_available` returns false. If nothing, all components are checked regardless of availability.
+- `filter_func::Union{Nothing, Function} = nothing`: Optional filter function that takes a component
+  and returns true if the component should be checked, false to skip it
 """
-function check_components(sys::System, components)
-    for component in components
-        check_component(sys, component)
+function check_components(
+    sys::System,
+    components;
+    skip_unavailable::Union{Nothing, Bool} = nothing,
+    filter_func::Union{Nothing, Function} = nothing,
+)
+    n_threads = Threads.nthreads()
+
+    # Helper function to check if a component should be processed
+    function should_check(component)
+        if skip_unavailable === true
+            try
+                if !get_available(component)
+                    return false
+                end
+            catch
+                # Component doesn't have get_available method, include it
+            end
+        end
+
+        if filter_func !== nothing && !filter_func(component)
+            return false
+        end
+
+        return true
     end
+
+    # Use single-threaded execution if only one thread available
+    if n_threads == 1
+        for component in components
+            if should_check(component)
+                check_component(sys, component)
+            end
+        end
+        return
+    end
+
+    # For parallel execution, we need to collect components into a vector
+    components_vec = if skip_unavailable === true || filter_func !== nothing
+        [c for c in components if should_check(c)]
+    else
+        collect(components)
+    end
+
+    if isempty(components_vec)
+        return
+    end
+
+    n_components = length(components_vec)
+
+    # Use single-threaded execution if few components
+    if n_components < n_threads
+        for component in components_vec
+            check_component(sys, component)
+        end
+        return
+    end
+
+    # Thread-safe storage for exceptions
+    exceptions = Vector{Union{Nothing, Exception}}(nothing, n_components)
+    exception_components = Vector{Union{Nothing, Component}}(nothing, n_components)
+
+    # Parallel execution with @threads
+    Threads.@threads for i in 1:n_components
+        component = components_vec[i]
+        try
+            check_component(sys, component)
+        catch e
+            exceptions[i] = e
+            exception_components[i] = component
+        end
+    end
+
+    # Collect and report all errors
+    error_indices = findall(!isnothing, exceptions)
+    if !isempty(error_indices)
+        # Throw the first exception to maintain backward compatibility
+        first_idx = error_indices[1]
+        first_exception = exceptions[first_idx]
+
+        if length(error_indices) > 1
+            # Log additional errors if multiple components failed
+            @warn "Multiple component validation errors occurred ($(length(error_indices)) total). Throwing first error."
+        end
+
+        throw(first_exception)
+    end
+
+    return
 end
 
 """
