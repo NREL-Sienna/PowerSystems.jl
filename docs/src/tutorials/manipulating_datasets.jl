@@ -264,4 +264,3 @@ get_name.(get_components(ThermalStandard, sys))
 # [`ThermalStandard`](@ref) and [`ACBus`](@ref) components, but remember that these getters
 # and setters are available for each data field for components of all Types in `PowerSystems.jl`.
 # Follow the next tutorials to learn how to [work with time series](@ref tutorial_time_series).
-

@@ -301,7 +301,7 @@ for l in get_components(Line, threebus_sys)
     ## create a dynamic branch
     dyn_branch = DynamicBranch(l)
     ## add dynamic branch to the system, replacing the static branch
-    add_component!(threebus_sys, dyn_branch) 
+    add_component!(threebus_sys, dyn_branch)
 end
 
 # Take a look at the AC branches in the system again:
@@ -336,4 +336,3 @@ threebus_sys
 #     [FrequencyEstimator](@ref), and [Filter](@ref) components
 #   - Explore [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
 #     for dynamics modeling in Sienna\Dyn
-
