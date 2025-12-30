@@ -25,10 +25,10 @@ include(joinpath(@__DIR__, "make_model_library.jl"))
 pages = OrderedDict(
         "Welcome Page" => "index.md",
         "Tutorials" =>  Any[
-            "Create and Explore a Power `System`" => "tutorials/creating_system.md",
-            "Manipulating Data Sets" => "tutorials/manipulating_datasets.md",
-            "Working with Time Series" => "tutorials/working_with_time_series.md",
-            "Adding Data for Dynamic Simulations" => "tutorials/add_dynamic_data.md",
+            "Create and Explore a Power `System`" => "tutorials/generated/creating_system.md",
+            "Manipulating Data Sets" => "tutorials/generated/manipulating_datasets.md",
+            "Working with Time Series" => "tutorials/generated/working_with_time_series.md",
+            "Adding Data for Dynamic Simulations" => "tutorials/generated/add_dynamic_data.md",
         ],
         "How to..." =>  Any[
             "...import data" => Any[
@@ -134,13 +134,18 @@ function insert_md(content)
 end
 
 # Function to clean up old generated_*.md files
-function clean_old_generated_files(dir::String)
+function clean_old_generated_files(dir::String; remove_all_md::Bool=false)
     # Remove old generated_*.md files before creating new ones
+    # For tutorials/generated, remove all .md files
     if !isdir(dir)
         @warn "Directory does not exist: $dir"
         return
     end
-    generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    if remove_all_md
+        generated_files = filter(f -> endswith(f, ".md"), readdir(dir))
+    else
+        generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    end
     for file in generated_files
         rm(joinpath(dir, file), force=true)
         @info "Removed old generated file: $file"
@@ -167,16 +172,38 @@ for (section, folder) in folders
     clean_old_generated_files(outputdir)
 end
 
+# Function to add download links to generated markdown
+function add_download_links(content, jl_file, ipynb_file)
+    # Add download links at the top of the file after the first heading
+    download_section = """
+
+*To follow along, you can download this tutorial as a [Julia script (.jl)](../$(jl_file)) or [Jupyter notebook (.ipynb)]($(ipynb_file)).*
+
+"""
+    # Insert after the first heading (which should be the title)
+    # Match the first heading line and replace it with heading + download section
+    m = match(r"^(#+ .+)$"m, content)
+    if m !== nothing
+        heading = m.match
+        content = replace(content, r"^(#+ .+)$"m => heading * download_section, count=1)
+    end
+    return content
+end
+
+# Process other sections (Model Library, Explanation, How to...)
 for (section, folder) in folders
     for file in folder
         @show file
         section_folder_name = lowercase(replace(section, " " => "_"))
-        outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
         inputfile = joinpath("$section_folder_name", "$file")
         infile_path = joinpath(pwd(), "docs", "src", inputfile)
-        outputfile = string("generated_", replace("$file", ".jl" => ""))
         execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
         execute && include(infile_path)
+        
+        outputdir = joinpath(pwd(), "docs", "src", "$section_folder_name")
+        outputfile = string("generated_", replace("$file", ".jl" => ""))
+        
+        # Generate markdown
         Literate.markdown(infile_path,
                           outputdir;
                           name = outputfile,
@@ -185,8 +212,45 @@ for (section, folder) in folders
                           documenter = true,
                           postprocess = insert_md,
                           execute = execute)
+        
         subsection = titlecase(replace(split(file, ".")[1], "_" => " "))
         push!(pages[section], ("$subsection" =>  joinpath("$section_folder_name", "$(outputfile).md")))
+    end
+end
+
+# Process tutorials separately with Literate
+tutorial_files = filter(x -> occursin(".jl", x), readdir("docs/src/tutorials"))
+if !isempty(tutorial_files)
+    # Clean up old generated tutorial files
+    tutorial_outputdir = joinpath(pwd(), "docs", "src", "tutorials", "generated")
+    clean_old_generated_files(tutorial_outputdir; remove_all_md=true)
+    mkpath(tutorial_outputdir)
+    
+    for file in tutorial_files
+        @show file
+        infile_path = joinpath(pwd(), "docs", "src", "tutorials", file)
+        execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
+        execute && include(infile_path)
+        
+        outputfile = replace("$file", ".jl" => "")
+        
+        # Generate markdown
+        Literate.markdown(infile_path,
+                          tutorial_outputdir;
+                          name = outputfile,
+                          credit = false,
+                          flavor = Literate.DocumenterFlavor(),
+                          documenter = true,
+                          postprocess = (content -> add_download_links(insert_md(content), file, string(outputfile, ".ipynb"))),
+                          execute = execute)
+        
+        # Generate notebook
+        Literate.notebook(infile_path,
+                          tutorial_outputdir;
+                          name = outputfile,
+                          credit = false,
+                          execute = false)
+        
     end
 end
 
