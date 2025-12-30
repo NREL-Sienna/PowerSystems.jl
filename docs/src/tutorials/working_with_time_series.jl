@@ -1,11 +1,11 @@
 # # [Working with Time Series Data](@id tutorial_time_series)
 # In this tutorial, we will manually add, retrieve, and inspect time-series data in
-# different formats, including identifying which components in a power `System` have time
+# different formats, including identifying which components in a power [`System`](@ref) have time
 # series data. Along the way, we will also use workarounds for missing forecast data and
 # reuse identical time series profiles to avoid unnecessary memory usage.
 
 # ## Example Data and Setup
-# We will make an example `System` with a wind generator and two loads, and
+# We will make an example [`System`](@ref) with a wind generator and two loads, and
 # add the time series needed to model, for example, the impacts of wind forecast uncertainty.
 # Here is the available data:
 # ```@raw html
@@ -72,7 +72,7 @@ load2 = PowerLoad(;
 );
 add_components!(system, [bus1, wind1, load1, load2])
 
-# Recall that we can also set the `System`'s unit base to natural units (MW)
+# Recall that we can also set the [`System`](@ref)'s unit base to natural units (MW)
 # to make it easier to inspect results:
 
 set_units_base_system!(system, "NATURAL_UNITS")
@@ -109,7 +109,7 @@ wind_time_series = SingleTimeSeries(;
 # name when using
 # [PowerSimulations.jl](https://nrel-sienna.github.io/PowerSimulations.jl/stable/formulation_library/RenewableGen/)
 # for simulations.
-# So far, this time series has been defined, but not attached to our `System` in any way. Now,
+# So far, this time series has been defined, but not attached to our [`System`](@ref) in any way. Now,
 # attach it to `wind1` using [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
 
 add_time_series!(system, wind1, wind_time_series);
@@ -139,7 +139,7 @@ wind_forecast_data = Dict(
     DateTime("2020-01-01T09:00:00") => [6.0, 6, 5, 5, 4, 5, 6, 7, 7, 7, 6, 6],
 );
 
-# Define the `Deterministic` forecast and attach it to `wind1`:
+# Define the [`Deterministic`](@ref) forecast and attach it to `wind1`:
 
 wind_forecast = Deterministic("max_active_power", wind_forecast_data, resolution);
 add_time_series!(system, wind1, wind_forecast);
@@ -236,22 +236,22 @@ get_time_series_array(SingleTimeSeries,
 # Notice that this is the normalized input data, which is still being stored underneath. Each
 # load is using a reference to that data when we call `get_time_series_array` to avoid
 # unnecessary data duplication.
-# # Transform a `SingleTimeSeries` into a Forecast
+# # Transform a [`SingleTimeSeries`](@ref) into a Forecast
 # Finally, let's use a workaround to handle the missing load forecast data. We will assume a
-# perfect forecast where the forecast is based on the `SingleTimeSeries` we just added.
+# perfect forecast where the forecast is based on the [`SingleTimeSeries`](@ref) we just added.
 # Rather than unnecessarily duplicating and reformatting data, use PowerSystems.jl's dedicated
 # [`transform_single_time_series!`](@ref) function to generate a [`DeterministicSingleTimeSeries`](@ref),
-# which saves memory while behaving just like a `Deterministic` forecast.
-# Before we call `transform_single_time_series!`, we need to remove the `SingleTimeSeries` from
-# the wind component. This is because the wind component already has a `Deterministic` forecast
-# with the name `"max_active_power"`, and having both a `Deterministic` and a
-# `DeterministicSingleTimeSeries` with the same name is not allowed. If we tried to keep both,
+# which saves memory while behaving just like a [`Deterministic`](@ref) forecast.
+# Before we call `transform_single_time_series!`, we need to remove the [`SingleTimeSeries`](@ref) from
+# the wind component. This is because the wind component already has a [`Deterministic`](@ref) forecast
+# with the name `"max_active_power"`, and having both a [`Deterministic`](@ref) and a
+# [`DeterministicSingleTimeSeries`](@ref) with the same name is not allowed. If we tried to keep both,
 # functions like `get_time_series` wouldn't know which forecast to retrieve when you request
-# `"max_active_power"`. Let's remove the `SingleTimeSeries` to avoid this conflict:
+# `"max_active_power"`. Let's remove the [`SingleTimeSeries`](@ref) to avoid this conflict:
 
 remove_time_series!(system, SingleTimeSeries, wind1, "max_active_power");
 
-# Now we can transform the remaining `SingleTimeSeries` (the ones attached to the loads):
+# Now we can transform the remaining [`SingleTimeSeries`](@ref) (the ones attached to the loads):
 
 transform_single_time_series!(
     system,
@@ -283,21 +283,21 @@ get_time_series_array(
 
 load1
 
-# Also, recall we can print the `System` to summarize the data in our system:
+# Also, recall we can print the [`System`](@ref) to summarize the data in our system:
 
 system
 
 # Notice that a new table has been added -- the Time Series Summary, showing the count of
 # each Type of component that has a given time series type.
-# Notice that the `RenewableDispatch` generator (`wind1`) only has its `Deterministic` forecast
-# and no `DeterministicSingleTimeSeries`. This is because we removed the wind's `SingleTimeSeries`
+# Notice that the [`RenewableDispatch`](@ref) generator (`wind1`) only has its [`Deterministic`](@ref) forecast
+# and no [`DeterministicSingleTimeSeries`](@ref). This is because we removed the wind's [`SingleTimeSeries`](@ref)
 # before calling `transform_single_time_series!`, preventing a conflict with its existing
-# `Deterministic` forecast.
+# [`Deterministic`](@ref) forecast.
 # Let's verify `wind1`'s time series to confirm:
 
 show_time_series(wind1)
 
-# See that it only has the `Deterministic` forecast, as expected.
+# See that it only has the [`Deterministic`](@ref) forecast, as expected.
 # Finally, let's do a last data sanity check on the forecasts. Since we defined the wind
 # time series in MW instead of scaling factors, let's make sure none of our forecasts exceeds
 # the `max_active_power` parameter.
@@ -327,7 +327,7 @@ get_max_active_power(wind1)
 
 # See that the forecasts are not exceeding this maximum -- sanity check complete.
 # !!! tip
-#     Unlike `PowerLoad` components, `RenewableDispatch` components do not have a
+#     Unlike [`PowerLoad`](@ref) components, [`RenewableDispatch`](@ref) components do not have a
 #     `max_active_power` field, so check
 #     [`get_max_active_power`](@ref get_max_active_power(d::RenewableGen))
 #     to see how its calculated.
@@ -335,7 +335,7 @@ get_max_active_power(wind1)
 # In this tutorial, you defined, added, and retrieved four time series data
 # sets, including static time series and deterministic forecasts. Along the way, we
 # reduced data duplication using normalized scaling factors for reuse by multiple components
-# or component fields, as well as by referencing a `StaticTimeSeries` to address missing
+# or component fields, as well as by referencing a [`StaticTimeSeries`](@ref) to address missing
 # forecast data.
 # Next you might like to:
 #   - [Parse many timeseries data sets from CSV's](@ref parsing_time_series)

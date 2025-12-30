@@ -13,7 +13,7 @@
 # We'll define these two layers sequentially.
 
 # ## Defining the Static Data Layer
-# Instead of defining the static data in the `System` manually, we will load an existing three-bus system using
+# Instead of defining the static data in the [`System`](@ref) manually, we will load an existing three-bus system using
 # [`PowerSystemCaseBuilder.jl`](https://github.com/NREL-Sienna/PowerSystemCaseBuilder.jl)
 # to use as a starting point.
 # Start by importing these packages:
@@ -159,19 +159,19 @@ dynamic_gen = DynamicGenerator(;
 # dyn_injector::DynamicInjection,
 # static_injector::StaticInjection;
 # kwargs...,
-# )) to add this data to the `System`:
+# )) to add this data to the [`System`](@ref):
 
 add_component!(threebus_sys, dynamic_gen, static_gen)
 
-# Notice that unlike static components, which are just added to the `System`,
-# this dynamic component is added to a specific static component within the `System`.
+# Notice that unlike static components, which are just added to the [`System`](@ref),
+# this dynamic component is added to a specific static component within the [`System`](@ref).
 # !!! tip
 #     To define identical dynamic devices for multiple generators at once, define the pieces of the
 #     generator model as *functions*, such as:
 #     ```
 #     avr_type1() = AVRTypeI(...
 #     ```
-#     When called in the `DynamicGenerator` constructor, this will create a new AVR for each generator, so
+#     When called in the [`DynamicGenerator`](@ref) constructor, this will create a new AVR for each generator, so
 #     they are different in memory. Later, if you decide to modify the AVR parameters for
 #     a specific generator, it will not modify the AVR in another generator.
 # Recall that you can print the system to see a summary of its data:
@@ -272,22 +272,22 @@ dynamic_inv = DynamicInverter(;
     filter = filt(),
 )
 
-# and adding it to the `System`:
+# and adding it to the [`System`](@ref):
 
 add_component!(threebus_sys, dynamic_inv, gen_103)
 
-# Both generators have now been updated with dynamic data. Let's complete the `System`
+# Both generators have now been updated with dynamic data. Let's complete the [`System`](@ref)
 # updates by adding dynamic lines.
 
 # ## Adding Dynamic Lines
 # !!! warning
-#     A `System` must have at least two buses and one branch to run a dynamic simulation in
+#     A [`System`](@ref) must have at least two buses and one branch to run a dynamic simulation in
 #     [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/).
 # Let's review the AC branches currently in the system:
 
 get_components(ACBranch, threebus_sys)
 
-# Notice that we have three static `Line` components.
+# Notice that we have three static [`Line`](@ref) components.
 # Let's also print the first line to review its format:
 
 first(get_components(Line, threebus_sys))
@@ -308,19 +308,19 @@ end
 
 branches = get_components(ACBranch, threebus_sys)
 
-# Notice that now there are 3 `DynamicBranch` components instead the `Line` components.
+# Notice that now there are 3 [`DynamicBranch`](@ref) components instead the `Line` components.
 # Let's take a look by printing first one:
 
 first(branches)
 
 # Observe that this is a wrapper around the static data, with the additional states
 # data for dynamic modeling.
-# Finally, let's print the `System` again to summarize our additions:
+# Finally, let's print the [`System`](@ref) again to summarize our additions:
 
 threebus_sys
 
-# Verify that the additions were successful, with an added voltage `Source`, `DynamicBranch`es
-# replacing the static `Lines`, and two new dynamic components with the generator and inverter models.
+# Verify that the additions were successful, with an added voltage [`Source`](@ref), [`DynamicBranch`](@ref)es
+# replacing the static [`Line`](@ref), and two new dynamic components with the generator and inverter models.
 
 # ## Next Steps
 # In this tutorial, you have updated a static system with a second dynamic data layer.

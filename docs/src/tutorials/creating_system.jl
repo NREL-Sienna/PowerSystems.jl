@@ -16,10 +16,10 @@
 
 using PowerSystems
 
-# ## Creating a Power `System`
+# ## Creating a Power [`System`](@ref)
 # In PowerSystems.jl, data is held in a [`System`](@ref) that holds all of the individual components
 # along with some metadata about the power system itself.
-# There are many ways to define a `System`, but let's start with an empty system.
+# There are many ways to define a [`System`](@ref), but let's start with an empty system.
 # All we need to define is a base power of 100 MVA for [per-unitization](@ref per_unit).
 
 sys = System(100.0)
@@ -50,15 +50,15 @@ bus1 = ACBus(;
 # an angle of 0 radians. Notice that we've defined this bus as [reference bus or slack
 # bus](@ref acbustypes_list), where it will be used for balancing power flow in power
 # flow studies.
-# Let's add this bus to our `System` with `add_component!`:
+# Let's add this bus to our [`System`](@ref) with [`add_component!`](@ref add_component!(sys::System, component::Component; kwargs...)):
 
 add_component!(sys, bus1)
 
-# We can see the impact this has on the `System` simply by printing it:
+# We can see the impact this has on the [`System`](@ref) simply by printing it:
 
 sys
 
-# Notice that `System` now shows a summary of components in the system. The table shows
+# Notice that [`System`](@ref) now shows a summary of components in the system. The table shows
 # "[Static](@ref S) Components", which refers to steady state data used for power
 # flow analysis or production cost modeling, as opposed to [Dynamic](@ref D) components
 # which that can be used to define differential equations for transient simulations.
@@ -77,7 +77,7 @@ bus2 = ACBus(;
 
 # Notice that we've defined this bus with [power and voltage variables](@ref acbustypes_list),
 # suitable for power flow studies.
-# Let's also add this to our `System`:
+# Let's also add this to our [`System`](@ref):
 
 add_component!(sys, bus2)
 
@@ -88,9 +88,9 @@ show_components(sys, ACBus)
 # ## Adding a Transmission Line
 # Let's connect our buses. We'll add a transmission [`Line`](@ref) between `bus1` and `bus2`.
 # !!! warning
-#     When defining a line that isn't attached to a `System` yet, you must define the
+#     When defining a line that isn't attached to a [`System`](@ref) yet, you must define the
 #     thermal rating of the transmission line in per-unit using the base power of the
-#     `System` you plan to connect it to -- in this case, 100 MVA.
+#     [`System`](@ref) you plan to connect it to -- in this case, 100 MVA.
 
 line = Line(;
     name = "line1",
@@ -107,11 +107,11 @@ line = Line(;
 
 # Note that we also had to define an [`Arc`](@ref) in the process to define the connection between
 # the two buses.
-# Let's also add this to our `System`:
+# Let's also add this to our [`System`](@ref):
 
 add_component!(sys, line)
 
-# Finally, let's check our `System` summary to see all the network topology components we have added
+# Finally, let's check our [`System`](@ref) summary to see all the network topology components we have added
 # are attached:
 
 sys
@@ -120,7 +120,7 @@ sys
 # Now that our network topology is complete, we'll start adding components that [inject](@ref I) or
 # withdraw power from the network.
 # !!! warning
-#     When you define components that aren't attached to a `System` yet, you must define
+#     When you define components that aren't attached to a [`System`](@ref) yet, you must define
 #     all fields related to power (with units such as MW, MVA, MVAR, or MW/min) in
 #     per-unit using the `base_power` of the component (with the exception of `base_power`
 #     itself, which is in MVA).
@@ -185,7 +185,7 @@ gas = ThermalStandard(;
     fuel = ThermalFuels.NATURAL_GAS,
 );
 
-# This time, let's add these components to our `System` using [`add_components!`](@ref)
+# This time, let's add these components to our [`System`](@ref) using [`add_components!`](@ref)
 # to add them both at the same time:
 
 add_components!(sys, [solar, gas])
@@ -193,11 +193,11 @@ add_components!(sys, [solar, gas])
 # ## Explore the System and its Components
 # Congratulations! You have built a power system including buses, a transmission line, a
 # load, and different types of generators. Now let's take a look around.
-# Remember that we can see a summary of our `System` using the print statement:
+# Remember that we can see a summary of our [`System`](@ref) using the print statement:
 
 sys
 
-# Now, let's double-check some of our data by retrieving it from the `System`.
+# Now, let's double-check some of our data by retrieving it from the [`System`](@ref).
 # Let's use [`show_components`](@ref) again to get an overview of our renewable generators:
 
 show_components(sys, RenewableDispatch)
@@ -217,7 +217,7 @@ get_prime_mover_type(retrieved_component)
 
 get_bus(retrieved_component)
 
-# See that the generator's bus is linked to the actual `bus2` component in our `System`.
+# See that the generator's bus is linked to the actual `bus2` component in our [`System`](@ref).
 # These "getter" functions are available for all the data fields in a component.
 # !!! tip
 #     **Always use the `get_*` functions to retrieve the data within a component.**
@@ -227,7 +227,7 @@ get_bus(retrieved_component)
 #     calculations that the getter functions will properly handle for you, as you'll see
 #     below.
 
-# ## Changing `System` Per-Unit Settings
+# ## Changing [`System`](@ref) Per-Unit Settings
 # Now, let's use a getter function to look up the solar generator's `rating`:
 
 get_rating(retrieved_component)
@@ -235,24 +235,24 @@ get_rating(retrieved_component)
 # !!! tip "Important"
 #     When we defined the solar generator, we defined the rating
 #     as 1.0 per-unit with a device `base_power` of 5.0 MVA. Notice that the rating now reads
-#     0.05. After we attached this component to our `System`, its power data is being
-#     returned to us in the `System`'s units base.
-# Let's double-check the `System`'s units base:
+#     0.05. After we attached this component to our [`System`](@ref), its power data is being
+#     returned to us in the [`System`](@ref)'s units base.
+# Let's double-check the [`System`](@ref)'s units base:
 
 get_units_base(sys)
 
 # `SYSTEM_BASE` means all power-related (MW, MVA, MVAR, MW/min) component data in
-# the `System`, except for each component's `base_power`, is per-unitized by the
+# the [`System`](@ref), except for each component's `base_power`, is per-unitized by the
 # system base power for consistency.
-# Check the `System`'s base_power again:
+# Check the [`System`](@ref)'s base_power again:
 
 get_base_power(sys)
 
 # Notice that when we called `get_rating` above, the solar generator's rating, 5.0 MW,
 # is being returned as 0.05 = (5 MVA)/(100 MVA) using the system base power.
-# Instead of using the `System` base power, let's view everything in MW or MVA -- or what we
+# Instead of using the [`System`](@ref) base power, let's view everything in MW or MVA -- or what we
 # call "NATURAL_UNITS" in PowerSystems.
-# Change the `System`'s unit system:
+# Change the [`System`](@ref)'s unit system:
 
 set_units_base_system!(sys, "NATURAL_UNITS")
 
@@ -261,7 +261,7 @@ set_units_base_system!(sys, "NATURAL_UNITS")
 get_rating(retrieved_component)
 
 # Notice that the value is now its "natural" value, 5.0 MVA.
-# Finally, let's change the `System`'s unit system to the final option, "DEVICE_BASE":
+# Finally, let's change the [`System`](@ref)'s unit system to the final option, "DEVICE_BASE":
 
 set_units_base_system!(sys, "DEVICE_BASE")
 
@@ -271,7 +271,7 @@ get_rating(retrieved_component)
 
 # See that now the data is now 1.0 (5.0 MVA per-unitized by the generator (i.e., the device's)
 # `base_power` of 5.0 MVA), which is the format we used to originally define the device.
-# As a shortcut to temporarily set the `System`'s unit system to a particular value, perform
+# As a shortcut to temporarily set the [`System`](@ref)'s unit system to a particular value, perform
 # some action, and then automatically set it back to what it was before, we can use
 # `with_units_base` and a [`do` block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments):
 
@@ -281,20 +281,20 @@ with_units_base(sys, "NATURAL_UNITS") do
 end
 get_units_base(sys)  # Unit system goes back to previous value when the block ends
 
-# Recall that if you ever need to check a `System`'s settings, including the unit system being
-# used by all the getter functions, you can always just print the `System`:
+# Recall that if you ever need to check a [`System`](@ref)'s settings, including the unit system being
+# used by all the getter functions, you can always just print the [`System`](@ref):
 
 sys
 
-# See the units base is printed as one of the `System` properties.
+# See the units base is printed as one of the [`System`](@ref) properties.
 
 # ## Next Steps
-# In this tutorial, you manually created a power `System`, added and then retrieved its components,
-# and modified the `System` per-unit settings.
+# In this tutorial, you manually created a power [`System`](@ref), added and then retrieved its components,
+# and modified the [`System`](@ref) per-unit settings.
 # Next, you might want to:
 #   - [Add time series data to components in the `System`](@ref tutorial_time_series)
 #   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
-#   - Import a `System` [from an existing Matpower or PSSE file](@ref pm_data) or
+#   - Import a [`System`](@ref) [from an existing Matpower or PSSE file](@ref pm_data) or
 #     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
 #   - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
 #   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
