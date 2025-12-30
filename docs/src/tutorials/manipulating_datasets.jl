@@ -40,12 +40,6 @@ solitude = get_component(ThermalStandard, sys, "Solitude")
 
 typeof(solitude)
 
-# Notice that all of Solitude's fields are pretty-printed with the return statment for
-# quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
-# manipulate:
-
-typeof(solitude)
-
 # If we are interested in accessing a particular field, we can use a `get_*` function, also known as a getter,
 # on this object. For example, if we are interested in the `fuel` we can use [`get_fuel`](@ref get_fuel(value::ThermalStandard)):
 
