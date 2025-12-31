@@ -644,12 +644,13 @@ end
 ```
 """
 function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
-    old_unit_system = get_internal(c).units_info.unit_system
+    internal = get_internal(c)
+    old_units_info = internal.units_info  # Save reference to restore later
     _set_units_base!(c, units)
     try
         f()
     finally
-        _set_units_base!(c, old_unit_system)
+        IS.set_units_info!(internal, old_units_info)  # Restore original reference
     end
 end
 
