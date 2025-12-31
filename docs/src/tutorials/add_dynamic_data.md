@@ -37,7 +37,9 @@ To create the system, load pre-existing data for a 3-bus system using
 threebus_sys = build_system(PSIDSystems, "3 Bus Inverter Base")
 ```
 
-See that there is a table of "Static Components", but no "Dynamic" data yet.
+See that there is a table of "[Static](@ref S) Components", which contains the
+steady state data needed for power flow analysis, but no "[Dynamic](@ref D)" data
+yet to define the differential equations for transient simulations.
 
 Let's view the generators in the system with [`show_components`](@ref),
 including which bus they are connected at:
@@ -436,7 +438,7 @@ Next, you might like to:
 
   - Read more about the static and dynamic data layers and the dynamic data format in
     [Dynamic Devices](@ref).
-  - Review the specific sub-system models available in `PowerSystems.jl` for [Machine](@ref),
+  - Review the specific subsystem models available in `PowerSystems.jl` for [Machine](@ref),
     [Shaft](@ref), [AVR](@ref), [PSS](@ref),
     [Prime Mover and Turbine Governor](@ref TurbineGov), [Converter](@ref),
     [OuterControl](@ref), [InnerControl](@ref), [DCSource](@ref),

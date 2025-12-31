@@ -1,6 +1,7 @@
 # [Parsing PSS/e dynamic data](@id dyr_data)
 
-A `PowerSystems.jl` system can be created using a .RAW and a .DYR file.
+A `PowerSystems.jl` system can be created using a .RAW and a .DYR file. For a complete list of supported models in PowerSystems.jl version 5.0, including machine models, AVR models, turbine governors, PSS models, inverter models, and additional models, see the [Supported PSS/e Models](@ref psse_models_ref) reference page.
+
 In this example we will create a three bus system from these example files:
 
 ```@repl raw_dyr_system
@@ -69,24 +70,6 @@ To create the `System` in `PowerSystems.jl`, we pass both files directories:
 dyn_system = System(RAW_dir, DYR_dir; runchecks = false)
 ```
 
-## Supported PSS/e Models
-
-PSS/e's dynamic model library is extensive, we currently support parsing a limited amount
-of models out of the box.
-
-| Machine models | AVR Models | Prime Movers | PSS models |
-|:-------------- |:---------- |:------------ |:---------- |
-| GENSAE         | IEEET1     | HYGOV        | IEEEST     |
-| GENSAL         | ESDC1A     | IEEEG1       |            |
-| GENROE         | ESAC1A     | GGOV1        |            |
-| GENCLS         | ESST4B     |              |            |
-| GENROU         | EXAC2      |              |            |
-|                | EXPIC1     |              |            |
-|                | ESAC6A     |              |            |
-|                | EXAC1      |              |            |
-|                | SCRX       |              |            |
-|                | ESDC2A     |              |            |
-
 # Common Issue: Unique Bus Names
 
 Please note that while PSS/e does not enforce unique bus names, `PowerSystems.jl` does. To reparse bus names to comply with this requirement the `bus_name_formatter` *kwarg  can be used in `System()` as shown in the example below:
@@ -104,5 +87,5 @@ In this example the anonymous function `x -> strip(string(x["name"])) * "-" * st
 ### See also:
 
   - Parsing [Matpower or PSS/e RAW Files](@ref pm_data)
-  - Parsing [table data (CSV Files)](@ref table_data)
+  - [Build a `System` from CSV files](@ref system_from_csv)
   - Parsing [time series](@ref parsing_time_series)

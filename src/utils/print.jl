@@ -5,121 +5,18 @@ function Base.summary(sys::System)
 end
 
 function Base.show(io::IO, sys::System)
-    show_system_table(io, sys; backend = Val(:auto))
+    show_system_table(io, sys; backend = :auto)
 
-    if IS.get_num_components(sys.data.components) > 0
-        show_components_table(io, sys; backend = Val(:auto))
+    if IS.get_num_components(sys) > 0
+        show_components_table(io, sys; backend = :auto)
     end
 
     println(io)
-    IS.show_time_series_data(io, sys.data; backend = Val(:auto))
+    IS.show_time_series_data(io, sys.data; backend = :auto)
     return
 end
 
 Base.show(io::IO, ::MIME"text/plain", sys::System) = show(io, sys)
-
-function Base.show(io::IO, ::MIME"text/html", sys::System)
-    show_system_table(io, sys; backend = Val(:html), standalone = false)
-
-    if IS.get_num_components(sys.data.components) > 0
-        show_components_table(
-            io,
-            sys;
-            backend = Val(:html),
-            tf = PrettyTables.tf_html_simple,
-            standalone = false,
-        )
-    end
-
-    println(io)
-    IS.show_time_series_data(
-        io,
-        sys.data;
-        backend = Val(:html),
-        tf = PrettyTables.tf_html_simple,
-        standalone = false,
-    )
-    return
-end
-
-function show_system_table(io::IO, sys::System; kwargs...)
-    header = ["Property", "Value"]
-    num_components = IS.get_num_components(sys.data.components)
-    table = [
-        "Name" isnothing(get_name(sys)) ? "" : get_name(sys)
-        "Description" isnothing(get_description(sys)) ? "" : get_description(sys)
-        "System Units Base" string(get_units_base(sys))
-        "Base Power" string(get_base_power(sys))
-        "Base Frequency" string(get_frequency(sys))
-        "Num Components" string(num_components)
-    ]
-    PrettyTables.pretty_table(
-        io,
-        table;
-        header = header,
-        title = "System",
-        alignment = :l,
-        kwargs...,
-    )
-    return
-end
-
-function show_components_table(io::IO, sys::System; kwargs...)
-    header = ["Type", "Count"]
-    components = sys.data.components
-
-    static_types = Vector{DataType}()
-    dynamic_types = Vector{DataType}()
-    for component_type in keys(components.data)
-        if component_type <: DynamicInjection
-            push!(dynamic_types, component_type)
-        else
-            push!(static_types, component_type)
-        end
-    end
-    static_data = Array{Any, 2}(undef, length(static_types), length(header))
-    dynamic_data = Array{Any, 2}(undef, length(dynamic_types), length(header))
-
-    static_type_names = [(IS.strip_module_name(x), x) for x in static_types]
-    sort!(static_type_names; by = x -> x[1])
-    for (i, (type_name, type)) in enumerate(static_type_names)
-        vals = components.data[type]
-        static_data[i, 1] = type_name
-        static_data[i, 2] = length(vals)
-    end
-
-    if !isempty(static_types)
-        println(io)
-        PrettyTables.pretty_table(
-            io,
-            static_data;
-            header = header,
-            title = "Static Components",
-            alignment = :l,
-            kwargs...,
-        )
-    end
-
-    dynamic_type_names = [(IS.strip_module_name(x), x) for x in dynamic_types]
-    sort!(dynamic_type_names; by = x -> x[1])
-    for (i, (type_name, type)) in enumerate(dynamic_type_names)
-        vals = components.data[type]
-        dynamic_data[i, 1] = type_name
-        dynamic_data[i, 2] = length(vals)
-    end
-
-    if !isempty(dynamic_types)
-        println(io)
-        PrettyTables.pretty_table(
-            io,
-            dynamic_data;
-            header = header,
-            title = "Dynamic Components",
-            alignment = :l,
-            kwargs...,
-        )
-    end
-end
 
 function Base.summary(io::IO, tech::DeviceParameter)
     print(io, "$(typeof(tech))")
@@ -214,7 +111,14 @@ function Base.show(io::IO, ::MIME"text/plain", ist::Component)
                 val = summary(getproperty(ist, name))
             elseif hasproperty(PowerSystems, getter_name)
                 getter_func = getproperty(PowerSystems, getter_name)
-                val = getter_func(ist)
+                try
+                    val = getter_func(ist)
+                catch e
+                    @warn "$(e.msg) Printing in DEVICE_BASE instead."
+                    val = with_units_base(ist, "DEVICE_BASE") do
+                        getter_func(ist)
+                    end
+                end
             else
                 val = getproperty(ist, name)
             end

@@ -21,7 +21,7 @@ Parameters of a Simple one-state Turbine Governor
 - `d_t::Float64`: Inverse Droop parameter, validation range: `(0, nothing)`
 - `Tm::Float64`: Turbine Governor Low-Pass Time Constant [s], validation range: `(0, nothing)`
 - `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the TGSimple model are:
 	τm: mechanical torque
 - `n_states::Int`: (**Do not modify.**) TGSimple has 1 state
@@ -34,7 +34,7 @@ mutable struct TGSimple <: TurbineGov
     Tm::Float64
     "Reference Power Set-point (pu)"
     P_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the TGSimple model are:
 	τm: mechanical torque"

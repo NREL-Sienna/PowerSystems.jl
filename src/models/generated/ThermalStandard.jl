@@ -40,12 +40,12 @@ This is a standard representation with options to include a minimum up time, min
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used, validation range: `active_power_limits`
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`: [`OperationalCost`](@ref) of generation
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
 - `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.OT`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
@@ -53,7 +53,7 @@ This is a standard representation with options to include a minimum up time, min
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ThermalStandard <: ThermalGen
@@ -69,7 +69,7 @@ mutable struct ThermalStandard <: ThermalGen
     active_power::Float64
     "Initial reactive power set point of the unit (MVAR)"
     reactive_power::Float64
-    "Maximum output power rating of the unit (MVA)"
+    "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
     "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax
@@ -95,7 +95,7 @@ mutable struct ThermalStandard <: ThermalGen
     time_at_status::Float64
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -123,7 +123,7 @@ function ThermalStandard(::Nothing)
         reactive_power_limits=nothing,
         ramp_limits=nothing,
         operation_cost=ThermalGenerationCost(nothing),
-        base_power=0.0,
+        base_power=100.0,
         time_limits=nothing,
         must_run=false,
         prime_mover_type=PrimeMovers.OT,
@@ -144,17 +144,17 @@ get_status(value::ThermalStandard) = value.status
 """Get [`ThermalStandard`](@ref) `bus`."""
 get_bus(value::ThermalStandard) = value.bus
 """Get [`ThermalStandard`](@ref) `active_power`."""
-get_active_power(value::ThermalStandard) = get_value(value, value.active_power)
+get_active_power(value::ThermalStandard) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`ThermalStandard`](@ref) `reactive_power`."""
-get_reactive_power(value::ThermalStandard) = get_value(value, value.reactive_power)
+get_reactive_power(value::ThermalStandard) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`ThermalStandard`](@ref) `rating`."""
-get_rating(value::ThermalStandard) = get_value(value, value.rating)
+get_rating(value::ThermalStandard) = get_value(value, Val(:rating), Val(:mva))
 """Get [`ThermalStandard`](@ref) `active_power_limits`."""
-get_active_power_limits(value::ThermalStandard) = get_value(value, value.active_power_limits)
+get_active_power_limits(value::ThermalStandard) = get_value(value, Val(:active_power_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::ThermalStandard) = get_value(value, value.reactive_power_limits)
+get_reactive_power_limits(value::ThermalStandard) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `ramp_limits`."""
-get_ramp_limits(value::ThermalStandard) = get_value(value, value.ramp_limits)
+get_ramp_limits(value::ThermalStandard) = get_value(value, Val(:ramp_limits), Val(:mva))
 """Get [`ThermalStandard`](@ref) `operation_cost`."""
 get_operation_cost(value::ThermalStandard) = value.operation_cost
 """Get [`ThermalStandard`](@ref) `base_power`."""
@@ -185,17 +185,17 @@ set_status!(value::ThermalStandard, val) = value.status = val
 """Set [`ThermalStandard`](@ref) `bus`."""
 set_bus!(value::ThermalStandard, val) = value.bus = val
 """Set [`ThermalStandard`](@ref) `active_power`."""
-set_active_power!(value::ThermalStandard, val) = value.active_power = set_value(value, val)
+set_active_power!(value::ThermalStandard, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `reactive_power`."""
-set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::ThermalStandard, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `rating`."""
-set_rating!(value::ThermalStandard, val) = value.rating = set_value(value, val)
+set_rating!(value::ThermalStandard, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `active_power_limits`."""
-set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = set_value(value, val)
+set_active_power_limits!(value::ThermalStandard, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = set_value(value, val)
+set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `ramp_limits`."""
-set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, val)
+set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
 """Set [`ThermalStandard`](@ref) `base_power`."""

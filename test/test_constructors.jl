@@ -5,6 +5,7 @@
     bus = ACBus(
         1,
         "test",
+        true,
         ACBusTypes.SLACK,
         0.0,
         0.0,
@@ -27,14 +28,16 @@ end
     @test tThermalGen isa PowerSystems.Component
     tHydroDispatch = HydroDispatch(nothing)
     @test tHydroDispatch isa PowerSystems.Component
-    tHydroEnergyReservoir = HydroEnergyReservoir(nothing)
-    @test tHydroEnergyReservoir isa PowerSystems.Component
     tRenewableNonDispatch = RenewableNonDispatch(nothing)
     @test tRenewableNonDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
     tRenewableDispatch = RenewableDispatch(nothing)
     @test tRenewableDispatch isa PowerSystems.Component
+    tTurbine = HydroTurbine(nothing)
+    @test tTurbine isa PowerSystems.Component
+    tReservoir = HydroReservoir(nothing)
+    @test tReservoir isa PowerSystems.Component
 end
 
 @testset "Source Constructors" begin
@@ -56,6 +59,10 @@ end
     @test tPowerLoad isa PowerSystems.Component
     tLoad = InterruptiblePowerLoad(nothing)
     @test tLoad isa PowerSystems.Component
+    tShiftableLoad = ShiftablePowerLoad(nothing)
+    @test tShiftableLoad isa PowerSystems.Component
+    tInterruptibleStandardLoad = InterruptibleStandardLoad(nothing)
+    @test tInterruptibleStandardLoad isa PowerSystems.Component
 end
 
 @testset "Branch Constructors" begin
@@ -63,10 +70,12 @@ end
     @test tLine isa PowerSystems.Component
     tMonitoredLine = MonitoredLine(nothing)
     @test tMonitoredLine isa PowerSystems.Component
-    tTwoTerminalHVDCLine = TwoTerminalHVDCLine(nothing)
-    @test tTwoTerminalHVDCLine isa PowerSystems.Component
-    tTwoTerminalVSCDCLine = TwoTerminalVSCDCLine(nothing)
-    @test tTwoTerminalVSCDCLine isa PowerSystems.Component
+    tTwoTerminalGenericHVDCLine = TwoTerminalGenericHVDCLine(nothing)
+    @test tTwoTerminalGenericHVDCLine isa PowerSystems.Component
+    tTwoTerminalLCCLine = TwoTerminalLCCLine(nothing)
+    @test tTwoTerminalLCCLine isa PowerSystems.Component
+    tTwoTerminalVSCLine = TwoTerminalVSCLine(nothing)
+    @test tTwoTerminalVSCLine isa PowerSystems.Component
     tTransformer2W = Transformer2W(nothing)
     @test tTransformer2W isa PowerSystems.Component
     tTapTransformer = TapTransformer(nothing)

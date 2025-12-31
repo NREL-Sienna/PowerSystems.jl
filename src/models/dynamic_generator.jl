@@ -174,3 +174,28 @@ function get_degov1_states(droop_flag::Int)
         error("Unsupported value of droop_flag on DEGOV1")
     end
 end
+
+function get_frequency_droop(dyn_gen::DynamicGenerator)
+    return get_frequency_droop(get_prime_mover(dyn_gen))
+end
+
+function get_frequency_droop(::V) where {V <: TurbineGov}
+    throw(
+        ArgumentError(
+            "get_frequency_droop not implemented for prime mover $V.",
+        ),
+    )
+end
+
+get_frequency_droop(pm::DEGOV) = 1 / get_K(pm)
+get_frequency_droop(pm::DEGOV1) = get_R(pm)
+get_frequency_droop(pm::GasTG) = get_R(pm)
+get_frequency_droop(pm::GeneralGovModel) = get_R(pm)
+get_frequency_droop(pm::HydroTurbineGov) = get_R(pm)
+get_frequency_droop(pm::IEEETurbineGov1) = 1 / get_K(pm)
+get_frequency_droop(pm::PIDGOV) = 1 / get_Rperm(pm)
+get_frequency_droop(pm::SteamTurbineGov1) = get_R(pm)
+get_frequency_droop(pm::TGSimple) = 1 / d_t(pm)
+get_frequency_droop(pm::TGTypeI) = get_R(pm)
+get_frequency_droop(pm::TGTypeII) = get_R(pm)
+get_frequency_droop(pm::WPIDHY) = 1 / get_reg(pm)

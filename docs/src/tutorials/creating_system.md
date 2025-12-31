@@ -9,7 +9,8 @@ system settings.
 
 ## Setup
 
-To get started, ensure you have followed the [installation instructions](@ref install).
+To get started, ensure you have followed the
+[installation instructions](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/).
 
 Start Julia from the command line if you haven't already:
 
@@ -52,6 +53,7 @@ Let's start with a reference bus:
 bus1 = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,
@@ -62,7 +64,9 @@ bus1 = ACBus(;
 
 This bus is on a 230 kV AC transmission network, with an allowable voltage range of
 0.9 to 1.05 p.u. We are assuming it is currently operating at 1.0 p.u. voltage and
-an angle of 0 radians.
+an angle of 0 radians. Notice that we've defined this bus as [reference bus or slack
+bus](@ref acbustypes_list), where it will be used for balancing power flow in power
+flow studies.
 
 Let's add this bus to our `System` with `add_component!`:
 
@@ -76,7 +80,10 @@ We can see the impact this has on the `System` simply by printing it:
 sys
 ```
 
-Notice that `System` now shows a summary of components in the system.
+Notice that `System` now shows a summary of components in the system. The table shows
+"[Static](@ref S) Components", which refers to steady state data used for power
+flow analysis or production cost modeling, as opposed to [Dynamic](@ref D) components
+which that can be used to define differential equations for transient simulations.
 
 Let's create a second bus:
 
@@ -84,6 +91,7 @@ Let's create a second bus:
 bus2 = ACBus(;
     number = 2,
     name = "bus2",
+    available = true,
     bustype = ACBusTypes.PV,
     angle = 0.0,
     magnitude = 1.0,
@@ -160,14 +168,14 @@ withdraw power from the network.
     per-unit using the `base_power` of the component (with the exception of `base_power`
     itself, which is in MVA).
 
-We'll start with defining a 10 MW [load](@ref PowerLoad) to `bus1`:
+We'll start with defining a 10 MW [load](@ref PowerLoad) to `bus2`:
 
 ```@repl basics
 load = PowerLoad(;
     name = "load1",
     available = true,
-    bus = bus1,
-    active_power = 0.0, # Per-unitized by device base_power
+    bus = bus2,
+    active_power = 0.5, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
     base_power = 10.0, # MVA
     max_active_power = 1.0, # 10 MW per-unitized by device base_power
@@ -176,7 +184,7 @@ load = PowerLoad(;
 ```
 
 Notice that we defined the `max_active_power`, which is 10 MW, as 1.0 in per-unit using the
-`base_power` of 10 MVA. We've also used the `bus1` component itself to define where this
+`base_power` of 10 MVA. We've also used the `bus2` component itself to define where this
 load is located in the network.
 
 Now add the load to the system:
@@ -194,7 +202,7 @@ solar = RenewableDispatch(;
     name = "solar1",
     available = true,
     bus = bus2,
-    active_power = 0.0, # Per-unitized by device base_power
+    active_power = 0.2, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
     rating = 1.0, # 5 MW per-unitized by device base_power
     prime_mover_type = PrimeMovers.PVe,
@@ -208,14 +216,15 @@ solar = RenewableDispatch(;
 Note that we've used a generic [renewable generator](@ref RenewableDispatch) to model
 solar, but we can specify that it is solar through the [prime mover](@ref pm_list).
 
-Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard):
+Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard) to `bus1`
+because a slack bus require a controllable generator component:
 
 ```@repl basics
 gas = ThermalStandard(;
     name = "gas1",
     available = true,
     status = true,
-    bus = bus2,
+    bus = bus1,
     active_power = 0.0, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
     rating = 1.0, # 30 MW per-unitized by device base_power
@@ -389,6 +398,6 @@ Next, you might want to:
   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
   - Import a `System` [from an existing Matpower or PSSE file](@ref pm_data) or
     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
-  - [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
+  - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
   - See a workaround for how to [Add a Component in Natural Units](@ref)

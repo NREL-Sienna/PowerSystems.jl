@@ -14,11 +14,11 @@ jobs:
       matrix:
         julia-version: [1]
         os: [ubuntu-latest]
-        package_name: [PowerSimulations, PowerSystemCaseBuilder, PowerNetworkMatrices]
+        package_name: [PowerSimulations, PowerSystemCaseBuilder, PowerNetworkMatrices, PowerFlows]
     continue-on-error: true
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
           arch: x64

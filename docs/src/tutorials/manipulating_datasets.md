@@ -6,7 +6,7 @@
 
 ## Viewing Components in the System
 
-We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](@ref psb):
+We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable/):
 
 ```@repl system
 using PowerSystems;
@@ -44,6 +44,14 @@ From above we know the names of the thermal generators.
 
 ```@repl system
 solitude = get_component(ThermalStandard, sys, "Solitude")
+```
+
+Notice that all of Solitude's fields are pretty-printed with the return statment for
+quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
+manipulate:
+
+```@repl system
+typeof(solitude)
 ```
 
 Notice that all of Solitude's fields are pretty-printed with the return statment for
@@ -185,8 +193,7 @@ using dot notation again to access the `fuel` fields:
 get_fuel.(get_components(ThermalStandard, sys))
 ```
 
-See that we linked two functions here with Julia's dot notation -- this is a very
-convenient way of quickly getting the data you need.
+See that we linked two functions here with Julia's dot notation -- this is a very convenient way of quickly getting the data you need.
 
 ## Filtering Specific Data
 
@@ -329,6 +336,10 @@ Now we can check the names using the [`get_name`](@ref) function again.
 ```@repl system
 get_name.(get_components(ThermalStandard, sys))
 ```
+
+Be aware again that accessing components through a vector using
+[`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
+might cause large memory allocations, based on your dataset size.
 
 Be aware again that accessing components through a vector using
 [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)

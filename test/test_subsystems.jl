@@ -53,7 +53,7 @@ function create_system_with_2_test_subsystems()
     add_component_to_subsystem!(
         c_sys5,
         subsystems[1],
-        get_component(TwoTerminalHVDCLine, c_sys5, "nodeC-nodeC2"),
+        get_component(TwoTerminalGenericHVDCLine, c_sys5, "nodeC-nodeC2"),
     )
     add_component_to_subsystem!(
         c_sys5,
@@ -215,6 +215,9 @@ end
     device = nothing
     service = nothing
     for dev in get_components(Device, sys)
+        if !PSY.supports_services(dev)
+            continue
+        end
         services = get_services(dev)
         if !isempty(services)
             device = dev
@@ -256,10 +259,43 @@ end
 end
 
 @testset "Test get subsystems and components for c_sys5" begin
-    bus_c = ACBus(3, "nodeC", "PV", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
-    bus_d = ACBus(4, "nodeD", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+    bus_c = ACBus(
+        3,
+        "nodeC",
+        true,
+        "PV",
+        0,
+        1.0,
+        (min = 0.9, max = 1.05),
+        230,
+        nothing,
+        nothing,
+    )
+    bus_d = ACBus(
+        4,
+        "nodeD",
+        true,
+        "REF",
+        0,
+        1.0,
+        (min = 0.9, max = 1.05),
+        230,
+        nothing,
+        nothing,
+    )
     bus_d2 =
-        ACBus(9, "nodeD2", "REF", 0, 1.0, (min = 0.9, max = 1.05), 230, nothing, nothing)
+        ACBus(
+            9,
+            "nodeD2",
+            true,
+            "REF",
+            0,
+            1.0,
+            (min = 0.9, max = 1.05),
+            230,
+            nothing,
+            nothing,
+        )
 
     d_d2 = Line(
         "nodeD-nodeD2",
@@ -454,12 +490,12 @@ end
     @test has_component(
         c_sys5,
         "subsystem_1",
-        get_component(TwoTerminalHVDCLine, c_sys5, "nodeC-nodeC2"),
+        get_component(TwoTerminalGenericHVDCLine, c_sys5, "nodeC-nodeC2"),
     )
     @test has_component(
         c_sys5,
         "subsystem_2",
-        get_component(TwoTerminalHVDCLine, c_sys5, "nodeC-nodeC2"),
+        get_component(TwoTerminalGenericHVDCLine, c_sys5, "nodeC-nodeC2"),
     )
 
     @test sort!(get_name.(get_subsystem_components(c_sys5, "subsystem_1"))) ==
@@ -491,7 +527,7 @@ end
         get_name(get_component(ACBus, c_sys5, "nodeD")),
         get_name(get_component(ACBus, c_sys5, "nodeE")),
         get_name(get_component(ACBus, c_sys5, "nodeC2")),
-        get_name(get_component(TwoTerminalHVDCLine, c_sys5, "nodeC-nodeC2")),
+        get_name(get_component(TwoTerminalGenericHVDCLine, c_sys5, "nodeC-nodeC2")),
     ])
 
     @test get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeD")) ==
@@ -604,7 +640,7 @@ end
         get_name(get_component(ACBus, c_sys5, "nodeD")),
         get_name(get_component(ACBus, c_sys5, "nodeE")),
         get_name(get_component(ACBus, c_sys5, "nodeC2")),
-        get_name(get_component(TwoTerminalHVDCLine, c_sys5, "nodeC-nodeC2")),
+        get_name(get_component(TwoTerminalGenericHVDCLine, c_sys5, "nodeC-nodeC2")),
     ])
     @test_throws ArgumentError remove_component_from_subsystem!(
         c_sys5,

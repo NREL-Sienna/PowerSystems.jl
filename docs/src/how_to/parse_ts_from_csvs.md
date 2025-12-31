@@ -88,4 +88,4 @@ sys
   - [Improve Performance with Time Series Data](@ref)
   - Parsing [Matpower or PSS/e RAW Files](@ref pm_data)
   - Parsing [PSS/e DYR Files](@ref dyr_data)
-  - Parsing [table data (CSV Files)](@ref table_data)
+  - [Build a `System` from CSV files](@ref system_from_csv)

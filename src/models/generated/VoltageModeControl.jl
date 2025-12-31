@@ -34,7 +34,7 @@ Parameters of an inner loop current control PID using virtual impedance based on
 - `kffi::Float64`: Binary variable to enable feed-forward gain of current, validation range: `(0, nothing)`
 - `ωad::Float64`: active damping filter cutoff frequency (rad/sec), validation range: `(0, nothing)`
 - `kad::Float64`: active damping gain, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,
 	ξq_ic: q-axis integrator state of the PI voltage controller,
@@ -65,7 +65,7 @@ mutable struct VoltageModeControl <: InnerControl
     ωad::Float64
     "active damping gain"
     kad::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the VoltageModeControl model are:
 	ξd_ic: d-axis integrator state of the PI voltage controller,

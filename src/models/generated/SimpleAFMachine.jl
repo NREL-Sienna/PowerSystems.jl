@@ -41,7 +41,7 @@ Parameters of 4-[states](@ref S) simplified Anderson-Fouad (SimpleAFMachine) mod
 - `Tq0_p::Float64`: Time constant of transient q-axis voltage, validation range: `(0, nothing)`
 - `Td0_pp::Float64`: Time constant of sub-transient d-axis voltage, validation range: `(0, nothing)`
 - `Tq0_pp::Float64`: Time constant of sub-transient q-axis voltage, validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,
 	ed_p: d-axis transient voltage,
@@ -73,7 +73,7 @@ mutable struct SimpleAFMachine <: Machine
     Td0_pp::Float64
     "Time constant of sub-transient q-axis voltage"
     Tq0_pp::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	eq_p: q-axis transient voltage,

@@ -35,15 +35,15 @@ Renewable generators do not have a `max_active_power` parameter, which is instea
 - `bus::ACBus`: Bus that this component is connected to
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`
-- `rating::Float64`: Maximum output power rating of the unit (MVA), validation range: `(0, nothing)`
+- `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref acbustypes_list) bus. Set to `nothing` if not applicable
 - `power_factor::Float64`: Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus, validation range: `(0, 1)`
 - `operation_cost::Union{RenewableGenerationCost, MarketBidCost}`: [`OperationalCost`](@ref) of generation
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct RenewableDispatch <: RenewableGen
@@ -57,7 +57,7 @@ mutable struct RenewableDispatch <: RenewableGen
     active_power::Float64
     "Initial reactive power set point of the unit (MVAR), used in some production cost modeling simulations. To set the reactive power in a load flow, use `power_factor`"
     reactive_power::Float64
-    "Maximum output power rating of the unit (MVA)"
+    "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
     "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
     prime_mover_type::PrimeMovers
@@ -73,7 +73,7 @@ mutable struct RenewableDispatch <: RenewableGen
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
@@ -100,7 +100,7 @@ function RenewableDispatch(::Nothing)
         reactive_power_limits=nothing,
         power_factor=1.0,
         operation_cost=RenewableGenerationCost(nothing),
-        base_power=0.0,
+        base_power=100.0,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -114,15 +114,15 @@ get_available(value::RenewableDispatch) = value.available
 """Get [`RenewableDispatch`](@ref) `bus`."""
 get_bus(value::RenewableDispatch) = value.bus
 """Get [`RenewableDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableDispatch) = get_value(value, value.active_power)
+get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`RenewableDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableDispatch) = get_value(value, value.reactive_power)
+get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`RenewableDispatch`](@ref) `rating`."""
-get_rating(value::RenewableDispatch) = get_value(value, value.rating)
+get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva))
 """Get [`RenewableDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableDispatch) = value.prime_mover_type
 """Get [`RenewableDispatch`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::RenewableDispatch) = get_value(value, value.reactive_power_limits)
+get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva))
 """Get [`RenewableDispatch`](@ref) `power_factor`."""
 get_power_factor(value::RenewableDispatch) = value.power_factor
 """Get [`RenewableDispatch`](@ref) `operation_cost`."""
@@ -143,15 +143,15 @@ set_available!(value::RenewableDispatch, val) = value.available = val
 """Set [`RenewableDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableDispatch, val) = value.bus = val
 """Set [`RenewableDispatch`](@ref) `active_power`."""
-set_active_power!(value::RenewableDispatch, val) = value.active_power = set_value(value, val)
+set_active_power!(value::RenewableDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `reactive_power`."""
-set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `rating`."""
-set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, val)
+set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::RenewableDispatch, val) = value.prime_mover_type = val
 """Set [`RenewableDispatch`](@ref) `reactive_power_limits`."""
-set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, val)
+set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `power_factor`."""
 set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val
 """Set [`RenewableDispatch`](@ref) `operation_cost`."""

@@ -1,15 +1,11 @@
-
-include("data_5bus_pu.jl")
-include("data_14bus_pu.jl")
-
 checksys = false
 
 @testset "Test System constructors from .jl files" begin
     tPowerSystem = System(nothing)
-    nodes_5 = nodes5()
-    nodes_14 = nodes14()
+    nodes_5_nodes = nodes5()
+    nodes_14_nodes = nodes14()
 
-    for node in nodes_5
+    for node in nodes_5_nodes
         node.angle = deg2rad(node.angle)
     end
 
@@ -18,22 +14,32 @@ checksys = false
 
     sys5 = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        loads5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5)
 
     sys5b = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        loads5(nodes_5),
-        battery5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        battery5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5b)
+
+    sys5f = System(
+        100.0,
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        shiftable5(nodes_5_nodes);
+        runchecks = checksys,
+    )
+    clear_components!(sys5f)
 
     # GitHub issue #234 - fix time_series5 in data file, use new format
     #_sys5b = PowerSystems._System(nodes_5, thermal_generators5(nodes_5), loads5(nodes_5), nothing, battery5(nodes_5),
@@ -42,12 +48,12 @@ checksys = false
 
     sys5bh = System(
         100.0,
-        nodes_5,
-        thermal_generators5(nodes_5),
-        hydro_generators5(nodes_5),
-        loads5(nodes_5),
-        branches5(nodes_5),
-        battery5(nodes_5);
+        nodes_5_nodes,
+        thermal_generators5(nodes_5_nodes),
+        hydro_generators5(nodes_5_nodes),
+        loads5(nodes_5_nodes),
+        branches5(nodes_5_nodes),
+        battery5(nodes_5_nodes);
         runchecks = checksys,
     )
     clear_components!(sys5bh)
@@ -59,26 +65,26 @@ checksys = false
     #                            100.0, Dict{Symbol,Vector{<:TimeSeriesData}}(),nothing,nothing)
     #sys14 = System(_sys14)
 
-    for node in nodes_14
+    for node in nodes_14_nodes
         node.angle = deg2rad(node.angle)
     end
 
     sys14b = PowerSystems.System(
         100.0,
-        nodes_14,
-        thermal_generators14(nodes_14),
-        loads14(nodes_14),
-        battery14(nodes_14);
+        nodes_14_nodes,
+        thermal_generators14(nodes_14_nodes),
+        loads14(nodes_14_nodes),
+        battery14(nodes_14_nodes);
         runchecks = checksys,
     )
     clear_components!(sys14b)
     sys14b = PowerSystems.System(
         100.0,
-        nodes_14,
-        thermal_generators14(nodes_14),
-        loads14(nodes_14),
-        branches14(nodes_14),
-        battery14(nodes_14);
+        nodes_14_nodes,
+        thermal_generators14(nodes_14_nodes),
+        loads14(nodes_14_nodes),
+        branches14(nodes_14_nodes),
+        battery14(nodes_14_nodes);
         runchecks = checksys,
     )
     clear_components!(sys14b)
@@ -104,7 +110,7 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
     # You can also call test_accessors wherever an instance has been created.
 
-    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent)
+    types_to_skip = (TestDevice, TestRenDevice, TestInjector, NonexistentComponent)
     types = vcat(
         IS.get_all_concrete_subtypes(Component),
         IS.get_all_concrete_subtypes(DynamicComponent),
@@ -121,7 +127,7 @@ end
 
 @testset "Test required accessor functions of subtypes of Component " begin
     types = IS.get_all_concrete_subtypes(Component)
-    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent)
+    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent, TestInjector)
     sort!(types; by = x -> string(x))
     for ps_type in types
         ps_type in types_to_skip && continue
@@ -172,7 +178,8 @@ end
         () -> begin
             sys = PSB.build_system(PSB.PSITestSystems, "c_sys5")
             component_name = "Bus2"
-            ts_name = "max_active_power"
+            # We use this name to avoid conflicts with the existing time series in the system
+            ts_name = "max_active_power_test"
             old_component = get_component(PowerLoad, sys, component_name)
             dates = collect(
                 Dates.DateTime("2020-01-01T00:00:00"):Dates.Hour(1):Dates.DateTime(

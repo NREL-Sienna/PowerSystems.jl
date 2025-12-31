@@ -15,6 +15,7 @@ This file is auto-generated. Do not edit.
         max_reactive_power::Float64
         base_power::Float64
         operation_cost::Union{LoadCost, MarketBidCost}
+        conformity::LoadConformity
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -33,11 +34,12 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
 - `max_reactive_power::Float64`: Maximum reactive power (MVAR) that this load can demand
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `operation_cost::Union{LoadCost, MarketBidCost}`: [`OperationalCost`](@ref) of interrupting load
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct InterruptiblePowerLoad <: ControllableLoad
@@ -59,22 +61,24 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     base_power::Float64
     "[`OperationalCost`](@ref) of interrupting load"
     operation_cost::Union{LoadCost, MarketBidCost}
+    "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list)."
+    conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, services, dynamic_injector, ext, internal, )
+function InterruptiblePowerLoad(; name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    InterruptiblePowerLoad(name, available, bus, active_power, reactive_power, max_active_power, max_reactive_power, base_power, operation_cost, conformity, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -87,8 +91,9 @@ function InterruptiblePowerLoad(::Nothing)
         reactive_power=0.0,
         max_active_power=0.0,
         max_reactive_power=0.0,
-        base_power=0.0,
+        base_power=100.0,
         operation_cost=LoadCost(nothing),
+        conformity=LoadConformity.UNDEFINED,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -102,17 +107,19 @@ get_available(value::InterruptiblePowerLoad) = value.available
 """Get [`InterruptiblePowerLoad`](@ref) `bus`."""
 get_bus(value::InterruptiblePowerLoad) = value.bus
 """Get [`InterruptiblePowerLoad`](@ref) `active_power`."""
-get_active_power(value::InterruptiblePowerLoad) = get_value(value, value.active_power)
+get_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:active_power), Val(:mva))
 """Get [`InterruptiblePowerLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, value.reactive_power)
+get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva))
 """Get [`InterruptiblePowerLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, value.max_active_power)
+get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva))
 """Get [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
-get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, value.max_reactive_power)
+get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva))
 """Get [`InterruptiblePowerLoad`](@ref) `base_power`."""
 get_base_power(value::InterruptiblePowerLoad) = value.base_power
 """Get [`InterruptiblePowerLoad`](@ref) `operation_cost`."""
 get_operation_cost(value::InterruptiblePowerLoad) = value.operation_cost
+"""Get [`InterruptiblePowerLoad`](@ref) `conformity`."""
+get_conformity(value::InterruptiblePowerLoad) = value.conformity
 """Get [`InterruptiblePowerLoad`](@ref) `services`."""
 get_services(value::InterruptiblePowerLoad) = value.services
 """Get [`InterruptiblePowerLoad`](@ref) `dynamic_injector`."""
@@ -127,17 +134,19 @@ set_available!(value::InterruptiblePowerLoad, val) = value.available = val
 """Set [`InterruptiblePowerLoad`](@ref) `bus`."""
 set_bus!(value::InterruptiblePowerLoad, val) = value.bus = val
 """Set [`InterruptiblePowerLoad`](@ref) `active_power`."""
-set_active_power!(value::InterruptiblePowerLoad, val) = value.active_power = set_value(value, val)
+set_active_power!(value::InterruptiblePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `reactive_power`."""
-set_reactive_power!(value::InterruptiblePowerLoad, val) = value.reactive_power = set_value(value, val)
+set_reactive_power!(value::InterruptiblePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `max_active_power`."""
-set_max_active_power!(value::InterruptiblePowerLoad, val) = value.max_active_power = set_value(value, val)
+set_max_active_power!(value::InterruptiblePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
-set_max_reactive_power!(value::InterruptiblePowerLoad, val) = value.max_reactive_power = set_value(value, val)
+set_max_reactive_power!(value::InterruptiblePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `base_power`."""
 set_base_power!(value::InterruptiblePowerLoad, val) = value.base_power = val
 """Set [`InterruptiblePowerLoad`](@ref) `operation_cost`."""
 set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost = val
+"""Set [`InterruptiblePowerLoad`](@ref) `conformity`."""
+set_conformity!(value::InterruptiblePowerLoad, val) = value.conformity = val
 """Set [`InterruptiblePowerLoad`](@ref) `services`."""
 set_services!(value::InterruptiblePowerLoad, val) = value.services = val
 """Set [`InterruptiblePowerLoad`](@ref) `ext`."""

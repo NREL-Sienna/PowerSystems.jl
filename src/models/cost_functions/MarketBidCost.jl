@@ -9,43 +9,64 @@ $(TYPEDFIELDS)
 An operating cost for market bids of energy and ancilliary services for any asset.
 Compatible with most US Market bidding mechanisms that support demand and generation side.
 """
-@kwdef mutable struct MarketBidCost <: OperationalCost
+mutable struct MarketBidCost <: OfferCurveCost
     "No load cost"
-    no_load_cost::Union{TimeSeriesKey, Nothing, Float64} = nothing
-    "Start-up cost at different stages of the thermal cycle as the unit cools after a 
+    no_load_cost::Union{TimeSeriesKey, Nothing, Float64}
+    "Start-up cost at different stages of the thermal cycle as the unit cools after a
     shutdown (e.g., *hot*, *warm*, or *cold* starts). Warm is also referred to as
     intermediate in some markets. Can also accept a single value if there is only one
     start-up cost"
     start_up::Union{TimeSeriesKey, StartUpStages}
     "Shut-down cost"
-    shut_down::Float64
+    shut_down::Union{TimeSeriesKey, Float64}
     "Sell Offer Curves data, which can be a time series of `PiecewiseStepData` or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     incremental_offer_curves::Union{
         Nothing,
         TimeSeriesKey,  # piecewise step data
         CostCurve{PiecewiseIncrementalCurve},
-    } = nothing
+    }
     "Buy Offer Curves data, which can be a time series of `PiecewiseStepData` or a
     [`CostCurve`](@ref) of [`PiecewiseIncrementalCurve`](@ref)"
     decremental_offer_curves::Union{
         Nothing,
         TimeSeriesKey,
         CostCurve{PiecewiseIncrementalCurve},
-    } = nothing
+    }
     "If using a time series for incremental_offer_curves, this is a time series of `Float64` representing the `initial_input`"
-    incremental_initial_input::Union{Nothing, TimeSeriesKey} = nothing
+    incremental_initial_input::Union{Nothing, TimeSeriesKey}
     "If using a time series for decremental_offer_curves, this is a time series of `Float64` representing the `initial_input`"
-    decremental_initial_input::Union{Nothing, TimeSeriesKey} = nothing
+    decremental_initial_input::Union{Nothing, TimeSeriesKey}
     "Bids for the ancillary services"
-    ancillary_service_offers::Vector{Service} = Vector{Service}()
+    ancillary_service_offers::Vector{Service}
 end
 
-"Auxiliary Constructor for Deserialization with Integer at no load cost"
+"Auxiliary constructor for shut_down::Integer"
+MarketBidCost(
+    no_load_cost::Union{TimeSeriesKey, Nothing, Float64},
+    start_up::Union{TimeSeriesKey, StartUpStages},
+    shut_down::Integer,
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+) = MarketBidCost(
+    no_load_cost,
+    start_up,
+    Float64(shut_down),
+    incremental_offer_curves,
+    decremental_offer_curves,
+    incremental_initial_input,
+    decremental_initial_input,
+    ancillary_service_offers,
+)
+
+"Auxiliary constructor for no_load_cost::Integer"
 MarketBidCost(
     no_load_cost::Integer,
     start_up::Union{TimeSeriesKey, StartUpStages},
-    shut_down,
+    shut_down::Union{TimeSeriesKey, Float64},
     incremental_offer_curves,
     decremental_offer_curves,
     incremental_initial_input,
@@ -67,7 +88,7 @@ MarketBidCost(
 MarketBidCost(
     no_load_cost::Float64,
     start_up::Union{TimeSeriesKey, StartUpStages},
-    shut_down,
+    shut_down::Union{TimeSeriesKey, Float64},
     incremental_offer_curves,
     decremental_offer_curves,
     ancillary_service_offers,
@@ -92,6 +113,21 @@ function MarketBidCost(::Nothing)
     )
 end
 
+MarketBidCost(;
+    no_load_cost = nothing,
+    start_up,
+    shut_down,
+    incremental_offer_curves = nothing,
+    decremental_offer_curves = nothing,
+    incremental_initial_input = nothing,
+    decremental_initial_input = nothing,
+    ancillary_service_offers = Vector{Service}(),
+) = MarketBidCost(
+    no_load_cost, start_up, shut_down, incremental_offer_curves,
+    decremental_offer_curves, incremental_initial_input, decremental_initial_input,
+    ancillary_service_offers,
+)
+
 """
 Accepts a single `start_up` value to use as the `hot` value, with `warm` and `cold` set to
 `0.0`.
@@ -108,7 +144,7 @@ function MarketBidCost(
 )
     # Intended for use with generators that are not multi-start (e.g. ThermalStandard).
     # Operators use `hot` when they don’t have multiple stages.
-    start_up_multi = (hot = Float64(start_up), warm = 0.0, cold = 0.0)
+    start_up_multi = single_start_up_to_stages(start_up)
     return MarketBidCost(;
         no_load_cost = no_load_cost,
         start_up = start_up_multi,
@@ -162,7 +198,7 @@ set_ancillary_service_offers!(value::MarketBidCost, val) =
 
 """Auxiliary Method for setting up start up that are not multi-start"""
 function set_start_up!(value::MarketBidCost, val::Real)
-    start_up_multi = (hot = Float64(val), warm = 0.0, cold = 0.0)
+    start_up_multi = single_start_up_to_stages(val)
     set_start_up!(value, start_up_multi)
 end
 
@@ -220,7 +256,7 @@ function make_market_bid_curve(data::PiecewiseStepData,
 end
 
 """
-Auxiliary make market bid curve for timeseries with nothing inputs. 
+Auxiliary make market bid curve for timeseries with nothing inputs.
 """
 function _make_market_bid_curve(data::PiecewiseStepData;
     initial_input::Union{Nothing, Float64} = nothing,

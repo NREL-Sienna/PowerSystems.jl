@@ -1,6 +1,6 @@
 # Parsing code ignores type=null.
 
-HydroEnergyReservoir:
+HydroTurbine:
 - {fuel: HYDRO, type: null}
 - {fuel: HYDRO, type: HYDRO}
 
@@ -24,8 +24,10 @@ ThermalStandard:
 - {fuel: GAS, type: null}
 - {fuel: NUCLEAR, type: null}
 - {fuel: NUC, type: null}
-- {fuel: SYNC_COND, type: SYNC_COND}
 - {fuel: OTHER, type: OT}
+
+SynchronousCondenser:
+- {fuel: SYNC_COND, type: SYNC_COND}
 
 EnergyReservoirStorage:
 - {fuel: STORAGE, type: null}

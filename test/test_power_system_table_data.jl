@@ -72,6 +72,11 @@ end
             mp_iter = get_components(ThermalGen, mpsys)
             mp_generators = LazyDictFromIterator(String, ThermalGen, mp_iter, get_name)
             for cdmgen in get_components(ThermalGen, cdmsys)
+                if isnothing(cdmgen)
+                    # Skips generators parsed from Matpower as SynchCondensers in PSY5
+                    # The fields are different so those aren't valiated in this loop
+                    continue
+                end
                 mpgen = get(mp_generators, uppercase(get_name(cdmgen)))
                 @test cdmgen.available == mpgen.available
                 @test lowercase(cdmgen.bus.name) == lowercase(mpgen.bus.name)
@@ -144,7 +149,8 @@ end
             @test get_rating(cdm_ac_branches[120]) ==
                   get_rating(get_branch(mpsys, cdm_ac_branches[120]))
 
-            cdm_dc_branches = collect(get_components(TwoTerminalHVDCLine, cdmsys))
+            cdm_dc_branches =
+                collect(get_components(TwoTerminalGenericHVDCLine, cdmsys))
             @test get_active_power_limits_from(cdm_dc_branches[1]) ==
                   get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
         end
@@ -264,4 +270,83 @@ end
     @assert isapprox(get_quadratic_term(cost_curve), a2, atol = 0.01)
     @assert isapprox(get_proportional_term(cost_curve), 0.0, atol = 0.01)
     @assert isapprox(get_constant_term(cost_curve), 0.0, atol = 0.01)
+
+    # Test that create_poly_cost works with numeric values (not just strings)
+    # Some CSV parsers return numeric types directly instead of strings
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = a0,  # Float64
+        heat_rate_a1 = a1,  # Float64
+        heat_rate_a2 = a2,  # Float64
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa QuadraticCurve
+    @assert isapprox(get_quadratic_term(cost_curve), a2, atol = 0.01)
+    @assert isapprox(get_proportional_term(cost_curve), a1, atol = 0.01)
+    @assert isapprox(get_constant_term(cost_curve), a0, atol = 0.01)
+
+    # Test with Int64 values (another common numeric type from CSV parsers)
+    example_generator = (
+        name = "test-gen",
+        heat_rate_a0 = Int64(9),
+        heat_rate_a1 = Int64(0),
+        heat_rate_a2 = Int64(0),
+    )
+    cost_curve, fixed_cost = create_poly_cost(example_generator, cost_colnames)
+    @assert cost_curve isa QuadraticCurve
+    @assert isapprox(get_quadratic_term(cost_curve), 0.0, atol = 0.01)
+    @assert isapprox(get_proportional_term(cost_curve), 0.0, atol = 0.01)
+    @assert isapprox(get_constant_term(cost_curve), 9.0, atol = 0.01)
+end
+
+@testset "Test parsing with ThermalMultiStart generators" begin
+    # Test that ThermalMultiStart generators parse correctly with multi-start costs
+    # This exercises the multi-start cost fallback logic in make_thermal_generator_multistart
+    rawsys = PowerSystemTableData(
+        RTS_GMLC_DIR,
+        100.0,
+        DESCRIPTORS;
+        generator_mapping_file = joinpath(
+            RTS_GMLC_DIR,
+            "generator_mapping_multi_start.yaml",
+        ),
+    )
+    sys = System(rawsys; time_series_resolution = Dates.Hour(1))
+
+    # Verify ThermalMultiStart generators were created
+    ms_gens = collect(get_components(ThermalMultiStart, sys))
+    @test length(ms_gens) > 0
+
+    # Check that startup costs were parsed correctly
+    for gen in ms_gens
+        op_cost = get_operation_cost(gen)
+        startup_costs = get_start_up(op_cost)
+        # Startup costs should be non-negative
+        @test startup_costs.hot >= 0.0
+        @test startup_costs.warm >= 0.0
+        @test startup_costs.cold >= 0.0
+    end
+end
+
+@testset "Test Reservoirs and Turbines" begin
+    cdmsys = PSB.build_system(
+        PSB.PSITestSystems,
+        "test_RTS_GMLC_sys";
+        force_build = true,
+    )
+    @test !isempty(get_components(HydroTurbine, cdmsys))
+    for turbine in get_components(HydroTurbine, cdmsys)
+        reservoir = get_connected_head_reservoirs(cdmsys, turbine)
+        @test !isempty(reservoir)
+        reservoir = get_connected_tail_reservoirs(cdmsys, turbine)
+        @test isempty(reservoir)
+    end
+
+    @test !isempty(get_components(HydroReservoir, cdmsys))
+
+    for reservoir in get_components(HydroReservoir, cdmsys)
+        turbines = get_downstream_turbines(reservoir)
+        @test !isempty(turbines)
+        @test isempty(get_upstream_turbines(reservoir))
+    end
 end

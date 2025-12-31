@@ -10,6 +10,7 @@ const INPUT_CATEGORY_NAMES = [
     ("reserves", InputCategory.RESERVE),
     ("storage", InputCategory.STORAGE),
 ]
+
 struct PowerSystemTableData
     base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
@@ -25,7 +26,7 @@ function PowerSystemTableData(
     directory::String,
     user_descriptors::Union{String, Dict},
     descriptors::Union{String, Dict},
-    generator_mapping::Union{String, Dict};
+    generator_mapping::Dict;
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
     category_to_df = Dict{InputCategory, DataFrames.DataFrame}()
@@ -67,10 +68,6 @@ function PowerSystemTableData(
         descriptors = _read_config_file(descriptors)
     end
 
-    if generator_mapping isa AbstractString
-        generator_mapping = get_generator_mapping(generator_mapping)
-    end
-
     return PowerSystemTableData(
         base_power,
         category_to_df,
@@ -83,28 +80,111 @@ function PowerSystemTableData(
 end
 
 """
-Reads in all the data stored in csv files
-The general format for data is
-    folder:
-        gen.csv
-        branch.csv
-        bus.csv
-        ..
-        load.csv
+Reads in all the data stored in csv files in a `directory`
+
+!!! warning
+
+    This parser is planned for deprecation. `PowerSystems.jl` will be
+    moving to a database solution for handling data. There are plans to eventually include
+    utility functions to translate from .csv files to the database, but there will probably
+    be a gap in support. **Users are recommended to write their own custom Julia code to
+    import data from their unique data formats, rather than relying on this parsing
+    code.** See [How-to Build a `System` from CSV Files](@ref system_from_csv) for an example.
 
 # Arguments
 - `directory::AbstractString`: directory containing CSV files
-- `base_power::Float64`: base power for System
-- `user_descriptor_file::AbstractString`: customized input descriptor file
-- `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: PowerSystems descriptor file
-- `generator_mapping_file=GENERATOR_MAPPING_FILE`: generator mapping configuration file
+- `base_power::Float64`: base power for [`System`](@ref)
+- `user_descriptor_file::AbstractString`: customized input descriptor file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/user_descriptors.yaml)
+- `descriptor_file=POWER_SYSTEM_DESCRIPTOR_FILE`: `PowerSystems.jl` descriptor file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json)
+- `generator_mapping_file=GENERATOR_MAPPING_FILE_CDM`: generator mapping configuration file. [Default](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping_cdm.yaml)
+- `timeseries_metadata_file = joinpath(directory, "timeseries_pointers")`: Time series pointers .json file. [Example](https://github.com/NREL-Sienna/PowerSystemsTestData/blob/master/RTS_GMLC/timeseries_pointers.json)
+
+The general format for data in the `directory` is:
+- bus.csv (required)
+    + columns specifying `area` and `zone` will create a corresponding set of `Area` and `LoadZone` objects.
+    + columns specifying `max_active_power` or `max_reactive_power` will create `PowerLoad` objects when nonzero values are encountered and will contribute to the `peak_active_power` and `peak_reactive_power` values for the
+        corresponding `LoadZone` object.
+- branch.csv
+- dc_branch.csv
+- gen.csv
+- load.csv
+- reserves.csv
+- storage.csv
+
+# Custom construction of generators
+
+Each generator will be defined as a concrete subtype of [`Generator`](@ref),
+based on the `fuel` and `type` columns in `gen.csv` and the `generator_mapping_file`.
+The default mapping file
+is [`src/parsers/generator_mapping.yaml`](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/parsers/generator_mapping.yaml). You can override this behavior by specifying your own file.
+
+# Custom Column names
+
+`PowerSystems` provides am input mapping capability that allows you to keep your own
+column names. For example, when parsing raw data for a generator the code expects a column
+called `name`. If the raw data instead defines that column as `GEN UID` then
+you can change the `custom_name` field under the `generator` category to
+`GEN UID` in your YAML file.
+
+To enable the parsing of a custom set of csv files, you can generate a configuration
+file (such as `user_descriptors.yaml`) from the defaults, which are stored
+in [`src/descriptors/power_system_inputs.json`](https://github.com/NREL-Sienna/PowerSystems.jl/blob/main/src/descriptors/power_system_inputs.json).
+
+```python
+python ./bin/generate_config_file.py ./user_descriptors.yaml
+```
+
+Next, edit this file with your customizations.
+
+Note that the user-specific customizations are stored in YAML rather than JSON
+to allow for easier editing. The next few sections describe changes you can
+make to this YAML file.  Do not edit the default JSON file.
+
+## Per-unit conversion
+
+`PowerSystems` defines whether it expects a column value to be per-unit system base,
+per-unit device base, or natural units in `power_system_inputs.json`. If it expects a
+per-unit convention that differs from your values then you can set the `unit_system` in
+`user_descriptors.yaml` and `PowerSystems` will automatically convert the values. For
+example, if you have a `max_active_power` value stored in natural units (MW), but
+`power_system_inputs.json` specifies `unit_system: device_base`, you can enter
+`unit_system: natural_units` in `user_descriptors.yaml` and `PowerSystems` will divide
+the value by the value of the corresponding entry in the column identified by the
+`base_reference` field in `power_system_inputs.json`. You can also override the
+`base_reference` setting by adding `base_reference: My Column` to make device base
+per-unit conversion by dividing the value by the entry in `My Column`. System base
+per-unit conversions always divide the value by the system `base_power` value
+instantiated when constructing a `System`.
+
+`PowerSystems` provides a limited set of unit conversions. For example, if
+`power_system_inputs.json` indicates that a value's unit is degrees but
+your values are in radians then you can set `unit: radian` in
+your YAML file. Other valid `unit` entries include `GW`, `GWh`, `MW`, `MWh`, `kW`,
+and `kWh`.
+
+# Examples
+```julia
+data_dir = "/data/my-data-dir"
+base_power = 100.0
+descriptors = "./user_descriptors.yaml"
+timeseries_metadata_file = "./timeseries_pointers.json"
+generator_mapping_file = "./generator_mapping.yaml"
+data = PowerSystemTableData(
+    data_dir,
+    base_power,
+    descriptors;
+    timeseries_metadata_file = timeseries_metadata_file,
+    generator_mapping_file = generator_mapping_file,
+)
+sys = System(data; time_series_in_memory = true)
+```
 """
 function PowerSystemTableData(
     directory::AbstractString,
     base_power::Float64,
     user_descriptor_file::AbstractString;
     descriptor_file = POWER_SYSTEM_DESCRIPTOR_FILE,
-    generator_mapping_file = GENERATOR_MAPPING_FILE,
+    generator_mapping_file = GENERATOR_MAPPING_FILE_CDM,
     timeseries_metadata_file = joinpath(directory, "timeseries_pointers"),
 )
     files = readdir(directory)
@@ -156,12 +236,20 @@ function PowerSystemTableData(
         error("No csv files or folders in $directory")
     end
 
+    generator_mapping = Dict{NamedTuple, DataType}()
+    try
+        generator_mapping = get_generator_mapping(generator_mapping_file)
+    catch e
+        @error "Error loading generator mapping $(generator_mapping_file)"
+        rethrow(e)
+    end
+
     return PowerSystemTableData(
         data,
         directory,
         user_descriptor_file,
         descriptor_file,
-        generator_mapping_file;
+        generator_mapping;
         timeseries_metadata_file = timeseries_metadata_file,
     )
 end
@@ -231,7 +319,16 @@ function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true
 end
 
 """
-Construct a System from PowerSystemTableData data.
+Construct a System from [`PowerSystemTableData`](@ref) data.
+
+!!! warning
+
+    This parser is planned for deprecation. `PowerSystems.jl` will be
+    moving to a database solution for handling data. There are plans to eventually include
+    utility functions to translate from .csv files to the database, but there will probably
+    be a gap in support. **Users are recommended to write their own custom Julia code to
+    import data from their unique data formats, rather than relying on this parsing
+    code.** See [How-to Build a `System` from CSV Files](@ref system_from_csv) for an example.
 
 # Arguments
 - `time_series_resolution::Union{DateTime, Nothing}=nothing`: only store time_series that match
@@ -314,6 +411,7 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
         ps_bus = ACBus(;
             number = bus_id,
             name = name,
+            available = true,
             bustype = bus_type,
             angle = bus.angle,
             magnitude = bus.voltage,
@@ -351,9 +449,21 @@ function bus_csv_parser!(sys::System, data::PowerSystemTableData)
     end
 end
 
+function get_branch_type(
+    tap::Float64,
+    is_transformer::Union{Bool, Nothing},
+)
+    if isnothing(is_transformer)
+        is_transformer = (tap != 0.0) && (tap != 1.0)
+    end
+
+    is_transformer || return Line
+
+    return tap == 1.0 ? Transformer2W : TapTransformer
+end
+
 """
 Add branches to the System from the raw data.
-
 """
 function branch_csv_parser!(sys::System, data::PowerSystemTableData)
     available = true
@@ -366,10 +476,13 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
         pf = branch.active_power_flow
         qf = branch.reactive_power_flow
 
-        #TODO: noop math...Phase-Shifting Transformer angle
-        alpha = (branch.primary_shunt / 2) - (branch.primary_shunt / 2)
+        # Table Model doesn't support PhaseShifters
         branch_type =
-            get_branch_type(branch.tap, alpha, get(branch, :is_transformer, nothing))
+            get_branch_type(
+                branch.tap,
+                get(branch, :is_transformer, nothing),
+            )
+
         if branch_type == Line
             b = branch.primary_shunt / 2
             value = Line(;
@@ -397,7 +510,9 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 rating = branch.rate,
+                base_power = data.base_power, # use system base power
             )
         elseif branch_type == TapTransformer
             value = TapTransformer(;
@@ -409,12 +524,11 @@ function branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 r = branch.r,
                 x = branch.x,
                 primary_shunt = branch.primary_shunt,
+                winding_group_number = WindingGroupNumber.UNDEFINED,
                 tap = branch.tap,
                 rating = branch.rate,
+                base_power = data.base_power, # use system base power
             )
-        elseif branch_type == PhaseShiftingTransformer
-            # TODO create PhaseShiftingTransformer
-            error("Unsupported branch type $branch_type")
         else
             error("Unsupported branch type $branch_type")
         end
@@ -469,7 +583,7 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
 
             loss = LinearCurve(dc_branch.loss) #TODO: Can we infer this from the other data?,
 
-            value = TwoTerminalHVDCLine(;
+            value = TwoTerminalGenericHVDCLine(;
                 name = dc_branch.name,
                 available = available,
                 active_power_flow = dc_branch.active_power_flow,
@@ -481,32 +595,8 @@ function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
                 loss = loss,
             )
         else
-            rectifier_taplimits = (
-                min = dc_branch.rectifier_tap_limits_min,
-                max = dc_branch.rectifier_tap_limits_max,
-            )
-            rectifier_xrc = dc_branch.rectifier_xrc #TODO: What is this?,
-            rectifier_firingangle = dc_branch.rectifier_firingangle
-            inverter_taplimits = (
-                min = dc_branch.inverter_tap_limits_min,
-                max = dc_branch.inverter_tap_limits_max,
-            )
-            inverter_xrc = dc_branch.inverter_xrc #TODO: What is this?
-            inverter_firingangle = (
-                min = dc_branch.inverter_firing_angle_min,
-                max = dc_branch.inverter_firing_angle_max,
-            )
-            value = TwoTerminalVSCDCLine(;
-                name = dc_branch.name,
-                available = true,
-                active_power_flow = pf,
-                arc = connection_points,
-                rectifier_taplimits = rectifier_taplimits,
-                rectifier_xrc = rectifier_xrc,
-                rectifier_firingangle = rectifier_firingangle,
-                inverter_taplimits = inverter_taplimits,
-                inverter_xrc = inverter_xrc,
-                inverter_firingangle = inverter_firingangle,
+            error(
+                "Only control mode = Power is supported for DC Branch $(dc_branch.name) in TableData.",
             )
         end
 
@@ -540,7 +630,9 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
             push!(cost_point_fields, Symbol(field))
         end
     end
+
     @assert length(output_point_fields) > 0
+
     if length(heat_rate_fields) > 0 && length(cost_point_fields) > 0
         throw(IS.ConflictingInputsError("Heat rate and cost points are both defined"))
     elseif length(heat_rate_fields) > 0
@@ -554,21 +646,30 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     gen_storage = cache_storage(data::PowerSystemTableData)
 
     for gen in iterate_rows(data, InputCategory.GENERATOR)
+        reservoirs = nothing # For hydro generators with reservoirs
         @debug "making generator:" _group = IS.LOG_GROUP_PARSING gen.name
         bus = get_bus(sys, gen.bus_id)
         if isnothing(bus)
             throw(DataFormatError("could not find $(gen.bus_id)"))
         end
 
-        generator = make_generator(data, gen, cost_colnames, bus, gen_storage)
+        # Returns a vector of reservoirs when applicable to hydro turbines
+        generator, reservoirs =
+            make_generator(data, gen, cost_colnames, bus, gen_storage)
         @debug "adding gen:" _group = IS.LOG_GROUP_PARSING generator
         if !isnothing(generator)
             add_component!(sys, generator)
         end
+        if !isnothing(reservoirs)
+            @debug "adding reservoirs:" _group = IS.LOG_GROUP_PARSING generator
+            add_components!(sys, reservoirs)
+        end
     end
+    return
 end
 
 function cache_storage(data::PowerSystemTableData)
+    storage = Dict{String, Any}()
     gen_head_dict = Dict()
     gen_tail_dict = Dict()
     if !haskey(data.category_to_df, InputCategory.STORAGE)
@@ -589,7 +690,9 @@ function cache_storage(data::PowerSystemTableData)
             end
         end
     end
-    return gen_head_dict, gen_tail_dict
+    storage["head"] = gen_head_dict
+    storage["tail"] = gen_tail_dict
+    return storage
 end
 
 """
@@ -714,6 +817,7 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
         if isnothing(device_subcategories)
             @info("Adding contributing components for $(reserve.name) by component name")
             for device in devices
+                @assert supports_services(device)
                 _add_device!(contributing_devices, device_categories, device)
             end
         else
@@ -723,11 +827,14 @@ function services_csv_parser!(sys::System, data::PowerSystemTableData)
                 bus_ids = buses[!, bus_id_column]
                 gen_type =
                     get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping)
-                sys_gen = get_component(
-                    get_generator_type(gen.fuel, gen.unit_type, data.generator_mapping),
-                    sys,
-                    gen.name,
-                )
+                sys_gen = get_component(gen_type, sys, gen.name)
+                @assert supports_services(sys_gen)
+                if isnothing(sys_gen)
+                    error(
+                        "Failed to find generator: type = $gen_type name = $(gen.name) " *
+                        "fuel = $(gen.fuel) unit_type = $(gen.unit_type)",
+                    )
+                end
                 area = string(
                     buses[bus_ids .== get_number(get_bus(sys_gen)), bus_area_column][1],
                 )
@@ -785,24 +892,39 @@ function get_reserve_direction(direction::AbstractString)
 end
 
 """Creates a generator of any type."""
-function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen_storage)
+function make_generator(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus,
+    gen_storage,
+)
     generator = nothing
     gen_type =
         get_generator_type(gen.fuel, get(gen, :unit_type, nothing), data.generator_mapping)
 
+    reservoirs = nothing
     if isnothing(gen_type)
         @error "Cannot recognize generator type" gen.name
     elseif gen_type == ThermalStandard
         generator = make_thermal_generator(data, gen, cost_colnames, bus)
     elseif gen_type == ThermalMultiStart
         generator = make_thermal_generator_multistart(data, gen, cost_colnames, bus)
-    elseif gen_type <: HydroGen
-        generator =
-            make_hydro_generator(gen_type, data, gen, cost_colnames, bus, gen_storage)
+    elseif gen_type == SynchronousCondenser
+        generator = make_synchronous_condenser_generator(gen, bus)
+    elseif gen_type == HydroDispatch
+        generator = make_hydro_dispatch(data, gen, cost_colnames, bus)
+    elseif gen_type == HydroTurbine
+        generator, reservoirs =
+            make_hydro_turbine(data, gen, cost_colnames, bus, gen_storage)
+    elseif gen_type == HydroPumpTurbine
+        # For HydroPump it can only return 2 reservoirs. First is head second is tail
+        generator, reservoirs =
+            make_hydro_pump_storage(data, gen, cost_colnames, bus, gen_storage)
     elseif gen_type <: RenewableGen
         generator = make_renewable_generator(gen_type, data, gen, cost_colnames, bus)
     elseif gen_type == EnergyReservoirStorage
-        head_dict, _ = gen_storage
+        head_dict = gen_storage["head"]
         if !haskey(head_dict, gen.name)
             throw(DataFormatError("Cannot find storage for $(gen.name) in storage.csv"))
         end
@@ -812,7 +934,13 @@ function make_generator(data::PowerSystemTableData, gen, cost_colnames, bus, gen
         @error "Skipping unsupported generator" gen.name gen_type
     end
 
-    return generator
+    if abs(get_base_power(generator)) <= 1e-6
+        @warn "Generator $(summary(generator)) has base power of zero: changing device " *
+              "base power to match system base power, $(data.base_power)"
+        set_base_power!(generator, data.base_power)
+    end
+
+    return generator, reservoirs
 end
 
 function make_cost(
@@ -831,16 +959,17 @@ function make_cost(
             create_poly_cost(gen, ["heat_rate_a0", "heat_rate_a1", "heat_rate_a2"])
     else
         cost_pairs = get_cost_pairs(gen, cost_colnames)
-        var_cost, fixed = create_pwinc_cost(cost_pairs)
+        var_cost, fixed = create_pwinc_cost(gen, cost_pairs)
     end
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) =
+        isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
 
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
-
+    fuel_offtake = LinearCurve(0.0)
     op_cost = ThermalGenerationCost(
-        FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price, vom_data),
+        FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price, fuel_offtake, vom_data),
         fixed * fuel_price,
         startup_cost,
         shutdown_cost,
@@ -856,9 +985,10 @@ function make_cost(
 ) where {T <: ThermalGen}
     fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost = create_pwl_cost(cost_pairs)
+    var_cost = create_pwl_cost(gen, cost_pairs)
     startup_cost, shutdown_cost = calculate_uc_cost(data, gen, fuel_price)
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) =
+        isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
 
@@ -879,7 +1009,7 @@ function make_cost(
 ) where {T <: HydroGen}
     fuel_price = gen.fuel_price / 1000.0
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost, fixed = create_pwinc_cost(cost_pairs)
+    var_cost, fixed = create_pwinc_cost(gen, cost_pairs)
     op_cost = HydroGenerationCost(
         FuelCurve(var_cost, UnitSystem.NATURAL_UNITS, fuel_price),
         fixed * fuel_price)
@@ -893,7 +1023,7 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: HydroGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    var_cost = create_pwl_cost(cost_pairs)
+    var_cost = create_pwl_cost(gen, cost_pairs)
     op_cost = HydroGenerationCost(
         CostCurve(var_cost, UnitSystem.NATURAL_UNITS),
         gen.fixed_cost)
@@ -907,7 +1037,8 @@ function make_cost(
     cost_colnames::_HeatRateColumns,
 ) where {T <: RenewableGen}
     @warn "Heat rate parsing not valid for RenewableGen replacing with zero cost"
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) =
+        isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
@@ -926,7 +1057,8 @@ function make_cost(
     cost_colnames::_CostPointColumns,
 ) where {T <: RenewableGen}
     cost_pairs = get_cost_pairs(gen, cost_colnames)
-    parse_maybe_nothing(x) = isnothing(x) ? 0.0 : tryparse(Float64, x)
+    parse_maybe_nothing(x) =
+        isnothing(x) ? 0.0 : (x isa Number ? Float64(x) : tryparse(Float64, x))
     vom_cost = parse_maybe_nothing(getfield(gen, Symbol("variable_cost")))
     vom_data = LinearCurve(vom_cost)
     var_cost = CostCurve(;
@@ -952,11 +1084,17 @@ function get_cost_pairs(gen::NamedTuple, cost_colnames)
         end
     end
 
-    last_increasing_point = findfirst(x -> x < 0.0, [diff(getfield.(vals, :x))..., -Inf])
-    return vals[1:last_increasing_point]
+    if isempty(vals)
+        return vals
+    else
+        last_increasing_point =
+            findfirst(x -> x < 0.0, [diff(getfield.(vals, :x))..., -Inf])
+        return vals[1:last_increasing_point]
+    end
 end
 
 function create_pwl_cost(
+    gen,
     cost_pairs,
 )
     if length(cost_pairs) > 1
@@ -986,7 +1124,8 @@ function create_poly_cost(
     gen, cost_colnames,
 )
     fixed_cost = 0.0
-    parse_maybe_nothing(x) = isnothing(x) ? nothing : tryparse(Float64, x)
+    parse_maybe_nothing(x) =
+        isnothing(x) ? nothing : (x isa Number ? Float64(x) : tryparse(Float64, x))
     a2 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a2")))
     a1 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a1")))
     a0 = parse_maybe_nothing(getfield(gen, Symbol("heat_rate_a0")))
@@ -1012,6 +1151,7 @@ function create_poly_cost(
 end
 
 function create_pwinc_cost(
+    gen,
     cost_pairs,
 )
     if length(cost_pairs) > 1
@@ -1026,7 +1166,9 @@ function create_pwinc_cost(
         # if there is only one point, use it to determine the constant $/MW cost
         var_cost = LinearCurve(cost_pairs[1].y)
     else
-        @warn "Unable to calculate variable cost for $(gen.name)" cost_pairs maxlog = 5
+        @warn "Unable to calculate variable cost for $(gen.name), defaulting to LinearCurve(0.0)" cost_pairs maxlog =
+            5
+        var_cost = LinearCurve(0.0)
     end
 
     return var_cost, 0.0
@@ -1119,6 +1261,26 @@ function make_reactive_params(
     return reactive_power, reactive_power_limits
 end
 
+function make_synchronous_condenser_generator(
+    gen,
+    bus,
+)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
+
+    return SynchronousCondenser(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        reactive_power = reactive_power,
+        rating = rating,
+        reactive_power_limits = reactive_power_limits,
+        base_power = gen.base_mva,
+    )
+end
+
 function make_thermal_generator(
     data::PowerSystemTableData,
     gen,
@@ -1129,7 +1291,7 @@ function make_thermal_generator(
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramplimits = make_ramplimits(gen)
     timelimits = make_timelimits(gen, :min_up_time, :min_down_time)
     primemover = parse_enum_mapping(PrimeMovers, gen.unit_type)
@@ -1173,19 +1335,11 @@ function make_thermal_generator_multistart(
     thermal_gen = make_thermal_generator(data, gen, cost_colnames, bus)
 
     @debug "Making ThermalMultiStart" _group = IS.LOG_GROUP_PARSING gen.name
-    base_power = get_base_power(thermal_gen)
-    var_cost, fixed, fuel_cost =
-        create_pwl_cost(data, gen, cost_colnames, base_power)
-    if var_cost isa LinearFunctionData
-        no_load_cost = 0.0
-    else
-        (no_load_x, no_load_cost) = first(var_cost)
-        @warn "Strange math occurring here (part 1)"
-        var_cost =
-            PiecewiseLinearData([
-                (pp - no_load_x, c - no_load_cost) for (pp, c) in var_cost
-            ])
-    end
+
+    # Get base operation cost from thermal generator
+    base_op_cost = get_operation_cost(thermal_gen)
+
+    # Extract time limits for hot/warm/cold starts
     lag_hot =
         if isnothing(gen.hot_start_time)
             get_time_limits(thermal_gen).down
@@ -1196,33 +1350,32 @@ function make_thermal_generator_multistart(
     lag_cold = isnothing(gen.cold_start_time) ? 0.0 : gen.cold_start_time
     startup_timelimits = (hot = lag_hot, warm = lag_warm, cold = lag_cold)
     start_types = sum(values(startup_timelimits) .> 0.0)
+
+    # Power trajectory for startup/shutdown ramps
     startup_ramp = isnothing(gen.startup_ramp) ? 0.0 : gen.startup_ramp
     shutdown_ramp = isnothing(gen.shutdown_ramp) ? 0.0 : gen.shutdown_ramp
     power_trajectory = (startup = startup_ramp, shutdown = shutdown_ramp)
-    hot_start_cost = isnothing(gen.hot_start_cost) ? gen.startup_cost : gen.hot_start_cost
-    if isnothing(hot_start_cost)
-        if hasfield(typeof(gen), :startup_heat_cold_cost)
-            hot_start_cost = gen.startup_heat_cold_cost * fuel_cost * 1000
-        else
-            hot_start_cost = 0.0
-            @warn "No hot_start_cost or startup_cost defined for $(gen.name), setting to $startup_cost" maxlog =
-                5
-        end
-    end
-    warm_start_cost = isnothing(gen.warm_start_cost) ? START_COST : gen.hot_start_cost #TODO
-    cold_start_cost = isnothing(gen.cold_start_cost) ? START_COST : gen.cold_start_cost
+
+    # Multi-start costs - use base cost as fallback if not specified
+    # Convert to Float64 since CSV values may be parsed as Int64
+    base_start_cost = get_start_up(base_op_cost)
+    hot_start_cost =
+        isnothing(gen.hot_start_cost) ? base_start_cost : Float64(gen.hot_start_cost)
+    warm_start_cost =
+        isnothing(gen.warm_start_cost) ? hot_start_cost : Float64(gen.warm_start_cost)
+    cold_start_cost =
+        isnothing(gen.cold_start_cost) ? warm_start_cost : Float64(gen.cold_start_cost)
     startup_cost = (hot = hot_start_cost, warm = warm_start_cost, cold = cold_start_cost)
 
-    shutdown_cost = gen.shutdown_cost
-    if isnothing(shutdown_cost)
-        @warn "No shutdown_cost defined for $(gen.name), setting to 0.0" maxlog = 1
-        shutdown_cost = 0.0
-    end
+    # Shutdown cost
+    base_shutdown_cost = get_shut_down(base_op_cost)
+    shutdown_cost =
+        isnothing(gen.shutdown_cost) ? base_shutdown_cost : Float64(gen.shutdown_cost)
 
-    @warn "Strange math occurring here (part 2)"
-    ThermalGenerationCost(
-        CostCurve(InputOutputCurve(var_cost)),
-        fixed + no_load_cost,
+    # Create new operation cost with multi-start stages
+    op_cost = ThermalGenerationCost(
+        get_variable(base_op_cost),
+        get_fixed(base_op_cost),
         startup_cost,
         shutdown_cost,
     )
@@ -1251,142 +1404,211 @@ function make_thermal_generator_multistart(
     )
 end
 
-function make_hydro_generator(
-    gen_type,
+function make_hydro_dispatch(
     data::PowerSystemTableData,
     gen,
     cost_colnames,
-    bus,
-    gen_storage,
+    bus::ACBus,
 )
-    @debug "Making HydroGen" _group = IS.LOG_GROUP_PARSING gen.name
+    @debug "Creating $(gen.name) as HydroDispatch" _group = IS.LOG_GROUP_PARSING
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     ramp_limits = make_ramplimits(gen)
-    min_up_time = gen.min_up_time
-    min_down_time = gen.min_down_time
     time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
     base_power = gen.base_mva
-
-    if gen_type == HydroEnergyReservoir || gen_type == HydroPumpedStorage
-        if !haskey(data.category_to_df, InputCategory.STORAGE)
-            throw(DataFormatError("Storage information must defined in storage.csv"))
-        end
-
-        head_dict, tail_dict = gen_storage
-        if !haskey(head_dict, gen.name)
-            throw(
-                DataFormatError("Cannot find head storage for $(gen.name) in storage.csv"),
-            )
-        end
-        storage = (head = head_dict[gen.name], tail = get(tail_dict, gen.name, nothing))
-
-        operation_cost = make_cost(HydroGen, data, gen, cost_colnames)
-
-        if gen_type == HydroEnergyReservoir
-            @debug "Creating $(gen.name) as HydroEnergyReservoir" _group =
-                IS.LOG_GROUP_PARSING
-
-            hydro_gen = HydroEnergyReservoir(;
-                name = gen.name,
-                available = gen.available,
-                bus = bus,
-                active_power = gen.active_power,
-                reactive_power = reactive_power,
-                prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
-                rating = rating,
-                active_power_limits = active_power_limits,
-                reactive_power_limits = reactive_power_limits,
-                ramp_limits = ramp_limits,
-                time_limits = time_limits,
-                operation_cost = operation_cost,
-                base_power = base_power,
-                storage_capacity = storage.head.storage_capacity,
-                inflow = storage.head.input_active_power_limit_max,
-                initial_storage = storage.head.energy_level,
-            )
-
-        elseif gen_type == HydroPumpedStorage
-            @debug "Creating $(gen.name) as HydroPumpedStorage" _group =
-                IS.LOG_GROUP_PARSING
-
-            pump_active_power_limits = (
-                min = gen.pump_active_power_limits_min,
-                max = gen.pump_active_power_limits_max,
-            )
-            (pump_reactive_power, pump_reactive_power_limits) = make_reactive_params(
-                gen;
-                powerfield = :pump_reactive_power,
-                minfield = :pump_reactive_power_limits_min,
-                maxfield = :pump_reactive_power_limits_max,
-            )
-            pump_rating =
-                calculate_rating(pump_active_power_limits, pump_reactive_power_limits)
-            pump_ramp_limits = make_ramplimits(
-                gen;
-                ramplimcol = :pump_ramp_limits,
-                rampupcol = :pump_ramp_up,
-                rampdncol = :pump_ramp_down,
-            )
-            pump_time_limits = make_timelimits(gen, :pump_min_up_time, :pump_min_down_time)
-            hydro_gen = HydroPumpedStorage(;
-                name = gen.name,
-                available = gen.available,
-                bus = bus,
-                active_power = gen.active_power,
-                reactive_power = reactive_power,
-                rating = rating,
-                base_power = base_power,
-                prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
-                active_power_limits = active_power_limits,
-                reactive_power_limits = reactive_power_limits,
-                ramp_limits = ramp_limits,
-                time_limits = time_limits,
-                rating_pump = pump_rating,
-                active_power_limits_pump = pump_active_power_limits,
-                reactive_power_limits_pump = pump_reactive_power_limits,
-                ramp_limits_pump = pump_ramp_limits,
-                time_limits_pump = pump_time_limits,
-                storage_capacity = (
-                    up = storage.head.storage_capacity,
-                    down = storage.head.storage_capacity,
-                ),
-                inflow = storage.head.input_active_power_limit_max,
-                outflow = storage.tail.input_active_power_limit_max,
-                initial_storage = (
-                    up = storage.head.energy_level,
-                    down = storage.tail.energy_level,
-                ),
-                storage_target = (
-                    up = storage.head.storage_target,
-                    down = storage.tail.storage_target,
-                ),
-                operation_cost = operation_cost,
-                pump_efficiency = storage.tail.efficiency,
-            )
-        end
-    elseif gen_type == HydroDispatch
-        @debug "Creating $(gen.name) as HydroDispatch" _group = IS.LOG_GROUP_PARSING
-        hydro_gen = HydroDispatch(;
-            name = gen.name,
-            available = gen.available,
-            bus = bus,
-            active_power = gen.active_power,
-            reactive_power = reactive_power,
-            rating = rating,
-            prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
-            active_power_limits = active_power_limits,
-            reactive_power_limits = reactive_power_limits,
-            ramp_limits = ramp_limits,
-            time_limits = time_limits,
-            base_power = base_power,
-        )
-    else
-        error("Tabular data parser does not currently support $gen_type creation")
-    end
+    operation_cost = make_cost(HydroGen, data, gen, cost_colnames)
+    hydro_gen = HydroDispatch(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        active_power = gen.active_power,
+        reactive_power = reactive_power,
+        rating = rating,
+        prime_mover_type = parse_enum_mapping(PrimeMovers, gen.unit_type),
+        active_power_limits = active_power_limits,
+        reactive_power_limits = reactive_power_limits,
+        ramp_limits = ramp_limits,
+        time_limits = time_limits,
+        base_power = base_power,
+        operation_cost = operation_cost,
+    )
     return hydro_gen
+end
+
+function _make_hydro_reservoirs(
+    data::PowerSystemTableData,
+    gen,
+    gen_storage,
+    tail_required::Bool,
+)
+    if !haskey(data.category_to_df, InputCategory.STORAGE)
+        throw(DataFormatError("Storage information must defined in storage.csv"))
+    end
+
+    head_dict = gen_storage["head"]
+    if !haskey(head_dict, gen.name)
+        throw(
+            DataFormatError("Cannot find head storage for $(gen.name) in storage.csv"),
+        )
+    end
+    reservoir_data = head_dict[gen.name]
+    head_reservoir = HydroReservoir(;
+        name = string(reservoir_data.name, "_head"),
+        available = reservoir_data.available,
+        storage_level_limits = (
+            min = reservoir_data.min_storage_capacity,
+            max = reservoir_data.storage_capacity,
+        ),
+        initial_level = reservoir_data.energy_level,
+        spillage_limits = nothing,
+        inflow = 1.0,
+        outflow = 1.0,
+        level_targets = reservoir_data.storage_target,
+        intake_elevation = 0.0,
+        head_to_volume_factor = LinearCurve(1.0),
+        operation_cost = HydroReservoirCost(),
+        level_data_type = ReservoirDataType.ENERGY,
+    )
+    tail_dict = gen_storage["tail"]
+    if !haskey(tail_dict, gen.name) && tail_required
+        throw(
+            DataFormatError("Cannot find tail storage for $(gen.name) in storage.csv"),
+        )
+    elseif !haskey(tail_dict, gen.name) && !tail_required
+        tail_reservoir = nothing
+    else
+        reservoir_data = tail_dict[gen.name]
+        tail_reservoir = HydroReservoir(;
+            name = string(reservoir_data.name, "_tail"),
+            available = reservoir_data.available,
+            storage_level_limits = (
+                min = reservoir_data.min_storage_capacity,
+                max = reservoir_data.storage_capacity,
+            ),
+            initial_level = reservoir_data.energy_level,
+            spillage_limits = nothing,
+            inflow = 1.0,
+            outflow = 1.0,
+            level_targets = reservoir_data.storage_target,
+            intake_elevation = 0.0,
+            head_to_volume_factor = LinearCurve(1.0),
+            operation_cost = HydroReservoirCost(),
+            level_data_type = ReservoirDataType.ENERGY,
+        )
+    end
+    return head_reservoir, tail_reservoir
+end
+
+function make_hydro_turbine(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus::ACBus,
+    gen_storage::Dict{String, Any},
+)
+    @debug "Creating $(gen.name) as HydroTurbine" _group = IS.LOG_GROUP_PARSING
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
+    ramp_limits = make_ramplimits(gen)
+    time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
+    base_power = gen.base_mva
+    operation_cost = make_cost(HydroGen, data, gen, cost_colnames)
+    head_reservoir, tail_reservoir = _make_hydro_reservoirs(data, gen, gen_storage, false)
+    if isnothing(tail_reservoir)
+        reservoirs = [head_reservoir]
+    else
+        reservoirs = [head_reservoir, tail_reservoir]
+    end
+    hydro_gen = HydroTurbine(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        active_power = gen.active_power,
+        reactive_power = reactive_power,
+        rating = rating,
+        active_power_limits = active_power_limits,
+        reactive_power_limits = reactive_power_limits,
+        base_power = base_power,
+        operation_cost = operation_cost,
+        ramp_limits = ramp_limits,
+        time_limits = time_limits,
+        outflow_limits = nothing,
+    )
+    set_downstream_turbines!(reservoirs[1], [hydro_gen])
+    if !isnothing(tail_reservoir)
+        set_upstream_turbines!(reservoirs[2], [hydro_gen])
+    end
+    return hydro_gen, reservoirs
+end
+
+function make_hydro_pump_storage(
+    data::PowerSystemTableData,
+    gen,
+    cost_colnames,
+    bus::ACBus,
+    gen_storage,
+)
+    @debug "Creating $(gen.name) as HydroPumpTurbine" _group = IS.LOG_GROUP_PARSING
+    active_power_limits =
+        (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
+    (reactive_power, reactive_power_limits) = make_reactive_params(gen)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
+    ramp_limits = make_ramplimits(gen)
+    time_limits = make_timelimits(gen, :min_up_time, :min_down_time)
+    base_power = gen.base_mva
+    head_reservoir, tail_reservoir = make_hydro_reservoirs(data, gen, gen_storage, true)
+    operation_cost = make_cost(HydroGen, data, gen, cost_colnames)
+    pump_active_power_limits = (
+        min = gen.pump_active_power_limits_min,
+        max = gen.pump_active_power_limits_max,
+    )
+    (pump_reactive_power, pump_reactive_power_limits) = make_reactive_params(
+        gen;
+        powerfield = :pump_reactive_power,
+        minfield = :pump_reactive_power_limits_min,
+        maxfield = :pump_reactive_power_limits_max,
+    )
+
+    pump_rating = calculate_gen_rating(
+        pump_active_power_limits,
+        pump_reactive_power_limits,
+        1.0,
+    )
+    pump_ramp_limits = make_ramplimits(
+        gen;
+        ramplimcol = :pump_ramp_limits,
+        rampupcol = :pump_ramp_up,
+        rampdncol = :pump_ramp_down,
+    )
+    pump_time_limits = make_timelimits(gen, :pump_min_up_time, :pump_min_down_time)
+
+    hydro_gen = HydroPumpTurbine(;
+        name = gen.name,
+        available = gen.available,
+        bus = bus,
+        active_power = gen.active_power,
+        reactive_power = reactive_power,
+        rating = rating,
+        active_power_limits = active_power_limits,
+        rating_pump = pump_rating,
+        reactive_power_limits = pump_reactive_power_limits,
+        active_power_limits_pump = pump_active_power_limits,
+        outflow_limits = nothing,
+        head_reservoir = head_reservoir,
+        tail_reservoir = tail_reservoir,
+        power_house_elevation = 0.0,
+        ramp_limits_pump = pump_ramp_limits,
+        time_limits_pump = pump_time_limits,
+        base_power = base_power,
+        operation_cost = operation_cost,
+    )
+    set_downstream_turbines!(head_reservoir, [hydro_gen])
+    set_upstream_turbines!(tail_reservoir, [hydro_gen])
+    return hydro_gen, [head_reservoir, tail_reservoir]
 end
 
 function make_renewable_generator(
@@ -1394,14 +1616,14 @@ function make_renewable_generator(
     data::PowerSystemTableData,
     gen,
     cost_colnames,
-    bus,
+    bus::ACBus,
 )
     @debug "Making RenewableGen" _group = IS.LOG_GROUP_PARSING gen.name
     generator = nothing
     active_power_limits =
         (min = gen.active_power_limits_min, max = gen.active_power_limits_max)
     (reactive_power, reactive_power_limits) = make_reactive_params(gen)
-    rating = calculate_rating(active_power_limits, reactive_power_limits)
+    rating = calculate_gen_rating(active_power_limits, reactive_power_limits, 1.0)
     base_power = gen.base_mva
     operation_cost = make_cost(RenewableGen, data, gen, cost_colnames)
 

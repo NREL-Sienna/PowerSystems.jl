@@ -15,6 +15,7 @@ This file is auto-generated. Do not edit.
         delta_t::Float64
         area::Union{Nothing, Area}
         initial_ace::Float64
+        reserves::Vector{Reserve}
         ext::Dict{String, Any}
         internal::InfrastructureSystemsInternal
     end
@@ -33,7 +34,8 @@ This model uses a proportional–integral–derivative (PID) control to simulate
 - `delta_t::Float64`: PID Discretization period [Seconds]
 - `area::Union{Nothing, Area}`: (default: `nothing`) the area controlled by the AGC
 - `initial_ace::Float64`: (default: `0.0`) Initial condition for ACE
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `reserves::Vector{Reserve}`: (default: `Device[]`) Reserves that this device contributes to
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AGC <: Service
@@ -55,18 +57,20 @@ mutable struct AGC <: Service
     area::Union{Nothing, Area}
     "Initial condition for ACE"
     initial_ace::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "Reserves that this device contributes to"
+    reserves::Vector{Reserve}
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), )
-    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, InfrastructureSystemsInternal(), )
+function AGC(name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, reserves=Device[], ext=Dict{String, Any}(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, reserves, ext, InfrastructureSystemsInternal(), )
 end
 
-function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, ext, internal, )
+function AGC(; name, available, bias, K_p, K_i, K_d, delta_t, area=nothing, initial_ace=0.0, reserves=Device[], ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    AGC(name, available, bias, K_p, K_i, K_d, delta_t, area, initial_ace, reserves, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -81,6 +85,7 @@ function AGC(::Nothing)
         delta_t=0.0,
         area=Area(nothing),
         initial_ace=0.0,
+        reserves=Device[],
         ext=Dict{String, Any}(),
     )
 end
@@ -103,6 +108,8 @@ get_delta_t(value::AGC) = value.delta_t
 get_area(value::AGC) = value.area
 """Get [`AGC`](@ref) `initial_ace`."""
 get_initial_ace(value::AGC) = value.initial_ace
+"""Get [`AGC`](@ref) `reserves`."""
+get_reserves(value::AGC) = value.reserves
 """Get [`AGC`](@ref) `ext`."""
 get_ext(value::AGC) = value.ext
 """Get [`AGC`](@ref) `internal`."""
@@ -124,5 +131,7 @@ set_delta_t!(value::AGC, val) = value.delta_t = val
 set_area!(value::AGC, val) = value.area = val
 """Set [`AGC`](@ref) `initial_ace`."""
 set_initial_ace!(value::AGC, val) = value.initial_ace = val
+"""Set [`AGC`](@ref) `reserves`."""
+set_reserves!(value::AGC, val) = value.reserves = val
 """Set [`AGC`](@ref) `ext`."""
 set_ext!(value::AGC, val) = value.ext = val

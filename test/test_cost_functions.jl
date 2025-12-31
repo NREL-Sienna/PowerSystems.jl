@@ -7,31 +7,49 @@
     fc = FuelCurve(InputOutputCurve(IS.QuadraticFunctionData(1, 2, 3)), 4.0)
     @test sprint(show, "text/plain", fc) ==
           sprint(show, "text/plain", fc; context = :compact => false) ==
-          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  vom_cost: LinearCurve (a type of InputOutputCurve) where function is: f(x) = 0.0 x + 0.0"
+          "FuelCurve:\n  value_curve: QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0\n  power_units: UnitSystem.NATURAL_UNITS = 2\n  fuel_cost: 4.0\n  startup_fuel_offtake: LinearCurve (a type of InputOutputCurve) where function is: f(x) = 0.0 x + 0.0\n  vom_cost: LinearCurve (a type of InputOutputCurve) where function is: f(x) = 0.0 x + 0.0"
     @test sprint(show, "text/plain", fc; context = :compact => true) ==
-          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0"
+          "FuelCurve with power_units UnitSystem.NATURAL_UNITS = 2, fuel_cost 4.0, startup_fuel_offtake LinearCurve(0.0, 0.0), vom_cost LinearCurve(0.0, 0.0), and value_curve:\n  QuadraticCurve (a type of InputOutputCurve) where function is: f(x) = 1.0 x^2 + 2.0 x + 3.0"
 end
 
-@testset "Test MarketBidCost direct struct creation" begin
+@testset "Test MarketBidCost direct struct creation and some scalar cost_function_timeseries interface" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generator = get_component(ThermalStandard, sys, "322_CT_6")
     #Update generator cost to MarketBidCost using Natural Units
     powers = [22.0, 33.0, 44.0, 55.0] # MW
     marginal_costs = [25.0, 26.0, 28.0] # $/MWh
     initial_input = 50.0 # $/h
+    cc = CostCurve(
+        PiecewiseIncrementalCurve(
+            initial_input,
+            powers,
+            marginal_costs,
+        ),
+    )
     mbc = MarketBidCost(;
         start_up = (hot = 0.0, warm = 0.0, cold = 0.0),
         shut_down = 0.0,
-        incremental_offer_curves = CostCurve(
-            PiecewiseIncrementalCurve(
-                initial_input,
-                powers,
-                marginal_costs,
-            ),
-        ),
+        incremental_offer_curves = cc,
     )
     set_operation_cost!(generator, mbc)
     @test get_operation_cost(generator) isa MarketBidCost
+
+    @test get_incremental_offer_curves(generator, mbc) == cc
+    @test isnothing(get_decremental_offer_curves(generator, mbc))
+
+    @test get_variable_cost(generator, mbc) == cc
+    @test get_incremental_variable_cost(generator, mbc) == cc
+    @test isnothing(get_decremental_variable_cost(generator, mbc))
+
+    cc2 = CostCurve(
+        PiecewiseIncrementalCurve(
+            initial_input,
+            powers,
+            marginal_costs .* 1.5,
+        ),
+    )
+    set_incremental_variable_cost!(sys, generator, cc2, UnitSystem.NATURAL_UNITS)
+    @test get_incremental_variable_cost(generator, mbc) == cc2
 end
 
 @testset "Test Make market bid curve interface" begin
@@ -162,7 +180,10 @@ end
     end
 
     iocs = get_incremental_offer_curves(generator, market_bid)
-    isequal(first(TimeSeries.values(iocs)), first(data_pwl[initial_time]))
+    @test isequal(
+        first(TimeSeries.values(iocs)),
+        get_function_data(first(data_pwl[initial_time])),
+    )
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 
@@ -209,7 +230,10 @@ end
     set_no_load_cost!(sys, generator, forecast_iaz)
 
     iocs = get_incremental_offer_curves(generator, market_bid)
-    isequal(first(TimeSeries.values(iocs)), first(data_pwl[initial_time]))
+    @test isequal(
+        first(TimeSeries.values(iocs)),
+        get_function_data(first(data_pwl[initial_time])),
+    )
     cost_forecast = get_variable_cost(generator, market_bid; start_time = initial_time)
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 end
@@ -254,13 +278,12 @@ end
     @test isequal(first(TimeSeries.values(cost_forecast)), first(data_pwl[initial_time]))
 end
 
-@testset "Test MarketBidCost with single `start_up::Number` value" begin
-    expected = (hot = 1.0, warm = 0.0, cold = 0.0)  # should only be used for the `hot` value.
-    no_load_cost = rand()
-    start_up = 1.0
-    shut_down = rand()
-    cost = MarketBidCost(no_load_cost, start_up, shut_down)
-    @test get_start_up(cost) == expected
+@testset "Test `MarketBidCost` with single `start_up` value" begin
+    cost = MarketBidCost(0.0, 1.0, 2.0)
+    @test get_start_up(cost) == (hot = 1.0, warm = 0.0, cold = 0.0)
+
+    set_start_up!(cost, 2.0)
+    @test get_start_up(cost) == (hot = 2.0, warm = 0.0, cold = 0.0)
 end
 
 @testset "Test ReserveDemandCurve with Cost Timeseries" begin
@@ -309,7 +332,7 @@ end
     fuel_forecast = get_fuel_cost(generator)  # missing start_time filled in with initial time
     @test first(TimeSeries.values(fuel_forecast)) == first(data_float[initial_time])
 end
-@testset "Test no-load cost (scalar and time series)" begin
+@testset "Test MarketBidCost no-load cost (single number and time series)" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, "322_CT_6")
@@ -333,7 +356,7 @@ end
           first(data_float[initial_time])
 end
 
-@testset "Test startup cost (tuple and time series)" begin
+@testset "Test MarketBidCost startup cost (single number, tuple, and time series)" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
     generators = collect(get_components(ThermalStandard, sys))
     generator = get_component(ThermalStandard, sys, "322_CT_6")
@@ -341,10 +364,17 @@ end
     set_operation_cost!(generator, market_bid)
 
     op_cost = get_operation_cost(generator)
+    @test get_start_up(op_cost) ==
+          (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
     @test get_start_up(generator, op_cost) ==
           (hot = PSY.START_COST, warm = PSY.START_COST, cold = PSY.START_COST)
 
+    set_start_up!(sys, generator, 3.14)
+    @test get_start_up(op_cost) == (hot = 3.14, warm = 0.0, cold = 0.0)
+    @test get_start_up(generator, op_cost) == (hot = 3.14, warm = 0.0, cold = 0.0)
+
     set_start_up!(sys, generator, (hot = 1.23, warm = 2.34, cold = 3.45))
+    @test get_start_up(op_cost) == (hot = 1.23, warm = 2.34, cold = 3.45)
     @test get_start_up(generator, op_cost) == (hot = 1.23, warm = 2.34, cold = 3.45)
 
     initial_time = Dates.DateTime("2020-01-01")
@@ -360,4 +390,215 @@ end
     set_start_up!(sys, generator, forecast_fd)
     @test first(TimeSeries.values(get_start_up(generator, op_cost))) ==
           first(data_sus[initial_time])
+end
+
+@testset "Test MarketBidCost shutdown cost (single number and time series)" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    generators = collect(get_components(ThermalStandard, sys))
+    generator = get_component(ThermalStandard, sys, "322_CT_6")
+    market_bid = MarketBidCost(nothing)
+    set_operation_cost!(generator, market_bid)
+
+    op_cost = get_operation_cost(generator)
+    @test get_shut_down(op_cost) == 0.0
+    @test get_shut_down(generator, op_cost) == 0.0
+
+    set_shut_down!(sys, generator, 3.14)
+    @test get_shut_down(op_cost) == 3.14
+    @test get_shut_down(generator, op_cost) == 3.14
+
+    initial_time = Dates.DateTime("2020-01-01")
+    resolution = Dates.Hour(1)
+    horizon = 24
+    data_float = SortedDict(initial_time => test_costs[Float64])
+    forecast_fd = IS.Deterministic("fuel_cost", data_float, resolution)
+
+    set_shut_down!(sys, generator, forecast_fd)
+    @test first(TimeSeries.values(get_shut_down(generator, op_cost))) ==
+          first(data_float[initial_time])
+end
+
+function build_iec_sys()
+    sys = PSB.build_system(PSITestSystems, "c_sys5_uc")
+
+    source = Source(;
+        name = "source",
+        available = true,
+        bus = get_component(ACBus, sys, "nodeC"),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        active_power_limits = (min = -2.0, max = 2.0),
+        reactive_power_limits = (min = -2.0, max = 2.0),
+        R_th = 0.01,
+        X_th = 0.02,
+        internal_voltage = 1.0,
+        internal_angle = 0.0,
+        base_power = 100.0,
+    )
+
+    source2 = Source(;
+        name = "source2",
+        available = true,
+        bus = get_component(ACBus, sys, "nodeD"),
+        active_power = 0.0,
+        reactive_power = 0.0,
+        active_power_limits = (min = -2.0, max = 2.0),
+        reactive_power_limits = (min = -2.0, max = 2.0),
+        R_th = 0.01,
+        X_th = 0.02,
+        internal_voltage = 1.0,
+        internal_angle = 0.0,
+        base_power = 100.0,
+    )
+
+    import_curve = make_import_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [5.0, 10.0, 20.0, 40.0],
+    )
+
+    import_curve2 = make_import_curve(;
+        power = 200.0,
+        price = 25.0,
+    )
+
+    export_curve = make_export_curve(;
+        power = [0.0, 100.0, 105.0, 120.0, 200.0],
+        price = [40.0, 20.0, 10.0, 5.0],
+    )
+
+    export_curve2 = make_export_curve(;
+        power = 200.0,
+        price = 45.0,
+    )
+
+    ie_cost = ImportExportCost(;
+        import_offer_curves = import_curve,
+        export_offer_curves = export_curve,
+    )
+
+    ie_cost2 = ImportExportCost(;
+        import_offer_curves = import_curve2,
+        export_offer_curves = export_curve2,
+    )
+
+    set_operation_cost!(source, ie_cost)
+    set_operation_cost!(source2, ie_cost2)
+    add_component!(sys, source)
+    add_component!(sys, source2)
+
+    return sys,
+    source,
+    source2,
+    import_curve,
+    import_curve2,
+    export_curve,
+    export_curve2,
+    ie_cost,
+    ie_cost2
+end
+
+@testset "ImportExportCost basic methods" begin
+    sys,
+    source,
+    source2,
+    import_curve,
+    import_curve2,
+    export_curve,
+    export_curve2,
+    ie_cost,
+    ie_cost2 =
+        build_iec_sys()
+
+    @test PowerSystems.is_import_export_curve(import_curve)
+    @test PowerSystems.is_import_export_curve(import_curve2)
+    @test PowerSystems.is_import_export_curve(export_curve)
+    @test PowerSystems.is_import_export_curve(export_curve2)
+
+    @test get_operation_cost(source) isa ImportExportCost
+    @test get_operation_cost(source2) isa ImportExportCost
+end
+
+@testset "ImportExportCost cost_function_timeseries scalar" begin
+    sys,
+    source,
+    source2,
+    import_curve,
+    import_curve2,
+    export_curve,
+    export_curve2,
+    ie_cost,
+    ie_cost2 =
+        build_iec_sys()
+
+    @test get_import_offer_curves(source, ie_cost) == import_curve
+    @test get_export_offer_curves(source, ie_cost) == export_curve
+
+    @test get_import_variable_cost(source, ie_cost) == import_curve
+    @test get_export_variable_cost(source, ie_cost) == export_curve
+end
+
+@testset "ImportExportCost cost_function_timeseries time series" begin
+    initial_time = Dates.DateTime("2024-01-01")
+    resolution = Dates.Hour(1)
+    other_time = initial_time + resolution
+    name = "test"
+    horizon = 24
+
+    sys,
+    source,
+    source2,
+    import_curve,
+    import_curve2,
+    export_curve,
+    export_curve2,
+    ie_cost,
+    ie_cost2 =
+        build_iec_sys()
+
+    import_fd_array = repeat(
+        [
+            make_import_curve(;
+                power = [0.0, 100.0, 105.0, 120.0, 200.0],
+                price = [5.0, 10.0, 20.0, 40.0])], 24)
+
+    export_fd_array = repeat(
+        [
+            make_export_curve(;
+                power = [0.0, 100.0, 105.0, 120.0, 200.0],
+                price = [40.0, 20.0, 10.0, 5.0])], 24)
+
+    import_sd = SortedDict(initial_time => import_fd_array,
+        other_time => import_fd_array)
+    export_sd = SortedDict(initial_time => export_fd_array,
+        other_time => export_fd_array)
+
+    import_curve = IS.Deterministic(
+        "import_variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(import_sd)),
+        resolution,
+    )
+    export_curve = IS.Deterministic(
+        "export_variable_cost",
+        Dict(k => get_function_data.(v) for (k, v) in pairs(export_sd)),
+        resolution,
+    )
+
+    set_import_variable_cost!(sys, source, import_curve, UnitSystem.NATURAL_UNITS)
+    set_export_variable_cost!(sys, source, export_curve, UnitSystem.NATURAL_UNITS)
+
+    iocs = get_import_offer_curves(source, ie_cost)
+    @test isequal(
+        first(TimeSeries.values(iocs)),
+        get_function_data(first(import_sd[initial_time])),
+    )
+    cost_forecast_i = get_import_variable_cost(source, ie_cost; start_time = initial_time)
+    @test isequal(first(TimeSeries.values(cost_forecast_i)), first(import_sd[initial_time]))
+
+    eocs = get_export_offer_curves(source, ie_cost)
+    @test isequal(
+        first(TimeSeries.values(eocs)),
+        get_function_data(first(export_sd[initial_time])),
+    )
+    cost_forecast_e = get_export_variable_cost(source, ie_cost; start_time = initial_time)
+    @test isequal(first(TimeSeries.values(cost_forecast_e)), first(export_sd[initial_time]))
 end

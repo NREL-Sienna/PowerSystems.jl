@@ -8,6 +8,7 @@ This file is auto-generated. Do not edit.
     mutable struct ACBus <: Bus
         number::Int
         name::String
+        available::Bool
         bustype::Union{Nothing, ACBusTypes}
         angle::Union{Nothing, Float64}
         magnitude::Union{Nothing, Float64}
@@ -24,14 +25,15 @@ An AC bus
 # Arguments
 - `number::Int`: A unique bus identification number (positive integer)
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)
 - `bustype::Union{Nothing, ACBusTypes}`: Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)
-- `angle::Union{Nothing, Float64}`: angle of the bus in radians, validation range: `(-1.571, 1.571)`
+- `angle::Union{Nothing, Float64}`: angle of the bus in radians
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`
 - `area::Union{Nothing, Area}`: (default: `nothing`) the area containing the bus
 - `load_zone::Union{Nothing, LoadZone}`: (default: `nothing`) the load zone containing the bus
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct ACBus <: Bus
@@ -39,6 +41,8 @@ mutable struct ACBus <: Bus
     number::Int
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)"
+    available::Bool
     "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)"
     bustype::Union{Nothing, ACBusTypes}
     "angle of the bus in radians"
@@ -53,15 +57,16 @@ mutable struct ACBus <: Bus
     area::Union{Nothing, Area}
     "the load zone containing the bus"
     load_zone::Union{Nothing, LoadZone}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 
-    function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
-        (number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = check_bus_params(
+    function ACBus(number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+        (number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, ) = check_bus_params(
             number,
             name,
+            available,
             bustype,
             angle,
             magnitude,
@@ -72,16 +77,16 @@ mutable struct ACBus <: Bus
             ext,
             internal,
         )
-        new(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+        new(number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
     end
 end
 
-function ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
-    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
+function ACBus(number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), )
+    ACBus(number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, InfrastructureSystemsInternal(), )
 end
 
-function ACBus(; number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    ACBus(number, name, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
+function ACBus(; number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area=nothing, load_zone=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    ACBus(number, name, available, bustype, angle, magnitude, voltage_limits, base_voltage, area, load_zone, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -89,6 +94,7 @@ function ACBus(::Nothing)
     ACBus(;
         number=0,
         name="init",
+        available=false,
         bustype=nothing,
         angle=0.0,
         magnitude=0.0,
@@ -104,6 +110,8 @@ end
 get_number(value::ACBus) = value.number
 """Get [`ACBus`](@ref) `name`."""
 get_name(value::ACBus) = value.name
+"""Get [`ACBus`](@ref) `available`."""
+get_available(value::ACBus) = value.available
 """Get [`ACBus`](@ref) `bustype`."""
 get_bustype(value::ACBus) = value.bustype
 """Get [`ACBus`](@ref) `angle`."""
@@ -123,6 +131,8 @@ get_ext(value::ACBus) = value.ext
 """Get [`ACBus`](@ref) `internal`."""
 get_internal(value::ACBus) = value.internal
 
+"""Set [`ACBus`](@ref) `available`."""
+set_available!(value::ACBus, val) = value.available = val
 """Set [`ACBus`](@ref) `bustype`."""
 set_bustype!(value::ACBus, val) = value.bustype = val
 """Set [`ACBus`](@ref) `angle`."""

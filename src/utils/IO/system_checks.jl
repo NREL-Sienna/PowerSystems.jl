@@ -1,11 +1,13 @@
 
 ### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
 
-## Check that all the buses have a type defintion ##
+## Check that all the buses have a type defintion and that bus types are consistent with generator connections ##
 
-function buscheck(buses)
+function buscheck(sys::System)
+    buses = get_components(ACBus, sys)
     for b in buses
-        if isnothing(b.bustype)
+        b_type = get_bustype(b)
+        if isnothing(b_type)
             @warn "Bus/Nodes data does not contain information to build an a network" maxlog =
                 10
         end

@@ -22,7 +22,7 @@ Parameters of a Virtual Inertia with SRF using VSM for active power controller
 - `kd::Float64`: VSM damping constant, validation range: `(0, nothing)`
 - `kω::Float64`: frequency droop gain, validation range: `(0, nothing)`
 - `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the VirtualInertia model are:
 	θ_oc: Phase angle displacement of the virtual synchronous generator model
 	ω_oc: Speed of the rotating reference frame of the virtual synchronous generator model
@@ -37,7 +37,7 @@ mutable struct VirtualInertia <: ActivePowerControl
     kω::Float64
     "Reference Power Set-point (pu)"
     P_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the VirtualInertia model are:
 	θ_oc: Phase angle displacement of the virtual synchronous generator model

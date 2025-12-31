@@ -71,7 +71,7 @@ Parameters of IEEE Std 421.5 Type ST8C Excitacion System. ST8C in PSSE and PSLF
 - `VB2_max::Float64`: Maximum available exciter voltage (pu), validation range: `(0, nothing)`
 - `V_ref::Float64`: (default: `1.0`) Reference Voltage Set-point (pu), validation range: `(0, nothing)`
 - `Ifd_ref::Float64`: (default: `1.0`) Reference Field Current Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,
 	x_a1: Regulator Integrator state,
@@ -137,7 +137,7 @@ mutable struct ST8C <: AVR
     V_ref::Float64
     "Reference Field Current Set-point (pu)"
     Ifd_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) are:
 	Vm: Sensed terminal voltage,

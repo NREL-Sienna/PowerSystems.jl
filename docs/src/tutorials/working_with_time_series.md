@@ -41,6 +41,7 @@ system = System(100.0); # 100 MVA base power
 bus1 = ACBus(;
     number = 1,
     name = "bus1",
+    available = true,
     bustype = ACBusTypes.REF,
     angle = 0.0,
     magnitude = 1.0,
@@ -80,7 +81,7 @@ load2 = PowerLoad(;
     active_power = 0.0, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
     base_power = 30.0, # MVA
-    max_active_power = 1.0, # 10 MW per-unitized by device base_power
+    max_active_power = 1.0, # 30 MW per-unitized by device base_power
     max_reactive_power = 0.0,
 );
 
@@ -239,7 +240,8 @@ load_time_series = SingleTimeSeries(;
 Notice that we assigned the
 [`get_max_active_power`](@ref get_max_active_power(value::PowerLoad)) *function*
 to scale the time series, rather than a value, making the time series reusable for multiple
-components or multiple fields in a component.
+components or multiple fields in a component. Note that the values are normalized using
+each device’s `max_active_power` parameter, not the system-wide `base_power`.
 
 Now, add the scaling factor time series to both loads to save memory and avoid data
 duplication:
@@ -264,9 +266,9 @@ show_time_series(load1)
     
     Notice that each load now has two references to `max_active_power`. This is intentional.
     There is the parameter, `max_active_power`, which is  the
-    maximum demand of each load at any time (10 MW). There is also `max_active_power` the time
-    series, which is the time varying demand over the 2-hour window, calculated using the
-    scaling factors and the `max_active_power` parameter.
+    maximum demand of each load at any time (10 MW or 30 MW). There is also
+    `max_active_power` the time series, which is the time varying demand over the 2-hour
+    window, calculated using the scaling factors and the `max_active_power` parameter.
     
     This means that if we change the `max_active_power` parameter, the time series will
     also change when we retrieve it! This is also true when we apply the same scaling factors
@@ -319,7 +321,20 @@ perfect forecast where the forecast is based on the `SingleTimeSeries` we just a
 
 Rather than unnecessarily duplicating and reformatting data, use PowerSystems.jl's dedicated
 [`transform_single_time_series!`](@ref) function to generate a [`DeterministicSingleTimeSeries`](@ref),
-which saves memory while behaving just like a `Deterministic` forecast:
+which saves memory while behaving just like a `Deterministic` forecast.
+
+Before we call `transform_single_time_series!`, we need to remove the `SingleTimeSeries` from
+the wind component. This is because the wind component already has a `Deterministic` forecast
+with the name `"max_active_power"`, and having both a `Deterministic` and a
+`DeterministicSingleTimeSeries` with the same name is not allowed. If we tried to keep both,
+functions like `get_time_series` wouldn't know which forecast to retrieve when you request
+`"max_active_power"`. Let's remove the `SingleTimeSeries` to avoid this conflict:
+
+```@repl timeseries
+remove_time_series!(system, SingleTimeSeries, wind1, "max_active_power");
+```
+
+Now we can transform the remaining `SingleTimeSeries` (the ones attached to the loads):
 
 ```@repl timeseries
 transform_single_time_series!(
@@ -351,9 +366,6 @@ get_time_series_array(
 
 See that `load1`'s scaling factor multiplier is still being applied as expected.
 
-Continue to the next section to address one more impact of calling
-`transform_single_time_series!` on the entire `System`.
-
 # Finding, Retrieving, and Inspecting Time Series
 
 Now, let's complete this tutorial by doing a few sanity checks on the data that we've added,
@@ -375,31 +387,18 @@ system
 Notice that a new table has been added -- the Time Series Summary, showing the count of
 each Type of component that has a given time series type.
 
-Additionally, see that there are both `Deterministic` and `DeterministicSingleTimeSeries`
-forecasts for our `RenewableDispatch` generator (`wind1`). This was a side effect of
-`transform_single_time_series!` which added `DeterministicSingleTimeSeries` for all
-`StaticTimeSeries` in the system, even though we don't need one for wind.
+Notice that the `RenewableDispatch` generator (`wind1`) only has its `Deterministic` forecast
+and no `DeterministicSingleTimeSeries`. This is because we removed the wind's `SingleTimeSeries`
+before calling `transform_single_time_series!`, preventing a conflict with its existing
+`Deterministic` forecast.
 
-Let's remove it with [`remove_time_series!`](@ref). Since we have one wind generator,
-we could easily do it for that component, but let's do programmatically instead by
-its Type:
-
-```@repl timeseries
-for g in get_components(x -> has_time_series(x), RenewableDispatch, system)
-    remove_time_series!(system, DeterministicSingleTimeSeries, g, "max_active_power")
-end
-```
-
-Notice that we also filtered for components where `has_time_series` is `true`,
-which is a simple way to find and manipulate components with time series.
-
-Let's double check `wind1` now:
+Let's verify `wind1`'s time series to confirm:
 
 ```@repl timeseries
 show_time_series(wind1)
 ```
 
-See the unnecessary data is gone.
+See that it only has the `Deterministic` forecast, as expected.
 
 Finally, let's do a last data sanity check on the forecasts. Since we defined the wind
 time series in MW instead of scaling factors, let's make sure none of our forecasts exceeds

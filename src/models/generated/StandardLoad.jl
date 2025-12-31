@@ -22,6 +22,7 @@ This file is auto-generated. Do not edit.
         max_impedance_reactive_power::Float64
         max_current_active_power::Float64
         max_current_reactive_power::Float64
+        conformity::LoadConformity
         services::Vector{Service}
         dynamic_injector::Union{Nothing, DynamicInjection}
         ext::Dict{String, Any}
@@ -38,7 +39,7 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Bus that this component is connected to
-- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the load (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `constant_active_power::Float64`: (default: `0.0`) Constant active power demand in MW (P_P)
 - `constant_reactive_power::Float64`: (default: `0.0`) Constant reactive power demand in MVAR (Q_P)
 - `impedance_active_power::Float64`: (default: `0.0`) Active power coefficient in MW for constant impedance load (P_Z)
@@ -51,9 +52,10 @@ For an alternative exponential formulation of the ZIP model, see [`ExponentialLo
 - `max_impedance_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant impedance load
 - `max_current_active_power::Float64`: (default: `0.0`) Maximum active power (MW) drawn by constant current load
 - `max_current_reactive_power::Float64`: (default: `0.0`) Maximum reactive power (MVAR) drawn by constant current load
+- `conformity::LoadConformity`: (default: `LoadConformity.UNDEFINED`) Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct StandardLoad <: StaticLoad
@@ -89,22 +91,24 @@ mutable struct StandardLoad <: StaticLoad
     max_current_active_power::Float64
     "Maximum reactive power (MVAR) drawn by constant current load"
     max_current_reactive_power::Float64
+    "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list)."
+    conformity::LoadConformity
     "Services that this device contributes to"
     services::Vector{Service}
     "corresponding dynamic injection device"
     dynamic_injector::Union{Nothing, DynamicInjection}
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
 end
 
-function StandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
-    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
+function StandardLoad(name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, conformity, services, dynamic_injector, ext, InfrastructureSystemsInternal(), )
 end
 
-function StandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
-    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, services, dynamic_injector, ext, internal, )
+function StandardLoad(; name, available, bus, base_power, constant_active_power=0.0, constant_reactive_power=0.0, impedance_active_power=0.0, impedance_reactive_power=0.0, current_active_power=0.0, current_reactive_power=0.0, max_constant_active_power=0.0, max_constant_reactive_power=0.0, max_impedance_active_power=0.0, max_impedance_reactive_power=0.0, max_current_active_power=0.0, max_current_reactive_power=0.0, conformity=LoadConformity.UNDEFINED, services=Device[], dynamic_injector=nothing, ext=Dict{String, Any}(), internal=InfrastructureSystemsInternal(), )
+    StandardLoad(name, available, bus, base_power, constant_active_power, constant_reactive_power, impedance_active_power, impedance_reactive_power, current_active_power, current_reactive_power, max_constant_active_power, max_constant_reactive_power, max_impedance_active_power, max_impedance_reactive_power, max_current_active_power, max_current_reactive_power, conformity, services, dynamic_injector, ext, internal, )
 end
 
 # Constructor for demo purposes; non-functional.
@@ -113,7 +117,7 @@ function StandardLoad(::Nothing)
         name="init",
         available=false,
         bus=ACBus(nothing),
-        base_power=0.0,
+        base_power=100.0,
         constant_active_power=0.0,
         constant_reactive_power=0.0,
         impedance_active_power=0.0,
@@ -126,6 +130,7 @@ function StandardLoad(::Nothing)
         max_impedance_reactive_power=0.0,
         max_current_active_power=0.0,
         max_current_reactive_power=0.0,
+        conformity=LoadConformity.UNDEFINED,
         services=Device[],
         dynamic_injector=nothing,
         ext=Dict{String, Any}(),
@@ -141,29 +146,31 @@ get_bus(value::StandardLoad) = value.bus
 """Get [`StandardLoad`](@ref) `base_power`."""
 get_base_power(value::StandardLoad) = value.base_power
 """Get [`StandardLoad`](@ref) `constant_active_power`."""
-get_constant_active_power(value::StandardLoad) = get_value(value, value.constant_active_power)
+get_constant_active_power(value::StandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `constant_reactive_power`."""
-get_constant_reactive_power(value::StandardLoad) = get_value(value, value.constant_reactive_power)
+get_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `impedance_active_power`."""
-get_impedance_active_power(value::StandardLoad) = get_value(value, value.impedance_active_power)
+get_impedance_active_power(value::StandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `impedance_reactive_power`."""
-get_impedance_reactive_power(value::StandardLoad) = get_value(value, value.impedance_reactive_power)
+get_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `current_active_power`."""
-get_current_active_power(value::StandardLoad) = get_value(value, value.current_active_power)
+get_current_active_power(value::StandardLoad) = get_value(value, Val(:current_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `current_reactive_power`."""
-get_current_reactive_power(value::StandardLoad) = get_value(value, value.current_reactive_power)
+get_current_reactive_power(value::StandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_constant_active_power`."""
-get_max_constant_active_power(value::StandardLoad) = get_value(value, value.max_constant_active_power)
+get_max_constant_active_power(value::StandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_constant_reactive_power`."""
-get_max_constant_reactive_power(value::StandardLoad) = get_value(value, value.max_constant_reactive_power)
+get_max_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_impedance_active_power`."""
-get_max_impedance_active_power(value::StandardLoad) = get_value(value, value.max_impedance_active_power)
+get_max_impedance_active_power(value::StandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
-get_max_impedance_reactive_power(value::StandardLoad) = get_value(value, value.max_impedance_reactive_power)
+get_max_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_current_active_power`."""
-get_max_current_active_power(value::StandardLoad) = get_value(value, value.max_current_active_power)
+get_max_current_active_power(value::StandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva))
 """Get [`StandardLoad`](@ref) `max_current_reactive_power`."""
-get_max_current_reactive_power(value::StandardLoad) = get_value(value, value.max_current_reactive_power)
+get_max_current_reactive_power(value::StandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva))
+"""Get [`StandardLoad`](@ref) `conformity`."""
+get_conformity(value::StandardLoad) = value.conformity
 """Get [`StandardLoad`](@ref) `services`."""
 get_services(value::StandardLoad) = value.services
 """Get [`StandardLoad`](@ref) `dynamic_injector`."""
@@ -180,29 +187,31 @@ set_bus!(value::StandardLoad, val) = value.bus = val
 """Set [`StandardLoad`](@ref) `base_power`."""
 set_base_power!(value::StandardLoad, val) = value.base_power = val
 """Set [`StandardLoad`](@ref) `constant_active_power`."""
-set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, val)
+set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `constant_reactive_power`."""
-set_constant_reactive_power!(value::StandardLoad, val) = value.constant_reactive_power = set_value(value, val)
+set_constant_reactive_power!(value::StandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `impedance_active_power`."""
-set_impedance_active_power!(value::StandardLoad, val) = value.impedance_active_power = set_value(value, val)
+set_impedance_active_power!(value::StandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `impedance_reactive_power`."""
-set_impedance_reactive_power!(value::StandardLoad, val) = value.impedance_reactive_power = set_value(value, val)
+set_impedance_reactive_power!(value::StandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `current_active_power`."""
-set_current_active_power!(value::StandardLoad, val) = value.current_active_power = set_value(value, val)
+set_current_active_power!(value::StandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `current_reactive_power`."""
-set_current_reactive_power!(value::StandardLoad, val) = value.current_reactive_power = set_value(value, val)
+set_current_reactive_power!(value::StandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_constant_active_power`."""
-set_max_constant_active_power!(value::StandardLoad, val) = value.max_constant_active_power = set_value(value, val)
+set_max_constant_active_power!(value::StandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_constant_reactive_power`."""
-set_max_constant_reactive_power!(value::StandardLoad, val) = value.max_constant_reactive_power = set_value(value, val)
+set_max_constant_reactive_power!(value::StandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_impedance_active_power`."""
-set_max_impedance_active_power!(value::StandardLoad, val) = value.max_impedance_active_power = set_value(value, val)
+set_max_impedance_active_power!(value::StandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
-set_max_impedance_reactive_power!(value::StandardLoad, val) = value.max_impedance_reactive_power = set_value(value, val)
+set_max_impedance_reactive_power!(value::StandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_current_active_power`."""
-set_max_current_active_power!(value::StandardLoad, val) = value.max_current_active_power = set_value(value, val)
+set_max_current_active_power!(value::StandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `max_current_reactive_power`."""
-set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_reactive_power = set_value(value, val)
+set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
+"""Set [`StandardLoad`](@ref) `conformity`."""
+set_conformity!(value::StandardLoad, val) = value.conformity = val
 """Set [`StandardLoad`](@ref) `services`."""
 set_services!(value::StandardLoad, val) = value.services = val
 """Set [`StandardLoad`](@ref) `ext`."""

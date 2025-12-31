@@ -82,7 +82,7 @@ GE General Governor/Turbine Model. The GeneralGovModel (GGOV1) model is a genera
 - `Tsb::Float64`: Temperature detection lag time constant, validation range: `(0, nothing)`
 - `R_lim::UpDown`: Maximum rate of load increase
 - `P_ref::Float64`: (default: `1.0`) Reference Power Set-point (pu), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,
 	x_g1: Governor differential control,
@@ -165,7 +165,7 @@ mutable struct GeneralGovModel <: TurbineGov
     R_lim::UpDown
     "Reference Power Set-point (pu)"
     P_ref::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "(**Do not modify.**) The [states](@ref S) of the GGOV1 model are:
 	Pe: Machine Electrical Power Measurement,

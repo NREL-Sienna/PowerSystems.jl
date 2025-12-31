@@ -33,8 +33,8 @@ For information on using the package and a more extensive list of device data en
 ## Parsing capabilities in PowerSystems
 
 - MATPOWER CaseFormat
-- PSS/e - PTI Format v30 and v33(.raw and .dyr files) 
-- [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/main/RTS_Data/SourceData) table data format
+- PSS/e - PTI Format v30 (partial support), v33, v35 (.raw and .dyr files) 
+- [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Development
 
@@ -48,16 +48,17 @@ code contribution guidelines.
 
 ```bibtex
 @article{LARA2021100747,
-title = {PowerSystems.jl — A power system data management package for large scale modeling},
-journal = {SoftwareX},
-volume = {15},
-pages = {100747},
-year = {2021},
-issn = {2352-7110},
-doi = {https://doi.org/10.1016/j.softx.2021.100747},
-url = {https://www.sciencedirect.com/science/article/pii/S2352711021000765},
-author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Krishnamurthy and Duncan Callaway},
-keywords = {Power Systems, Julia, Energy},
+  title = {PowerSystems.jl — A power system data management package for large scale modeling},
+  journal = {SoftwareX},
+  volume = {15},
+  pages = {100747},
+  year = {2021},
+  issn = {2352-7110},
+  doi = {https://doi.org/10.1016/j.softx.2021.100747},
+  url = {https://www.sciencedirect.com/science/article/pii/S2352711021000765},
+  author = {José Daniel Lara and Clayton Barrows and Daniel Thom and Dheepak Krishnamurthy and Duncan Callaway},
+  keywords = {Power Systems, Julia, Energy}
+}
 ```
 
 ## License

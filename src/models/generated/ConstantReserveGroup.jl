@@ -24,7 +24,7 @@ This model has a constant procurement requirement, such as 3% of the system base
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `requirement::Float64`: the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit)), validation range: `(0, nothing)`
-- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude.
+- `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `contributing_services::Vector{Service}`: (default: `Vector{Service}()`) Services that contribute to this group requirement. Services must be added for this constraint to have an effect when conducting simulations in [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/latest/)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -35,7 +35,7 @@ mutable struct ConstantReserveGroup{T <: ReserveDirection} <: Service
     available::Bool
     "the value of required reserves in p.u. ([`SYSTEM_BASE`](@ref per_unit))"
     requirement::Float64
-    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation, such as latitude and longitude."
+    "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
     "Services that contribute to this group requirement. Services must be added for this constraint to have an effect when conducting simulations in [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/latest/)"
     contributing_services::Vector{Service}
@@ -67,7 +67,7 @@ get_name(value::ConstantReserveGroup) = value.name
 """Get [`ConstantReserveGroup`](@ref) `available`."""
 get_available(value::ConstantReserveGroup) = value.available
 """Get [`ConstantReserveGroup`](@ref) `requirement`."""
-get_requirement(value::ConstantReserveGroup) = get_value(value, value.requirement)
+get_requirement(value::ConstantReserveGroup) = get_value(value, Val(:requirement), Val(:mva))
 """Get [`ConstantReserveGroup`](@ref) `ext`."""
 get_ext(value::ConstantReserveGroup) = value.ext
 """Get [`ConstantReserveGroup`](@ref) `contributing_services`."""
@@ -78,6 +78,6 @@ get_internal(value::ConstantReserveGroup) = value.internal
 """Set [`ConstantReserveGroup`](@ref) `available`."""
 set_available!(value::ConstantReserveGroup, val) = value.available = val
 """Set [`ConstantReserveGroup`](@ref) `requirement`."""
-set_requirement!(value::ConstantReserveGroup, val) = value.requirement = set_value(value, val)
+set_requirement!(value::ConstantReserveGroup, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`ConstantReserveGroup`](@ref) `ext`."""
 set_ext!(value::ConstantReserveGroup, val) = value.ext = val

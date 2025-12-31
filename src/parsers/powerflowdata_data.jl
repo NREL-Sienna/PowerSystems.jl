@@ -161,6 +161,7 @@ function read_bus!(
         bus = ACBus(
             bus_number,
             bus_name,
+            true,
             bus_types[buses.ide[ix]],
             clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
             buses.vm[ix],
@@ -240,6 +241,7 @@ function read_bus!(
         bus = ACBus(
             bus_number,
             bus_name,
+            true,
             bus_types[buses.ide[ix]],
             clamp(buses.va[ix] * (π / 180), -π / 2, π / 2),
             buses.vm[ix],
@@ -508,7 +510,9 @@ function read_branch!(
                 r = branches.r[ix],
                 x = branches.x[ix],
                 primary_shunt = 0.0,
+                winding_group_number = WindingGroupNumber(0),
                 rating = max_rate,
+                base_power = get_base_power(sys), # add system base power
                 ext = Dict(
                     "line_to_xfr" => true,
                 ),
@@ -679,6 +683,8 @@ function read_branch!(
             x = br_x,
             tap = tap_value,
             primary_shunt = transformers.mag2[ix],
+            winding_group_number = WindingGroupNumber(0),
+            base_power = get_base_power(sys),
             rating = max_rate,
         )
         add_component!(sys, transformer; skip_validation = SKIP_PM_VALIDATION)
