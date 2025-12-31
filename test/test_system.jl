@@ -269,8 +269,10 @@ end
     @test sys.units_settings === PSY.get_internal(line).units_info
 
     # Remove component during with_units_base block
-    with_units_base(line, "NATURAL_UNITS") do
-        remove_component!(sys, line)
+    @test_throws ErrorException begin
+        with_units_base(line, "NATURAL_UNITS") do
+            remove_component!(sys, line)
+        end
     end
 
     # After removal, units_info should be nothing (not restored to system's)
