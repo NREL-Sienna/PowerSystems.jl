@@ -647,10 +647,15 @@ function with_units_base(f::Function, c::Component, units::Union{UnitSystem, Str
     internal = get_internal(c)
     old_units_info = internal.units_info  # Save reference to restore later
     _set_units_base!(c, units)
+    temp_units_info = internal.units_info  # The temporary object we just created
     try
         f()
     finally
-        IS.set_units_info!(internal, old_units_info)  # Restore original reference
+        # Only restore if units_info is still temp_units_info.
+        # The user may have changed it in the function body, by e.g. removing the component
+        # and then attaching it to a different system.
+        internal.units_info === temp_units_info &&
+            IS.set_units_info!(internal, old_units_info)
     end
 end
 
