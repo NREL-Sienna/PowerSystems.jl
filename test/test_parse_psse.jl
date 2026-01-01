@@ -106,8 +106,11 @@ end
     @info "Testing Phase Shifting Three-Winding Transformer Parsing"
     sys_pst3w = build_system(PSSEParsingTestSystems, "pti_case14_with_pst3w_sys")
 
-    pst3w_1 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[1]
-    pst3w_2 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[2]
+    pst3w_1, pst3w_2 = sort(
+        collect(get_components(PhaseShiftingTransformer3W, sys_pst3w)),
+        by=get_name,
+        )
+ 
 
     @test get_available(pst3w_1) == true
     @test get_available(pst3w_2) == true
@@ -491,8 +494,10 @@ end
         "pti_case14_with_interruptible_loads_sys";
         force_build = true,
     )
-    isl = collect(get_components(InterruptibleStandardLoad, sys))[1]
-    @test length(collect(get_components(InterruptibleStandardLoad, sys))) == 4
+    all_isl = collect(get_components(InterruptibleStandardLoad, sys))
+    sort!(all_isl, by=get_name)
+    isl = first(all_isl)  # should be named "load10LD"
+    @test length(all_isl) == 4
     @test get_available(isl) == true
     @test isl isa InterruptibleStandardLoad
     @test get_constant_active_power(isl) == 0.11485
