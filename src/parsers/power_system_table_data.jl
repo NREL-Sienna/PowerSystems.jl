@@ -1841,14 +1841,12 @@ function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_noth
             value = row[field_info.custom_name]
         else
             value = field_info.default_value
-            if value == "required"
-                @warn "Value $(field_info.name) should be required, we continue with a nothing"
-                value = nothing
-            end
+            value == "required" && throw(DataFormatError("$(field_info.name) is required"))
+            @debug "Column $(field_info.custom_name) doesn't exist in df, enabling use of default value of $(field_info.default_value)" _group =
+                IS.LOG_GROUP_PARSING maxlog = 1
         end
         if ismissing(value)
-            @info "$(field_info.custom_name) value missing"
-            value = nothing
+            throw(DataFormatError("$(field_info.custom_name) value missing"))
         end
         if na_to_nothing && value == "NA"
             value = nothing
