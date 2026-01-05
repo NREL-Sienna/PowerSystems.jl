@@ -46,7 +46,7 @@ function Base.show(io::IO, ::MIME"text/plain", data::OperationalCost)
         print(io, "\n  $(field_name): $val_printout")
     end
 end
-
+#=
 function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
     println(io, "$(typeof(data)):")
     println(io, "  directory:  $(data.directory)")
@@ -59,7 +59,7 @@ function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
         println(io, "$(summary(df))")
     end
 end
-
+=#
 function Base.show(io::IO, ist::Component)
     print(io, IS.strip_module_name(typeof(ist)), "(")
     is_first = true

@@ -502,7 +502,7 @@ export convert_component!
 export set_area!
 export set_load_zone!
 export PowerModelsData
-export PowerSystemTableData
+#export PowerSystemTableData
 export add_dyn_injectors!
 export get_machine
 export get_shaft
@@ -855,7 +855,7 @@ include("parsers/common.jl")
 include("parsers/enums.jl")
 include("parsers/pm_io.jl")
 include("parsers/im_io.jl")
-include("parsers/power_system_table_data.jl")
+#include("parsers/power_system_table_data.jl")
 include("parsers/power_models_data.jl")
 include("parsers/powerflowdata_data.jl")
 include("parsers/psse_dynamic_data.jl")

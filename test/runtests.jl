@@ -11,7 +11,7 @@ import PowerSystemCaseBuilder: PSYTestSystems
 import InfrastructureSystems
 const IS = InfrastructureSystems
 using PowerSystems
-import PowerSystems: PowerSystemTableData
+#import PowerSystems: PowerSystemTableData
 const PSY = PowerSystems
 const PSB = PowerSystemCaseBuilder
 
