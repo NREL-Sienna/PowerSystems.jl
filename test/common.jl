@@ -24,6 +24,10 @@ function get_component_by_name(sys::System, component_type, other::Component)
     error("Did not find component $component")
 end
 
+#=
+ 
+# get_branch only used in tests for TableData, so can be removed from here and live in PTDP
+
 """Return the Branch in the system that matches another by case-insensitive arc
 names."""
 function get_branch(sys::System, other::Branch)
@@ -36,7 +40,7 @@ function get_branch(sys::System, other::Branch)
 
     error("Did not find branch with buses $(other.arc.from.name) ", "$(other.arc.to.name)")
 end
-#=
+
 function create_rts_system(time_series_resolution = Dates.Hour(1))
     data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
     return System(data; time_series_resolution = time_series_resolution)
