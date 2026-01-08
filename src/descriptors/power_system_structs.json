@@ -3435,14 +3435,6 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "active_power_limits",
-                    "comment": "Minimum and maximum stable active power levels (MW)",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
                     "name": "reactive_power",
                     "comment": "Initial steady state reactive power demand (MVAR)",
                     "null_value": "0.0",
@@ -3479,20 +3471,21 @@
                 },
                 {
                     "name": "load_balance_time_horizon",
-                    "comment": "Number of time periods over which load must be balanced",
-                    "null_value": "1",
-                    "data_type": "Int",
-                    "valid_range": {
-                        "min": 1,
-                        "max": null
-                    },
-                    "validation_action": "error"
+                    "comment": "Time duration over which load must be balanced",
+                    "null_value": "Dates.Hour(0)",
+                    "data_type": "Dates.Period"
                 },
                 {
                     "name": "operation_cost",
                     "null_value": "LoadCost(nothing)",
                     "data_type": "Union{LoadCost, MarketBidCost}",
                     "comment": "[`OperationalCost`](@ref) of interrupting load"
+                },
+                {
+                    "name": "conformity",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "data_type": "LoadConformity",
+                    "default": "LoadConformity.UNDEFINED"
                 },
                 {
                     "name": "services",
