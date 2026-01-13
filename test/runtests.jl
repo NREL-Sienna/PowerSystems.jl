@@ -8,11 +8,10 @@ import TimeSeries
 import InteractiveUtils
 import JSON3
 import PowerSystemCaseBuilder: PSYTestSystems
-import InfrastructureSystems
-const IS = InfrastructureSystems
+import InfrastructureSystems as IS
 using PowerSystems
 import PowerSystems: PowerSystemTableData
-const PSY = PowerSystems
+import PowerSystems as PSY
 const PSB = PowerSystemCaseBuilder
 
 import Aqua

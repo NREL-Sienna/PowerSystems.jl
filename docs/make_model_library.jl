@@ -1,8 +1,8 @@
 using InfrastructureSystems
 using PowerSystems
 using InteractiveUtils
-const IS = InfrastructureSystems
-const PSY = PowerSystems
+import InfrastructureSystems as IS
+import PowerSystems as PSY
 
 function _clean_old_generated_files(dir::String)
     # Remove old generated_*.md files before creating new ones

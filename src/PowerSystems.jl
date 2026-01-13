@@ -597,7 +597,7 @@ import InteractiveUtils
 import PrettyTables
 import PowerFlowData
 
-import InfrastructureSystems
+import InfrastructureSystems as IS
 import InfrastructureSystems:
     Components,
     TimeSeriesData,
@@ -737,8 +737,6 @@ import InfrastructureSystems:
     get_startup_fuel_offtake,
     get_power_units,
     get_fuel_cost
-
-const IS = InfrastructureSystems
 
 #################################################################################
 
