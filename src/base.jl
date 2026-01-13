@@ -654,8 +654,8 @@ function with_units_base(f::Function, c::Component, units::Union{UnitSystem, Str
         # Only restore if units_info is still temp_units_info.
         # The user may have changed it in the function body, by e.g. removing the component
         # and then attaching it to a different system.
-        internal.units_info === temp_units_info || throw(ErrorException(
-            "Units info was modified during with_units_base."))
+        internal.units_info === temp_units_info || error(
+            "Units info was modified during with_units_base.")
         IS.set_units_info!(internal, old_units_info)
     end
 end
