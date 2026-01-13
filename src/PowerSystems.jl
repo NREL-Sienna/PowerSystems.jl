@@ -597,6 +597,8 @@ import InteractiveUtils
 import PrettyTables
 import PowerFlowData
 
+# Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
+# and with alias for convenient usage throughout the codebase
 import InfrastructureSystems
 import InfrastructureSystems as IS
 import InfrastructureSystems:
