@@ -1,4 +1,4 @@
-
+import InfrastructureSystems
 mutable struct TestDevice <: Device
     name::String
 end
