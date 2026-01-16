@@ -22,10 +22,16 @@ export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
 export get_geo_json
+export PowerPlant
 export ThermalPowerPlant
 export CombinedCycleBlock
+export CombinedCycleConfiguration
 export HydroPowerPlant
-export PumpedHydroPowerPlant
+export RenewablePowerPlant
+export get_shaft_map
+export get_configuration
+export get_heat_recovery_to_steam_factor
+export get_penstock_map
 
 export Component
 export Device
