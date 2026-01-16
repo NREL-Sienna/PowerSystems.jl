@@ -6,7 +6,7 @@ using LinearAlgebra
 import TimeSeries
 import InteractiveUtils
 import JSON3
-import PowerSystemCaseBuilder: PSYTestSystems
+using PowerSystemCaseBuilder
 import PowerSystemCaseBuilder as PSB
 import InfrastructureSystems as IS
 using PowerSystems
