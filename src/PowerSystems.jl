@@ -78,7 +78,8 @@ export ProductionVariableCostCurve, CostCurve, FuelCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
-export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
+export OperationalCost,
+    OfferCurveCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
@@ -457,11 +458,13 @@ export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_import_offer_curves, set_import_offer_curves!
 export get_export_offer_curves, set_export_offer_curves!
+export get_import_variable_cost, get_export_variable_cost
 export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
 export get_energy_export_weekly_limit, set_energy_export_weekly_limit!
 export get_services_bid
 export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
+export set_import_variable_cost!, set_export_variable_cost!
 export set_service_bid!
 export iterate_windows
 export get_window
@@ -538,6 +541,7 @@ export get_subsystem_components
 export remove_component_from_subsystem!
 export remove_component_from_subsystems!
 export has_component
+export has_components
 export get_assigned_subsystems
 export has_subsystems
 export is_assigned_to_subsystem
@@ -593,7 +597,10 @@ import InteractiveUtils
 import PrettyTables
 import PowerFlowData
 
+# Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
+# and with alias for convenient usage throughout the codebase
 import InfrastructureSystems
+import InfrastructureSystems as IS
 import InfrastructureSystems:
     Components,
     TimeSeriesData,
@@ -734,8 +741,6 @@ import InfrastructureSystems:
     get_power_units,
     get_fuel_cost
 
-const IS = InfrastructureSystems
-
 #################################################################################
 
 using DocStringExtensions
@@ -790,6 +795,7 @@ include("models/OuterControl.jl")
 
 # Costs
 include("models/cost_functions/operational_cost.jl")
+include("models/cost_functions/OfferCurveCost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
@@ -858,6 +864,14 @@ include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")
+@static if pkgversion(PrettyTables).major == 2
+    # When PrettyTables v2 is more widely adopted in the ecosystem, we can remove this file.
+    # In this case, we should also update the compat bounds in Project.toml to list only
+    # PrettyTables v3.
+    include("utils/print_pt_v2.jl")
+else
+    include("utils/print_pt_v3.jl")
+end
 
 include("models/serialization.jl")
 

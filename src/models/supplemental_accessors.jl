@@ -95,10 +95,67 @@ Returns 1/(R + jX) where R is resistance and X is reactance.
 """
 get_series_admittance(b::ACTransmission) = 1 / (get_r(b) + get_x(b) * 1im)
 
+"""
+Calculate the series admittance of a [`PhaseShiftingTransformer`](@ref) accounting for the tap ratio.
+For a phase-shifting transformer, the series admittance is calculated as the inverse of the
+complex impedance modified by the tap ratio, following the same pattern as the susceptance calculation:
+Y = 1/(tap * (R + jX)).
+The phase angle α affects the admittance matrix construction but not the series impedance magnitude directly.
+
+See also: [`get_series_susceptance`](@ref)
+"""
+function get_series_admittance(b::PhaseShiftingTransformer)
+    tap = get_tap(b)
+    Z_series = get_r(b) + get_x(b) * 1im
+    return 1 / (tap * Z_series)
+end
+
+"""
+Calculate the series admittance of a [`TapTransformer`](@ref) accounting for the tap ratio.
+For a tap transformer, the series admittance is calculated as the inverse of the
+complex impedance modified by the tap ratio, following the same pattern as the susceptance calculation:
+Y = 1/(tap * (R + jX)).
+
+See also: [`get_series_susceptance`](@ref)
+"""
+function get_series_admittance(b::TapTransformer)
+    tap = get_tap(b)
+    Z_series = get_r(b) + get_x(b) * 1im
+    return 1 / (tap * Z_series)
+end
+
+"""
+Calculate the series admittances of a [`PhaseShiftingTransformer3W`](@ref) as three complex values
+(for each of the 3 branches) accounting for turns ratios.
+For each winding, the series admittance is calculated following the same pattern as the susceptance calculation:
+Yi = 1/(turns_ratio_i * (Ri + jXi)).
+The phase shift angles affect the admittance matrix construction but not the series impedance magnitudes directly.
+
+See also: [`get_series_admittance`](@ref) for 2-winding transformers
+"""
+function get_series_admittances(b::PhaseShiftingTransformer3W)
+    # Get the turns ratios for each winding
+    tap_primary = get_primary_turns_ratio(b)
+    tap_secondary = get_secondary_turns_ratio(b)
+    tap_tertiary = get_tertiary_turns_ratio(b)
+
+    # Calculate series impedances
+    Z1 = get_r_primary(b) + get_x_primary(b) * 1im
+    Z2 = get_r_secondary(b) + get_x_secondary(b) * 1im
+    Z3 = get_r_tertiary(b) + get_x_tertiary(b) * 1im
+
+    # Calculate admittances accounting for turns ratios (consistent with susceptance pattern)
+    Y1 = 1 / (tap_primary * Z1)
+    Y2 = 1 / (tap_secondary * Z2)
+    Y3 = 1 / (tap_tertiary * Z3)
+
+    return (Y1, Y2, Y3)
+end
+
 function get_series_admittance(::Union{PhaseShiftingTransformer3W, Transformer3W})
     throw(
         ArgumentError(
-            "get_series_admittance not implemented for multi-winding transformers.",
+            "get_series_admittance not implemented for multi-winding transformers, use get_series_admittances instead.",
         ),
     )
 end
@@ -166,6 +223,13 @@ function get_max_active_power(d::Union{InterruptibleStandardLoad, StandardLoad})
     total_load += get_max_impedance_active_power(d)
     total_load += get_max_current_active_power(d)
     return total_load
+end
+
+"""
+Get the maximum storage capacity for HydroReservoir.
+"""
+function get_max_storage_level(reservoir::HydroReservoir)
+    return get_storage_level_limits(reservoir).max
 end
 
 """

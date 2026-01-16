@@ -106,8 +106,11 @@ end
     @info "Testing Phase Shifting Three-Winding Transformer Parsing"
     sys_pst3w = build_system(PSSEParsingTestSystems, "pti_case14_with_pst3w_sys")
 
-    pst3w_1 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[1]
-    pst3w_2 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[2]
+    pst3w_1, pst3w_2 = sort(
+        collect(get_components(PhaseShiftingTransformer3W, sys_pst3w)),
+        by=get_name,
+        )
+ 
 
     @test get_available(pst3w_1) == true
     @test get_available(pst3w_2) == true
@@ -491,8 +494,10 @@ end
         "pti_case14_with_interruptible_loads_sys";
         force_build = true,
     )
-    isl = collect(get_components(InterruptibleStandardLoad, sys))[1]
-    @test length(collect(get_components(InterruptibleStandardLoad, sys))) == 4
+    all_isl = collect(get_components(InterruptibleStandardLoad, sys))
+    sort!(all_isl, by=get_name)
+    isl = first(all_isl)  # should be named "load10LD"
+    @test length(all_isl) == 4
     @test get_available(isl) == true
     @test isl isa InterruptibleStandardLoad
     @test get_constant_active_power(isl) == 0.11485
@@ -521,4 +526,51 @@ end
     @test get_available(trf_3w) == true
     @test get_available_tertiary(trf_3w) == true
     @test get_x_tertiary(trf_3w) == 1e-4
+end
+
+@testset "Test GeoJSON RFC 7946 Compliance" begin
+    # Test that GeographicInfo uses proper GeoJSON Point format
+    # According to RFC 7946, section 3.1.2, a Point should have:
+    # {"type": "Point", "coordinates": [longitude, latitude]}
+
+    # Create a simple test using the common.jl helper
+    sys = System(100.0)
+    bus1 = ACBus(;
+        number = 1,
+        name = "test_bus",
+        available = true,
+        bustype = ACBusTypes.REF,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    add_component!(sys, bus1)
+
+    # Create GeographicInfo with proper GeoJSON format
+    geo = IS.GeographicInfo(;
+        geo_json = Dict("type" => "Point", "coordinates" => [-105.0, 40.0]),
+    )
+
+    add_supplemental_attribute!(sys, bus1, geo)
+
+    # Retrieve and verify the GeoJSON format
+    geo_attrs = get_supplemental_attributes(IS.GeographicInfo, sys)
+    @test length(geo_attrs) == 1
+
+    retrieved_geo = first(geo_attrs)
+    geo_json = IS.get_geo_json(retrieved_geo)
+
+    # Verify RFC 7946 compliance
+    @test haskey(geo_json, "type")
+    @test geo_json["type"] == "Point"
+    @test haskey(geo_json, "coordinates")
+    @test isa(geo_json["coordinates"], Vector)
+    @test length(geo_json["coordinates"]) == 2
+    @test geo_json["coordinates"][1] == -105.0  # longitude
+    @test geo_json["coordinates"][2] == 40.0    # latitude
+
+    # Verify old format is NOT present
+    @test !haskey(geo_json, "x")
+    @test !haskey(geo_json, "y")
 end

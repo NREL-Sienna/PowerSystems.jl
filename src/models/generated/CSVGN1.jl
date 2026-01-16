@@ -40,7 +40,7 @@ Parameters of static shunt compensator: CSVGN1 in PSSE
 - `Vmax::Float64`: Maximum voltage in pu, validation range: `(0, nothing)`
 - `Vmin::Float64`: Minimum voltage in pu, validation range: `(0, nothing)`
 - `CBase::Float64`: Capacitor (MVAR), validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `R_th::Float64`: Source Thevenin resistance
 - `X_th::Float64`: Source Thevenin reactance
@@ -115,7 +115,7 @@ function CSVGN1(::Nothing)
         Vmax=0,
         Vmin=0,
         CBase=0,
-        base_power=0,
+        base_power=100,
         ext=Dict{String, Any}(),
     )
 end

@@ -43,7 +43,7 @@ For hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `status::Bool`: (default: `false`) Initial commitment condition at the start of a simulation (`true` = on or `false` = off)
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `operation_cost::Union{HydroGenerationCost, MarketBidCost}`: (default: `HydroGenerationCost(nothing)`) [`OperationalCost`](@ref) of generation
@@ -115,7 +115,7 @@ function HydroDispatch(::Nothing)
         reactive_power_limits=nothing,
         ramp_limits=nothing,
         time_limits=nothing,
-        base_power=0.0,
+        base_power=100.0,
         status=false,
         time_at_status=INFINITE_TIME,
         operation_cost=HydroGenerationCost(nothing),

@@ -43,7 +43,7 @@ The model uses an equivalent circuit assuming the impedance is on the High Volta
 - `primary_shunt::Complex{Float64}`: Primary shunt admittance in pu ([`SYSTEM_BASE`](@ref per_unit))
 - `tap::Float64`: Normalized tap changer position for voltage control, varying between 0 and 2, with 1 centered at the nominal voltage, validation range: `(0, 2)`
 - `rating::Union{Nothing, Float64}`: Thermal rating (MVA). Flow through the transformer must be between -`rating`. When defining a transformer before it is attached to a `System`, `rating` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to, validation range: `(0, nothing)`
-- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `base_voltage_primary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_from(arc))`) Primary base voltage in kV, validation range: `(0, nothing)`
 - `base_voltage_secondary::Union{Nothing, Float64}`: (default: `get_base_voltage(get_to(arc))`) Secondary base voltage in kV, validation range: `(0, nothing)`
 - `rating_b::Union{Nothing, Float64}`: (default: `nothing`) Second current rating; entered in MVA.
@@ -118,7 +118,7 @@ function TapTransformer(::Nothing)
         primary_shunt=0.0,
         tap=1.0,
         rating=0.0,
-        base_power=0.0,
+        base_power=100.0,
         base_voltage_primary=nothing,
         base_voltage_secondary=nothing,
         rating_b=0.0,

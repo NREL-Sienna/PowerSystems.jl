@@ -38,6 +38,7 @@ pages = OrderedDict(
                 "Save and read data with a JSON" => "how_to/serialize_data.md",
             ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
+            "...use context managers for bulk operations" => "how_to/use_context_managers.md",
             "...add additional data to a component" => "how_to/adding_additional_fields.md",
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
@@ -46,6 +47,9 @@ pages = OrderedDict(
             "...add cost data" => Any[
                 "Add an Operating Cost" => "how_to/add_cost_curve.md",
                 "Add a market bid" => "how_to/market_bid_cost.md",
+                "Add costs for imported/exported power" => "how_to/create_system_with_source_import_export_cost.md",
+                "Add time series fuel costs" => "how_to/add_fuel_curve_timeseries.md",
+
             ],
             "...customize or add a new Type" => "how_to/add_new_types.md",
             "...define hydro generators with reservoirs" => "how_to/create_hydro_datasets.md",
@@ -75,6 +79,7 @@ pages = OrderedDict(
             "Type Tree" => "api/type_tree.md",
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
+            "Supported PSS/e Models" => "api/psse_models.md",
             "Citation" => "api/citation.md",
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
@@ -112,7 +117,8 @@ pages["Model Library"] = make_model_library(
         "StorageCost" =>"model_library/storage_cost.md",
         "LoadCost" =>"model_library/load_cost.md",
         "MarketBidCost" =>"model_library/market_bid_cost.md",
-        "ImportExportCost" =>"model_library/import_export_cost.md"],
+        "ImportExportCost" =>"model_library/import_export_cost.md",
+        "OfferCurveCost" =>"model_library/offer_curve_cost.md"],
         "HydroReservoir" => "model_library/hydro_reservoir.md",
         )
 )

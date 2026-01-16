@@ -234,6 +234,51 @@ end
     @test active_power_mw == get_active_power(gen)
 end
 
+@testset "Test with_units_base on component" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    gen = get_component(ThermalStandard, sys, "322_CT_6")
+    base_power = get_base_power(sys)
+
+    # Component shares system's units_settings initially
+    @test sys.units_settings === PSY.get_internal(gen).units_info
+
+    # with_units_base on component should work and preserve reference after
+    P_pu = get_active_power(gen)
+    P_natural = with_units_base(gen, "NATURAL_UNITS") do
+        get_active_power(gen)
+    end
+    @test P_natural ≈ P_pu * base_power
+
+    # Reference should be preserved after with_units_base(component, ...)
+    @test sys.units_settings === PSY.get_internal(gen).units_info
+
+    # System-level with_units_base should still work after component-level call
+    P_natural_via_sys = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+        get_active_power(gen)
+    end
+    @test P_natural ≈ P_natural_via_sys
+end
+
+@testset "Test with_units_base on component removed during block" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    line = first(get_components(Line, sys))
+
+    # Component shares system's units_settings initially
+    @test sys.units_settings === PSY.get_internal(line).units_info
+
+    # Remove component during with_units_base block
+    @test_throws ErrorException begin
+        with_units_base(line, "NATURAL_UNITS") do
+            remove_component!(sys, line)
+        end
+    end
+
+    # After removal, units_info should be nothing (not restored to system's)
+    @test isnothing(PSY.get_internal(line).units_info)
+end
+
 @testset "Test add_time_series multiple components" begin
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -636,6 +681,12 @@ end
     service1 = first(get_components(VariableReserve{ReserveDown}, sys1))
     device2 = first(get_components(ThermalStandard, sys2))
     @test_throws ArgumentError add_service!(device2, service1, sys2)
+end
+
+@testset "Test has_components" begin
+    sys1 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    @test has_components(sys1, ThermalStandard)
+    @test !has_components(sys1, TransmissionInterface)
 end
 
 @testset "Test set_bus_number!" begin

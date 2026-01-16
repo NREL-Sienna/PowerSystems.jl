@@ -54,7 +54,7 @@ A thermal generator, such as a fossil fuel or nuclear generator, that can start-
 - `start_time_limits::Union{Nothing, StartUpStages}`: Time limits for start-up based on turbine temperature in hours
 - `start_types::Int`: Number of start-up based on turbine temperature, where `1` = *hot*, `2` = *warm*, and `3` = *cold*, validation range: `(1, 3)`
 - `operation_cost::Union{ThermalGenerationCost, MarketBidCost}`: [`OperationalCost`](@ref) of generation
-- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0, nothing)`
+- `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
@@ -140,7 +140,7 @@ function ThermalMultiStart(::Nothing)
         start_time_limits=nothing,
         start_types=1,
         operation_cost=ThermalGenerationCost(nothing),
-        base_power=0.0,
+        base_power=100.0,
         services=Device[],
         time_at_status=INFINITE_TIME,
         must_run=false,

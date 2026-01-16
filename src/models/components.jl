@@ -214,7 +214,7 @@ end
 
 function _set_value(c::Component, value::FromTo, conversion_unit)::FromTo
     m = 1 / _get_multiplier(c, conversion_unit)
-    return (from = value.from * m, to_from = value.to * m)
+    return (from = value.from * m, to = value.to * m)
 end
 
 function _set_value(::Component, ::Nothing, _)
