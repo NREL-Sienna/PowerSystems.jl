@@ -51,11 +51,14 @@
     @test get_time_series_resolutions(sys)[1] == Dates.Hour(1)
 
     # Get time_series with a name and without.
-    components = collect(get_components(HydroEnergyReservoir, sys))
+    components = collect(get_components(HydroTurbine, sys))
     @test !isempty(components)
     component = components[1]
     ts = get_time_series(SingleTimeSeries, component, "max_active_power")
     @test ts isa SingleTimeSeries
+
+    components = collect(get_components(HydroReservoir, sys))
+    @test !isempty(components)
 
     returned_it, returned_len = check_time_series_consistency(sys, SingleTimeSeries)
     @test returned_it == first(TimeSeries.timestamp(get_data(ts)))
@@ -231,6 +234,51 @@ end
     @test active_power_mw == get_active_power(gen)
 end
 
+@testset "Test with_units_base on component" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    gen = get_component(ThermalStandard, sys, "322_CT_6")
+    base_power = get_base_power(sys)
+
+    # Component shares system's units_settings initially
+    @test sys.units_settings === PSY.get_internal(gen).units_info
+
+    # with_units_base on component should work and preserve reference after
+    P_pu = get_active_power(gen)
+    P_natural = with_units_base(gen, "NATURAL_UNITS") do
+        get_active_power(gen)
+    end
+    @test P_natural ≈ P_pu * base_power
+
+    # Reference should be preserved after with_units_base(component, ...)
+    @test sys.units_settings === PSY.get_internal(gen).units_info
+
+    # System-level with_units_base should still work after component-level call
+    P_natural_via_sys = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+        get_active_power(gen)
+    end
+    @test P_natural ≈ P_natural_via_sys
+end
+
+@testset "Test with_units_base on component removed during block" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "SYSTEM_BASE")
+    line = first(get_components(Line, sys))
+
+    # Component shares system's units_settings initially
+    @test sys.units_settings === PSY.get_internal(line).units_info
+
+    # Remove component during with_units_base block
+    @test_throws ErrorException begin
+        with_units_base(line, "NATURAL_UNITS") do
+            remove_component!(sys, line)
+        end
+    end
+
+    # After removal, units_info should be nothing (not restored to system's)
+    @test isnothing(PSY.get_internal(line).units_info)
+end
+
 @testset "Test add_time_series multiple components" begin
     sys = System(100.0)
     bus = ACBus(nothing)
@@ -253,7 +301,7 @@ end
     ta = TimeSeries.TimeArray(dates, data, ["1"])
     name = "max_active_power"
     ts = SingleTimeSeries(; name = name, data = ta)
-    add_time_series!(sys, components, ts)
+    res = add_time_series!(sys, components, ts)
 
     for i in 1:len
         component = get_component(ThermalStandard, sys, string(i))
@@ -401,14 +449,27 @@ end
 end
 
 @testset "Test time series counts" begin
+    # The system has both single and deterministic forecasts time series
     c_sys5 = PSB.build_system(
         PSITestSystems,
         "c_sys5_uc";
         add_forecasts = true,
+        skip_serialization = true,
     )
     counts = get_time_series_counts(c_sys5)
     @test counts.static_time_series_count == 0
     @test counts.forecast_count == 3
+
+    # The system has both single and deterministic forecasts time series
+    c_sys5 = PSB.build_system(
+        PSITestSystems,
+        "c_sys5_uc";
+        add_single_time_series = true,
+        skip_serialization = true,
+    )
+    counts = get_time_series_counts(c_sys5)
+    @test counts.static_time_series_count == 3
+    @test counts.forecast_count == 0
 end
 
 @testset "Test deepcopy with time series options" begin
@@ -620,6 +681,12 @@ end
     service1 = first(get_components(VariableReserve{ReserveDown}, sys1))
     device2 = first(get_components(ThermalStandard, sys2))
     @test_throws ArgumentError add_service!(device2, service1, sys2)
+end
+
+@testset "Test has_components" begin
+    sys1 = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")
+    @test has_components(sys1, ThermalStandard)
+    @test !has_components(sys1, TransmissionInterface)
 end
 
 @testset "Test set_bus_number!" begin

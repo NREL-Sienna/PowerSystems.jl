@@ -10,7 +10,6 @@
         @info "Successfully parsed $f to PowerModelsData"
         sys = System(pm_data)
         for g in get_components(Generator, sys)
-            # @test haskey(get_ext(g), "z_source")
             @test haskey(get_ext(g), "r")
             @test haskey(get_ext(g), "x")
         end
@@ -34,7 +33,7 @@ end
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
     @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
     @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          5.83546
+          -5.83546
     @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
           LoadConformity.CONFORMING
 
@@ -44,17 +43,27 @@ end
     @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
           LoadConformity.CONFORMING
 
+    @info "Testing ZIP Load Parsing"
+    wecc_sys = build_system(PSYTestSystems, "psse_240_parsing_sys")
+    test_load1 = get_component(StandardLoad, wecc_sys, "load24091")
+    impedance_q = get_impedance_reactive_power(test_load1)
+    # Negative for capacitive loads
+    @test impedance_q < 0
+    @test isapprox(impedance_q, -0.75; atol = 1e-4)
+
+    test_load2 = get_component(StandardLoad, wecc_sys, "load10031")
+    impedance_q = get_impedance_reactive_power(test_load2)
+    # Positive for inductance loads
+    @test impedance_q > 0
+    @test isapprox(impedance_q, 3.873; atol = 1e-3)
+
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
     @test get_available(get_component(ThermalStandard, sys, "generator-2438-EG")) == 1
 
-    sys3 =
-        @test_logs (:error, r"no active generators found at bus") match_mode = :any build_system(
-            PSSEParsingTestSystems,
-            "psse_ACTIVSg2000_sys",
-        )
+    sys3 = build_system(PSSEParsingTestSystems, "psse_ACTIVSg2000_sys")
     sys4 = build_system(PSSEParsingTestSystems, "pti_frankenstein_70_sys")
 
     base_dir = string(dirname(@__FILE__))
@@ -75,7 +84,7 @@ end
     @test length(tw3s) == 1
     tw3 = only(tw3s)
     @test isapprox(get_b(tw3), 0.0036144)
-    @test get_primary_turns_ratio(tw3) == 1.0
+    @test get_primary_turns_ratio(tw3) == 1.5
     @test get_rating(tw3) == 0.0
 
     @test get_available(
@@ -97,8 +106,10 @@ end
     @info "Testing Phase Shifting Three-Winding Transformer Parsing"
     sys_pst3w = build_system(PSSEParsingTestSystems, "pti_case14_with_pst3w_sys")
 
-    pst3w_1 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[1]
-    pst3w_2 = collect(get_components(PhaseShiftingTransformer3W, sys_pst3w))[2]
+    pst3w_1, pst3w_2 = sort(
+        collect(get_components(PhaseShiftingTransformer3W, sys_pst3w)),
+        by = get_name,
+    )
 
     @test get_available(pst3w_1) == true
     @test get_available(pst3w_2) == true
@@ -457,21 +468,23 @@ end
 end
 
 @testset "PSSE isolated bus handling (unavailable vs topologically isolated)" begin
-    sys = @test_logs (:error,) match_mode = :any build_system(
+    sys = @test_logs (:error,) min_level = Logging.Error match_mode = :any build_system(
         PSSEParsingTestSystems,
         "isolated_bus_test_system";
         force_build = true,
     )
-    @test length(get_components(x -> get_available(x), ACBus, sys)) == 1   #Reference bus
-    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 0
+    @test length(get_components(x -> get_available(x), ACBus, sys)) == 2   #Bus 1 and 2
+    @test length(get_components(x -> get_available(x), StandardLoad, sys)) == 1 # Load at Bus 2
     @test length(get_components(x -> get_available(x), SwitchedAdmittance, sys)) == 0
-    @test length(get_components(x -> get_available(x), Generator, sys)) == 1  #Gen at reference bus
-    @test length(get_components(x -> get_available(x), Branch, sys)) == 0
+    @test length(get_components(x -> get_available(x), Generator, sys)) == 2  #Gens at Bus 1 and 2
+    @test length(get_components(x -> get_available(x), Branch, sys)) == 1
+    @test length(get_components(x -> get_available(x), TapTransformer, sys)) == 0
+
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.ISOLATED, ACBus, sys)) ==
-          1
+          14
     @test length(get_components(x -> get_bustype(x) == ACBusTypes.REF, ACBus, sys)) == 1
-    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 4
-    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 9
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PV, ACBus, sys)) == 1
+    @test length(get_components(x -> get_bustype(x) == ACBusTypes.PQ, ACBus, sys)) == 0
 end
 
 @testset "Test PSSE interruptible loads parsing" begin
@@ -480,8 +493,10 @@ end
         "pti_case14_with_interruptible_loads_sys";
         force_build = true,
     )
-    isl = collect(get_components(InterruptibleStandardLoad, sys))[1]
-    @test length(collect(get_components(InterruptibleStandardLoad, sys))) == 4
+    all_isl = collect(get_components(InterruptibleStandardLoad, sys))
+    sort!(all_isl, by = get_name)
+    isl = first(all_isl)  # should be named "load10LD"
+    @test length(all_isl) == 4
     @test get_available(isl) == true
     @test isl isa InterruptibleStandardLoad
     @test get_constant_active_power(isl) == 0.11485
@@ -510,4 +525,51 @@ end
     @test get_available(trf_3w) == true
     @test get_available_tertiary(trf_3w) == true
     @test get_x_tertiary(trf_3w) == 1e-4
+end
+
+@testset "Test GeoJSON RFC 7946 Compliance" begin
+    # Test that GeographicInfo uses proper GeoJSON Point format
+    # According to RFC 7946, section 3.1.2, a Point should have:
+    # {"type": "Point", "coordinates": [longitude, latitude]}
+
+    # Create a simple test using the common.jl helper
+    sys = System(100.0)
+    bus1 = ACBus(;
+        number = 1,
+        name = "test_bus",
+        available = true,
+        bustype = ACBusTypes.REF,
+        angle = 0.0,
+        magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    add_component!(sys, bus1)
+
+    # Create GeographicInfo with proper GeoJSON format
+    geo = IS.GeographicInfo(;
+        geo_json = Dict("type" => "Point", "coordinates" => [-105.0, 40.0]),
+    )
+
+    add_supplemental_attribute!(sys, bus1, geo)
+
+    # Retrieve and verify the GeoJSON format
+    geo_attrs = get_supplemental_attributes(IS.GeographicInfo, sys)
+    @test length(geo_attrs) == 1
+
+    retrieved_geo = first(geo_attrs)
+    geo_json = IS.get_geo_json(retrieved_geo)
+
+    # Verify RFC 7946 compliance
+    @test haskey(geo_json, "type")
+    @test geo_json["type"] == "Point"
+    @test haskey(geo_json, "coordinates")
+    @test isa(geo_json["coordinates"], Vector)
+    @test length(geo_json["coordinates"]) == 2
+    @test geo_json["coordinates"][1] == -105.0  # longitude
+    @test geo_json["coordinates"][2] == 40.0    # latitude
+
+    # Verify old format is NOT present
+    @test !haskey(geo_json, "x")
+    @test !haskey(geo_json, "y")
 end

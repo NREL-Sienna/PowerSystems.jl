@@ -27,7 +27,7 @@ Start by importing these packages:
 ```@repl dyn_data
 using PowerSystems
 using PowerSystemCaseBuilder
-const PSY = PowerSystems;
+import PowerSystems as PSY;
 ```
 
 To create the system, load pre-existing data for a 3-bus system using
@@ -37,7 +37,9 @@ To create the system, load pre-existing data for a 3-bus system using
 threebus_sys = build_system(PSIDSystems, "3 Bus Inverter Base")
 ```
 
-See that there is a table of "Static Components", but no "Dynamic" data yet.
+See that there is a table of "[Static](@ref S) Components", which contains the
+steady state data needed for power flow analysis, but no "[Dynamic](@ref D)" data
+yet to define the differential equations for transient simulations.
 
 Let's view the generators in the system with [`show_components`](@ref),
 including which bus they are connected at:

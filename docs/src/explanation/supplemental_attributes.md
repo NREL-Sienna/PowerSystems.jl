@@ -13,7 +13,7 @@ flowchart LR
     E["Attribute C"] -->  F["Component 3"]
 ```
 
-Supplemental attributes can also contain timeseries in the same that a component can allowing the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
+Supplemental attributes can also contain timeseries in the same fashion that a component can allowing the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
 
 ## Getting the attributes in a system
 
@@ -67,6 +67,33 @@ for outage in get_supplemental_attributes(
     @show summary(outage)
 end
 ```
+
+## Getting the attributes associated with a component type
+
+You can retrieve the attributes associated with any component of a given type
+using the function [`get_associated_supplemental_attributes`](@ref). If one attribute is attached to
+multiple components of the given type, it will still only appear once in the result.
+
+ 1. Get all the attributes associated with all components of a given type.
+    
+    ```julia
+    for outage in get_associated_supplemental_attributes(system, ThermalStandard)
+        @show summary(outage)
+    end
+    ```
+
+ 2. Same as #1, but filter the results by attribute type, which can be concrete or abstract.
+    
+    ```julia
+    for outage in
+        get_associated_supplemental_attributes(
+        system,
+        ThermalStandard;
+        attribute_type = FixedForcedOutage,
+    )
+        @show summary(outage)
+    end
+    ```
 
 ## Getting the components associated with an attribute
 

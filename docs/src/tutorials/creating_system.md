@@ -9,7 +9,8 @@ system settings.
 
 ## Setup
 
-To get started, ensure you have followed the [installation instructions](@ref install).
+To get started, ensure you have followed the
+[installation instructions](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/).
 
 Start Julia from the command line if you haven't already:
 
@@ -79,7 +80,10 @@ We can see the impact this has on the `System` simply by printing it:
 sys
 ```
 
-Notice that `System` now shows a summary of components in the system.
+Notice that `System` now shows a summary of components in the system. The table shows
+"[Static](@ref S) Components", which refers to steady state data used for power
+flow analysis or production cost modeling, as opposed to [Dynamic](@ref D) components
+which that can be used to define differential equations for transient simulations.
 
 Let's create a second bus:
 
@@ -394,6 +398,6 @@ Next, you might want to:
   - [Add necessary data for dynamic simulations](@ref "Adding Data for Dynamic Simulations")
   - Import a `System` [from an existing Matpower or PSSE file](@ref pm_data) or
     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
-  - [Create your own `System` from .csv files instead of creating it manually](@ref table_data)
+  - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
   - See a workaround for how to [Add a Component in Natural Units](@ref)

@@ -1,8 +1,19 @@
-using InfrastructureSystems
-using PowerSystems
 using InteractiveUtils
-const IS = InfrastructureSystems
-const PSY = PowerSystems
+import InfrastructureSystems as IS
+import PowerSystems as PSY
+
+function _clean_old_generated_files(dir::String)
+    # Remove old generated_*.md files before creating new ones
+    if !isdir(dir)
+        @warn "Directory does not exist: $dir"
+        return
+    end
+    generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    for file in generated_files
+        rm(joinpath(dir, file), force=true)
+        @info "Removed old generated file: $file"
+    end
+end
 
 function _check_exception(T, exceptions::Vector)
     for type_exception in exceptions
@@ -99,6 +110,8 @@ function make_model_library(;
     exceptions = [],
     manual_additions = Dict{String, Any}()
 )
+    # Clean up old generated files before creating new ones
+    _clean_old_generated_files(joinpath("docs", "src", "model_library"))
 
     model_library = Dict{String, Any}()
 

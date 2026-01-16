@@ -4,12 +4,15 @@ function _validate_market_bid_cost(cost, context)
         StackTraces.stacktrace()[2].func, context, MarketBidCost, cost))
 end
 
-function _validate_reserve_demand_curve(cost, name)
-    !(cost isa CostCurve{PiecewiseIncrementalCurve}) && throw(
-        ArgumentError(
-            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
-        ),
-    )
+function _validate_import_export_cost(cost, context)
+    (cost isa ImportExportCost) || throw(TypeError(
+        StackTraces.stacktrace()[2].func, context, ImportExportCost, cost))
+end
+
+function _validate_reserve_demand_curve(
+    cost::CostCurve{PiecewiseIncrementalCurve},
+    name::String,
+)
     value_curve = get_value_curve(cost)
     function_data = get_function_data(value_curve)
     x_coords = get_x_coords(function_data)
@@ -26,6 +29,14 @@ function _validate_reserve_demand_curve(cost, name)
             )
         end
     end
+end
+
+function _validate_reserve_demand_curve(cost::T, name::String) where {T <: CostCurve}
+    throw(
+        ArgumentError(
+            "Reserve curve of type $(typeof(cost)) on $name cannot represent an ORDC curve, use CostCurve{PiecewiseIncrementalCurve} instead",
+        ),
+    )
 end
 
 function _validate_fuel_curve(component::Component)
@@ -74,7 +85,7 @@ function read_and_convert_ts(
 )
     isnothing(start_time) && (start_time = IS.get_initial_timestamp(ts))
     isnothing(transform_fn) && (transform_fn = (x -> x))
-    data = IS.get_time_series_array(component, ts, start_time; len = len)
+    data = IS.get_time_series_array(component, ts; start_time = start_time, len = len)
     time_stamps = TimeSeries.timestamp(data)
     return TimeSeries.TimeArray(
         time_stamps,
@@ -109,7 +120,7 @@ function _process_get_cost(::Type{T}, component::Component, cost::TimeSeriesKey,
     start_time::Union{Nothing, Dates.DateTime},
     len::Union{Nothing, Int},
 ) where {T}
-    ts = get_time_series(component, cost, start_time, len, 1)
+    ts = get_time_series(component, cost; start_time = start_time, len = len, count = 1)
     converted = read_and_convert_ts(ts, component, start_time, len, transform_fn)
     return converted
 end
@@ -117,10 +128,10 @@ end
 # GETTER IMPLEMENTATIONS
 """
 Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
-of the relevant fields (`incremental_offer_curves`, `initial_input`, `no_load_cost`) are
-time series, the user may specify `start_time` and `len` and the function returns a
-`TimeArray` of `CostCurve`s; if the field is not a time series, the function returns a
-single `CostCurve`.
+of the relevant fields (`incremental_offer_curves`, `incremental_initial_input`,
+`no_load_cost`) are time series, the user may specify `start_time` and `len` and the
+function returns a `TimeArray` of `CostCurve{PiecewiseIncrementalCurve}`s; if the field is
+not a time series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}`.
 """
 function get_variable_cost(
     device::StaticInjection,
@@ -147,6 +158,7 @@ function get_variable_cost(
         get_no_load_cost(device, cost)
     end
     params::Vector{Any} = [function_data, initial_input, input_at_zero]
+    all(isnothing.(params)) && return nothing
     first_time_series = findfirst(isa.(params, TimeSeries.TimeArray))
     if !isnothing(first_time_series)
         timestamps = TimeSeries.timestamp(params[first_time_series])
@@ -178,11 +190,12 @@ function get_variable_cost(
 end
 
 """
-Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
-of the relevant fields (`incremental_offer_curves`, `initial_input`, `no_load_cost`) are
-time series, the user may specify `start_time` and `len` and the function returns a
-`TimeArray` of `CostCurve`s; if the field is not a time series, the function returns a
-single `CostCurve`.
+Retrieve the incremental variable cost bid for a `StaticInjection` device with a
+`MarketBidCost`. If any of the relevant fields (`incremental_offer_curves`,
+`incremental_initial_input`, `no_load_cost`) are time series, the user may specify
+`start_time` and `len` and the function returns a `TimeArray` of
+`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
+returns a single `CostCurve{PiecewiseIncrementalCurve}`.
 """
 function get_incremental_variable_cost(
     device::StaticInjection,
@@ -199,11 +212,12 @@ function get_incremental_variable_cost(
 end
 
 """
-Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
-of the relevant fields (`decremental_offer_curves`, `initial_input`, `no_load_cost`) are
-time series, the user may specify `start_time` and `len` and the function returns a
-`TimeArray` of `CostCurve`s; if the field is not a time series, the function returns a
-single `CostCurve`.
+Retrieve the decremental variable cost bid for a `StaticInjection` device with a
+`MarketBidCost`. If any of the relevant fields (`decremental_offer_curves`,
+`decremental_initial_input`, `no_load_cost`) are time series, the user may specify
+`start_time` and `len` and the function returns a `TimeArray` of
+`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
+returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
 """
 function get_decremental_variable_cost(
     device::StaticInjection,
@@ -230,6 +244,7 @@ function get_decremental_variable_cost(
         get_no_load_cost(device, cost)
     end
     params::Vector{Any} = [function_data, initial_input, input_at_zero]
+    all(isnothing.(params)) && return nothing
     first_time_series = findfirst(isa.(params, TimeSeries.TimeArray))
     if !isnothing(first_time_series)
         timestamps = TimeSeries.timestamp(params[first_time_series])
@@ -253,11 +268,54 @@ function get_decremental_variable_cost(
                 (fd, ii, iaz) in collect(zip(collect.(TimeSeries.values.(params))...))
             ])
     end
+
     return make_market_bid_curve(
         function_data,
         initial_input;
         input_at_zero = input_at_zero,
     )
+end
+
+"""
+Retrieve the import variable cost bid for a `StaticInjection` device with an
+`ImportExportCost`. If `import_offer_curves` is a time series, the user may specify
+`start_time` and `len` and the function returns a `TimeArray` of
+`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
+returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+"""
+function get_import_variable_cost(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+)
+    get_import_offer_curves(cost) isa CostCurve &&
+        return get_import_offer_curves(cost)
+    function_data =
+        get_import_offer_curves(device, cost; start_time = start_time, len = len)
+    return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
+        [make_import_export_curve(fd) for fd in TimeSeries.values(function_data)])
+end
+
+"""
+Retrieve the export variable cost bid for a `StaticInjection` device with an
+`ImportExportCost`. If `export_offer_curves` is a time series, the user may specify
+`start_time` and `len` and the function returns a `TimeArray` of
+`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
+returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+"""
+function get_export_variable_cost(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+)
+    get_export_offer_curves(cost) isa CostCurve &&
+        return get_export_offer_curves(cost)
+    function_data =
+        get_export_offer_curves(device, cost; start_time = start_time, len = len)
+    return TimeSeries.TimeArray(TimeSeries.timestamp(function_data),
+        [make_import_export_curve(fd) for fd in TimeSeries.values(function_data)])
 end
 
 """
@@ -315,36 +373,66 @@ end
 """
 Retrieve the `incremental_offer_curves` for a `StaticInjection` device with a
 `MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
-and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
-function returns a single `Float64` or `Nothing`.
+and the function returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time
+series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
 """
 get_incremental_offer_curves(
     device::StaticInjection,
     cost::MarketBidCost;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
-) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+) = _process_get_cost(
+    Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}, Nothing},
     device, get_incremental_offer_curves(cost), nothing, start_time, len)
 
 """
 Retrieve the `decremental_offer_curves` for a `StaticInjection` device with a
 `MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
-and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
-function returns a single `Float64` or `Nothing`.
+and the function returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time
+series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
 """
 get_decremental_offer_curves(
     device::StaticInjection,
     cost::MarketBidCost;
     start_time::Union{Nothing, Dates.DateTime} = nothing,
     len::Union{Nothing, Int} = nothing,
-) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+) = _process_get_cost(
+    Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}, Nothing},
     device, get_decremental_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `import_offer_curves` for a `StaticInjection` device with a `ImportExportCost`.
+If this field is a time series, the user may specify `start_time` and `len` and the function
+returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time series, the
+function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+"""
+get_import_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_import_offer_curves(cost), nothing, start_time, len)
+
+"""
+Retrieve the `export_offer_curves` for a `StaticInjection` device with a `ImportExportCost`.
+If this field is a time series, the user may specify `start_time` and `len` and the function
+returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time series, the
+function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+"""
+get_export_offer_curves(
+    device::StaticInjection,
+    cost::ImportExportCost;
+    start_time::Union{Nothing, Dates.DateTime} = nothing,
+    len::Union{Nothing, Int} = nothing,
+) = _process_get_cost(Union{PiecewiseStepData, CostCurve{PiecewiseIncrementalCurve}},
+    device, get_export_offer_curves(cost), nothing, start_time, len)
 
 """
 Retrieve the no-load cost data for a `StaticInjection` device with a `MarketBidCost`. If
 this field is a time series, the user may specify `start_time` and `len` and the function
 returns a `TimeArray` of `Float64`s; if the field is not a time series, the function
-returns a single `Float64` or `Nothing`.
+returns a single `Float64` or `nothing`.
 """
 get_no_load_cost(
     device::StaticInjection,
@@ -355,7 +443,10 @@ get_no_load_cost(
     get_no_load_cost(cost), nothing, start_time, len)
 
 """
-Retrieve the `incremental_initial_input` for a `StaticInjection` device with a `MarketBidCost`.
+Retrieve the `incremental_initial_input` for a `StaticInjection` device with a
+`MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `nothing`.
 """
 get_incremental_initial_input(
     device::StaticInjection,
@@ -366,7 +457,10 @@ get_incremental_initial_input(
     get_incremental_initial_input(cost), nothing, start_time, len)
 
 """
-Retrieve the `decremental_initial_input` for a `StaticInjection` device with a `MarketBidCost`.
+Retrieve the `decremental_initial_input` for a `StaticInjection` device with a
+`MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
+and the function returns a `TimeArray` of `Float64`s; if the field is not a time series, the
+function returns a single `Float64` or `nothing`.
 """
 get_decremental_initial_input(
     device::StaticInjection,
@@ -549,6 +643,100 @@ function set_decremental_variable_cost!(
     )
 
     set_decremental_offer_curves!(market_bid_cost, to_set)
+    return
+end
+
+"""
+Set the import variable cost bid for a `StaticInjection` device with an `ImportExportCost`.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}}`: the data. 
+  If using a time series, must be of eltype `PiecewiseStepData`. `PiecewiseIncrementalCurve` 
+  is only accepted for single CostCurve and not accepted for time series data.
+- `power_units::UnitSystem`: Units to be used for data.
+"""
+function set_import_variable_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+    power_units::UnitSystem,
+)
+    import_export_cost = get_operation_cost(component)
+    _validate_import_export_cost(import_export_cost, "get_operation_cost(component)")
+
+    if (typeof(data) <: CostCurve{PiecewiseIncrementalCurve}) &&
+       (data.power_units != power_units)
+        throw(
+            ArgumentError(
+                "Units specified in CostCurve data differs from the units specified in the set cost.",
+            ),
+        )
+    end
+    if (typeof(data) <: IS.TimeSeriesData) && (power_units != UnitSystem.NATURAL_UNITS)
+        throw(
+            ArgumentError(
+                "Time Series data for ImportExportCost must be in NATURAL_UNITS.",
+            ),
+        )
+    end
+    to_set = _process_set_cost(
+        CostCurve{PiecewiseIncrementalCurve},
+        PiecewiseStepData,
+        sys,
+        component,
+        data,
+    )
+
+    set_import_offer_curves!(import_export_cost, to_set)
+    return
+end
+
+"""
+Set the export variable cost bid for a `StaticInjection` device with an `ImportExportCost`.
+
+# Arguments
+- `sys::System`: PowerSystem System
+- `component::StaticInjection`: Static injection device
+- `data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}}`: the data. 
+  If using a time series, must be of eltype `PiecewiseStepData`. `PiecewiseIncrementalCurve` 
+  is only accepted for single CostCurve and not accepted for time series data.
+- `power_units::UnitSystem`: Units to be used for data.
+"""
+function set_export_variable_cost!(
+    sys::System,
+    component::StaticInjection,
+    data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}},
+    power_units::UnitSystem,
+)
+    import_export_cost = get_operation_cost(component)
+    _validate_import_export_cost(import_export_cost, "get_operation_cost(component)")
+
+    if (typeof(data) <: CostCurve{PiecewiseIncrementalCurve}) &&
+       (data.power_units != power_units)
+        throw(
+            ArgumentError(
+                "Units specified in CostCurve data differs from the units specified in the set cost.",
+            ),
+        )
+    end
+    if (typeof(data) <: IS.TimeSeriesData) && (power_units != UnitSystem.NATURAL_UNITS)
+        throw(
+            ArgumentError(
+                "Time Series data for ImportExportCost must be in NATURAL_UNITS.",
+            ),
+        )
+    end
+    to_set = _process_set_cost(
+        CostCurve{PiecewiseIncrementalCurve},
+        PiecewiseStepData,
+        sys,
+        component,
+        data,
+    )
+
+    set_export_offer_curves!(import_export_cost, to_set)
     return
 end
 

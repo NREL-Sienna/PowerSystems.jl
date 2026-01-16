@@ -1456,7 +1456,7 @@ function check_reference_bus(data::Dict{String, <:Any})
         if length(data["gen"]) > 0
             big_gen = _biggest_generator(data["gen"])
             gen_bus = big_gen["gen_bus"]
-            ref_bus = data["bus"]["$(gen_bus)"]
+            ref_bus = data["bus"][gen_bus]
             ref_bus["bus_type"] = 3
             @warn(
                 "no reference bus found, setting bus $(gen_bus) as reference based on generator $(big_gen["index"])"
@@ -1469,6 +1469,7 @@ function check_reference_bus(data::Dict{String, <:Any})
             )
         end
     end
+    return
 end
 
 "find the largest active generator in the network"

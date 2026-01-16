@@ -5,6 +5,13 @@ const SYSTEM_KWARGS = Set((
     :area_name_formatter,
     :branch_name_formatter,
     :xfrm_3w_name_formatter,
+    :switched_shunt_name_formatter,
+    :transformer_control_objective_formatter,
+    :transformer_resistance_formatter,
+    :transformer_reactance_formatter,
+    :transformer_tap_formatter,
+    :dcline_name_formatter,
+    :vscline_name_formatter,
     :bus_name_formatter,
     :config_path,
     :frequency,
@@ -29,7 +36,7 @@ const SYSTEM_KWARGS = Set((
 ))
 
 # This will be used in the future to handle serialization changes.
-const DATA_FORMAT_VERSION = "4.0.0"
+const DATA_FORMAT_VERSION = "5.0.0"
 
 mutable struct SystemMetadata <: IS.InfrastructureSystemsType
     name::Union{Nothing, String}
@@ -637,12 +644,19 @@ end
 ```
 """
 function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
-    old_unit_system = get_internal(c).units_info.unit_system
+    internal = get_internal(c)
+    old_units_info = internal.units_info  # Save reference to restore later
     _set_units_base!(c, units)
+    temp_units_info = internal.units_info  # The temporary object we just created
     try
         f()
     finally
-        _set_units_base!(c, old_unit_system)
+        # Only restore if units_info is still temp_units_info.
+        # The user may have changed it in the function body, by e.g. removing the component
+        # and then attaching it to a different system.
+        internal.units_info === temp_units_info || error(
+            "Units info was modified during with_units_base.")
+        IS.set_units_info!(internal, old_units_info)
     end
 end
 
@@ -828,6 +842,16 @@ function _validate_types_for_interface(sys::System, contributing_devices)
     return
 end
 
+function _validate_types_for_agc(contributing_devices)
+    for device in contributing_devices
+        device_type = typeof(device)
+        if !(device_type <: Reserve)
+            throw(ArgumentError("contributing_devices of AGC must be of type Reserve"))
+        end
+    end
+    return
+end
+
 function _add_service!(
     sys::System,
     service::TransmissionInterface,
@@ -843,6 +867,24 @@ function _add_service!(
 
     for device in contributing_devices
         add_service_internal!(device, service)
+    end
+end
+
+function _add_service!(
+    sys::System,
+    service::AGC,
+    contributing_devices;
+    skip_validation = false,
+    kwargs...,
+)
+    skip_validation = _validate_or_skip!(sys, service, skip_validation)
+    _validate_types_for_agc(contributing_devices)
+    set_units_setting!(service, sys.units_settings)
+    # Since this isn't atomic, order is important. Add to system before adding to devices.
+    IS.add_component!(sys.data, service; skip_validation = skip_validation, kwargs...)
+
+    for device in contributing_devices
+        add_service_internal!(service, device)
     end
 end
 
@@ -1219,8 +1261,8 @@ end
 """
 Check to see if the component of type T exists.
 """
-function has_component(sys::System, T::Type{<:Component})
-    return IS.has_component(sys.data, T)
+function has_components(sys::System, T::Type{<:Component})
+    return IS.has_components(sys.data.components, T)
 end
 
 """
@@ -1357,7 +1399,9 @@ Return a vector of devices contributing to the service.
 """
 function get_contributing_devices(sys::System, service::T) where {T <: Service}
     throw_if_not_attached(service, sys)
-    return [x for x in get_components(Device, sys) if has_service(x, service)]
+    return [
+        x for x in get_components(supports_services, Device, sys) if has_service(x, service)
+    ]
 end
 
 """
@@ -1377,6 +1421,15 @@ const ServiceContributingDevicesKey = NamedTuple{(:type, :name), Tuple{DataType,
 const ServiceContributingDevicesMapping =
     Dict{ServiceContributingDevicesKey, ServiceContributingDevices}
 
+struct AGCContributingReserves
+    agc::AGC
+    contributing_reserves::Vector{Reserve}
+end
+
+const AGCContributingReservesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const AGCContributingReservesMapping =
+    Dict{AGCContributingReservesKey, AGCContributingReserves}
+
 """
 Returns a ServiceContributingDevices object.
 """
@@ -1384,14 +1437,47 @@ function _get_contributing_devices(sys::System, service::T) where {T <: Service}
     uuid = IS.get_uuid(service)
     devices = ServiceContributingDevices(service, Vector{Device}())
     for device in get_components(Device, sys)
-        for _service in get_services(device)
-            if IS.get_uuid(_service) == uuid
-                push!(devices.contributing_devices, device)
-                break
+        if supports_services(device)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
             end
         end
     end
     return devices
+end
+
+"""
+Returns a ServiceContributingDevices object.
+"""
+function _get_contributing_devices(sys::System, service::TransmissionInterface)
+    uuid = IS.get_uuid(service)
+    devices = ServiceContributingDevices(service, Vector{Device}())
+    for device in get_components(Branch, sys)
+        if supports_services(device)
+            for _service in get_services(device)
+                if IS.get_uuid(_service) == uuid
+                    push!(devices.contributing_devices, device)
+                    break
+                end
+            end
+        end
+    end
+    return devices
+end
+
+"""
+Return an instance of AGCContributingReservesMapping.
+"""
+function get_contributing_reserve_mapping(sys::System)
+    agcs = AGCContributingReservesMapping()
+    for agc in get_components(AGC, sys)
+        key = AGCContributingReservesKey((typeof(agc), get_name(agc)))
+        agcs[key] = AGCContributingReserves(agc, get_reserves(agc))
+    end
+    return agcs
 end
 
 """
@@ -1408,31 +1494,45 @@ function get_contributing_device_mapping(sys::System)
 end
 
 """
-Return a vector of connected turbines to the reservoir
+Return a vector of connected head reservoirs to the turbine. Reservoirs that have the turbine in their downstream_turbines field are head reservoirs of such turbine.
 """
-function get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
-    throw_if_not_attached(reservoir, sys)
-    return [x for x in get_components(HydroTurbine, sys) if has_reservoir(x, reservoir)]
+function get_connected_head_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+    throw_if_not_attached(turbine, sys)
+    return [
+        x for x in get_components(HydroReservoir, sys) if has_downstream_turbine(x, turbine)
+    ]
 end
 
-struct ReservoirConnectedDevices
-    reservoir::HydroReservoir
+"""
+Return a vector of connected tail reservoirs to the turbine. Reservoirs that have the turbine in their upstream_turbines field are tail reservoirs of such turbine.
+"""
+function get_connected_tail_reservoirs(sys::System, turbine::T) where {T <: HydroUnit}
+    throw_if_not_attached(turbine, sys)
+    return [
+        x for x in get_components(HydroReservoir, sys) if has_upstream_turbine(x, turbine)
+    ]
+end
+
+struct TurbineConnectedDevices
+    turbine::HydroUnit
     connected_devices::Vector{Device}
 end
 
-const ReservoirConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
-const ReservoirConnectedDevicesMapping =
-    Dict{ReservoirConnectedDevicesKey, ReservoirConnectedDevices}
+const TurbineConnectedDevicesKey = NamedTuple{(:type, :name), Tuple{DataType, String}}
+const TurbineConnectedDevicesMapping =
+    Dict{TurbineConnectedDevicesKey, TurbineConnectedDevices}
 
 """
-Returns a ReservoirConnectedDevices object.
+Returns a TurbineConnectedDevices object.
 """
-function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroReservoir}
-    uuid = IS.get_uuid(reservoir)
-    devices = ReservoirConnectedDevices(reservoir, Vector{Device}())
-    for device in get_components(HydroTurbine, sys)
-        for _reservoir in get_reservoirs(device)
-            if IS.get_uuid(_reservoir) == uuid
+function _get_connected_head_devices(sys::System, turbine::T) where {T <: HydroUnit}
+    uuid = IS.get_uuid(turbine)
+    devices = TurbineConnectedDevices(turbine, Vector{Device}())
+    for device in get_components(HydroReservoir, sys)
+        # Only add reservoirs that have the turbine in their downstream_turbines field
+        # That is, those reservoirs are a head reservoir to that turbine
+        for _turbine in get_downstream_turbines(device)
+            if IS.get_uuid(_turbine) == uuid
                 push!(devices.connected_devices, device)
                 break
             end
@@ -1442,16 +1542,48 @@ function _get_connected_devices(sys::System, reservoir::T) where {T <: HydroRese
 end
 
 """
-Return an instance of ReservoirConnectedDevicesMapping.
+Returns a TurbineConnectedDevices object.
 """
-function get_reservoir_device_mapping(sys::System)
-    reservoir_mapping = ReservoirConnectedDevicesMapping()
-    for reservoir in get_components(HydroReservoir, sys)
-        key = ReservoirConnectedDevicesKey((typeof(HydroReservoir), get_name(reservoir)))
-        reservoir_mapping[key] = _get_connected_devices(sys, reservoir)
+function _get_connected_tail_devices(sys::System, turbine::T) where {T <: HydroUnit}
+    uuid = IS.get_uuid(turbine)
+    devices = TurbineConnectedDevices(turbine, Vector{Device}())
+    for device in get_components(HydroReservoir, sys)
+        # Only add reservoirs that have the turbine in their upstream_turbines field
+        # That is, those reservoirs are a tail reservoir to that turbine
+        for _turbine in get_upstream_turbines(device)
+            if IS.get_uuid(_turbine) == uuid
+                push!(devices.connected_devices, device)
+                break
+            end
+        end
+    end
+    return devices
+end
+
+"""
+Return an instance of TurbineConnectedDevicesMapping.
+"""
+function get_turbine_head_reservoirs_mapping(sys::System)
+    turbine_mapping = TurbineConnectedDevicesMapping()
+    for turbine in get_components(HydroUnit, sys)
+        key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
+        turbine_mapping[key] = _get_connected_head_devices(sys, turbine)
     end
 
-    return reservoir_mapping
+    return turbine_mapping
+end
+
+"""
+Return an instance of TurbineConnectedDevicesMapping.
+"""
+function get_turbine_tail_reservoirs_mapping(sys::System)
+    turbine_mapping = TurbineConnectedDevicesMapping()
+    for turbine in get_components(HydroUnit, sys)
+        key = TurbineConnectedDevicesKey((typeof(HydroUnit), get_name(turbine)))
+        turbine_mapping[key] = _get_connected_tail_devices(sys, turbine)
+    end
+
+    return turbine_mapping
 end
 
 """
@@ -1534,10 +1666,35 @@ function _get_buses(data::IS.SystemData, aggregator::T) where {T <: AggregationT
 end
 
 """
-Add time series data to a component.
+Add time series data to a component. Assign optional features to differentiate time series
+of the same type with the same name but with different data.
+
+Returns a key that can later be used to retrieve the time series data.
 
 Throws ArgumentError if the component is not stored in the system.
 
+# Examples
+```julia
+ts1 = Deterministic(
+    name = "max_active_power",
+    data = deterministic_data,
+    resolution = Dates.Hour(1),
+)
+ts2 = SingleTimeSeries(
+    name = "max_active_power",
+    data = time_array_1,
+)
+ts3 = SingleTimeSeries(
+    name = "max_active_power",
+    data = time_array_2,
+)
+key1 = add_time_series!(system, component, ts1)
+key2 = add_time_series!(system, component, ts2, scenario = "high")
+key3 = add_time_series!(system, component, ts3, scenario = "low")
+ts1_b = get_time_series(component, key1)
+ts2_b = get_time_series(component, key2)
+ts3_b = get_time_series(component, key3)
+```
 """
 function add_time_series!(
     sys::System,
@@ -1858,6 +2015,56 @@ function get_supplemental_attributes(
     sys::System,
 ) where {T <: IS.SupplementalAttribute}
     return IS.get_supplemental_attributes(T, sys.data)
+end
+
+"""
+    get_associated_supplemental_attributes(obj)
+
+Retrieves supplemental attributes associated with the given object.
+
+This function extracts and returns additional metadata or auxiliary information
+that is linked to the specified object, typically used for extended functionality
+or configuration purposes.
+
+# Arguments
+- `obj`: The object for which to retrieve associated supplemental attributes
+
+# Returns
+- Collection of supplemental attributes associated with the input object
+
+# Examples
+```julia
+gen_attr_pairs = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+)
+for (gen, attr) in gen_attr_pairs
+    @show summary(gen) summary(attr)
+end
+
+my_generators = [gen1, gen2, gen3]
+gen_attr_pairs_limited = get_component_supplemental_attribute_pairs(
+    GeometricDistributionForcedOutage,
+    ThermalStandard,
+    sys,
+    components = my_generators,
+)
+for (gen, attr) in gen_attr_pairs_limited
+    @show summary(gen) summary(attr)
+end
+```
+"""
+function get_associated_supplemental_attributes(
+    sys::System,
+    ::Type{T};
+    attribute_type::Union{Nothing, Type{<:IS.SupplementalAttribute}} = nothing,
+) where {T <: IS.InfrastructureSystemsComponent}
+    return IS.get_associated_supplemental_attributes(
+        sys.data,
+        T;
+        attribute_type = attribute_type,
+    )
 end
 
 """
@@ -2240,6 +2447,8 @@ function deserialize_components!(sys::System, raw)
             if !isnothing(include_types) && !is_matching_type(type, include_types)
                 continue
             end
+            components =
+                _handle_hydro_reservoirs_deserialization_special_cases(components, type)
             for component in components
                 handle_deserialization_special_cases!(component, type)
                 comp = deserialize(type, component, component_cache)
@@ -2254,17 +2463,24 @@ function deserialize_components!(sys::System, raw)
     end
 
     # Run in order based on type composition.
-    # Bus and AGC instances can have areas and LoadZones.
+    # Bus instances can have areas and LoadZones.
+    # AGC instances can have areas and contributing reserves
     # Most components have buses.
     # Static injection devices can contain dynamic injection devices.
     # StaticInjectionSubsystem instances have StaticInjection subcomponents.
     deserialize_and_add!(; include_types = [Area, LoadZone])
+    deserialize_and_add!(; include_types = [AbstractReserve])
     deserialize_and_add!(; include_types = [AGC])
     deserialize_and_add!(; include_types = [Bus])
     deserialize_and_add!(;
         include_types = [Arc, Service],
         skip_types = [ConstantReserveGroup],
     )
+    deserialize_and_add!(;
+        include_types = [HydroTurbine, HydroPumpTurbine],
+        skip_types = [ConstantReserveGroup, HydroReservoir],
+    )
+    deserialize_and_add!(; include_types = [HydroReservoir])
     deserialize_and_add!(; include_types = [Branch])
     deserialize_and_add!(; include_types = [DynamicBranch])
     deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
@@ -2302,6 +2518,89 @@ handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = no
 #    return
 #end
 
+# This function does an iterative union find to handle the ordering of the reservoir chains
+function _handle_hydro_reservoirs_deserialization_special_cases(
+    components::Vector{Dict},
+    ::Type{HydroReservoir},
+)
+
+    # Build a mapping from UUID to component for quick lookup
+    uuid_to_component = Dict{String, Dict}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        uuid_to_component[uuid_str] = component
+    end
+
+    # Build parent mapping for union-find (each reservoir points to its upstream reservoir)
+    parent = Dict{String, String}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        upstream_uuids = component["upstream_reservoirs"]
+
+        if isempty(upstream_uuids)
+            parent[uuid_str] = uuid_str  # Root of its own chain
+        else
+            # Assume single upstream reservoir for simplicity
+            parent[uuid_str] = string(upstream_uuids[1])
+        end
+    end
+
+    # Find root of each chain iteratively
+    function find_root(uuid_str)
+        current = uuid_str
+        while parent[current] != current
+            current = parent[current]
+        end
+        return current
+    end
+
+    # Group components by their chain root
+    chains = Dict{String, Vector{Dict}}()
+    for component in components
+        uuid_str = string(component["internal"]["uuid"])
+        root = find_root(uuid_str)
+
+        if !haskey(chains, root)
+            chains[root] = Vector{Dict}()
+        end
+        push!(chains[root], component)
+    end
+
+    # Order each chain from upstream (root) to downstream
+    ordered_components = Vector{Dict}()
+    for (root_uuid, chain) in chains
+        # Sort chain by dependency order - upstream reservoirs first
+        chain_ordered = Vector{Dict}()
+        remaining = Set(chain)
+
+        while !isempty(remaining)
+            # Find next component whose upstream is already processed or is a root
+            for component in remaining
+                upstream_uuids = component["upstream_reservoirs"]
+                can_add =
+                    isempty(upstream_uuids) ||
+                    all(
+                        string(uuid) in
+                        [string(c["internal"]["uuid"]) for c in chain_ordered] for
+                        uuid in upstream_uuids
+                    )
+
+                if can_add
+                    push!(chain_ordered, component)
+                    delete!(remaining, component)
+                    break
+                end
+            end
+        end
+
+        append!(ordered_components, chain_ordered)
+    end
+    return ordered_components
+end
+
+_handle_hydro_reservoirs_deserialization_special_cases(
+    components::Vector{Dict},
+    ::Type{<:Component}) = components
 """
 Return [`ACBus`](@ref) with `name`.
 """
@@ -2661,6 +2960,9 @@ end
 function handle_component_removal!(sys::System, service::Service)
     _handle_component_removal_common!(service)
     for device in get_components(Device, sys)
+        if !supports_services(device)
+            continue
+        end
         _remove_service!(device, service)
     end
 end

@@ -178,6 +178,8 @@ function _convert_data!(
     ::Val{Symbol("4.0.0")},
     ::Val{Symbol("5.0.0")},
 )
+    error("Conversion from 4.0.0 to 5.0.0 JSON format is not supported yet.")
+    #=
     for component in raw["data"]["components"]
         if component["__metadata__"]["type"] == "TwoTerminalHVDCLine"
             component["__metadata__"]["type"] = "TwoTerminalGenericHVDCLine"
@@ -189,6 +191,7 @@ function _convert_data!(
             continue
         end
     end
+    =#
     return
 end
 

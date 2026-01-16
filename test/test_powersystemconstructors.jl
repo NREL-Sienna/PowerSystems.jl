@@ -110,7 +110,7 @@ end
     # If that isn't appropriate for this type, add it to types_to_skip below.
     # You can also call test_accessors wherever an instance has been created.
 
-    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent)
+    types_to_skip = (TestDevice, TestRenDevice, TestInjector, NonexistentComponent)
     types = vcat(
         IS.get_all_concrete_subtypes(Component),
         IS.get_all_concrete_subtypes(DynamicComponent),
@@ -127,7 +127,7 @@ end
 
 @testset "Test required accessor functions of subtypes of Component " begin
     types = IS.get_all_concrete_subtypes(Component)
-    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent)
+    types_to_skip = (TestDevice, TestRenDevice, NonexistentComponent, TestInjector)
     sort!(types; by = x -> string(x))
     for ps_type in types
         ps_type in types_to_skip && continue
@@ -178,7 +178,8 @@ end
         () -> begin
             sys = PSB.build_system(PSB.PSITestSystems, "c_sys5")
             component_name = "Bus2"
-            ts_name = "max_active_power"
+            # We use this name to avoid conflicts with the existing time series in the system
+            ts_name = "max_active_power_test"
             old_component = get_component(PowerLoad, sys, component_name)
             dates = collect(
                 Dates.DateTime("2020-01-01T00:00:00"):Dates.Hour(1):Dates.DateTime(

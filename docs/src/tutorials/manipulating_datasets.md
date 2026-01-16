@@ -6,7 +6,7 @@
 
 ## Viewing Components in the System
 
-We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](@ref psb):
+We are going to begin by loading in a test case [`System`](@ref) from [`PowerSystemCaseBuilder.jl`](https://nrel-sienna.github.io/PowerSystemCaseBuilder.jl/stable/):
 
 ```@repl system
 using PowerSystems;
@@ -193,11 +193,7 @@ using dot notation again to access the `fuel` fields:
 get_fuel.(get_components(ThermalStandard, sys))
 ```
 
-See that we linked two functions here with Julia's dot notation -- this is a very
-convenient way of quickly getting the data you need.
-
-See that we linked two functions here with Julia's dot notation -- this is a very
-convenient way of quickly getting the data you need.
+See that we linked two functions here with Julia's dot notation -- this is a very convenient way of quickly getting the data you need.
 
 ## Filtering Specific Data
 

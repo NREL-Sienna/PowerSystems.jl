@@ -186,8 +186,8 @@ function add_geographic_info_to_buses!(sys, substation_data)
 
             geo_info = GeographicInfo(;
                 geo_json = Dict(
-                    "x" => lon,
-                    "y" => lat,
+                    "type" => "Point",
+                    "coordinates" => [lon, lat],
                 ),
             )
             for node in substation["nodes"]
@@ -228,15 +228,19 @@ function _impedance_correction_table_lookup(data::Dict)
     @info "Reading Impedance Correction Table data"
     if !haskey(data, "impedance_correction")
         @info "There is no Impedance Correction Table data in this file"
-        return
+        return ict_instances
     end
 
-    for (table_number, table_data) in data["impedance_correction"]
-        table_number = parse(Int64, table_number)
+    for (_, table_data) in data["impedance_correction"]
+        table_number = table_data["table_number"]
         x = table_data["tap_or_angle"]
         y = table_data["scaling_factor"]
 
         if length(x) == length(y)
+            if length(x) < 2
+                @warn "Skipping impedance correction entry due to insufficient data points ($(length(x)) < 2): $(x)"
+                continue
+            end
             pwl_data = PiecewiseLinearData([(x[i], y[i]) for i in eachindex(x)])
             table_type =
                 if (
@@ -278,11 +282,11 @@ function _attach_single_ict!(
     d::Dict,
     table_key::String,
     winding_idx::WindingCategory,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
+    if isempty(ict_instances)
+        return
+    end
     if haskey(d, table_key)
         table_number = d[table_key]
         cache_key = (table_number, winding_idx)
@@ -290,9 +294,10 @@ function _attach_single_ict!(
             ict = ict_instances[cache_key]
             add_supplemental_attribute!(sys, transformer, ict)
         else
-            @info "No correction table associated with transformer $name for winding $winding_idx."
+            @debug "No correction table associated with transformer $name for winding $winding_idx."
         end
     end
+    return
 end
 
 """
@@ -300,13 +305,10 @@ Attaches the corresponding ICT data to a Transformer2W component.
 """
 function _attach_impedance_correction_tables!(
     sys::System,
-    transformer::Transformer2W,
+    transformer::TwoWindingTransformer,
     name::String,
     d::Dict,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
     _attach_single_ict!(
         sys,
@@ -317,6 +319,7 @@ function _attach_impedance_correction_tables!(
         WindingCategory.TR2W_WINDING,
         ict_instances,
     )
+    return
 end
 
 """
@@ -327,16 +330,17 @@ function _attach_impedance_correction_tables!(
     transformer::ThreeWindingTransformer,
     name::String,
     d::Dict,
-    ict_instances::Union{
-        Nothing,
-        Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
-    },
+    ict_instances::Dict{Tuple{Int64, WindingCategory}, ImpedanceCorrectionData},
 )
+    if isempty(ict_instances)
+        return
+    end
     for winding_category in instances(WindingCategory)
         winding_category == WindingCategory.TR2W_WINDING && continue
         key = "$(WINDING_NAMES[winding_category])_correction_table"
         _attach_single_ict!(sys, transformer, name, d, key, winding_category, ict_instances)
     end
+    return
 end
 
 """
@@ -483,11 +487,12 @@ function read_bus!(sys::System, data::Dict; kwargs...)
         for (k, d) in data["interarea_transfer"]
             area_from_name = _get_name_area(d["area_from"])
             area_to_name = _get_name_area(d["area_to"])
+            transfer_id = get(d, "transfer_id", "1") # 1 by default
 
             from_area = get_component(Area, sys, area_from_name)
             to_area = get_component(Area, sys, area_to_name)
 
-            name = "$(area_from_name)_$(area_to_name)"
+            name = "$(area_from_name)_$(area_to_name)_$(transfer_id)"
             available = true
             active_power_flow = d["power_transfer"]
             flow_limits = (from_to = -INFINITE_BOUND, to_from = INFINITE_BOUND)
@@ -715,13 +720,12 @@ function read_loadzones!(
     end
 end
 
-function make_hydro_gen(
+function make_hydro_dispatch(
     gen_name::Union{SubString{String}, String},
     d::Dict,
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ramp_agc = get(d, "ramp_agc", get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"]))))
     curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
 
     if d["mbase"] != 0.0
@@ -738,7 +742,7 @@ function make_hydro_gen(
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         active_power_limits = (
             min = d["pmin"] * base_conversion,
@@ -748,7 +752,46 @@ function make_hydro_gen(
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
         ),
-        ramp_limits = (up = ramp_agc, down = ramp_agc),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
+        time_limits = nothing,
+        operation_cost = curtailcost,
+        base_power = mbase,
+    )
+end
+
+function make_hydro_reservoir(
+    gen_name::Union{SubString{String}, String},
+    d::Dict,
+    bus::ACBus,
+    sys_mbase::Float64,
+)
+    curtailcost = HydroGenerationCost(zero(CostCurve), 0.0)
+
+    if d["mbase"] != 0.0
+        mbase = d["mbase"]
+    else
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        mbase = sys_mbase
+    end
+
+    base_conversion = sys_mbase / mbase
+    return HydroDispatch(; # No way to define storage parameters for gens in PM so can only make HydroDispatch
+        name = gen_name,
+        available = Bool(d["gen_status"]),
+        bus = bus,
+        active_power = d["pg"] * base_conversion,
+        reactive_power = d["qg"] * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
+        prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
+        active_power_limits = (
+            min = d["pmin"] * base_conversion,
+            max = d["pmax"] * base_conversion,
+        ),
+        reactive_power_limits = (
+            min = d["qmin"] * base_conversion,
+            max = d["qmax"] * base_conversion,
+        ),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
         time_limits = nothing,
         operation_cost = curtailcost,
         base_power = mbase,
@@ -772,7 +815,7 @@ function make_renewable_dispatch(
 
     base_conversion = sys_mbase / mbase
 
-    rating = calculate_rating(d["pmax"], d["qmax"])
+    rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion)
     if rating > mbase
         @warn "rating is larger than base power for $gen_name, setting to $mbase"
         rating = mbase
@@ -867,6 +910,11 @@ function _is_likely_motor_load(d::Dict, gen_name::Union{SubString{String}, Strin
         @warn "Generator $gen_name is likely a motor load with negative active power: $(d["pg"]) and undefined active power limits \
         this component will be parsed as a thermal generator with negative active power injection. You can convert the device to a MotorLoad for more accurate modeling."
     end
+
+    if d["pmin"] < 0 && d["pmax"] == 0
+        @warn "Generator $gen_name is likely something that is not a ThermalGenerators with negative power limits: (min = $(d["pmin"]), max = $(d["pmax"])) \
+        this component will be parsed as a thermal generator with negative active power limits. Check this entry for more accurate modeling."
+    end
     return
 end
 
@@ -928,9 +976,6 @@ function make_thermal_gen(
         shutdn = tmpcost.shut_down
     end
 
-    # Ignoring due to  GitHub #148: ramp_agc isn't always present. This value may not be correct.
-    ramp_lim = get(d, "ramp_10", get(d, "ramp_30", abs(d["pmax"])))
-
     operation_cost = ThermalGenerationCost(;
         variable = cost,
         fixed = fixed,
@@ -968,7 +1013,7 @@ function make_thermal_gen(
         bus = bus,
         active_power = d["pg"] * base_conversion,
         reactive_power = d["qg"] * base_conversion,
-        rating = calculate_rating(d["pmax"], d["qmax"]) * base_conversion,
+        rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion),
         prime_mover_type = parse_enum_mapping(PrimeMovers, d["type"]),
         fuel = parse_enum_mapping(ThermalFuels, d["fuel"]),
         active_power_limits = (
@@ -979,7 +1024,7 @@ function make_thermal_gen(
             min = d["qmin"] * base_conversion,
             max = d["qmax"] * base_conversion,
         ),
-        ramp_limits = (up = ramp_lim, down = ramp_lim),
+        ramp_limits = calculate_ramp_limit(d, gen_name),
         time_limits = nothing,
         operation_cost = operation_cost,
         base_power = mbase,
@@ -995,7 +1040,7 @@ function make_synchronous_condenser(
     bus::ACBus,
     sys_mbase::Float64,
 )
-    ext = Dict{String, Float64}()
+    ext = get(d, "ext", Dict{String, Any}())
     if haskey(d, "r_source") && haskey(d, "x_source")
         ext["r"] = d["r_source"]
         ext["x"] = d["x_source"]
@@ -1043,9 +1088,12 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
         return nothing
     end
 
-    generator_mapping = get(kwargs, :generator_mapping, nothing)
-    if generator_mapping isa AbstractString || isnothing(generator_mapping)
+    generator_mapping = get(kwargs, :generator_mapping, GENERATOR_MAPPING_FILE_PM)
+    try
         generator_mapping = get_generator_mapping(generator_mapping)
+    catch e
+        @error "Error loading generator mapping $(generator_mapping)"
+        rethrow(e)
     end
 
     sys_mbase = data["baseMVA"]
@@ -1062,8 +1110,11 @@ function read_gen!(sys::System, data::Dict, bus_number_to_bus::Dict{Int, ACBus};
         gen_type = get_generator_type(pm_gen["fuel"], pm_gen["type"], generator_mapping)
         if gen_type == ThermalStandard
             generator = make_thermal_gen(gen_name, pm_gen, bus, sys_mbase)
-        elseif gen_type == HydroEnergyReservoir
-            generator = make_hydro_gen(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == HydroDispatch
+            generator = make_hydro_dispatch(gen_name, pm_gen, bus, sys_mbase)
+        elseif gen_type == HydroTurbine
+            # This method adds a
+            generator = make_hydro_reservoir(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableDispatch
             generator = make_renewable_dispatch(gen_name, pm_gen, bus, sys_mbase)
         elseif gen_type == RenewableNonDispatch
@@ -1143,7 +1194,7 @@ function get_branch_type_psse(
 
     if !is_transformer
         if (tap != 0.0) && (tap != 1.0)
-            @show "Transformer $d has tap ratio $tap, which is not 0.0 or 1.0; this is not a valid value for a Line. Parsing entry as a Transformer"
+            @warn "Transformer $d has tap ratio $tap, which is not 0.0 or 1.0; this is not a valid value for a Line. Parsing entry as a Transformer"
             is_transformer = true
             _add_vector_control_group(d, "shift", "group_number")
         else
@@ -1170,7 +1221,8 @@ function make_branch(
     d::Dict,
     bus_f::ACBus,
     bus_t::ACBus,
-    source_type::String,
+    source_type::String;
+    kwargs...,
 )
     if source_type == "matpower"
         branch_type = get_branch_type_matpower(d)
@@ -1189,11 +1241,11 @@ function make_branch(
     elseif branch_type == DiscreteControlledACBranch
         value = _make_switch_from_zero_impedance_line(name, d, bus_f, bus_t)
     elseif branch_type == Transformer2W
-        value = make_transformer_2w(name, d, bus_f, bus_t)
+        value = make_transformer_2w(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == TapTransformer
-        value = make_tap_transformer(name, d, bus_f, bus_t)
+        value = make_tap_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == PhaseShiftingTransformer
-        value = make_phase_shifting_transformer(name, d, bus_f, bus_t)
+        value = make_phase_shifting_transformer(name, d, bus_f, bus_t; kwargs...)
     elseif branch_type == Line
         value = make_line(name, d, bus_f, bus_t)
     else
@@ -1244,7 +1296,7 @@ function _get_rating(
     haskey(line_data, key) || return key == "rate_a" ? INFINITE_BOUND : nothing
 
     if isapprox(line_data[key], 0.0)
-        @warn(
+        @info(
             "$branch_type $name rating value: $(line_data[key]). Unbounded value implied as per PSSe Manual"
         )
         return INFINITE_BOUND
@@ -1326,7 +1378,8 @@ function make_transformer_2w(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1336,14 +1389,19 @@ function make_transformer_2w(
         available_value = false
     end
 
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+
     return Transformer2W(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
+        r = r,
+        x = x,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
@@ -1502,7 +1560,8 @@ function make_tap_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1512,15 +1571,46 @@ function make_tap_transformer(
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective = if control_objective_formatter !== nothing
+        result = control_objective_formatter(name)
+        result !== nothing ? result : get(d, "COD1", -99)
+    else
+        get(d, "COD1", -99)
+    end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = if resistance_formatter !== nothing
+        result = resistance_formatter(name)
+        result !== nothing ? result : d["br_r"]
+    else
+        d["br_r"]
+    end
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = if reactance_formatter !== nothing
+        result = reactance_formatter(name)
+        result !== nothing ? result : d["br_x"]
+    else
+        d["br_x"]
+    end
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = if tap_formatter !== nothing
+        result = tap_formatter(name)
+        result !== nothing ? result : d["tap"]
+    else
+        d["tap"]
+    end
+
     return TapTransformer(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         base_power = d["base_power"],
@@ -1530,7 +1620,8 @@ function make_tap_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
+        ext = ext,
     )
 end
 
@@ -1538,7 +1629,8 @@ function make_phase_shifting_transformer(
     name::String,
     d::Dict,
     bus_f::ACBus,
-    bus_t::ACBus,
+    bus_t::ACBus;
+    kwargs...,
 )
     pf = get(d, "pf", 0.0)
     qf = get(d, "qf", 0.0)
@@ -1548,15 +1640,31 @@ function make_phase_shifting_transformer(
         available_value = false
     end
 
+    ext = haskey(d, "ext") ? d["ext"] : Dict{String, Any}()
+    control_objective_formatter =
+        get(kwargs, :transformer_control_objective_formatter, nothing)
+    control_objective = if control_objective_formatter !== nothing
+        result = control_objective_formatter(name)
+        result !== nothing ? result : get(d, "COD1", -99)
+    else
+        get(d, "COD1", -99)
+    end
+    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
+    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
+    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
+    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
+    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
+    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
+
     return PhaseShiftingTransformer(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = d["br_r"],
-        x = d["br_x"],
-        tap = d["tap"],
+        r = r,
+        x = x,
+        tap = tap,
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = d["shift"],
         base_power = d["base_power"],
@@ -1566,7 +1674,8 @@ function make_phase_shifting_transformer(
         # for psse inputs, these numbers may be different than the buses' base voltages
         base_voltage_primary = d["base_voltage_from"],
         base_voltage_secondary = d["base_voltage_to"],
-        control_objective = get(d, "COD1", -99),
+        control_objective = control_objective,
+        ext = ext,
     )
 end
 
@@ -1589,7 +1698,7 @@ function read_branch!(
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
         name = _get_name(d, bus_f, bus_t)
-        value = make_branch(name, d, bus_f, bus_t, source_type)
+        value = make_branch(name, d, bus_f, bus_t, source_type; kwargs...)
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)
@@ -1597,7 +1706,7 @@ function read_branch!(
             continue
         end
 
-        if isa(value, Transformer2W)
+        if isa(value, TwoWindingTransformer)
             _attach_impedance_correction_tables!(
                 sys,
                 value,
@@ -1761,7 +1870,7 @@ function make_dcline(name::String, d::Dict, bus_f::ACBus, bus_t::ACBus, source_t
             rectifier_tap_limits = d["rectifier_tap_limits"],
             rectifier_tap_step = d["rectifier_tap_step"],
             rectifier_delay_angle = d["rectifier_delay_angle"],
-            rectifier_capacitor_reactance = d["inverter_capacitor_reactance"],
+            rectifier_capacitor_reactance = d["rectifier_capacitor_reactance"],
             inverter_transformer_ratio = d["inverter_transformer_ratio"],
             inverter_tap_setting = d["inverter_tap_setting"],
             inverter_tap_limits = d["inverter_tap_limits"],
@@ -1805,7 +1914,7 @@ function read_dcline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :dcline_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["dcline"]
         d["name"] = get(d, "name", d_key)
@@ -1864,7 +1973,7 @@ function read_vscline!(
         return
     end
 
-    _get_name = get(kwargs, :branch_name_formatter, _get_pm_branch_name)
+    _get_name = get(kwargs, :vsc_line_name_formatter, _get_pm_branch_name)
 
     for (d_key, d) in data["vscline"]
         d["name"] = get(d, "name", d_key)
@@ -1907,7 +2016,7 @@ function read_switched_shunt!(
         return
     end
 
-    _get_name = get(kwargs, :shunt_name_formatter, _get_pm_dict_name)
+    _get_name = get(kwargs, :switched_shunt_name_formatter, _get_pm_dict_name)
 
     for (d_key, d) in data["switched_shunt"]
         d["name"] = get(d, "name", d_key)

@@ -327,6 +327,12 @@
                     "data_type": "String"
                 },
                 {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.",
+                    "data_type": "Bool"
+                },
+                {
                     "name": "magnitude",
                     "comment": "voltage as a multiple of `base_voltage`",
                     "null_value": "0.0",
@@ -929,10 +935,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -988,7 +994,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1118,10 +1124,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -1177,7 +1183,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1296,10 +1302,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -1814,21 +1820,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -2313,21 +2319,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. This is used to determine the tap position during power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -3159,10 +3165,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -3237,10 +3243,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -3463,10 +3469,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -3790,10 +3796,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -3894,17 +3900,17 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -3997,10 +4003,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -4215,10 +4221,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -4371,10 +4377,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": 0,
+                    "null_value": 100.0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     }
                 },
@@ -4533,10 +4539,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": 0,
+                    "null_value": 100.0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     }
                 },
@@ -4859,10 +4865,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": 0.0,
+                    "null_value": 100.0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     }
                 },
@@ -4990,10 +4996,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the converter in MVA",
-                    "null_value": "0.0",
+                    "null_value": 100.0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -5165,10 +5171,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": 0,
+                    "null_value": 100.0,
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     }
                 },
@@ -5216,8 +5222,8 @@
             "supertype": "DynamicInjection"
         },
         {
-            "struct_name": "HydroEnergyReservoir",
-            "docstring": "A hydropower generator with an upper reservoir, offering some energy storage and operational flexibility.\n\nFor hydro generators with pumped storage, see [`HydroPumpTurbine`](@ref) and [`HydroReservoir`](@ref)",
+            "struct_name": "HydroDispatch",
+            "docstring": "A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.\n\nFor hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -5258,7 +5264,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5280,6 +5286,11 @@
                     "comment": "Minimum and maximum stable active power levels (MW)",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax",
+                    "valid_range": {
+                        "min": 0,
+                        "max": null
+                    },
+                    "validation_action": "warn",
                     "needs_conversion": true,
                     "conversion_unit": ":mva"
                 },
@@ -5319,236 +5330,27 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
                 },
                 {
-                    "name": "storage_capacity",
-                    "comment": "Maximum storage capacity in the reservoir (units can be p.u-hr or m^3)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "inflow",
-                    "comment": "Baseline inflow into the reservoir (units can be p.u. or m^3/hr)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "initial_storage",
-                    "comment": "Initial storage capacity in the reservoir (units can be p.u-hr or m^3)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "operation_cost",
-                    "null_value": "HydroGenerationCost(nothing)",
-                    "data_type": "Union{HydroGenerationCost, StorageCost, MarketBidCost}",
-                    "default": "HydroGenerationCost(nothing)",
-                    "comment": "[`OperationalCost`](@ref) of generation"
-                },
-                {
-                    "name": "storage_target",
-                    "comment": "Storage target at the end of simulation as a fraction of storage capacity",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
-                    "name": "conversion_factor",
-                    "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "default": "1.0"
-                },
-                {
                     "null_value": "false",
+                    "default": "false",
                     "name": "status",
                     "comment": "Initial commitment condition at the start of a simulation (`true` = on or `false` = off)",
-                    "data_type": "Bool",
-                    "default": "false"
+                    "data_type": "Bool"
                 },
                 {
                     "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
                     "name": "time_at_status",
                     "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
-                    "data_type": "Float64",
-                    "default": "INFINITE_TIME"
-                },
-                {
-                    "name": "services",
-                    "data_type": "Vector{Service}",
-                    "comment": "Services that this device contributes to",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
-                },
-                {
-                    "name": "dynamic_injector",
-                    "data_type": "Union{Nothing, DynamicInjection}",
-                    "comment": "corresponding dynamic injection device",
-                    "null_value": "nothing",
-                    "exclude_setter": true,
-                    "default": "nothing"
-                },
-                {
-                    "name": "ext",
-                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
-                    "data_type": "Dict{String, Any}",
-                    "null_value": "Dict{String, Any}()",
-                    "default": "Dict{String, Any}()"
-                },
-                {
-                    "name": "internal",
-                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
-                    "data_type": "InfrastructureSystemsInternal",
-                    "internal_default": "InfrastructureSystemsInternal()",
-                    "exclude_setter": true
-                }
-            ],
-            "supertype": "HydroGen"
-        },
-        {
-            "struct_name": "HydroDispatch",
-            "docstring": "A hydropower generator without a reservoir, suitable for modeling run-of-river hydropower.\n\nFor hydro generators with an upper reservoir, see [`HydroEnergyReservoir`](@ref)",
-            "fields": [
-                {
-                    "null_value": "init",
-                    "name": "name",
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
-                    "exclude_setter": true,
-                    "data_type": "String"
-                },
-                {
-                    "null_value": "false",
-                    "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
-                    "data_type": "Bool"
-                },
-                {
-                    "name": "bus",
-                    "comment": "Bus that this component is connected to",
-                    "null_value": "ACBus(nothing)",
-                    "data_type": "ACBus"
-                },
-                {
-                    "name": "active_power",
-                    "comment": "Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power",
-                    "comment": "Initial reactive power set point of the unit (MVAR)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": "reactive_power_limits",
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
-                    "null_value": "PrimeMovers.HY",
-                    "data_type": "PrimeMovers"
-                },
-                {
-                    "name": "active_power_limits",
-                    "comment": "Minimum and maximum stable active power levels (MW)",
-                    "null_value": "(min=0.0, max=0.0)",
-                    "data_type": "MinMax",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "reactive_power_limits",
-                    "comment": "Minimum and maximum reactive power limits. Set to `Nothing` if not applicable",
-                    "validation_action": "warn",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "ramp_limits",
-                    "comment": "ramp up and ramp down limits in MW/min",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, UpDown}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error",
-                    "needs_conversion": true,
-                    "conversion_unit": ":mva"
-                },
-                {
-                    "name": "time_limits",
-                    "comment": "Minimum up and Minimum down time limits in hours",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, UpDown}",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "error"
-                },
-                {
-                    "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
+                    "data_type": "Float64"
                 },
                 {
                     "name": "operation_cost",
@@ -5632,7 +5434,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5666,11 +5468,22 @@
                     "conversion_unit": ":mva"
                 },
                 {
-                    "name": "outflow_limits",
-                    "comment": "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable",
-                    "validation_action": "warn",
-                    "null_value": "nothing",
-                    "data_type": "Union{Nothing, MinMax}"
+                    "name": "base_power",
+                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
+                    "null_value": "100.0",
+                    "data_type": "Float64",
+                    "valid_range": {
+                        "min": 1e-4,
+                        "max": null
+                    },
+                    "validation_action": "warn"
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "HydroGenerationCost(nothing)",
+                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
+                    "default": "HydroGenerationCost(nothing)",
+                    "comment": "[`OperationalCost`](@ref) of generation"
                 },
                 {
                     "name": "powerhouse_elevation",
@@ -5681,6 +5494,7 @@
                         "min": 0,
                         "max": null
                     },
+                    "default": "0.0",
                     "validation_action": "error"
                 },
                 {
@@ -5694,6 +5508,7 @@
                     },
                     "validation_action": "error",
                     "needs_conversion": true,
+                    "default": "nothing",
                     "conversion_unit": ":mva"
                 },
                 {
@@ -5705,25 +5520,16 @@
                         "min": 0,
                         "max": null
                     },
-                    "validation_action": "error"
+                    "validation_action": "error",
+                    "default": "nothing"
                 },
                 {
-                    "name": "base_power",
-                    "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
-                    "data_type": "Float64",
-                    "valid_range": {
-                        "min": 0,
-                        "max": null
-                    },
-                    "validation_action": "warn"
-                },
-                {
-                    "name": "operation_cost",
-                    "null_value": "HydroGenerationCost(nothing)",
-                    "data_type": "Union{HydroGenerationCost, MarketBidCost}",
-                    "default": "HydroGenerationCost(nothing)",
-                    "comment": "[`OperationalCost`](@ref) of generation"
+                    "name": "outflow_limits",
+                    "comment": "Turbine outflow limits in m3/s. Set to `Nothing` if not applicable",
+                    "validation_action": "warn",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}",
+                    "default": "nothing"
                 },
                 {
                     "name": "efficiency",
@@ -5738,6 +5544,13 @@
                     "validation_action": "warn"
                 },
                 {
+                    "name": "turbine_type",
+                    "comment": "Type of the turbine",
+                    "null_value": "HydroTurbineType.UNKNOWN",
+                    "data_type": "HydroTurbineType",
+                    "default": "HydroTurbineType.UNKNOWN"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
                     "null_value": "1.0",
@@ -5745,11 +5558,18 @@
                     "default": "1.0"
                 },
                 {
-                    "name": "reservoirs",
-                    "comment": "[`HydroReservoir`](@ref)(s) that this component is connected to",
-                    "data_type": "Vector{HydroReservoir}",
-                    "null_value": "Device[]",
-                    "default": "Device[]"
+                    "name": "prime_mover_type",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "null_value": "PrimeMovers.OT",
+                    "data_type": "PrimeMovers",
+                    "default": "PrimeMovers.HY"
+                },
+                {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
                 },
                 {
                     "name": "services",
@@ -5781,7 +5601,7 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "HydroGen"
+            "supertype": "HydroUnit"
         },
         {
             "struct_name": "HydroPumpTurbine",
@@ -5826,7 +5646,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -5880,18 +5700,6 @@
                     "data_type": "Union{Nothing, MinMax}"
                 },
                 {
-                    "name": "head_reservoir",
-                    "comment": "Head [`HydroReservoir`](@ref) that this component is connected to",
-                    "data_type": "HydroReservoir",
-                    "null_value": "HydroReservoir(nothing)"
-                },
-                {
-                    "name": "tail_reservoir",
-                    "comment": "Tail [`HydroReservoir`](@ref) that this component is connected to",
-                    "data_type": "HydroReservoir",
-                    "null_value": "HydroReservoir(nothing)"
-                },
-                {
                     "name": "powerhouse_elevation",
                     "comment": "Height level in meters above the sea level of the powerhouse on which the turbine is installed.",
                     "null_value": "0.0",
@@ -5929,13 +5737,28 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
+                },
+                {
+
+                    "null_value": "PumpHydroStatus.OFF",
+                    "default": "PumpHydroStatus.OFF",
+                    "name": "status",
+                    "comment": "Initial Operating status of a pumped‑storage hydro unit. See [PumpHydroStatus](@ref) for reference",
+                    "data_type": "PumpHydroStatus"
+                },
+                {
+                    "null_value": "INFINITE_TIME",
+                    "default": "INFINITE_TIME",
+                    "name": "time_at_status",
+                    "comment": "Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`",
+                    "data_type": "Float64"
                 },
                 {
                     "name": "operation_cost",
@@ -5975,6 +5798,13 @@
                     "default": "(turbine = 0.0, pump = 0.0)"
                 },
                 {
+                    "name": "travel_time",
+                    "comment": "Downstream (from reservoir into turbine) travel time in hours.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}",
+                    "default": "nothing"
+                },
+                {
                     "name": "conversion_factor",
                     "comment": "Conversion factor from flow/volume to energy: m^3 -> p.u-hr",
                     "null_value": "1.0",
@@ -5983,7 +5813,7 @@
                 },
                 {
                     "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
+                    "comment": "Whether the unit must run (i.e., cannot be curtailed)",
                     "null_value": "false",
                     "data_type": "Bool",
                     "default": "false"
@@ -5991,7 +5821,7 @@
                 {
                     "name": "prime_mover_type",
                     "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
-                    "null_value": "PrimeMovers.PS",
+                    "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
                     "default": "PrimeMovers.PS"
                 },
@@ -6025,7 +5855,124 @@
                     "exclude_setter": true
                 }
             ],
-            "supertype": "HydroGen"
+            "supertype": "HydroUnit"
+        },
+        {
+            "struct_name": "HydroReservoir",
+            "docstring": "A hydropower reservoir that have attached [`HydroTurbine`](@ref)(s) or [`HydroPumpTurbine`](@ref)(s) used to generate power.\nSee [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for supported configurations.",
+            "fields": [
+                {
+                    "null_value": "init",
+                    "name": "name",
+                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "exclude_setter": true,
+                    "data_type": "String"
+                },
+                {
+                    "null_value": "false",
+                    "name": "available",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations",
+                    "data_type": "Bool"
+                },
+                {
+                    "name": "storage_level_limits",
+                    "comment": "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`",
+                    "null_value": "(min=0.0, max=0.0)",
+                    "data_type": "MinMax"
+                },
+                {
+                    "name": "initial_level",
+                    "comment": "Initial level of the reservoir relative to the `storage_level_limits.max`.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "spillage_limits",
+                    "comment": "Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, MinMax}"
+                },
+                {
+                    "name": "inflow",
+                    "comment": "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "outflow",
+                    "comment": "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "level_targets",
+                    "comment": "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.",
+                    "null_value": "nothing",
+                    "data_type": "Union{Nothing, Float64}"
+                },
+                {
+                    "name": "intake_elevation",
+                    "comment": "Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.",
+                    "null_value": "0.0",
+                    "data_type": "Float64"
+                },
+                {
+                    "name": "head_to_volume_factor",
+                    "comment": "Head to volume relationship for the reservoir.",
+                    "null_value": "LinearCurve(0.0)",
+                    "data_type": "ValueCurve"
+                },
+                {
+                    "name": "upstream_turbines",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{HydroUnit}",
+                    "default": "Device[]",
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
+                },
+                {
+                    "name": "downstream_turbines",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{HydroUnit}",
+                    "default": "Device[]",
+                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
+                },
+                {
+                    "name": "upstream_reservoirs",
+                    "null_value": "Device[]",
+                    "data_type": "Vector{Device}",
+                    "default": "Device[]",
+                    "comment": "Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs."
+                },
+                {
+                    "name": "operation_cost",
+                    "null_value": "HydroReservoirCost(nothing)",
+                    "data_type": "HydroReservoirCost",
+                    "default": "HydroReservoirCost(nothing)",
+                    "comment": "[`OperationalCost`](@ref) of reservoir."
+                },
+                {
+                    "name": "level_data_type",
+                    "null_value": "ReservoirDataType.USABLE_VOLUME",
+                    "data_type": "ReservoirDataType",
+                    "default": "ReservoirDataType.USABLE_VOLUME",
+                    "comment": "Reservoir level data type. See [ReservoirDataType](@ref) for reference."
+                },
+                {
+                    "name": "ext",
+                    "comment": "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.",
+                    "data_type": "Dict{String, Any}",
+                    "null_value": "Dict{String, Any}()",
+                    "default": "Dict{String, Any}()"
+                },
+                {
+                    "name": "internal",
+                    "comment": "(**Do not modify.**) PowerSystems.jl internal reference",
+                    "data_type": "InfrastructureSystemsInternal",
+                    "internal_default": "InfrastructureSystemsInternal()",
+                    "exclude_setter": true
+                }
+            ],
+            "supertype": "Device"
         },
         {
             "struct_name": "RenewableDispatch",
@@ -6068,7 +6015,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
@@ -6113,10 +6060,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -6194,7 +6141,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6225,10 +6172,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -6316,7 +6263,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6370,10 +6317,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -6485,7 +6432,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6507,20 +6454,13 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
-                },
-                {
-                    "name": "must_run",
-                    "comment": "Set to `true` if the unit is must run",
-                    "null_value": "false",
-                    "data_type": "Bool",
-                    "default": "false"
                 },
                 {
                     "name": "active_power_losses",
@@ -6619,7 +6559,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6720,10 +6660,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -6846,7 +6786,7 @@
                 },
                 {
                     "name": "rating",
-                    "comment": "Maximum output power rating of the unit (MVA)",
+                    "comment": "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
@@ -6918,10 +6858,10 @@
                 {
                     "name": "base_power",
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
-                    "null_value": "0.0",
+                    "null_value": "100.0",
                     "data_type": "Float64",
                     "valid_range": {
-                        "min": 0,
+                        "min": 1e-4,
                         "max": null
                     },
                     "validation_action": "warn"
@@ -7604,6 +7544,13 @@
                     "default": "0.0",
                     "null_value": "0.0",
                     "data_type": "Float64"
+                },
+                {
+                    "name": "reserves",
+                    "data_type": "Vector{Reserve}",
+                    "comment": "Reserves that this device contributes to",
+                    "null_value": "Device[]",
+                    "default": "Device[]"
                 },
                 {
                     "name": "ext",

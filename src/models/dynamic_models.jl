@@ -34,3 +34,11 @@ get_states(::DynamicInjection) = Vector{Symbol}()
 function get_states_types(d::DynamicComponent)
     return fill(StateTypes.Differential, get_n_states(d))
 end
+
+function get_frequency_droop(::V) where {V <: DynamicInjection}
+    throw(
+        ArgumentError(
+            "get_frequency_droop not implemented for type $V.",
+        ),
+    )
+end

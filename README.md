@@ -33,7 +33,7 @@ For information on using the package and a more extensive list of device data en
 ## Parsing capabilities in PowerSystems
 
 - MATPOWER CaseFormat
-- PSS/e - PTI Format v30 and v33(.raw and .dyr files) 
+- PSS/e - PTI Format v30 (partial support), v33, v35 (.raw and .dyr files) 
 - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Development
@@ -65,4 +65,4 @@ code contribution guidelines.
 
 PowerSystems is released under a BSD [license](https://github.com/NREL/PowerSystems.jl/blob/main/LICENSE).
 PowerSystems has been developed as part of the Scalable Integrated Infrastructure Planning (SIIP)
-initiative at the U.S. Department of Energy's National Renewable Energy Laboratory ([NREL](https://www.nrel.gov/)) Software Record SWR-23-105.
+initiative at the U.S. Department of Energy's National Laboratory of the Rockies ([NLR](https://www.nlr.gov/), formerly NREL) Software Record SWR-23-105.

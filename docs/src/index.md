@@ -6,14 +6,14 @@ CurrentModule = PowerSystems
 
 !!! tip "Announcement"
     
-    PowerSystems.jl upgraded to version 5.0 in May 2025, which included breaking changes.
+    PowerSystems.jl upgraded to version 5.0 in November 2025, which included breaking changes.
     Visit the [v5.0 migration guide](@ref psy5_migration) for information on
     how to update your existing code from version 4.0.
 
 ## About
 
-`PowerSystems.jl` is part of the National Renewable Energy Laboratory's
-[Sienna ecosystem](https://www.nrel.gov/analysis/sienna.html), an open source framework for
+`PowerSystems.jl` is part of the National Laboratory of the Rockies'
+[Sienna ecosystem](https://www.nlr.gov/analysis/sienna.html), an open source framework for
 scheduling problems and dynamic simulations for power systems. The Sienna ecosystem can be
 [found on github](https://github.com/NREL-Sienna/Sienna). It contains three applications:
 

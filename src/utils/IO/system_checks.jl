@@ -5,43 +5,11 @@
 
 function buscheck(sys::System)
     buses = get_components(ACBus, sys)
-    bus_to_pv_device_map = Dict((i, Set{String}()) for i in get_number.(buses))
-    for gen in get_components(StaticInjection, sys)
-        if !get_available(gen) || typeof(gen) == ElectricLoad
-            continue
-        end
-        bus_number = get_number(get_bus(gen))
-        gen_name = get_name(gen)
-        push!(get!(bus_to_pv_device_map, bus_number, Set{String}()), gen_name)
-    end
-    for hvdc in get_components(TwoTerminalHVDC, sys)
-        if !get_available(hvdc)
-            continue
-        end
-        from_bus_number = get_number(get_from(get_arc(hvdc)))
-        to_bus_number = get_number(get_to(get_arc(hvdc)))
-        hvdc_name = get_name(hvdc)
-        push!(
-            get!(bus_to_pv_device_map, from_bus_number, Set{String}()),
-            hvdc_name,
-        )
-        push!(
-            get!(bus_to_pv_device_map, to_bus_number, Set{String}()),
-            hvdc_name,
-        )
-    end
     for b in buses
         b_type = get_bustype(b)
-        b_number = get_number(b)
         if isnothing(b_type)
             @warn "Bus/Nodes data does not contain information to build an a network" maxlog =
                 10
-        elseif b_type ∈ [ACBusTypes.PV, ACBusTypes.SLACK]
-            bus_pv_device_count = length(bus_to_pv_device_map[b_number])
-            if bus_pv_device_count == 0
-                @error "no active generators found at bus $(summary(b)) with type $(b_type), consider checking your data inputs." maxlog =
-                    PS_MAX_LOG
-            end
         end
     end
     return

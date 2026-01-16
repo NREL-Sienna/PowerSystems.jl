@@ -17,21 +17,10 @@ function add_service_internal!(device::Device, service::Service)
     @debug "Add $service to $(get_name(device))" _group = IS.LOG_GROUP_SYSTEM
 end
 
-function add_service_internal!(device::Device, service::AGC)
-    device_bus_area = get_area(get_bus(device))
-    service_area = get_area(service)
-    if isnothing(device_bus_area) ||
-       !(IS.get_uuid(device_bus_area) == IS.get_uuid(service_area))
-        throw(
-            IS.ConflictingInputsError(
-                "Device $(get_name(device)) is not located in the regulation control area",
-            ),
-        )
-    end
-
-    services = get_services(device)
-    for _service in services
-        if IS.get_uuid(service) == IS.get_uuid(_service)
+function add_service_internal!(device::AGC, service::Service)
+    reserves = get_reserves(device)
+    for _reserve in reserves
+        if IS.get_uuid(service) == IS.get_uuid(_reserve)
             throw(
                 ArgumentError(
                     "service $(get_name(service)) is already attached to $(get_name(device))",
@@ -40,7 +29,7 @@ function add_service_internal!(device::Device, service::AGC)
         end
     end
 
-    push!(services, service)
+    push!(reserves, service)
     @debug "Add $service to $(get_name(device))" _group = IS.LOG_GROUP_SYSTEM
 end
 
@@ -76,6 +65,9 @@ end
 Return true if a service with type T is attached to the device.
 """
 function has_service(device::Device, ::Type{T}) where {T <: Service}
+    if !supports_services(device)
+        return false
+    end
     for _service in get_services(device)
         if isa(_service, T)
             return true
@@ -122,27 +114,30 @@ function clear_services!(device::Device)
     return
 end
 
+""" Ensures that reservoirs cannot provide services """
+supports_services(::HydroReservoir) = false
+
 """
 Remove a reservoir from a device.
 
 Throws ArgumentError if the reservoir is not attached to the device.
 """
-function remove_reservoir!(device::HydroTurbine, reservoir::HydroReservoir)
-    if !_remove_reservoir!(device, reservoir)
+function remove_turbine!(reservoir::HydroReservoir, device::HydroTurbine)
+    if !_remove_turbine!(reservoir, device)
         throw(
             ArgumentError(
-                "reservoir $(get_name(reservoir)) was not attached to $(get_name(device))",
+                "turbine $(get_name(device)) was not attached to $(get_name(reservoir))",
             ),
         )
     end
 end
 
 """
-Return true if the service is attached to the device.
+Return true if the reservoir has attached the upstream turbine.
 """
-function has_reservoir(device::HydroTurbine, reservoir::HydroReservoir)
-    for _reservoir in get_reservoirs(device)
-        if IS.get_uuid(_reservoir) == IS.get_uuid(reservoir)
+function has_upstream_turbine(reservoir::HydroReservoir, turbine::HydroUnit)
+    for _turbine in get_upstream_turbines(reservoir)
+        if IS.get_uuid(_turbine) == IS.get_uuid(turbine)
             return true
         end
     end
@@ -151,11 +146,11 @@ function has_reservoir(device::HydroTurbine, reservoir::HydroReservoir)
 end
 
 """
-Return true if any reservoir is attached to the device.
+Return true if the reservoir has attached the upstream turbine.
 """
-function has_reservoir(turbine::HydroTurbine)
-    for _reservoir in get_reservoirs(turbine)
-        if isa(_reservoir, HydroReservoir)
+function has_downstream_turbine(reservoir::HydroReservoir, turbine::HydroUnit)
+    for _turbine in get_downstream_turbines(reservoir)
+        if IS.get_uuid(_turbine) == IS.get_uuid(turbine)
             return true
         end
     end
@@ -163,24 +158,49 @@ function has_reservoir(turbine::HydroTurbine)
     return false
 end
 
-has_reservoir(T::Type{<:HydroReservoir}, device::Device) = has_reservoir(device, T)
+"""
+Return true if any upstream hydro unit is attached to the reservoir.
+"""
+function has_upstream_turbine(reservoir::HydroReservoir)
+    return !isempty(get_upstream_turbines(reservoir))
+end
 
 """
-Remove service from device if it is attached.
+Return true if any downstream hydro unit is attached to the reservoir.
 """
-function _remove_reservoir!(device::Device, reservoir::HydroReservoir)
+function has_downstream_turbine(reservoir::HydroReservoir)
+    return !isempty(get_downstream_turbines(reservoir))
+end
+
+"""
+Remove turbine from reservoir if it is attached.
+"""
+function _remove_turbine!(reservoir::HydroReservoir, device::HydroUnit)
     removed = false
-    reservoirs = get_reservoirs(device)
+    up_turbines = get_upstream_turbines(reservoir)
+    down_turbines = get_downstream_turbines(reservoir)
 
     # The expectation is that there won't be many services in each device, and so
     # a faster lookup method is not needed.
-    for (i, _reservoir) in enumerate(reservoirs)
-        if IS.get_uuid(_reservoir) == IS.get_uuid(reservoir)
-            deleteat!(reservoirs, i)
+    for (i, _turbine) in enumerate(down_turbines)
+        if IS.get_uuid(_turbine) == IS.get_uuid(device)
+            deleteat!(down_turbines, i)
             removed = true
-            @debug "Removed service $(get_name(reservoir)) from $(get_name(device))" _group =
+            @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =
                 IS.LOG_GROUP_SYSTEM
             break
+        end
+    end
+
+    if !removed
+        for (i, _turbine) in enumerate(up_turbines)
+            if IS.get_uuid(_turbine) == IS.get_uuid(device)
+                deleteat!(up_turbines, i)
+                removed = true
+                @debug "Removed turbine $(get_name(_turbine)) from $(get_name(reservoir))" _group =
+                    IS.LOG_GROUP_SYSTEM
+                break
+            end
         end
     end
 
@@ -188,10 +208,12 @@ function _remove_reservoir!(device::Device, reservoir::HydroReservoir)
 end
 
 """
-Remove all services attached to the device.
+Remove all turbines attached to the reservoir.
 """
-function clear_reservoirs!(device::Device)
-    reservoirs = get_reservoirs(device)
-    empty!(reservoirs)
+function clear_turbines!(device::HydroReservoir)
+    turbines = get_upstream_turbines(device)
+    empty!(turbines)
+    turbines = get_downstream_turbines(device)
+    empty!(turbines)
     return
 end

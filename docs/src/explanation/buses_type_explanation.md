@@ -1,4 +1,4 @@
-# [Understanding ACBusTypes](@id bustyped)
+# [Understanding ACBusTypes](@id bustypes)
 
 `PowerSystems.jl` supports multiple types of AC buses, [listed here](@ref acbustypes_list).
 When creating nodal datasets, the definitions for AC Buses can have a significant impact on the
@@ -20,8 +20,7 @@ topology logic for the network.
 
 ## Reference and Slack Buses
 
-There is a nuanced distinction between a slack bus and a reference bus. In most small test sytems and
-academic discussions, the system has a single slack bus which is also the reference bus. However, for large interconnected cases or cases with a very radial structure, having a single bus that takes on all the real power mistmatch in the system can lead to erroneous results.
+There is a nuanced distinction between a slack bus and a reference bus. In most small test sytems and academic discussions, the system has a single slack bus which is also the reference bus. However, for large interconnected cases or cases with a very radial structure, having a single bus that takes on all the real power mistmatch in the system can lead to erroneous results. In PowerSystems.jl we distinguish the posibility of having slacks and reference buses. Is up to the modeler to decide how to handle the classifications inside of the applications. In other words, wether a reference bus is also a slack or viceversa is left to the application developer.
 
   - `SLACK`:
     

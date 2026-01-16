@@ -59,7 +59,8 @@ function sanitize_angle_limits!(line::Union{Line, MonitoredLine})
     return
 end
 
-# https://scholarspace.manoa.hawaii.edu/bitstream/10125/50237/paper0350.pdf
+# Building Synthetic Power Transmission Networks of Many Voltage Levels, Spanning Multiple Areas
+# https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/47b28d1e-7019-415f-9a88-e1ed37556342/content
 # https://www.mdpi.com/1996-1073/10/8/1233/htm
 const MVA_LIMITS_LINES = Dict(
     69.0 => (min = 12.0, max = 115.0),
@@ -70,7 +71,8 @@ const MVA_LIMITS_LINES = Dict(
     345.0 => (min = 897.0, max = 1494.0),
     500.0 => (min = 1732.0, max = 3464.0))
 
-# https://scholarspace.manoa.hawaii.edu/bitstream/10125/50237/paper0350.pdf
+# Building Synthetic Power Transmission Networks of Many Voltage Levels, Spanning Multiple Areas
+# https://scholarspace.manoa.hawaii.edu/server/api/core/bitstreams/47b28d1e-7019-415f-9a88-e1ed37556342/content
 # https://www.mdpi.com/1996-1073/10/8/1233/htm
 const MVA_LIMITS_TRANSFORMERS = Dict(
     69.0 => (min = 7.0, max = 115.0),

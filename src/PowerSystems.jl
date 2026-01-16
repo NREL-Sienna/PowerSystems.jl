@@ -82,7 +82,8 @@ export ProductionVariableCostCurve, CostCurve, FuelCurve
 export get_function_data, get_initial_input, get_input_at_zero
 export get_value_curve, get_power_units
 
-export OperationalCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
+export OperationalCost,
+    OfferCurveCost, MarketBidCost, LoadCost, StorageCost, ImportExportCost
 export HydroGenerationCost, RenewableGenerationCost, ThermalGenerationCost
 export HydroReservoirCost
 export get_fuel_cost, set_fuel_cost!, get_vom_cost
@@ -105,7 +106,6 @@ export get_spillage_cost, set_spillage_cost!
 export Generator
 export HydroGen
 export HydroDispatch
-export HydroEnergyReservoir
 export HydroTurbine
 export HydroReservoir
 export HydroPumpTurbine
@@ -327,6 +327,8 @@ export StorageTech
 export StateTypes
 export ReservoirDataType
 export MotorLoadTechnology
+export HydroTurbineType
+export ReservoirLocation
 
 # from IS time_series_structs.jl, time_series_cache.jl
 export TimeSeriesAssociation
@@ -375,25 +377,30 @@ export remove_service!
 export clear_services!
 export get_services
 export has_service
-export remove_reservoir!
-export clear_reservoirs!
-export get_reservoirs
-export has_reservoir
+export remove_turbine!
+export clear_turbines!
+export has_upstream_turbine
+export has_downstream_turbine
 export has_time_series
 export get_buses
 export is_component_in_aggregation_topology
 export get_components_in_aggregation_topology
 export get_aggregation_topology_mapping
 export get_contributing_devices
-export get_connected_devices
+export set_upstream_turbine!
+export set_downstream_turbine!
+export get_connected_head_reservoirs
+export get_connected_tail_reservoirs
 export get_contributing_device_mapping
-export get_reservoir_device_mapping
+export get_contributing_reserve_mapping
+export get_turbine_head_reservoirs_mapping
+export get_turbine_tail_reservoirs_mapping
 export ServiceContributingDevices
 export ServiceContributingDevicesKey
 export ServiceContributingDevicesMapping
-export ReservoirConnectedDevices
-export ReservoirConnectedDevicesKey
-export ReservoirConnectedDevicesMapping
+export TurbineConnectedDevices
+export TurbineConnectedDevicesKey
+export TurbineConnectedDevicesMapping
 export get_component
 export get_components
 export get_num_components
@@ -417,6 +424,7 @@ export remove_supplemental_attributes!
 export get_component_supplemental_attribute_pairs
 export get_supplemental_attribute
 export get_supplemental_attributes
+export get_associated_supplemental_attributes
 export has_supplemental_attributes
 export iterate_supplemental_attributes
 export begin_supplemental_attributes_update
@@ -454,11 +462,13 @@ export get_decremental_initial_input, set_decremental_initial_input!
 export get_ancillary_service_offers, set_ancillary_service_offers!
 export get_import_offer_curves, set_import_offer_curves!
 export get_export_offer_curves, set_export_offer_curves!
+export get_import_variable_cost, get_export_variable_cost
 export get_energy_import_weekly_limit, set_energy_import_weekly_limit!
 export get_energy_export_weekly_limit, set_energy_export_weekly_limit!
 export get_services_bid
 export set_variable_cost!
 export set_incremental_variable_cost!, set_decremental_variable_cost!
+export set_import_variable_cost!, set_export_variable_cost!
 export set_service_bid!
 export iterate_windows
 export get_window
@@ -469,28 +479,6 @@ export validate_component_with_system
 export get_compression_settings
 export CompressionSettings
 export CompressionTypes
-
-# Export HydroReservoir functions
-export get_storage_level_limits
-export get_initial_level
-export get_spillage_limits
-export get_inflow
-export get_outflow
-export get_level_targets
-export get_travel_time
-export get_intake_elevation
-export get_head_to_volume_factor
-export get_level_data_type
-export set_initial_level!
-export set_level_targets!
-export set_storage_level_limits!
-export set_outflow!
-export set_inflow!
-export set_travel_time!
-export set_intake_elevation!
-export set_head_to_volume_factor!
-export set_spillage_limits!
-export set_level_data_type!
 
 # Parsing functions
 export create_poly_cost
@@ -506,6 +494,7 @@ export get_description
 export set_description!
 export get_base_power
 export get_frequency
+export get_frequency_droop
 export set_units_base_system!
 export with_units_base
 export to_json
@@ -556,6 +545,7 @@ export get_subsystem_components
 export remove_component_from_subsystem!
 export remove_component_from_subsystems!
 export has_component
+export has_components
 export get_assigned_subsystems
 export has_subsystems
 export is_assigned_to_subsystem
@@ -611,7 +601,10 @@ import InteractiveUtils
 import PrettyTables
 import PowerFlowData
 
+# Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
+# and with alias for convenient usage throughout the codebase
 import InfrastructureSystems
+import InfrastructureSystems as IS
 import InfrastructureSystems:
     Components,
     TimeSeriesData,
@@ -752,8 +745,6 @@ import InfrastructureSystems:
     get_power_units,
     get_fuel_cost
 
-const IS = InfrastructureSystems
-
 #################################################################################
 
 using DocStringExtensions
@@ -808,6 +799,7 @@ include("models/OuterControl.jl")
 
 # Costs
 include("models/cost_functions/operational_cost.jl")
+include("models/cost_functions/OfferCurveCost.jl")
 include("models/cost_functions/MarketBidCost.jl")
 include("models/cost_functions/ImportExportCost.jl")
 include("models/cost_functions/HydroGenerationCost.jl")
@@ -818,7 +810,6 @@ include("models/cost_functions/ThermalGenerationCost.jl")
 include("models/cost_functions/HydroReservoirCost.jl")
 
 # Include all auto-generated structs.
-include("models/HydroReservoir.jl")
 include("models/generated/includes.jl")
 include("models/HybridSystem.jl")
 
@@ -840,6 +831,7 @@ include("models/dynamic_branch.jl")
 include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
 include("models/supplemental_accessors.jl")
+include("models/supplemental_setters.jl")
 
 # Supplemental attributes
 include("contingencies.jl")
@@ -877,6 +869,14 @@ include("parsers/psse_metadata_reimport.jl")
 
 # Better printing
 include("utils/print.jl")
+@static if pkgversion(PrettyTables).major == 2
+    # When PrettyTables v2 is more widely adopted in the ecosystem, we can remove this file.
+    # In this case, we should also update the compat bounds in Project.toml to list only
+    # PrettyTables v3.
+    include("utils/print_pt_v2.jl")
+else
+    include("utils/print_pt_v3.jl")
+end
 
 include("models/serialization.jl")
 
