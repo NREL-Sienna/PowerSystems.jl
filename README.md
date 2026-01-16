@@ -3,7 +3,7 @@
 [![Main - CI](https://github.com/NREL-Sienna/PowerSystems.jl/workflows/Main%20-%20CI/badge.svg)](https://github.com/NREL-Sienna/PowerSystems.jl/actions/workflows/main-tests.yml)
 [![codecov](https://codecov.io/gh/NREL-Sienna/PowerSystems.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/NREL-Sienna/PowerSystems.jl)
 [![Documentation Build](https://github.com/NREL-Sienna/PowerSystems.jl/workflows/Documentation/badge.svg?)](https://nrel-sienna.github.io/PowerSystems.jl/stable)
-[![DOI](https://zenodo.org/badge/114039584.svg)](https://zenodo.org/badge/latestdoi/114039584)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.17703517.svg)](https://doi.org/10.5281/zenodo.17703517)
 [<img src="https://img.shields.io/badge/slack-@Sienna/PSY-sienna.svg?logo=slack">](https://join.slack.com/t/nrel-sienna/shared_invite/zt-glam9vdu-o8A9TwZTZqqNTKHa7q3BpQ)
 [![PowerSystems.jl Downloads](https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2Fjuliapkgstats.com%2Fapi%2Fv1%2Ftotal_downloads%2FPowerSystems&query=total_requests&label=Downloads)](http://juliapkgstats.com/pkg/PowerSystems)
 
@@ -33,7 +33,7 @@ For information on using the package and a more extensive list of device data en
 ## Parsing capabilities in PowerSystems
 
 - MATPOWER CaseFormat
-- PSS/e - PTI Format v30 (partial support), v33, v35 (.raw and .dyr files) 
+- PSS/e - PTI Format v30 (partial support), v33, v35 (.raw and .dyr files)
 - [RTS-GMLC](https://github.com/GridMod/RTS-GMLC/tree/master/RTS_Data/SourceData) table data format
 
 ## Development
