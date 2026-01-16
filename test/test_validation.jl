@@ -170,7 +170,7 @@ end
         ),
     )
     B = collect(get_components(ACBus, sys))
-    sort!(B, by=get_number)
+    sort!(B, by = get_number)
     a = Arc(B[1], B[6])
     badline = Line(
         "badline",
@@ -223,7 +223,7 @@ end
         sys2 = PSY.System(path)
 
         B = collect(get_components(ACBus, sys2))
-        sort!(B, by=get_number)
+        sort!(B, by = get_number)
         a = Arc(B[1], B[6])
         badline = Line(
             "badline",
