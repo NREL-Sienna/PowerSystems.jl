@@ -534,10 +534,10 @@ end
           ["subsystem_1"]
     @test get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeD2")) ==
           ["subsystem_2"]
-    @test get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeC2")) ==
-          ["subsystem_2", "subsystem_1"]
-    @test get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeC")) ==
-          ["subsystem_2", "subsystem_1"]
+    @test sort!(get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeC2"))) ==
+          ["subsystem_1", "subsystem_2"]
+    @test sort!(get_assigned_subsystems(c_sys5, get_component(ACBus, c_sys5, "nodeC"))) ==
+          ["subsystem_1", "subsystem_2"]
     @test is_assigned_to_subsystem(c_sys5, get_component(ACBus, c_sys5, "nodeC"))
     @test !is_assigned_to_subsystem(c_sys5, d_d2)
     @test !is_assigned_to_subsystem(c_sys5, c_d2)
