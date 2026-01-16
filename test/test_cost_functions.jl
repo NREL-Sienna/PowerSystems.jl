@@ -311,13 +311,13 @@ end
     initial_time = Dates.DateTime("2020-01-01")
     resolution = Dates.Hour(1)
     other_time = initial_time + resolution
-    
+
     # Create time varying PWL cost data using PiecewiseIncrementalCurve
     data_pwl_incremental = SortedDict(
         initial_time => test_costs[PiecewiseIncrementalCurve],
-        other_time => test_costs[PiecewiseIncrementalCurve]
+        other_time => test_costs[PiecewiseIncrementalCurve],
     )
-    
+
     # Create system and reserve product
     sys = System(100.0)
     reserve = ReserveDemandCurve{ReserveUp}(
@@ -330,7 +330,7 @@ end
         0.0,  # deployed_fraction
     )
     add_component!(sys, reserve)
-    
+
     # Attach time varying cost to the reserve product
     forecast_fd = IS.Deterministic(
         "variable_cost",
@@ -338,23 +338,24 @@ end
         resolution,
     )
     set_variable_cost!(sys, reserve, forecast_fd)
-    
+
     # Retrieve and verify the time varying cost data
     cost_forecast = get_variable_cost(reserve; start_time = initial_time)
     retrieved_curve = first(TimeSeries.values(cost_forecast))
     original_curve = first(data_pwl_incremental[initial_time])
-    
+
     # Compare function data (x and y coordinates)
     @test get_function_data(retrieved_curve) == get_function_data(original_curve)
-    
+
     # Verify we can retrieve cost at the second time point
     cost_forecast_second = get_variable_cost(reserve; start_time = other_time)
     retrieved_curve_second = first(TimeSeries.values(cost_forecast_second))
     original_curve_second = first(data_pwl_incremental[other_time])
-    
+
     # Compare function data
-    @test get_function_data(retrieved_curve_second) == get_function_data(original_curve_second)
-    
+    @test get_function_data(retrieved_curve_second) ==
+          get_function_data(original_curve_second)
+
     # Verify the reserve has the time series attached
     @test has_time_series(reserve)
     @test length(get_time_series_keys(reserve)) == 1

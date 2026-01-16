@@ -108,9 +108,8 @@ end
 
     pst3w_1, pst3w_2 = sort(
         collect(get_components(PhaseShiftingTransformer3W, sys_pst3w)),
-        by=get_name,
-        )
- 
+        by = get_name,
+    )
 
     @test get_available(pst3w_1) == true
     @test get_available(pst3w_2) == true
@@ -495,7 +494,7 @@ end
         force_build = true,
     )
     all_isl = collect(get_components(InterruptibleStandardLoad, sys))
-    sort!(all_isl, by=get_name)
+    sort!(all_isl, by = get_name)
     isl = first(all_isl)  # should be named "load10LD"
     @test length(all_isl) == 4
     @test get_available(isl) == true
