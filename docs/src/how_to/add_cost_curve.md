@@ -51,9 +51,9 @@ definitions:
 RenewableGenerationCost(; variable = CostCurve(; value_curve = LinearCurve(22.0)))
 ```
 
-## Example 2: A Thermal Generator
+## Example 2: A Thermal Generator with Input/Output Data
 
-We have a thermal generating unit that has a heat rate of 7 GJ/MWh at 100 MW and 9 GJ/MWh at
+We have a thermal generating unit that has a heat input of 1400 GJ/h at 100 MW and 2200 GJ/MWh at
 200 MW, plus a fixed cost of \$6.0/hr, a start-up cost of \$2000, and a shut-down cost of
 \$1000. Its fuel cost is \$20/GJ.
 
@@ -62,13 +62,13 @@ Following the decision steps above:
  1. We select [`ThermalGenerationCost`](@ref) to represent this thermal generator.
  2. We select [`FuelCurve`](@ref) because we have consumption in units of fuel (GJ/MWh)
     instead of currency.
- 3. We select a [`PiecewisePointCurve`](@ref) to represent the piecewise linear heat rate
+ 3. We select a [`PiecewisePointCurve`](@ref) to represent the piecewise linear input-output
     curve.
 
 This time, we'll define each step individually, beginning with the heat rate curve:
 
 ```@repl costcurve
-heat_rate_curve = PiecewisePointCurve([(100.0, 7.0), (200.0, 9.0)])
+heat_rate_curve = PiecewisePointCurve([(100.0, 1400.0), (200.0, 2200.0)])
 ```
 
 Use the heat rate to define the fuel curve, including the cost of fuel:
@@ -90,3 +90,30 @@ cost = ThermalGenerationCost(;
 
 This `OperationalCost` can be used when defining a component or added to an existing component using
 `set_operation_cost!`.
+
+## Example 3: A Thermal Generator with Marginal Heatrate Data
+
+Often times, generator efficiency data is provided in the form of marginal heat rates (the additional
+heat input energy required per MWh of electrical output energy) as a function of generator output. 
+For example, the thermal unit above can be described by a heat input of 1400 GJ/h at 100 MW with a marginal
+heat rate of 8 GJ/MWh across the operating range (100MW - 200MW).
+
+In this case, we can specify the heat rate curve with [`PiecewiseIncrementalCurve`](@ref) via the margnial
+heat rate directly: 
+```@repl costcurve
+heat_rate_curve = PiecewiseIncrementalCurve(1400, [100.0, 200.0], [8.0])
+```
+
+The [`FuelCurve`](@ref) and [`ThermalGenerationCost`](@ref) are specified in the same way despite the 
+differing representation of the value curve:
+
+```@repl costcurve
+fuel_curve = FuelCurve(; value_curve = heat_rate_curve, fuel_cost = 20.0)
+cost = ThermalGenerationCost(;
+    variable = fuel_curve,
+    fixed = 6.0,
+    start_up = 2000.0,
+    shut_down = 1000.0,
+)
+```
+Note that the [`ThermalGenerationCost`](@ref) defined in Example 2 and 3 are functionally equivalent.
