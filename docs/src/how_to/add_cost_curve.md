@@ -101,7 +101,7 @@ heat rate of 8 GJ/MWh across the operating range (100MW - 200MW).
 In this case, we can specify the heat rate curve with [`PiecewiseIncrementalCurve`](@ref) via the margnial
 heat rate directly: 
 ```@repl costcurve
-heat_rate_curve = PiecewiseIncrementalCurve(1400, [100.0, 200.0], [8.0])
+heat_rate_curve = PiecewiseIncrementalCurve(1400.0, [100.0, 200.0], [8.0])
 ```
 
 The [`FuelCurve`](@ref) and [`ThermalGenerationCost`](@ref) are specified in the same way despite the 
