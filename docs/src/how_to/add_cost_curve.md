@@ -62,7 +62,7 @@ Following the decision steps above:
  1. We select [`ThermalGenerationCost`](@ref) to represent this thermal generator.
  2. We select [`FuelCurve`](@ref) because we have consumption in units of fuel (GJ/MWh)
     instead of currency.
- 3. We select a [`PiecewisePointCurve`](@ref) to represent the piecewise linear input-output
+ 3. We select a [`PiecewisePointCurve`](@ref) to represent the piecewise linear heat rate
     curve.
 
 This time, we'll define each step individually, beginning with the heat rate curve:
