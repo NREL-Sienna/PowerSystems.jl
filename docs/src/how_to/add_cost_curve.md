@@ -94,17 +94,18 @@ This `OperationalCost` can be used when defining a component or added to an exis
 ## Example 3: A Thermal Generator with Marginal Heatrate Data
 
 Often times, generator efficiency data is provided in the form of marginal heat rates (the additional
-heat input energy required per MWh of electrical output energy) as a function of generator output. 
+heat input energy required per MWh of electrical output energy) as a function of generator output.
 For example, the thermal unit above can be described by a heat input of 1400 GJ/h at 100 MW with a marginal
 heat rate of 8 GJ/MWh across the operating range (100MW - 200MW).
 
 In this case, we can specify the heat rate curve with [`PiecewiseIncrementalCurve`](@ref) via the margnial
-heat rate directly: 
+heat rate directly:
+
 ```@repl costcurve
 heat_rate_curve = PiecewiseIncrementalCurve(1400.0, [100.0, 200.0], [8.0])
 ```
 
-The [`FuelCurve`](@ref) and [`ThermalGenerationCost`](@ref) are specified in the same way despite the 
+The [`FuelCurve`](@ref) and [`ThermalGenerationCost`](@ref) are specified in the same way despite the
 differing representation of the value curve:
 
 ```@repl costcurve
@@ -116,4 +117,5 @@ cost = ThermalGenerationCost(;
     shut_down = 1000.0,
 )
 ```
+
 Note that the [`ThermalGenerationCost`](@ref) defined in Example 2 and 3 are functionally equivalent.
