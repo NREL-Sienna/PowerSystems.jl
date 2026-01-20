@@ -20,7 +20,7 @@
 
 using PowerSystems
 using PowerSystemCaseBuilder
-const PSY = PowerSystems;
+import PowerSystems as PSY;
 
 # To create the system, load pre-existing data for a 3-bus system using
 # `PowerSystemCaseBuilder.jl`:

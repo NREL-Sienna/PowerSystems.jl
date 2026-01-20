@@ -139,10 +139,8 @@ type of the struct and extract it in a customized `deserialze` method.
 ```julia
 module MyModelingModule
 
-import PowerSystems
-import InfrastructureSystems
-const PSY = PowerSystems
-const IS = InfrastructureSystems
+import PowerSystems as PSY
+import InfrastructureSystems as IS
 
 export MyDevice
 export get_name
