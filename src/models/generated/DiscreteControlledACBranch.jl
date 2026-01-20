@@ -92,18 +92,23 @@ end
 get_name(value::DiscreteControlledACBranch) = value.name
 """Get [`DiscreteControlledACBranch`](@ref) `available`."""
 get_available(value::DiscreteControlledACBranch) = value.available
-"""Get [`DiscreteControlledACBranch`](@ref) `active_power_flow`."""
-get_active_power_flow(value::DiscreteControlledACBranch) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::DiscreteControlledACBranch) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`DiscreteControlledACBranch`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::DiscreteControlledACBranch) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::DiscreteControlledACBranch, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::DiscreteControlledACBranch) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::DiscreteControlledACBranch, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`DiscreteControlledACBranch`](@ref) `arc`."""
 get_arc(value::DiscreteControlledACBranch) = value.arc
-"""Get [`DiscreteControlledACBranch`](@ref) `r`."""
-get_r(value::DiscreteControlledACBranch) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`DiscreteControlledACBranch`](@ref) `x`."""
-get_x(value::DiscreteControlledACBranch) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`DiscreteControlledACBranch`](@ref) `rating`."""
-get_rating(value::DiscreteControlledACBranch) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`DiscreteControlledACBranch`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::DiscreteControlledACBranch) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::DiscreteControlledACBranch, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`DiscreteControlledACBranch`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::DiscreteControlledACBranch) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::DiscreteControlledACBranch, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`DiscreteControlledACBranch`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::DiscreteControlledACBranch) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::DiscreteControlledACBranch, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`DiscreteControlledACBranch`](@ref) `discrete_branch_type`."""
 get_discrete_branch_type(value::DiscreteControlledACBranch) = value.discrete_branch_type
 """Get [`DiscreteControlledACBranch`](@ref) `branch_status`."""
@@ -115,17 +120,17 @@ get_internal(value::DiscreteControlledACBranch) = value.internal
 
 """Set [`DiscreteControlledACBranch`](@ref) `available`."""
 set_available!(value::DiscreteControlledACBranch, val) = value.available = val
-"""Set [`DiscreteControlledACBranch`](@ref) `active_power_flow`."""
+"""Set [`DiscreteControlledACBranch`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::DiscreteControlledACBranch, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`."""
+"""Set [`DiscreteControlledACBranch`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::DiscreteControlledACBranch, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`DiscreteControlledACBranch`](@ref) `arc`."""
 set_arc!(value::DiscreteControlledACBranch, val) = value.arc = val
-"""Set [`DiscreteControlledACBranch`](@ref) `r`."""
+"""Set [`DiscreteControlledACBranch`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::DiscreteControlledACBranch, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`DiscreteControlledACBranch`](@ref) `x`."""
+"""Set [`DiscreteControlledACBranch`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::DiscreteControlledACBranch, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`DiscreteControlledACBranch`](@ref) `rating`."""
+"""Set [`DiscreteControlledACBranch`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::DiscreteControlledACBranch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`DiscreteControlledACBranch`](@ref) `discrete_branch_type`."""
 set_discrete_branch_type!(value::DiscreteControlledACBranch, val) = value.discrete_branch_type = val

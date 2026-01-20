@@ -103,12 +103,15 @@ get_name(value::RenewableNonDispatch) = value.name
 get_available(value::RenewableNonDispatch) = value.available
 """Get [`RenewableNonDispatch`](@ref) `bus`."""
 get_bus(value::RenewableNonDispatch) = value.bus
-"""Get [`RenewableNonDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableNonDispatch) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`RenewableNonDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableNonDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`RenewableNonDispatch`](@ref) `rating`."""
-get_rating(value::RenewableNonDispatch) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`RenewableNonDispatch`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::RenewableNonDispatch) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::RenewableNonDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`RenewableNonDispatch`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::RenewableNonDispatch) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::RenewableNonDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`RenewableNonDispatch`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::RenewableNonDispatch) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::RenewableNonDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableNonDispatch) = value.prime_mover_type
 """Get [`RenewableNonDispatch`](@ref) `power_factor`."""
@@ -128,11 +131,11 @@ get_internal(value::RenewableNonDispatch) = value.internal
 set_available!(value::RenewableNonDispatch, val) = value.available = val
 """Set [`RenewableNonDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableNonDispatch, val) = value.bus = val
-"""Set [`RenewableNonDispatch`](@ref) `active_power`."""
+"""Set [`RenewableNonDispatch`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::RenewableNonDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`RenewableNonDispatch`](@ref) `reactive_power`."""
+"""Set [`RenewableNonDispatch`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::RenewableNonDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`RenewableNonDispatch`](@ref) `rating`."""
+"""Set [`RenewableNonDispatch`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::RenewableNonDispatch, val) = value.prime_mover_type = val

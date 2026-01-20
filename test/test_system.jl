@@ -234,49 +234,73 @@ end
     @test active_power_mw == get_active_power(gen)
 end
 
-@testset "Test with_units_base on component" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-    set_units_base_system!(sys, "SYSTEM_BASE")
-    gen = get_component(ThermalStandard, sys, "322_CT_6")
-    base_power = get_base_power(sys)
+@testset "Test explicit units API" begin
+    # Create fresh components to test the new units-aware API
+    sys = System(100.0)  # 100 MVA system base
+    bus = ACBus(nothing)
+    bus.name = "Bus1"
+    bus.number = 1
+    add_component!(sys, bus)
 
-    # Component shares system's units_settings initially
-    @test sys.units_settings === PSY.get_internal(gen).units_info
+    gen = ThermalStandard(nothing)
+    gen.name = "Gen1"
+    gen.base_power = 50.0  # 50 MVA device base (different from system)
+    gen.active_power = 0.6  # 0.6 pu device base = 30 MW
+    gen.reactive_power = 0.4  # 0.4 pu device base = 20 Mvar
+    gen.bus = bus
+    add_component!(sys, gen)
 
-    # with_units_base on component should work and preserve reference after
-    P_pu = get_active_power(gen)
-    P_natural = with_units_base(gen, "NATURAL_UNITS") do
-        get_active_power(gen)
-    end
-    @test P_natural ≈ P_pu * base_power
+    device_base = get_base_power(gen)
+    system_base = get_base_power(sys)
+    raw_active = gen.active_power
+    raw_reactive = gen.reactive_power
 
-    # Reference should be preserved after with_units_base(component, ...)
-    @test sys.units_settings === PSY.get_internal(gen).units_info
+    # Default getter returns natural units (MW)
+    P_mw = get_active_power(gen)
+    @test P_mw isa Unitful.Quantity
+    @test Unitful.ustrip(P_mw) ≈ raw_active * device_base
 
-    # System-level with_units_base should still work after component-level call
-    P_natural_via_sys = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-        get_active_power(gen)
-    end
-    @test P_natural ≈ P_natural_via_sys
+    # Explicit DU (device base per-unit)
+    P_du = get_active_power(gen, PSY.DU)
+    @test P_du isa PSY.RelativeQuantity
+    @test PSY.ustrip(P_du) ≈ raw_active
+
+    # Explicit SU (system base per-unit)
+    P_su = get_active_power(gen, PSY.SU)
+    @test P_su isa PSY.RelativeQuantity
+    @test PSY.ustrip(P_su) ≈ raw_active * device_base / system_base
+
+    # Reactive power returns Mvar by default
+    Q_mvar = get_reactive_power(gen)
+    @test Unitful.ustrip(Unitful.uconvert(PSY.Mvar, Q_mvar)) ≈ raw_reactive * device_base
 end
 
-@testset "Test with_units_base on component removed during block" begin
-    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-    set_units_base_system!(sys, "SYSTEM_BASE")
-    line = first(get_components(Line, sys))
+@testset "Test explicit units setters" begin
+    sys = System(100.0)
+    bus = ACBus(nothing)
+    bus.name = "Bus1"
+    bus.number = 1
+    add_component!(sys, bus)
 
-    # Component shares system's units_settings initially
-    @test sys.units_settings === PSY.get_internal(line).units_info
+    gen = ThermalStandard(nothing)
+    gen.name = "Gen1"
+    gen.base_power = 100.0
+    gen.bus = bus
+    add_component!(sys, gen)
 
-    # Remove component during with_units_base block
-    @test_throws ErrorException begin
-        with_units_base(line, "NATURAL_UNITS") do
-            remove_component!(sys, line)
-        end
-    end
+    device_base = get_base_power(gen)
 
-    # After removal, units_info should be nothing (not restored to system's)
-    @test isnothing(PSY.get_internal(line).units_info)
+    # Set with MW
+    set_active_power!(gen, 50.0PSY.MW)
+    @test gen.active_power ≈ 50.0 / device_base
+
+    # Set with DU
+    set_active_power!(gen, 0.6PSY.DU)
+    @test gen.active_power ≈ 0.6
+
+    # Set with Mvar
+    set_reactive_power!(gen, 25.0PSY.Mvar)
+    @test gen.reactive_power ≈ 25.0 / device_base
 end
 
 @testset "Test add_time_series multiple components" begin

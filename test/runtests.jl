@@ -3,6 +3,7 @@ using Logging
 using DataStructures
 using Dates
 using LinearAlgebra
+using Unitful
 import TimeSeries
 import InteractiveUtils
 import JSON3

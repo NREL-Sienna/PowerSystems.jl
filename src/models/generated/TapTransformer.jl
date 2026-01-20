@@ -134,32 +134,40 @@ end
 get_name(value::TapTransformer) = value.name
 """Get [`TapTransformer`](@ref) `available`."""
 get_available(value::TapTransformer) = value.available
-"""Get [`TapTransformer`](@ref) `active_power_flow`."""
-get_active_power_flow(value::TapTransformer) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`TapTransformer`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::TapTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`TapTransformer`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::TapTransformer) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::TapTransformer, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`TapTransformer`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::TapTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::TapTransformer, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`TapTransformer`](@ref) `arc`."""
 get_arc(value::TapTransformer) = value.arc
-"""Get [`TapTransformer`](@ref) `r`."""
-get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`TapTransformer`](@ref) `x`."""
-get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`TapTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
+"""Get [`TapTransformer`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::TapTransformer) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::TapTransformer, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`TapTransformer`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::TapTransformer) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::TapTransformer, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`TapTransformer`](@ref) `primary_shunt`. Returns natural units (SIEMENS) by default."""
+get_primary_shunt(value::TapTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens), SIEMENS)
+get_primary_shunt(value::TapTransformer, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
 """Get [`TapTransformer`](@ref) `tap`."""
 get_tap(value::TapTransformer) = value.tap
-"""Get [`TapTransformer`](@ref) `rating`."""
-get_rating(value::TapTransformer) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`TapTransformer`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::TapTransformer) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::TapTransformer, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`TapTransformer`](@ref) `base_power`."""
 get_base_power(value::TapTransformer) = value.base_power
 """Get [`TapTransformer`](@ref) `base_voltage_primary`."""
 get_base_voltage_primary(value::TapTransformer) = value.base_voltage_primary
 """Get [`TapTransformer`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::TapTransformer) = value.base_voltage_secondary
-"""Get [`TapTransformer`](@ref) `rating_b`."""
-get_rating_b(value::TapTransformer) = get_value(value, Val(:rating_b), Val(:mva))
-"""Get [`TapTransformer`](@ref) `rating_c`."""
-get_rating_c(value::TapTransformer) = get_value(value, Val(:rating_c), Val(:mva))
+"""Get [`TapTransformer`](@ref) `rating_b`. Returns natural units (MW) by default."""
+get_rating_b(value::TapTransformer) = get_value(value, Val(:rating_b), Val(:mva), MW)
+get_rating_b(value::TapTransformer, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`TapTransformer`](@ref) `rating_c`. Returns natural units (MW) by default."""
+get_rating_c(value::TapTransformer) = get_value(value, Val(:rating_c), Val(:mva), MW)
+get_rating_c(value::TapTransformer, units) = get_value(value, Val(:rating_c), Val(:mva), units)
 """Get [`TapTransformer`](@ref) `winding_group_number`."""
 get_winding_group_number(value::TapTransformer) = value.winding_group_number
 """Get [`TapTransformer`](@ref) `control_objective`."""
@@ -173,21 +181,21 @@ get_internal(value::TapTransformer) = value.internal
 
 """Set [`TapTransformer`](@ref) `available`."""
 set_available!(value::TapTransformer, val) = value.available = val
-"""Set [`TapTransformer`](@ref) `active_power_flow`."""
+"""Set [`TapTransformer`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::TapTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`TapTransformer`](@ref) `reactive_power_flow`."""
+"""Set [`TapTransformer`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::TapTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `arc`."""
 set_arc!(value::TapTransformer, val) = value.arc = val
-"""Set [`TapTransformer`](@ref) `r`."""
+"""Set [`TapTransformer`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::TapTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`TapTransformer`](@ref) `x`."""
+"""Set [`TapTransformer`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::TapTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`TapTransformer`](@ref) `primary_shunt`."""
+"""Set [`TapTransformer`](@ref) `primary_shunt`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`TapTransformer`](@ref) `tap`."""
 set_tap!(value::TapTransformer, val) = value.tap = val
-"""Set [`TapTransformer`](@ref) `rating`."""
+"""Set [`TapTransformer`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::TapTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `base_power`."""
 set_base_power!(value::TapTransformer, val) = value.base_power = val
@@ -195,9 +203,9 @@ set_base_power!(value::TapTransformer, val) = value.base_power = val
 set_base_voltage_primary!(value::TapTransformer, val) = value.base_voltage_primary = val
 """Set [`TapTransformer`](@ref) `base_voltage_secondary`."""
 set_base_voltage_secondary!(value::TapTransformer, val) = value.base_voltage_secondary = val
-"""Set [`TapTransformer`](@ref) `rating_b`."""
+"""Set [`TapTransformer`](@ref) `rating_b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_b!(value::TapTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-"""Set [`TapTransformer`](@ref) `rating_c`."""
+"""Set [`TapTransformer`](@ref) `rating_c`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_c!(value::TapTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`TapTransformer`](@ref) `winding_group_number`."""
 set_winding_group_number!(value::TapTransformer, val) = value.winding_group_number = val

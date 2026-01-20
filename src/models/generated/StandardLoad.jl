@@ -145,30 +145,42 @@ get_available(value::StandardLoad) = value.available
 get_bus(value::StandardLoad) = value.bus
 """Get [`StandardLoad`](@ref) `base_power`."""
 get_base_power(value::StandardLoad) = value.base_power
-"""Get [`StandardLoad`](@ref) `constant_active_power`."""
-get_constant_active_power(value::StandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `constant_reactive_power`."""
-get_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `impedance_active_power`."""
-get_impedance_active_power(value::StandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `impedance_reactive_power`."""
-get_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `current_active_power`."""
-get_current_active_power(value::StandardLoad) = get_value(value, Val(:current_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `current_reactive_power`."""
-get_current_reactive_power(value::StandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_constant_active_power`."""
-get_max_constant_active_power(value::StandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_constant_reactive_power`."""
-get_max_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_impedance_active_power`."""
-get_max_impedance_active_power(value::StandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
-get_max_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_current_active_power`."""
-get_max_current_active_power(value::StandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_current_reactive_power`."""
-get_max_current_reactive_power(value::StandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva))
+"""Get [`StandardLoad`](@ref) `constant_active_power`. Returns natural units (MW) by default."""
+get_constant_active_power(value::StandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva), MW)
+get_constant_active_power(value::StandardLoad, units) = get_value(value, Val(:constant_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `constant_reactive_power`. Returns natural units (Mvar) by default."""
+get_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva), Mvar)
+get_constant_reactive_power(value::StandardLoad, units) = get_value(value, Val(:constant_reactive_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `impedance_active_power`. Returns natural units (MW) by default."""
+get_impedance_active_power(value::StandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva), MW)
+get_impedance_active_power(value::StandardLoad, units) = get_value(value, Val(:impedance_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `impedance_reactive_power`. Returns natural units (Mvar) by default."""
+get_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva), Mvar)
+get_impedance_reactive_power(value::StandardLoad, units) = get_value(value, Val(:impedance_reactive_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `current_active_power`. Returns natural units (MW) by default."""
+get_current_active_power(value::StandardLoad) = get_value(value, Val(:current_active_power), Val(:mva), MW)
+get_current_active_power(value::StandardLoad, units) = get_value(value, Val(:current_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `current_reactive_power`. Returns natural units (Mvar) by default."""
+get_current_reactive_power(value::StandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva), Mvar)
+get_current_reactive_power(value::StandardLoad, units) = get_value(value, Val(:current_reactive_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_constant_active_power`. Returns natural units (MW) by default."""
+get_max_constant_active_power(value::StandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva), MW)
+get_max_constant_active_power(value::StandardLoad, units) = get_value(value, Val(:max_constant_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_constant_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), Mvar)
+get_max_constant_reactive_power(value::StandardLoad, units) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_impedance_active_power`. Returns natural units (MW) by default."""
+get_max_impedance_active_power(value::StandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva), MW)
+get_max_impedance_active_power(value::StandardLoad, units) = get_value(value, Val(:max_impedance_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_impedance_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), Mvar)
+get_max_impedance_reactive_power(value::StandardLoad, units) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_current_active_power`. Returns natural units (MW) by default."""
+get_max_current_active_power(value::StandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva), MW)
+get_max_current_active_power(value::StandardLoad, units) = get_value(value, Val(:max_current_active_power), Val(:mva), units)
+"""Get [`StandardLoad`](@ref) `max_current_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_current_reactive_power(value::StandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva), Mvar)
+get_max_current_reactive_power(value::StandardLoad, units) = get_value(value, Val(:max_current_reactive_power), Val(:mva), units)
 """Get [`StandardLoad`](@ref) `conformity`."""
 get_conformity(value::StandardLoad) = value.conformity
 """Get [`StandardLoad`](@ref) `services`."""
@@ -186,29 +198,29 @@ set_available!(value::StandardLoad, val) = value.available = val
 set_bus!(value::StandardLoad, val) = value.bus = val
 """Set [`StandardLoad`](@ref) `base_power`."""
 set_base_power!(value::StandardLoad, val) = value.base_power = val
-"""Set [`StandardLoad`](@ref) `constant_active_power`."""
+"""Set [`StandardLoad`](@ref) `constant_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `constant_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `constant_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_constant_reactive_power!(value::StandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `impedance_active_power`."""
+"""Set [`StandardLoad`](@ref) `impedance_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_impedance_active_power!(value::StandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `impedance_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `impedance_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_impedance_reactive_power!(value::StandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `current_active_power`."""
+"""Set [`StandardLoad`](@ref) `current_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_current_active_power!(value::StandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `current_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `current_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_current_reactive_power!(value::StandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_constant_active_power`."""
+"""Set [`StandardLoad`](@ref) `max_constant_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_constant_active_power!(value::StandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_constant_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `max_constant_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_constant_reactive_power!(value::StandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_impedance_active_power`."""
+"""Set [`StandardLoad`](@ref) `max_impedance_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_impedance_active_power!(value::StandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `max_impedance_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_impedance_reactive_power!(value::StandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_current_active_power`."""
+"""Set [`StandardLoad`](@ref) `max_current_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_current_active_power!(value::StandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
-"""Set [`StandardLoad`](@ref) `max_current_reactive_power`."""
+"""Set [`StandardLoad`](@ref) `max_current_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_current_reactive_power!(value::StandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `conformity`."""
 set_conformity!(value::StandardLoad, val) = value.conformity = val

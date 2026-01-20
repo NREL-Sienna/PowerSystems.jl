@@ -94,16 +94,20 @@ get_name(value::SynchronousCondenser) = value.name
 get_available(value::SynchronousCondenser) = value.available
 """Get [`SynchronousCondenser`](@ref) `bus`."""
 get_bus(value::SynchronousCondenser) = value.bus
-"""Get [`SynchronousCondenser`](@ref) `reactive_power`."""
-get_reactive_power(value::SynchronousCondenser) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`SynchronousCondenser`](@ref) `rating`."""
-get_rating(value::SynchronousCondenser) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`SynchronousCondenser`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::SynchronousCondenser) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`SynchronousCondenser`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::SynchronousCondenser) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::SynchronousCondenser, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`SynchronousCondenser`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::SynchronousCondenser) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::SynchronousCondenser, units) = get_value(value, Val(:rating), Val(:mva), units)
+"""Get [`SynchronousCondenser`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits(value::SynchronousCondenser) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+get_reactive_power_limits(value::SynchronousCondenser, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`SynchronousCondenser`](@ref) `base_power`."""
 get_base_power(value::SynchronousCondenser) = value.base_power
-"""Get [`SynchronousCondenser`](@ref) `active_power_losses`."""
-get_active_power_losses(value::SynchronousCondenser) = get_value(value, Val(:active_power_losses), Val(:mva))
+"""Get [`SynchronousCondenser`](@ref) `active_power_losses`. Returns natural units (MW) by default."""
+get_active_power_losses(value::SynchronousCondenser) = get_value(value, Val(:active_power_losses), Val(:mva), MW)
+get_active_power_losses(value::SynchronousCondenser, units) = get_value(value, Val(:active_power_losses), Val(:mva), units)
 """Get [`SynchronousCondenser`](@ref) `services`."""
 get_services(value::SynchronousCondenser) = value.services
 """Get [`SynchronousCondenser`](@ref) `dynamic_injector`."""
@@ -117,15 +121,15 @@ get_internal(value::SynchronousCondenser) = value.internal
 set_available!(value::SynchronousCondenser, val) = value.available = val
 """Set [`SynchronousCondenser`](@ref) `bus`."""
 set_bus!(value::SynchronousCondenser, val) = value.bus = val
-"""Set [`SynchronousCondenser`](@ref) `reactive_power`."""
+"""Set [`SynchronousCondenser`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::SynchronousCondenser, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`SynchronousCondenser`](@ref) `rating`."""
+"""Set [`SynchronousCondenser`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`SynchronousCondenser`](@ref) `reactive_power_limits`."""
+"""Set [`SynchronousCondenser`](@ref) `reactive_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `base_power`."""
 set_base_power!(value::SynchronousCondenser, val) = value.base_power = val
-"""Set [`SynchronousCondenser`](@ref) `active_power_losses`."""
+"""Set [`SynchronousCondenser`](@ref) `active_power_losses`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `services`."""
 set_services!(value::SynchronousCondenser, val) = value.services = val

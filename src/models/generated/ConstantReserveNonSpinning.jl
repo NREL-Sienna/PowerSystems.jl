@@ -86,8 +86,9 @@ get_name(value::ConstantReserveNonSpinning) = value.name
 get_available(value::ConstantReserveNonSpinning) = value.available
 """Get [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::ConstantReserveNonSpinning) = value.time_frame
-"""Get [`ConstantReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::ConstantReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva))
+"""Get [`ConstantReserveNonSpinning`](@ref) `requirement`. Returns natural units (MW) by default."""
+get_requirement(value::ConstantReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva), MW)
+get_requirement(value::ConstantReserveNonSpinning, units) = get_value(value, Val(:requirement), Val(:mva), units)
 """Get [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
 get_sustained_time(value::ConstantReserveNonSpinning) = value.sustained_time
 """Get [`ConstantReserveNonSpinning`](@ref) `max_output_fraction`."""
@@ -105,7 +106,7 @@ get_internal(value::ConstantReserveNonSpinning) = value.internal
 set_available!(value::ConstantReserveNonSpinning, val) = value.available = val
 """Set [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::ConstantReserveNonSpinning, val) = value.time_frame = val
-"""Set [`ConstantReserveNonSpinning`](@ref) `requirement`."""
+"""Set [`ConstantReserveNonSpinning`](@ref) `requirement`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_requirement!(value::ConstantReserveNonSpinning, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
 set_sustained_time!(value::ConstantReserveNonSpinning, val) = value.sustained_time = val

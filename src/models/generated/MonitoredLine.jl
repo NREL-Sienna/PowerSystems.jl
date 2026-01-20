@@ -119,30 +119,40 @@ end
 get_name(value::MonitoredLine) = value.name
 """Get [`MonitoredLine`](@ref) `available`."""
 get_available(value::MonitoredLine) = value.available
-"""Get [`MonitoredLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::MonitoredLine) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`MonitoredLine`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::MonitoredLine) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`MonitoredLine`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::MonitoredLine) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::MonitoredLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`MonitoredLine`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::MonitoredLine) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::MonitoredLine, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`MonitoredLine`](@ref) `arc`."""
 get_arc(value::MonitoredLine) = value.arc
-"""Get [`MonitoredLine`](@ref) `r`."""
-get_r(value::MonitoredLine) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`MonitoredLine`](@ref) `x`."""
-get_x(value::MonitoredLine) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`MonitoredLine`](@ref) `b`."""
-get_b(value::MonitoredLine) = get_value(value, Val(:b), Val(:siemens))
-"""Get [`MonitoredLine`](@ref) `flow_limits`."""
-get_flow_limits(value::MonitoredLine) = get_value(value, Val(:flow_limits), Val(:mva))
-"""Get [`MonitoredLine`](@ref) `rating`."""
-get_rating(value::MonitoredLine) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`MonitoredLine`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::MonitoredLine) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::MonitoredLine, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`MonitoredLine`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::MonitoredLine) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::MonitoredLine, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`MonitoredLine`](@ref) `b`. Returns natural units (SIEMENS) by default."""
+get_b(value::MonitoredLine) = get_value(value, Val(:b), Val(:siemens), SIEMENS)
+get_b(value::MonitoredLine, units) = get_value(value, Val(:b), Val(:siemens), units)
+"""Get [`MonitoredLine`](@ref) `flow_limits`. Returns natural units (MW) by default."""
+get_flow_limits(value::MonitoredLine) = get_value(value, Val(:flow_limits), Val(:mva), MW)
+get_flow_limits(value::MonitoredLine, units) = get_value(value, Val(:flow_limits), Val(:mva), units)
+"""Get [`MonitoredLine`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::MonitoredLine) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::MonitoredLine, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`MonitoredLine`](@ref) `angle_limits`."""
 get_angle_limits(value::MonitoredLine) = value.angle_limits
-"""Get [`MonitoredLine`](@ref) `rating_b`."""
-get_rating_b(value::MonitoredLine) = get_value(value, Val(:rating_b), Val(:mva))
-"""Get [`MonitoredLine`](@ref) `rating_c`."""
-get_rating_c(value::MonitoredLine) = get_value(value, Val(:rating_c), Val(:mva))
-"""Get [`MonitoredLine`](@ref) `g`."""
-get_g(value::MonitoredLine) = get_value(value, Val(:g), Val(:siemens))
+"""Get [`MonitoredLine`](@ref) `rating_b`. Returns natural units (MW) by default."""
+get_rating_b(value::MonitoredLine) = get_value(value, Val(:rating_b), Val(:mva), MW)
+get_rating_b(value::MonitoredLine, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`MonitoredLine`](@ref) `rating_c`. Returns natural units (MW) by default."""
+get_rating_c(value::MonitoredLine) = get_value(value, Val(:rating_c), Val(:mva), MW)
+get_rating_c(value::MonitoredLine, units) = get_value(value, Val(:rating_c), Val(:mva), units)
+"""Get [`MonitoredLine`](@ref) `g`. Returns natural units (SIEMENS) by default."""
+get_g(value::MonitoredLine) = get_value(value, Val(:g), Val(:siemens), SIEMENS)
+get_g(value::MonitoredLine, units) = get_value(value, Val(:g), Val(:siemens), units)
 """Get [`MonitoredLine`](@ref) `services`."""
 get_services(value::MonitoredLine) = value.services
 """Get [`MonitoredLine`](@ref) `ext`."""
@@ -152,29 +162,29 @@ get_internal(value::MonitoredLine) = value.internal
 
 """Set [`MonitoredLine`](@ref) `available`."""
 set_available!(value::MonitoredLine, val) = value.available = val
-"""Set [`MonitoredLine`](@ref) `active_power_flow`."""
+"""Set [`MonitoredLine`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::MonitoredLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`MonitoredLine`](@ref) `reactive_power_flow`."""
+"""Set [`MonitoredLine`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::MonitoredLine, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `arc`."""
 set_arc!(value::MonitoredLine, val) = value.arc = val
-"""Set [`MonitoredLine`](@ref) `r`."""
+"""Set [`MonitoredLine`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::MonitoredLine, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`MonitoredLine`](@ref) `x`."""
+"""Set [`MonitoredLine`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::MonitoredLine, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`MonitoredLine`](@ref) `b`."""
+"""Set [`MonitoredLine`](@ref) `b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_b!(value::MonitoredLine, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
-"""Set [`MonitoredLine`](@ref) `flow_limits`."""
+"""Set [`MonitoredLine`](@ref) `flow_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_flow_limits!(value::MonitoredLine, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
-"""Set [`MonitoredLine`](@ref) `rating`."""
+"""Set [`MonitoredLine`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::MonitoredLine, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`MonitoredLine`](@ref) `angle_limits`."""
 set_angle_limits!(value::MonitoredLine, val) = value.angle_limits = val
-"""Set [`MonitoredLine`](@ref) `rating_b`."""
+"""Set [`MonitoredLine`](@ref) `rating_b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_b!(value::MonitoredLine, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-"""Set [`MonitoredLine`](@ref) `rating_c`."""
+"""Set [`MonitoredLine`](@ref) `rating_c`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_c!(value::MonitoredLine, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
-"""Set [`MonitoredLine`](@ref) `g`."""
+"""Set [`MonitoredLine`](@ref) `g`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_g!(value::MonitoredLine, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`MonitoredLine`](@ref) `services`."""
 set_services!(value::MonitoredLine, val) = value.services = val

@@ -302,44 +302,63 @@ get_secondary_star_arc(value::PhaseShiftingTransformer3W) = value.secondary_star
 get_tertiary_star_arc(value::PhaseShiftingTransformer3W) = value.tertiary_star_arc
 """Get [`PhaseShiftingTransformer3W`](@ref) `star_bus`."""
 get_star_bus(value::PhaseShiftingTransformer3W) = value.star_bus
-"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_primary`."""
-get_active_power_flow_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_primary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_primary`."""
-get_reactive_power_flow_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_secondary`."""
-get_active_power_flow_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_secondary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_secondary`."""
-get_reactive_power_flow_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_tertiary`."""
-get_active_power_flow_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_tertiary`."""
-get_reactive_power_flow_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_primary`."""
-get_r_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_primary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_primary`."""
-get_x_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_primary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_secondary`."""
-get_r_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_secondary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_secondary`."""
-get_x_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_secondary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_tertiary`."""
-get_r_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_tertiary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_tertiary`."""
-get_x_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_tertiary), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `rating`."""
-get_rating(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_12`."""
-get_r_12(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_12), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_12`."""
-get_x_12(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_12), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_23`."""
-get_r_23(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_23), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_23`."""
-get_x_23(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_23), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `r_13`."""
-get_r_13(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_13), Val(:ohm))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `x_13`."""
-get_x_13(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_13), Val(:ohm))
+"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_primary`. Returns natural units (MW) by default."""
+get_active_power_flow_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_primary), Val(:mva), MW)
+get_active_power_flow_primary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:active_power_flow_primary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_primary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva), Mvar)
+get_reactive_power_flow_primary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_secondary`. Returns natural units (MW) by default."""
+get_active_power_flow_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_secondary), Val(:mva), MW)
+get_active_power_flow_secondary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:active_power_flow_secondary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_secondary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva), Mvar)
+get_reactive_power_flow_secondary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_tertiary`. Returns natural units (MW) by default."""
+get_active_power_flow_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva), MW)
+get_active_power_flow_tertiary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_tertiary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva), Mvar)
+get_reactive_power_flow_tertiary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_primary`. Returns natural units (OHMS) by default."""
+get_r_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_primary), Val(:ohm), OHMS)
+get_r_primary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_primary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_primary`. Returns natural units (OHMS) by default."""
+get_x_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_primary), Val(:ohm), OHMS)
+get_x_primary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_primary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_secondary`. Returns natural units (OHMS) by default."""
+get_r_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_secondary), Val(:ohm), OHMS)
+get_r_secondary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_secondary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_secondary`. Returns natural units (OHMS) by default."""
+get_x_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_secondary), Val(:ohm), OHMS)
+get_x_secondary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_secondary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_tertiary`. Returns natural units (OHMS) by default."""
+get_r_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_tertiary), Val(:ohm), OHMS)
+get_r_tertiary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_tertiary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_tertiary`. Returns natural units (OHMS) by default."""
+get_x_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_tertiary), Val(:ohm), OHMS)
+get_x_tertiary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_tertiary), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_12`. Returns natural units (OHMS) by default."""
+get_r_12(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_12), Val(:ohm), OHMS)
+get_r_12(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_12), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_12`. Returns natural units (OHMS) by default."""
+get_x_12(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_12), Val(:ohm), OHMS)
+get_x_12(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_12), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_23`. Returns natural units (OHMS) by default."""
+get_r_23(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_23), Val(:ohm), OHMS)
+get_r_23(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_23), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_23`. Returns natural units (OHMS) by default."""
+get_x_23(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_23), Val(:ohm), OHMS)
+get_x_23(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_23), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `r_13`. Returns natural units (OHMS) by default."""
+get_r_13(value::PhaseShiftingTransformer3W) = get_value(value, Val(:r_13), Val(:ohm), OHMS)
+get_r_13(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:r_13), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `x_13`. Returns natural units (OHMS) by default."""
+get_x_13(value::PhaseShiftingTransformer3W) = get_value(value, Val(:x_13), Val(:ohm), OHMS)
+get_x_13(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:x_13), Val(:ohm), units)
 """Get [`PhaseShiftingTransformer3W`](@ref) `α_primary`."""
 get_α_primary(value::PhaseShiftingTransformer3W) = value.α_primary
 """Get [`PhaseShiftingTransformer3W`](@ref) `α_secondary`."""
@@ -358,10 +377,12 @@ get_base_voltage_primary(value::PhaseShiftingTransformer3W) = value.base_voltage
 get_base_voltage_secondary(value::PhaseShiftingTransformer3W) = value.base_voltage_secondary
 """Get [`PhaseShiftingTransformer3W`](@ref) `base_voltage_tertiary`."""
 get_base_voltage_tertiary(value::PhaseShiftingTransformer3W) = value.base_voltage_tertiary
-"""Get [`PhaseShiftingTransformer3W`](@ref) `g`."""
-get_g(value::PhaseShiftingTransformer3W) = get_value(value, Val(:g), Val(:siemens))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `b`."""
-get_b(value::PhaseShiftingTransformer3W) = get_value(value, Val(:b), Val(:siemens))
+"""Get [`PhaseShiftingTransformer3W`](@ref) `g`. Returns natural units (SIEMENS) by default."""
+get_g(value::PhaseShiftingTransformer3W) = get_value(value, Val(:g), Val(:siemens), SIEMENS)
+get_g(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:g), Val(:siemens), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `b`. Returns natural units (SIEMENS) by default."""
+get_b(value::PhaseShiftingTransformer3W) = get_value(value, Val(:b), Val(:siemens), SIEMENS)
+get_b(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:b), Val(:siemens), units)
 """Get [`PhaseShiftingTransformer3W`](@ref) `primary_turns_ratio`."""
 get_primary_turns_ratio(value::PhaseShiftingTransformer3W) = value.primary_turns_ratio
 """Get [`PhaseShiftingTransformer3W`](@ref) `secondary_turns_ratio`."""
@@ -374,12 +395,15 @@ get_available_primary(value::PhaseShiftingTransformer3W) = value.available_prima
 get_available_secondary(value::PhaseShiftingTransformer3W) = value.available_secondary
 """Get [`PhaseShiftingTransformer3W`](@ref) `available_tertiary`."""
 get_available_tertiary(value::PhaseShiftingTransformer3W) = value.available_tertiary
-"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_primary`."""
-get_rating_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_primary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_secondary`."""
-get_rating_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_secondary), Val(:mva))
-"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`."""
-get_rating_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva))
+"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_primary`. Returns natural units (MW) by default."""
+get_rating_primary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_primary), Val(:mva), MW)
+get_rating_primary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_primary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_secondary`. Returns natural units (MW) by default."""
+get_rating_secondary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_secondary), Val(:mva), MW)
+get_rating_secondary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_secondary), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`. Returns natural units (MW) by default."""
+get_rating_tertiary(value::PhaseShiftingTransformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva), MW)
+get_rating_tertiary(value::PhaseShiftingTransformer3W, units) = get_value(value, Val(:rating_tertiary), Val(:mva), units)
 """Get [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer3W) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer3W`](@ref) `control_objective_primary`."""
@@ -405,43 +429,43 @@ set_secondary_star_arc!(value::PhaseShiftingTransformer3W, val) = value.secondar
 set_tertiary_star_arc!(value::PhaseShiftingTransformer3W, val) = value.tertiary_star_arc = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `star_bus`."""
 set_star_bus!(value::PhaseShiftingTransformer3W, val) = value.star_bus = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_primary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_primary!(value::PhaseShiftingTransformer3W, val) = value.active_power_flow_primary = set_value(value, Val(:active_power_flow_primary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_primary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_primary!(value::PhaseShiftingTransformer3W, val) = value.reactive_power_flow_primary = set_value(value, Val(:reactive_power_flow_primary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_secondary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_secondary!(value::PhaseShiftingTransformer3W, val) = value.active_power_flow_secondary = set_value(value, Val(:active_power_flow_secondary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_secondary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_secondary!(value::PhaseShiftingTransformer3W, val) = value.reactive_power_flow_secondary = set_value(value, Val(:reactive_power_flow_secondary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_tertiary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `active_power_flow_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_tertiary!(value::PhaseShiftingTransformer3W, val) = value.active_power_flow_tertiary = set_value(value, Val(:active_power_flow_tertiary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_tertiary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `reactive_power_flow_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_tertiary!(value::PhaseShiftingTransformer3W, val) = value.reactive_power_flow_tertiary = set_value(value, Val(:reactive_power_flow_tertiary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_primary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_primary!(value::PhaseShiftingTransformer3W, val) = value.r_primary = set_value(value, Val(:r_primary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_primary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_primary!(value::PhaseShiftingTransformer3W, val) = value.x_primary = set_value(value, Val(:x_primary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_secondary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_secondary!(value::PhaseShiftingTransformer3W, val) = value.r_secondary = set_value(value, Val(:r_secondary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_secondary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_secondary!(value::PhaseShiftingTransformer3W, val) = value.x_secondary = set_value(value, Val(:x_secondary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_tertiary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_tertiary!(value::PhaseShiftingTransformer3W, val) = value.r_tertiary = set_value(value, Val(:r_tertiary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_tertiary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_tertiary!(value::PhaseShiftingTransformer3W, val) = value.x_tertiary = set_value(value, Val(:x_tertiary), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `rating`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::PhaseShiftingTransformer3W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_12`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_12`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_12!(value::PhaseShiftingTransformer3W, val) = value.r_12 = set_value(value, Val(:r_12), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_12`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_12`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_12!(value::PhaseShiftingTransformer3W, val) = value.x_12 = set_value(value, Val(:x_12), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_23`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_23`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_23!(value::PhaseShiftingTransformer3W, val) = value.r_23 = set_value(value, Val(:r_23), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_23`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_23`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_23!(value::PhaseShiftingTransformer3W, val) = value.x_23 = set_value(value, Val(:x_23), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `r_13`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `r_13`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_13!(value::PhaseShiftingTransformer3W, val) = value.r_13 = set_value(value, Val(:r_13), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `x_13`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `x_13`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_13!(value::PhaseShiftingTransformer3W, val) = value.x_13 = set_value(value, Val(:x_13), val, Val(:ohm))
 """Set [`PhaseShiftingTransformer3W`](@ref) `α_primary`."""
 set_α_primary!(value::PhaseShiftingTransformer3W, val) = value.α_primary = val
@@ -461,9 +485,9 @@ set_base_voltage_primary!(value::PhaseShiftingTransformer3W, val) = value.base_v
 set_base_voltage_secondary!(value::PhaseShiftingTransformer3W, val) = value.base_voltage_secondary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `base_voltage_tertiary`."""
 set_base_voltage_tertiary!(value::PhaseShiftingTransformer3W, val) = value.base_voltage_tertiary = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `g`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `g`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_g!(value::PhaseShiftingTransformer3W, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `b`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_b!(value::PhaseShiftingTransformer3W, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`PhaseShiftingTransformer3W`](@ref) `primary_turns_ratio`."""
 set_primary_turns_ratio!(value::PhaseShiftingTransformer3W, val) = value.primary_turns_ratio = val
@@ -477,11 +501,11 @@ set_available_primary!(value::PhaseShiftingTransformer3W, val) = value.available
 set_available_secondary!(value::PhaseShiftingTransformer3W, val) = value.available_secondary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `available_tertiary`."""
 set_available_tertiary!(value::PhaseShiftingTransformer3W, val) = value.available_tertiary = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_primary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_primary!(value::PhaseShiftingTransformer3W, val) = value.rating_primary = set_value(value, Val(:rating_primary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_secondary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_secondary!(value::PhaseShiftingTransformer3W, val) = value.rating_secondary = set_value(value, Val(:rating_secondary), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`."""
+"""Set [`PhaseShiftingTransformer3W`](@ref) `rating_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_tertiary!(value::PhaseShiftingTransformer3W, val) = value.rating_tertiary = set_value(value, Val(:rating_tertiary), val, Val(:mva))
 """Set [`PhaseShiftingTransformer3W`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer3W, val) = value.phase_angle_limits = val

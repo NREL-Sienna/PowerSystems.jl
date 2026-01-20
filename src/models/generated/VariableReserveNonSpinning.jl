@@ -88,8 +88,9 @@ get_name(value::VariableReserveNonSpinning) = value.name
 get_available(value::VariableReserveNonSpinning) = value.available
 """Get [`VariableReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::VariableReserveNonSpinning) = value.time_frame
-"""Get [`VariableReserveNonSpinning`](@ref) `requirement`."""
-get_requirement(value::VariableReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva))
+"""Get [`VariableReserveNonSpinning`](@ref) `requirement`. Returns natural units (MW) by default."""
+get_requirement(value::VariableReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva), MW)
+get_requirement(value::VariableReserveNonSpinning, units) = get_value(value, Val(:requirement), Val(:mva), units)
 """Get [`VariableReserveNonSpinning`](@ref) `sustained_time`."""
 get_sustained_time(value::VariableReserveNonSpinning) = value.sustained_time
 """Get [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""
@@ -107,7 +108,7 @@ get_internal(value::VariableReserveNonSpinning) = value.internal
 set_available!(value::VariableReserveNonSpinning, val) = value.available = val
 """Set [`VariableReserveNonSpinning`](@ref) `time_frame`."""
 set_time_frame!(value::VariableReserveNonSpinning, val) = value.time_frame = val
-"""Set [`VariableReserveNonSpinning`](@ref) `requirement`."""
+"""Set [`VariableReserveNonSpinning`](@ref) `requirement`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_requirement!(value::VariableReserveNonSpinning, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`VariableReserveNonSpinning`](@ref) `sustained_time`."""
 set_sustained_time!(value::VariableReserveNonSpinning, val) = value.sustained_time = val

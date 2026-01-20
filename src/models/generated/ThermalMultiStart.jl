@@ -157,24 +157,31 @@ get_available(value::ThermalMultiStart) = value.available
 get_status(value::ThermalMultiStart) = value.status
 """Get [`ThermalMultiStart`](@ref) `bus`."""
 get_bus(value::ThermalMultiStart) = value.bus
-"""Get [`ThermalMultiStart`](@ref) `active_power`."""
-get_active_power(value::ThermalMultiStart) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`ThermalMultiStart`](@ref) `reactive_power`."""
-get_reactive_power(value::ThermalMultiStart) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`ThermalMultiStart`](@ref) `rating`."""
-get_rating(value::ThermalMultiStart) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`ThermalMultiStart`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::ThermalMultiStart) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::ThermalMultiStart, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`ThermalMultiStart`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::ThermalMultiStart) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`ThermalMultiStart`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::ThermalMultiStart) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::ThermalMultiStart, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`ThermalMultiStart`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::ThermalMultiStart) = value.prime_mover_type
 """Get [`ThermalMultiStart`](@ref) `fuel`."""
 get_fuel(value::ThermalMultiStart) = value.fuel
-"""Get [`ThermalMultiStart`](@ref) `active_power_limits`."""
-get_active_power_limits(value::ThermalMultiStart) = get_value(value, Val(:active_power_limits), Val(:mva))
-"""Get [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::ThermalMultiStart) = get_value(value, Val(:reactive_power_limits), Val(:mva))
-"""Get [`ThermalMultiStart`](@ref) `ramp_limits`."""
-get_ramp_limits(value::ThermalMultiStart) = get_value(value, Val(:ramp_limits), Val(:mva))
-"""Get [`ThermalMultiStart`](@ref) `power_trajectory`."""
-get_power_trajectory(value::ThermalMultiStart) = get_value(value, Val(:power_trajectory), Val(:mva))
+"""Get [`ThermalMultiStart`](@ref) `active_power_limits`. Returns natural units (MW) by default."""
+get_active_power_limits(value::ThermalMultiStart) = get_value(value, Val(:active_power_limits), Val(:mva), MW)
+get_active_power_limits(value::ThermalMultiStart, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+"""Get [`ThermalMultiStart`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits(value::ThermalMultiStart) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+get_reactive_power_limits(value::ThermalMultiStart, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+"""Get [`ThermalMultiStart`](@ref) `ramp_limits`. Returns natural units (MW) by default."""
+get_ramp_limits(value::ThermalMultiStart) = get_value(value, Val(:ramp_limits), Val(:mva), MW)
+get_ramp_limits(value::ThermalMultiStart, units) = get_value(value, Val(:ramp_limits), Val(:mva), units)
+"""Get [`ThermalMultiStart`](@ref) `power_trajectory`. Returns natural units (MW) by default."""
+get_power_trajectory(value::ThermalMultiStart) = get_value(value, Val(:power_trajectory), Val(:mva), MW)
+get_power_trajectory(value::ThermalMultiStart, units) = get_value(value, Val(:power_trajectory), Val(:mva), units)
 """Get [`ThermalMultiStart`](@ref) `time_limits`."""
 get_time_limits(value::ThermalMultiStart) = value.time_limits
 """Get [`ThermalMultiStart`](@ref) `start_time_limits`."""
@@ -204,23 +211,23 @@ set_available!(value::ThermalMultiStart, val) = value.available = val
 set_status!(value::ThermalMultiStart, val) = value.status = val
 """Set [`ThermalMultiStart`](@ref) `bus`."""
 set_bus!(value::ThermalMultiStart, val) = value.bus = val
-"""Set [`ThermalMultiStart`](@ref) `active_power`."""
+"""Set [`ThermalMultiStart`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::ThermalMultiStart, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`ThermalMultiStart`](@ref) `reactive_power`."""
+"""Set [`ThermalMultiStart`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::ThermalMultiStart, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`ThermalMultiStart`](@ref) `rating`."""
+"""Set [`ThermalMultiStart`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::ThermalMultiStart, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`ThermalMultiStart`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::ThermalMultiStart, val) = value.prime_mover_type = val
 """Set [`ThermalMultiStart`](@ref) `fuel`."""
 set_fuel!(value::ThermalMultiStart, val) = value.fuel = val
-"""Set [`ThermalMultiStart`](@ref) `active_power_limits`."""
+"""Set [`ThermalMultiStart`](@ref) `active_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_limits!(value::ThermalMultiStart, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
-"""Set [`ThermalMultiStart`](@ref) `reactive_power_limits`."""
+"""Set [`ThermalMultiStart`](@ref) `reactive_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits!(value::ThermalMultiStart, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
-"""Set [`ThermalMultiStart`](@ref) `ramp_limits`."""
+"""Set [`ThermalMultiStart`](@ref) `ramp_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_ramp_limits!(value::ThermalMultiStart, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
-"""Set [`ThermalMultiStart`](@ref) `power_trajectory`."""
+"""Set [`ThermalMultiStart`](@ref) `power_trajectory`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_power_trajectory!(value::ThermalMultiStart, val) = value.power_trajectory = set_value(value, Val(:power_trajectory), val, Val(:mva))
 """Set [`ThermalMultiStart`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalMultiStart, val) = value.time_limits = val

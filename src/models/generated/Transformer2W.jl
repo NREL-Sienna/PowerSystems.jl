@@ -124,30 +124,38 @@ end
 get_name(value::Transformer2W) = value.name
 """Get [`Transformer2W`](@ref) `available`."""
 get_available(value::Transformer2W) = value.available
-"""Get [`Transformer2W`](@ref) `active_power_flow`."""
-get_active_power_flow(value::Transformer2W) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`Transformer2W`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::Transformer2W) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`Transformer2W`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::Transformer2W) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::Transformer2W, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`Transformer2W`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::Transformer2W) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::Transformer2W, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`Transformer2W`](@ref) `arc`."""
 get_arc(value::Transformer2W) = value.arc
-"""Get [`Transformer2W`](@ref) `r`."""
-get_r(value::Transformer2W) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`Transformer2W`](@ref) `x`."""
-get_x(value::Transformer2W) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`Transformer2W`](@ref) `primary_shunt`."""
-get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), Val(:siemens))
-"""Get [`Transformer2W`](@ref) `rating`."""
-get_rating(value::Transformer2W) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`Transformer2W`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::Transformer2W) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::Transformer2W, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`Transformer2W`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::Transformer2W) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::Transformer2W, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`Transformer2W`](@ref) `primary_shunt`. Returns natural units (SIEMENS) by default."""
+get_primary_shunt(value::Transformer2W) = get_value(value, Val(:primary_shunt), Val(:siemens), SIEMENS)
+get_primary_shunt(value::Transformer2W, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
+"""Get [`Transformer2W`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::Transformer2W) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::Transformer2W, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`Transformer2W`](@ref) `base_power`."""
 get_base_power(value::Transformer2W) = value.base_power
 """Get [`Transformer2W`](@ref) `base_voltage_primary`."""
 get_base_voltage_primary(value::Transformer2W) = value.base_voltage_primary
 """Get [`Transformer2W`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::Transformer2W) = value.base_voltage_secondary
-"""Get [`Transformer2W`](@ref) `rating_b`."""
-get_rating_b(value::Transformer2W) = get_value(value, Val(:rating_b), Val(:mva))
-"""Get [`Transformer2W`](@ref) `rating_c`."""
-get_rating_c(value::Transformer2W) = get_value(value, Val(:rating_c), Val(:mva))
+"""Get [`Transformer2W`](@ref) `rating_b`. Returns natural units (MW) by default."""
+get_rating_b(value::Transformer2W) = get_value(value, Val(:rating_b), Val(:mva), MW)
+get_rating_b(value::Transformer2W, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`Transformer2W`](@ref) `rating_c`. Returns natural units (MW) by default."""
+get_rating_c(value::Transformer2W) = get_value(value, Val(:rating_c), Val(:mva), MW)
+get_rating_c(value::Transformer2W, units) = get_value(value, Val(:rating_c), Val(:mva), units)
 """Get [`Transformer2W`](@ref) `winding_group_number`."""
 get_winding_group_number(value::Transformer2W) = value.winding_group_number
 """Get [`Transformer2W`](@ref) `services`."""
@@ -159,19 +167,19 @@ get_internal(value::Transformer2W) = value.internal
 
 """Set [`Transformer2W`](@ref) `available`."""
 set_available!(value::Transformer2W, val) = value.available = val
-"""Set [`Transformer2W`](@ref) `active_power_flow`."""
+"""Set [`Transformer2W`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::Transformer2W, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`Transformer2W`](@ref) `reactive_power_flow`."""
+"""Set [`Transformer2W`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::Transformer2W, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `arc`."""
 set_arc!(value::Transformer2W, val) = value.arc = val
-"""Set [`Transformer2W`](@ref) `r`."""
+"""Set [`Transformer2W`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::Transformer2W, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`Transformer2W`](@ref) `x`."""
+"""Set [`Transformer2W`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::Transformer2W, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`Transformer2W`](@ref) `primary_shunt`."""
+"""Set [`Transformer2W`](@ref) `primary_shunt`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
-"""Set [`Transformer2W`](@ref) `rating`."""
+"""Set [`Transformer2W`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `base_power`."""
 set_base_power!(value::Transformer2W, val) = value.base_power = val
@@ -179,9 +187,9 @@ set_base_power!(value::Transformer2W, val) = value.base_power = val
 set_base_voltage_primary!(value::Transformer2W, val) = value.base_voltage_primary = val
 """Set [`Transformer2W`](@ref) `base_voltage_secondary`."""
 set_base_voltage_secondary!(value::Transformer2W, val) = value.base_voltage_secondary = val
-"""Set [`Transformer2W`](@ref) `rating_b`."""
+"""Set [`Transformer2W`](@ref) `rating_b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_b!(value::Transformer2W, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-"""Set [`Transformer2W`](@ref) `rating_c`."""
+"""Set [`Transformer2W`](@ref) `rating_c`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_c!(value::Transformer2W, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`Transformer2W`](@ref) `winding_group_number`."""
 set_winding_group_number!(value::Transformer2W, val) = value.winding_group_number = val

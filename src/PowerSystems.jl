@@ -565,6 +565,11 @@ export StructDefinition
 export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
+# Unit types for explicit units in getters/setters
+export MW, Mvar, MVA, kV, OHMS, SIEMENS
+export DU, SU, DeviceBaseUnit, SystemBaseUnit
+export AbstractRelativeUnit, RelativeQuantity
+export ustrip
 
 # ComponentSelector
 export ComponentSelector
@@ -676,6 +681,20 @@ import InfrastructureSystems:
     NormalizationTypes,
     UnitSystem,
     SystemUnitsSettings,
+    # Unit types for explicit units in getters/setters
+    MW,
+    Mvar,
+    MVA,
+    kV,
+    OHMS,
+    SIEMENS,
+    DU,
+    SU,
+    DeviceBaseUnit,
+    SystemBaseUnit,
+    AbstractRelativeUnit,
+    RelativeQuantity,
+    ustrip,
     open_file_logger,
     make_logging_config_file,
     validate_struct,
