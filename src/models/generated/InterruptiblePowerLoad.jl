@@ -106,14 +106,18 @@ get_name(value::InterruptiblePowerLoad) = value.name
 get_available(value::InterruptiblePowerLoad) = value.available
 """Get [`InterruptiblePowerLoad`](@ref) `bus`."""
 get_bus(value::InterruptiblePowerLoad) = value.bus
-"""Get [`InterruptiblePowerLoad`](@ref) `active_power`."""
-get_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`InterruptiblePowerLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`InterruptiblePowerLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva))
-"""Get [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
-get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva))
+"""Get [`InterruptiblePowerLoad`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`InterruptiblePowerLoad`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`InterruptiblePowerLoad`](@ref) `max_active_power`. Returns natural units (MW) by default."""
+get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva), MW)
+get_max_active_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
+"""Get [`InterruptiblePowerLoad`](@ref) `max_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), Mvar)
+get_max_reactive_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 """Get [`InterruptiblePowerLoad`](@ref) `base_power`."""
 get_base_power(value::InterruptiblePowerLoad) = value.base_power
 """Get [`InterruptiblePowerLoad`](@ref) `operation_cost`."""
@@ -133,13 +137,13 @@ get_internal(value::InterruptiblePowerLoad) = value.internal
 set_available!(value::InterruptiblePowerLoad, val) = value.available = val
 """Set [`InterruptiblePowerLoad`](@ref) `bus`."""
 set_bus!(value::InterruptiblePowerLoad, val) = value.bus = val
-"""Set [`InterruptiblePowerLoad`](@ref) `active_power`."""
+"""Set [`InterruptiblePowerLoad`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::InterruptiblePowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`InterruptiblePowerLoad`](@ref) `reactive_power`."""
+"""Set [`InterruptiblePowerLoad`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::InterruptiblePowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`InterruptiblePowerLoad`](@ref) `max_active_power`."""
+"""Set [`InterruptiblePowerLoad`](@ref) `max_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_active_power!(value::InterruptiblePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
-"""Set [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
+"""Set [`InterruptiblePowerLoad`](@ref) `max_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_reactive_power!(value::InterruptiblePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `base_power`."""
 set_base_power!(value::InterruptiblePowerLoad, val) = value.base_power = val

@@ -297,44 +297,63 @@ get_secondary_star_arc(value::Transformer3W) = value.secondary_star_arc
 get_tertiary_star_arc(value::Transformer3W) = value.tertiary_star_arc
 """Get [`Transformer3W`](@ref) `star_bus`."""
 get_star_bus(value::Transformer3W) = value.star_bus
-"""Get [`Transformer3W`](@ref) `active_power_flow_primary`."""
-get_active_power_flow_primary(value::Transformer3W) = get_value(value, Val(:active_power_flow_primary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `reactive_power_flow_primary`."""
-get_reactive_power_flow_primary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `active_power_flow_secondary`."""
-get_active_power_flow_secondary(value::Transformer3W) = get_value(value, Val(:active_power_flow_secondary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `reactive_power_flow_secondary`."""
-get_reactive_power_flow_secondary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `active_power_flow_tertiary`."""
-get_active_power_flow_tertiary(value::Transformer3W) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `reactive_power_flow_tertiary`."""
-get_reactive_power_flow_tertiary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `r_primary`."""
-get_r_primary(value::Transformer3W) = get_value(value, Val(:r_primary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_primary`."""
-get_x_primary(value::Transformer3W) = get_value(value, Val(:x_primary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `r_secondary`."""
-get_r_secondary(value::Transformer3W) = get_value(value, Val(:r_secondary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_secondary`."""
-get_x_secondary(value::Transformer3W) = get_value(value, Val(:x_secondary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `r_tertiary`."""
-get_r_tertiary(value::Transformer3W) = get_value(value, Val(:r_tertiary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_tertiary`."""
-get_x_tertiary(value::Transformer3W) = get_value(value, Val(:x_tertiary), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `rating`."""
-get_rating(value::Transformer3W) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`Transformer3W`](@ref) `r_12`."""
-get_r_12(value::Transformer3W) = get_value(value, Val(:r_12), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_12`."""
-get_x_12(value::Transformer3W) = get_value(value, Val(:x_12), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `r_23`."""
-get_r_23(value::Transformer3W) = get_value(value, Val(:r_23), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_23`."""
-get_x_23(value::Transformer3W) = get_value(value, Val(:x_23), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `r_13`."""
-get_r_13(value::Transformer3W) = get_value(value, Val(:r_13), Val(:ohm))
-"""Get [`Transformer3W`](@ref) `x_13`."""
-get_x_13(value::Transformer3W) = get_value(value, Val(:x_13), Val(:ohm))
+"""Get [`Transformer3W`](@ref) `active_power_flow_primary`. Returns natural units (MW) by default."""
+get_active_power_flow_primary(value::Transformer3W) = get_value(value, Val(:active_power_flow_primary), Val(:mva), MW)
+get_active_power_flow_primary(value::Transformer3W, units) = get_value(value, Val(:active_power_flow_primary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `reactive_power_flow_primary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_primary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva), Mvar)
+get_reactive_power_flow_primary(value::Transformer3W, units) = get_value(value, Val(:reactive_power_flow_primary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `active_power_flow_secondary`. Returns natural units (MW) by default."""
+get_active_power_flow_secondary(value::Transformer3W) = get_value(value, Val(:active_power_flow_secondary), Val(:mva), MW)
+get_active_power_flow_secondary(value::Transformer3W, units) = get_value(value, Val(:active_power_flow_secondary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `reactive_power_flow_secondary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_secondary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva), Mvar)
+get_reactive_power_flow_secondary(value::Transformer3W, units) = get_value(value, Val(:reactive_power_flow_secondary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `active_power_flow_tertiary`. Returns natural units (MW) by default."""
+get_active_power_flow_tertiary(value::Transformer3W) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva), MW)
+get_active_power_flow_tertiary(value::Transformer3W, units) = get_value(value, Val(:active_power_flow_tertiary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `reactive_power_flow_tertiary`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow_tertiary(value::Transformer3W) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva), Mvar)
+get_reactive_power_flow_tertiary(value::Transformer3W, units) = get_value(value, Val(:reactive_power_flow_tertiary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `r_primary`. Returns natural units (OHMS) by default."""
+get_r_primary(value::Transformer3W) = get_value(value, Val(:r_primary), Val(:ohm), OHMS)
+get_r_primary(value::Transformer3W, units) = get_value(value, Val(:r_primary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_primary`. Returns natural units (OHMS) by default."""
+get_x_primary(value::Transformer3W) = get_value(value, Val(:x_primary), Val(:ohm), OHMS)
+get_x_primary(value::Transformer3W, units) = get_value(value, Val(:x_primary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `r_secondary`. Returns natural units (OHMS) by default."""
+get_r_secondary(value::Transformer3W) = get_value(value, Val(:r_secondary), Val(:ohm), OHMS)
+get_r_secondary(value::Transformer3W, units) = get_value(value, Val(:r_secondary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_secondary`. Returns natural units (OHMS) by default."""
+get_x_secondary(value::Transformer3W) = get_value(value, Val(:x_secondary), Val(:ohm), OHMS)
+get_x_secondary(value::Transformer3W, units) = get_value(value, Val(:x_secondary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `r_tertiary`. Returns natural units (OHMS) by default."""
+get_r_tertiary(value::Transformer3W) = get_value(value, Val(:r_tertiary), Val(:ohm), OHMS)
+get_r_tertiary(value::Transformer3W, units) = get_value(value, Val(:r_tertiary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_tertiary`. Returns natural units (OHMS) by default."""
+get_x_tertiary(value::Transformer3W) = get_value(value, Val(:x_tertiary), Val(:ohm), OHMS)
+get_x_tertiary(value::Transformer3W, units) = get_value(value, Val(:x_tertiary), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::Transformer3W) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::Transformer3W, units) = get_value(value, Val(:rating), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `r_12`. Returns natural units (OHMS) by default."""
+get_r_12(value::Transformer3W) = get_value(value, Val(:r_12), Val(:ohm), OHMS)
+get_r_12(value::Transformer3W, units) = get_value(value, Val(:r_12), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_12`. Returns natural units (OHMS) by default."""
+get_x_12(value::Transformer3W) = get_value(value, Val(:x_12), Val(:ohm), OHMS)
+get_x_12(value::Transformer3W, units) = get_value(value, Val(:x_12), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `r_23`. Returns natural units (OHMS) by default."""
+get_r_23(value::Transformer3W) = get_value(value, Val(:r_23), Val(:ohm), OHMS)
+get_r_23(value::Transformer3W, units) = get_value(value, Val(:r_23), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_23`. Returns natural units (OHMS) by default."""
+get_x_23(value::Transformer3W) = get_value(value, Val(:x_23), Val(:ohm), OHMS)
+get_x_23(value::Transformer3W, units) = get_value(value, Val(:x_23), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `r_13`. Returns natural units (OHMS) by default."""
+get_r_13(value::Transformer3W) = get_value(value, Val(:r_13), Val(:ohm), OHMS)
+get_r_13(value::Transformer3W, units) = get_value(value, Val(:r_13), Val(:ohm), units)
+"""Get [`Transformer3W`](@ref) `x_13`. Returns natural units (OHMS) by default."""
+get_x_13(value::Transformer3W) = get_value(value, Val(:x_13), Val(:ohm), OHMS)
+get_x_13(value::Transformer3W, units) = get_value(value, Val(:x_13), Val(:ohm), units)
 """Get [`Transformer3W`](@ref) `base_power_12`."""
 get_base_power_12(value::Transformer3W) = value.base_power_12
 """Get [`Transformer3W`](@ref) `base_power_23`."""
@@ -347,10 +366,12 @@ get_base_voltage_primary(value::Transformer3W) = value.base_voltage_primary
 get_base_voltage_secondary(value::Transformer3W) = value.base_voltage_secondary
 """Get [`Transformer3W`](@ref) `base_voltage_tertiary`."""
 get_base_voltage_tertiary(value::Transformer3W) = value.base_voltage_tertiary
-"""Get [`Transformer3W`](@ref) `g`."""
-get_g(value::Transformer3W) = get_value(value, Val(:g), Val(:siemens))
-"""Get [`Transformer3W`](@ref) `b`."""
-get_b(value::Transformer3W) = get_value(value, Val(:b), Val(:siemens))
+"""Get [`Transformer3W`](@ref) `g`. Returns natural units (SIEMENS) by default."""
+get_g(value::Transformer3W) = get_value(value, Val(:g), Val(:siemens), SIEMENS)
+get_g(value::Transformer3W, units) = get_value(value, Val(:g), Val(:siemens), units)
+"""Get [`Transformer3W`](@ref) `b`. Returns natural units (SIEMENS) by default."""
+get_b(value::Transformer3W) = get_value(value, Val(:b), Val(:siemens), SIEMENS)
+get_b(value::Transformer3W, units) = get_value(value, Val(:b), Val(:siemens), units)
 """Get [`Transformer3W`](@ref) `primary_turns_ratio`."""
 get_primary_turns_ratio(value::Transformer3W) = value.primary_turns_ratio
 """Get [`Transformer3W`](@ref) `secondary_turns_ratio`."""
@@ -363,12 +384,15 @@ get_available_primary(value::Transformer3W) = value.available_primary
 get_available_secondary(value::Transformer3W) = value.available_secondary
 """Get [`Transformer3W`](@ref) `available_tertiary`."""
 get_available_tertiary(value::Transformer3W) = value.available_tertiary
-"""Get [`Transformer3W`](@ref) `rating_primary`."""
-get_rating_primary(value::Transformer3W) = get_value(value, Val(:rating_primary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `rating_secondary`."""
-get_rating_secondary(value::Transformer3W) = get_value(value, Val(:rating_secondary), Val(:mva))
-"""Get [`Transformer3W`](@ref) `rating_tertiary`."""
-get_rating_tertiary(value::Transformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva))
+"""Get [`Transformer3W`](@ref) `rating_primary`. Returns natural units (MW) by default."""
+get_rating_primary(value::Transformer3W) = get_value(value, Val(:rating_primary), Val(:mva), MW)
+get_rating_primary(value::Transformer3W, units) = get_value(value, Val(:rating_primary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `rating_secondary`. Returns natural units (MW) by default."""
+get_rating_secondary(value::Transformer3W) = get_value(value, Val(:rating_secondary), Val(:mva), MW)
+get_rating_secondary(value::Transformer3W, units) = get_value(value, Val(:rating_secondary), Val(:mva), units)
+"""Get [`Transformer3W`](@ref) `rating_tertiary`. Returns natural units (MW) by default."""
+get_rating_tertiary(value::Transformer3W) = get_value(value, Val(:rating_tertiary), Val(:mva), MW)
+get_rating_tertiary(value::Transformer3W, units) = get_value(value, Val(:rating_tertiary), Val(:mva), units)
 """Get [`Transformer3W`](@ref) `primary_group_number`."""
 get_primary_group_number(value::Transformer3W) = value.primary_group_number
 """Get [`Transformer3W`](@ref) `secondary_group_number`."""
@@ -398,43 +422,43 @@ set_secondary_star_arc!(value::Transformer3W, val) = value.secondary_star_arc = 
 set_tertiary_star_arc!(value::Transformer3W, val) = value.tertiary_star_arc = val
 """Set [`Transformer3W`](@ref) `star_bus`."""
 set_star_bus!(value::Transformer3W, val) = value.star_bus = val
-"""Set [`Transformer3W`](@ref) `active_power_flow_primary`."""
+"""Set [`Transformer3W`](@ref) `active_power_flow_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_primary!(value::Transformer3W, val) = value.active_power_flow_primary = set_value(value, Val(:active_power_flow_primary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `reactive_power_flow_primary`."""
+"""Set [`Transformer3W`](@ref) `reactive_power_flow_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_primary!(value::Transformer3W, val) = value.reactive_power_flow_primary = set_value(value, Val(:reactive_power_flow_primary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `active_power_flow_secondary`."""
+"""Set [`Transformer3W`](@ref) `active_power_flow_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_secondary!(value::Transformer3W, val) = value.active_power_flow_secondary = set_value(value, Val(:active_power_flow_secondary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `reactive_power_flow_secondary`."""
+"""Set [`Transformer3W`](@ref) `reactive_power_flow_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_secondary!(value::Transformer3W, val) = value.reactive_power_flow_secondary = set_value(value, Val(:reactive_power_flow_secondary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `active_power_flow_tertiary`."""
+"""Set [`Transformer3W`](@ref) `active_power_flow_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow_tertiary!(value::Transformer3W, val) = value.active_power_flow_tertiary = set_value(value, Val(:active_power_flow_tertiary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `reactive_power_flow_tertiary`."""
+"""Set [`Transformer3W`](@ref) `reactive_power_flow_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow_tertiary!(value::Transformer3W, val) = value.reactive_power_flow_tertiary = set_value(value, Val(:reactive_power_flow_tertiary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `r_primary`."""
+"""Set [`Transformer3W`](@ref) `r_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_primary!(value::Transformer3W, val) = value.r_primary = set_value(value, Val(:r_primary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_primary`."""
+"""Set [`Transformer3W`](@ref) `x_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_primary!(value::Transformer3W, val) = value.x_primary = set_value(value, Val(:x_primary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `r_secondary`."""
+"""Set [`Transformer3W`](@ref) `r_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_secondary!(value::Transformer3W, val) = value.r_secondary = set_value(value, Val(:r_secondary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_secondary`."""
+"""Set [`Transformer3W`](@ref) `x_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_secondary!(value::Transformer3W, val) = value.x_secondary = set_value(value, Val(:x_secondary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `r_tertiary`."""
+"""Set [`Transformer3W`](@ref) `r_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_tertiary!(value::Transformer3W, val) = value.r_tertiary = set_value(value, Val(:r_tertiary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_tertiary`."""
+"""Set [`Transformer3W`](@ref) `x_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_tertiary!(value::Transformer3W, val) = value.x_tertiary = set_value(value, Val(:x_tertiary), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `rating`."""
+"""Set [`Transformer3W`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::Transformer3W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `r_12`."""
+"""Set [`Transformer3W`](@ref) `r_12`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_12!(value::Transformer3W, val) = value.r_12 = set_value(value, Val(:r_12), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_12`."""
+"""Set [`Transformer3W`](@ref) `x_12`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_12!(value::Transformer3W, val) = value.x_12 = set_value(value, Val(:x_12), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `r_23`."""
+"""Set [`Transformer3W`](@ref) `r_23`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_23!(value::Transformer3W, val) = value.r_23 = set_value(value, Val(:r_23), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_23`."""
+"""Set [`Transformer3W`](@ref) `x_23`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_23!(value::Transformer3W, val) = value.x_23 = set_value(value, Val(:x_23), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `r_13`."""
+"""Set [`Transformer3W`](@ref) `r_13`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r_13!(value::Transformer3W, val) = value.r_13 = set_value(value, Val(:r_13), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `x_13`."""
+"""Set [`Transformer3W`](@ref) `x_13`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x_13!(value::Transformer3W, val) = value.x_13 = set_value(value, Val(:x_13), val, Val(:ohm))
 """Set [`Transformer3W`](@ref) `base_power_12`."""
 set_base_power_12!(value::Transformer3W, val) = value.base_power_12 = val
@@ -448,9 +472,9 @@ set_base_voltage_primary!(value::Transformer3W, val) = value.base_voltage_primar
 set_base_voltage_secondary!(value::Transformer3W, val) = value.base_voltage_secondary = val
 """Set [`Transformer3W`](@ref) `base_voltage_tertiary`."""
 set_base_voltage_tertiary!(value::Transformer3W, val) = value.base_voltage_tertiary = val
-"""Set [`Transformer3W`](@ref) `g`."""
+"""Set [`Transformer3W`](@ref) `g`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_g!(value::Transformer3W, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
-"""Set [`Transformer3W`](@ref) `b`."""
+"""Set [`Transformer3W`](@ref) `b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_b!(value::Transformer3W, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
 """Set [`Transformer3W`](@ref) `primary_turns_ratio`."""
 set_primary_turns_ratio!(value::Transformer3W, val) = value.primary_turns_ratio = val
@@ -464,11 +488,11 @@ set_available_primary!(value::Transformer3W, val) = value.available_primary = va
 set_available_secondary!(value::Transformer3W, val) = value.available_secondary = val
 """Set [`Transformer3W`](@ref) `available_tertiary`."""
 set_available_tertiary!(value::Transformer3W, val) = value.available_tertiary = val
-"""Set [`Transformer3W`](@ref) `rating_primary`."""
+"""Set [`Transformer3W`](@ref) `rating_primary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_primary!(value::Transformer3W, val) = value.rating_primary = set_value(value, Val(:rating_primary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `rating_secondary`."""
+"""Set [`Transformer3W`](@ref) `rating_secondary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_secondary!(value::Transformer3W, val) = value.rating_secondary = set_value(value, Val(:rating_secondary), val, Val(:mva))
-"""Set [`Transformer3W`](@ref) `rating_tertiary`."""
+"""Set [`Transformer3W`](@ref) `rating_tertiary`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_tertiary!(value::Transformer3W, val) = value.rating_tertiary = set_value(value, Val(:rating_tertiary), val, Val(:mva))
 """Set [`Transformer3W`](@ref) `primary_group_number`."""
 set_primary_group_number!(value::Transformer3W, val) = value.primary_group_number = val

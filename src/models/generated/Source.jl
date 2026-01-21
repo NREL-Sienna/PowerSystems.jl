@@ -121,14 +121,18 @@ get_name(value::Source) = value.name
 get_available(value::Source) = value.available
 """Get [`Source`](@ref) `bus`."""
 get_bus(value::Source) = value.bus
-"""Get [`Source`](@ref) `active_power`."""
-get_active_power(value::Source) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`Source`](@ref) `reactive_power`."""
-get_reactive_power(value::Source) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`Source`](@ref) `active_power_limits`."""
-get_active_power_limits(value::Source) = get_value(value, Val(:active_power_limits), Val(:mva))
-"""Get [`Source`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::Source) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`Source`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::Source) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::Source, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`Source`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::Source) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::Source, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`Source`](@ref) `active_power_limits`. Returns natural units (MW) by default."""
+get_active_power_limits(value::Source) = get_value(value, Val(:active_power_limits), Val(:mva), MW)
+get_active_power_limits(value::Source, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+"""Get [`Source`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits(value::Source) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+get_reactive_power_limits(value::Source, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`Source`](@ref) `R_th`."""
 get_R_th(value::Source) = value.R_th
 """Get [`Source`](@ref) `X_th`."""
@@ -154,13 +158,13 @@ get_internal(value::Source) = value.internal
 set_available!(value::Source, val) = value.available = val
 """Set [`Source`](@ref) `bus`."""
 set_bus!(value::Source, val) = value.bus = val
-"""Set [`Source`](@ref) `active_power`."""
+"""Set [`Source`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::Source, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`Source`](@ref) `reactive_power`."""
+"""Set [`Source`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::Source, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`Source`](@ref) `active_power_limits`."""
+"""Set [`Source`](@ref) `active_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_limits!(value::Source, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
-"""Set [`Source`](@ref) `reactive_power_limits`."""
+"""Set [`Source`](@ref) `reactive_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits!(value::Source, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`Source`](@ref) `R_th`."""
 set_R_th!(value::Source, val) = value.R_th = val

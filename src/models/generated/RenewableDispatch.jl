@@ -113,16 +113,20 @@ get_name(value::RenewableDispatch) = value.name
 get_available(value::RenewableDispatch) = value.available
 """Get [`RenewableDispatch`](@ref) `bus`."""
 get_bus(value::RenewableDispatch) = value.bus
-"""Get [`RenewableDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`RenewableDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`RenewableDispatch`](@ref) `rating`."""
-get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`RenewableDispatch`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::RenewableDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`RenewableDispatch`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`RenewableDispatch`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::RenewableDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`RenewableDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableDispatch) = value.prime_mover_type
-"""Get [`RenewableDispatch`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`RenewableDispatch`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+get_reactive_power_limits(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`RenewableDispatch`](@ref) `power_factor`."""
 get_power_factor(value::RenewableDispatch) = value.power_factor
 """Get [`RenewableDispatch`](@ref) `operation_cost`."""
@@ -142,15 +146,15 @@ get_internal(value::RenewableDispatch) = value.internal
 set_available!(value::RenewableDispatch, val) = value.available = val
 """Set [`RenewableDispatch`](@ref) `bus`."""
 set_bus!(value::RenewableDispatch, val) = value.bus = val
-"""Set [`RenewableDispatch`](@ref) `active_power`."""
+"""Set [`RenewableDispatch`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::RenewableDispatch, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`RenewableDispatch`](@ref) `reactive_power`."""
+"""Set [`RenewableDispatch`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::RenewableDispatch, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`RenewableDispatch`](@ref) `rating`."""
+"""Set [`RenewableDispatch`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::RenewableDispatch, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `prime_mover_type`."""
 set_prime_mover_type!(value::RenewableDispatch, val) = value.prime_mover_type = val
-"""Set [`RenewableDispatch`](@ref) `reactive_power_limits`."""
+"""Set [`RenewableDispatch`](@ref) `reactive_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`RenewableDispatch`](@ref) `power_factor`."""
 set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val

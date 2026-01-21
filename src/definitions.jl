@@ -532,6 +532,7 @@ Enumeration representing the location of a hydro reservoir relative to its assoc
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 const DEFAULT_BASE_MVA = 100.0
+const DEFAULT_POWER_UNITS_TYPE = typeof(0.0 * IS.MW)
 
 const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_structs.json")

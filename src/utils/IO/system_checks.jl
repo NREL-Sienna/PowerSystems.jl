@@ -1,6 +1,17 @@
 
 ### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
 
+"""
+Sum a getter over components, returning zero(DEFAULT_POWER_UNITS_TYPE) if empty.
+"""
+function _sum_or_zero(getter::Function, components)
+    if isempty(components)
+        return zero(DEFAULT_POWER_UNITS_TYPE)
+    else
+        return sum(getter.(components))
+    end
+end
+
 ## Check that all the buses have a type defintion and that bus types are consistent with generator connections ##
 
 function buscheck(sys::System)
@@ -87,28 +98,25 @@ Checks the system for sum(generator ratings) >= sum(load ratings).
 - `sys::System`: system
 """
 function total_load_rating(sys::System)
-    base_power = get_base_power(sys)
-    controllable_loads = get_components(ControllableLoad, sys)
-    cl =
-        if isempty(controllable_loads)
-            0.0
-        else
-            sum(get_max_active_power.(controllable_loads)) * base_power
-        end
+    cl = _sum_or_zero(get_max_active_power, get_components(ControllableLoad, sys))
     @debug "System has $cl MW of ControllableLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
-    static_loads = get_components(StaticLoad, sys)
-    sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
+
+    sl = _sum_or_zero(get_max_active_power, get_components(StaticLoad, sys))
     @debug "System has $sl MW of StaticLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
+
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
+    # Note: get_base_voltage and get_Y return raw Float64 values (kV and p.u. respectively)
     fa_loads = get_components(FixedAdmittance, sys)
     fa =
         if isempty(fa_loads)
-            0.0
+            zero(DEFAULT_POWER_UNITS_TYPE)
         else
-            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads))) *
+            IS.MW
         end
     @debug "System has $fa MW of FixedAdmittance assuming admittance values are in P.U." _group =
         IS.LOG_GROUP_SYSTEM_CHECKS
+
     total_load = cl + sl + fa
     @debug "Total System Load: $total_load" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     return total_load
@@ -123,15 +131,13 @@ Sum of system generator and storage ratings.
 - `sys::System`: system
 """
 function total_capacity_rating(sys::System)
-    total = 0
+    total = zero(DEFAULT_POWER_UNITS_TYPE)
+
     for component_type in (Generator, Storage)
-        components = get_components(component_type, sys)
-        if !isempty(components)
-            component_total = sum(get_rating.(components)) * get_base_power(sys)
-            @debug "total rating for $component_type = $component_total" _group =
-                IS.LOG_GROUP_SYSTEM_CHECKS
-            total += component_total
-        end
+        component_total = _sum_or_zero(get_rating, get_components(component_type, sys))
+        @debug "total rating for $component_type = $component_total" _group =
+            IS.LOG_GROUP_SYSTEM_CHECKS
+        total += component_total
     end
 
     @debug "Total System capacity: $total" _group = IS.LOG_GROUP_SYSTEM_CHECKS

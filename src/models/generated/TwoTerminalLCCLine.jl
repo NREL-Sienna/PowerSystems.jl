@@ -241,8 +241,9 @@ get_name(value::TwoTerminalLCCLine) = value.name
 get_available(value::TwoTerminalLCCLine) = value.available
 """Get [`TwoTerminalLCCLine`](@ref) `arc`."""
 get_arc(value::TwoTerminalLCCLine) = value.arc
-"""Get [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
-get_active_power_flow(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_flow), Val(:mva))
+"""Get [`TwoTerminalLCCLine`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::TwoTerminalLCCLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 """Get [`TwoTerminalLCCLine`](@ref) `r`."""
 get_r(value::TwoTerminalLCCLine) = value.r
 """Get [`TwoTerminalLCCLine`](@ref) `transfer_setpoint`."""
@@ -301,14 +302,18 @@ get_inverter_tap_step(value::TwoTerminalLCCLine) = value.inverter_tap_step
 get_inverter_extinction_angle(value::TwoTerminalLCCLine) = value.inverter_extinction_angle
 """Get [`TwoTerminalLCCLine`](@ref) `inverter_capacitor_reactance`."""
 get_inverter_capacitor_reactance(value::TwoTerminalLCCLine) = value.inverter_capacitor_reactance
-"""Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
-get_active_power_limits_from(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva))
-"""Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
-get_active_power_limits_to(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva))
-"""Get [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`."""
-get_reactive_power_limits_from(value::TwoTerminalLCCLine) = get_value(value, Val(:reactive_power_limits_from), Val(:mva))
-"""Get [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`."""
-get_reactive_power_limits_to(value::TwoTerminalLCCLine) = get_value(value, Val(:reactive_power_limits_to), Val(:mva))
+"""Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`. Returns natural units (MW) by default."""
+get_active_power_limits_from(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva), MW)
+get_active_power_limits_from(value::TwoTerminalLCCLine, units) = get_value(value, Val(:active_power_limits_from), Val(:mva), units)
+"""Get [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`. Returns natural units (MW) by default."""
+get_active_power_limits_to(value::TwoTerminalLCCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva), MW)
+get_active_power_limits_to(value::TwoTerminalLCCLine, units) = get_value(value, Val(:active_power_limits_to), Val(:mva), units)
+"""Get [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits_from(value::TwoTerminalLCCLine) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), Mvar)
+get_reactive_power_limits_from(value::TwoTerminalLCCLine, units) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), units)
+"""Get [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits_to(value::TwoTerminalLCCLine) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), Mvar)
+get_reactive_power_limits_to(value::TwoTerminalLCCLine, units) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), units)
 """Get [`TwoTerminalLCCLine`](@ref) `loss`."""
 get_loss(value::TwoTerminalLCCLine) = value.loss
 """Get [`TwoTerminalLCCLine`](@ref) `services`."""
@@ -322,7 +327,7 @@ get_internal(value::TwoTerminalLCCLine) = value.internal
 set_available!(value::TwoTerminalLCCLine, val) = value.available = val
 """Set [`TwoTerminalLCCLine`](@ref) `arc`."""
 set_arc!(value::TwoTerminalLCCLine, val) = value.arc = val
-"""Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`."""
+"""Set [`TwoTerminalLCCLine`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::TwoTerminalLCCLine, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `r`."""
 set_r!(value::TwoTerminalLCCLine, val) = value.r = val
@@ -382,13 +387,13 @@ set_inverter_tap_step!(value::TwoTerminalLCCLine, val) = value.inverter_tap_step
 set_inverter_extinction_angle!(value::TwoTerminalLCCLine, val) = value.inverter_extinction_angle = val
 """Set [`TwoTerminalLCCLine`](@ref) `inverter_capacitor_reactance`."""
 set_inverter_capacitor_reactance!(value::TwoTerminalLCCLine, val) = value.inverter_capacitor_reactance = val
-"""Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`."""
+"""Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_from`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_limits_from!(value::TwoTerminalLCCLine, val) = value.active_power_limits_from = set_value(value, Val(:active_power_limits_from), val, Val(:mva))
-"""Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`."""
+"""Set [`TwoTerminalLCCLine`](@ref) `active_power_limits_to`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_limits_to!(value::TwoTerminalLCCLine, val) = value.active_power_limits_to = set_value(value, Val(:active_power_limits_to), val, Val(:mva))
-"""Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`."""
+"""Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_from`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits_from!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_from = set_value(value, Val(:reactive_power_limits_from), val, Val(:mva))
-"""Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`."""
+"""Set [`TwoTerminalLCCLine`](@ref) `reactive_power_limits_to`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits_to!(value::TwoTerminalLCCLine, val) = value.reactive_power_limits_to = set_value(value, Val(:reactive_power_limits_to), val, Val(:mva))
 """Set [`TwoTerminalLCCLine`](@ref) `loss`."""
 set_loss!(value::TwoTerminalLCCLine, val) = value.loss = val

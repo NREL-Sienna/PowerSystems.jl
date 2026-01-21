@@ -77,14 +77,16 @@ end
 get_name(value::AreaInterchange) = value.name
 """Get [`AreaInterchange`](@ref) `available`."""
 get_available(value::AreaInterchange) = value.available
-"""Get [`AreaInterchange`](@ref) `active_power_flow`."""
-get_active_power_flow(value::AreaInterchange) = get_value(value, Val(:active_power_flow), Val(:mva))
+"""Get [`AreaInterchange`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::AreaInterchange) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::AreaInterchange, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 """Get [`AreaInterchange`](@ref) `from_area`."""
 get_from_area(value::AreaInterchange) = value.from_area
 """Get [`AreaInterchange`](@ref) `to_area`."""
 get_to_area(value::AreaInterchange) = value.to_area
-"""Get [`AreaInterchange`](@ref) `flow_limits`."""
-get_flow_limits(value::AreaInterchange) = get_value(value, Val(:flow_limits), Val(:mva))
+"""Get [`AreaInterchange`](@ref) `flow_limits`. Returns natural units (MW) by default."""
+get_flow_limits(value::AreaInterchange) = get_value(value, Val(:flow_limits), Val(:mva), MW)
+get_flow_limits(value::AreaInterchange, units) = get_value(value, Val(:flow_limits), Val(:mva), units)
 """Get [`AreaInterchange`](@ref) `services`."""
 get_services(value::AreaInterchange) = value.services
 """Get [`AreaInterchange`](@ref) `ext`."""
@@ -94,13 +96,13 @@ get_internal(value::AreaInterchange) = value.internal
 
 """Set [`AreaInterchange`](@ref) `available`."""
 set_available!(value::AreaInterchange, val) = value.available = val
-"""Set [`AreaInterchange`](@ref) `active_power_flow`."""
+"""Set [`AreaInterchange`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::AreaInterchange, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
 """Set [`AreaInterchange`](@ref) `from_area`."""
 set_from_area!(value::AreaInterchange, val) = value.from_area = val
 """Set [`AreaInterchange`](@ref) `to_area`."""
 set_to_area!(value::AreaInterchange, val) = value.to_area = val
-"""Set [`AreaInterchange`](@ref) `flow_limits`."""
+"""Set [`AreaInterchange`](@ref) `flow_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_flow_limits!(value::AreaInterchange, val) = value.flow_limits = set_value(value, Val(:flow_limits), val, Val(:mva))
 """Set [`AreaInterchange`](@ref) `services`."""
 set_services!(value::AreaInterchange, val) = value.services = val

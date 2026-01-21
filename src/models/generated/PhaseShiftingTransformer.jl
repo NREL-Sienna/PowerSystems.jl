@@ -139,34 +139,42 @@ end
 get_name(value::PhaseShiftingTransformer) = value.name
 """Get [`PhaseShiftingTransformer`](@ref) `available`."""
 get_available(value::PhaseShiftingTransformer) = value.available
-"""Get [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
-get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`PhaseShiftingTransformer`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::PhaseShiftingTransformer, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::PhaseShiftingTransformer) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::PhaseShiftingTransformer, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`PhaseShiftingTransformer`](@ref) `arc`."""
 get_arc(value::PhaseShiftingTransformer) = value.arc
-"""Get [`PhaseShiftingTransformer`](@ref) `r`."""
-get_r(value::PhaseShiftingTransformer) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`PhaseShiftingTransformer`](@ref) `x`."""
-get_x(value::PhaseShiftingTransformer) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
-get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens))
+"""Get [`PhaseShiftingTransformer`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::PhaseShiftingTransformer) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::PhaseShiftingTransformer, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::PhaseShiftingTransformer) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::PhaseShiftingTransformer, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`PhaseShiftingTransformer`](@ref) `primary_shunt`. Returns natural units (SIEMENS) by default."""
+get_primary_shunt(value::PhaseShiftingTransformer) = get_value(value, Val(:primary_shunt), Val(:siemens), SIEMENS)
+get_primary_shunt(value::PhaseShiftingTransformer, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
 """Get [`PhaseShiftingTransformer`](@ref) `tap`."""
 get_tap(value::PhaseShiftingTransformer) = value.tap
 """Get [`PhaseShiftingTransformer`](@ref) `α`."""
 get_α(value::PhaseShiftingTransformer) = value.α
-"""Get [`PhaseShiftingTransformer`](@ref) `rating`."""
-get_rating(value::PhaseShiftingTransformer) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`PhaseShiftingTransformer`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::PhaseShiftingTransformer) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::PhaseShiftingTransformer, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`PhaseShiftingTransformer`](@ref) `base_power`."""
 get_base_power(value::PhaseShiftingTransformer) = value.base_power
 """Get [`PhaseShiftingTransformer`](@ref) `base_voltage_primary`."""
 get_base_voltage_primary(value::PhaseShiftingTransformer) = value.base_voltage_primary
 """Get [`PhaseShiftingTransformer`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::PhaseShiftingTransformer) = value.base_voltage_secondary
-"""Get [`PhaseShiftingTransformer`](@ref) `rating_b`."""
-get_rating_b(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_b), Val(:mva))
-"""Get [`PhaseShiftingTransformer`](@ref) `rating_c`."""
-get_rating_c(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_c), Val(:mva))
+"""Get [`PhaseShiftingTransformer`](@ref) `rating_b`. Returns natural units (MW) by default."""
+get_rating_b(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_b), Val(:mva), MW)
+get_rating_b(value::PhaseShiftingTransformer, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`PhaseShiftingTransformer`](@ref) `rating_c`. Returns natural units (MW) by default."""
+get_rating_c(value::PhaseShiftingTransformer) = get_value(value, Val(:rating_c), Val(:mva), MW)
+get_rating_c(value::PhaseShiftingTransformer, units) = get_value(value, Val(:rating_c), Val(:mva), units)
 """Get [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 get_phase_angle_limits(value::PhaseShiftingTransformer) = value.phase_angle_limits
 """Get [`PhaseShiftingTransformer`](@ref) `control_objective`."""
@@ -180,23 +188,23 @@ get_internal(value::PhaseShiftingTransformer) = value.internal
 
 """Set [`PhaseShiftingTransformer`](@ref) `available`."""
 set_available!(value::PhaseShiftingTransformer, val) = value.available = val
-"""Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::PhaseShiftingTransformer, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::PhaseShiftingTransformer, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `arc`."""
 set_arc!(value::PhaseShiftingTransformer, val) = value.arc = val
-"""Set [`PhaseShiftingTransformer`](@ref) `r`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::PhaseShiftingTransformer, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer`](@ref) `x`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::PhaseShiftingTransformer, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `primary_shunt`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_primary_shunt!(value::PhaseShiftingTransformer, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`PhaseShiftingTransformer`](@ref) `tap`."""
 set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 """Set [`PhaseShiftingTransformer`](@ref) `α`."""
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
-"""Set [`PhaseShiftingTransformer`](@ref) `rating`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `base_power`."""
 set_base_power!(value::PhaseShiftingTransformer, val) = value.base_power = val
@@ -204,9 +212,9 @@ set_base_power!(value::PhaseShiftingTransformer, val) = value.base_power = val
 set_base_voltage_primary!(value::PhaseShiftingTransformer, val) = value.base_voltage_primary = val
 """Set [`PhaseShiftingTransformer`](@ref) `base_voltage_secondary`."""
 set_base_voltage_secondary!(value::PhaseShiftingTransformer, val) = value.base_voltage_secondary = val
-"""Set [`PhaseShiftingTransformer`](@ref) `rating_b`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `rating_b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_b!(value::PhaseShiftingTransformer, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer`](@ref) `rating_c`."""
+"""Set [`PhaseShiftingTransformer`](@ref) `rating_c`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_c!(value::PhaseShiftingTransformer, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
 """Set [`PhaseShiftingTransformer`](@ref) `phase_angle_limits`."""
 set_phase_angle_limits!(value::PhaseShiftingTransformer, val) = value.phase_angle_limits = val

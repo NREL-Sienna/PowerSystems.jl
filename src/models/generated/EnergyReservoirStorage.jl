@@ -160,26 +160,33 @@ get_bus(value::EnergyReservoirStorage) = value.bus
 get_prime_mover_type(value::EnergyReservoirStorage) = value.prime_mover_type
 """Get [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 get_storage_technology_type(value::EnergyReservoirStorage) = value.storage_technology_type
-"""Get [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
-get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, Val(:storage_capacity), Val(:mva))
+"""Get [`EnergyReservoirStorage`](@ref) `storage_capacity`. Returns natural units (MW) by default."""
+get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, Val(:storage_capacity), Val(:mva), MW)
+get_storage_capacity(value::EnergyReservoirStorage, units) = get_value(value, Val(:storage_capacity), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::EnergyReservoirStorage) = value.storage_level_limits
 """Get [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initial_storage_capacity_level
-"""Get [`EnergyReservoirStorage`](@ref) `rating`."""
-get_rating(value::EnergyReservoirStorage) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`EnergyReservoirStorage`](@ref) `active_power`."""
-get_active_power(value::EnergyReservoirStorage) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
-get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:input_active_power_limits), Val(:mva))
-"""Get [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
-get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:output_active_power_limits), Val(:mva))
+"""Get [`EnergyReservoirStorage`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::EnergyReservoirStorage) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::EnergyReservoirStorage, units) = get_value(value, Val(:rating), Val(:mva), units)
+"""Get [`EnergyReservoirStorage`](@ref) `active_power`. Returns natural units (MW) by default."""
+get_active_power(value::EnergyReservoirStorage) = get_value(value, Val(:active_power), Val(:mva), MW)
+get_active_power(value::EnergyReservoirStorage, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`EnergyReservoirStorage`](@ref) `input_active_power_limits`. Returns natural units (MW) by default."""
+get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:input_active_power_limits), Val(:mva), MW)
+get_input_active_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:input_active_power_limits), Val(:mva), units)
+"""Get [`EnergyReservoirStorage`](@ref) `output_active_power_limits`. Returns natural units (MW) by default."""
+get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:output_active_power_limits), Val(:mva), MW)
+get_output_active_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:output_active_power_limits), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `efficiency`."""
 get_efficiency(value::EnergyReservoirStorage) = value.efficiency
-"""Get [`EnergyReservoirStorage`](@ref) `reactive_power`."""
-get_reactive_power(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`EnergyReservoirStorage`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
+get_reactive_power(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+get_reactive_power(value::EnergyReservoirStorage, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+"""Get [`EnergyReservoirStorage`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
+get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+get_reactive_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `base_power`."""
 get_base_power(value::EnergyReservoirStorage) = value.base_power
 """Get [`EnergyReservoirStorage`](@ref) `operation_cost`."""
@@ -207,25 +214,25 @@ set_bus!(value::EnergyReservoirStorage, val) = value.bus = val
 set_prime_mover_type!(value::EnergyReservoirStorage, val) = value.prime_mover_type = val
 """Set [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 set_storage_technology_type!(value::EnergyReservoirStorage, val) = value.storage_technology_type = val
-"""Set [`EnergyReservoirStorage`](@ref) `storage_capacity`."""
+"""Set [`EnergyReservoirStorage`](@ref) `storage_capacity`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_storage_capacity!(value::EnergyReservoirStorage, val) = value.storage_capacity = set_value(value, Val(:storage_capacity), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 set_storage_level_limits!(value::EnergyReservoirStorage, val) = value.storage_level_limits = val
 """Set [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 set_initial_storage_capacity_level!(value::EnergyReservoirStorage, val) = value.initial_storage_capacity_level = val
-"""Set [`EnergyReservoirStorage`](@ref) `rating`."""
+"""Set [`EnergyReservoirStorage`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::EnergyReservoirStorage, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`EnergyReservoirStorage`](@ref) `active_power`."""
+"""Set [`EnergyReservoirStorage`](@ref) `active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power!(value::EnergyReservoirStorage, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
-"""Set [`EnergyReservoirStorage`](@ref) `input_active_power_limits`."""
+"""Set [`EnergyReservoirStorage`](@ref) `input_active_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_input_active_power_limits!(value::EnergyReservoirStorage, val) = value.input_active_power_limits = set_value(value, Val(:input_active_power_limits), val, Val(:mva))
-"""Set [`EnergyReservoirStorage`](@ref) `output_active_power_limits`."""
+"""Set [`EnergyReservoirStorage`](@ref) `output_active_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_output_active_power_limits!(value::EnergyReservoirStorage, val) = value.output_active_power_limits = set_value(value, Val(:output_active_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `efficiency`."""
 set_efficiency!(value::EnergyReservoirStorage, val) = value.efficiency = val
-"""Set [`EnergyReservoirStorage`](@ref) `reactive_power`."""
+"""Set [`EnergyReservoirStorage`](@ref) `reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
+"""Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `base_power`."""
 set_base_power!(value::EnergyReservoirStorage, val) = value.base_power = val

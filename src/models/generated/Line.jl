@@ -112,28 +112,37 @@ end
 get_name(value::Line) = value.name
 """Get [`Line`](@ref) `available`."""
 get_available(value::Line) = value.available
-"""Get [`Line`](@ref) `active_power_flow`."""
-get_active_power_flow(value::Line) = get_value(value, Val(:active_power_flow), Val(:mva))
-"""Get [`Line`](@ref) `reactive_power_flow`."""
-get_reactive_power_flow(value::Line) = get_value(value, Val(:reactive_power_flow), Val(:mva))
+"""Get [`Line`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
+get_active_power_flow(value::Line) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+get_active_power_flow(value::Line, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`Line`](@ref) `reactive_power_flow`. Returns natural units (Mvar) by default."""
+get_reactive_power_flow(value::Line) = get_value(value, Val(:reactive_power_flow), Val(:mva), Mvar)
+get_reactive_power_flow(value::Line, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 """Get [`Line`](@ref) `arc`."""
 get_arc(value::Line) = value.arc
-"""Get [`Line`](@ref) `r`."""
-get_r(value::Line) = get_value(value, Val(:r), Val(:ohm))
-"""Get [`Line`](@ref) `x`."""
-get_x(value::Line) = get_value(value, Val(:x), Val(:ohm))
-"""Get [`Line`](@ref) `b`."""
-get_b(value::Line) = get_value(value, Val(:b), Val(:siemens))
-"""Get [`Line`](@ref) `rating`."""
-get_rating(value::Line) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`Line`](@ref) `r`. Returns natural units (OHMS) by default."""
+get_r(value::Line) = get_value(value, Val(:r), Val(:ohm), OHMS)
+get_r(value::Line, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`Line`](@ref) `x`. Returns natural units (OHMS) by default."""
+get_x(value::Line) = get_value(value, Val(:x), Val(:ohm), OHMS)
+get_x(value::Line, units) = get_value(value, Val(:x), Val(:ohm), units)
+"""Get [`Line`](@ref) `b`. Returns natural units (SIEMENS) by default."""
+get_b(value::Line) = get_value(value, Val(:b), Val(:siemens), SIEMENS)
+get_b(value::Line, units) = get_value(value, Val(:b), Val(:siemens), units)
+"""Get [`Line`](@ref) `rating`. Returns natural units (MW) by default."""
+get_rating(value::Line) = get_value(value, Val(:rating), Val(:mva), MW)
+get_rating(value::Line, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`Line`](@ref) `angle_limits`."""
 get_angle_limits(value::Line) = value.angle_limits
-"""Get [`Line`](@ref) `rating_b`."""
-get_rating_b(value::Line) = get_value(value, Val(:rating_b), Val(:mva))
-"""Get [`Line`](@ref) `rating_c`."""
-get_rating_c(value::Line) = get_value(value, Val(:rating_c), Val(:mva))
-"""Get [`Line`](@ref) `g`."""
-get_g(value::Line) = get_value(value, Val(:g), Val(:siemens))
+"""Get [`Line`](@ref) `rating_b`. Returns natural units (MW) by default."""
+get_rating_b(value::Line) = get_value(value, Val(:rating_b), Val(:mva), MW)
+get_rating_b(value::Line, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`Line`](@ref) `rating_c`. Returns natural units (MW) by default."""
+get_rating_c(value::Line) = get_value(value, Val(:rating_c), Val(:mva), MW)
+get_rating_c(value::Line, units) = get_value(value, Val(:rating_c), Val(:mva), units)
+"""Get [`Line`](@ref) `g`. Returns natural units (SIEMENS) by default."""
+get_g(value::Line) = get_value(value, Val(:g), Val(:siemens), SIEMENS)
+get_g(value::Line, units) = get_value(value, Val(:g), Val(:siemens), units)
 """Get [`Line`](@ref) `services`."""
 get_services(value::Line) = value.services
 """Get [`Line`](@ref) `ext`."""
@@ -143,27 +152,27 @@ get_internal(value::Line) = value.internal
 
 """Set [`Line`](@ref) `available`."""
 set_available!(value::Line, val) = value.available = val
-"""Set [`Line`](@ref) `active_power_flow`."""
+"""Set [`Line`](@ref) `active_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_active_power_flow!(value::Line, val) = value.active_power_flow = set_value(value, Val(:active_power_flow), val, Val(:mva))
-"""Set [`Line`](@ref) `reactive_power_flow`."""
+"""Set [`Line`](@ref) `reactive_power_flow`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_reactive_power_flow!(value::Line, val) = value.reactive_power_flow = set_value(value, Val(:reactive_power_flow), val, Val(:mva))
 """Set [`Line`](@ref) `arc`."""
 set_arc!(value::Line, val) = value.arc = val
-"""Set [`Line`](@ref) `r`."""
+"""Set [`Line`](@ref) `r`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_r!(value::Line, val) = value.r = set_value(value, Val(:r), val, Val(:ohm))
-"""Set [`Line`](@ref) `x`."""
+"""Set [`Line`](@ref) `x`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_x!(value::Line, val) = value.x = set_value(value, Val(:x), val, Val(:ohm))
-"""Set [`Line`](@ref) `b`."""
+"""Set [`Line`](@ref) `b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_b!(value::Line, val) = value.b = set_value(value, Val(:b), val, Val(:siemens))
-"""Set [`Line`](@ref) `rating`."""
+"""Set [`Line`](@ref) `rating`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating!(value::Line, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`Line`](@ref) `angle_limits`."""
 set_angle_limits!(value::Line, val) = value.angle_limits = val
-"""Set [`Line`](@ref) `rating_b`."""
+"""Set [`Line`](@ref) `rating_b`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_b!(value::Line, val) = value.rating_b = set_value(value, Val(:rating_b), val, Val(:mva))
-"""Set [`Line`](@ref) `rating_c`."""
+"""Set [`Line`](@ref) `rating_c`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_rating_c!(value::Line, val) = value.rating_c = set_value(value, Val(:rating_c), val, Val(:mva))
-"""Set [`Line`](@ref) `g`."""
+"""Set [`Line`](@ref) `g`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_g!(value::Line, val) = value.g = set_value(value, Val(:g), val, Val(:siemens))
 """Set [`Line`](@ref) `services`."""
 set_services!(value::Line, val) = value.services = val

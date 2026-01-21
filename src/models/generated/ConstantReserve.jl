@@ -86,8 +86,9 @@ get_name(value::ConstantReserve) = value.name
 get_available(value::ConstantReserve) = value.available
 """Get [`ConstantReserve`](@ref) `time_frame`."""
 get_time_frame(value::ConstantReserve) = value.time_frame
-"""Get [`ConstantReserve`](@ref) `requirement`."""
-get_requirement(value::ConstantReserve) = get_value(value, Val(:requirement), Val(:mva))
+"""Get [`ConstantReserve`](@ref) `requirement`. Returns natural units (MW) by default."""
+get_requirement(value::ConstantReserve) = get_value(value, Val(:requirement), Val(:mva), MW)
+get_requirement(value::ConstantReserve, units) = get_value(value, Val(:requirement), Val(:mva), units)
 """Get [`ConstantReserve`](@ref) `sustained_time`."""
 get_sustained_time(value::ConstantReserve) = value.sustained_time
 """Get [`ConstantReserve`](@ref) `max_output_fraction`."""
@@ -105,7 +106,7 @@ get_internal(value::ConstantReserve) = value.internal
 set_available!(value::ConstantReserve, val) = value.available = val
 """Set [`ConstantReserve`](@ref) `time_frame`."""
 set_time_frame!(value::ConstantReserve, val) = value.time_frame = val
-"""Set [`ConstantReserve`](@ref) `requirement`."""
+"""Set [`ConstantReserve`](@ref) `requirement`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_requirement!(value::ConstantReserve, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`ConstantReserve`](@ref) `sustained_time`."""
 set_sustained_time!(value::ConstantReserve, val) = value.sustained_time = val

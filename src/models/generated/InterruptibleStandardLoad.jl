@@ -154,30 +154,42 @@ get_base_power(value::InterruptibleStandardLoad) = value.base_power
 get_operation_cost(value::InterruptibleStandardLoad) = value.operation_cost
 """Get [`InterruptibleStandardLoad`](@ref) `conformity`."""
 get_conformity(value::InterruptibleStandardLoad) = value.conformity
-"""Get [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
-get_constant_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
-get_constant_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `impedance_active_power`."""
-get_impedance_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`."""
-get_impedance_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `current_active_power`."""
-get_current_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:current_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `current_reactive_power`."""
-get_current_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`."""
-get_max_constant_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`."""
-get_max_constant_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`."""
-get_max_impedance_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`."""
-get_max_impedance_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_current_active_power`."""
-get_max_current_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva))
-"""Get [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
-get_max_current_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva))
+"""Get [`InterruptibleStandardLoad`](@ref) `constant_active_power`. Returns natural units (MW) by default."""
+get_constant_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva), MW)
+get_constant_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`. Returns natural units (Mvar) by default."""
+get_constant_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva), Mvar)
+get_constant_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:constant_reactive_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `impedance_active_power`. Returns natural units (MW) by default."""
+get_impedance_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva), MW)
+get_impedance_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`. Returns natural units (Mvar) by default."""
+get_impedance_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva), Mvar)
+get_impedance_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:impedance_reactive_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `current_active_power`. Returns natural units (MW) by default."""
+get_current_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:current_active_power), Val(:mva), MW)
+get_current_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `current_reactive_power`. Returns natural units (Mvar) by default."""
+get_current_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva), Mvar)
+get_current_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:current_reactive_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`. Returns natural units (MW) by default."""
+get_max_constant_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva), MW)
+get_max_constant_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_constant_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), Mvar)
+get_max_constant_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`. Returns natural units (MW) by default."""
+get_max_impedance_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva), MW)
+get_max_impedance_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_impedance_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), Mvar)
+get_max_impedance_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_current_active_power`. Returns natural units (MW) by default."""
+get_max_current_active_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva), MW)
+get_max_current_active_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_active_power), Val(:mva), units)
+"""Get [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`. Returns natural units (Mvar) by default."""
+get_max_current_reactive_power(value::InterruptibleStandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva), Mvar)
+get_max_current_reactive_power(value::InterruptibleStandardLoad, units) = get_value(value, Val(:max_current_reactive_power), Val(:mva), units)
 """Get [`InterruptibleStandardLoad`](@ref) `services`."""
 get_services(value::InterruptibleStandardLoad) = value.services
 """Get [`InterruptibleStandardLoad`](@ref) `dynamic_injector`."""
@@ -197,29 +209,29 @@ set_base_power!(value::InterruptibleStandardLoad, val) = value.base_power = val
 set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cost = val
 """Set [`InterruptibleStandardLoad`](@ref) `conformity`."""
 set_conformity!(value::InterruptibleStandardLoad, val) = value.conformity = val
-"""Set [`InterruptibleStandardLoad`](@ref) `constant_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `constant_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_constant_active_power!(value::InterruptibleStandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `constant_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.constant_reactive_power = set_value(value, Val(:constant_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `impedance_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `impedance_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.impedance_active_power = set_value(value, Val(:impedance_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `impedance_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.impedance_reactive_power = set_value(value, Val(:impedance_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `current_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `current_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_current_active_power!(value::InterruptibleStandardLoad, val) = value.current_active_power = set_value(value, Val(:current_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `current_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `current_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.current_reactive_power = set_value(value, Val(:current_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_constant_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_constant_active_power!(value::InterruptibleStandardLoad, val) = value.max_constant_active_power = set_value(value, Val(:max_constant_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_constant_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_constant_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_constant_reactive_power = set_value(value, Val(:max_constant_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_impedance_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_impedance_active_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_active_power = set_value(value, Val(:max_impedance_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_impedance_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_impedance_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_impedance_reactive_power = set_value(value, Val(:max_impedance_reactive_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_current_active_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_current_active_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_current_active_power!(value::InterruptibleStandardLoad, val) = value.max_current_active_power = set_value(value, Val(:max_current_active_power), val, Val(:mva))
-"""Set [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`."""
+"""Set [`InterruptibleStandardLoad`](@ref) `max_current_reactive_power`. Value must have units (e.g., `30.0MW`, `0.5DU`)."""
 set_max_current_reactive_power!(value::InterruptibleStandardLoad, val) = value.max_current_reactive_power = set_value(value, Val(:max_current_reactive_power), val, Val(:mva))
 """Set [`InterruptibleStandardLoad`](@ref) `services`."""
 set_services!(value::InterruptibleStandardLoad, val) = value.services = val
