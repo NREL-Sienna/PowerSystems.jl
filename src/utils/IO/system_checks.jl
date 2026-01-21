@@ -91,21 +91,26 @@ function total_load_rating(sys::System)
     controllable_loads = get_components(ControllableLoad, sys)
     cl =
         if isempty(controllable_loads)
-            0.0
+            zero(DEFAULT_POWER_UNITS_TYPE)
         else
             sum(get_max_active_power.(controllable_loads)) * base_power
         end
     @debug "System has $cl MW of ControllableLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     static_loads = get_components(StaticLoad, sys)
-    sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
+    sl =
+        if isempty(static_loads)
+            zero(DEFAULT_POWER_UNITS_TYPE)
+        else
+            sum(get_max_active_power.(static_loads)) * base_power
+        end
     @debug "System has $sl MW of StaticLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
     fa_loads = get_components(FixedAdmittance, sys)
     fa =
         if isempty(fa_loads)
-            0.0
+            zero(DEFAULT_POWER_UNITS_TYPE)
         else
-            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
+            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads))) * IS.MW
         end
     @debug "System has $fa MW of FixedAdmittance assuming admittance values are in P.U." _group =
         IS.LOG_GROUP_SYSTEM_CHECKS
@@ -123,11 +128,13 @@ Sum of system generator and storage ratings.
 - `sys::System`: system
 """
 function total_capacity_rating(sys::System)
-    total = 0
+    base_power = get_base_power(sys)
+    total = zero(DEFAULT_POWER_UNITS_TYPE)
+
     for component_type in (Generator, Storage)
         components = get_components(component_type, sys)
         if !isempty(components)
-            component_total = sum(get_rating.(components)) * get_base_power(sys)
+            component_total = sum(get_rating.(components)) * base_power
             @debug "total rating for $component_type = $component_total" _group =
                 IS.LOG_GROUP_SYSTEM_CHECKS
             total += component_total
