@@ -88,8 +88,8 @@ file_structure:
           - generation.jl: generation component definitions
           - storage.jl: storage/battery definitions
           - loads.jl: load component definitions
-          - reserves.jl: reserves and ancillary services
-          - services.jl: support services
+          - reserves.jl: reserve ancillary services
+          - services.jl: support all kinds of ancillary services. Super type to reserves
           - static_models.jl: static component definitions
           - dynamic_generator.jl: dynamic generator models
           - dynamic_inverter.jl: dynamic inverter models
@@ -192,9 +192,9 @@ core_abstractions:
   Branch:
     description: Transmission elements connecting buses. Branchs that contain Arcs with ACBuses are AC Branches and branches with DC Buses are DC Branches.
     subtypes:
-      - ACBranch: Line, TwoWindingTransformer, PhaseShiftingTransformer, TapTransformer, TwoTerminalHVDCLine
+      - ACBranch: Line, TwoWindingTransformer, PhaseShiftingTransformer, TapTransformer, TwoTerminalHVDCLine, MonitoredLine
       - DCBranch: TModelHVDCLine
-      - ControlledBranch: MonitoredLine
+      - ControlledBranch: DiscreteControlledACBranch
 
   DynamicInjection:
     description: Dynamic models for transient stability
