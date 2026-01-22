@@ -24,7 +24,7 @@ For this model, attach an upstream [`HydroReservoir`](@ref) to any number of [`H
 
 ```julia
 using PowerSystems
-const PSY = PowerSystems
+import PowerSystems as PSY
 
 # Create a system
 sys = System(100.0)

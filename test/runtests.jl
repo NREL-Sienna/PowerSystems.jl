@@ -3,17 +3,15 @@ using Logging
 using DataStructures
 using Dates
 using LinearAlgebra
-using PowerSystemCaseBuilder
 import TimeSeries
 import InteractiveUtils
 import JSON3
-import PowerSystemCaseBuilder: PSYTestSystems
-import InfrastructureSystems
-const IS = InfrastructureSystems
+using PowerSystemCaseBuilder
+import PowerSystemCaseBuilder as PSB
+import InfrastructureSystems as IS
 using PowerSystems
 import PowerSystems: PowerSystemTableData
-const PSY = PowerSystems
-const PSB = PowerSystemCaseBuilder
+import PowerSystems as PSY
 
 import Aqua
 Aqua.test_unbound_args(PowerSystems)
