@@ -4,7 +4,7 @@ abstract type PowerPlant <: SupplementalAttribute end
 get_internal(x::PowerPlant) = x.internal
 
 """
-Attribute to represent ThermalGeneration power plants with synchronous generation.
+Attribute to represent [`ThermalGen`](@ref) power plants with synchronous generation.
 For CombinedCycle plants consider using [`CombinedCycleBlock`](@ref).
 
 The shaft map field is used to represent shared shafts between units.
