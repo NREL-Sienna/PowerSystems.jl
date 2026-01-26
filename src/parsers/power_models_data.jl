@@ -731,7 +731,8 @@ function make_hydro_dispatch(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -770,7 +771,8 @@ function make_hydro_reservoir(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -809,7 +811,8 @@ function make_renewable_dispatch(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -817,7 +820,8 @@ function make_renewable_dispatch(
 
     rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion)
     if rating > mbase
-        @warn "rating is larger than base power for $gen_name, setting to $mbase"
+        @warn "rating is larger than base power for $gen_name, setting to $mbase" _group =
+            IS.LOG_GROUP_PARSING
         rating = mbase
     end
 
@@ -850,7 +854,8 @@ function make_renewable_fix(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -1000,7 +1005,8 @@ function make_thermal_gen(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -1054,7 +1060,8 @@ function make_synchronous_condenser(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
