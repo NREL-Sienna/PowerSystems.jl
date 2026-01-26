@@ -21,7 +21,7 @@ fallbacks = ExternalFallbacks(
 # communicate this information to users is ongoing.
 #include(joinpath(@__DIR__, "src", "generate_validation_table.jl"))
 include(joinpath(@__DIR__, "make_model_library.jl"))
-include(joinpath(@__DIR__, "postprocess_tutorials.jl"))
+include(joinpath(@__DIR__, "make_tutorials.jl"))
 
 pages = OrderedDict(
         "Welcome Page" => "index.md",
@@ -124,29 +124,8 @@ pages["Model Library"] = make_model_library(
         )
 )
 
-# postprocess function to insert md
-function insert_md(content)
-    m = match(r"APPEND_MARKDOWN\(\"(.*)\"\)", content)
-    if !isnothing(m)
-        md_content = read(m.captures[1], String)
-        content = replace(content, r"APPEND_MARKDOWN\(\"(.*)\"\)" => md_content)
-    end
-    return content
-end
-
-# Function to clean up old generated_*.md files
-function clean_old_generated_files(dir::String)
-    # Remove old generated_*.md files before creating new ones
-    if !isdir(dir)
-        @warn "Directory does not exist: $dir"
-        return
-    end
-    generated_files = filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
-    for file in generated_files
-        rm(joinpath(dir, file), force=true)
-        @info "Removed old generated file: $file"
-    end
-end
+# clean_old_generated_files and insert_md are now defined in make_tutorials.jl
+# They are used here for other sections (Model Library, Explanation, How to...)
 
 # This code performs the automated addition of Literate - Generated Markdowns. The desired
 # section name should be the name of the file for instance network_matrices.jl -> Network Matrices
@@ -198,40 +177,7 @@ for (section, folder) in folders
 end
 
 # Process tutorials separately with Literate
-tutorial_files = filter(x -> occursin(".jl", x), readdir("docs/src/tutorials"))
-if !isempty(tutorial_files)
-    # Clean up old generated tutorial files
-    tutorial_outputdir = joinpath(pwd(), "docs", "src", "tutorials")
-    clean_old_generated_files(tutorial_outputdir)
-    
-    for file in tutorial_files
-        @show file
-        infile_path = joinpath(pwd(), "docs", "src", "tutorials", file)
-        execute = occursin("EXECUTE = TRUE", uppercase(readline(infile_path))) ? true : false
-        execute && include(infile_path)
-        
-        outputfile = string("generated_", replace("$file", ".jl" => ""))
-        
-        # Generate markdown
-        Literate.markdown(infile_path,
-                          tutorial_outputdir;
-                          name = outputfile,
-                          credit = false,
-                          flavor = Literate.DocumenterFlavor(),
-                          documenter = true,
-                          postprocess = (content -> add_download_links(insert_md(content), file, string(outputfile, ".ipynb"))),
-                          execute = execute)
-        
-        # Generate notebook
-        Literate.notebook(infile_path,
-                          tutorial_outputdir;
-                          name = outputfile,
-                          credit = false,
-                          execute = false,
-                          postprocess = add_pkg_status_to_notebook)
-        
-    end
-end
+process_tutorials()
 
 makedocs(
     modules = [PowerSystems],
