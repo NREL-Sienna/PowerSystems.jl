@@ -133,7 +133,7 @@ function clean_old_generated_files(dir::String)
 end
 
 # Process tutorials with Literate
-function process_tutorials()
+function make_tutorials()
     tutorial_files = filter(x -> occursin(".jl", x), readdir("docs/src/tutorials"))
     if !isempty(tutorial_files)
         # Clean up old generated tutorial files

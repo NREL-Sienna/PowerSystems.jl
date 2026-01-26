@@ -177,7 +177,7 @@ for (section, folder) in folders
 end
 
 # Process tutorials separately with Literate
-process_tutorials()
+make_tutorials()
 
 makedocs(
     modules = [PowerSystems],
