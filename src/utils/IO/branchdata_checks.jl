@@ -23,8 +23,8 @@ function sanitize_angle_limits!(line::Union{Line, MonitoredLine})
     if (line.angle_limits.max / max_limit > 3) ||
        (-1 * line.angle_limits.min / max_limit > 3)
         @warn "The angle limits provided is larger than 3π/2 radians.\n " *
-              "PowerSystems inferred the data provided in degrees and will transform it to radians" maxlog =
-            PS_MAX_LOG
+              "PowerSystems inferred the data provided in degrees and will transform it to radians" _group =
+            IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
 
         if line.angle_limits.max / max_limit >= 0.99
             line.angle_limits = (
@@ -101,12 +101,12 @@ function check_rating_values(line::Union{Line, MonitoredLine}, basemva::Float64)
             continue
         end
         if (rating_value >= 2.0 * closest_rate_range.max / basemva)
-            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
+            @warn "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         elseif (rating_value >= closest_rate_range.max / basemva) ||
                (rating_value <= closest_rate_range.min / basemva)
-            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
+            @info "$(field) $(round(rating_value*basemva; digits=2)) MW for $(get_name(line)) is outside the expected range $(closest_rate_range) MW for Line at a $(closest_v_level) kV Voltage level." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end
 
@@ -149,8 +149,8 @@ function correct_rate_limits!(branch::Union{Line, MonitoredLine}, basemva::Float
         end
         if rating_value == INFINITE_BOUND
             @warn "Data for branch $(summary(branch)) $(field) is set to INFINITE_BOUND. \
-                PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" maxlog =
-                PS_MAX_LOG
+                PowerSystems will set a rate from line parameters to $(theoretical_line_rate_pu)" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             setfield!(branch, field, theoretical_line_rate_pu)
         end
     end
@@ -205,12 +205,12 @@ function check_rating_values(
             continue
         end
         if (rating_value * device_base_power >= 2.0 * closest_rate_range.max)
-            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
+            @warn "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is 2x larger than the max expected rating $(closest_rate_range.max) MW for Transformer at a $(closest_v_level) kV Voltage level." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         elseif (rating_value * device_base_power >= closest_rate_range.max) ||
                (rating_value * device_base_power <= closest_rate_range.min)
-            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." maxlog =
-                PS_MAX_LOG
+            @info "$(field) $(round(rating_value*device_base_power; digits=2)) MW for $(get_name(xfrm)) is outside the expected range $(closest_rate_range) MW for Transformer at a $(closest_v_level) kV Voltage level." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
         end
     end
     return true
@@ -222,11 +222,13 @@ function check_transformer_reactance(
     x_pu = getproperty(xfrm, :x)
     if x_pu < TYPICAL_XFRM_REACTANCE.min
         @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is lower than the typical range $(TYPICAL_XFRM_REACTANCE). \
-            Check if the reactance source data is correct." maxlog = PS_MAX_LOG
+            Check if the reactance source data is correct." _group = IS.LOG_GROUP_PARSING maxlog =
+            PS_MAX_LOG
     end
     if x_pu > TYPICAL_XFRM_REACTANCE.max
         @warn "Transformer $(get_name(xfrm)) per-unit reactance $(x_pu) is higher than the typical range $(TYPICAL_XFRM_REACTANCE). \
-            Check if the reactance source data is correct." maxlog = PS_MAX_LOG
+            Check if the reactance source data is correct." _group = IS.LOG_GROUP_PARSING maxlog =
+            PS_MAX_LOG
     end
     return true
 end
