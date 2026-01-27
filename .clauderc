@@ -1,5 +1,5 @@
 package_role: data model for power system simulation and optimization
-julia_compat: "^1.6"
+julia_compat: "^1.10"
 
 design_objectives:
   primary: performance and expressiveness
@@ -256,6 +256,7 @@ documentation_practices:
     internals: docs/src/api/internals.md
 
 common_tasks:
+  dev_local_copy: julia --project=test -e 'using Pkg; Pkg.develop(path = ".")
   run_tests: julia --project=test test/runtests.jl
   build_docs: julia --project=docs docs/make.jl
   format_code: julia -e 'include("scripts/formatter/formatter_code.jl")'
