@@ -80,6 +80,7 @@ pages = OrderedDict(
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
             "Supported PSS/e Models" => "api/psse_models.md",
+            "Comparison of Load, Generator, and Storage Types" => "api/static_injection_subtypes.md",
             "Citation" => "api/citation.md",
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
