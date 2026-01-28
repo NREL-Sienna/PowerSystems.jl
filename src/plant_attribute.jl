@@ -39,9 +39,12 @@ function ThermalPowerPlant(;
     reverse_shaft_map = Dict{Base.UUID, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys to integers if needed (for deserialization)
+    # Convert string keys/values to proper types if needed (for deserialization)
     if !isempty(shaft_map) && first(keys(shaft_map)) isa String
-        shaft_map = Dict{Int, Vector{Base.UUID}}(parse(Int, k) => v for (k, v) in shaft_map)
+        shaft_map = Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
+            for (k, v) in shaft_map
+        )
     end
     if !isempty(reverse_shaft_map) && first(keys(reverse_shaft_map)) isa String
         reverse_shaft_map =
@@ -135,10 +138,12 @@ function HydroPowerPlant(;
     reverse_penstock_map = Dict{Base.UUID, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys to integers if needed (for deserialization)
+    # Convert string keys/values to proper types if needed (for deserialization)
     if !isempty(penstock_map) && first(keys(penstock_map)) isa String
-        penstock_map =
-            Dict{Int, Vector{Base.UUID}}(parse(Int, k) => v for (k, v) in penstock_map)
+        penstock_map = Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
+            for (k, v) in penstock_map
+        )
     end
     if !isempty(reverse_penstock_map) && first(keys(reverse_penstock_map)) isa String
         reverse_penstock_map =
@@ -187,9 +192,12 @@ function RenewablePowerPlant(;
     reverse_pcc_map = Dict{Base.UUID, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys to integers if needed (for deserialization)
+    # Convert string keys/values to proper types if needed (for deserialization)
     if !isempty(pcc_map) && first(keys(pcc_map)) isa String
-        pcc_map = Dict{Int, Vector{Base.UUID}}(parse(Int, k) => v for (k, v) in pcc_map)
+        pcc_map = Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
+            for (k, v) in pcc_map
+        )
     end
     if !isempty(reverse_pcc_map) && first(keys(reverse_pcc_map)) isa String
         reverse_pcc_map =
