@@ -50,11 +50,11 @@ The maximum active power is determined by the mechanical system that drives the 
 
 ### Storage Convention Summary
 
-| Concept          | Storage Units       | Accessor Function               |
-|:---------------- |:------------------- |:------------------------------- |
-| Base Power       | Natural units (MVA) | `get_base_power()`              |
-| Rating           | Device base (p.u.)  | `get_rating()`                  |
-| Max Active Power | Device base (p.u.)  | `get_max_active_power()`        |
+| Concept          | Storage Units       | Accessor Function        |
+|:---------------- |:------------------- |:------------------------ |
+| Base Power       | Natural units (MVA) | `get_base_power()`       |
+| Rating           | Device base (p.u.)  | `get_rating()`           |
+| Max Active Power | Device base (p.u.)  | `get_max_active_power()` |
 
 ### Physical Interpretation
 
