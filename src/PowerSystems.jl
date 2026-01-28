@@ -30,12 +30,15 @@ export HydroPowerPlant
 export RenewablePowerPlant
 export get_shaft_map
 export get_reverse_shaft_map
+export get_components_in_shaft
 export get_configuration
 export get_heat_recovery_to_steam_factor
 export get_penstock_map
 export get_reverse_penstock_map
+export get_components_in_penstock
 export get_pcc_map
 export get_reverse_pcc_map
+export get_components_in_pcc
 
 export Component
 export Device
