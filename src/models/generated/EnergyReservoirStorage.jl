@@ -42,7 +42,7 @@ This is suitable for modeling storage charging and discharging with average effi
 - `bus::ACBus`: Bus that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
 - `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)
-- `storage_capacity::Float64`: Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. See [per unitization](@ref per_unit) for more details on the per-unit system, validation range: `(0, nothing)`
+- `storage_capacity::Float64`: Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. For understanding this relationship, see [per unitization](@ref per_unit), validation range: `(0, nothing)`
 - `storage_level_limits::MinMax`: Minimum and maximum allowable storage levels [0, 1], which can be used to model derates or other restrictions, such as state-of-charge restrictions on battery cycling, validation range: `(0, 1)`
 - `initial_storage_capacity_level::Float64`: Initial storage capacity level as a ratio [0, 1.0] of `storage_capacity`, validation range: `(0, 1)`
 - `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power
@@ -73,7 +73,7 @@ mutable struct EnergyReservoirStorage <: Storage
     prime_mover_type::PrimeMovers
     "Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)"
     storage_technology_type::StorageTech
-    "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. See [per unitization](@ref per_unit) for more details on the per-unit system"
+    "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. For understanding this relationship, see [per unitization](@ref per_unit)"
     storage_capacity::Float64
     "Minimum and maximum allowable storage levels [0, 1], which can be used to model derates or other restrictions, such as state-of-charge restrictions on battery cycling"
     storage_level_limits::MinMax
