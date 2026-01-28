@@ -22,6 +22,23 @@ struct ThermalPowerPlant <: PowerPlant
     internal::InfrastructureSystemsInternal
 end
 
+# Deserialization variant: converts string-keyed dicts from JSON
+function ThermalPowerPlant(
+    name::String,
+    shaft_map::Dict{String, <:Any},
+    reverse_shaft_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return ThermalPowerPlant(
+        name,
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in shaft_map
+        ),
+        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_shaft_map),
+        internal,
+    )
+end
+
 """
     ThermalPowerPlant(; name, shaft_map, reverse_shaft_map, internal)
 
@@ -34,22 +51,11 @@ Construct a [`ThermalPowerPlant`](@ref).
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function ThermalPowerPlant(;
-    name,
-    shaft_map = Dict{Int, Vector{Base.UUID}}(),
-    reverse_shaft_map = Dict{Base.UUID, Int}(),
-    internal = InfrastructureSystemsInternal(),
+    name::String,
+    shaft_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    reverse_shaft_map::AbstractDict = Dict{Base.UUID, Int}(),
+    internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys/values to proper types if needed (for deserialization)
-    if !isempty(shaft_map) && first(keys(shaft_map)) isa String
-        shaft_map = Dict{Int, Vector{Base.UUID}}(
-            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
-            for (k, v) in shaft_map
-        )
-    end
-    if !isempty(reverse_shaft_map) && first(keys(reverse_shaft_map)) isa String
-        reverse_shaft_map =
-            Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_shaft_map)
-    end
     return ThermalPowerPlant(name, shaft_map, reverse_shaft_map, internal)
 end
 
@@ -121,6 +127,23 @@ struct HydroPowerPlant <: PowerPlant
     internal::InfrastructureSystemsInternal
 end
 
+# Deserialization variant: converts string-keyed dicts from JSON
+function HydroPowerPlant(
+    name::String,
+    penstock_map::Dict{String, <:Any},
+    reverse_penstock_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return HydroPowerPlant(
+        name,
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in penstock_map
+        ),
+        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_penstock_map),
+        internal,
+    )
+end
+
 """
     HydroPowerPlant(; name, penstock_map, reverse_penstock_map, internal)
 
@@ -133,22 +156,11 @@ Construct a [`HydroPowerPlant`](@ref).
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function HydroPowerPlant(;
-    name,
-    penstock_map = Dict{Int, Vector{Base.UUID}}(),
-    reverse_penstock_map = Dict{Base.UUID, Int}(),
-    internal = InfrastructureSystemsInternal(),
+    name::String,
+    penstock_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    reverse_penstock_map::AbstractDict = Dict{Base.UUID, Int}(),
+    internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys/values to proper types if needed (for deserialization)
-    if !isempty(penstock_map) && first(keys(penstock_map)) isa String
-        penstock_map = Dict{Int, Vector{Base.UUID}}(
-            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
-            for (k, v) in penstock_map
-        )
-    end
-    if !isempty(reverse_penstock_map) && first(keys(reverse_penstock_map)) isa String
-        reverse_penstock_map =
-            Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_penstock_map)
-    end
     return HydroPowerPlant(name, penstock_map, reverse_penstock_map, internal)
 end
 
@@ -175,6 +187,23 @@ struct RenewablePowerPlant <: PowerPlant
     internal::InfrastructureSystemsInternal
 end
 
+# Deserialization variant: converts string-keyed dicts from JSON
+function RenewablePowerPlant(
+    name::String,
+    pcc_map::Dict{String, <:Any},
+    reverse_pcc_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return RenewablePowerPlant(
+        name,
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in pcc_map
+        ),
+        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_pcc_map),
+        internal,
+    )
+end
+
 """
     RenewablePowerPlant(; name, pcc_map, reverse_pcc_map, internal)
 
@@ -187,22 +216,11 @@ Construct a [`RenewablePowerPlant`](@ref). This supports multiple point of commo
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function RenewablePowerPlant(;
-    name,
-    pcc_map = Dict{Int, Vector{Base.UUID}}(),
-    reverse_pcc_map = Dict{Base.UUID, Int}(),
-    internal = InfrastructureSystemsInternal(),
+    name::String,
+    pcc_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    reverse_pcc_map::AbstractDict = Dict{Base.UUID, Int}(),
+    internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    # Convert string keys/values to proper types if needed (for deserialization)
-    if !isempty(pcc_map) && first(keys(pcc_map)) isa String
-        pcc_map = Dict{Int, Vector{Base.UUID}}(
-            parse(Int, k) => [u isa String ? Base.UUID(u) : u for u in v]
-            for (k, v) in pcc_map
-        )
-    end
-    if !isempty(reverse_pcc_map) && first(keys(reverse_pcc_map)) isa String
-        reverse_pcc_map =
-            Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in reverse_pcc_map)
-    end
     return RenewablePowerPlant(name, pcc_map, reverse_pcc_map, internal)
 end
 
