@@ -261,7 +261,7 @@ common_tasks:
   format_code: julia -e 'include("scripts/formatter/formatter_code.jl")'
   check_format: git diff --exit-code
   instantiate_test: julia --project=test -e 'using Pkg; Pkg.instantiate()'
-  generate_structs: julia --project -e 'using PowerSystems; PowerSystems.generate_struct_files("src/descriptors/power_system_structs.json", "src/models/generated")'
+  generate_structs: julia --project=test -e "using InfrastructureSystems; InfrastructureSystems.generate_structs(\"./src/descriptors/power_system_structs.json\", \"./src/models/generated\")"
 
 contribution_workflow:
   branch_naming: feature/description or fix/description (branches in main repo)
