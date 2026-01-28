@@ -81,7 +81,7 @@ When you access these values through the PowerSystems.jl accessor functions, the
 sys = System(100.0)  # System base power = 100 MVA
 gen = get_component(ThermalStandard, sys, "gen1")
 
-# In DEVICE_BASE (default for generators)
+# In DEVICE_BASE
 set_units_base_system!(sys, "DEVICE_BASE")
 get_base_power(gen)                    # Returns: 100.0 MVA (always natural units)
 get_rating(gen)                        # Returns: 1.0 p.u. (on device base)
