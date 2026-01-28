@@ -258,6 +258,8 @@ documentation_practices:
 common_tasks:
   dev_local_copy: julia --project=test -e 'using Pkg; Pkg.develop(path = ".")
   run_tests: julia --project=test test/runtests.jl
+  run_specific_tests: julia --project=test test/runtests.jl <test_file_name_without_extension>
+  run_specific_tests_example: julia --project=test test/runtests.jl test_plant_attributes
   build_docs: julia --project=docs docs/make.jl
   format_code: julia -e 'include("scripts/formatter/formatter_code.jl")'
   check_format: git diff --exit-code
