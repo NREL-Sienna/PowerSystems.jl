@@ -22,6 +22,23 @@ export get_aggregation_topology_accessor
 export SupplementalAttribute
 export GeographicInfo
 export get_geo_json
+export PowerPlant
+export ThermalPowerPlant
+export CombinedCycleBlock
+export CombinedCycleConfiguration
+export HydroPowerPlant
+export RenewablePowerPlant
+export get_shaft_map
+export get_reverse_shaft_map
+export get_components_in_shaft
+export get_configuration
+export get_heat_recovery_to_steam_factor
+export get_penstock_map
+export get_reverse_penstock_map
+export get_components_in_penstock
+export get_pcc_map
+export get_reverse_pcc_map
+export get_components_in_pcc
 
 export Component
 export Device
@@ -835,6 +852,7 @@ include("outages.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
+include("plant_attribute.jl")
 include("subsystems.jl")
 include("component_selector.jl")
 include("data_format_conversions.jl")
