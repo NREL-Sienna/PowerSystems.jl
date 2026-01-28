@@ -6751,7 +6751,7 @@
                 },
                 {
                     "name": "storage_capacity",
-                    "comment": "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen)",
+                    "comment": "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this represents the duration in hours the storage can discharge at base_power",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
