@@ -6751,7 +6751,7 @@
                 },
                 {
                     "name": "storage_capacity",
-                    "comment": "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor",
+                    "comment": "Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. See [per unitization](@ref per_unit) for more details on the per-unit system",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "valid_range": {
