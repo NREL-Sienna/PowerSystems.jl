@@ -31,7 +31,7 @@ The rating is typically determined by the electrical design and thermal limits o
 
 ## Maximum Active Power
 
-**Maximum active power** (stored in `active_power_limits.max`) represents the maximum real power output of the prime mover.
+**Maximum active power** represents the maximum real power output of the prime mover.
 
   - **Purpose**: Defines the maximum real power (MW) that the prime mover can deliver
 
@@ -42,7 +42,7 @@ The rating is typically determined by the electrical design and thermal limits o
       + Combustion chamber limits (for gas turbines)
       + Boiler capacity (for steam generators)
       + Fuel flow limitations
-  - **Access**: Retrieved using `get_active_power_limits(device).max`
+  - **Access**: Retrieved using `get_max_active_power(device)`
 
 The maximum active power is determined by the mechanical system that drives the generator. This is often less than the rating when considering only real power production.
 
@@ -54,7 +54,7 @@ The maximum active power is determined by the mechanical system that drives the 
 |:---------------- |:------------------- |:------------------------------- |
 | Base Power       | Natural units (MVA) | `get_base_power()`              |
 | Rating           | Device base (p.u.)  | `get_rating()`                  |
-| Max Active Power | Device base (p.u.)  | `get_active_power_limits().max` |
+| Max Active Power | Device base (p.u.)  | `get_max_active_power()`        |
 
 ### Physical Interpretation
 
@@ -70,7 +70,7 @@ Consider a thermal generator with:
 
   - `base_power = 100.0` MVA (stored in natural units)
   - `rating = 1.0` p.u. (equals 100 MVA when converted to natural units)
-  - `active_power_limits.max = 0.95` p.u. (equals 95 MW when converted to natural units)
+  - `max_active_power = 0.95` p.u. (equals 95 MW when converted to natural units)
 
 In this example:
 
@@ -83,7 +83,7 @@ In this example:
 When you access these values through the PowerSystems.jl accessor functions, they are automatically converted based on the current unit system setting:
 
 ```julia
-# Assuming base_power = 100 MVA, rating = 1.0 p.u., active_power_limits.max = 0.95 p.u.
+# Assuming base_power = 100 MVA, rating = 1.0 p.u., max_active_power = 0.95 p.u.
 sys = System(100.0)  # System base power = 100 MVA
 gen = get_component(ThermalStandard, sys, "gen1")
 
@@ -91,19 +91,19 @@ gen = get_component(ThermalStandard, sys, "gen1")
 set_units_base_system!(sys, "DEVICE_BASE")
 get_base_power(gen)                    # Returns: 100.0 MVA (always natural units)
 get_rating(gen)                        # Returns: 1.0 p.u. (on device base)
-get_active_power_limits(gen).max       # Returns: 0.95 p.u. (on device base)
+get_max_active_power(gen)              # Returns: 0.95 p.u. (on device base)
 
 # In NATURAL_UNITS
 set_units_base_system!(sys, "NATURAL_UNITS")
 get_base_power(gen)                    # Returns: 100.0 MVA (always natural units)
 get_rating(gen)                        # Returns: 100.0 MVA (converted from p.u.)
-get_active_power_limits(gen).max       # Returns: 95.0 MW (converted from p.u.)
+get_max_active_power(gen)              # Returns: 95.0 MW (converted from p.u.)
 
 # In SYSTEM_BASE
 set_units_base_system!(sys, "SYSTEM_BASE")
 get_base_power(gen)                    # Returns: 100.0 MVA (always natural units)
 get_rating(gen)                        # Returns: 1.0 p.u. (on system base, assuming system base = device base)
-get_active_power_limits(gen).max       # Returns: 0.95 p.u. (on system base)
+get_max_active_power(gen)              # Returns: 0.95 p.u. (on system base)
 ```
 
 !!! note
