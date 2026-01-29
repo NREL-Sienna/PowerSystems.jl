@@ -107,12 +107,6 @@ Branch naming: `feature/description` or `fix/description`
 3. Ensure tests pass
 4. Submit pull request
 
-## Troubleshooting
-
-- **Type instability:** Use `@code_warntype` to diagnose; see Anti-Patterns section
-- **Test failures after dependency changes:** Run `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
-- **Formatter issues:** Use package-specific formatter script
-
 ## AI Agent Guidance
 
 **Key priorities:** Read existing patterns first, maintain consistency, use concrete types in hot paths, run formatter, add docstrings to public API, ensure tests pass.
@@ -147,3 +141,18 @@ julia --project=docs docs/make.jl
 ```
 
 **Why this matters:** Running without `--project=<env>` will fail because required packages won't be available in the default environment. The test/docs environments contain all necessary dependencies for their respective tasks.
+
+## Troubleshooting
+
+**Type instability**
+- Symptom: Poor performance, many allocations
+- Diagnosis: `@code_warntype` on suspect function
+- Solution: See performance anti-patterns above
+
+**Formatter fails**
+- Symptom: Formatter command returns error
+- Solution: Run the formatter script provided in the package (e.g., `julia -e 'include("scripts/formatter/formatter_code.jl")'`)
+
+**Test failures**
+- Symptom: Tests fail unexpectedly
+- Solution: `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
