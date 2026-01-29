@@ -36,6 +36,8 @@ export get_heat_recovery_to_steam_factor
 export get_penstock_map
 export get_reverse_penstock_map
 export get_components_in_penstock
+export get_unit_map
+export get_reverse_unit_map
 export get_pcc_map
 export get_reverse_pcc_map
 export get_components_in_pcc

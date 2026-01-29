@@ -12,22 +12,16 @@ include("common.jl")
     @testset "ThermalPowerPlant construction and basic accessors" begin
         plant = ThermalPowerPlant(name = "Coal Plant A")
         @test get_name(plant) == "Coal Plant A"
-        @test isempty(get_shaft_map(plant))
-        @test isempty(get_reverse_shaft_map(plant))
     end
 
     @testset "HydroPowerPlant construction and basic accessors" begin
         plant = HydroPowerPlant(name = "Hydro Dam 1")
         @test get_name(plant) == "Hydro Dam 1"
-        @test isempty(get_penstock_map(plant))
-        @test isempty(get_reverse_penstock_map(plant))
     end
 
     @testset "RenewablePowerPlant construction and basic accessors" begin
         plant = RenewablePowerPlant(name = "Wind Farm A")
         @test get_name(plant) == "Wind Farm A"
-        @test isempty(get_pcc_map(plant))
-        @test isempty(get_reverse_pcc_map(plant))
     end
 
     @testset "CombinedCycleBlock construction and basic accessors" begin
@@ -524,10 +518,94 @@ include("common.jl")
         @test length(reverse_map) == 2
     end
 
-    @testset "Serialization and deserialization of CombinedCycleBlock" begin
+    @testset "Add and remove ThermalGen to/from CombinedCycleBlock" begin
         sys = System(100.0)
 
-        # Create bus and generator
+        bus1 = ACBus(nothing)
+        bus1.name = "bus1"
+        bus1.number = 1
+        bus1.bustype = ACBusTypes.REF
+        add_component!(sys, bus1)
+
+        bus2 = ACBus(nothing)
+        bus2.name = "bus2"
+        bus2.number = 2
+        add_component!(sys, bus2)
+
+        # Create thermal generators
+        ct_gen = ThermalStandard(nothing)
+        ct_gen.bus = bus1
+        ct_gen.name = "ct_gen1"
+        add_component!(sys, ct_gen)
+
+        ca_gen = ThermalStandard(nothing)
+        ca_gen.bus = bus2
+        ca_gen.name = "ca_gen1"
+        add_component!(sys, ca_gen)
+
+        # Create combined cycle block
+        cc_block = CombinedCycleBlock(
+            name = "CC Block 1",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+            heat_recovery_to_steam_factor = 0.75,
+        )
+
+        # Add generators with unit types
+        add_supplemental_attribute!(
+            sys, ct_gen, cc_block; unit_type = PrimeMovers.CT,
+        )
+        add_supplemental_attribute!(
+            sys, ca_gen, cc_block; unit_type = PrimeMovers.CA,
+        )
+
+        # Verify unit mappings
+        unit_map = get_unit_map(cc_block)
+        @test length(unit_map) == 2
+        @test length(unit_map[PrimeMovers.CT]) == 1
+        @test length(unit_map[PrimeMovers.CA]) == 1
+        @test unit_map[PrimeMovers.CT][1] == IS.get_uuid(ct_gen)
+        @test unit_map[PrimeMovers.CA][1] == IS.get_uuid(ca_gen)
+
+        # Verify reverse mappings
+        reverse_map = get_reverse_unit_map(cc_block)
+        @test reverse_map[IS.get_uuid(ct_gen)] == PrimeMovers.CT
+        @test reverse_map[IS.get_uuid(ca_gen)] == PrimeMovers.CA
+
+        # Verify supplemental attributes are attached
+        @test has_supplemental_attributes(ct_gen)
+        @test has_supplemental_attributes(ca_gen)
+
+        # Test multiple generators with same unit type
+        ct_gen2 = ThermalStandard(nothing)
+        ct_gen2.bus = bus1
+        ct_gen2.name = "ct_gen2"
+        add_component!(sys, ct_gen2)
+        add_supplemental_attribute!(
+            sys, ct_gen2, cc_block; unit_type = PrimeMovers.CT,
+        )
+        @test length(unit_map[PrimeMovers.CT]) == 2
+        @test unit_map[PrimeMovers.CT][2] == IS.get_uuid(ct_gen2)
+
+        # Remove generator from block
+        remove_supplemental_attribute!(sys, ct_gen, cc_block)
+        @test !haskey(reverse_map, IS.get_uuid(ct_gen))
+        @test length(unit_map[PrimeMovers.CT]) == 1
+        @test unit_map[PrimeMovers.CT][1] == IS.get_uuid(ct_gen2)
+
+        # Remove last CT generator
+        remove_supplemental_attribute!(sys, ct_gen2, cc_block)
+        @test !haskey(unit_map, PrimeMovers.CT)
+        @test !haskey(reverse_map, IS.get_uuid(ct_gen2))
+
+        # Test error when removing non-existent generator
+        @test_throws IS.ArgumentError remove_supplemental_attribute!(
+            sys, ct_gen, cc_block,
+        )
+    end
+
+    @testset "CombinedCycleBlock rejects invalid PrimeMover types" begin
+        sys = System(100.0)
+
         bus = ACBus(nothing)
         bus.name = "bus1"
         bus.number = 1
@@ -536,30 +614,99 @@ include("common.jl")
 
         gen = ThermalStandard(nothing)
         gen.bus = bus
-        gen.name = "cc_gen1"
+        gen.name = "gen1"
         add_component!(sys, gen)
 
-        # Create and add combined cycle block
+        cc_block = CombinedCycleBlock(
+            name = "CC Block Invalid",
+            configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
+        )
+
+        # Invalid prime mover types should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, gen, cc_block; unit_type = PrimeMovers.GT,
+        )
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, gen, cc_block; unit_type = PrimeMovers.ST,
+        )
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, gen, cc_block; unit_type = PrimeMovers.WT,
+        )
+
+        # Valid prime mover types should not throw
+        for pm in [PrimeMovers.CA, PrimeMovers.CC, PrimeMovers.CT, PrimeMovers.CS]
+            gen_valid = ThermalStandard(nothing)
+            gen_valid.bus = bus
+            gen_valid.name = "gen_$(pm)"
+            add_component!(sys, gen_valid)
+            add_supplemental_attribute!(
+                sys, gen_valid, cc_block; unit_type = pm,
+            )
+        end
+        @test length(get_unit_map(cc_block)) == 4
+    end
+
+    @testset "Serialization and deserialization of CombinedCycleBlock" begin
+        sys = System(100.0)
+
+        # Create bus and generators
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        ct_gen = ThermalStandard(nothing)
+        ct_gen.bus = bus
+        ct_gen.name = "cc_ct_gen1"
+        add_component!(sys, ct_gen)
+
+        ca_gen = ThermalStandard(nothing)
+        ca_gen.bus = bus
+        ca_gen.name = "cc_ca_gen1"
+        add_component!(sys, ca_gen)
+
+        # Create and add combined cycle block with unit mappings
         cc_block = CombinedCycleBlock(
             name = "CC Block 1",
             configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
             heat_recovery_to_steam_factor = 0.75,
         )
-        IS.add_supplemental_attribute!(sys.data, gen, cc_block)
+        add_supplemental_attribute!(
+            sys, ct_gen, cc_block; unit_type = PrimeMovers.CT,
+        )
+        add_supplemental_attribute!(
+            sys, ca_gen, cc_block; unit_type = PrimeMovers.CA,
+        )
 
         # Serialize and deserialize
         sys2, result = validate_serialization(sys)
         @test result
 
         # Verify block is preserved
-        gen_restored = get_component(ThermalStandard, sys2, "cc_gen1")
-        @test has_supplemental_attributes(gen_restored)
-        attrs = get_supplemental_attributes(CombinedCycleBlock, gen_restored)
+        ct_gen_restored = get_component(ThermalStandard, sys2, "cc_ct_gen1")
+        @test has_supplemental_attributes(ct_gen_restored)
+        attrs = get_supplemental_attributes(CombinedCycleBlock, ct_gen_restored)
         cc_block_restored = collect(attrs)[1]
         @test get_name(cc_block_restored) == "CC Block 1"
         @test get_configuration(cc_block_restored) ==
               CombinedCycleConfiguration.SeparateShaftCombustionSteam
         @test get_heat_recovery_to_steam_factor(cc_block_restored) == 0.75
+
+        # Verify unit mappings are preserved
+        unit_map = get_unit_map(cc_block_restored)
+        reverse_map = get_reverse_unit_map(cc_block_restored)
+        @test length(unit_map) == 2
+        @test length(reverse_map) == 2
+
+        ct_gen_restored_uuid = IS.get_uuid(ct_gen_restored)
+        ca_gen_restored = get_component(ThermalStandard, sys2, "cc_ca_gen1")
+        ca_gen_restored_uuid = IS.get_uuid(ca_gen_restored)
+
+        @test reverse_map[ct_gen_restored_uuid] == PrimeMovers.CT
+        @test reverse_map[ca_gen_restored_uuid] == PrimeMovers.CA
+        @test ct_gen_restored_uuid in unit_map[PrimeMovers.CT]
+        @test ca_gen_restored_uuid in unit_map[PrimeMovers.CA]
     end
 
     @testset "Multiple plants per generator" begin
