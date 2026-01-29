@@ -90,20 +90,15 @@ end
 # Deserialization variant: converts string-keyed dicts from JSON
 function CombinedCycleBlock(
     name::String,
-    configuration::Union{CombinedCycleConfiguration, String},
+    configuration::CombinedCycleConfiguration,
     heat_recovery_to_steam_factor::Float64,
     unit_map::Dict{String, <:Any},
     reverse_unit_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
-    config = if configuration isa String
-        IS.deserialize(CombinedCycleConfiguration, configuration)
-    else
-        configuration
-    end
     return CombinedCycleBlock(
         name,
-        config,
+        configuration,
         heat_recovery_to_steam_factor,
         Dict{PrimeMovers, Vector{Base.UUID}}(
             get_enum_value(PrimeMovers, k) => Base.UUID.(v) for (k, v) in unit_map
@@ -111,6 +106,25 @@ function CombinedCycleBlock(
         Dict{Base.UUID, PrimeMovers}(
             Base.UUID(k) => get_enum_value(PrimeMovers, v) for (k, v) in reverse_unit_map
         ),
+        internal,
+    )
+end
+
+# Deserialization variant: configuration is also serialized as a string
+function CombinedCycleBlock(
+    name::String,
+    configuration::String,
+    heat_recovery_to_steam_factor::Float64,
+    unit_map::Dict{String, <:Any},
+    reverse_unit_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return CombinedCycleBlock(
+        name,
+        IS.deserialize(CombinedCycleConfiguration, configuration),
+        heat_recovery_to_steam_factor,
+        unit_map,
+        reverse_unit_map,
         internal,
     )
 end
