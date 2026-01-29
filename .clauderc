@@ -291,6 +291,20 @@ troubleshooting:
     solution: julia --project=test -e 'using Pkg; Pkg.instantiate()'
 
 ai_agent_guidance:
+  julia_environment:
+    critical: >
+      ALWAYS use `julia --project=test` when running ANY Julia code in this repository,
+      including tests, scripts, REPL commands, and one-off expressions.
+      NEVER use bare `julia` or `julia --project` without specifying the test environment.
+      The test/Project.toml defines all required dependencies. Running without --project=test
+      will fail because packages like PowerSystems, PowerSystemCaseBuilder, InfrastructureSystems,
+      and others will not be available.
+    examples:
+      run_tests: "julia --project=test test/runtests.jl"
+      run_specific_test: "julia --project=test test/runtests.jl test_file_name"
+      run_expression: "julia --project=test -e 'using PowerSystems; ...'"
+      instantiate: "julia --project=test -e 'using Pkg; Pkg.instantiate()'"
+
   code_generation_priorities:
     - Performance matters - use concrete types in hot paths
     - Apply anti-patterns list with judgment (not exhaustively everywhere)
