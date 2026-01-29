@@ -2,66 +2,20 @@
 
 Data model library for power system simulation and optimization. Julia compat: `^1.10`.
 
+> **General Sienna Programming Practices:** For information on performance requirements, code conventions, documentation practices, and contribution workflows that apply across all Sienna packages, see [Sienna.md](Sienna.md).
+
 ## Design Objectives
 
 **Primary goal:** Performance and expressiveness.
 
 Comprehensive data model library for power system simulation, optimization, and dynamics analysis. Provides the `System` container and all component types (generators, loads, branches, storage, dynamic models). Consumed by PowerSimulations.jl, PowerFlows.jl, PowerNetworkMatrices.jl, and other Sienna packages. All code must be written with performance in mind.
 
-### Principles
-
-- Elegance and concision in both interface and implementation
-- Fail fast with actionable error messages rather than hiding problems
-- Validate invariants explicitly in subtle cases
-- Avoid over-adherence to backwards compatibility for internal helpers
-
-## Performance Requirements
-
-**Priority:** Critical. See the [Julia Performance Tips](https://docs.julialang.org/en/v1/manual/performance-tips/).
-
-### Anti-Patterns to Avoid
-
-**Type instability** -- Functions must return consistent concrete types. Check with `@code_warntype`.
-- Bad: `f(x) = x > 0 ? 1 : 1.0`
-- Good: `f(x) = x > 0 ? 1.0 : 1.0`
-
-**Abstract field types** -- Struct fields must have concrete types or be parameterized.
-- Bad: `struct Foo; data::AbstractVector; end`
-- Good: `struct Foo{T<:AbstractVector}; data::T; end`
-
-**Untyped containers**
-- Bad: `Vector{Any}()`, `Vector{Real}()`
-- Good: `Vector{Float64}()`, `Vector{Int}()`
-
-**Non-const globals**
-- Bad: `THRESHOLD = 0.5`
-- Good: `const THRESHOLD = 0.5`
-
-**Unnecessary allocations**
-- Use views instead of copies (`@view`, `@views`)
-- Pre-allocate arrays instead of `push!` in loops
-- Use in-place operations (functions ending with `!`)
-
-**Captured variables** -- Avoid closures that capture variables causing boxing. Pass variables as function arguments instead.
-
-**Splatting penalty** -- Avoid splatting (`...`) in performance-critical code.
-
-**Abstract return types** -- Avoid returning `Union` types or abstract types.
-
-### Best Practices
-
-- Use `@inbounds` when bounds are verified
-- Use broadcasting (dot syntax) for element-wise operations
-- Avoid `try-catch` in hot paths
-- Use function barriers to isolate type instability
-
-> Apply these guidelines with judgment. Not every function is performance-critical. Focus optimization efforts on hot paths and frequently called code.
-
 ## File Structure
 
 ### `src/`
 
-**Key files:**
+Key files:
+
 - `PowerSystems.jl` -- main module, exports, and includes
 - `base.jl` -- `System` type definition and core methods
 - `definitions.jl` -- core type definitions and enums
@@ -72,7 +26,10 @@ Comprehensive data model library for power system simulation, optimization, and 
 - `component_selector.jl` -- component selection utilities
 - `data_format_conversions.jl` -- format conversion methods
 
-**`models/`** -- Core component models and definitions:
+#### `models/`
+
+Core component models and definitions:
+
 - `components.jl` -- base component methods
 - `devices.jl` -- device implementations
 - `branches.jl` -- branch/transmission line definitions
@@ -95,7 +52,10 @@ Comprehensive data model library for power system simulation, optimization, and 
 - `generated/` -- auto-generated component type files (**DO NOT EDIT directly**)
 - `cost_functions/` -- operational cost types (ThermalGenerationCost, StorageCost, etc.)
 
-**`parsers/`** -- Data parsing and import functionality:
+#### `parsers/`
+
+Data parsing and import functionality:
+
 - `common.jl` -- shared parsing utilities
 - `power_system_table_data.jl` -- CSV/table-based data parsing
 - `power_models_data.jl` -- PowerModels.jl format support
@@ -103,14 +63,20 @@ Comprehensive data model library for power system simulation, optimization, and 
 - `pm_io/` -- PowerModels I/O (matpower.jl, psse.jl, pti.jl)
 - `im_io/` -- InteractiveModels I/O (matlab.jl)
 
-**`utils/`** -- Utility functions:
+#### `utils/`
+
+Utility functions:
+
 - `print.jl` -- enhanced console display
 - `generate_struct_files.jl` -- generate component definitions
 - `logging.jl` -- logging configuration
 - `conversion.jl` -- unit and format conversions
 - `IO/` -- data validation (system_checks.jl, branchdata_checks.jl, base_checks.jl)
 
-**`descriptors/`** -- JSON schema and metadata:
+#### `descriptors/`
+
+JSON schema and metadata:
+
 - `power_system_structs.json` -- component structure definitions
 - `power_system_inputs.json` -- input specifications
 
@@ -124,9 +90,10 @@ Comprehensive data model library for power system simulation, optimization, and 
 
 Component structs are auto-generated from JSON descriptors (`src/descriptors/power_system_structs.json`). Generated files are in `src/models/generated/` and should **NOT** be edited directly. Over 140 component types are auto-generated.
 
-**Generator:** `src/utils/generate_struct_files.jl`
+Generator: `src/utils/generate_struct_files.jl`
 
-**Workflow:**
+Workflow:
+
 1. Edit `src/descriptors/power_system_structs.json` to define/modify struct fields
 2. Run the generation script
 3. Generated files include docstrings, constructors, and accessors automatically
@@ -152,20 +119,22 @@ Component structs are auto-generated from JSON descriptors (`src/descriptors/pow
 
 Main container for power system data. Defined in `src/base.jl`.
 
-**Fields:**
+Fields:
+
 - `data` -- `IS.SystemData` for storing components and time series
 - `frequency` -- system frequency (Hz)
 - `bus_numbers` -- set of bus numbers for validation
 - `runchecks` -- flag for data validation
 - `units_settings` -- unit system settings (`SYSTEM_BASE`, `DEVICE_BASE`, `NATURAL_UNITS`)
 
-**Key methods:** `add_component!`, `remove_component!`, `get_component`, `get_components`, `get_bus`, `set_units_base_system!`
+Key methods: `add_component!`, `remove_component!`, `get_component`, `get_components`, `get_bus`, `set_units_base_system!`
 
 ### Component
 
 Abstract base type for all power system elements.
 
-**Hierarchy:**
+Hierarchy:
+
 - **Topology** -- network topology elements: `Bus` (`ACBus`, `DCBus`), `Arc`, `Area`, `LoadZone`
 - **Device** -- physical equipment: `StaticInjection` (generators, loads, storage), `Branch` (lines, transformers)
 - **Service** -- ancillary services (reserves, AGC)
@@ -221,34 +190,6 @@ Time-varying data attached to components.
 - **Deterministic** -- deterministic forecast
 - **Probabilistic** -- probabilistic forecast with scenarios
 
-## Code Conventions
-
-**Style guide:** <https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/style/>
-
-**Formatter:** JuliaFormatter -- `julia -e 'include("scripts/formatter/formatter_code.jl")'`
-
-**Key rules:**
-- Constructors: use `function Foo()` not `Foo() = ...`
-- Asserts: prefer `InfrastructureSystems.@assert_op` over `@assert`
-- Globals: `UPPER_CASE` for constants
-- Exports: all exports in main module file
-- Comments: complete sentences, describe why not how
-
-## Documentation Practices
-
-**Framework:** [Diataxis](https://diataxis.fr/)
-**Sienna guide:** <https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/docs_best_practices/explanation/>
-
-**Docstring requirements:**
-- Scope: all elements of public interface (IS is selective about exports)
-- Include: function signatures and arguments list
-- Automation: `DocStringExtensions.TYPEDSIGNATURES` (`TYPEDFIELDS` used sparingly in IS)
-- See also: add links for functions with same name (multiple dispatch)
-
-**API docs:**
-- Public: `docs/src/api/public.md` using `@autodocs` with `Public=true, Private=false`
-- Internals: `docs/src/api/internals.md`
-
 ## Common Tasks
 
 ```sh
@@ -279,62 +220,27 @@ julia --project=test -e 'using Pkg; Pkg.instantiate()'
 julia --project=test -e "using InfrastructureSystems; InfrastructureSystems.generate_structs(\"./src/descriptors/power_system_structs.json\", \"./src/models/generated\")"
 ```
 
-## Contribution Workflow
-
-**Branch naming:** `feature/description` or `fix/description` (branches in main repo)
-**Main branch:** `main`
-
-1. Create a feature branch in the main repo
-2. Make changes following the style guide
-3. Run formatter before committing
-4. Ensure tests pass
-5. Submit pull request
-
-## Troubleshooting
-
-**Type instability**
-- Symptom: Poor performance, many allocations
-- Diagnosis: `@code_warntype` on suspect function
-- Solution: See anti-patterns above
-
-**Formatter fails**
-- Symptom: Formatter command returns error
-- Solution: `julia -e 'include("scripts/formatter/formatter_code.jl")'`
-
-**Test failures**
-- Symptom: Tests fail unexpectedly
-- Solution: `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
-
-## AI Agent Guidance
+## PowerSystems.jl Specific Guidelines
 
 ### Julia Environment
 
-**ALWAYS** use `julia --project=test` when running ANY Julia code in this repository, including tests, scripts, REPL commands, and one-off expressions. **NEVER** use bare `julia` or `julia --project` without specifying the test environment. The `test/Project.toml` defines all required dependencies. Running without `--project=test` will fail because packages like PowerSystems, PowerSystemCaseBuilder, InfrastructureSystems, and others will not be available.
+**Always use `julia --project=test`** when running Julia code in this repository. See [Sienna.md](Sienna.md) for general Julia environment best practices. The `test/Project.toml` defines all required dependencies including PowerSystems, PowerSystemCaseBuilder, and InfrastructureSystems.
 
-```sh
-# Run tests
-julia --project=test test/runtests.jl
+### Working with Auto-Generated Code
 
-# Run specific test
-julia --project=test test/runtests.jl test_file_name
+Component structs are auto-generated from `src/descriptors/power_system_structs.json`. Over 140 component types are auto-generated.
 
-# Run expression
-julia --project=test -e 'using PowerSystems; ...'
+**DO NOT** edit files in `src/models/generated/` directly. Instead:
 
-# Instantiate
-julia --project=test -e 'using Pkg; Pkg.instantiate()'
-```
+1. Edit `src/descriptors/power_system_structs.json` to define/modify struct fields
+2. Run the generation script: `julia --project=test -e "using InfrastructureSystems; InfrastructureSystems.generate_structs(\"./src/descriptors/power_system_structs.json\", \"./src/models/generated\")"`
+3. Generated files include docstrings, constructors, and accessors automatically
 
-### Code Generation Priorities
+### PowerSystems-Specific Patterns
 
-- Performance matters -- use concrete types in hot paths
-- Apply anti-patterns list with judgment (not exhaustively everywhere)
-- Run formatter on all changes
-- Add docstrings to public interface elements
-- Consider type stability in performance-critical functions
-
-### When Modifying Code
-
-- Read existing code patterns before making changes
-- Maintain consistency with existing style
-- Prefer failing fast with clear errors over silent failures
+- **Component addition:** Use `add_component!(sys, component)` not direct insertion
+- **Component retrieval:** Use `get_component(Type, sys, name)` or `get_components(Type, sys)`
+- **Time series:** Always attach to components, never store standalone
+- **Units:** Be mindful of `SYSTEM_BASE`, `DEVICE_BASE`, `NATURAL_UNITS` settings
+- **Validation:** Use `runchecks=true` during development to catch issues early
+- **Bus numbers:** Must be unique across system; validated on add
