@@ -107,6 +107,12 @@ Branch naming: `feature/description` or `fix/description`
 3. Ensure tests pass
 4. Submit pull request
 
+## Troubleshooting
+
+- **Type instability:** Use `@code_warntype` to diagnose; see Anti-Patterns section
+- **Test failures after dependency changes:** Run `julia --project=test -e 'using Pkg; Pkg.instantiate()'`
+- **Formatter issues:** Use package-specific formatter script
+
 ## AI Agent Guidance
 
 **Key priorities:** Read existing patterns first, maintain consistency, use concrete types in hot paths, run formatter, add docstrings to public API, ensure tests pass.
