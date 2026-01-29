@@ -50,6 +50,17 @@ Avoid splatting (`...`) in performance-critical code.
 
 Avoid returning `Union` types or abstract types.
 
+#### Using `isa` for dispatch
+
+**CRITICAL - COMMON MISTAKE:** Avoid using `isa` checks for type-based behavior. This creates type instability and prevents compilation optimization.
+
+- Bad: `if x isa Float64 ... elseif x isa Int ... end`
+- Good: Use multiple dispatch with specific type signatures
+- Bad: `function f(x); if x isa AbstractVector return sum(x) else return x end; end`
+- Good: `f(x::AbstractVector) = sum(x); f(x::Number) = x`
+
+**Why this matters:** `isa` checks force the compiler to handle multiple code paths at runtime, losing type information and preventing specialization. Multiple dispatch allows the compiler to generate optimized code for each type.
+
 ### Best Practices
 
 - Use `@inbounds` when bounds are verified
@@ -113,6 +124,7 @@ Branch naming: `feature/description` or `fix/description`
 
 **Critical rules:**
 - Always use `julia --project=<env>` (never bare `julia`)
+- **Never use `isa` for dispatch** - use multiple dispatch instead to avoid type instability
 - Never edit auto-generated files directly
 - Verify type stability with `@code_warntype` for performance-critical code
 - Consider downstream package impact
