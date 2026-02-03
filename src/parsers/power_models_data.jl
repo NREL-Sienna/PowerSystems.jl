@@ -1,4 +1,3 @@
-#=
 """Container for data parsed by PowerModels"""
 struct PowerModelsData
     data::Dict{String, Any}
@@ -22,7 +21,7 @@ function PowerModelsData(file::Union{String, IO}; kwargs...)
     correct_pm_transformer_status!(pm_data)
     return pm_data
 end
-=#
+
 """
 Constructs a System from PowerModelsData.
 
