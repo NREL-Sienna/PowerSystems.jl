@@ -31,13 +31,12 @@ export RenewablePowerPlant
 export get_shaft_map
 export get_reverse_shaft_map
 export get_components_in_shaft
-export get_configuration
 export get_heat_recovery_to_steam_factor
 export get_penstock_map
 export get_reverse_penstock_map
 export get_components_in_penstock
-export get_unit_map
-export get_reverse_unit_map
+export get_combustion_to_steam_map
+export get_steam_to_combustion_map
 export get_pcc_map
 export get_reverse_pcc_map
 export get_components_in_pcc

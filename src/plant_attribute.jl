@@ -68,63 +68,39 @@ get_reverse_shaft_map(value::ThermalPowerPlant) = value.reverse_shaft_map
 
 """
 Attribute to represent combined cycle generation by block configuration.
-For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 
 # Arguments
 - `name::String`: Name of the combined cycle block
-- `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: Factor for heat recovery to steam conversion
-- `unit_map::Dict{PrimeMovers, Vector{Base.UUID}}`: Mapping of prime mover type to unit UUIDs
-- `reverse_unit_map::Dict{Base.UUID, PrimeMovers}`: Reverse mapping from unit UUID to prime mover type
+- `combustion_to_steam_map::Dict{String, Set{String}}`: Mapping of combustion unit names to steam unit names
+- `steam_to_combustion_map::Dict{String, Set{String}}`:  Mapping of combustion unit names to combustion unit names
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleBlock <: PowerPlant
     name::String
-    configuration::CombinedCycleConfiguration
     heat_recovery_to_steam_factor::Float64
-    unit_map::Dict{PrimeMovers, Vector{Base.UUID}}
-    reverse_unit_map::Dict{Base.UUID, PrimeMovers}
+    combustion_to_steam_map::Dict{Base.UUID, Vector{Base.UUID}}
+    steam_to_combustion_map::Dict{Base.UUID, Vector{Base.UUID}}
     internal::InfrastructureSystemsInternal
 end
 
 # Deserialization variant: converts string-keyed dicts from JSON
 function CombinedCycleBlock(
     name::String,
-    configuration::CombinedCycleConfiguration,
     heat_recovery_to_steam_factor::Float64,
-    unit_map::Dict{String, <:Any},
-    reverse_unit_map::Dict{String, <:Any},
+    combustion_to_steam_map::Dict{String, <:Any},
+    steam_to_combustion_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleBlock(
         name,
-        configuration,
         heat_recovery_to_steam_factor,
-        Dict{PrimeMovers, Vector{Base.UUID}}(
-            get_enum_value(PrimeMovers, k) => Base.UUID.(v) for (k, v) in unit_map
+        Dict{Base.UUID, Vector{Base.UUID}}(
+            Base.UUID(k) => Base.UUID.(v) for (k, v) in combustion_to_steam_map
         ),
-        Dict{Base.UUID, PrimeMovers}(
-            Base.UUID(k) => get_enum_value(PrimeMovers, v) for (k, v) in reverse_unit_map
+        Dict{Base.UUID, Vector{Base.UUID}}(
+            Base.UUID(k) => Base.UUID.(v) for (k, v) in steam_to_combustion_map
         ),
-        internal,
-    )
-end
-
-# Deserialization variant: configuration is also serialized as a string
-function CombinedCycleBlock(
-    name::String,
-    configuration::String,
-    heat_recovery_to_steam_factor::Float64,
-    unit_map::Dict{String, <:Any},
-    reverse_unit_map::Dict{String, <:Any},
-    internal::InfrastructureSystemsInternal,
-)
-    return CombinedCycleBlock(
-        name,
-        IS.deserialize(CombinedCycleConfiguration, configuration),
-        heat_recovery_to_steam_factor,
-        unit_map,
-        reverse_unit_map,
         internal,
     )
 end
@@ -136,41 +112,36 @@ Construct a [`CombinedCycleBlock`](@ref).
 
 # Arguments
 - `name::String`: Name of the combined cycle block
-- `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: (default: `0.0`) Factor for heat recovery to steam conversion
-- `unit_map::AbstractDict`: (default: empty dict) Mapping of prime mover type to unit UUIDs
-- `reverse_unit_map::AbstractDict`: (default: empty dict) Reverse mapping from unit UUID to prime mover type
+- `combustion_to_steam_map::AbstractDict`: (default: empty dict) Mapping of prime mover type to unit UUIDs
+- `steam_to_combustion_map::AbstractDict`: (default: empty dict) Reverse mapping from unit UUID to prime mover type
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleBlock(;
     name,
-    configuration,
     heat_recovery_to_steam_factor = 0.0,
-    unit_map::AbstractDict = Dict{PrimeMovers, Vector{Base.UUID}}(),
-    reverse_unit_map::AbstractDict = Dict{Base.UUID, PrimeMovers}(),
+    combustion_to_steam_map::AbstractDict = Dict{Base.UUID, Vector{Base.UUID}}(),
+    steam_to_combustion_map::AbstractDict = Dict{Base.UUID, Vector{Base.UUID}}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleBlock(
         name,
-        configuration,
         heat_recovery_to_steam_factor,
-        unit_map,
-        reverse_unit_map,
+        combustion_to_steam_map,
+        steam_to_combustion_map,
         internal,
     )
 end
 
 """Get [`CombinedCycleBlock`](@ref) `name`."""
 get_name(value::CombinedCycleBlock) = value.name
-"""Get [`CombinedCycleBlock`](@ref) `configuration`."""
-get_configuration(value::CombinedCycleBlock) = value.configuration
 """Get [`CombinedCycleBlock`](@ref) `heat_recovery_to_steam_factor`."""
 get_heat_recovery_to_steam_factor(value::CombinedCycleBlock) =
     value.heat_recovery_to_steam_factor
 """Get [`CombinedCycleBlock`](@ref) `unit_map`."""
-get_unit_map(value::CombinedCycleBlock) = value.unit_map
+get_combustion_to_steam_map(value::CombinedCycleBlock) = value.combustion_to_steam_map
 """Get [`CombinedCycleBlock`](@ref) `reverse_unit_map`."""
-get_reverse_unit_map(value::CombinedCycleBlock) = value.reverse_unit_map
+get_steam_to_combustion_map(value::CombinedCycleBlock) = value.steam_to_combustion_map
 
 """
 Attribute to represent hydro power plants with shared penstocks.
@@ -291,13 +262,6 @@ get_name(value::RenewablePowerPlant) = value.name
 get_pcc_map(value::RenewablePowerPlant) = value.pcc_map
 """Get [`RenewablePowerPlant`](@ref) `reverse_pcc_map`."""
 get_reverse_pcc_map(value::RenewablePowerPlant) = value.reverse_pcc_map
-
-const COMBINED_CYCLE_PRIME_MOVERS = Set([
-    PrimeMovers.CA,
-    PrimeMovers.CC,
-    PrimeMovers.CT,
-    PrimeMovers.CS,
-])
 
 """
     get_components_in_shaft(sys::System, plant::ThermalPowerPlant, shaft_number::Int)
@@ -622,72 +586,124 @@ function remove_supplemental_attribute!(
 end
 
 """
-    add_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleBlock; unit_type::PrimeMovers)
+    add_supplemental_attribute!(sys::System, attribute::CombinedCycleBlock, combustion_units::Vector{ThermalGen}, steam_units:::Vector{ThermalGen})
 
-Add a thermal generator to a [`CombinedCycleBlock`](@ref) by associating it with a prime mover unit type.
-Only combined-cycle prime movers (CA, CC, CT, CS) are valid.
+Add a collection of thermal generators to a [`CombinedCycleBlock`](@ref). 
+This method is valid for common configurations (e.g. 1 x 1, 2 x 1, 3 x 1) of combustion and steam units. 
+For other more complex configurations, the mapping of units must be passed. 
 
 # Arguments
 - `sys::System`: The system containing the generator
-- `component::ThermalGen`: The thermal generator to add to the block
 - `attribute::CombinedCycleBlock`: The combined cycle block
-- `unit_type::PrimeMovers`: The prime mover type (must be CA, CC, CT, or CS)
+- `combustion_units::Vector{ThermalGen}`: The combustion units to add to the block (must have prime mover CT)
+- `steam_units::Vector{ThermalGen}`: The steam units to add to the block (must have prime mover CA)
 """
 function add_supplemental_attribute!(
     sys::System,
-    component::ThermalGen,
-    attribute::CombinedCycleBlock;
-    unit_type::PrimeMovers,
-)
-    if unit_type ∉ COMBINED_CYCLE_PRIME_MOVERS
+    attribute::CombinedCycleBlock,
+    combustion_units::Vector{T},
+    steam_units::Vector{T},
+) where {T <: ThermalGen}
+    if !all(get_prime_mover_type(x) == PrimeMovers.CT for x in combustion_units)
+        throw(IS.ArgumentError("Invalid prime mover type for combustion unit; must be CT"))
+    end
+    if !all(get_prime_mover_type(x) == PrimeMovers.CA for x in steam_units)
+        throw(IS.ArgumentError("Invalid prime mover type for steam unit; must be CA"))
+    end
+    if length(combustion_units) > 1 && length(steam_units) > 1
         throw(
             IS.ArgumentError(
-                "Invalid prime mover type $unit_type for CombinedCycleBlock. Valid types are: CA, CC, CT, CS.",
+                "Unit maps must be provided due to multiple possible configurations. This is the case if there are multiple steam units for a single block.",
             ),
         )
     end
-    IS.add_supplemental_attribute!(sys.data, component, attribute)
-    uuid = IS.get_uuid(component)
-    if haskey(attribute.unit_map, unit_type)
-        push!(attribute.unit_map[unit_type], uuid)
-    else
-        attribute.unit_map[unit_type] = [uuid]
+    for combustion_unit in combustion_units
+        IS.add_supplemental_attribute!(sys.data, combustion_unit, attribute)
+        uuid = IS.get_uuid(combustion_unit)
+        attribute.combustion_to_steam_map[uuid] = collect(IS.get_uuid.(steam_units))
     end
-    attribute.reverse_unit_map[uuid] = unit_type
+    for steam_unit in steam_units
+        IS.add_supplemental_attribute!(sys.data, steam_unit, attribute)
+        uuid = IS.get_uuid(steam_unit)
+        attribute.steam_to_combustion_map[uuid] = collect(IS.get_uuid.(combustion_units))
+    end
     return
 end
 
 """
-    remove_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleBlock)
+    add_supplemental_attribute!(sys::System, attribute::CombinedCycleBlock, combustion_to_steam_map::Dict{ThermalGen, Vector{ThermalGen}}, steam_to_combustion_map:::Dict{ThermalGen, Vector{ThermalGen}})
 
-Remove a thermal generator from a [`CombinedCycleBlock`](@ref).
-This removes the block as a supplemental attribute from the generator and removes the
-generator's UUID from the block's unit map.
+Add a collection of thermal generators to a [`CombinedCycleBlock`](@ref). 
+This method of valid for uncommon configurations with multiple steam and combustion units.
 
 # Arguments
 - `sys::System`: The system containing the generator
-- `component::ThermalGen`: The thermal generator to remove from the block
+- `attribute::CombinedCycleBlock`: The combined cycle block
+- `combustion_to_steam_map::Dict{ThermalGen, Vector{ThermalGen}}`: A mapping from combustion units to the connected steam units. The keys must have prime mover CT and the elements of the values must have prime mover CA.
+- `steam_to_combustion_map::Dict{ThermalGen, Vector{ThermalGen}}`: A mapping from steam units to the connected combustion units. The keys must have prime mover CA and the elements of the values must have prime mover CT.
+"""
+function add_supplemental_attribute!(
+    sys::System,
+    attribute::CombinedCycleBlock,
+    combustion_to_steam_map::Dict{T, Vector{T}},
+    steam_to_combustion_map::Dict{T, Vector{T}},
+) where {T <: ThermalGen}
+    for (combustion_unit, steam_units) in combustion_to_steam_map
+        if !all(get_prime_mover_type(x) == PrimeMovers.CA for x in steam_units)
+            throw(IS.ArgumentError("Invalid prime mover type for steam unit; must be CA"))
+        end
+        if !(PrimeMovers.CT == get_prime_mover_type(combustion_unit))
+            throw(
+                IS.ArgumentError(
+                    "Invalid prime mover type for combustion unit; must be CT",
+                ),
+            )
+        end
+        IS.add_supplemental_attribute!(sys.data, combustion_unit, attribute)
+        uuid = IS.get_uuid(combustion_unit)
+        attribute.combustion_to_steam_map[uuid] = collect(IS.get_uuid.(steam_units))
+    end
+    for (steam_unit, combustion_units) in steam_to_combustion_map
+        if !all(get_prime_mover_type(x) == PrimeMovers.CT for x in combustion_units)
+            throw(
+                IS.ArgumentError(
+                    "Invalid prime mover type for combustion unit; must be CT",
+                ),
+            )
+        end
+        if !(PrimeMovers.CA == get_prime_mover_type(steam_unit))
+            throw(IS.ArgumentError("Invalid prime mover type for steam unit; must be CA"))
+        end
+        IS.add_supplemental_attribute!(sys.data, steam_unit, attribute)
+        uuid = IS.get_uuid(steam_unit)
+        attribute.steam_to_combustion_map[uuid] = collect(IS.get_uuid.(combustion_units))
+    end
+    return
+end
+
+"""
+    remove_supplemental_attribute!(sys::System, attribute::CombinedCycleBlock)
+
+Remove a [`CombinedCycleBlock`](@ref).
+This removes the block as a supplemental attribute from each of the generators in the block's unit maps and empties the maps.
+
+# Arguments
+- `sys::System`: The system containing the generator
 - `attribute::CombinedCycleBlock`: The combined cycle block
 """
 function remove_supplemental_attribute!(
     sys::System,
-    component::ThermalGen,
     attribute::CombinedCycleBlock,
 )
-    uuid = IS.get_uuid(component)
-    if !haskey(attribute.reverse_unit_map, uuid)
-        throw(
-            IS.ArgumentError(
-                "Generator $(get_name(component)) is not part of block $(get_name(attribute))",
-            ),
-        )
+    for uuid in keys(attribute.combustion_to_steam_map)
+        component = get_component(sys, uuid)
+        delete!(attribute.combustion_to_steam_map, uuid)
+        IS.remove_supplemental_attribute!(sys.data, component, attribute)
     end
-    unit_type = attribute.reverse_unit_map[uuid]
-    filter!(x -> x != uuid, attribute.unit_map[unit_type])
-    if isempty(attribute.unit_map[unit_type])
-        delete!(attribute.unit_map, unit_type)
+    for uuid in keys(attribute.steam_to_combustion_map)
+        component = get_component(sys, uuid)
+        delete!(attribute.steam_to_combustion_map, uuid)
+        IS.remove_supplemental_attribute!(sys.data, component, attribute)
     end
-    delete!(attribute.reverse_unit_map, uuid)
-    IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end
