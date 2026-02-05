@@ -74,16 +74,20 @@ For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 - `name::String`: Name of the combined cycle block
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: Factor for heat recovery to steam conversion
-- `unit_map::Dict{PrimeMovers, Vector{Base.UUID}}`: Mapping of prime mover type to unit UUIDs
-- `reverse_unit_map::Dict{Base.UUID, PrimeMovers}`: Reverse mapping from unit UUID to prime mover type
+- `hrsg_ct_map::Dict{Int, Vector{Base.UUID}}`: Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
+- `hrsg_ca_map::Dict{Int, Vector{Base.UUID}}`: Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
+- `ct_hrsg_map::Dict{Base.UUID, Int}`: Reverse mapping from CT unit UUID to HRSG number
+- `ca_hrsg_map::Dict{Base.UUID, Int}`: Reverse mapping from CA unit UUID to HRSG number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleBlock <: PowerPlant
     name::String
     configuration::CombinedCycleConfiguration
     heat_recovery_to_steam_factor::Float64
-    unit_map::Dict{PrimeMovers, Vector{Base.UUID}}
-    reverse_unit_map::Dict{Base.UUID, PrimeMovers}
+    hrsg_ct_map::Dict{Int, Vector{Base.UUID}}
+    hrsg_ca_map::Dict{Int, Vector{Base.UUID}}
+    ct_hrsg_map::Dict{Base.UUID, Int}
+    ca_hrsg_map::Dict{Base.UUID, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -92,20 +96,24 @@ function CombinedCycleBlock(
     name::String,
     configuration::CombinedCycleConfiguration,
     heat_recovery_to_steam_factor::Float64,
-    unit_map::Dict{String, <:Any},
-    reverse_unit_map::Dict{String, <:Any},
+    hrsg_ct_map::Dict{String, <:Any},
+    hrsg_ca_map::Dict{String, <:Any},
+    ct_hrsg_map::Dict{String, <:Any},
+    ca_hrsg_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleBlock(
         name,
         configuration,
         heat_recovery_to_steam_factor,
-        Dict{PrimeMovers, Vector{Base.UUID}}(
-            get_enum_value(PrimeMovers, k) => Base.UUID.(v) for (k, v) in unit_map
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in hrsg_ct_map
         ),
-        Dict{Base.UUID, PrimeMovers}(
-            Base.UUID(k) => get_enum_value(PrimeMovers, v) for (k, v) in reverse_unit_map
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in hrsg_ca_map
         ),
+        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in ct_hrsg_map),
+        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in ca_hrsg_map),
         internal,
     )
 end
@@ -115,22 +123,26 @@ function CombinedCycleBlock(
     name::String,
     configuration::String,
     heat_recovery_to_steam_factor::Float64,
-    unit_map::Dict{String, <:Any},
-    reverse_unit_map::Dict{String, <:Any},
+    hrsg_ct_map::Dict{String, <:Any},
+    hrsg_ca_map::Dict{String, <:Any},
+    ct_hrsg_map::Dict{String, <:Any},
+    ca_hrsg_map::Dict{String, <:Any},
     internal::InfrastructureSystemsInternal,
 )
     return CombinedCycleBlock(
         name,
         IS.deserialize(CombinedCycleConfiguration, configuration),
         heat_recovery_to_steam_factor,
-        unit_map,
-        reverse_unit_map,
+        hrsg_ct_map,
+        hrsg_ca_map,
+        ct_hrsg_map,
+        ca_hrsg_map,
         internal,
     )
 end
 
 """
-    CombinedCycleBlock(; name, configuration, heat_recovery_to_steam_factor, unit_map, reverse_unit_map, internal)
+    CombinedCycleBlock(; name, configuration, heat_recovery_to_steam_factor, hrsg_ct_map, hrsg_ca_map, ct_hrsg_map, ca_hrsg_map, internal)
 
 Construct a [`CombinedCycleBlock`](@ref).
 
@@ -138,24 +150,30 @@ Construct a [`CombinedCycleBlock`](@ref).
 - `name::String`: Name of the combined cycle block
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `heat_recovery_to_steam_factor::Float64`: (default: `0.0`) Factor for heat recovery to steam conversion
-- `unit_map::AbstractDict`: (default: empty dict) Mapping of prime mover type to unit UUIDs
-- `reverse_unit_map::AbstractDict`: (default: empty dict) Reverse mapping from unit UUID to prime mover type
+- `hrsg_ct_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
+- `hrsg_ca_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
+- `ct_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CT unit UUID to HRSG number
+- `ca_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CA unit UUID to HRSG number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleBlock(;
     name,
     configuration,
     heat_recovery_to_steam_factor = 0.0,
-    unit_map::AbstractDict = Dict{PrimeMovers, Vector{Base.UUID}}(),
-    reverse_unit_map::AbstractDict = Dict{Base.UUID, PrimeMovers}(),
+    hrsg_ct_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    hrsg_ca_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    ct_hrsg_map::AbstractDict = Dict{Base.UUID, Int}(),
+    ca_hrsg_map::AbstractDict = Dict{Base.UUID, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleBlock(
         name,
         configuration,
         heat_recovery_to_steam_factor,
-        unit_map,
-        reverse_unit_map,
+        hrsg_ct_map,
+        hrsg_ca_map,
+        ct_hrsg_map,
+        ca_hrsg_map,
         internal,
     )
 end
@@ -167,10 +185,14 @@ get_configuration(value::CombinedCycleBlock) = value.configuration
 """Get [`CombinedCycleBlock`](@ref) `heat_recovery_to_steam_factor`."""
 get_heat_recovery_to_steam_factor(value::CombinedCycleBlock) =
     value.heat_recovery_to_steam_factor
-"""Get [`CombinedCycleBlock`](@ref) `unit_map`."""
-get_unit_map(value::CombinedCycleBlock) = value.unit_map
-"""Get [`CombinedCycleBlock`](@ref) `reverse_unit_map`."""
-get_reverse_unit_map(value::CombinedCycleBlock) = value.reverse_unit_map
+"""Get [`CombinedCycleBlock`](@ref) `hrsg_ct_map`."""
+get_hrsg_ct_map(value::CombinedCycleBlock) = value.hrsg_ct_map
+"""Get [`CombinedCycleBlock`](@ref) `hrsg_ca_map`."""
+get_hrsg_ca_map(value::CombinedCycleBlock) = value.hrsg_ca_map
+"""Get [`CombinedCycleBlock`](@ref) `ct_hrsg_map`."""
+get_ct_hrsg_map(value::CombinedCycleBlock) = value.ct_hrsg_map
+"""Get [`CombinedCycleBlock`](@ref) `ca_hrsg_map`."""
+get_ca_hrsg_map(value::CombinedCycleBlock) = value.ca_hrsg_map
 
 """
 Attribute to represent hydro power plants with shared penstocks.
@@ -291,13 +313,6 @@ get_name(value::RenewablePowerPlant) = value.name
 get_pcc_map(value::RenewablePowerPlant) = value.pcc_map
 """Get [`RenewablePowerPlant`](@ref) `reverse_pcc_map`."""
 get_reverse_pcc_map(value::RenewablePowerPlant) = value.reverse_pcc_map
-
-const COMBINED_CYCLE_PRIME_MOVERS = Set([
-    PrimeMovers.CA,
-    PrimeMovers.CC,
-    PrimeMovers.CT,
-    PrimeMovers.CS,
-])
 
 """
     get_components_in_shaft(sys::System, plant::ThermalPowerPlant, shaft_number::Int)
@@ -622,38 +637,50 @@ function remove_supplemental_attribute!(
 end
 
 """
-    add_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleBlock; unit_type::PrimeMovers)
+    add_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleBlock; hrsg_number::Int)
 
-Add a thermal generator to a [`CombinedCycleBlock`](@ref) by associating it with a prime mover unit type.
-Only combined-cycle prime movers (CA, CC, CT, CS) are valid.
+Add a thermal generator to a [`CombinedCycleBlock`](@ref) by associating it with an HRSG number.
+Only generators with CT (combustion turbine as HRSG input) or CA (combined cycle steam part as HRSG output)
+prime mover types can be added.
 
 # Arguments
 - `sys::System`: The system containing the generator
-- `component::ThermalGen`: The thermal generator to add to the block
+- `component::ThermalGen`: The thermal generator to add to the block (must have prime mover type CT or CA)
 - `attribute::CombinedCycleBlock`: The combined cycle block
-- `unit_type::PrimeMovers`: The prime mover type (must be CA, CC, CT, or CS)
+- `hrsg_number::Int`: The HRSG number to associate with the generator
 """
 function add_supplemental_attribute!(
     sys::System,
     component::ThermalGen,
     attribute::CombinedCycleBlock;
-    unit_type::PrimeMovers,
+    hrsg_number::Int,
 )
-    if unit_type ∉ COMBINED_CYCLE_PRIME_MOVERS
+    prime_mover = get_prime_mover_type(component)
+    if prime_mover == PrimeMovers.CT
+        IS.add_supplemental_attribute!(sys.data, component, attribute)
+        uuid = IS.get_uuid(component)
+        if haskey(attribute.hrsg_ct_map, hrsg_number)
+            push!(attribute.hrsg_ct_map[hrsg_number], uuid)
+        else
+            attribute.hrsg_ct_map[hrsg_number] = [uuid]
+        end
+        attribute.ct_hrsg_map[uuid] = hrsg_number
+    elseif prime_mover == PrimeMovers.CA
+        IS.add_supplemental_attribute!(sys.data, component, attribute)
+        uuid = IS.get_uuid(component)
+        if haskey(attribute.hrsg_ca_map, hrsg_number)
+            push!(attribute.hrsg_ca_map[hrsg_number], uuid)
+        else
+            attribute.hrsg_ca_map[hrsg_number] = [uuid]
+        end
+        attribute.ca_hrsg_map[uuid] = hrsg_number
+    else
         throw(
             IS.ArgumentError(
-                "Invalid prime mover type $unit_type for CombinedCycleBlock. Valid types are: CA, CC, CT, CS.",
+                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CT and CA generators can be added to a CombinedCycleBlock.",
             ),
         )
     end
-    IS.add_supplemental_attribute!(sys.data, component, attribute)
-    uuid = IS.get_uuid(component)
-    if haskey(attribute.unit_map, unit_type)
-        push!(attribute.unit_map[unit_type], uuid)
-    else
-        attribute.unit_map[unit_type] = [uuid]
-    end
-    attribute.reverse_unit_map[uuid] = unit_type
     return
 end
 
@@ -662,7 +689,7 @@ end
 
 Remove a thermal generator from a [`CombinedCycleBlock`](@ref).
 This removes the block as a supplemental attribute from the generator and removes the
-generator's UUID from the block's unit map.
+generator's UUID from the block's HRSG maps.
 
 # Arguments
 - `sys::System`: The system containing the generator
@@ -675,19 +702,29 @@ function remove_supplemental_attribute!(
     attribute::CombinedCycleBlock,
 )
     uuid = IS.get_uuid(component)
-    if !haskey(attribute.reverse_unit_map, uuid)
+    # Check if this is a CT (HRSG input)
+    if haskey(attribute.ct_hrsg_map, uuid)
+        hrsg_number = attribute.ct_hrsg_map[uuid]
+        filter!(x -> x != uuid, attribute.hrsg_ct_map[hrsg_number])
+        if isempty(attribute.hrsg_ct_map[hrsg_number])
+            delete!(attribute.hrsg_ct_map, hrsg_number)
+        end
+        delete!(attribute.ct_hrsg_map, uuid)
+        # Check if this is a CA (HRSG output)
+    elseif haskey(attribute.ca_hrsg_map, uuid)
+        hrsg_number = attribute.ca_hrsg_map[uuid]
+        filter!(x -> x != uuid, attribute.hrsg_ca_map[hrsg_number])
+        if isempty(attribute.hrsg_ca_map[hrsg_number])
+            delete!(attribute.hrsg_ca_map, hrsg_number)
+        end
+        delete!(attribute.ca_hrsg_map, uuid)
+    else
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of block $(get_name(attribute))",
             ),
         )
     end
-    unit_type = attribute.reverse_unit_map[uuid]
-    filter!(x -> x != uuid, attribute.unit_map[unit_type])
-    if isempty(attribute.unit_map[unit_type])
-        delete!(attribute.unit_map, unit_type)
-    end
-    delete!(attribute.reverse_unit_map, uuid)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end

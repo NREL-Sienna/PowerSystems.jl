@@ -536,6 +536,7 @@ IS.@scoped_enum(
     SeparateShaftCombustionSteam = 2,
     DoubleCombustionOneSteam = 3,
     TripleCombustionOneSteam = 4,
+    Other = 5,
 )
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))

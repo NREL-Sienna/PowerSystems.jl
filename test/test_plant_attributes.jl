@@ -532,15 +532,17 @@ include("common.jl")
         bus2.number = 2
         add_component!(sys, bus2)
 
-        # Create thermal generators
+        # Create thermal generators with appropriate prime mover types
         ct_gen = ThermalStandard(nothing)
         ct_gen.bus = bus1
         ct_gen.name = "ct_gen1"
+        ct_gen.prime_mover_type = PrimeMovers.CT
         add_component!(sys, ct_gen)
 
         ca_gen = ThermalStandard(nothing)
         ca_gen.bus = bus2
         ca_gen.name = "ca_gen1"
+        ca_gen.prime_mover_type = PrimeMovers.CA
         add_component!(sys, ca_gen)
 
         # Create combined cycle block
@@ -550,52 +552,60 @@ include("common.jl")
             heat_recovery_to_steam_factor = 0.75,
         )
 
-        # Add generators with unit types
+        # Add generators with HRSG numbers (prime mover type is read from component)
         add_supplemental_attribute!(
-            sys, ct_gen, cc_block; unit_type = PrimeMovers.CT,
+            sys, ct_gen, cc_block; hrsg_number = 1,
         )
         add_supplemental_attribute!(
-            sys, ca_gen, cc_block; unit_type = PrimeMovers.CA,
+            sys, ca_gen, cc_block; hrsg_number = 1,
         )
 
-        # Verify unit mappings
-        unit_map = get_unit_map(cc_block)
-        @test length(unit_map) == 2
-        @test length(unit_map[PrimeMovers.CT]) == 1
-        @test length(unit_map[PrimeMovers.CA]) == 1
-        @test unit_map[PrimeMovers.CT][1] == IS.get_uuid(ct_gen)
-        @test unit_map[PrimeMovers.CA][1] == IS.get_uuid(ca_gen)
+        # Verify HRSG CT mappings
+        hrsg_ct_map = get_hrsg_ct_map(cc_block)
+        @test length(hrsg_ct_map) == 1
+        @test length(hrsg_ct_map[1]) == 1
+        @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen)
 
-        # Verify reverse mappings
-        reverse_map = get_reverse_unit_map(cc_block)
-        @test reverse_map[IS.get_uuid(ct_gen)] == PrimeMovers.CT
-        @test reverse_map[IS.get_uuid(ca_gen)] == PrimeMovers.CA
+        # Verify HRSG CA mappings
+        hrsg_ca_map = get_hrsg_ca_map(cc_block)
+        @test length(hrsg_ca_map) == 1
+        @test length(hrsg_ca_map[1]) == 1
+        @test hrsg_ca_map[1][1] == IS.get_uuid(ca_gen)
+
+        # Verify reverse CT mapping
+        ct_hrsg_map = get_ct_hrsg_map(cc_block)
+        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == 1
+
+        # Verify reverse CA mapping
+        ca_hrsg_map = get_ca_hrsg_map(cc_block)
+        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == 1
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(ct_gen)
         @test has_supplemental_attributes(ca_gen)
 
-        # Test multiple generators with same unit type
+        # Test multiple CTs on same HRSG
         ct_gen2 = ThermalStandard(nothing)
         ct_gen2.bus = bus1
         ct_gen2.name = "ct_gen2"
+        ct_gen2.prime_mover_type = PrimeMovers.CT
         add_component!(sys, ct_gen2)
         add_supplemental_attribute!(
-            sys, ct_gen2, cc_block; unit_type = PrimeMovers.CT,
+            sys, ct_gen2, cc_block; hrsg_number = 1,
         )
-        @test length(unit_map[PrimeMovers.CT]) == 2
-        @test unit_map[PrimeMovers.CT][2] == IS.get_uuid(ct_gen2)
+        @test length(hrsg_ct_map[1]) == 2
+        @test hrsg_ct_map[1][2] == IS.get_uuid(ct_gen2)
 
         # Remove generator from block
         remove_supplemental_attribute!(sys, ct_gen, cc_block)
-        @test !haskey(reverse_map, IS.get_uuid(ct_gen))
-        @test length(unit_map[PrimeMovers.CT]) == 1
-        @test unit_map[PrimeMovers.CT][1] == IS.get_uuid(ct_gen2)
+        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen))
+        @test length(hrsg_ct_map[1]) == 1
+        @test hrsg_ct_map[1][1] == IS.get_uuid(ct_gen2)
 
-        # Remove last CT generator
+        # Remove last CT generator from HRSG 1
         remove_supplemental_attribute!(sys, ct_gen2, cc_block)
-        @test !haskey(unit_map, PrimeMovers.CT)
-        @test !haskey(reverse_map, IS.get_uuid(ct_gen2))
+        @test !haskey(hrsg_ct_map, 1)
+        @test !haskey(ct_hrsg_map, IS.get_uuid(ct_gen2))
 
         # Test error when removing non-existent generator
         @test_throws IS.ArgumentError remove_supplemental_attribute!(
@@ -612,44 +622,56 @@ include("common.jl")
         bus.bustype = ACBusTypes.REF
         add_component!(sys, bus)
 
-        gen = ThermalStandard(nothing)
-        gen.bus = bus
-        gen.name = "gen1"
-        add_component!(sys, gen)
-
         cc_block = CombinedCycleBlock(
             name = "CC Block Invalid",
             configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
         )
 
-        # Invalid prime mover types should throw
-        @test_throws IS.ArgumentError add_supplemental_attribute!(
-            sys, gen, cc_block; unit_type = PrimeMovers.GT,
-        )
-        @test_throws IS.ArgumentError add_supplemental_attribute!(
-            sys, gen, cc_block; unit_type = PrimeMovers.ST,
-        )
-        @test_throws IS.ArgumentError add_supplemental_attribute!(
-            sys, gen, cc_block; unit_type = PrimeMovers.WT,
-        )
-
-        # Valid prime mover types should not throw
-        for pm in [PrimeMovers.CA, PrimeMovers.CC, PrimeMovers.CT, PrimeMovers.CS]
-            gen_valid = ThermalStandard(nothing)
-            gen_valid.bus = bus
-            gen_valid.name = "gen_$(pm)"
-            add_component!(sys, gen_valid)
-            add_supplemental_attribute!(
-                sys, gen_valid, cc_block; unit_type = pm,
+        # Invalid prime mover types should throw (only CT and CA are valid)
+        for (i, pm) in enumerate([
+            PrimeMovers.GT,
+            PrimeMovers.ST,
+            PrimeMovers.WT,
+            PrimeMovers.CC,
+            PrimeMovers.CS,
+        ])
+            gen = ThermalStandard(nothing)
+            gen.bus = bus
+            gen.name = "gen_invalid_$i"
+            gen.prime_mover_type = pm
+            add_component!(sys, gen)
+            @test_throws IS.ArgumentError add_supplemental_attribute!(
+                sys, gen, cc_block; hrsg_number = 1,
             )
         end
-        @test length(get_unit_map(cc_block)) == 4
+
+        # Valid prime mover types should not throw (CT and CA only)
+        ct_gen = ThermalStandard(nothing)
+        ct_gen.bus = bus
+        ct_gen.name = "gen_ct"
+        ct_gen.prime_mover_type = PrimeMovers.CT
+        add_component!(sys, ct_gen)
+        add_supplemental_attribute!(
+            sys, ct_gen, cc_block; hrsg_number = 1,
+        )
+
+        ca_gen = ThermalStandard(nothing)
+        ca_gen.bus = bus
+        ca_gen.name = "gen_ca"
+        ca_gen.prime_mover_type = PrimeMovers.CA
+        add_component!(sys, ca_gen)
+        add_supplemental_attribute!(
+            sys, ca_gen, cc_block; hrsg_number = 1,
+        )
+
+        @test length(get_hrsg_ct_map(cc_block)) == 1
+        @test length(get_hrsg_ca_map(cc_block)) == 1
     end
 
     @testset "Serialization and deserialization of CombinedCycleBlock" begin
         sys = System(100.0)
 
-        # Create bus and generators
+        # Create bus and generators with appropriate prime mover types
         bus = ACBus(nothing)
         bus.name = "bus1"
         bus.number = 1
@@ -659,24 +681,26 @@ include("common.jl")
         ct_gen = ThermalStandard(nothing)
         ct_gen.bus = bus
         ct_gen.name = "cc_ct_gen1"
+        ct_gen.prime_mover_type = PrimeMovers.CT
         add_component!(sys, ct_gen)
 
         ca_gen = ThermalStandard(nothing)
         ca_gen.bus = bus
         ca_gen.name = "cc_ca_gen1"
+        ca_gen.prime_mover_type = PrimeMovers.CA
         add_component!(sys, ca_gen)
 
-        # Create and add combined cycle block with unit mappings
+        # Create and add combined cycle block with HRSG mappings
         cc_block = CombinedCycleBlock(
             name = "CC Block 1",
             configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
             heat_recovery_to_steam_factor = 0.75,
         )
         add_supplemental_attribute!(
-            sys, ct_gen, cc_block; unit_type = PrimeMovers.CT,
+            sys, ct_gen, cc_block; hrsg_number = 1,
         )
         add_supplemental_attribute!(
-            sys, ca_gen, cc_block; unit_type = PrimeMovers.CA,
+            sys, ca_gen, cc_block; hrsg_number = 1,
         )
 
         # Serialize and deserialize
@@ -693,20 +717,24 @@ include("common.jl")
               CombinedCycleConfiguration.SeparateShaftCombustionSteam
         @test get_heat_recovery_to_steam_factor(cc_block_restored) == 0.75
 
-        # Verify unit mappings are preserved
-        unit_map = get_unit_map(cc_block_restored)
-        reverse_map = get_reverse_unit_map(cc_block_restored)
-        @test length(unit_map) == 2
-        @test length(reverse_map) == 2
+        # Verify HRSG mappings are preserved
+        hrsg_ct_map = get_hrsg_ct_map(cc_block_restored)
+        hrsg_ca_map = get_hrsg_ca_map(cc_block_restored)
+        ct_hrsg_map = get_ct_hrsg_map(cc_block_restored)
+        ca_hrsg_map = get_ca_hrsg_map(cc_block_restored)
+        @test length(hrsg_ct_map) == 1
+        @test length(hrsg_ca_map) == 1
+        @test length(ct_hrsg_map) == 1
+        @test length(ca_hrsg_map) == 1
 
         ct_gen_restored_uuid = IS.get_uuid(ct_gen_restored)
         ca_gen_restored = get_component(ThermalStandard, sys2, "cc_ca_gen1")
         ca_gen_restored_uuid = IS.get_uuid(ca_gen_restored)
 
-        @test reverse_map[ct_gen_restored_uuid] == PrimeMovers.CT
-        @test reverse_map[ca_gen_restored_uuid] == PrimeMovers.CA
-        @test ct_gen_restored_uuid in unit_map[PrimeMovers.CT]
-        @test ca_gen_restored_uuid in unit_map[PrimeMovers.CA]
+        @test ct_hrsg_map[ct_gen_restored_uuid] == 1
+        @test ca_hrsg_map[ca_gen_restored_uuid] == 1
+        @test ct_gen_restored_uuid in hrsg_ct_map[1]
+        @test ca_gen_restored_uuid in hrsg_ca_map[1]
     end
 
     @testset "Multiple plants per generator" begin
