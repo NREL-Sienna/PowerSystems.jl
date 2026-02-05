@@ -2,13 +2,12 @@
 $(TYPEDEF)
 $(TYPEDFIELDS)
 
-    RenewableGenerationCost(variable, curtailment_cost)
-    RenewableGenerationCost(variable; curtailment_cost)
-    RenewableGenerationCost(; variable, curtailment_cost)
+    RenewableGenerationCost(variable, curtailment_cost, fixed)
+    RenewableGenerationCost(; variable, curtailment_cost, fixed)
 
 An operational cost of renewable generators which includes the variable cost of energy
-(like a [PPA](@ref P)) and the cost of curtailing power. For example, curtailment costs
-can be used to represent the loss of tax incentives.
+(like a [PPA](@ref P)), the cost of curtailing power, and a fixed cost of keeping the unit online.
+For example, curtailment costs can be used to represent the loss of tax incentives.
 
 The `variable` cost is a required parameter, but `zero(CostCurve)` can be used to set it to 0.
 """
