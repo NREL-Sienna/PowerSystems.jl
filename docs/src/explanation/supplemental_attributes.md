@@ -165,3 +165,14 @@ end
   - [`PlannedOutage`](@ref)
   - [`GeographicInfo`](@ref)
   - [`ImpedanceCorrectionData`](@ref)
+
+### Plant Attributes
+
+Plant attributes are a specialized category of supplemental attributes for grouping individual
+generator units into logical plant structures. See [Plant Attributes](@ref plant_attributes)
+for detailed documentation.
+
+  - [`ThermalPowerPlant`](@ref) - Thermal plants with shared shafts
+  - [`CombinedCycleBlock`](@ref) - Combined cycle plants with HRSG configurations
+  - [`HydroPowerPlant`](@ref) - Hydro plants with shared penstocks
+  - [`RenewablePowerPlant`](@ref) - Renewable plants with shared PCCs
