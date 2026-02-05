@@ -66,6 +66,7 @@ pages = OrderedDict(
             "explanation/type_structure.md",
             "explanation/buses_type_explanation.md",
             "explanation/per_unit.md",
+            "explanation/power_concepts.md",
             "explanation/conforming_and_non_conforming_loads.md",
             "explanation/transformer_per_unit_models.md",
             "explanation/time_series.md",
@@ -80,6 +81,7 @@ pages = OrderedDict(
             "`ValueCurve` Options" => "api/valuecurve_options.md",
             "Specifying the category of..." => "api/enumerated_types.md",
             "Supported PSS/e Models" => "api/psse_models.md",
+            "Comparison of Load, Generator, and Storage Types" => "api/static_injection_subtypes.md",
             "Citation" => "api/citation.md",
             "Developers" => ["Developer Guidelines" => "api/developer_guidelines.md",
             "Internals" => "api/internal.md"]
