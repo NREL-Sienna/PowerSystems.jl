@@ -255,6 +255,8 @@ function add_image_links(nb::Dict, outputfile_base::AbstractString)
         append_after = m -> string(m) * suffix
         # Literate outputs raw HTML (no ```@raw html```); match <p...>...<img...>...</p>
         text = replace(text, r"<p[^>]*>[\s\S]*?<img[\s\S]*?</p>" => append_after)
+        # Standalone <img> (Literate converts @raw html to plain HTML in notebooks, no wrapper)
+        text = replace(text, r"<img[^>]*?/?>" => append_after)
         # If source still had literal ```@raw html ... ``` in the notebook
         text = replace(text, r"```@raw html[\s\S]*?```" => append_after)
         # Markdown image ![...](...)
