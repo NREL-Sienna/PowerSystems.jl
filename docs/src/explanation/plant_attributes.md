@@ -59,8 +59,8 @@ combustion turbines (CTs) and steam turbines through the Heat Recovery Steam Gen
 | `heat_recovery_to_steam_factor` | `Float64`                    | Factor for heat recovery to steam conversion |
 | `hrsg_ct_map`                   | `Dict{Int, Vector{UUID}}`    | HRSG to CT unit mappings (inputs)            |
 | `hrsg_ca_map`                   | `Dict{Int, Vector{UUID}}`    | HRSG to CA unit mappings (outputs)           |
-| `ct_hrsg_map`                   | `Dict{UUID, Int}`            | Reverse CT to HRSG mapping                   |
-| `ca_hrsg_map`                   | `Dict{UUID, Int}`            | Reverse CA to HRSG mapping                   |
+| `ct_hrsg_map`                   | `Dict{UUID, Vector{Int}}`    | Reverse CT to HRSG mapping                   |
+| `ca_hrsg_map`                   | `Dict{UUID, Vector{Int}}`    | Reverse CA to HRSG mapping                   |
 
 The `CombinedCycleConfiguration` enum describes the plant layout. Combined cycle plants are
 typically described using a "CTs x STs" notation (e.g., 2x1 means two combustion turbines

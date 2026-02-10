@@ -574,11 +574,11 @@ include("common.jl")
 
         # Verify reverse CT mapping
         ct_hrsg_map = get_ct_hrsg_map(cc_block)
-        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == 1
+        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1]
 
         # Verify reverse CA mapping
         ca_hrsg_map = get_ca_hrsg_map(cc_block)
-        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == 1
+        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1]
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(ct_gen)
@@ -731,10 +731,154 @@ include("common.jl")
         ca_gen_restored = get_component(ThermalStandard, sys2, "cc_ca_gen1")
         ca_gen_restored_uuid = IS.get_uuid(ca_gen_restored)
 
-        @test ct_hrsg_map[ct_gen_restored_uuid] == 1
-        @test ca_hrsg_map[ca_gen_restored_uuid] == 1
+        @test ct_hrsg_map[ct_gen_restored_uuid] == [1]
+        @test ca_hrsg_map[ca_gen_restored_uuid] == [1]
         @test ct_gen_restored_uuid in hrsg_ct_map[1]
         @test ca_gen_restored_uuid in hrsg_ca_map[1]
+    end
+
+    @testset "Duplicate generator rejection for ThermalPowerPlant" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        gen = ThermalStandard(nothing)
+        gen.bus = bus
+        gen.name = "gen1"
+        add_component!(sys, gen)
+
+        plant = ThermalPowerPlant(name = "Plant")
+        add_supplemental_attribute!(sys, gen, plant; shaft_number = 1)
+
+        # Adding the same generator again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, gen, plant; shaft_number = 1,
+        )
+        # Also rejects with a different shaft number
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, gen, plant; shaft_number = 2,
+        )
+
+        # Maps should be unchanged after rejected adds
+        @test length(get_shaft_map(plant)) == 1
+        @test length(get_shaft_map(plant)[1]) == 1
+        @test get_reverse_shaft_map(plant)[IS.get_uuid(gen)] == 1
+    end
+
+    @testset "Duplicate generator rejection for HydroPowerPlant" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        turb = HydroTurbine(nothing)
+        turb.bus = bus
+        turb.name = "turb1"
+        add_component!(sys, turb)
+
+        plant = HydroPowerPlant(name = "Hydro Plant")
+        add_supplemental_attribute!(sys, turb, plant, 1)
+
+        # Adding the same turbine again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(sys, turb, plant, 1)
+        @test_throws IS.ArgumentError add_supplemental_attribute!(sys, turb, plant, 2)
+
+        # Maps should be unchanged
+        @test length(get_penstock_map(plant)) == 1
+        @test length(get_penstock_map(plant)[1]) == 1
+        @test get_reverse_penstock_map(plant)[IS.get_uuid(turb)] == 1
+    end
+
+    @testset "Duplicate generator rejection for RenewablePowerPlant" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        wind = RenewableDispatch(nothing)
+        wind.bus = bus
+        wind.name = "wind1"
+        add_component!(sys, wind)
+
+        plant = RenewablePowerPlant(name = "Renewable Plant")
+        add_supplemental_attribute!(sys, wind, plant, 1)
+
+        # Adding the same generator again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(sys, wind, plant, 1)
+        @test_throws IS.ArgumentError add_supplemental_attribute!(sys, wind, plant, 2)
+
+        # Maps should be unchanged
+        @test length(get_pcc_map(plant)) == 1
+        @test length(get_pcc_map(plant)[1]) == 1
+        @test get_reverse_pcc_map(plant)[IS.get_uuid(wind)] == 1
+    end
+
+    @testset "Duplicate generator rejection for CombinedCycleBlock" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        ct_gen = ThermalStandard(nothing)
+        ct_gen.bus = bus
+        ct_gen.name = "ct_gen1"
+        ct_gen.prime_mover_type = PrimeMovers.CT
+        add_component!(sys, ct_gen)
+
+        ca_gen = ThermalStandard(nothing)
+        ca_gen.bus = bus
+        ca_gen.name = "ca_gen1"
+        ca_gen.prime_mover_type = PrimeMovers.CA
+        add_component!(sys, ca_gen)
+
+        cc_block = CombinedCycleBlock(
+            name = "CC Block",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+        )
+
+        add_supplemental_attribute!(sys, ct_gen, cc_block; hrsg_number = 1)
+        add_supplemental_attribute!(sys, ca_gen, cc_block; hrsg_number = 1)
+
+        # Adding the same CT again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, ct_gen, cc_block; hrsg_number = 1,
+        )
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, ct_gen, cc_block; hrsg_number = 2,
+        )
+
+        # Adding the same CA again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, ca_gen, cc_block; hrsg_number = 1,
+        )
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, ca_gen, cc_block; hrsg_number = 2,
+        )
+
+        # Maps should be unchanged after rejected adds
+        hrsg_ct_map = get_hrsg_ct_map(cc_block)
+        hrsg_ca_map = get_hrsg_ca_map(cc_block)
+        ct_hrsg_map = get_ct_hrsg_map(cc_block)
+        ca_hrsg_map = get_ca_hrsg_map(cc_block)
+        @test length(hrsg_ct_map) == 1
+        @test length(hrsg_ct_map[1]) == 1
+        @test length(hrsg_ca_map) == 1
+        @test length(hrsg_ca_map[1]) == 1
+        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1]
+        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1]
     end
 
     @testset "Multiple plants per generator" begin

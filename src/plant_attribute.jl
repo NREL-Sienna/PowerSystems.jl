@@ -76,8 +76,8 @@ For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 - `heat_recovery_to_steam_factor::Float64`: Factor for heat recovery to steam conversion
 - `hrsg_ct_map::Dict{Int, Vector{Base.UUID}}`: Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
 - `hrsg_ca_map::Dict{Int, Vector{Base.UUID}}`: Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
-- `ct_hrsg_map::Dict{Base.UUID, Int}`: Reverse mapping from CT unit UUID to HRSG number
-- `ca_hrsg_map::Dict{Base.UUID, Int}`: Reverse mapping from CA unit UUID to HRSG number
+- `ct_hrsg_map::Dict{Base.UUID, Vector{Int}}`: Reverse mapping from CT unit UUID to HRSG numbers (a CT can feed multiple HRSGs)
+- `ca_hrsg_map::Dict{Base.UUID, Vector{Int}}`: Reverse mapping from CA unit UUID to HRSG numbers (a CA can receive from multiple HRSGs)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleBlock <: PowerPlant
@@ -86,8 +86,8 @@ struct CombinedCycleBlock <: PowerPlant
     heat_recovery_to_steam_factor::Float64
     hrsg_ct_map::Dict{Int, Vector{Base.UUID}}
     hrsg_ca_map::Dict{Int, Vector{Base.UUID}}
-    ct_hrsg_map::Dict{Base.UUID, Int}
-    ca_hrsg_map::Dict{Base.UUID, Int}
+    ct_hrsg_map::Dict{Base.UUID, Vector{Int}}
+    ca_hrsg_map::Dict{Base.UUID, Vector{Int}}
     internal::InfrastructureSystemsInternal
 end
 
@@ -112,8 +112,8 @@ function CombinedCycleBlock(
         Dict{Int, Vector{Base.UUID}}(
             parse(Int, k) => Base.UUID.(v) for (k, v) in hrsg_ca_map
         ),
-        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in ct_hrsg_map),
-        Dict{Base.UUID, Int}(Base.UUID(k) => v for (k, v) in ca_hrsg_map),
+        Dict{Base.UUID, Vector{Int}}(Base.UUID(k) => v for (k, v) in ct_hrsg_map),
+        Dict{Base.UUID, Vector{Int}}(Base.UUID(k) => v for (k, v) in ca_hrsg_map),
         internal,
     )
 end
@@ -152,8 +152,8 @@ Construct a [`CombinedCycleBlock`](@ref).
 - `heat_recovery_to_steam_factor::Float64`: (default: `0.0`) Factor for heat recovery to steam conversion
 - `hrsg_ct_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CT unit UUIDs (CTs as HRSG inputs)
 - `hrsg_ca_map::AbstractDict`: (default: empty dict) Mapping of HRSG numbers to CA unit UUIDs (CAs as HRSG outputs)
-- `ct_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CT unit UUID to HRSG number
-- `ca_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CA unit UUID to HRSG number
+- `ct_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CT unit UUID to HRSG numbers
+- `ca_hrsg_map::AbstractDict`: (default: empty dict) Reverse mapping from CA unit UUID to HRSG numbers
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleBlock(;
@@ -162,8 +162,8 @@ function CombinedCycleBlock(;
     heat_recovery_to_steam_factor = 0.0,
     hrsg_ct_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
     hrsg_ca_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
-    ct_hrsg_map::AbstractDict = Dict{Base.UUID, Int}(),
-    ca_hrsg_map::AbstractDict = Dict{Base.UUID, Int}(),
+    ct_hrsg_map::AbstractDict = Dict{Base.UUID, Vector{Int}}(),
+    ca_hrsg_map::AbstractDict = Dict{Base.UUID, Vector{Int}}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleBlock(
@@ -441,8 +441,15 @@ function add_supplemental_attribute!(
     attribute::ThermalPowerPlant;
     shaft_number::Int,
 )
-    IS.add_supplemental_attribute!(sys.data, component, attribute)
     uuid = IS.get_uuid(component)
+    if haskey(attribute.reverse_shaft_map, uuid)
+        throw(
+            IS.ArgumentError(
+                "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
+            ),
+        )
+    end
+    IS.add_supplemental_attribute!(sys.data, component, attribute)
     if haskey(attribute.shaft_map, shaft_number)
         push!(attribute.shaft_map[shaft_number], uuid)
     else
@@ -471,8 +478,15 @@ function add_supplemental_attribute!(
     attribute::HydroPowerPlant,
     penstock_number::Int,
 )
-    IS.add_supplemental_attribute!(sys.data, component, attribute)
     uuid = IS.get_uuid(component)
+    if haskey(attribute.reverse_penstock_map, uuid)
+        throw(
+            IS.ArgumentError(
+                "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
+            ),
+        )
+    end
+    IS.add_supplemental_attribute!(sys.data, component, attribute)
     if haskey(attribute.penstock_map, penstock_number)
         push!(attribute.penstock_map[penstock_number], uuid)
     else
@@ -520,8 +534,15 @@ function add_supplemental_attribute!(
     attribute::RenewablePowerPlant,
     pcc_number::Int,
 )
-    IS.add_supplemental_attribute!(sys.data, component, attribute)
     uuid = IS.get_uuid(component)
+    if haskey(attribute.reverse_pcc_map, uuid)
+        throw(
+            IS.ArgumentError(
+                "Component $(get_name(component)) is already part of plant $(get_name(attribute))",
+            ),
+        )
+    end
+    IS.add_supplemental_attribute!(sys.data, component, attribute)
     if haskey(attribute.pcc_map, pcc_number)
         push!(attribute.pcc_map[pcc_number], uuid)
     else
@@ -655,25 +676,31 @@ function add_supplemental_attribute!(
     attribute::CombinedCycleBlock;
     hrsg_number::Int,
 )
+    uuid = IS.get_uuid(component)
+    if haskey(attribute.ct_hrsg_map, uuid) || haskey(attribute.ca_hrsg_map, uuid)
+        throw(
+            IS.ArgumentError(
+                "Generator $(get_name(component)) is already part of block $(get_name(attribute))",
+            ),
+        )
+    end
     prime_mover = get_prime_mover_type(component)
     if prime_mover == PrimeMovers.CT
         IS.add_supplemental_attribute!(sys.data, component, attribute)
-        uuid = IS.get_uuid(component)
         if haskey(attribute.hrsg_ct_map, hrsg_number)
             push!(attribute.hrsg_ct_map[hrsg_number], uuid)
         else
             attribute.hrsg_ct_map[hrsg_number] = [uuid]
         end
-        attribute.ct_hrsg_map[uuid] = hrsg_number
+        attribute.ct_hrsg_map[uuid] = [hrsg_number]
     elseif prime_mover == PrimeMovers.CA
         IS.add_supplemental_attribute!(sys.data, component, attribute)
-        uuid = IS.get_uuid(component)
         if haskey(attribute.hrsg_ca_map, hrsg_number)
             push!(attribute.hrsg_ca_map[hrsg_number], uuid)
         else
             attribute.hrsg_ca_map[hrsg_number] = [uuid]
         end
-        attribute.ca_hrsg_map[uuid] = hrsg_number
+        attribute.ca_hrsg_map[uuid] = [hrsg_number]
     else
         throw(
             IS.ArgumentError(
@@ -704,18 +731,22 @@ function remove_supplemental_attribute!(
     uuid = IS.get_uuid(component)
     # Check if this is a CT (HRSG input)
     if haskey(attribute.ct_hrsg_map, uuid)
-        hrsg_number = attribute.ct_hrsg_map[uuid]
-        filter!(x -> x != uuid, attribute.hrsg_ct_map[hrsg_number])
-        if isempty(attribute.hrsg_ct_map[hrsg_number])
-            delete!(attribute.hrsg_ct_map, hrsg_number)
+        hrsg_numbers = attribute.ct_hrsg_map[uuid]
+        for hrsg_number in hrsg_numbers
+            filter!(x -> x != uuid, attribute.hrsg_ct_map[hrsg_number])
+            if isempty(attribute.hrsg_ct_map[hrsg_number])
+                delete!(attribute.hrsg_ct_map, hrsg_number)
+            end
         end
         delete!(attribute.ct_hrsg_map, uuid)
         # Check if this is a CA (HRSG output)
     elseif haskey(attribute.ca_hrsg_map, uuid)
-        hrsg_number = attribute.ca_hrsg_map[uuid]
-        filter!(x -> x != uuid, attribute.hrsg_ca_map[hrsg_number])
-        if isempty(attribute.hrsg_ca_map[hrsg_number])
-            delete!(attribute.hrsg_ca_map, hrsg_number)
+        hrsg_numbers = attribute.ca_hrsg_map[uuid]
+        for hrsg_number in hrsg_numbers
+            filter!(x -> x != uuid, attribute.hrsg_ca_map[hrsg_number])
+            if isempty(attribute.hrsg_ca_map[hrsg_number])
+                delete!(attribute.hrsg_ca_map, hrsg_number)
+            end
         end
         delete!(attribute.ca_hrsg_map, uuid)
     else
