@@ -177,5 +177,6 @@ for detailed documentation.
 
   - [`ThermalPowerPlant`](@ref) - Thermal plants with shared shafts
   - [`CombinedCycleBlock`](@ref) - Combined cycle plants with HRSG configurations
+  - [`CombinedCycleFractional`](@ref) - Combined cycle plants with aggregate heat rate and exclusion groups
   - [`HydroPowerPlant`](@ref) - Hydro plants with shared penstocks
   - [`RenewablePowerPlant`](@ref) - Renewable plants with shared PCCs

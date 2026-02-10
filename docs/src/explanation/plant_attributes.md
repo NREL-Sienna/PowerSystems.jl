@@ -24,7 +24,7 @@ components into logical plant structures while preserving the detailed unit-leve
 
 ## Plant Attribute Types
 
-PowerSystems.jl provides four specialized plant attribute types, each designed for a specific
+PowerSystems.jl provides five specialized plant attribute types, each designed for a specific
 generation technology:
 
 ```mermaid
@@ -32,6 +32,7 @@ classDiagram
     SupplementalAttribute <|-- PowerPlant
     PowerPlant <|-- ThermalPowerPlant
     PowerPlant <|-- CombinedCycleBlock
+    PowerPlant <|-- CombinedCycleFractional
     PowerPlant <|-- HydroPowerPlant
     PowerPlant <|-- RenewablePowerPlant
 ```
@@ -86,6 +87,21 @@ turbine units and the steam portion of the combined cycle respectively.
 For more information on combined cycle configurations, see the
 [U.S. Energy Information Administration article on combined-cycle plants](https://www.eia.gov/todayinenergy/detail.php?id=52158).
 
+### CombinedCycleFractional
+
+Represents combined cycle generation when each unit represents a specific configuration with
+an aggregate heat rate. Unlike [`CombinedCycleBlock`](@ref), which models the CT/CA relationship
+through the HRSG, the fractional representation uses **operation exclusion groups** to define
+which units can operate simultaneously. Only generators with the `CC` (combined cycle)
+[prime mover type](@ref pm_list) can be added.
+
+| Field                             | Type                         | Description                                              |
+|:--------------------------------- |:---------------------------- |:-------------------------------------------------------- |
+| `name`                            | `String`                     | Name of the combined cycle fractional plant              |
+| `configuration`                   | `CombinedCycleConfiguration` | Configuration type (see table above)                     |
+| `operation_exclusion_map`         | `Dict{Int, Vector{UUID}}`    | Mapping of exclusion group numbers to unit UUIDs         |
+| `inverse_operation_exclusion_map` | `Dict{Int, Vector{UUID}}`    | Reverse mapping of exclusion group numbers to unit UUIDs |
+
 ### HydroPowerPlant
 
 Represents hydroelectric plants where multiple turbines may share a common **penstock**
@@ -125,6 +141,10 @@ cc_block = CombinedCycleBlock(;
     name = "CC Unit 1",
     configuration = CombinedCycleConfiguration.DoubleCombustionOneSteam,
 )
+cc_fractional = CombinedCycleFractional(;
+    name = "CC Fractional 1",
+    configuration = CombinedCycleConfiguration.DoubleCombustionOneSteam,
+)
 ```
 
 ### Adding Units to Plants
@@ -147,10 +167,16 @@ add_supplemental_attribute!(sys, turbine3, hydro_plant, 2)  # Penstock 2
 add_supplemental_attribute!(sys, wind_gen1, renewable_plant, 1)  # PCC 1
 add_supplemental_attribute!(sys, battery, renewable_plant, 1)    # Same PCC
 
-# Add CT and CA units to combined cycle (hrsg_number is required)
+# Add CT and CA units to combined cycle block (hrsg_number is required)
 # Note: Only CT (combustion turbine) and CA (combined cycle steam part) prime movers are allowed
 add_supplemental_attribute!(sys, ct_unit, cc_block; hrsg_number = 1)
 add_supplemental_attribute!(sys, steam_unit, cc_block; hrsg_number = 1)
+
+# Add CC units to combined cycle fractional (exclusion_group is required)
+# Note: Only CC (combined cycle) prime mover type is allowed
+add_supplemental_attribute!(sys, cc_config1, cc_fractional; exclusion_group = 1)
+add_supplemental_attribute!(sys, cc_config2, cc_fractional; exclusion_group = 1)
+add_supplemental_attribute!(sys, cc_config3, cc_fractional; exclusion_group = 2)
 ```
 
 ## Querying Plant Information
@@ -179,6 +205,9 @@ turbines_on_penstock_2 = get_components_in_penstock(sys, hydro_plant, 2)
 
 # Get all generators/storage at PCC 1
 components_at_pcc_1 = get_components_in_pcc(sys, renewable_plant, 1)
+
+# Get all generators in exclusion group 1
+gens_in_group_1 = get_components_in_exclusion_group(sys, cc_fractional, 1)
 ```
 
 ### Accessing Infrastructure Maps
@@ -203,6 +232,11 @@ ct_map = get_hrsg_ct_map(cc_block)     # HRSG -> CTs
 ca_map = get_hrsg_ca_map(cc_block)     # HRSG -> CAs
 config = get_configuration(cc_block)   # CombinedCycleConfiguration
 factor = get_heat_recovery_to_steam_factor(cc_block)
+
+# CombinedCycleFractional
+exclusion_map = get_operation_exclusion_map(cc_fractional)
+inverse_map = get_inverse_operation_exclusion_map(cc_fractional)
+config = get_configuration(cc_fractional)  # CombinedCycleConfiguration
 ```
 
 ## Removing Units from Plants
@@ -214,6 +248,7 @@ remove_supplemental_attribute!(sys, gen1, thermal_plant)
 remove_supplemental_attribute!(sys, turbine1, hydro_plant)
 remove_supplemental_attribute!(sys, wind_gen1, renewable_plant)
 remove_supplemental_attribute!(sys, ct_unit, cc_block)
+remove_supplemental_attribute!(sys, cc_config1, cc_fractional)
 ```
 
 ## Complete Example
@@ -325,12 +360,13 @@ println("Total plant capacity: $total_capacity MW")
 
 Each plant attribute type supports specific component types:
 
-| Plant Type            | Supported Components                                     |
-|:--------------------- |:-------------------------------------------------------- |
-| `ThermalPowerPlant`   | `ThermalGen` (all subtypes)                              |
-| `CombinedCycleBlock`  | `ThermalGen` with `CT` or `CA` prime mover only          |
-| `HydroPowerPlant`     | `HydroTurbine`, `HydroPumpTurbine` (not `HydroDispatch`) |
-| `RenewablePowerPlant` | `RenewableGen`, `EnergyReservoirStorage`                 |
+| Plant Type                | Supported Components                                     |
+|:------------------------- |:-------------------------------------------------------- |
+| `ThermalPowerPlant`       | `ThermalGen` (all subtypes)                              |
+| `CombinedCycleBlock`      | `ThermalGen` with `CT` or `CA` prime mover only          |
+| `CombinedCycleFractional` | `ThermalGen` with `CC` prime mover only                  |
+| `HydroPowerPlant`         | `HydroTurbine`, `HydroPumpTurbine` (not `HydroDispatch`) |
+| `RenewablePowerPlant`     | `RenewableGen`, `EnergyReservoirStorage`                 |
 
 ## Serialization
 
@@ -343,5 +379,6 @@ the plant-unit relationships across save/load cycles.
   - [`SupplementalAttribute`](@ref supplemental_attributes) - Base concept for supplemental data
   - [`ThermalPowerPlant`](@ref) - API reference
   - [`CombinedCycleBlock`](@ref) - API reference
+  - [`CombinedCycleFractional`](@ref) - API reference
   - [`HydroPowerPlant`](@ref) - API reference
   - [`RenewablePowerPlant`](@ref) - API reference
