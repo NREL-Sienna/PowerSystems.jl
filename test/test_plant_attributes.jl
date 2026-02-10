@@ -1076,4 +1076,294 @@ include("common.jl")
             rm(test_dir; recursive = true, force = true)
         end
     end
+
+    @testset "CombinedCycleFractional construction and basic accessors" begin
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac 1",
+            configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
+        )
+        @test get_name(cc_frac) == "CC Frac 1"
+        @test get_configuration(cc_frac) ==
+              CombinedCycleConfiguration.SingleShaftCombustionSteam
+        @test isempty(get_operation_exclusion_map(cc_frac))
+        @test isempty(get_inverse_operation_exclusion_map(cc_frac))
+    end
+
+    @testset "Add and remove ThermalGen to/from CombinedCycleFractional" begin
+        sys = System(100.0)
+
+        bus1 = ACBus(nothing)
+        bus1.name = "bus1"
+        bus1.number = 1
+        bus1.bustype = ACBusTypes.REF
+        add_component!(sys, bus1)
+
+        bus2 = ACBus(nothing)
+        bus2.name = "bus2"
+        bus2.number = 2
+        add_component!(sys, bus2)
+
+        # Create thermal generators with CC prime mover type
+        cc_gen1 = ThermalStandard(nothing)
+        cc_gen1.bus = bus1
+        cc_gen1.name = "cc_gen1"
+        cc_gen1.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen1)
+
+        cc_gen2 = ThermalStandard(nothing)
+        cc_gen2.bus = bus2
+        cc_gen2.name = "cc_gen2"
+        cc_gen2.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen2)
+
+        # Create combined cycle fractional plant
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac 1",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+        )
+
+        # Add generators with exclusion group numbers
+        add_supplemental_attribute!(
+            sys, cc_gen1, cc_frac; exclusion_group = 1,
+        )
+        add_supplemental_attribute!(
+            sys, cc_gen2, cc_frac; exclusion_group = 1,
+        )
+
+        # Verify exclusion mappings
+        excl_map = get_operation_exclusion_map(cc_frac)
+        @test length(excl_map) == 1
+        @test length(excl_map[1]) == 2
+        @test IS.get_uuid(cc_gen1) in excl_map[1]
+        @test IS.get_uuid(cc_gen2) in excl_map[1]
+
+        # Verify inverse mappings
+        inv_map = get_inverse_operation_exclusion_map(cc_frac)
+        @test length(inv_map) == 1
+        @test length(inv_map[1]) == 2
+        @test IS.get_uuid(cc_gen1) in inv_map[1]
+        @test IS.get_uuid(cc_gen2) in inv_map[1]
+
+        # Verify supplemental attributes are attached
+        @test has_supplemental_attributes(cc_gen1)
+        @test has_supplemental_attributes(cc_gen2)
+
+        # Test multiple exclusion groups
+        cc_gen3 = ThermalStandard(nothing)
+        cc_gen3.bus = bus1
+        cc_gen3.name = "cc_gen3"
+        cc_gen3.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen3)
+        add_supplemental_attribute!(
+            sys, cc_gen3, cc_frac; exclusion_group = 2,
+        )
+        @test length(excl_map) == 2
+        @test length(excl_map[2]) == 1
+        @test excl_map[2][1] == IS.get_uuid(cc_gen3)
+
+        # Remove generator from plant
+        remove_supplemental_attribute!(sys, cc_gen1, cc_frac)
+        @test length(excl_map[1]) == 1
+        @test excl_map[1][1] == IS.get_uuid(cc_gen2)
+
+        # Remove last generator from group 1
+        remove_supplemental_attribute!(sys, cc_gen2, cc_frac)
+        @test !haskey(excl_map, 1)
+
+        # Test error when removing non-existent generator
+        @test_throws IS.ArgumentError remove_supplemental_attribute!(
+            sys, cc_gen1, cc_frac,
+        )
+    end
+
+    @testset "CombinedCycleFractional rejects invalid PrimeMover types" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac Invalid",
+            configuration = CombinedCycleConfiguration.SingleShaftCombustionSteam,
+        )
+
+        # Invalid prime mover types should throw (only CC is valid)
+        for (i, pm) in enumerate([
+            PrimeMovers.GT,
+            PrimeMovers.ST,
+            PrimeMovers.WT,
+            PrimeMovers.CT,
+            PrimeMovers.CA,
+        ])
+            gen = ThermalStandard(nothing)
+            gen.bus = bus
+            gen.name = "gen_invalid_$i"
+            gen.prime_mover_type = pm
+            add_component!(sys, gen)
+            @test_throws IS.ArgumentError add_supplemental_attribute!(
+                sys, gen, cc_frac; exclusion_group = 1,
+            )
+        end
+
+        # Valid prime mover type (CC only)
+        cc_gen = ThermalStandard(nothing)
+        cc_gen.bus = bus
+        cc_gen.name = "gen_cc"
+        cc_gen.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen)
+        add_supplemental_attribute!(
+            sys, cc_gen, cc_frac; exclusion_group = 1,
+        )
+        @test length(get_operation_exclusion_map(cc_frac)) == 1
+    end
+
+    @testset "Get components in exclusion group" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        # Create CC generators
+        gen1 = ThermalStandard(nothing)
+        gen1.bus = bus
+        gen1.name = "cc_gen1"
+        gen1.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, gen1)
+
+        gen2 = ThermalStandard(nothing)
+        gen2.bus = bus
+        gen2.name = "cc_gen2"
+        gen2.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, gen2)
+
+        gen3 = ThermalStandard(nothing)
+        gen3.bus = bus
+        gen3.name = "cc_gen3"
+        gen3.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, gen3)
+
+        # Create plant with generators in different exclusion groups
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac Test",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+        )
+        add_supplemental_attribute!(sys, gen1, cc_frac; exclusion_group = 1)
+        add_supplemental_attribute!(sys, gen2, cc_frac; exclusion_group = 1)
+        add_supplemental_attribute!(sys, gen3, cc_frac; exclusion_group = 2)
+
+        # Test getting components in exclusion group 1
+        group1_components = get_components_in_exclusion_group(sys, cc_frac, 1)
+        @test length(group1_components) == 2
+        group1_names = Set([get_name(c) for c in group1_components])
+        @test "cc_gen1" in group1_names
+        @test "cc_gen2" in group1_names
+
+        # Test getting components in exclusion group 2
+        group2_components = get_components_in_exclusion_group(sys, cc_frac, 2)
+        @test length(group2_components) == 1
+        @test get_name(group2_components[1]) == "cc_gen3"
+
+        # Test error for non-existent exclusion group
+        @test_throws IS.ArgumentError get_components_in_exclusion_group(sys, cc_frac, 99)
+    end
+
+    @testset "Duplicate generator rejection for CombinedCycleFractional" begin
+        sys = System(100.0)
+
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        cc_gen = ThermalStandard(nothing)
+        cc_gen.bus = bus
+        cc_gen.name = "cc_gen1"
+        cc_gen.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen)
+
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+        )
+
+        add_supplemental_attribute!(sys, cc_gen, cc_frac; exclusion_group = 1)
+
+        # Adding the same generator again should throw
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, cc_gen, cc_frac; exclusion_group = 1,
+        )
+        # Also rejects with a different exclusion group
+        @test_throws IS.ArgumentError add_supplemental_attribute!(
+            sys, cc_gen, cc_frac; exclusion_group = 2,
+        )
+
+        # Maps should be unchanged after rejected adds
+        excl_map = get_operation_exclusion_map(cc_frac)
+        @test length(excl_map) == 1
+        @test length(excl_map[1]) == 1
+    end
+
+    @testset "Serialization and deserialization of CombinedCycleFractional" begin
+        sys = System(100.0)
+
+        # Create bus and generators with CC prime mover type
+        bus = ACBus(nothing)
+        bus.name = "bus1"
+        bus.number = 1
+        bus.bustype = ACBusTypes.REF
+        add_component!(sys, bus)
+
+        cc_gen1 = ThermalStandard(nothing)
+        cc_gen1.bus = bus
+        cc_gen1.name = "cc_frac_gen1"
+        cc_gen1.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen1)
+
+        cc_gen2 = ThermalStandard(nothing)
+        cc_gen2.bus = bus
+        cc_gen2.name = "cc_frac_gen2"
+        cc_gen2.prime_mover_type = PrimeMovers.CC
+        add_component!(sys, cc_gen2)
+
+        # Create and add combined cycle fractional plant
+        cc_frac = CombinedCycleFractional(
+            name = "CC Frac 1",
+            configuration = CombinedCycleConfiguration.SeparateShaftCombustionSteam,
+        )
+        add_supplemental_attribute!(sys, cc_gen1, cc_frac; exclusion_group = 1)
+        add_supplemental_attribute!(sys, cc_gen2, cc_frac; exclusion_group = 2)
+
+        # Serialize and deserialize
+        sys2, result = validate_serialization(sys)
+        @test result
+
+        # Verify plant is preserved
+        gen1_restored = get_component(ThermalStandard, sys2, "cc_frac_gen1")
+        @test has_supplemental_attributes(gen1_restored)
+        attrs = get_supplemental_attributes(CombinedCycleFractional, gen1_restored)
+        cc_frac_restored = collect(attrs)[1]
+        @test get_name(cc_frac_restored) == "CC Frac 1"
+        @test get_configuration(cc_frac_restored) ==
+              CombinedCycleConfiguration.SeparateShaftCombustionSteam
+
+        # Verify exclusion mappings are preserved
+        excl_map = get_operation_exclusion_map(cc_frac_restored)
+        inv_map = get_inverse_operation_exclusion_map(cc_frac_restored)
+        @test length(excl_map) == 2
+        @test length(inv_map) == 2
+
+        gen1_restored_uuid = IS.get_uuid(gen1_restored)
+        gen2_restored = get_component(ThermalStandard, sys2, "cc_frac_gen2")
+        gen2_restored_uuid = IS.get_uuid(gen2_restored)
+
+        @test gen1_restored_uuid in excl_map[1]
+        @test gen2_restored_uuid in excl_map[2]
+    end
 end

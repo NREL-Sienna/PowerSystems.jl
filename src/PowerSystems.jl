@@ -25,6 +25,7 @@ export get_geo_json
 export PowerPlant
 export ThermalPowerPlant
 export CombinedCycleBlock
+export CombinedCycleFractional
 export CombinedCycleConfiguration
 export HydroPowerPlant
 export RenewablePowerPlant
@@ -43,6 +44,9 @@ export get_ca_hrsg_map
 export get_pcc_map
 export get_reverse_pcc_map
 export get_components_in_pcc
+export get_operation_exclusion_map
+export get_inverse_operation_exclusion_map
+export get_components_in_exclusion_group
 
 export Component
 export Device

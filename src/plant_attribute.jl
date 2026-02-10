@@ -67,7 +67,7 @@ get_shaft_map(value::ThermalPowerPlant) = value.shaft_map
 get_reverse_shaft_map(value::ThermalPowerPlant) = value.reverse_shaft_map
 
 """
-Attribute to represent combined cycle generation by block configuration.
+Attribute to represent combined cycle generation by block configuration that shares heat recovery converstions.
 For aggregate representations consider using [`CombinedCycleFractional`](@ref).
 
 # Arguments
@@ -193,6 +193,103 @@ get_hrsg_ca_map(value::CombinedCycleBlock) = value.hrsg_ca_map
 get_ct_hrsg_map(value::CombinedCycleBlock) = value.ct_hrsg_map
 """Get [`CombinedCycleBlock`](@ref) `ca_hrsg_map`."""
 get_ca_hrsg_map(value::CombinedCycleBlock) = value.ca_hrsg_map
+
+"""
+Attribute to represent combined cycle generation when each unit represents a specific configuration and aggregate heat rate.
+For block-level representations consider using [`CombinedCycleBlock`](@ref).
+
+# Arguments
+- `name::String`: Name of the combined cycle fractional plant
+- `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
+- `operation_exclusion_map::Dict{Int, Vector{Base.UUID}}`: Mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
+- `inverse_operation_exclusion_map::Dict{Int, Vector{Base.UUID}}`: Reverse mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
+- `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
+"""
+struct CombinedCycleFractional <: PowerPlant
+    name::String
+    configuration::CombinedCycleConfiguration
+    operation_exclusion_map::Dict{Int, Vector{Base.UUID}}
+    inverse_operation_exclusion_map::Dict{Int, Vector{Base.UUID}}
+    internal::InfrastructureSystemsInternal
+end
+
+# Deserialization variant: converts string-keyed dicts from JSON
+function CombinedCycleFractional(
+    name::String,
+    configuration::CombinedCycleConfiguration,
+    operation_exclusion_map::Dict{String, <:Any},
+    inverse_operation_exclusion_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return CombinedCycleFractional(
+        name,
+        configuration,
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for (k, v) in operation_exclusion_map
+        ),
+        Dict{Int, Vector{Base.UUID}}(
+            parse(Int, k) => Base.UUID.(v) for
+            (k, v) in inverse_operation_exclusion_map
+        ),
+        internal,
+    )
+end
+
+# Deserialization variant: configuration is also serialized as a string
+function CombinedCycleFractional(
+    name::String,
+    configuration::String,
+    operation_exclusion_map::Dict{String, <:Any},
+    inverse_operation_exclusion_map::Dict{String, <:Any},
+    internal::InfrastructureSystemsInternal,
+)
+    return CombinedCycleFractional(
+        name,
+        IS.deserialize(CombinedCycleConfiguration, configuration),
+        operation_exclusion_map,
+        inverse_operation_exclusion_map,
+        internal,
+    )
+end
+
+"""
+    CombinedCycleFractional(; name, configuration, operation_exclusion_map, inverse_operation_exclusion_map, internal)
+
+Construct a [`CombinedCycleFractional`](@ref).
+
+# Arguments
+- `name::String`: Name of the combined cycle fractional plant
+- `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
+- `operation_exclusion_map::AbstractDict`: (default: empty dict) Mapping of operation exclusion group numbers to unit UUIDs
+- `inverse_operation_exclusion_map::AbstractDict`: (default: empty dict) Reverse mapping of operation exclusion group numbers to unit UUIDs
+- `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
+"""
+function CombinedCycleFractional(;
+    name,
+    configuration,
+    operation_exclusion_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    inverse_operation_exclusion_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    internal = InfrastructureSystemsInternal(),
+)
+    return CombinedCycleFractional(
+        name,
+        configuration,
+        operation_exclusion_map,
+        inverse_operation_exclusion_map,
+        internal,
+    )
+end
+
+"""Get [`CombinedCycleFractional`](@ref) `name`."""
+get_name(value::CombinedCycleFractional) = value.name
+"""Get [`CombinedCycleFractional`](@ref) `configuration`."""
+get_configuration(value::CombinedCycleFractional) = value.configuration
+"""Get [`CombinedCycleFractional`](@ref) `operation_exclusion_map`."""
+get_operation_exclusion_map(value::CombinedCycleFractional) =
+    value.operation_exclusion_map
+"""Get [`CombinedCycleFractional`](@ref) `inverse_operation_exclusion_map`."""
+get_inverse_operation_exclusion_map(value::CombinedCycleFractional) =
+    value.inverse_operation_exclusion_map
 
 """
 Attribute to represent hydro power plants with shared penstocks.
@@ -758,4 +855,140 @@ function remove_supplemental_attribute!(
     end
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
+end
+
+"""
+    add_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleFractional; exclusion_group::Int)
+
+Add a thermal generator to a [`CombinedCycleFractional`](@ref) by associating it with an exclusion group number.
+Only generators with CC (combined cycle) prime mover type can be added.
+
+# Arguments
+- `sys::System`: The system containing the generator
+- `component::ThermalGen`: The thermal generator to add to the plant (must have prime mover type CC)
+- `attribute::CombinedCycleFractional`: The combined cycle fractional plant
+- `exclusion_group::Int`: The exclusion group number to associate with the generator
+"""
+function add_supplemental_attribute!(
+    sys::System,
+    component::ThermalGen,
+    attribute::CombinedCycleFractional;
+    exclusion_group::Int,
+)
+    uuid = IS.get_uuid(component)
+    # Check if already in any exclusion group
+    for (_, uuids) in attribute.operation_exclusion_map
+        if uuid in uuids
+            throw(
+                IS.ArgumentError(
+                    "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
+                ),
+            )
+        end
+    end
+    prime_mover = get_prime_mover_type(component)
+    if prime_mover != PrimeMovers.CC
+        throw(
+            IS.ArgumentError(
+                "Invalid prime mover type $prime_mover for generator $(get_name(component)). Only CC generators can be added to a CombinedCycleFractional.",
+            ),
+        )
+    end
+    IS.add_supplemental_attribute!(sys.data, component, attribute)
+    if haskey(attribute.operation_exclusion_map, exclusion_group)
+        push!(attribute.operation_exclusion_map[exclusion_group], uuid)
+    else
+        attribute.operation_exclusion_map[exclusion_group] = [uuid]
+    end
+    if haskey(attribute.inverse_operation_exclusion_map, exclusion_group)
+        push!(attribute.inverse_operation_exclusion_map[exclusion_group], uuid)
+    else
+        attribute.inverse_operation_exclusion_map[exclusion_group] = [uuid]
+    end
+    return
+end
+
+"""
+    remove_supplemental_attribute!(sys::System, component::ThermalGen, attribute::CombinedCycleFractional)
+
+Remove a thermal generator from a [`CombinedCycleFractional`](@ref).
+This removes the plant as a supplemental attribute from the generator and removes the
+generator's UUID from the plant's exclusion maps.
+
+# Arguments
+- `sys::System`: The system containing the generator
+- `component::ThermalGen`: The thermal generator to remove from the plant
+- `attribute::CombinedCycleFractional`: The combined cycle fractional plant
+"""
+function remove_supplemental_attribute!(
+    sys::System,
+    component::ThermalGen,
+    attribute::CombinedCycleFractional,
+)
+    uuid = IS.get_uuid(component)
+    found = false
+    for (group, _) in attribute.operation_exclusion_map
+        if uuid in attribute.operation_exclusion_map[group]
+            filter!(x -> x != uuid, attribute.operation_exclusion_map[group])
+            if isempty(attribute.operation_exclusion_map[group])
+                delete!(attribute.operation_exclusion_map, group)
+            end
+            found = true
+            break
+        end
+    end
+    if !found
+        throw(
+            IS.ArgumentError(
+                "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
+            ),
+        )
+    end
+    for (group, _) in attribute.inverse_operation_exclusion_map
+        if uuid in attribute.inverse_operation_exclusion_map[group]
+            filter!(x -> x != uuid, attribute.inverse_operation_exclusion_map[group])
+            if isempty(attribute.inverse_operation_exclusion_map[group])
+                delete!(attribute.inverse_operation_exclusion_map, group)
+            end
+            break
+        end
+    end
+    IS.remove_supplemental_attribute!(sys.data, component, attribute)
+    return
+end
+
+"""
+    get_components_in_exclusion_group(sys::System, plant::CombinedCycleFractional, exclusion_group::Int)
+
+Get all thermal generators in a specific exclusion group of a [`CombinedCycleFractional`](@ref).
+
+# Arguments
+- `sys::System`: The system containing the components
+- `plant::CombinedCycleFractional`: The combined cycle fractional plant
+- `exclusion_group::Int`: The exclusion group number to query
+
+# Returns
+- `Vector{ThermalGen}`: Vector of thermal generators in the specified exclusion group
+
+# Throws
+- `ArgumentError`: If the exclusion group does not exist in the plant
+"""
+function get_components_in_exclusion_group(
+    sys::System,
+    plant::CombinedCycleFractional,
+    exclusion_group::Int,
+)
+    exclusion_map = get_operation_exclusion_map(plant)
+    if !haskey(exclusion_map, exclusion_group)
+        throw(
+            IS.ArgumentError(
+                "Exclusion group $exclusion_group does not exist in plant $(get_name(plant))",
+            ),
+        )
+    end
+
+    uuids = exclusion_map[exclusion_group]
+    all_components = get_associated_components(sys, plant; component_type = ThermalGen)
+    # Filter to only include components in this exclusion group
+    return filter(c -> IS.get_uuid(c) in uuids, all_components)
 end
