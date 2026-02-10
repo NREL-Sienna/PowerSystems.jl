@@ -100,7 +100,7 @@ which units can operate simultaneously. Only generators with the `CC` (combined 
 | `name`                            | `String`                     | Name of the combined cycle fractional plant              |
 | `configuration`                   | `CombinedCycleConfiguration` | Configuration type (see table above)                     |
 | `operation_exclusion_map`         | `Dict{Int, Vector{UUID}}`    | Mapping of exclusion group numbers to unit UUIDs         |
-| `inverse_operation_exclusion_map` | `Dict{Int, Vector{UUID}}`    | Reverse mapping of exclusion group numbers to unit UUIDs |
+| `inverse_operation_exclusion_map` | `Dict{UUID, Int}`            | Reverse mapping from unit UUID to exclusion group number |
 
 ### HydroPowerPlant
 

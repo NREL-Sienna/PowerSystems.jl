@@ -202,14 +202,14 @@ For block-level representations consider using [`CombinedCycleBlock`](@ref).
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `operation_exclusion_map::Dict{Int, Vector{Base.UUID}}`: Mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
-- `inverse_operation_exclusion_map::Dict{Int, Vector{Base.UUID}}`: Reverse mapping of operation exclusion group numbers to unit UUIDs (only units in the same group can operate simultaneously)
+- `inverse_operation_exclusion_map::Dict{Base.UUID, Int}`: Reverse mapping from unit UUID to exclusion group number
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems internal reference
 """
 struct CombinedCycleFractional <: PowerPlant
     name::String
     configuration::CombinedCycleConfiguration
     operation_exclusion_map::Dict{Int, Vector{Base.UUID}}
-    inverse_operation_exclusion_map::Dict{Int, Vector{Base.UUID}}
+    inverse_operation_exclusion_map::Dict{Base.UUID, Int}
     internal::InfrastructureSystemsInternal
 end
 
@@ -227,9 +227,8 @@ function CombinedCycleFractional(
         Dict{Int, Vector{Base.UUID}}(
             parse(Int, k) => Base.UUID.(v) for (k, v) in operation_exclusion_map
         ),
-        Dict{Int, Vector{Base.UUID}}(
-            parse(Int, k) => Base.UUID.(v) for
-            (k, v) in inverse_operation_exclusion_map
+        Dict{Base.UUID, Int}(
+            Base.UUID(k) => v for (k, v) in inverse_operation_exclusion_map
         ),
         internal,
     )
@@ -261,14 +260,14 @@ Construct a [`CombinedCycleFractional`](@ref).
 - `name::String`: Name of the combined cycle fractional plant
 - `configuration::CombinedCycleConfiguration`: Configuration type of the combined cycle
 - `operation_exclusion_map::AbstractDict`: (default: empty dict) Mapping of operation exclusion group numbers to unit UUIDs
-- `inverse_operation_exclusion_map::AbstractDict`: (default: empty dict) Reverse mapping of operation exclusion group numbers to unit UUIDs
+- `inverse_operation_exclusion_map::AbstractDict`: (default: empty dict) Reverse mapping from unit UUID to exclusion group number
 - `internal::InfrastructureSystemsInternal`: (default: `InfrastructureSystemsInternal()`) (**Do not modify.**) PowerSystems internal reference
 """
 function CombinedCycleFractional(;
     name,
     configuration,
     operation_exclusion_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
-    inverse_operation_exclusion_map::AbstractDict = Dict{Int, Vector{Base.UUID}}(),
+    inverse_operation_exclusion_map::AbstractDict = Dict{Base.UUID, Int}(),
     internal = InfrastructureSystemsInternal(),
 )
     return CombinedCycleFractional(
@@ -900,11 +899,7 @@ function add_supplemental_attribute!(
     else
         attribute.operation_exclusion_map[exclusion_group] = [uuid]
     end
-    if haskey(attribute.inverse_operation_exclusion_map, exclusion_group)
-        push!(attribute.inverse_operation_exclusion_map[exclusion_group], uuid)
-    else
-        attribute.inverse_operation_exclusion_map[exclusion_group] = [uuid]
-    end
+    attribute.inverse_operation_exclusion_map[uuid] = exclusion_group
     return
 end
 
@@ -944,15 +939,7 @@ function remove_supplemental_attribute!(
             ),
         )
     end
-    for (group, _) in attribute.inverse_operation_exclusion_map
-        if uuid in attribute.inverse_operation_exclusion_map[group]
-            filter!(x -> x != uuid, attribute.inverse_operation_exclusion_map[group])
-            if isempty(attribute.inverse_operation_exclusion_map[group])
-                delete!(attribute.inverse_operation_exclusion_map, group)
-            end
-            break
-        end
-    end
+    delete!(attribute.inverse_operation_exclusion_map, uuid)
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end

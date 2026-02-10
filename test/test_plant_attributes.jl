@@ -1139,10 +1139,9 @@ include("common.jl")
 
         # Verify inverse mappings
         inv_map = get_inverse_operation_exclusion_map(cc_frac)
-        @test length(inv_map) == 1
-        @test length(inv_map[1]) == 2
-        @test IS.get_uuid(cc_gen1) in inv_map[1]
-        @test IS.get_uuid(cc_gen2) in inv_map[1]
+        @test length(inv_map) == 2
+        @test inv_map[IS.get_uuid(cc_gen1)] == 1
+        @test inv_map[IS.get_uuid(cc_gen2)] == 1
 
         # Verify supplemental attributes are attached
         @test has_supplemental_attributes(cc_gen1)
