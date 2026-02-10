@@ -120,7 +120,7 @@ show_components(sys, ACBus)
 Let's connect our buses. We'll add a transmission [`Line`](@ref) between `bus1` and `bus2`.
 
 !!! warning
-    
+
     When defining a line that isn't attached to a `System` yet, you must define the
     thermal rating of the transmission line in per-unit using the base power of the
     `System` you plan to connect it to -- in this case, 100 MVA.
@@ -162,7 +162,7 @@ Now that our network topology is complete, we'll start adding components that [i
 withdraw power from the network.
 
 !!! warning
-    
+
     When you define components that aren't attached to a `System` yet, you must define
     all fields related to power (with units such as MW, MVA, MVAR, or MW/min) in
     per-unit using the `base_power` of the component (with the exception of `base_power`
@@ -292,7 +292,7 @@ See that the generator's bus is linked to the actual `bus2` component in our `Sy
 These "getter" functions are available for all the data fields in a component.
 
 !!! tip
-    
+
     **Always use the `get_*` functions to retrieve the data within a component.**
     While in Julia a user can use `.` to access the fields of a component, we make no
     guarantees on the stability of field names and locations. We do however promise to
@@ -309,7 +309,7 @@ get_rating(retrieved_component)
 ```
 
 !!! tip "Important"
-    
+
     When we defined the solar generator, we defined the rating
     as 1.0 per-unit with a device `base_power` of 5.0 MVA. Notice that the rating now reads
     0.05. After we attached this component to our `System`, its power data is being

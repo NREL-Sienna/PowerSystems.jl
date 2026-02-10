@@ -263,13 +263,13 @@ show_time_series(load1)
 ```
 
 !!! tip "Important"
-    
+
     Notice that each load now has two references to `max_active_power`. This is intentional.
     There is the parameter, `max_active_power`, which is  the
     maximum demand of each load at any time (10 MW or 30 MW). There is also
     `max_active_power` the time series, which is the time varying demand over the 2-hour
     window, calculated using the scaling factors and the `max_active_power` parameter.
-    
+
     This means that if we change the `max_active_power` parameter, the time series will
     also change when we retrieve it! This is also true when we apply the same scaling factors
     to multiple components or parameters.
@@ -440,7 +440,7 @@ get_max_active_power(wind1)
 See that the forecasts are not exceeding this maximum -- sanity check complete.
 
 !!! tip
-    
+
     Unlike `PowerLoad` components, `RenewableDispatch` components do not have a
     `max_active_power` field, so check
     [`get_max_active_power`](@ref get_max_active_power(d::RenewableGen))
