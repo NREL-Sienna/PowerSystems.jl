@@ -38,7 +38,7 @@ show_components(ThermalStandard, threebus_sys, [:bus])
 # Notice that there are generators connected at Buses 2 and 3, but not Bus 1.
 # Now, we are going to add the data needed to run an EMT simulation.
 # We will add an infinite voltage source to Bus 1, which is the last component we
-# need to complete the static data layer. Then, we will a dynamic
+# need to complete the static data layer. Then, we will add a dynamic
 # generator or inverter model to the two generators, as well as adding dynamic lines.
 
 # ## Add an Infinite Voltage Source
@@ -83,7 +83,7 @@ add_component!(threebus_sys, inf_source)
 # !!! note
 #     When defining dynamic data, by convention `PowerSystems.jl` assumes that all data is
 #     in [`DEVICE_BASE`](@ref per_unit).
-# First, define a [Machine](@ref Machine) that describes the the stator electro-magnetic dynamics:
+# First, define a [Machine](@ref Machine) that describes the stator electro-magnetic dynamics:
 
 machine_oneDoneQ = OneDOneQMachine(;
     R = 0.0,
@@ -308,8 +308,8 @@ end
 
 branches = get_components(ACBranch, threebus_sys)
 
-# Notice that now there are 3 [`DynamicBranch`](@ref) components instead the `Line` components.
-# Let's take a look by printing first one:
+# Notice that now there are 3 [`DynamicBranch`](@ref) components instead of the `Line` components.
+# Let's take a look by printing the first one:
 
 first(branches)
 

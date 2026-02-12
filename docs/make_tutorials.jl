@@ -41,8 +41,10 @@ function clean_old_generated_files(dir::String)
         @warn "Directory does not exist: $dir"
         return
     end
-    generated_files =
-        filter(f -> startswith(f, "generated_") && endswith(f, ".md"), readdir(dir))
+    generated_files = filter(
+        f -> startswith(f, "generated_") && (endswith(f, ".md") || endswith(f, ".ipynb")),
+        readdir(dir),
+    )
     for file in generated_files
         rm(joinpath(dir, file); force = true)
         @info "Removed old generated file: $file"
@@ -251,16 +253,21 @@ function add_image_links(nb::Dict, outputfile_base::AbstractString)
         source = get(cell, "source", [])
         isempty(source) && continue
         text = join(source)
+        # Check if this cell already has the "view online" message to avoid duplicates
+        contains(text, "If image is not available when viewing in a Jupyter notebook") &&
+            continue
         suffix = "\n\n" * msg * "\n"
         append_after = m -> string(m) * suffix
-        # Literate outputs raw HTML (no ```@raw html```); match <p...>...<img...>...</p>
-        text = replace(text, r"<p[^>]*>[\s\S]*?<img[\s\S]*?</p>" => append_after)
-        # Standalone <img> (Literate converts @raw html to plain HTML in notebooks, no wrapper)
-        text = replace(text, r"<img[^>]*?/?>" => append_after)
-        # If source still had literal ```@raw html ... ``` in the notebook
-        text = replace(text, r"```@raw html[\s\S]*?```" => append_after)
-        # Markdown image ![...](...)
-        text = replace(text, r"!\[[^\]]*\]\([^\)]*\)" => append_after)
+        # Use a single non-overlapping regex to match image-containing fragments:
+        # - <p...>...<img...>...</p> (Literate raw HTML paragraphs)
+        # - ```@raw html ... ``` blocks
+        # - Markdown images ![...](...)
+        # - standalone <img> tags (only if not already matched by <p> wrapper)
+        text = replace(
+            text,
+            r"(?:<p[^>]*>[\s\S]*?<img[\s\S]*?</p>|```@raw html[\s\S]*?```|!\[[^\]]*\]\([^\)]*\)|<img[^>]*?/?>)" =>
+                append_after,
+        )
         # Convert back to notebook source array (lines, last without trailing \n if non-empty)
         lines = split(text, "\n"; keepempty = true)
         new_source = String[]
