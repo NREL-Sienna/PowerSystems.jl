@@ -14,7 +14,7 @@
 # For the wind generator, we have the historical point (deterministic) forecasts of power
 # output. The forecasts were generated every 30 minutes with a 5-minute [resolution](@ref R)
 # and 1-hour [horizon](@ref H). We also have
-# measurements what actually happened at 5-minute resolution over the 2 hours.
+# measurements of what actually happened at 5-minute resolution over the 2 hours.
 # For the loads, note that the forecast data is missing. We only have the historical
 # measurements of total load for the system, which is normalized to the system's peak load.
 # Load the `PowerSystems`, `Dates`, and `TimeSeries` packages to get started:
@@ -172,7 +172,7 @@ load_values = [0.3, 0.3, 0.3, 0.3, 0.4, 0.4, 0.4, 0.4, 0.5, 0.5, 0.6, 0.6,
 load_timearray = TimeArray(timestamps, load_values);
 
 # Again, define a [`SingleTimeSeries`](@ref), but this time use the
-# `scaling_factor_multiplier`parameter to scale this time series from
+# `scaling_factor_multiplier` parameter to scale this time series from
 # normalized values to power values:
 
 load_time_series = SingleTimeSeries(;
@@ -214,12 +214,12 @@ show_time_series(load1)
 get_time_series_array(SingleTimeSeries, load1, "max_active_power") # in MW
 
 # See that the normalized values have been scaled up by 10 MW.
-# Now let's at `load2`. First check its `max_active_power` parameter:
+# Now let's look at `load2`. First check its `max_active_power` parameter:
 
 get_max_active_power(load2)
 
 # This has a higher peak maximum demand of 30 MW.
-# Next, retrieve it's `max_active_power` time series:
+# Next, retrieve its `max_active_power` time series:
 
 get_time_series_array(SingleTimeSeries, load2, "max_active_power") # in MW
 

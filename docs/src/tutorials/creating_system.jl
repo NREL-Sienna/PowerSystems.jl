@@ -298,4 +298,4 @@ sys
 #     [with PSSE dynamic data](@ref dyr_data) instead of creating it manually
 #   - [Create your own `System` from .csv files instead of creating it manually](@ref system_from_csv)
 #   - [Read more to understand per-unitization in PowerSystems.jl](@ref per_unit)
-#   - See a workaround for how to [Add a Component in Natural Units](@ref)
+#   - See a workaround for how to [Add a Component in Natural Units](@ref add_comp_natural_units)

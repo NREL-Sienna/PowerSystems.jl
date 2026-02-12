@@ -34,7 +34,7 @@ show_components(ThermalStandard, sys, [:fuel, :active_power, :reactive_power])
 
 solitude = get_component(ThermalStandard, sys, "Solitude")
 
-# Notice that all of Solitude's fields are pretty-printed with the return statment for
+# Notice that all of Solitude's fields are pretty-printed with the return statement for
 # quick reference. However, what is returned is a [`ThermalStandard`](@ref) object we can
 # manipulate:
 
@@ -239,9 +239,6 @@ end
 
 get_name.(get_components(ThermalStandard, sys))
 
-# Be aware again that accessing components through a vector using
-# [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
-# might cause large memory allocations, based on your dataset size.
 # Be aware again that accessing components through a vector using
 # [`collect`](https://docs.julialang.org/en/v1/base/collections/#Base.collect-Tuple%7BAny%7D)
 # might cause large memory allocations, based on your dataset size.
