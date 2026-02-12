@@ -76,6 +76,7 @@ pages = OrderedDict(
             "explanation/time_series.md",
             "explanation/dynamic_data.md",
             "explanation/supplemental_attributes.md",
+            "explanation/plant_attributes.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
