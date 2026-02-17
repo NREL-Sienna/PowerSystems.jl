@@ -1,6 +1,6 @@
 # [Per-unit Conventions](@id per_unit)
 
-It is often useful to express power systems data in relative terms using per-unit conventions.
+It is often useful to express power systems data in relative terms using per-unit (p.u.) conventions.
 `PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
 
  1. `"NATURAL_UNITS"`: The naturally defined units of each parameter (typically MW).
@@ -50,7 +50,9 @@ converge when using natural units. If you change the unit setting, it's suggeste
 switch back to `"SYSTEM_BASE"` before solving an optimization problem (for example in
 [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
 
+## Transformer per unit transformations
+Per-unit conventions with transformers simplify calculations by normalizing all quantities (voltage, current, power, impedance) to a common base. This effectively "retains" the ideal transformer from the circuit diagram because the per-unit impedance of a transformer remains the same when referred from one side to the other.
+
 !!! note
 
-    Check the [`Transformers per unit explanation`](@ref transformers_pu) for details on how
-    the per-unit is managed
+    The return value of the getter functions, e.g., [`get_x`](@ref) for the transformer impedances will perform the transformations following the convention in [`Per-unit Conventions`](@ref per_unit).

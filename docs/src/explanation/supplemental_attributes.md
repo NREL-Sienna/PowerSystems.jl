@@ -13,7 +13,7 @@ flowchart LR
     E["Attribute C"] -->  F["Component 3"]
 ```
 
-Supplemental attributes can also contain timeseries in the same fashion that a component can allowing the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
+Supplemental attributes can also contain timeseries in the same fashion that a component can allow the user to model time varying attributes like outage time series or weather dependent probabilities. See the section [`Working with Time Series Data`](@ref tutorial_time_series) for details on time series handling.
 
 ## Getting the attributes in a system
 
