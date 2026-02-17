@@ -215,6 +215,17 @@ get_power_factor(::T) where {T <: Device} =
     throw(ArgumentError("get_power_factor not implemented for $T"))
 
 """
+Calculate the active power for a [`StandardLoad`](@ref) or [`InterruptibleStandardLoad`](@ref) 
+    by summing the constant, impedance, and current components assuming a 1.0 voltage magnitude at the bus.
+"""
+function get_active_power(d::Union{InterruptibleStandardLoad, StandardLoad})
+    total_load = get_constant_active_power(d)
+    total_load += get_impedance_active_power(d)
+    total_load += get_current_active_power(d)
+    return total_load
+end
+
+"""
 Calculate the maximum active power for a [`StandardLoad`](@ref) or [`InterruptibleStandardLoad`](@ref)
     by summing the maximum constant, impedance, and current components assuming a 1.0 voltage magnitude at the bus.
 """
