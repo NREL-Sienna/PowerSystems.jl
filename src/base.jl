@@ -2313,6 +2313,11 @@ function check_ac_transmission_rate_values(sys::System)
     return is_valid
 end
 
+"""
+Serialize a [System](@ref) instance. Returns a `Dict{String, Any}` 
+of the form `Dict("data_format_version" => "1.0", "field1" => serialize(sys.field1), ...)`,
+which can then be written to a JSON3 file.
+"""
 function IS.serialize(sys::T) where {T <: System}
     data = Dict{String, Any}()
     data["data_format_version"] = DATA_FORMAT_VERSION
@@ -2328,6 +2333,9 @@ function IS.serialize(sys::T) where {T <: System}
     return data
 end
 
+"""
+Deserialize a [System](@ref) instance from a JSON3 file; the reverse of [`IS.serialize`](@ref).
+"""
 function IS.deserialize(
     ::Type{System},
     filename::AbstractString;
