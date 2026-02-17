@@ -1,3 +1,9 @@
+"""
+Supertype for outage contingencies representing planned or unplanned equipment outages.
+
+Concrete subtypes include [`GeometricDistributionForcedOutage`](@ref),
+[`PlannedOutage`](@ref), and [`FixedForcedOutage`](@ref).
+"""
 abstract type Outage <: Contingency end
 
 abstract type UnplannedOutage <: Outage end
