@@ -43,7 +43,7 @@ wind1 = RenewableDispatch(;
     bus = bus1,
     active_power = 0.0, # Per-unitized by device base_power
     reactive_power = 0.0, # Per-unitized by device base_power
-    rating = 1.0, # 10 MW per-unitized by device base_power
+    rating = 1.0, # 100 MW per-unitized by device base_power
     prime_mover_type = PrimeMovers.WT,
     reactive_power_limits = (min = 0.0, max = 0.0), # per-unitized by device base_power
     power_factor = 1.0,
@@ -90,10 +90,11 @@ system
 # # Add and Retrieve a Single Time Series
 # Let's start by defining and attaching the wind measurements shown in the data above.
 # This is a single time series profile, so we will use a [`SingleTimeSeries`](@ref).
-# First, define a `TimeSeries.TimeArray` of input data, using the 5-minute
-# [resolution](@ref R) to define the time-stamps in the example data:
+# First, define a `TimeSeries.TimeArray` of input data in device's `base_power` per-unit
+# format, using the 5-minute [resolution](@ref R) to define the time-stamps in the
+# example data:
 
-wind_values = [6.0, 7, 7, 6, 7, 9, 9, 9, 8, 8, 7, 6, 5, 5, 5, 5, 5, 6, 6, 6, 7, 6, 7, 7];
+wind_values = [0.6, 0.7, 0.7, 0.6, 0.7, 0.9, 0.9, 0.9, 0.8, 0.8, 0.7, 0.6, 0.5, 0.5, 0.5, 0.5, 0.5, 0.6, 0.6, 0.6, 0.7, 0.6, 0.7, 0.7];
 resolution = Dates.Minute(5);
 timestamps = range(DateTime("2020-01-01T08:00:00"); step = resolution, length = 24);
 wind_timearray = TimeArray(timestamps, wind_values);
@@ -108,7 +109,8 @@ wind_time_series = SingleTimeSeries(;
 # Note that we've chosen the name `max_active_power`, which is the default time series profile
 # name when using
 # [PowerSimulations.jl](https://nrel-sienna.github.io/PowerSimulations.jl/stable/formulation_library/RenewableGen/)
-# for simulations.
+# for simulations. We did not specify the `scaling_factor_multiplier` used for the
+# `SingleTimeSeries` parameter, thus it will use device's `base_power` to scale the input.
 # So far, this time series has been defined, but not attached to our [`System`](@ref) in any way. Now,
 # attach it to `wind1` using [`add_time_series!`](@ref add_time_series!(sys::System, component::Component, time_series::TimeSeriesData; features...)):
 
@@ -134,9 +136,9 @@ get_time_series_array(SingleTimeSeries, wind1, "max_active_power")
 # Set up the example input data:
 
 wind_forecast_data = Dict(
-    DateTime("2020-01-01T08:00:00") => [5.0, 6, 7, 7, 7, 8, 9, 10, 10, 9, 7, 5],
-    DateTime("2020-01-01T08:30:00") => [9.0, 9, 9, 9, 8, 7, 6, 5, 4, 5, 4, 4],
-    DateTime("2020-01-01T09:00:00") => [6.0, 6, 5, 5, 4, 5, 6, 7, 7, 7, 6, 6],
+    DateTime("2020-01-01T08:00:00") => [0.5, 0.6, 0.7, 0.7, 0.7, 0.8, 0.9, 1.0, 1.0, 0.9, 0.7, 0.5],
+    DateTime("2020-01-01T08:30:00") => [0.9, 0.9, 0.9, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.5, 0.4, 0.4],
+    DateTime("2020-01-01T09:00:00") => [0.6, 0.6, 0.5, 0.5, 0.4, 0.5, 0.6, 0.7, 0.7, 0.7, 0.6, 0.6],
 );
 
 # Define the [`Deterministic`](@ref) forecast and attach it to `wind1`:
