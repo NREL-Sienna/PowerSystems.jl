@@ -32,7 +32,7 @@ In this example, it is assumed that the CSV files are stored in a directory
 called `MyData`. In each section below, ensure your data follows the row-column format
 before beginning, and that your data are in the given units.
 
-These are the depedencies needed for this how-to:
+These are the dependencies needed for this how-to:
 
 ```julia
 using PowerSystems

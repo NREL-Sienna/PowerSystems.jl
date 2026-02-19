@@ -18,7 +18,7 @@ Depth = 2
 
 ## AC Branches Type Hierarchy Change
 
-New abstract type [`ACTransmission`](@ref) and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to caputre HVDC links connected between [`ACBus`](@ref).
+New abstract type [`ACTransmission`](@ref) and was created to better distinguish between AC transmission objects connected between [`ACBus`](@ref) the new added [`TwoTerminalHVDC`](@ref) abstract type to capture HVDC links connected between [`ACBus`](@ref).
 
 ## Renamed Types and Parameters
 
