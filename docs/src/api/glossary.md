@@ -1,6 +1,6 @@
 # Glossary and Acronyms
 
-[A](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) |
+[A](@ref) | [C](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) |
 [S](@ref) | [V](@ref) | [W](@ref) | [Z](@ref)
 
 ### A
@@ -13,11 +13,17 @@
 
   - *AVR*: Automatic Voltage Regulator
 
+### C
+
+  - *CAISO*: California Independent System Operator
+
 ### D
 
   - *DC*: Direct current
 
   - *DERA1*:
+
+  - *Deterministic*: mathematical model in which the outcomes are precisely determined through known relationships among states and events. For contrast, see the definition of [Probabilistic](@ref P). 
 
   - *Dynamic*: Refers to data and simulations for power system transient simulations using differential
     equations. Common examples include signal stability analysis to verify the power system will
@@ -26,6 +32,7 @@
 
 ### E
 
+  - *EIM*: Energy Imbalance Market
   - *EMF*: Electromotive force
   - *ESAC*: IEEE Type AC Excitation System model
   - *ESDC*: IEEE Type DC Excitation System model
@@ -91,6 +98,8 @@
 
   - *PPA*: Power purchase agreement
 
+  - *Probabilistic*: mathematical model in which the outcomes represent random phenomenon. For contrast, see the definition of [Deterministic](@ref D).
+
   - *PSI*: [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/latest/)
 
   - *PSID*: [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
@@ -133,6 +142,8 @@
 
   - *STAB*: Speed Sensitive Stabilizing PSS Model
 
+  - *Struct*: A composite data type in Julia that can store multiple values in a single object
+
 ### V
 
   - *VSCLine*: Voltage-Source Converter HVDC Line
@@ -140,6 +151,8 @@
   - *VSM*: Virtual Synchronous Machine
 
 ### W
+
+  - *WECC*: Western Electricity Coordinating Council
 
   - *Window*: A forecast window is one forecast run that starts at one [initial time](@ref I)
     and extends through the forecast [horizon](@ref H). Typically, a forecast data set

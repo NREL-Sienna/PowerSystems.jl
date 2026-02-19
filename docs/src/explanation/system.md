@@ -75,7 +75,7 @@ get_name.(gens_2)
 One useful feature that requires care when used is generating a new [`System`](@ref) from a `subsystem` assignment.
 
 The function [`from_subsystem`](@ref) will allow the user to produce a new [`System`](@ref) that can be used or exported.
-This functionality requires careful subsystem assignemnt of the devices and its dependencies. Following from the example in this document, you can export a system as follows:
+This functionality requires careful subsystem assignment of the devices and its dependencies. Following from the example in this document, you can export a system as follows:
 
 ```@repl subsystem
 from_subsystem(sys, "1")

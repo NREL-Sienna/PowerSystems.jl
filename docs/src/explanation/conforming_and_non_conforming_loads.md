@@ -6,17 +6,17 @@ The difference between conforming and non-conforming loads is not particularly s
 
 At its core, the distinction is about forecastability. The De Facto-Criteria and Practical Uses of this distinction comes from CAISO's Energy Imbalance Market (EIM) definitions. This section draws from the [CAISO EIM's "Non-Conforming Load FAQ"](https://www.westerneim.com/Documents/EIM-Non-Conforming-Load-FAQ.pdf) document.
 
-Conforming loads are the typically residential and commercial loads that, in aggregate, follow a predictable daily and seasonal pattern influenced by factors like time of day, day of the week, and weather conditions. This predictability allows modelers to use aggregate forecasts of the total area load with a high degree of accuracy and then desagregate the curve using participation factors.
+Conforming loads are the typically residential and commercial loads that, in aggregate, follow a predictable daily and seasonal pattern influenced by factors like time of day, day of the week, and weather conditions. This predictability allows modelers to use aggregate forecasts of the total area load with a high degree of accuracy and then disaggregate the curve using participation factors.
 
 Non-conforming loads, on the other hand have patterns of consumption that don't follow the aggregate behavior. Their consumption does not follow typical patterns and can fluctuate with different rates as the total system load. These are often large industrial processes with unique operational cycles. For example:
 
-  - Electric Arc Furnaces: Used in steel manufacturing, electric arc furnaces cause massive, sudden spikes in power demand when they are in operation. Depending on the time-scale of modeling these loads can require a consumption pattern that mathches the underlying industrial process.
+  - Electric Arc Furnaces: Used in steel manufacturing, electric arc furnaces cause massive, sudden spikes in power demand when they are in operation. Depending on the time-scale of modeling these loads can require a consumption pattern that matches the underlying industrial process.
 
   - Large Data Centers: While having a relatively constant base load, the computational demands of large data centers almost never change with the patterns from the rest of the system. These loads tend to be flat and in some advanced models include the behavior of compute load dispatch algorithms that conduct geographic price arbitrage.
 
   - Traction Loads for Railways: The movement of electric trains results in fluctuating power demand along the railway lines based on the transportation demand.
 
-  - Pumping Loads: Similarly to tranction loads, pumping loads can change according to water or gas demand and supply needs and not system level behavior. In its data collection manuals, WECC specifies that pumping loads are typically modeled as non-conforming in power flow cases.
+  - Pumping Loads: Similarly to traction loads, pumping loads can change according to water or gas demand and supply needs and not system level behavior. In its data collection manuals, WECC specifies that pumping loads are typically modeled as non-conforming in power flow cases.
 
 ## Modeling using PowerSystems.jl
 
