@@ -51,6 +51,7 @@ export get_components_in_exclusion_group
 export Component
 export Device
 export get_max_active_power
+export get_active_power
 export get_max_reactive_power
 export Branch
 export StaticInjection
