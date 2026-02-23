@@ -212,7 +212,7 @@ gens_in_group_1 = get_components_in_exclusion_group(sys, cc_fractional, 1)
 
 ### Accessing Infrastructure Maps
 
-Direct access to the mapping dictionaries is available through accessor functions:
+Direct access to the mapping dictionaries is available through getter functions:
 
 ```julia
 # ThermalPowerPlant

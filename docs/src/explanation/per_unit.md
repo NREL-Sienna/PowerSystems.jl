@@ -27,8 +27,8 @@ performs some action, then automatically sets the unit system back to its previo
 
 Conversion between unit systems does not change
 the stored parameter values. Instead, unit system conversions are made when accessing
-parameters using the [accessor functions](@ref dot_access), thus making it
-imperative to utilize the accessor functions instead of the "dot" accessor methods to
+parameters using the [getter functions](@ref dot_access), thus making it
+imperative to utilize the getter functions instead of the "dot" accessor methods to
 ensure the return of the correct values. The units of the parameter values stored in each
 struct are defined in `src/descriptors/power_system_structs.json`.
 
@@ -41,8 +41,8 @@ defined in `"SYSTEM_BASE"`.
 In the future, `PowerSystems.jl` hopes to support defining components in natural units.
 For now, if you want to define data in natural units, you must first
 set the system units to `"NATURAL_UNITS"`, define an empty component, and then use the
-[accessor functions](@ref dot_access) (e.g., getters and setters), to define each field
-within the component. The accessor functions will then do the data conversion from your
+[getter functions](@ref dot_access) (e.g., getters and setters), to define each field
+within the component. The getter functions will then do the data conversion from your
 input data in natural units (e.g., MW or MVA) to per-unit.
 
 By default, `PowerSystems.jl` uses `"SYSTEM_BASE"` because many optimization problems won't

@@ -86,7 +86,7 @@ Time series data can be stored actual component values (for instance MW) or scal
 factors intended to be multiplied by a scalar to generate the component values.
 By default PowerSystems treats the values in the time
 series data as physical units. In order to specify them as scaling factors, you
-must pass the accessor function that provides the multiplier value (e.g.,
+must pass the getter function that provides the multiplier value (e.g.,
 `get_time_series_array`). The scaling factor multiplier
 must be passed into the forecast when you create it to use this option.
 
@@ -94,7 +94,7 @@ The time series contains fields for `scaling_factor_multiplier` and `data`
 to identify the details of  th `Component` field that the time series describes, and the
 time series `data`. For example: we commonly want to use a time series to
 describe the maximum active power capability of a renewable generator. In this case, we
-can create a `SingleTimeSeries` with a `TimeArray` and an accessor function to the
+can create a `SingleTimeSeries` with a `TimeArray` and a getter function to the
 maximum active power field in the struct describing the generator. In this way, we can
 store a scaling factor time series that will get multiplied by the maximum active power
 rather than the magnitudes of the maximum active power time series.

@@ -28,15 +28,15 @@ types as described by the [Type Structure](@ref type_structure).
 
 ## [Accessing data stored in a component](@id dot_access)
 
-__Using the "dot" access to get a parameter value from a component is actively discouraged, use "getter" functions instead__
+__Using the "dot" access to get a parameter value from a component is actively discouraged, use getter functions instead__
 
-Using code autogeneration, `PowerSystems.jl` implements accessor (or "getter") functions to
+Using code autogeneration, `PowerSystems.jl` implements getter functions to
 enable the retrieval of parameters defined in the component struct fields. Julia syntax enables
 access to this data using the "dot" access (e.g. `component.field`), however
 _this is actively discouraged_ for two reasons:
 
- 1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the accessor methods.
- 2. Per-unit conversions are made in the return of data from the accessor functions. (see the [per-unit section](@ref per_unit) for more details)
+ 1. We make no guarantees on the stability of component structure definitions. We will maintain version stability on the getter methods.
+ 2. Per-unit conversions are made in the return of data from the getter functions. (see the [per-unit section](@ref per_unit) for more details)
 
 ## [Using subsystems](@id subsystems)
 
