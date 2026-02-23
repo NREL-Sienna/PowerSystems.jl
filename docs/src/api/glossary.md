@@ -1,7 +1,7 @@
 # Glossary and Acronyms
 
 [A](@ref) | [C](@ref) | [D](@ref) | [E](@ref) | [F](@ref) | [H](@ref) | [I](@ref) | [O](@ref) | [P](@ref) | [R](@ref) |
-[S](@ref) | [V](@ref) | [W](@ref) | [Z](@ref)
+[S](@ref) | [U](@ref) | [V](@ref) | [W](@ref) | [Z](@ref)
 
 ### A
 
@@ -143,6 +143,11 @@
   - *STAB*: Speed Sensitive Stabilizing PSS Model
 
   - *Struct*: A composite data type in Julia that can store multiple values in a single object
+
+### U
+
+  - *UUID*: Universally Unique Identifier. A 128-bit identifier formatted as a 32-character
+    hexadecimal string (e.g. `5f180c4c-cd81-4b80-8c60-627c28aef8b0`).
 
 ### V
 

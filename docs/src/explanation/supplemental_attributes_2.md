@@ -1,4 +1,4 @@
-# About Supplemental Attributes
+# [About Supplemental Attributes](@id supplemental_attributes_explanation)
 
 Supplemental attributes help PowerSystems.jl manage the relationships between power system components and their metadata. Instead of cramming everything into basic component definitions, this system keeps electrical data separate from contextual information like location, outages, or plant groupings.
 
@@ -64,6 +64,29 @@ Other power system tools handle this differently:
 
 **PowerSystems.jl's approach**: Combines the speed of in-memory data with the relationship modeling power typically found only in databases. This works well for interactive analysis.
 
+## Existing Supplemental Attributes in PowerSystems
+
+  - [`GeographicInfo`](@ref)
+  - [`ImpedanceCorrectionData`](@ref)
+
+### Contingency Attributes
+
+  - [`FixedForcedOutage`](@ref)
+  - [`GeometricDistributionForcedOutage`](@ref)
+  - [`PlannedOutage`](@ref)
+
+### Plant Attributes
+
+Plant attributes are a specialized category of supplemental attributes for grouping individual
+generator units into logical plant structures. See [Plant Attributes](@ref plant_attributes)
+for detailed documentation.
+
+  - [`ThermalPowerPlant`](@ref) - Thermal plants with shared shafts
+  - [`CombinedCycleBlock`](@ref) - Combined cycle plants with HRSG configurations
+  - [`CombinedCycleFractional`](@ref) - Combined cycle plants with aggregate heat rate and exclusion groups
+  - [`HydroPowerPlant`](@ref) - Hydro plants with shared penstocks
+  - [`RenewablePowerPlant`](@ref) - Renewable plants with shared PCCs
+
 ## Learn More
 
-For more information about supplemental attributes, see this section of the Sienna API which details specific features.
+For more information about supplemental attributes, see the [Supplemental Attributes](@ref) API reference.
