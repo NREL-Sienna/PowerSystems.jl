@@ -1,4 +1,4 @@
-# # Create and Explore a Power `System`
+# # [Create and Explore a Power `System`](@id tutorial_creating_system)
 # Welcome to PowerSystems.jl!
 # In this tutorial, we will create a power system and add some components to it,
 # including some nodes, a transmission line, load, and both renewable

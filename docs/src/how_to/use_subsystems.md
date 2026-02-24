@@ -4,12 +4,11 @@ For certain applications, such as those that employ dispatch coordination method
 decomposition approaches, it is useful to split components into subsystems based on
 user-defined criteria. The [`System`](@ref) provides `subsystem` containers for this
 purpose. Each subsystem is defined by a name and can hold references to any number of
-components.
+components. For background on the `System` container, see [System](@ref system_doc).
 
 ## Create subsystems and add components
 
-Start by loading a `System`, then call [`add_subsystem!`](@ref) to register named
-subsystems:
+Load a `System`, then call [`add_subsystem!`](@ref) to register named subsystems:
 
 ```@repl subsystem
 using PowerSystems;
