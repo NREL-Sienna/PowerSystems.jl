@@ -51,6 +51,7 @@ switch back to `"SYSTEM_BASE"` before solving an optimization problem (for examp
 [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
 
 ## Transformer per unit transformations
+
 Per-unit conventions with transformers simplify calculations by normalizing all quantities (voltage, current, power, impedance) to a common base. This effectively "retains" the ideal transformer from the circuit diagram because the per-unit impedance of a transformer remains the same when referred from one side to the other.
 
 !!! note

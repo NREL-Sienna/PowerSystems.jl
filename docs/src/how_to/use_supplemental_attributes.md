@@ -42,6 +42,7 @@ for outage in get_supplemental_attributes(FixedForcedOutage, gen1)
     @show summary(outage)
 end
 ```
+
 The output includes the attribute type name and its [UUID](@ref U).
 
 Pass a filter function as the first argument to narrow results by field values.
@@ -66,7 +67,7 @@ Use [`get_associated_components`](@ref) to retrieve the components attached to a
 
     ```julia
     using PowerSystems
-
+    
     outage = first(get_supplemental_attributes(FixedForcedOutage, sys))
     for component in get_associated_components(sys, outage)
         @show summary(component)
@@ -79,7 +80,7 @@ Use [`get_associated_components`](@ref) to retrieve the components attached to a
 
     ```julia
     using PowerSystems
-
+    
     outage = first(get_supplemental_attributes(FixedForcedOutage, sys))
     for component in get_associated_components(sys, outage; component_type = ThermalStandard)
         @show summary(component)
@@ -87,14 +88,14 @@ Use [`get_associated_components`](@ref) to retrieve the components attached to a
     ```
 
     In this how-to, both of the FixedForceOutages only have the component_type = ThermalStandard, so no results are filtered out by the component_type filter.
-    
+
     ## Get component / supplemental attribute pairs
-    
+
     Use [`get_component_supplemental_attribute_pairs`](@ref) to retrieve component/attribute pairs by type. Prefer this over nested loops iterating over components and their attributes separately.
-    
+
     ```julia
     using PowerSystems
-
+    
     for (gen, outage) in get_component_supplemental_attribute_pairs(
         ThermalStandard,
         FixedForcedOutage,
@@ -104,4 +105,4 @@ Use [`get_associated_components`](@ref) to retrieve the components attached to a
     end
     ```
 
-    The output is a summary of the component_type and the UUID of the FixedForceOutage.  
+    The output is a summary of the component_type and the UUID of the FixedForceOutage.

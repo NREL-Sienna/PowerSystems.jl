@@ -7,9 +7,10 @@ Supplemental attributes help PowerSystems.jl manage the relationships between po
 Power system components exist in multiple contexts. A generator isn't just defined by its electrical properties—it also has a geographic location, belongs to a plant, and may share infrastructure with other units.
 
 Traditional approaches used generic dictionary fields to store this extra information. But this created problems:
-- Data inconsistency across large systems
-- Maintenance difficulties 
-- No validation of the information stored
+
+  - Data inconsistency across large systems
+  - Maintenance difficulties
+  - No validation of the information stored
 
 Supplemental attributes solve this by using structured types instead of loose dictionaries. This provides:
 
@@ -24,9 +25,10 @@ Supplemental attributes solve this by using structured types instead of loose di
 Supplemental attributes use many-to-many relationships. One attribute can connect to multiple components, and one component can have multiple attributes.
 
 For example:
-- Multiple generators at the same plant share geographic coordinates
-- One weather pattern affects several plants in a region
-- Each generator might have its own maintenance schedule
+
+  - Multiple generators at the same plant share geographic coordinates
+  - One weather pattern affects several plants in a region
+  - Each generator might have its own maintenance schedule
 
 ```mermaid
 flowchart LR

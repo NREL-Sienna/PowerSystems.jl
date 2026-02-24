@@ -13,7 +13,7 @@ references are stored in volatile memory, while the actual time series data is s
 an HDF5 file. This design loads only the portions of the data that are relevant at the
 time of the query, avoiding unnecessary memory overhead for large datasets.
 
-```@raw         
+```@raw html
 <img src="../../assets/System.png" style="zoom: 150%;"/>
 ```
 

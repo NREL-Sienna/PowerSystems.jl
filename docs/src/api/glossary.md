@@ -23,7 +23,7 @@
 
   - *DERA1*:
 
-  - *Deterministic*: mathematical model in which the outcomes are precisely determined through known relationships among states and events. For contrast, see the definition of [Probabilistic](@ref P). 
+  - *Deterministic*: mathematical model in which the outcomes are precisely determined through known relationships among states and events. For contrast, see the definition of [Probabilistic](@ref P).
 
   - *Dynamic*: Refers to data and simulations for power system transient simulations using differential
     equations. Common examples include signal stability analysis to verify the power system will
