@@ -1979,7 +1979,7 @@ function remove_supplemental_attributes!(
     ::Type{T},
     sys::System,
 ) where {T <: IS.SupplementalAttribute}
-    return IS.remove_supplemental_attributes!(T, sys.data)
+    return IS.remove_supplemental_attributes!(sys.data, T)
 end
 
 """
