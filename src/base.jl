@@ -745,7 +745,7 @@ function add_component!(
         # occurred when the original addition ran and do not apply to that scenario.
         handle_component_addition!(sys, component; kwargs...)
         # Special condition required to populate the bus numbers in the system after
-    elseif component isa ACBus
+    elseif component isa Bus
         handle_component_addition!(sys, component; kwargs...)
     end
 
@@ -2835,7 +2835,7 @@ function check_component_addition(sys::System, dyn_injector::DynamicInjection; k
     return
 end
 
-function check_component_addition(sys::System, bus::ACBus; kwargs...)
+function check_component_addition(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     if number in sys.bus_numbers
         throw(ArgumentError("bus number $number is already stored in the system"))
@@ -2852,7 +2852,7 @@ function check_component_addition(sys::System, bus::ACBus; kwargs...)
     end
 end
 
-function handle_component_addition!(sys::System, bus::ACBus; kwargs...)
+function handle_component_addition!(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
     @assert !(number in sys.bus_numbers) "bus number $number is already stored"
     push!(sys.bus_numbers, number)
@@ -2938,7 +2938,7 @@ _handle_branch_addition_common!(sys::System, component::AreaInterchange) = nothi
 """
 Throws ArgumentError if the bus number is not stored in the system.
 """
-function handle_component_removal!(sys::System, bus::ACBus)
+function handle_component_removal!(sys::System, bus::Bus)
     _handle_component_removal_common!(bus)
     number = get_number(bus)
     @assert number in sys.bus_numbers "bus number $number is not stored"
@@ -3217,7 +3217,7 @@ end
 """
 Set the number of a bus.
 """
-function set_bus_number!(sys::System, bus::ACBus, number::Int)
+function set_bus_number!(sys::System, bus::Bus, number::Int)
     throw_if_not_attached(bus, sys)
 
     orig = get_number(bus)

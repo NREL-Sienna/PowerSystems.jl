@@ -58,3 +58,43 @@ end
         end
     @test_logs min_level = Logging.Error match_mode = :any test_bus_numbers()
 end
+
+@testset "Test unique DCBus numbers" begin
+    test_dcbus_numbers =
+        () -> begin
+            sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
+            number = 200
+            dcbus1 = DCBus(;
+                number = number,
+                name = "dcbus200",
+                available = true,
+                magnitude = 1.0,
+                voltage_limits = (min = -1.0, max = 1.0),
+                base_voltage = 1.0,
+            )
+            dcbus2 = DCBus(;
+                number = number,
+                name = "dcbus201",
+                available = true,
+                magnitude = 1.0,
+                voltage_limits = (min = -1.0, max = 1.0),
+                base_voltage = 1.0,
+            )
+
+            add_component!(sys, dcbus1)
+            @test_throws ArgumentError add_component!(sys, dcbus2)
+
+            # Also verify that a DCBus cannot share a number with an existing ACBus
+            existing_ac_number = first(get_bus_numbers(sys))
+            dcbus3 = DCBus(;
+                number = existing_ac_number,
+                name = "dcbus_conflict",
+                available = true,
+                magnitude = 1.0,
+                voltage_limits = (min = -1.0, max = 1.0),
+                base_voltage = 1.0,
+            )
+            @test_throws ArgumentError add_component!(sys, dcbus3)
+        end
+    @test_logs min_level = Logging.Error match_mode = :any test_dcbus_numbers()
+end
