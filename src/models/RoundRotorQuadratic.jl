@@ -97,7 +97,9 @@ function RoundRotorQuadratic(::Nothing)
     )
 end
 
+"""Get the [`RoundRotorMachine`](@ref) of a [`RoundRotorQuadratic`](@ref)."""
 get_base_machine(value::RoundRotorQuadratic) = value.base_machine
+"""Get the quadratic saturation coefficients of a [`RoundRotorQuadratic`](@ref)."""
 get_saturation_coeffs(value::RoundRotorQuadratic) = value.saturation_coeffs
 set_base_machine!(value::RoundRotorQuadratic, val::RoundRotorMachine) =
     value.base_machine = val

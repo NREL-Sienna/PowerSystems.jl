@@ -134,15 +134,22 @@ get_name(device::DynamicGenerator) = device.name
 get_states(device::DynamicGenerator) = device.states
 get_n_states(device::DynamicGenerator) = device.n_states
 get_ω_ref(device::DynamicGenerator) = device.ω_ref
+"""Get the [`Machine`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_machine(device::DynamicGenerator) = device.machine
+"""Get the [`Shaft`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_shaft(device::DynamicGenerator) = device.shaft
+"""Get the [`AVR`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_avr(device::DynamicGenerator) = device.avr
+"""Get the [`TurbineGov`](@ref) (prime mover) of a [`DynamicGenerator`](@ref)."""
 get_prime_mover(device::DynamicGenerator) = device.prime_mover
+"""Get the [`PSS`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_pss(device::DynamicGenerator) = device.pss
 get_base_power(device::DynamicGenerator) = device.base_power
 get_ext(device::DynamicGenerator) = device.ext
 get_internal(device::DynamicGenerator) = device.internal
+"""Get the voltage set-point from the [`AVR`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_V_ref(value::DynamicGenerator) = get_V_ref(get_avr(value))
+"""Get the power set-point from the [`TurbineGov`](@ref) of a [`DynamicGenerator`](@ref)."""
 get_P_ref(value::DynamicGenerator) = get_P_ref(get_prime_mover(value))
 
 set_base_power!(value::DynamicGenerator, val) = value.base_power = val

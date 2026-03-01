@@ -54,7 +54,9 @@ function SalientPoleQuadratic(::Nothing)
     )
 end
 
+"""Get the [`SalientPoleMachine`](@ref) of a [`SalientPoleQuadratic`](@ref)."""
 get_base_machine(value::SalientPoleQuadratic) = value.base_machine
+"""Get the quadratic saturation coefficients of a [`SalientPoleQuadratic`](@ref)."""
 get_saturation_coeffs(value::SalientPoleQuadratic) = value.saturation_coeffs
 set_base_machine!(value::SalientPoleQuadratic, val::SalientPoleMachine) =
     value.base_machine = val

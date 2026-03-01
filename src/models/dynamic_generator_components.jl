@@ -1,8 +1,14 @@
+"""Supertype for components that make up a [`DynamicGenerator`](@ref)"""
 abstract type DynamicGeneratorComponent <: DynamicComponent end
+"""Supertype for Automatic Voltage Regulator (AVR) models that define excitation system dynamics"""
 abstract type AVR <: DynamicGeneratorComponent end
+"""Supertype for machine models that define stator electro-magnetic dynamics"""
 abstract type Machine <: DynamicGeneratorComponent end
+"""Supertype for Power System Stabilizer (PSS) models that provide stabilization signals to the [`AVR`](@ref)"""
 abstract type PSS <: DynamicGeneratorComponent end
+"""Supertype for shaft models that define rotor electro-mechanical dynamics"""
 abstract type Shaft <: DynamicGeneratorComponent end
+"""Supertype for prime mover and turbine governor models that define thermo-mechanical dynamics"""
 abstract type TurbineGov <: DynamicGeneratorComponent end
 
 """

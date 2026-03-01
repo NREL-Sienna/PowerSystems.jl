@@ -1,3 +1,4 @@
+"""Supertype for inverter dynamic components (deprecated alias for [`DynamicInverterComponent`](@ref))"""
 abstract type InverterComponent <: DynamicComponent end
 
 """
@@ -232,17 +233,25 @@ get_ω_ref(device::DynamicInverter) = device.ω_ref
 get_ext(device::DynamicInverter) = device.ext
 get_states(device::DynamicInverter) = device.states
 get_n_states(device::DynamicInverter) = device.n_states
+"""Get the [`Converter`](@ref) of a [`DynamicInverter`](@ref)."""
 get_converter(device::DynamicInverter) = device.converter
+"""Get the [`OuterControl`](@ref) of a [`DynamicInverter`](@ref)."""
 get_outer_control(device::DynamicInverter) = device.outer_control
+"""Get the [`InnerControl`](@ref) of a [`DynamicInverter`](@ref)."""
 get_inner_control(device::DynamicInverter) = device.inner_control
+"""Get the [`DCSource`](@ref) of a [`DynamicInverter`](@ref)."""
 get_dc_source(device::DynamicInverter) = device.dc_source
+"""Get the [`FrequencyEstimator`](@ref) of a [`DynamicInverter`](@ref)."""
 get_freq_estimator(device::DynamicInverter) = device.freq_estimator
+"""Get the [`Filter`](@ref) of a [`DynamicInverter`](@ref)."""
 get_filter(device::DynamicInverter) = device.filter
 get_limiter(device::DynamicInverter) = device.limiter
 get_base_power(device::DynamicInverter) = device.base_power
 get_internal(device::DynamicInverter) = device.internal
+"""Get the active power set-point from the [`OuterControl`](@ref) of a [`DynamicInverter`](@ref)."""
 get_P_ref(value::DynamicInverter) =
     get_P_ref(get_active_power_control(get_outer_control(value)))
+"""Get the voltage set-point from the [`OuterControl`](@ref) of a [`DynamicInverter`](@ref)."""
 get_V_ref(value::DynamicInverter) =
     get_V_ref(get_reactive_power_control(get_outer_control(value)))
 

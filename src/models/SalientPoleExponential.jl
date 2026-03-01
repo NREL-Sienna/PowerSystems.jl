@@ -54,7 +54,9 @@ function SalientPoleExponential(::Nothing)
     )
 end
 
+"""Get the [`SalientPoleMachine`](@ref) of a [`SalientPoleExponential`](@ref)."""
 get_base_machine(value::SalientPoleExponential) = value.base_machine
+"""Get the exponential saturation coefficients of a [`SalientPoleExponential`](@ref)."""
 get_saturation_coeffs(value::SalientPoleExponential) = value.saturation_coeffs
 
 set_base_machine!(value::SalientPoleExponential, val::SalientPoleMachine) =

@@ -1,5 +1,7 @@
+"""Supertype for outage attributes that model periods when components are unavailable"""
 abstract type Outage <: Contingency end
 
+"""Supertype for unplanned/forced outage attributes caused by equipment failures"""
 abstract type UnplannedOutage <: Outage end
 
 supports_time_series(::Outage) = true
