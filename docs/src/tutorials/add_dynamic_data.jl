@@ -65,7 +65,7 @@ inf_source = Source(;
 add_component!(threebus_sys, inf_source)
 
 # This completes the first layer of [static](@ref S) data, using components similar to those
-# we added manually in the [Create and Explore a Power `System`](@ref) tutorial.
+# we added manually in the [Create and Explore a Power `System`](@ref tutorial_creating_system) tutorial.
 
 # ## Adding a Dynamic Generator
 # Now, we will connect a classic machine model to the generator at bus 102.

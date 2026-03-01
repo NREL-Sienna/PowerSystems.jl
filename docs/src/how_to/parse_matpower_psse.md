@@ -28,7 +28,7 @@ PowerSystems.jl utilizes a data model that bridges the gap between operational s
 In PowerSystems v5, we have implemented the following conventions for parsing PSSe files:
 
   - **BusType correction**: If a bus has a value set to ISOLATED in PSSe, we will confirm that the bus is not entirely disconnected from the network. If the bus is disconnected, it will be set to ISOLATED and set the field available to false. However, if the bus is connected to a generator, we will infer a bus of type PV and set the field 'available' to false. This correction also applies to Matpower. For any other device connected to the bus, we will set it to PQ and set the 'available' field to false. Check [`Understanding ACBusTypes`](@ref bustypes) for a detailed explanation.
-  - **Parsing Synchronous Condensers**: If a generator is connected to a PV Bus with activer power set to 0.0, it will be parsed as a [`SynchronousCondenser`](@ref). This prevents for generators to be modeled as dispatchable [`ThermalStandard`](@ref) when it doesn't apply.
+  - **Parsing Synchronous Condensers**: If a generator is connected to a PV Bus with active power set to 0.0, it will be parsed as a [`SynchronousCondenser`](@ref). This prevents for generators to be modeled as dispatchable [`ThermalStandard`](@ref) when it doesn't apply.
   - **Reading and Storing Transformer Data**: The transformer data is always stored in the devices
     ' base. See [`Transformer per unit transformations`](@ref transformers_pu) for additional details.
   - **Transformer's Susceptance**: When reading from Matpower we split the transformer's susceptance evenly between the `from` and `to` ends to make it a closer approximation to the model in PSSe.
@@ -38,14 +38,14 @@ In PowerSystems v5, we have implemented the following conventions for parsing PS
   - **Use [`InterruptibleStandardLoad`](@ref) (PSSe v35 only)**: In newer versions of PSSe there is a flag for interruptible. Since PowerSystems.jl already has structures to model controllable load like [`InterruptiblePowerLoad`](@ref) and [`ShiftablePowerLoad`](@ref) a new type is used when parsing from PSSe to account of the interruptible behavior in economic modeling.
   - **Treatment of conforming and non-conforming flags**: See the section [`Conforming and Non-Conforming Loads`](@ref conf_loads). PowerSystems.jl uses an enum to represent this data but it does not implement specific models for this behavior.
   - **Breakers and Switches**: From the perspective of PowerSystems.jl breakers and switches are modeled as [`DiscreteControlledACBranch`](@ref). We use an enum to separate between the two but from the data structure perspective both use the same object definition.
-  - **Rate data correction**: For rates B and C are set as `nothing` if the value in the file is zero. On the other hand, for rating A, the value gets corrected. If the raw file is zero, then set up the rating to infinite bound first and then reduced according to the voltage values. This proceedure still can produce a large amount of warning for situations where a single line is used to model a double circuit or a whole transmission corridor.
-  - **Motor Loads**: We included a new device for explictly modeling motor loads. However, PSSe doesn't support explicit representations of these loads. The parser will print a warning in the log when we detect conditions commonly associated to motor load representations but won't be able to capture it directly.
+  - **Rate data correction**: For rates B and C are set as `nothing` if the value in the file is zero. On the other hand, for rating A, the value gets corrected. If the raw file is zero, then set up the rating to infinite bound first and then reduced according to the voltage values. This procedure still can produce a large amount of warning for situations where a single line is used to model a double circuit or a whole transmission corridor.
+  - **Motor Loads**: We included a new device for explicitly modeling motor loads. However, PSSe doesn't support explicit representations of these loads. The parser will print a warning in the log when we detect conditions commonly associated to motor load representations but won't be able to capture it directly.
 
 ### Pending parsing challenges
 
-  - Managing the new format for rate data. In the old PSSe versions, there was Rate A, Rate B and Rate C. However, in newer versions there are 12 possible rates open to intepretation by the modeler. it can still be interpreted as A, B or C rates or a rate per month. PSSe doesn't provide any metada to interpret the rating bands provided.
+  - Managing the new format for rate data. In the old PSSe versions, there was Rate A, Rate B and Rate C. However, in newer versions there are 12 possible rates open to interpretation by the modeler. it can still be interpreted as A, B or C rates or a rate per month. PSSe doesn't provide any metadata to interpret the rating bands provided.
   - Detecting motor loads modeled as generators. Same as with the case for the negative loads, motors are known to be modeled as machines with negative injections (i.e., loads) to match modeling them in transient studies as machines.
-  - Automated transformer direction swaping. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1423)
+  - Automated transformer direction swapping. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1423)
   - Parsing outage data.
 
 ### See also:

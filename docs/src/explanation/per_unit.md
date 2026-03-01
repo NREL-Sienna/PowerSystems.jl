@@ -1,6 +1,6 @@
 # [Per-unit Conventions](@id per_unit)
 
-It is often useful to express power systems data in relative terms using per-unit conventions.
+It is often useful to express power systems data in relative terms using per-unit (p.u.) conventions.
 `PowerSystems.jl` supports the automatic conversion of data between three different unit systems:
 
  1. `"NATURAL_UNITS"`: The naturally defined units of each parameter (typically MW).
@@ -27,8 +27,8 @@ performs some action, then automatically sets the unit system back to its previo
 
 Conversion between unit systems does not change
 the stored parameter values. Instead, unit system conversions are made when accessing
-parameters using the [accessor functions](@ref dot_access), thus making it
-imperative to utilize the accessor functions instead of the "dot" accessor methods to
+parameters using the [getter functions](@ref dot_access), thus making it
+imperative to utilize the getter functions instead of the "dot" accessor methods to
 ensure the return of the correct values. The units of the parameter values stored in each
 struct are defined in `src/descriptors/power_system_structs.json`.
 
@@ -41,8 +41,8 @@ defined in `"SYSTEM_BASE"`.
 In the future, `PowerSystems.jl` hopes to support defining components in natural units.
 For now, if you want to define data in natural units, you must first
 set the system units to `"NATURAL_UNITS"`, define an empty component, and then use the
-[accessor functions](@ref dot_access) (e.g., getters and setters), to define each field
-within the component. The accessor functions will then do the data conversion from your
+[getter functions](@ref dot_access) (e.g., getters and setters), to define each field
+within the component. The getter functions will then do the data conversion from your
 input data in natural units (e.g., MW or MVA) to per-unit.
 
 By default, `PowerSystems.jl` uses `"SYSTEM_BASE"` because many optimization problems won't
@@ -50,7 +50,10 @@ converge when using natural units. If you change the unit setting, it's suggeste
 switch back to `"SYSTEM_BASE"` before solving an optimization problem (for example in
 [`PowerSimulations.jl`](https://nrel-sienna.github.io/PowerSimulations.jl/stable/)).
 
+## Transformer per unit transformations
+
+Per-unit conventions with transformers simplify calculations by normalizing all quantities (voltage, current, power, impedance) to a common base. This effectively "retains" the ideal transformer from the circuit diagram because the per-unit impedance of a transformer remains the same when referred from one side to the other.
+
 !!! note
 
-    Check the [`Transformers per unit explanation`](@ref transformers_pu) for details on how
-    the per-unit is managed
+    The return value of the getter functions, e.g., [`get_x`](@ref) for the transformer impedances will perform the transformations following the convention in [`Per-unit Conventions`](@ref per_unit).

@@ -19,7 +19,7 @@ For interoperable analysis across different tools and datasets, it is often nece
  4. **Regulatory reporting**: Different reports require different aggregation levels
 
 PowerSystems.jl addresses this challenge through **Plant Attributes**, which are
-[`SupplementalAttribute`](@ref supplemental_attributes) types that group individual generator
+[`SupplementalAttribute`](@ref supplemental_attributes_explanation) types that group individual generator
 components into logical plant structures while preserving the detailed unit-level information.
 
 ## Plant Attribute Types
@@ -212,7 +212,7 @@ gens_in_group_1 = get_components_in_exclusion_group(sys, cc_fractional, 1)
 
 ### Accessing Infrastructure Maps
 
-Direct access to the mapping dictionaries is available through accessor functions:
+Direct access to the mapping dictionaries is available through getter functions:
 
 ```julia
 # ThermalPowerPlant
@@ -376,7 +376,7 @@ the plant-unit relationships across save/load cycles.
 
 ## See Also
 
-  - [`SupplementalAttribute`](@ref supplemental_attributes) - Base concept for supplemental data
+  - [`SupplementalAttribute`](@ref supplemental_attributes_explanation) - Base concept for supplemental data
   - [`ThermalPowerPlant`](@ref) - API reference
   - [`CombinedCycleBlock`](@ref) - API reference
   - [`CombinedCycleFractional`](@ref) - API reference

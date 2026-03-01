@@ -250,6 +250,6 @@ end
 ## See Also
 
   - [Per-unit Conventions](@ref per_unit) - Learn more about unit systems
-  - [Supplemental Attributes](@ref supplemental_attributes) - Details on supplemental attribute usage
+  - [Supplemental Attributes](@ref supplemental_attributes_explanation) - Details on supplemental attribute usage
   - [Working with Time Series Data](@ref tutorial_time_series) - Tutorial on time series handling
   - [Improve Performance with Time Series Data](@ref) - Additional time series performance tips

@@ -5,7 +5,7 @@ This page describes how developers should add types to `PowerSystems.jl`
 ## Type Hierarchy
 
 All structs that correlate to power system components must be subtypes of the
-[`Component`](@ref) abstract type. Browse its type hierachy to choose an appropriate
+[`Component`](@ref) abstract type. Browse its type hierarchy to choose an appropriate
 supertype for your new struct.
 
 ## Interfaces
