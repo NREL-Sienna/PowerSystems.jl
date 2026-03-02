@@ -142,7 +142,9 @@
 
   - *STAB*: Speed Sensitive Stabilizing PSS Model
 
-  - *Struct*: A composite data type in Julia that can store multiple values in a single object
+  - *Struct*: A composite data type in Julia that can store multiple values in a single object.
+    See the Julia documentation on [`struct`](https://docs.julialang.org/en/v1/base/base/#struct)
+    and [Composite Types](https://docs.julialang.org/en/v1/manual/types/#Composite-Types).
 
 ### U
 
