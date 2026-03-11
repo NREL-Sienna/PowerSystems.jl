@@ -2941,7 +2941,9 @@ Throws ArgumentError if the bus number is not stored in the system.
 function handle_component_removal!(sys::System, bus::Bus)
     _handle_component_removal_common!(bus)
     number = get_number(bus)
-    @assert number in sys.bus_numbers "bus number $number is not stored"
+    if !(number in sys.bus_numbers)
+        throw(ArgumentError("bus number $number is not stored"))
+    end
     pop!(sys.bus_numbers, number)
     return
 end
