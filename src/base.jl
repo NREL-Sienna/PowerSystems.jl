@@ -2854,7 +2854,9 @@ end
 
 function handle_component_addition!(sys::System, bus::Bus; kwargs...)
     number = get_number(bus)
-    @assert !(number in sys.bus_numbers) "bus number $number is already stored"
+    if number in sys.bus_numbers
+        throw(ArgumentError("bus number $number is already stored"))
+    end
     push!(sys.bus_numbers, number)
     return
 end

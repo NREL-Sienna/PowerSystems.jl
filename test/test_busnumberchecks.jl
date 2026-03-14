@@ -64,22 +64,14 @@ end
         () -> begin
             sys = PSB.build_system(PSB.MatpowerTestSystems, "matpower_case5_re_sys")
             number = 200
-            dcbus1 = DCBus(;
-                number = number,
-                name = "dcbus200",
+            dcbus_defaults = (;
                 available = true,
                 magnitude = 1.0,
                 voltage_limits = (min = -1.0, max = 1.0),
                 base_voltage = 1.0,
             )
-            dcbus2 = DCBus(;
-                number = number,
-                name = "dcbus201",
-                available = true,
-                magnitude = 1.0,
-                voltage_limits = (min = -1.0, max = 1.0),
-                base_voltage = 1.0,
-            )
+            dcbus1 = DCBus(; number = number, name = "dcbus200", dcbus_defaults...)
+            dcbus2 = DCBus(; number = number, name = "dcbus201", dcbus_defaults...)
 
             add_component!(sys, dcbus1)
             @test_throws ArgumentError add_component!(sys, dcbus2)
@@ -89,10 +81,7 @@ end
             dcbus3 = DCBus(;
                 number = existing_ac_number,
                 name = "dcbus_conflict",
-                available = true,
-                magnitude = 1.0,
-                voltage_limits = (min = -1.0, max = 1.0),
-                base_voltage = 1.0,
+                dcbus_defaults...,
             )
             @test_throws ArgumentError add_component!(sys, dcbus3)
         end
