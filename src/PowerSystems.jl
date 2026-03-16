@@ -390,6 +390,7 @@ export copy_time_series!
 export copy_subcomponent_time_series!
 export add_component!
 export add_components!
+export replace_dynamic_injector!
 export remove_component!
 export remove_components!
 export clear_components!
