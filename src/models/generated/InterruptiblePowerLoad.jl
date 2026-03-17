@@ -106,17 +106,17 @@ get_name(value::InterruptiblePowerLoad) = value.name
 get_available(value::InterruptiblePowerLoad) = value.available
 """Get [`InterruptiblePowerLoad`](@ref) `bus`."""
 get_bus(value::InterruptiblePowerLoad) = value.bus
-"""Get [`InterruptiblePowerLoad`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`InterruptiblePowerLoad`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`InterruptiblePowerLoad`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
-get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+"""Get [`InterruptiblePowerLoad`](@ref) `reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
-"""Get [`InterruptiblePowerLoad`](@ref) `max_active_power`. Returns natural units (MW) by default."""
-get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva), MW)
+"""Get [`InterruptiblePowerLoad`](@ref) `max_active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_active_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_active_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
-"""Get [`InterruptiblePowerLoad`](@ref) `max_reactive_power`. Returns natural units (Mvar) by default."""
-get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), Mvar)
+"""Get [`InterruptiblePowerLoad`](@ref) `max_reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_reactive_power(value::InterruptiblePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_reactive_power(value::InterruptiblePowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 """Get [`InterruptiblePowerLoad`](@ref) `base_power`."""
 get_base_power(value::InterruptiblePowerLoad) = value.base_power

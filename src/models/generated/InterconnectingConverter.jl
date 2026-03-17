@@ -111,14 +111,14 @@ get_available(value::InterconnectingConverter) = value.available
 get_bus(value::InterconnectingConverter) = value.bus
 """Get [`InterconnectingConverter`](@ref) `dc_bus`."""
 get_dc_bus(value::InterconnectingConverter) = value.dc_bus
-"""Get [`InterconnectingConverter`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::InterconnectingConverter) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`InterconnectingConverter`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::InterconnectingConverter) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::InterconnectingConverter, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`InterconnectingConverter`](@ref) `rating`. Returns natural units (MW) by default."""
-get_rating(value::InterconnectingConverter) = get_value(value, Val(:rating), Val(:mva), MW)
+"""Get [`InterconnectingConverter`](@ref) `rating`. Returns value in the system's unit setting (natural units by default)."""
+get_rating(value::InterconnectingConverter) = get_value(value, Val(:rating), Val(:mva), _get_system_units(value, Val(:mva)))
 get_rating(value::InterconnectingConverter, units) = get_value(value, Val(:rating), Val(:mva), units)
-"""Get [`InterconnectingConverter`](@ref) `active_power_limits`. Returns natural units (MW) by default."""
-get_active_power_limits(value::InterconnectingConverter) = get_value(value, Val(:active_power_limits), Val(:mva), MW)
+"""Get [`InterconnectingConverter`](@ref) `active_power_limits`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_limits(value::InterconnectingConverter) = get_value(value, Val(:active_power_limits), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_limits(value::InterconnectingConverter, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
 """Get [`InterconnectingConverter`](@ref) `base_power`."""
 get_base_power(value::InterconnectingConverter) = value.base_power

@@ -94,22 +94,22 @@ end
 get_name(value::TwoTerminalGenericHVDCLine) = value.name
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `available`."""
 get_available(value::TwoTerminalGenericHVDCLine) = value.available
-"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
-get_active_power_flow(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_flow`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_flow(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_flow), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_flow(value::TwoTerminalGenericHVDCLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `arc`."""
 get_arc(value::TwoTerminalGenericHVDCLine) = value.arc
-"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`. Returns natural units (MW) by default."""
-get_active_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva), MW)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_from`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_limits_from(value::TwoTerminalGenericHVDCLine, units) = get_value(value, Val(:active_power_limits_from), Val(:mva), units)
-"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`. Returns natural units (MW) by default."""
-get_active_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva), MW)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `active_power_limits_to`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_limits_to(value::TwoTerminalGenericHVDCLine, units) = get_value(value, Val(:active_power_limits_to), Val(:mva), units)
-"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`. Returns natural units (Mvar) by default."""
-get_reactive_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), Mvar)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_from`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power_limits_from(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power_limits_from(value::TwoTerminalGenericHVDCLine, units) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), units)
-"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`. Returns natural units (Mvar) by default."""
-get_reactive_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), Mvar)
+"""Get [`TwoTerminalGenericHVDCLine`](@ref) `reactive_power_limits_to`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power_limits_to(value::TwoTerminalGenericHVDCLine) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power_limits_to(value::TwoTerminalGenericHVDCLine, units) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), units)
 """Get [`TwoTerminalGenericHVDCLine`](@ref) `loss`."""
 get_loss(value::TwoTerminalGenericHVDCLine) = value.loss

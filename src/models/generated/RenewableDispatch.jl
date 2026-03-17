@@ -113,19 +113,19 @@ get_name(value::RenewableDispatch) = value.name
 get_available(value::RenewableDispatch) = value.available
 """Get [`RenewableDispatch`](@ref) `bus`."""
 get_bus(value::RenewableDispatch) = value.bus
-"""Get [`RenewableDispatch`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`RenewableDispatch`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::RenewableDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`RenewableDispatch`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
-get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+"""Get [`RenewableDispatch`](@ref) `reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
-"""Get [`RenewableDispatch`](@ref) `rating`. Returns natural units (MW) by default."""
-get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva), MW)
+"""Get [`RenewableDispatch`](@ref) `rating`. Returns value in the system's unit setting (natural units by default)."""
+get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva), _get_system_units(value, Val(:mva)))
 get_rating(value::RenewableDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
 """Get [`RenewableDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableDispatch) = value.prime_mover_type
-"""Get [`RenewableDispatch`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
-get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+"""Get [`RenewableDispatch`](@ref) `reactive_power_limits`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power_limits(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`RenewableDispatch`](@ref) `power_factor`."""
 get_power_factor(value::RenewableDispatch) = value.power_factor

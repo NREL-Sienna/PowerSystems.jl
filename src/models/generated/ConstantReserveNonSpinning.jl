@@ -86,8 +86,8 @@ get_name(value::ConstantReserveNonSpinning) = value.name
 get_available(value::ConstantReserveNonSpinning) = value.available
 """Get [`ConstantReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::ConstantReserveNonSpinning) = value.time_frame
-"""Get [`ConstantReserveNonSpinning`](@ref) `requirement`. Returns natural units (MW) by default."""
-get_requirement(value::ConstantReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva), MW)
+"""Get [`ConstantReserveNonSpinning`](@ref) `requirement`. Returns value in the system's unit setting (natural units by default)."""
+get_requirement(value::ConstantReserveNonSpinning) = get_value(value, Val(:requirement), Val(:mva), _get_system_units(value, Val(:mva)))
 get_requirement(value::ConstantReserveNonSpinning, units) = get_value(value, Val(:requirement), Val(:mva), units)
 """Get [`ConstantReserveNonSpinning`](@ref) `sustained_time`."""
 get_sustained_time(value::ConstantReserveNonSpinning) = value.sustained_time

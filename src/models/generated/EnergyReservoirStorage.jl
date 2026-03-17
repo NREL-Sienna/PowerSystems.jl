@@ -160,32 +160,32 @@ get_bus(value::EnergyReservoirStorage) = value.bus
 get_prime_mover_type(value::EnergyReservoirStorage) = value.prime_mover_type
 """Get [`EnergyReservoirStorage`](@ref) `storage_technology_type`."""
 get_storage_technology_type(value::EnergyReservoirStorage) = value.storage_technology_type
-"""Get [`EnergyReservoirStorage`](@ref) `storage_capacity`. Returns natural units (MW) by default."""
-get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, Val(:storage_capacity), Val(:mva), MW)
+"""Get [`EnergyReservoirStorage`](@ref) `storage_capacity`. Returns value in the system's unit setting (natural units by default)."""
+get_storage_capacity(value::EnergyReservoirStorage) = get_value(value, Val(:storage_capacity), Val(:mva), _get_system_units(value, Val(:mva)))
 get_storage_capacity(value::EnergyReservoirStorage, units) = get_value(value, Val(:storage_capacity), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `storage_level_limits`."""
 get_storage_level_limits(value::EnergyReservoirStorage) = value.storage_level_limits
 """Get [`EnergyReservoirStorage`](@ref) `initial_storage_capacity_level`."""
 get_initial_storage_capacity_level(value::EnergyReservoirStorage) = value.initial_storage_capacity_level
-"""Get [`EnergyReservoirStorage`](@ref) `rating`. Returns natural units (MW) by default."""
-get_rating(value::EnergyReservoirStorage) = get_value(value, Val(:rating), Val(:mva), MW)
+"""Get [`EnergyReservoirStorage`](@ref) `rating`. Returns value in the system's unit setting (natural units by default)."""
+get_rating(value::EnergyReservoirStorage) = get_value(value, Val(:rating), Val(:mva), _get_system_units(value, Val(:mva)))
 get_rating(value::EnergyReservoirStorage, units) = get_value(value, Val(:rating), Val(:mva), units)
-"""Get [`EnergyReservoirStorage`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::EnergyReservoirStorage) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`EnergyReservoirStorage`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::EnergyReservoirStorage) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::EnergyReservoirStorage, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`EnergyReservoirStorage`](@ref) `input_active_power_limits`. Returns natural units (MW) by default."""
-get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:input_active_power_limits), Val(:mva), MW)
+"""Get [`EnergyReservoirStorage`](@ref) `input_active_power_limits`. Returns value in the system's unit setting (natural units by default)."""
+get_input_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:input_active_power_limits), Val(:mva), _get_system_units(value, Val(:mva)))
 get_input_active_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:input_active_power_limits), Val(:mva), units)
-"""Get [`EnergyReservoirStorage`](@ref) `output_active_power_limits`. Returns natural units (MW) by default."""
-get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:output_active_power_limits), Val(:mva), MW)
+"""Get [`EnergyReservoirStorage`](@ref) `output_active_power_limits`. Returns value in the system's unit setting (natural units by default)."""
+get_output_active_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:output_active_power_limits), Val(:mva), _get_system_units(value, Val(:mva)))
 get_output_active_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:output_active_power_limits), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `efficiency`."""
 get_efficiency(value::EnergyReservoirStorage) = value.efficiency
-"""Get [`EnergyReservoirStorage`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
-get_reactive_power(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+"""Get [`EnergyReservoirStorage`](@ref) `reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power(value::EnergyReservoirStorage, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
-"""Get [`EnergyReservoirStorage`](@ref) `reactive_power_limits`. Returns natural units (Mvar) by default."""
-get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power_limits), Val(:mva), Mvar)
+"""Get [`EnergyReservoirStorage`](@ref) `reactive_power_limits`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power_limits(value::EnergyReservoirStorage) = get_value(value, Val(:reactive_power_limits), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power_limits(value::EnergyReservoirStorage, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 """Get [`EnergyReservoirStorage`](@ref) `base_power`."""
 get_base_power(value::EnergyReservoirStorage) = value.base_power

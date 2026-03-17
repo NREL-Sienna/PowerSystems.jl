@@ -94,8 +94,8 @@ end
 get_name(value::TModelHVDCLine) = value.name
 """Get [`TModelHVDCLine`](@ref) `available`."""
 get_available(value::TModelHVDCLine) = value.available
-"""Get [`TModelHVDCLine`](@ref) `active_power_flow`. Returns natural units (MW) by default."""
-get_active_power_flow(value::TModelHVDCLine) = get_value(value, Val(:active_power_flow), Val(:mva), MW)
+"""Get [`TModelHVDCLine`](@ref) `active_power_flow`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_flow(value::TModelHVDCLine) = get_value(value, Val(:active_power_flow), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_flow(value::TModelHVDCLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 """Get [`TModelHVDCLine`](@ref) `arc`."""
 get_arc(value::TModelHVDCLine) = value.arc
@@ -105,11 +105,11 @@ get_r(value::TModelHVDCLine) = value.r
 get_l(value::TModelHVDCLine) = value.l
 """Get [`TModelHVDCLine`](@ref) `c`."""
 get_c(value::TModelHVDCLine) = value.c
-"""Get [`TModelHVDCLine`](@ref) `active_power_limits_from`. Returns natural units (MW) by default."""
-get_active_power_limits_from(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva), MW)
+"""Get [`TModelHVDCLine`](@ref) `active_power_limits_from`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_limits_from(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_from), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_limits_from(value::TModelHVDCLine, units) = get_value(value, Val(:active_power_limits_from), Val(:mva), units)
-"""Get [`TModelHVDCLine`](@ref) `active_power_limits_to`. Returns natural units (MW) by default."""
-get_active_power_limits_to(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva), MW)
+"""Get [`TModelHVDCLine`](@ref) `active_power_limits_to`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power_limits_to(value::TModelHVDCLine) = get_value(value, Val(:active_power_limits_to), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power_limits_to(value::TModelHVDCLine, units) = get_value(value, Val(:active_power_limits_to), Val(:mva), units)
 """Get [`TModelHVDCLine`](@ref) `services`."""
 get_services(value::TModelHVDCLine) = value.services

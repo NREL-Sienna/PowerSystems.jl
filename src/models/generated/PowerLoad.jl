@@ -101,19 +101,19 @@ get_name(value::PowerLoad) = value.name
 get_available(value::PowerLoad) = value.available
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
-"""Get [`PowerLoad`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::PowerLoad) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`PowerLoad`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::PowerLoad) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::PowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`PowerLoad`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
-get_reactive_power(value::PowerLoad) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+"""Get [`PowerLoad`](@ref) `reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power(value::PowerLoad) = get_value(value, Val(:reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power(value::PowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
 """Get [`PowerLoad`](@ref) `base_power`."""
 get_base_power(value::PowerLoad) = value.base_power
-"""Get [`PowerLoad`](@ref) `max_active_power`. Returns natural units (MW) by default."""
-get_max_active_power(value::PowerLoad) = get_value(value, Val(:max_active_power), Val(:mva), MW)
+"""Get [`PowerLoad`](@ref) `max_active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_active_power(value::PowerLoad) = get_value(value, Val(:max_active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_active_power(value::PowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
-"""Get [`PowerLoad`](@ref) `max_reactive_power`. Returns natural units (Mvar) by default."""
-get_max_reactive_power(value::PowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), Mvar)
+"""Get [`PowerLoad`](@ref) `max_reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_reactive_power(value::PowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_reactive_power(value::PowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 """Get [`PowerLoad`](@ref) `conformity`."""
 get_conformity(value::PowerLoad) = value.conformity

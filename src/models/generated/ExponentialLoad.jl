@@ -111,11 +111,11 @@ get_name(value::ExponentialLoad) = value.name
 get_available(value::ExponentialLoad) = value.available
 """Get [`ExponentialLoad`](@ref) `bus`."""
 get_bus(value::ExponentialLoad) = value.bus
-"""Get [`ExponentialLoad`](@ref) `active_power`. Returns natural units (MW) by default."""
-get_active_power(value::ExponentialLoad) = get_value(value, Val(:active_power), Val(:mva), MW)
+"""Get [`ExponentialLoad`](@ref) `active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_active_power(value::ExponentialLoad) = get_value(value, Val(:active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_active_power(value::ExponentialLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
-"""Get [`ExponentialLoad`](@ref) `reactive_power`. Returns natural units (Mvar) by default."""
-get_reactive_power(value::ExponentialLoad) = get_value(value, Val(:reactive_power), Val(:mva), Mvar)
+"""Get [`ExponentialLoad`](@ref) `reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_reactive_power(value::ExponentialLoad) = get_value(value, Val(:reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_reactive_power(value::ExponentialLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
 """Get [`ExponentialLoad`](@ref) `α`."""
 get_α(value::ExponentialLoad) = value.α
@@ -123,11 +123,11 @@ get_α(value::ExponentialLoad) = value.α
 get_β(value::ExponentialLoad) = value.β
 """Get [`ExponentialLoad`](@ref) `base_power`."""
 get_base_power(value::ExponentialLoad) = value.base_power
-"""Get [`ExponentialLoad`](@ref) `max_active_power`. Returns natural units (MW) by default."""
-get_max_active_power(value::ExponentialLoad) = get_value(value, Val(:max_active_power), Val(:mva), MW)
+"""Get [`ExponentialLoad`](@ref) `max_active_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_active_power(value::ExponentialLoad) = get_value(value, Val(:max_active_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_active_power(value::ExponentialLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
-"""Get [`ExponentialLoad`](@ref) `max_reactive_power`. Returns natural units (Mvar) by default."""
-get_max_reactive_power(value::ExponentialLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), Mvar)
+"""Get [`ExponentialLoad`](@ref) `max_reactive_power`. Returns value in the system's unit setting (natural units by default)."""
+get_max_reactive_power(value::ExponentialLoad) = get_value(value, Val(:max_reactive_power), Val(:mva), _get_system_units(value, Val(:mva)))
 get_max_reactive_power(value::ExponentialLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 """Get [`ExponentialLoad`](@ref) `conformity`."""
 get_conformity(value::ExponentialLoad) = value.conformity
