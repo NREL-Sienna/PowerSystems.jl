@@ -126,8 +126,8 @@ function _make_source(g::StaticInjection, r::Float64, x::Float64, sys_base::Floa
         name = get_name(g),
         available = true,
         bus = get_bus(g),
-        active_power = get_active_power(g),
-        reactive_power = get_reactive_power(g),
+        active_power = g.active_power,
+        reactive_power = g.reactive_power,
         R_th = r_sysbase,
         X_th = x_sysbase,
     )

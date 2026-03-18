@@ -25,37 +25,40 @@ end
 @testset "PSSE Component Parsing" begin
     @info "Testing Load Parsing"
     mp_sys = build_system(MatpowerTestSystems, "matpower_case24_sys")
-    @test get_active_power(get_component(PowerLoad, mp_sys, "bus14")) == 1.94
-    @test get_max_reactive_power(get_component(PowerLoad, mp_sys, "bus14")) == 0.39
+    @test get_active_power(get_component(PowerLoad, mp_sys, "bus14"), DU) == 1.94DU
+    @test get_max_reactive_power(get_component(PowerLoad, mp_sys, "bus14"), DU) == 0.39DU
     @test get_conformity(get_component(PowerLoad, mp_sys, "bus14")) ==
           LoadConformity.CONFORMING
 
     sys = build_system(PSYTestSystems, "psse_240_parsing_sys") # current/imedance_power read in natural units during parsing
-    @test get_current_active_power(get_component(StandardLoad, sys, "load10021")) == 2.2371
-    @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021")) ==
-          -5.83546
+    @test get_current_active_power(get_component(StandardLoad, sys, "load10021"), DU) ==
+          2.2371DU
+    @test get_impedance_reactive_power(get_component(StandardLoad, sys, "load10021"), DU) ==
+          -5.83546DU
     @test get_conformity(get_component(StandardLoad, sys, "load10021")) ==
           LoadConformity.CONFORMING
 
     sys2 = build_system(PSYTestSystems, "psse_Benchmark_4ger_33_2015_sys")  # Constant_active/reactive_power read in pu during parsing
-    @test get_constant_active_power(get_component(StandardLoad, sys2, "load71")) == 9.67
-    @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71")) == 1.0
+    @test get_constant_active_power(get_component(StandardLoad, sys2, "load71"), DU) ==
+          9.67DU
+    @test get_constant_reactive_power(get_component(StandardLoad, sys2, "load71"), DU) ==
+          1.0DU
     @test get_conformity(get_component(StandardLoad, sys2, "load71")) ==
           LoadConformity.CONFORMING
 
     @info "Testing ZIP Load Parsing"
     wecc_sys = build_system(PSYTestSystems, "psse_240_parsing_sys")
     test_load1 = get_component(StandardLoad, wecc_sys, "load24091")
-    impedance_q = get_impedance_reactive_power(test_load1)
+    impedance_q = get_impedance_reactive_power(test_load1, DU)
     # Negative for capacitive loads
-    @test impedance_q < 0
-    @test isapprox(impedance_q, -0.75; atol = 1e-4)
+    @test impedance_q < 0.0DU
+    @test isapprox(impedance_q, -0.75DU; atol = 1e-4)
 
     test_load2 = get_component(StandardLoad, wecc_sys, "load10031")
-    impedance_q = get_impedance_reactive_power(test_load2)
+    impedance_q = get_impedance_reactive_power(test_load2, DU)
     # Positive for inductance loads
-    @test impedance_q > 0
-    @test isapprox(impedance_q, 3.873; atol = 1e-3)
+    @test impedance_q > 0.0DU
+    @test isapprox(impedance_q, 3.873DU; atol = 1e-3)
 
     @info "Testing Generator Parsing"
     @test get_status(get_component(ThermalStandard, sys, "generator-2438-ND")) == 0
@@ -83,9 +86,9 @@ end
     tw3s = get_components(Transformer3W, sys4)
     @test length(tw3s) == 1
     tw3 = only(tw3s)
-    @test isapprox(get_b(tw3), 0.0036144)
+    @test isapprox(get_b(tw3, SU), 0.00251SU; atol = 1e-5)
     @test get_primary_turns_ratio(tw3) == 1.5
-    @test get_rating(tw3) == 0.0
+    @test get_rating(tw3, DU) == 0.0DU
 
     @test get_available(
         get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_A"),
@@ -93,7 +96,8 @@ end
 
     @test get_r_primary(
         get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_C"),
-    ) == 0.00225
+        DU,
+    ) == 0.00225DU
     @test haskey(
         get_ext(
             get_component(Transformer3W, sys5, "FAV SPOT 01-FAV SPOT 02-FAV SPOT 03-i_C"),
@@ -167,7 +171,7 @@ end
 
     @info "Testing VSC Parser"
     vsc = only(get_components(TwoTerminalVSCLine, sys4))
-    @test get_active_power_flow(vsc) == -0.2
+    @test get_active_power_flow(vsc, DU) == -0.2DU
     @test get_dc_setpoint_to(vsc) == -20.0
 
     @info "Testing Load Zone Formatter"
@@ -209,8 +213,8 @@ end
     sc_gen1 = collect(get_components(SynchronousCondenser, sys))[1]
 
     @test !hasproperty(sc_gen1, :active_power)
-    @test get_rating(sc_gen1) >= 0.0
-    @test get_reactive_power(sc_gen1) != 0.0
+    @test get_rating(sc_gen1, DU) >= 0.0DU
+    @test get_reactive_power(sc_gen1, DU) != 0.0DU
     @test get_available(sc_gen1) == true
     @test get_bustype(get_bus(sc_gen1)) == ACBusTypes.PV
 end
@@ -282,7 +286,7 @@ end
     @test length(lccs) == 1
     lcc = only(lccs)
     @test get_transfer_setpoint(lcc) == 20.0
-    @test get_active_power_flow(lcc) == 0.2
+    @test get_active_power_flow(lcc, DU) == 0.2DU
     @test isapprox(get_rectifier_delay_angle_limits(lcc).max, pi / 2)
     @test isapprox(get_inverter_extinction_angle_limits(lcc).max, pi / 2)
     @test get_power_mode(lcc)
@@ -499,8 +503,8 @@ end
     @test length(all_isl) == 4
     @test get_available(isl) == true
     @test isl isa InterruptibleStandardLoad
-    @test get_constant_active_power(isl) == 0.11485
-    @test get_max_active_power(isl) == 0.11485
+    @test get_constant_active_power(isl, DU) == 0.11485DU
+    @test get_max_active_power(isl, DU) == 0.11485DU
 end
 
 @testset "Test conversion zero impedance branch to switch" begin
@@ -511,7 +515,11 @@ end
     )
     @test length(get_components(DiscreteControlledACBranch, sys)) == 6
     @test length(
-        get_components(x -> get_r(x) == get_x(x) == 0.0, DiscreteControlledACBranch, sys),
+        get_components(
+            x -> get_r(x, DU) == get_x(x, DU) == 0.0DU,
+            DiscreteControlledACBranch,
+            sys,
+        ),
     ) == 4
 end
 
@@ -524,7 +532,7 @@ end
     trf_3w = collect(get_components(Transformer3W, sys))[1]
     @test get_available(trf_3w) == true
     @test get_available_tertiary(trf_3w) == true
-    @test get_x_tertiary(trf_3w) == 1e-4
+    @test get_x_tertiary(trf_3w) == 1.5e-5SU
 end
 
 @testset "Test GeoJSON RFC 7946 Compliance" begin

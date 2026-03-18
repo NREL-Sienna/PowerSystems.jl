@@ -246,6 +246,8 @@ function create_system_with_subsystems()
 end
 
 function test_accessors(component)
+    # FIXME this fails for some components, with "not attached to a system. Cannot determine base power."
+    # presumably we're calling the getter with a unit setting that requires base power.
     ps_type = typeof(component)
 
     for (field_name, field_type) in zip(fieldnames(ps_type), fieldtypes(ps_type))

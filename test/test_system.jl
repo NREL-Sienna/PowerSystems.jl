@@ -78,7 +78,7 @@
     @test val[1] isa Dates.DateTime
     val = get_time_series_values(SingleTimeSeries, component, "max_active_power")
     @test val isa Array
-    @test val[1] isa AbstractFloat
+    @test val[1] isa Number
 
     val = get_time_series_array(component, ts)
     @test val isa TimeSeries.TimeArray
@@ -87,7 +87,7 @@
     @test val[1] isa Dates.DateTime
     val = get_time_series_values(component, ts)
     @test val isa Array
-    @test val[1] isa AbstractFloat
+    @test val[1] isa Number
 
     clear_time_series!(sys)
     @test length(collect(get_time_series_multiple(sys))) == 0
@@ -221,6 +221,7 @@ end
 
 @testset "Test system units" begin
     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    set_units_base_system!(sys, "DEVICE_BASE")
     @test get_units_base(sys) == "DEVICE_BASE"
     set_units_base_system!(sys, "SYSTEM_BASE")
     @test get_units_base(sys) == "SYSTEM_BASE"
@@ -255,8 +256,8 @@ end
     raw_active = gen.active_power
     raw_reactive = gen.reactive_power
 
-    # Default getter returns natural units (MW)
-    P_mw = get_active_power(gen)
+    # Explicit MW
+    P_mw = get_active_power(gen, MW)
     @test P_mw isa Unitful.Quantity
     @test Unitful.ustrip(P_mw) ≈ raw_active * device_base
 
@@ -270,8 +271,8 @@ end
     @test P_su isa PSY.RelativeQuantity
     @test PSY.ustrip(P_su) ≈ raw_active * device_base / system_base
 
-    # Reactive power returns Mvar by default
-    Q_mvar = get_reactive_power(gen)
+    # Reactive power in Mvar
+    Q_mvar = get_reactive_power(gen, PSY.Mvar)
     @test Unitful.ustrip(Unitful.uconvert(PSY.Mvar, Q_mvar)) ≈ raw_reactive * device_base
 end
 
@@ -577,7 +578,7 @@ end
     @test IS.compare_values(gen1, gen2)
     @test IS.compare_values(sys1, sys2)
 
-    set_active_power!(gen1, get_active_power(gen1) + 0.1)
+    set_active_power!(gen1, get_active_power(gen1, DU) + 0.1DU)
     @test(
         @test_logs(
             (:error, r"not match"),

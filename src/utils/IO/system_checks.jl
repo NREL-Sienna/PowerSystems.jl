@@ -2,13 +2,16 @@
 ### Utility Functions needed for the construction of the Power System, mostly used for consistency checking ####
 
 """
-Sum a getter over components, returning zero(DEFAULT_POWER_UNITS_TYPE) if empty.
+Sum a getter over components in MW, returning zero(DEFAULT_POWER_UNITS_TYPE) if empty.
+The second argument can be a getter function (which will be called with MW units),
+or a tuple of (getter, units) to specify different units.
 """
 function _sum_or_zero(getter::Function, components)
     if isempty(components)
         return zero(DEFAULT_POWER_UNITS_TYPE)
     else
-        return sum(getter.(components))
+        # Always request MW to ensure consistent units
+        return sum(c -> getter(c, IS.MW), components)
     end
 end
 

@@ -147,6 +147,59 @@ import Unitful
 using Unitful: Quantity, Units, @u_str, uconvert
 
 """
+    _get_system_units(c::Component, conversion_unit::Val{:mva})
+
+Get the appropriate units based on the component's unit_system setting.
+Returns MW for NATURAL_UNITS, DU for DEVICE_BASE, SU for SYSTEM_BASE.
+"""
+# TODO: reactive power fields also go through :mva and get MW back;
+# consider splitting so reactive power returns Mvar for a visibly distinct unit.
+function _get_system_units(c::Component, ::Val{:mva})
+    units_info = get_internal(c).units_info
+    if isnothing(units_info)
+        return IS.MW  # Default to natural units if not set
+    end
+    unit_system = units_info.unit_system
+    if unit_system == IS.UnitSystem.NATURAL_UNITS
+        return IS.MW
+    elseif unit_system == IS.UnitSystem.DEVICE_BASE
+        return IS.DU
+    else  # SYSTEM_BASE
+        return IS.SU
+    end
+end
+
+function _get_system_units(c::Component, ::Val{:ohm})
+    units_info = get_internal(c).units_info
+    if isnothing(units_info)
+        return IS.OHMS
+    end
+    unit_system = units_info.unit_system
+    if unit_system == IS.UnitSystem.NATURAL_UNITS
+        return IS.OHMS
+    elseif unit_system == IS.UnitSystem.DEVICE_BASE
+        return IS.DU
+    else
+        return IS.SU
+    end
+end
+
+function _get_system_units(c::Component, ::Val{:siemens})
+    units_info = get_internal(c).units_info
+    if isnothing(units_info)
+        return IS.SIEMENS
+    end
+    unit_system = units_info.unit_system
+    if unit_system == IS.UnitSystem.NATURAL_UNITS
+        return IS.SIEMENS
+    elseif unit_system == IS.UnitSystem.DEVICE_BASE
+        return IS.DU
+    else
+        return IS.SU
+    end
+end
+
+"""
     get_value(c::Component, field::Val{T}, conversion_unit, units) where {T}
 
 Get a field value with explicit units. Returns the value converted to the specified units.
@@ -183,7 +236,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:ohm},
     ::typeof(IS.OHMS),
 ) where {T <: Branch}
@@ -196,7 +249,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:ohm},
     ::typeof(IS.OHMS),
 ) where {T <: TwoWindingTransformer}
@@ -209,7 +262,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:siemens},
     ::typeof(IS.SIEMENS),
 ) where {T <: Branch}
@@ -223,7 +276,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:siemens},
     ::typeof(IS.SIEMENS),
 ) where {T <: TwoWindingTransformer}
@@ -236,7 +289,7 @@ function _convert_from_device_base(
 end
 
 # Conversion from device base to device base (DU) - trivial, no system info needed
-function _convert_from_device_base(::Component, value::Float64, ::Val, ::IS.DeviceBaseUnit)
+function _convert_from_device_base(::Component, value::Number, ::Val, ::IS.DeviceBaseUnit)
     return value * IS.DU
 end
 
@@ -264,7 +317,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:ohm},
     ::IS.SystemBaseUnit,
 ) where {T <: Branch}
@@ -274,7 +327,7 @@ end
 
 function _convert_from_device_base(
     c::T,
-    value::Float64,
+    value::Number,
     ::Val{:siemens},
     ::IS.SystemBaseUnit,
 ) where {T <: Branch}

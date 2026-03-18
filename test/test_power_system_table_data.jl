@@ -142,17 +142,17 @@ end
             end
 
             cdm_ac_branches = collect(get_components(ACBranch, cdmsys))
-            @test get_rating(cdm_ac_branches[2]) ==
-                  get_rating(get_branch(mpsys, cdm_ac_branches[2]))
-            @test get_rating(cdm_ac_branches[6]) ==
-                  get_rating(get_branch(mpsys, cdm_ac_branches[6]))
-            @test get_rating(cdm_ac_branches[120]) ==
-                  get_rating(get_branch(mpsys, cdm_ac_branches[120]))
+            @test get_rating(cdm_ac_branches[2], SU) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[2]), SU)
+            @test get_rating(cdm_ac_branches[6], SU) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[6]), SU)
+            @test get_rating(cdm_ac_branches[120], SU) ==
+                  get_rating(get_branch(mpsys, cdm_ac_branches[120]), SU)
 
             cdm_dc_branches =
                 collect(get_components(TwoTerminalGenericHVDCLine, cdmsys))
-            @test get_active_power_limits_from(cdm_dc_branches[1]) ==
-                  get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]))
+            @test get_active_power_limits_from(cdm_dc_branches[1], SU) ==
+                  get_active_power_limits_from(get_branch(mpsys, cdm_dc_branches[1]), SU)
         end
     @test_logs (:error,) match_mode = :any min_level = Logging.Error consistency_test()
 end
