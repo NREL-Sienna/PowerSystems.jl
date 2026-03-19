@@ -6,6 +6,7 @@ include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
+include("VirtualAdmittance.jl")
 include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
@@ -498,6 +499,7 @@ export get_admittance_limits
 export get_angle
 export get_angle_limits
 export get_arc
+export get_arc_admittance
 export get_area
 export get_available
 export get_available_primary
@@ -1183,6 +1185,7 @@ export set_admittance_limits!
 export set_angle!
 export set_angle_limits!
 export set_arc!
+export set_arc_admittance!
 export set_area!
 export set_available!
 export set_available_primary!

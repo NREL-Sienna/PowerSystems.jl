@@ -63,6 +63,7 @@ export ThreeWindingTransformer
 export TwoTerminalHVDC
 export Line
 export MonitoredLine
+export VirtualAdmittance
 export DCBranch
 export TwoTerminalGenericHVDCLine
 export TwoTerminalVSCLine
