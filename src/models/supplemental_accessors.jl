@@ -90,6 +90,38 @@ function get_series_susceptances(b::Transformer3W)
 end
 
 """
+    get_base_voltage(line::Union{Line, MonitoredLine})
+
+Return the base voltage (kV) of a [`Line`](@ref) or [`MonitoredLine`](@ref) by reading the
+`base_voltage` field from the `from` bus of the line's [`Arc`](@ref).
+"""
+get_base_voltage(line::Union{Line, MonitoredLine}) = get_base_voltage(get_from_bus(line))
+
+"""
+    get_high_voltage(t::TwoWindingTransformer)
+
+Return the high-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
+maximum of `base_voltage_primary` and `base_voltage_secondary`.
+"""
+function get_high_voltage(t::TwoWindingTransformer)
+    v_primary = get_base_voltage_primary(t)
+    v_secondary = get_base_voltage_secondary(t)
+    return max(v_primary, v_secondary)
+end
+
+"""
+    get_low_voltage(t::TwoWindingTransformer)
+
+Return the low-side base voltage (kV) of a [`TwoWindingTransformer`](@ref) as the
+minimum of `base_voltage_primary` and `base_voltage_secondary`.
+"""
+function get_low_voltage(t::TwoWindingTransformer)
+    v_primary = get_base_voltage_primary(t)
+    v_secondary = get_base_voltage_secondary(t)
+    return min(v_primary, v_secondary)
+end
+
+"""
 Calculate the series admittance of a [`ACTransmission`](@ref) as the inverse of the complex impedance.
 Returns 1/(R + jX) where R is resistance and X is reactance.
 """
