@@ -564,8 +564,8 @@
             "supertype": "ACTransmission"
         },
         {
-            "struct_name": "VirtualAdmittance",
-            "docstring": "A virtual admittance between two buses that does not correspond to a physical component. This can be used to model the effects of network reductions (e.g. Ward reduction).",
+            "struct_name": "GenericArcImpedance",
+            "docstring": "A virtual impedance between two buses that does not correspond to a physical component. This can be used to model the effects of network reductions (e.g. Ward reduction).",
             "fields": [
                 {
                     "null_value": "init",
@@ -597,16 +597,34 @@
                     "conversion_unit": ":mva"
                 },
                 {
+                    "null_value": "0.0",
+                    "name": "max_flow",
+                    "comment": "Maximum allowable flow on the generic impedance. When defining a GenericArcImpedance before it is attached to a `System`, `max_flow` must be in pu ([`SYSTEM_BASE`](@ref per_unit)) using the base power of the `System` it will be attached to",
+                    "data_type": "Float64",
+                    "needs_conversion": true,
+                    "conversion_unit": ":mva"
+                },
+                {
                     "null_value": "Arc(ACBus(nothing), ACBus(nothing))",
                     "name": "arc",
                     "comment": "An [`Arc`](@ref) defining this line `from` a bus `to` another bus",
                     "data_type": "Arc"
                 },
+               {
+                    "null_value": "0.0",
+                    "name": "r",
+                    "data_type": "Float64",
+                    "comment": "Resistance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
+                },
                 {
                     "null_value": "0.0",
-                    "name": "arc_admittance",
-                    "data_type": "Complex{Float64}",
-                    "comment": "Admittance in pu ([`SYSTEM_BASE`](@ref per_unit)). The component does not contribute a shunt admittance."
+                    "name": "x",
+                    "data_type": "Float64",
+                    "comment": "Reactance in pu ([`SYSTEM_BASE`](@ref per_unit))",
+                    "needs_conversion": true,
+                    "conversion_unit": ":ohm"
                 },
                 {
                     "name": "ext",

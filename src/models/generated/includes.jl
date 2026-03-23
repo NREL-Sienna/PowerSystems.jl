@@ -6,7 +6,7 @@ include("ACBus.jl")
 include("DCBus.jl")
 include("Arc.jl")
 include("Line.jl")
-include("VirtualAdmittance.jl")
+include("GenericArcImpedance.jl")
 include("DiscreteControlledACBranch.jl")
 include("MonitoredLine.jl")
 include("PhaseShiftingTransformer.jl")
@@ -499,7 +499,6 @@ export get_admittance_limits
 export get_angle
 export get_angle_limits
 export get_arc
-export get_arc_admittance
 export get_area
 export get_available
 export get_available_primary
@@ -656,6 +655,7 @@ export get_max_current_reactive_power
 export get_max_dc_current
 export get_max_dc_current_from
 export get_max_dc_current_to
+export get_max_flow
 export get_max_impedance_active_power
 export get_max_impedance_reactive_power
 export get_max_output_fraction
@@ -1185,7 +1185,6 @@ export set_admittance_limits!
 export set_angle!
 export set_angle_limits!
 export set_arc!
-export set_arc_admittance!
 export set_area!
 export set_available!
 export set_available_primary!
@@ -1342,6 +1341,7 @@ export set_max_current_reactive_power!
 export set_max_dc_current!
 export set_max_dc_current_from!
 export set_max_dc_current_to!
+export set_max_flow!
 export set_max_impedance_active_power!
 export set_max_impedance_reactive_power!
 export set_max_output_fraction!

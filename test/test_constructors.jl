@@ -86,8 +86,8 @@ end
     @test tTransformer3W isa PowerSystems.Component
     tPhaseShiftingTransformer3W = PhaseShiftingTransformer3W(nothing)
     @test tPhaseShiftingTransformer3W isa PowerSystems.Component
-    tVirtualAdmittance = VirtualAdmittance(nothing)
-    @test tVirtualAdmittance isa PowerSystems.Component
+    tGenericArcImpedance = GenericArcImpedance(nothing)
+    @test tGenericArcImpedance isa PowerSystems.Component
 end
 
 @testset "Service Constructors" begin
