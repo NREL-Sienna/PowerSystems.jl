@@ -93,9 +93,41 @@ end
     get_base_voltage(line::Union{Line, MonitoredLine})
 
 Return the base voltage (kV) of a [`Line`](@ref) or [`MonitoredLine`](@ref) by reading the
-`base_voltage` field from the `from` bus of the line's [`Arc`](@ref).
+`base_voltage` from both endpoints of the line's [`Arc`](@ref).
+
+If the two bus voltages are identical, that value is returned directly. If they differ but
+are within [`BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL`] (percent), the value with fewer significant
+figures is returned (i.e., the rounder number). If the difference exceeds the tolerance, an
+error is thrown.
 """
-get_base_voltage(line::Union{Line, MonitoredLine}) = get_base_voltage(get_from_bus(line))
+function get_base_voltage(line::Union{Line, MonitoredLine})
+    v_from = get_base_voltage(get_from_bus(line))
+    v_to = get_base_voltage(get_to_bus(line))
+    v_from == v_to && return v_from
+    percent_diff = abs(v_from - v_to) / ((v_from + v_to) / 2)
+    if percent_diff > BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL
+        error(
+            "Bus voltage mismatch on $(get_name(line)): " *
+            "from=$(v_from) kV, to=$(v_to) kV exceeds " *
+            "$(BRANCH_BUS_VOLTAGE_DIFFERENCE_TOL * 100)% tolerance.",
+        )
+    end
+    return _select_fewer_significant_figures(v_from, v_to)
+end
+
+"""
+Select the value with fewer significant figures (the "rounder" number).
+Uses trailing zeros after stripping the decimal point as a proxy.
+"""
+function _select_fewer_significant_figures(a::Float64, b::Float64)
+    sa = rstrip(string(a), '0')
+    sb = rstrip(string(b), '0')
+    la = length(sa)
+    lb = length(sb)
+    la < lb && return a
+    lb < la && return b
+    return max(a, b)
+end
 
 """
     get_high_voltage(t::TwoWindingTransformer)
