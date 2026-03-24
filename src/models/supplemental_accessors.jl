@@ -380,3 +380,22 @@ end
 function supports_services(::AreaInterchange)
     return true
 end
+
+# supports_active_power overrides for types without controllable active power
+supports_active_power(::SynchronousCondenser) = false
+supports_active_power(::FACTSControlDevice) = false
+supports_active_power(::FixedAdmittance) = false
+supports_active_power(::SwitchedAdmittance) = false
+
+# supports_reactive_power overrides for types without controllable reactive power
+supports_reactive_power(::InterconnectingConverter) = false
+supports_reactive_power(::FixedAdmittance) = false
+supports_reactive_power(::SwitchedAdmittance) = false
+
+# supports_voltage_control overrides for types that can control voltage
+supports_voltage_control(::Generator) = true
+supports_voltage_control(::SynchronousCondenser) = true
+supports_voltage_control(::FACTSControlDevice) = true
+supports_voltage_control(::Source) = true
+supports_voltage_control(::Storage) = true
+supports_voltage_control(::StaticInjectionSubsystem) = true

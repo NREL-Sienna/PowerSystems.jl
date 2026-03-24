@@ -88,3 +88,60 @@ end
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
     ).max == 0.10
 end
+
+@testset "Test static injection traits" begin
+    # supports_active_power
+    @test supports_active_power(ThermalStandard(nothing)) == true
+    @test supports_active_power(ThermalMultiStart(nothing)) == true
+    @test supports_active_power(RenewableDispatch(nothing)) == true
+    @test supports_active_power(RenewableNonDispatch(nothing)) == true
+    @test supports_active_power(HydroDispatch(nothing)) == true
+    @test supports_active_power(HydroTurbine(nothing)) == true
+    @test supports_active_power(HydroPumpTurbine(nothing)) == true
+    @test supports_active_power(Source(nothing)) == true
+    @test supports_active_power(InterconnectingConverter(nothing)) == true
+    @test supports_active_power(EnergyReservoirStorage(nothing)) == true
+    @test supports_active_power(PowerLoad(nothing)) == true
+    @test supports_active_power(StandardLoad(nothing)) == true
+    @test supports_active_power(ExponentialLoad(nothing)) == true
+    @test supports_active_power(InterruptiblePowerLoad(nothing)) == true
+    @test supports_active_power(ShiftablePowerLoad(nothing)) == true
+    @test supports_active_power(HybridSystem(nothing)) == true
+    @test supports_active_power(SynchronousCondenser(nothing)) == false
+    @test supports_active_power(FACTSControlDevice(nothing)) == false
+    @test supports_active_power(FixedAdmittance(nothing)) == false
+    @test supports_active_power(SwitchedAdmittance(nothing)) == false
+
+    # supports_reactive_power
+    @test supports_reactive_power(ThermalStandard(nothing)) == true
+    @test supports_reactive_power(RenewableDispatch(nothing)) == true
+    @test supports_reactive_power(Source(nothing)) == true
+    @test supports_reactive_power(SynchronousCondenser(nothing)) == true
+    @test supports_reactive_power(FACTSControlDevice(nothing)) == true
+    @test supports_reactive_power(PowerLoad(nothing)) == true
+    @test supports_reactive_power(EnergyReservoirStorage(nothing)) == true
+    @test supports_reactive_power(HybridSystem(nothing)) == true
+    @test supports_reactive_power(InterconnectingConverter(nothing)) == false
+    @test supports_reactive_power(FixedAdmittance(nothing)) == false
+    @test supports_reactive_power(SwitchedAdmittance(nothing)) == false
+
+    # supports_voltage_control
+    @test supports_voltage_control(ThermalStandard(nothing)) == true
+    @test supports_voltage_control(ThermalMultiStart(nothing)) == true
+    @test supports_voltage_control(RenewableDispatch(nothing)) == true
+    @test supports_voltage_control(RenewableNonDispatch(nothing)) == true
+    @test supports_voltage_control(HydroDispatch(nothing)) == true
+    @test supports_voltage_control(Source(nothing)) == true
+    @test supports_voltage_control(SynchronousCondenser(nothing)) == true
+    @test supports_voltage_control(FACTSControlDevice(nothing)) == true
+    @test supports_voltage_control(EnergyReservoirStorage(nothing)) == true
+    @test supports_voltage_control(HybridSystem(nothing)) == true
+    @test supports_voltage_control(PowerLoad(nothing)) == false
+    @test supports_voltage_control(StandardLoad(nothing)) == false
+    @test supports_voltage_control(ExponentialLoad(nothing)) == false
+    @test supports_voltage_control(InterruptiblePowerLoad(nothing)) == false
+    @test supports_voltage_control(ShiftablePowerLoad(nothing)) == false
+    @test supports_voltage_control(InterconnectingConverter(nothing)) == false
+    @test supports_voltage_control(FixedAdmittance(nothing)) == false
+    @test supports_voltage_control(SwitchedAdmittance(nothing)) == false
+end
