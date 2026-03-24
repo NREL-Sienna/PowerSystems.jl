@@ -392,10 +392,12 @@ supports_reactive_power(::InterconnectingConverter) = false
 supports_reactive_power(::FixedAdmittance) = false
 supports_reactive_power(::SwitchedAdmittance) = false
 
-function supports_reactive_power(d::FACTSControlDevice)
-    mode = get_control_mode(d)
-    return !isnothing(mode) && mode != FACTSOperationModes.OOS
-end
+# FACTSControlDevice reactive power and voltage control depend on control_mode.
+# control_mode is nothing for uninitialized devices (e.g. FACTSControlDevice(nothing)).
+_facts_is_active(d::FACTSControlDevice) =
+    (mode = get_control_mode(d); !isnothing(mode) && mode != FACTSOperationModes.OOS)
+
+supports_reactive_power(d::FACTSControlDevice) = _facts_is_active(d)
 
 # supports_voltage_control overrides for types that can control voltage
 supports_voltage_control(::Generator) = true
@@ -403,10 +405,7 @@ supports_voltage_control(::Source) = true
 supports_voltage_control(::Storage) = true
 supports_voltage_control(::StaticInjectionSubsystem) = true
 
-function supports_voltage_control(d::FACTSControlDevice)
-    mode = get_control_mode(d)
-    return !isnothing(mode) && mode != FACTSOperationModes.OOS
-end
+supports_voltage_control(d::FACTSControlDevice) = _facts_is_active(d)
 
 function supports_voltage_control(d::SynchronousCondenser)
     bustype = get_bustype(get_bus(d))
