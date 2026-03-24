@@ -47,6 +47,10 @@ merge!(
         "ice" => PrimeMovers.IC,
     ),
 )
+#= 
+
+this function only used in PowerSystemTableData() parser and is modified so that gen is a string
+and not the PSY generator type
 
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
 generator types."""
@@ -74,9 +78,12 @@ function get_generator_mapping(filename::String)
 
     return mappings
 end
+=#
 
+# mappings is now of type String because of the way PowerSystemTableData is modified
+# for parser extraction
 """Return the PowerSystems generator type for this fuel and unit_type."""
-function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType})
+function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, String})
     fuel = isnothing(fuel) ? "" : uppercase(fuel)
     unit_type = uppercase(unit_type)
     generator = nothing
@@ -85,7 +92,8 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, DataType
     for ut in (unit_type, nothing), fu in (fuel, nothing)
         key = (fuel = fu, unit_type = ut)
         if haskey(mappings, key)
-            generator = mappings[key]
+            gen_type = mappings[key]
+            generator = getfield(PowerSystems, Symbol(gen_type))
             break
         end
     end

@@ -1734,7 +1734,7 @@ function _get_component_type_from_category(category::AbstractString)
 
     return component_type
 end
-
+#= this function only used in PowerSystemTableData()
 function _read_config_file(file_path::String)
     return open(file_path) do io
         data = YAML.load(io)
@@ -1750,7 +1750,7 @@ function _read_config_file(file_path::String)
         return config_data
     end
 end
-
+=#
 """Stores user-customized information for required dataframe columns."""
 struct _FieldInfo
     name::String

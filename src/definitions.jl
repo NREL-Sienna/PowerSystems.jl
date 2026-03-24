@@ -531,7 +531,7 @@ Enumeration representing the location of a hydro reservoir relative to its assoc
 " ReservoirLocation
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
-const DEFAULT_BASE_MVA = 100.0
+# const DEFAULT_BASE_MVA = 100.0; only used in PSTD parser
 
 const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
     joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_structs.json")
