@@ -1,6 +1,16 @@
-const POWER_SYSTEM_DESCRIPTOR_FILE =
-    joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
+#const POWER_SYSTEM_DESCRIPTOR_FILE =
+#    joinpath(dirname(pathof(PowerSystems)), "descriptors", "power_system_inputs.json")
 
+#=
+- INPUT_CATEGORY_NAMES defined here for all of PSY, used in parser and in
+docs/src/generate_input_config_table.jl but nowhere else in PSY 
+- InputCategory is an IS.@scoped_enum, and in PSY is used only in this 
+file in both PowerSystemTableData and System function definitions
+- So we can't necessarily migrate INPUT_CATEGORY_NAMES or
+IS.@scoped_enum(InputCategory...) to PowerTableDataParser.jl, but we can
+duplicate them in said repo as an IS.@scoped_enum, thus InputCategory is used in
+PowerTableDataParser.jl but not as a PSY dep, and PSY doesn't break either
+=#
 const INPUT_CATEGORY_NAMES = [
     ("branch", InputCategory.BRANCH),
     ("bus", InputCategory.BUS),
@@ -11,6 +21,7 @@ const INPUT_CATEGORY_NAMES = [
     ("storage", InputCategory.STORAGE),
 ]
 
+#=
 struct PowerSystemTableData
     base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}
@@ -317,9 +328,11 @@ function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true
         end
     end
 end
+=#
+
 
 """
-Construct a System from [`PowerSystemTableData`](@ref) data.
+Construct a System from [`PowerTableDataParser.PowerSystemTableData`](@ref) data.
 
 !!! warning
 
@@ -343,7 +356,7 @@ Throws DataFormatError if time_series with multiple resolutions are detected.
 
 """
 function System(
-    data::PowerSystemTableData;
+    data::PowerTableDataParser.PowerSystemTableData;
     time_series_resolution = nothing,
     time_series_in_memory = false,
     time_series_directory = nothing,
@@ -392,7 +405,7 @@ end
 Add buses and areas to the System from the raw data.
 
 """
-function bus_csv_parser!(sys::System, data::PowerSystemTableData)
+function bus_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     for (ix, bus) in enumerate(iterate_rows(data, InputCategory.BUS))
         name = bus.name
         bus_type =
@@ -465,7 +478,7 @@ end
 """
 Add branches to the System from the raw data.
 """
-function branch_csv_parser!(sys::System, data::PowerSystemTableData)
+function branch_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     available = true
 
     for branch in iterate_rows(data, InputCategory.BRANCH)
@@ -540,7 +553,7 @@ end
 """
 Add DC branches to the System from raw data.
 """
-function dc_branch_csv_parser!(sys::System, data::PowerSystemTableData)
+function dc_branch_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     function make_dc_limits(dc_branch, min, max)
         min_lim = dc_branch[min]
         if isnothing(dc_branch[min]) && isnothing(dc_branch[max])
@@ -615,7 +628,7 @@ struct _CostPointColumns
     columns::Base.Iterators.Zip{Tuple{Array{Symbol, 1}, Array{Symbol, 1}}}
 end
 
-function gen_csv_parser!(sys::System, data::PowerSystemTableData)
+function gen_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     output_point_fields = Vector{Symbol}()
     heat_rate_fields = Vector{Symbol}()
     cost_point_fields = Vector{Symbol}()
@@ -643,7 +656,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
         throw(IS.DataFormatError("Configuration for cost terms not recognized"))
     end
 
-    gen_storage = cache_storage(data::PowerSystemTableData)
+    gen_storage = cache_storage(data::PowerTableDataParser.PowerSystemTableData)
 
     for gen in iterate_rows(data, InputCategory.GENERATOR)
         reservoirs = nothing # For hydro generators with reservoirs
@@ -668,7 +681,7 @@ function gen_csv_parser!(sys::System, data::PowerSystemTableData)
     return
 end
 
-function cache_storage(data::PowerSystemTableData)
+function cache_storage(data::PowerTableDataParser.PowerSystemTableData)
     storage = Dict{String, Any}()
     gen_head_dict = Dict()
     gen_tail_dict = Dict()
@@ -696,12 +709,12 @@ function cache_storage(data::PowerSystemTableData)
 end
 
 """
-    load_csv_parser!(sys::System, data::PowerSystemTableData)
+    load_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
 
 Add loads to the System from the raw load data.
 
 """
-function load_csv_parser!(sys::System, data::PowerSystemTableData)
+function load_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     for rawload in iterate_rows(data, InputCategory.LOAD)
         bus = get_bus(sys, rawload.bus_id)
         if isnothing(bus)
@@ -727,12 +740,12 @@ function load_csv_parser!(sys::System, data::PowerSystemTableData)
 end
 
 """
-    loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
+    loadzone_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
 
 Add branches to the System from the raw data.
 
 """
-function loadzone_csv_parser!(sys::System, data::PowerSystemTableData)
+function loadzone_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     buses = get_dataframe(data, InputCategory.BUS)
     zone_column = get_user_field(data, InputCategory.BUS, "zone")
     if !in(zone_column, names(buses))
@@ -767,7 +780,7 @@ end
 """
 Add services to the System from the raw data.
 """
-function services_csv_parser!(sys::System, data::PowerSystemTableData)
+function services_csv_parser!(sys::System, data::PowerTableDataParser.PowerSystemTableData)
     bus_id_column = get_user_field(data, InputCategory.BUS, "bus_id")
     bus_area_column = get_user_field(data, InputCategory.BUS, "area")
 
@@ -893,7 +906,7 @@ end
 
 """Creates a generator of any type."""
 function make_generator(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus,
@@ -1282,7 +1295,7 @@ function make_synchronous_condenser_generator(
 end
 
 function make_thermal_generator(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames::Union{_CostPointColumns, _HeatRateColumns},
     bus,
@@ -1327,7 +1340,7 @@ function make_thermal_generator(
 end
 
 function make_thermal_generator_multistart(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus,
@@ -1405,7 +1418,7 @@ function make_thermal_generator_multistart(
 end
 
 function make_hydro_dispatch(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus::ACBus,
@@ -1438,7 +1451,7 @@ function make_hydro_dispatch(
 end
 
 function _make_hydro_reservoirs(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     gen_storage,
     tail_required::Bool,
@@ -1502,7 +1515,7 @@ function _make_hydro_reservoirs(
 end
 
 function make_hydro_turbine(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus::ACBus,
@@ -1546,7 +1559,7 @@ function make_hydro_turbine(
 end
 
 function make_hydro_pump_storage(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus::ACBus,
@@ -1613,7 +1626,7 @@ end
 
 function make_renewable_generator(
     gen_type,
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     gen,
     cost_colnames,
     bus::ACBus,
@@ -1662,7 +1675,7 @@ function make_renewable_generator(
     return generator
 end
 
-function make_storage(data::PowerSystemTableData, gen, bus, storage)
+function make_storage(data::PowerTableDataParser.PowerSystemTableData, gen, bus, storage)
     @debug "Making Storage" _group = IS.LOG_GROUP_PARSING storage.name
     input_active_power_limits = (
         min = storage.input_active_power_limit_min,
@@ -1751,7 +1764,7 @@ struct _FieldInfo
     # TODO unit, value ranges and options
 end
 
-function _get_field_infos(data::PowerSystemTableData, category::InputCategory, df_names)
+function _get_field_infos(data::PowerTableDataParser.PowerSystemTableData, category::InputCategory, df_names)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
     end
@@ -1833,7 +1846,7 @@ function _get_field_infos(data::PowerSystemTableData, category::InputCategory, d
 end
 
 """Reads values from dataframe row and performs necessary conversions."""
-function _read_data_row(data::PowerSystemTableData, row, field_infos; na_to_nothing = true)
+function _read_data_row(data::PowerTableDataParser.PowerSystemTableData, row, field_infos; na_to_nothing = true)
     fields = Vector{String}()
     vals = Vector()
     for field_info in field_infos

@@ -47,7 +47,7 @@ function Base.show(io::IO, ::MIME"text/plain", data::OperationalCost)
     end
 end
 
-function Base.show(io::IO, ::MIME"text/plain", data::PowerSystemTableData)
+function Base.show(io::IO, ::MIME"text/plain", data::PowerTableDataParser.PowerSystemTableData)
     println(io, "$(typeof(data)):")
     println(io, "  directory:  $(data.directory)")
     if !isnothing(data.timeseries_metadata_file)

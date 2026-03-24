@@ -1,4 +1,6 @@
-
+# this is the only place IS.@scoped_enum(InputCategory) is defined
+# InputCategory is used only in power_system_table_data.jl but is
+# needed by both PowerSystemTableData() and System()
 IS.@scoped_enum(
     InputCategory,
     BRANCH = 1,

@@ -1,3 +1,4 @@
+#=
 """Container for data parsed by PowerFlowData"""
 struct PowerFlowDataNetwork
     data::PowerFlowData.Network
@@ -10,7 +11,7 @@ Currently Supports PSSE data files v30, v32 and v33
 function PowerFlowDataNetwork(file::Union{String, IO}; kwargs...)
     return PowerFlowDataNetwork(PowerFlowData.parse_network(file))
 end
-
+=#
 """
 Constructs a System from PowerModelsData.
 
@@ -36,7 +37,7 @@ sys = System(
 )
 ```
 """
-function System(net_data::PowerFlowDataNetwork; kwargs...)
+function System(net_data::PowerFlowFileParser.PowerFlowDataNetwork; kwargs...)
     runchecks = get(kwargs, :runchecks, true)
     data = net_data.data
     if length(data.buses) < 1

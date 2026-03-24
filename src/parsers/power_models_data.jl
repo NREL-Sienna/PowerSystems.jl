@@ -1,3 +1,4 @@
+#=
 """Container for data parsed by PowerModels"""
 struct PowerModelsData
     data::Dict{String, Any}
@@ -21,13 +22,13 @@ function PowerModelsData(file::Union{String, IO}; kwargs...)
     correct_pm_transformer_status!(pm_data)
     return pm_data
 end
-
+=#
 """
-Constructs a System from PowerModelsData.
+Constructs a System from PowerFlowFileParser.PowerModelsData.
 
 # Arguments
-- `pm_data::Union{PowerModelsData, Union{String, IO}}`: PowerModels data object or supported
-load flow case (*.m, *.raw)
+- `pm_data::Union{PowerFlowFileParser.PowerModelsData, Union{String, IO}}`: PowerFlowFileParser.PowerModels 
+data object or supported load flow case (*.m, *.raw)
 
 # Keyword arguments
 - `ext::Dict`: Contains user-defined parameters. Should only contain standard types.
@@ -47,7 +48,7 @@ sys = System(
 )
 ```
 """
-function System(pm_data::PowerModelsData; kwargs...)
+function System(pm_data::PowerFlowFileParser.PowerModelsData; kwargs...)
     runchecks = get(kwargs, :runchecks, true)
     data = pm_data.data
     if length(data["bus"]) < 1
@@ -83,8 +84,8 @@ function System(pm_data::PowerModelsData; kwargs...)
 
     return sys
 end
-
-function correct_pm_transformer_status!(pm_data::PowerModelsData)
+#= this function only used in PowerModelsData function, not System
+function correct_pm_transformer_status!(pm_data::PowerFlowFileParser.PowerModelsData)
     for (k, branch) in pm_data.data["branch"]
         f_bus_bvolt = pm_data.data["bus"][branch["f_bus"]]["base_kv"]
         t_bus_bvolt = pm_data.data["bus"][branch["t_bus"]]["base_kv"]
@@ -103,7 +104,7 @@ function correct_pm_transformer_status!(pm_data::PowerModelsData)
         end
     end
 end
-
+=#
 """
 Internal component name retrieval from pm2ps_dict
 """
