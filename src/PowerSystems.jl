@@ -52,6 +52,8 @@ export Component
 export Device
 export get_max_active_power
 export get_max_reactive_power
+export get_high_voltage
+export get_low_voltage
 export Branch
 export StaticInjection
 export StaticInjectionSubsystem
