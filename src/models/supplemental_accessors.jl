@@ -389,7 +389,6 @@ supports_active_power(::SwitchedAdmittance) = false
 # supports_reactive_power overrides for types without controllable reactive power
 supports_reactive_power(::InterconnectingConverter) = false
 supports_reactive_power(::FixedAdmittance) = false
-supports_reactive_power(::SwitchedAdmittance) = false
 
 # FACTSControlDevice reactive power and voltage control depend on control_mode.
 # control_mode is nothing for uninitialized devices (e.g. FACTSControlDevice(nothing)).

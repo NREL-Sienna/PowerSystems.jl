@@ -133,7 +133,7 @@ end
     @test supports_reactive_power(HybridSystem(nothing)) == true
     @test supports_reactive_power(InterconnectingConverter(nothing)) == false
     @test supports_reactive_power(FixedAdmittance(nothing)) == false
-    @test supports_reactive_power(SwitchedAdmittance(nothing)) == false
+    @test supports_reactive_power(SwitchedAdmittance(nothing)) == true
 
     # FACTSControlDevice reactive power depends on control_mode
     @test supports_reactive_power(FACTSControlDevice(nothing)) == false
