@@ -108,9 +108,20 @@ end
     @test supports_active_power(ShiftablePowerLoad(nothing)) == true
     @test supports_active_power(HybridSystem(nothing)) == true
     @test supports_active_power(SynchronousCondenser(nothing)) == false
-    @test supports_active_power(FACTSControlDevice(nothing)) == false
     @test supports_active_power(FixedAdmittance(nothing)) == false
     @test supports_active_power(SwitchedAdmittance(nothing)) == false
+
+    # FACTSControlDevice active power depends on control_mode (true only for NML)
+    @test supports_active_power(FACTSControlDevice(nothing)) == false
+    facts_nml = FACTSControlDevice(nothing)
+    set_control_mode!(facts_nml, FACTSOperationModes.NML)
+    @test supports_active_power(facts_nml) == true
+    facts_byp = FACTSControlDevice(nothing)
+    set_control_mode!(facts_byp, FACTSOperationModes.BYP)
+    @test supports_active_power(facts_byp) == false
+    facts_oos = FACTSControlDevice(nothing)
+    set_control_mode!(facts_oos, FACTSOperationModes.OOS)
+    @test supports_active_power(facts_oos) == false
 
     # supports_reactive_power
     @test supports_reactive_power(ThermalStandard(nothing)) == true

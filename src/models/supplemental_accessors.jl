@@ -383,7 +383,6 @@ end
 
 # supports_active_power overrides for types without controllable active power
 supports_active_power(::SynchronousCondenser) = false
-supports_active_power(::FACTSControlDevice) = false
 supports_active_power(::FixedAdmittance) = false
 supports_active_power(::SwitchedAdmittance) = false
 
@@ -396,6 +395,13 @@ supports_reactive_power(::SwitchedAdmittance) = false
 # control_mode is nothing for uninitialized devices (e.g. FACTSControlDevice(nothing)).
 _facts_is_active(d::FACTSControlDevice) =
     (mode = get_control_mode(d); !isnothing(mode) && mode != FACTSOperationModes.OOS)
+
+# In NML mode both Series and Shunt links operate, enabling active power control.
+# In BYP mode the Series link is bypassed and the Shunt acts as a STATCOM (reactive only).
+function supports_active_power(d::FACTSControlDevice)
+    mode = get_control_mode(d)
+    return !isnothing(mode) && mode == FACTSOperationModes.NML
+end
 
 supports_reactive_power(d::FACTSControlDevice) = _facts_is_active(d)
 
