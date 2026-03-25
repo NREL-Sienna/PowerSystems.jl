@@ -414,6 +414,5 @@ supports_voltage_control(d::FACTSControlDevice) = _facts_is_active(d)
 
 function supports_voltage_control(d::SynchronousCondenser)
     bustype = get_bustype(get_bus(d))
-    return !isnothing(bustype) &&
-           bustype ∈ (ACBusTypes.PV, ACBusTypes.REF, ACBusTypes.SLACK)
+    return bustype ∈ (ACBusTypes.PV, ACBusTypes.REF, ACBusTypes.SLACK)
 end

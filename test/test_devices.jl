@@ -172,7 +172,6 @@ end
     @test supports_voltage_control(facts_oos) == false
 
     # SynchronousCondenser voltage control depends on bus type
-    @test supports_voltage_control(SynchronousCondenser(nothing)) == false
     sc_pv = SynchronousCondenser(nothing)
     sc_pv.bus = ACBus(;
         number = 1, name = "pv_bus", available = true, bustype = ACBusTypes.PV,
@@ -180,6 +179,13 @@ end
         base_voltage = 230.0,
     )
     @test supports_voltage_control(sc_pv) == true
+    sc_ref = SynchronousCondenser(nothing)
+    sc_ref.bus = ACBus(;
+        number = 2, name = "ref_bus", available = true, bustype = ACBusTypes.REF,
+        angle = 0.0, magnitude = 1.0, voltage_limits = (min = 0.9, max = 1.1),
+        base_voltage = 230.0,
+    )
+    @test supports_voltage_control(sc_ref) == true
     sc_pq = SynchronousCondenser(nothing)
     sc_pq.bus = ACBus(;
         number = 2, name = "pq_bus", available = true, bustype = ACBusTypes.PQ,
