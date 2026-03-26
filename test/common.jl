@@ -38,7 +38,7 @@ function get_branch(sys::System, other::Branch)
 end
 
 function create_rts_system(time_series_resolution = Dates.Hour(1))
-    data = PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
+    data = PowerTableDataParser.PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS)
     return System(data; time_series_resolution = time_series_resolution)
 end
 

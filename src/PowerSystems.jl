@@ -501,8 +501,8 @@ export clear_ext!
 export convert_component!
 export set_area!
 export set_load_zone!
-export PowerModelsData
-export PowerSystemTableData
+# export PowerModelsData
+# export PowerSystemTableData
 export add_dyn_injectors!
 export get_machine
 export get_shaft

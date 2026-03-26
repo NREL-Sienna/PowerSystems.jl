@@ -47,11 +47,12 @@ merge!(
         "ice" => PrimeMovers.IC,
     ),
 )
-#= 
 
-this function only used in PowerSystemTableData() parser and is modified so that gen is a string
-and not the PSY generator type
-
+# get_generator_mapping is only used in two places: to create a
+# PowerSystemTableData object, where mappings is type String which has been
+# extracted to the parser repo; to create a System from a
+# PowerFlowFileParser.PowerModelsData object, where mappings is type DataType.
+# Thus get_generator_mapping still needs to stay in this repo
 """Return a dict where keys are a tuple of input parameters (fuel, unit_type) and values are
 generator types."""
 function get_generator_mapping(filename::String)
@@ -78,12 +79,14 @@ function get_generator_mapping(filename::String)
 
     return mappings
 end
-=#
 
-# mappings is now of type String because of the way PowerSystemTableData is modified
-# for parser extraction
+# mappings is now a union of type String and DataType because when
+# get_generator_type is called in power_system_table_data.jl, mappings is of
+# type String (see above function and comment), and when the function is called
+# in power_models_data.jl, mappings is of type DataType
+
 """Return the PowerSystems generator type for this fuel and unit_type."""
-function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, String})
+function get_generator_type(fuel, unit_type, mappings::Union{Dict{NamedTuple, String}, Dict{NamedTuple, DataType}})
     fuel = isnothing(fuel) ? "" : uppercase(fuel)
     unit_type = uppercase(unit_type)
     generator = nothing
@@ -92,8 +95,12 @@ function get_generator_type(fuel, unit_type, mappings::Dict{NamedTuple, String})
     for ut in (unit_type, nothing), fu in (fuel, nothing)
         key = (fuel = fu, unit_type = ut)
         if haskey(mappings, key)
-            gen_type = mappings[key]
-            generator = getfield(PowerSystems, Symbol(gen_type))
+            if typeof(mappings) == DataType
+                generator = mappings[key]
+            elseif typeof(mappings) == String
+                gen_type = mappings[key]
+                generator = getfield(PowerSystems, Symbol(gen_type))
+            end
             break
         end
     end

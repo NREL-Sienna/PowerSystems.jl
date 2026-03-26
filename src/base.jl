@@ -268,7 +268,7 @@ end
 function system_via_power_models(file_path::AbstractString; kwargs...)
     pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
     sys_kwargs = Dict(k => v for (k, v) in kwargs if in(k, SYSTEM_KWARGS))
-    return System(PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
+    return System(PowerFlowFileParser.PowerModelsData(file_path; pm_kwargs...); sys_kwargs...)
 end
 
 """Constructs a System from a file path ending with .m, .raw, or .json
@@ -380,7 +380,7 @@ function System(sys_file::AbstractString, dyr_file::AbstractString; kwargs...)
     ext = splitext(sys_file)[2]
     if lowercase(ext) in [".raw"]
         pm_kwargs = Dict(k => v for (k, v) in kwargs if !in(k, SYSTEM_KWARGS))
-        sys = System(PowerModelsData(sys_file; pm_kwargs...); kwargs...)
+        sys = System(PowerFlowFileParser.PowerModelsData(sys_file; pm_kwargs...); kwargs...)
     else
         throw(DataFormatError("$sys_file is not a .raw file type"))
     end

@@ -264,14 +264,14 @@ function PowerSystemTableData(
         timeseries_metadata_file = timeseries_metadata_file,
     )
 end
-
+=#
 """
 Return the custom name stored in the user descriptor file.
 
 Throws DataFormatError if a required value is not found in the file.
 """
 function get_user_field(
-    data::PowerSystemTableData,
+    data::PowerTableDataParser.PowerSystemTableData,
     category::InputCategory,
     field::AbstractString,
 )
@@ -297,7 +297,7 @@ function get_user_field(
 end
 
 """Return a vector of user-defined fields for the category."""
-function get_user_fields(data::PowerSystemTableData, category::InputCategory)
+function get_user_fields(data::PowerTableDataParser.PowerSystemTableData, category::InputCategory)
     if !haskey(data.user_descriptors, category)
         throw(DataFormatError("Invalid category=$category"))
     end
@@ -306,7 +306,7 @@ function get_user_fields(data::PowerSystemTableData, category::InputCategory)
 end
 
 """Return the dataframe for the category."""
-function get_dataframe(data::PowerSystemTableData, category::InputCategory)
+function get_dataframe(data::PowerTableDataParser.PowerSystemTableData, category::InputCategory)
     df = get(data.category_to_df, category, DataFrames.DataFrame())
     isempty(df) && @warn("Missing $category data.")
     return df
@@ -318,7 +318,7 @@ making type conversions as necessary.
 
 Refer to the PowerSystems descriptor file for field names that will be created.
 """
-function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true)
+function iterate_rows(data::PowerTableDataParser.PowerSystemTableData, category; na_to_nothing = true)
     df = get_dataframe(data, category)
     field_infos = _get_field_infos(data, category, names(df))
     Channel() do channel
@@ -328,8 +328,6 @@ function iterate_rows(data::PowerSystemTableData, category; na_to_nothing = true
         end
     end
 end
-=#
-
 
 """
 Construct a System from [`PowerTableDataParser.PowerSystemTableData`](@ref) data.

@@ -84,7 +84,7 @@ end
         show(
             IOBuffer(),
             "text/plain",
-            PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
+            PowerTableDataParser.PowerSystemTableData(RTS_GMLC_DIR, 100.0, DESCRIPTORS),
         ),
     )
 

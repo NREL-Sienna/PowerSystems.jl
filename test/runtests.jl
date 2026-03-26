@@ -10,7 +10,7 @@ using PowerSystemCaseBuilder
 import PowerSystemCaseBuilder as PSB
 import InfrastructureSystems as IS
 using PowerSystems
-import PowerSystems: PowerSystemTableData
+import PowerTableDataParser
 import PowerSystems as PSY
 
 import Aqua
