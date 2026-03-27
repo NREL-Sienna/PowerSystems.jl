@@ -35,13 +35,14 @@ Private = false
 Modules = [PowerSystems]
 Pages   = ["outages.jl",
            "impedance_correction.jl",
+           "plant_attribute.jl"
            ]
 Public = true
 Private = false
 ```
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["geographic_supplemental_attribute.jl"
         ]
 Order = [:type, :function]
@@ -51,7 +52,7 @@ Filter = t -> nameof(t) in names(PowerSystems)
 ## Operating Costs
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["production_variable_cost_curve.jl",
             "cost_aliases.jl",
             "value_curve.jl",
@@ -63,7 +64,7 @@ Filter = t -> nameof(t) in names(PowerSystems)
 ## Time Series
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["abstract_time_series.jl",
            "deterministic.jl",
            "deterministic_single_time_series.jl",
@@ -78,7 +79,7 @@ Filter = t -> nameof(t) in names(PowerSystems)
 ```
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["time_series_cache.jl",
             "time_series_interface.jl",
             "time_series_structs.jl",
@@ -121,7 +122,7 @@ Filter = t -> t ∉ [System]
 The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://nrel-sienna.github.io/PowerAnalytics.jl/stable/).
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["component_selector.jl"]
 Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && !(nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
 ```
@@ -134,7 +135,7 @@ Private = false
 ```
 
 ```@autodocs
-Modules = [InfrastructureSystems]
+Modules = [IS]
 Pages   = ["component_selector.jl"]
 Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && getproperty(PowerSystems, nameof(t)) === t && (nameof(t) in [:SingularComponentSelector, :PluralComponentSelector, :DynamicallyGroupedComponentSelector, :subtype_to_string, :component_to_qualified_string])
 ```

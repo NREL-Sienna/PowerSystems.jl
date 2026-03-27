@@ -56,7 +56,7 @@ end
 function critical_components_check(sys::System)
     critical_component_types = [ACBus, Generator, ElectricLoad]
     for component_type in critical_component_types
-        components = get_components(component_type, sys)
+        components = get_available_components(component_type, sys)
         if length(components) == 0
             @warn "There are no $(component_type) Components in the System"
         end
@@ -81,35 +81,25 @@ end
 """
     total_load_rating(sys::System)
 
-Checks the system for sum(generator ratings) >= sum(load ratings).
+Sum of load ratings.
 
 # Arguments
 - `sys::System`: system
 """
 function total_load_rating(sys::System)
+    # Assumes system is in system base
     base_power = get_base_power(sys)
-    controllable_loads = get_components(ControllableLoad, sys)
-    cl =
-        if isempty(controllable_loads)
-            0.0
-        else
-            sum(get_max_active_power.(controllable_loads)) * base_power
-        end
-    @debug "System has $cl MW of ControllableLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
-    static_loads = get_components(StaticLoad, sys)
+    static_loads = get_available_components(StaticLoad, sys)
     sl = isempty(static_loads) ? 0.0 : sum(get_max_active_power.(static_loads)) * base_power
     @debug "System has $sl MW of StaticLoad" _group = IS.LOG_GROUP_SYSTEM_CHECKS
-    # Total load calculation assumes  P = Real(V^2/Y) assuming V=1.0
-    fa_loads = get_components(FixedAdmittance, sys)
-    fa =
-        if isempty(fa_loads)
-            0.0
-        else
-            sum(real.(get_base_voltage.(get_bus.(fa_loads)) .^ 2 ./ get_Y.(fa_loads)))
-        end
-    @debug "System has $fa MW of FixedAdmittance assuming admittance values are in P.U." _group =
-        IS.LOG_GROUP_SYSTEM_CHECKS
-    total_load = cl + sl + fa
+    # Total load calculation for admittances assumes P = Real(V^2*Y) with V=1.0
+    fa_loads = get_available_components(FixedAdmittance, sys)
+    fa = isempty(fa_loads) ? 0.0 : sum(real.(1.0 .* get_Y.(fa_loads))) * base_power
+    @debug "System has $fa MW of FixedAdmittance" _group = IS.LOG_GROUP_SYSTEM_CHECKS
+    sa_loads = get_available_components(SwitchedAdmittance, sys)
+    sa = isempty(sa_loads) ? 0.0 : sum(real.(1.0 .* get_Y.(sa_loads))) * base_power
+    @debug "System has $fa MW of SwitchedAdmittance" _group = IS.LOG_GROUP_SYSTEM_CHECKS
+    total_load = sl + fa + sa
     @debug "Total System Load: $total_load" _group = IS.LOG_GROUP_SYSTEM_CHECKS
     return total_load
 end
@@ -125,7 +115,7 @@ Sum of system generator and storage ratings.
 function total_capacity_rating(sys::System)
     total = 0
     for component_type in (Generator, Storage)
-        components = get_components(component_type, sys)
+        components = get_available_components(component_type, sys)
         if !isempty(components)
             component_total = sum(get_rating.(components)) * get_base_power(sys)
             @debug "total rating for $component_type = $component_total" _group =

@@ -731,7 +731,8 @@ function make_hydro_dispatch(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -770,7 +771,8 @@ function make_hydro_reservoir(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -809,7 +811,8 @@ function make_renewable_dispatch(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -817,7 +820,8 @@ function make_renewable_dispatch(
 
     rating = calculate_gen_rating(d["pmax"], d["qmax"], base_conversion)
     if rating > mbase
-        @warn "rating is larger than base power for $gen_name, setting to $mbase"
+        @warn "rating is larger than base power for $gen_name, setting to $mbase" _group =
+            IS.LOG_GROUP_PARSING
         rating = mbase
     end
 
@@ -850,7 +854,8 @@ function make_renewable_fix(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -1000,7 +1005,8 @@ function make_thermal_gen(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -1054,7 +1060,8 @@ function make_synchronous_condenser(
     if d["mbase"] != 0.0
         mbase = d["mbase"]
     else
-        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase"
+        @warn "Generator $gen_name has base power equal to zero: $(d["mbase"]). Changing it to system base: $sys_mbase" _group =
+            IS.LOG_GROUP_PARSING
         mbase = sys_mbase
     end
 
@@ -1389,19 +1396,14 @@ function make_transformer_2w(
         available_value = false
     end
 
-    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
-    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
-    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
-    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
-
     return Transformer2W(;
         name = name,
         available = available_value,
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = r,
-        x = x,
+        r = d["br_r"],
+        x = d["br_x"],
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         rating = _get_rating("Transformer2W", name, d, "rate_a"),
@@ -1580,27 +1582,6 @@ function make_tap_transformer(
     else
         get(d, "COD1", -99)
     end
-    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
-    r = if resistance_formatter !== nothing
-        result = resistance_formatter(name)
-        result !== nothing ? result : d["br_r"]
-    else
-        d["br_r"]
-    end
-    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
-    x = if reactance_formatter !== nothing
-        result = reactance_formatter(name)
-        result !== nothing ? result : d["br_x"]
-    else
-        d["br_x"]
-    end
-    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
-    tap = if tap_formatter !== nothing
-        result = tap_formatter(name)
-        result !== nothing ? result : d["tap"]
-    else
-        d["tap"]
-    end
 
     return TapTransformer(;
         name = name,
@@ -1608,9 +1589,9 @@ function make_tap_transformer(
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = r,
-        x = x,
-        tap = tap,
+        r = d["br_r"],
+        x = d["br_x"],
+        tap = d["tap"],
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         winding_group_number = d["group_number"],
         base_power = d["base_power"],
@@ -1649,12 +1630,6 @@ function make_phase_shifting_transformer(
     else
         get(d, "COD1", -99)
     end
-    resistance_formatter = get(kwargs, :transformer_resistance_formatter, nothing)
-    r = resistance_formatter !== nothing ? resistance_formatter(name) : d["br_r"]
-    reactance_formatter = get(kwargs, :transformer_reactance_formatter, nothing)
-    x = reactance_formatter !== nothing ? reactance_formatter(name) : d["br_x"]
-    tap_formatter = get(kwargs, :transformer_tap_formatter, nothing)
-    tap = tap_formatter !== nothing ? tap_formatter(name) : d["tap"]
 
     return PhaseShiftingTransformer(;
         name = name,
@@ -1662,9 +1637,9 @@ function make_phase_shifting_transformer(
         active_power_flow = pf,
         reactive_power_flow = qf,
         arc = Arc(bus_f, bus_t),
-        r = r,
-        x = x,
-        tap = tap,
+        r = d["br_r"],
+        x = d["br_x"],
+        tap = d["tap"],
         primary_shunt = d["g_fr"] + im * d["b_fr"],
         α = d["shift"],
         base_power = d["base_power"],
