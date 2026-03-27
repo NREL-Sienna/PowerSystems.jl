@@ -1,5 +1,8 @@
-function get_system_base_power(c::Component)
-    return get_internal(c).units_info.base_value
+@inline function get_system_base_power(c::Component)
+    units_info = get_internal(c).units_info
+    isnothing(units_info) && error("Component $(get_name(c)) is not attached to a system.")
+    # Assert concrete type; UnitsData is abstract. Remove once IS narrows the field type.
+    return (units_info::IS.SystemUnitsSettings).base_value
 end
 
 """
@@ -7,7 +10,7 @@ Default behavior of a component. If there is no base_power field, assume is in t
 """
 get_base_power(c::Component) = get_system_base_power(c)
 
-_get_multiplier(c::T, conversion_unit) where {T <: Component} =
+@inline _get_multiplier(c::T, conversion_unit) where {T <: Component} =
     _get_multiplier(c, get_internal(c).units_info, conversion_unit)
 
 _get_multiplier(::T, ::Nothing, conversion_unit) where {T <: Component} =
