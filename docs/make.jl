@@ -42,8 +42,13 @@ pages = OrderedDict(
                 "Save and read data with a JSON" => "how_to/serialize_data.md",
             ],
             "...add a component using natural units (MW)" => "how_to/add_component_natural_units.md",
+            "...use subsystems" => "how_to/use_subsystems.md",
             "...use context managers for bulk operations" => "how_to/use_context_managers.md",
-            "...add additional data to a component" => "how_to/adding_additional_fields.md",
+            "...add additional data to a component" => Any[
+                "Add Supplemental Attributes to a System" => "how_to/add_supplemental_attributes.md",
+                "Use Supplemental Attributes" => "how_to/use_supplemental_attributes.md",
+                "Add additional fields to a component" => "how_to/adding_additional_fields.md",
+            ],
             "...add time-series data" => Any[
                 "Parse time series data from .csv files" => "how_to/parse_ts_from_csvs.md",
                 "Improve performance with time series data" => "how_to/improve_ts_performance.md",
@@ -75,7 +80,7 @@ pages = OrderedDict(
             "explanation/transformer_per_unit_models.md",
             "explanation/time_series.md",
             "explanation/dynamic_data.md",
-            "explanation/supplemental_attributes.md",
+            "explanation/supplemental_attributes_2.md",
             "explanation/plant_attributes.md",
             ],
         "Model Library" => Any[],

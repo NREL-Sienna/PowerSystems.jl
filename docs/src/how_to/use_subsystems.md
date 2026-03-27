@@ -1,0 +1,67 @@
+# [Use Subsystems](@id use_subsystems)
+
+For certain applications, such as those that employ dispatch coordination methods or
+decomposition approaches, it is useful to split components into subsystems based on
+user-defined criteria. The [`System`](@ref) provides `subsystem` containers for this
+purpose. Each subsystem is defined by a name and can hold references to any number of
+components. For background on the `System` container, see [System](@ref system_doc).
+
+## Create subsystems and add components
+
+Load a `System`, then call [`add_subsystem!`](@ref) to register named subsystems:
+
+```@repl subsystem
+using PowerSystems;
+using PowerSystemCaseBuilder;
+sys = build_system(PSISystems, "c_sys5_pjm")
+add_subsystem!(sys, "1")
+add_subsystem!(sys, "2")
+```
+
+Assign devices to subsystems using [`add_component_to_subsystem!`](@ref):
+
+```@repl subsystem
+g = get_component(ThermalStandard, sys, "Alta")
+add_component_to_subsystem!(sys, "1", g)
+
+g = get_component(ThermalStandard, sys, "Sundance")
+add_component_to_subsystem!(sys, "2", g)
+```
+
+## Retrieve components from a subsystem
+
+Pass the `subsystem_name` keyword argument to [`get_components`](@ref) to filter by
+subsystem:
+
+```@repl subsystem
+gens_1 = get_components(ThermalStandard, sys; subsystem_name = "1")
+get_name.(gens_1)
+
+gens_2 = get_components(ThermalStandard, sys; subsystem_name = "2")
+get_name.(gens_2)
+```
+
+## Export a subsystem as a new `System`
+
+[`from_subsystem`](@ref) produces a new, standalone [`System`](@ref) from the components
+assigned to a subsystem. This requires careful assignment of all dependencies — not just
+the devices themselves, but also any topology elements (buses, arcs) they reference.
+
+```@repl subsystem
+from_subsystem(sys, "1")
+```
+
+!!! warning
+
+    The system above is invalid because the bus connected to the Alta generator is not
+    part of subsystem "1". Add the bus first, then re-run [`from_subsystem`](@ref):
+
+```@repl subsystem
+g = get_component(ThermalStandard, sys, "Alta")
+b = get_bus(g)
+add_component_to_subsystem!(sys, "1", b)
+from_subsystem(sys, "1")
+```
+
+Advanced users can pass `runchecks=false` to skip topological validation. Only do this
+if you are confident you can validate the resulting system before using it for modeling.
