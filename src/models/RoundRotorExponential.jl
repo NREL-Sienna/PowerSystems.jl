@@ -98,7 +98,9 @@ function RoundRotorExponential(::Nothing)
     )
 end
 
+"""Get the [`RoundRotorMachine`](@ref) of a [`RoundRotorExponential`](@ref)."""
 get_base_machine(value::RoundRotorExponential) = value.base_machine
+"""Get the exponential saturation coefficients of a [`RoundRotorExponential`](@ref)."""
 get_saturation_coeffs(value::RoundRotorExponential) = value.saturation_coeffs
 set_base_machine!(value::RoundRotorExponential, val::RoundRotorMachine) =
     value.base_machine = val

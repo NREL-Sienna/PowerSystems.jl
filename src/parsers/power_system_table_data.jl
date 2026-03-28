@@ -11,6 +11,11 @@ const INPUT_CATEGORY_NAMES = [
     ("storage", InputCategory.STORAGE),
 ]
 
+"""
+Container for tabular power system data parsed from CSV files.
+
+See the constructor `PowerSystemTableData(data, directory, ...)` for details on usage.
+"""
 struct PowerSystemTableData
     base_power::Float64
     category_to_df::Dict{InputCategory, DataFrames.DataFrame}

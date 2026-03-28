@@ -453,6 +453,13 @@ Notes
 - Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
 " PumpHydroStatus
 
+"""
+Denotes the type of dynamic equation governing a state variable in dynamic simulations.
+
+Used by [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/)
+to classify states as `Differential` (governed by ``\\dot{x} = f(x)``), `Algebraic`
+(governed by ``0 = g(x)``), or `Hybrid` (either, depending on parameters).
+"""
 IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 
 IS.@scoped_enum(
