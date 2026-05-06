@@ -74,7 +74,7 @@ end
 
     @test isnothing(get_component(Transformer3W, sys3, "1"))
     @test haskey(
-        get_ext(get_component(Transformer2W, sys3, "DALLAS 1 3-DALLAS 1 0-i_1")),
+        get_ext(get_component(TapTransformer, sys3, "DALLAS 1 3-DALLAS 1 0-i_1")),
         "psse_name",
     )
     @test get_available(
@@ -313,7 +313,7 @@ end
     file_dir = joinpath(base_dir, "test_data", "modified_14bus_system.raw")
     sys = System(file_dir)
 
-    tr2w_1 = get_component(Transformer2W, sys, "BUS 110-BUS 109-i_1")
+    tr2w_1 = get_component(TapTransformer, sys, "BUS 110-BUS 109-i_1")
     suppl_attr_tr2w_1 = only(get_supplemental_attributes(tr2w_1))
     @test get_table_number(suppl_attr_tr2w_1) == 3
     @test get_points(get_impedance_correction_curve(suppl_attr_tr2w_1))[1] ==
@@ -324,7 +324,7 @@ end
     @test get_transformer_control_mode(suppl_attr_tr2w_1) ==
           ImpedanceCorrectionTransformerControlMode.PHASE_SHIFT_ANGLE
 
-    tr2w_2 = get_component(Transformer2W, sys, "BUS 109-BUS 104-i_1")
+    tr2w_2 = get_component(TapTransformer, sys, "BUS 109-BUS 104-i_1")
     suppl_attr_tr2w_2 = only(get_supplemental_attributes(tr2w_2))
     @test get_table_number(suppl_attr_tr2w_2) == 4
     @test get_points(get_impedance_correction_curve(suppl_attr_tr2w_2))[1] ==
@@ -335,7 +335,7 @@ end
     @test get_transformer_control_mode(suppl_attr_tr2w_2) ==
           ImpedanceCorrectionTransformerControlMode.TAP_RATIO
 
-    tr2w_3 = get_component(Transformer2W, sys, "BUS 106-BUS 105-i_1")
+    tr2w_3 = get_component(TapTransformer, sys, "BUS 106-BUS 105-i_1")
     suppl_attr_tr2w_3 = only(get_supplemental_attributes(tr2w_3))
     @test get_table_number(suppl_attr_tr2w_3) == 7
     @test get_points(get_impedance_correction_curve(suppl_attr_tr2w_3))[1] ==
