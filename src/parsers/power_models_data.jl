@@ -1238,11 +1238,9 @@ function get_branch_type_psse(
     is_tap_controllable, is_alpha_controllable = _determine_control_modes(d, "COD1", "tap")
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         return PhaseShiftingTransformer
-    # parse TapTransformer from PSSE regardless of is_tap_controllable to avoid parsing mixed transformer types in parallel
-    elseif d["group_number"] != WindingGroupNumber.UNDEFINED
+        # parse TapTransformer from PSSE regardless of is_tap_controllable to avoid parsing mixed transformer types in parallel
+    else 
         return TapTransformer
-    else
-        error("Couldn't infer the branch type for branch $d")
     end
 end
 
@@ -1812,13 +1810,13 @@ function _determine_control_modes(d::Dict, control_flag::String, tap_key::String
         is_tap_controllable = true
         is_alpha_controllable = true
     elseif control_code == -99
-        @warn "Can't determine control objective for the transformer from the $(control_flag) field for $d"
+        @warn "Can't determine control objective for the transformer from the $(control_flag) field for $d \
+              Will attempt to infer control objective from shift and tap fields."
         if d["shift"] != 0.0
             is_alpha_controllable = true
-        elseif (tap != 0.0) || (tap != 1.0)
+        end 
+        if (tap != 0.0) && (tap != 1.0)
             is_tap_controllable = true
-        else
-            @warn "Can't determine control objective for the other fields. Will return a TapTransformer"
         end
     else
         error(d)
