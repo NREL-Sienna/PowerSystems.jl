@@ -1235,10 +1235,9 @@ function get_branch_type_psse(
     end
 
     _add_vector_control_group(d, "shift", "group_number")
-    is_tap_controllable, is_alpha_controllable = _determine_control_modes(d, "COD1", "tap")
+    is_alpha_controllable = _determine_control_mode(d, "COD1", "tap")
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
         return PhaseShiftingTransformer
-        # parse TapTransformer from PSSE regardless of is_tap_controllable to avoid parsing mixed transformer types in parallel
     else 
         return TapTransformer
     end
@@ -1778,50 +1777,38 @@ function read_3w_transformer!(
     end
 end
 
-function _determine_control_modes(d::Dict, control_flag::String, tap_key::String)
+function _determine_control_mode(d::Dict, control_flag::String, tap_key::String)
     control_code = get(d, control_flag, -99)
-    tap = d[tap_key]
 
-    is_tap_controllable = false
     is_alpha_controllable = false
 
     # There is no control
     if control_code == 0
-        is_tap_controllable = false
         is_alpha_controllable = false
         # Reactive Power Control
     elseif control_code ∈ [1, -1]
-        is_tap_controllable = true
         is_alpha_controllable = false
         # Voltage Control
     elseif control_code ∈ [2, -2]
-        is_tap_controllable = true
         is_alpha_controllable = false
         # Active Power Control
     elseif control_code ∈ [3, -3]
-        is_tap_controllable = true
         is_alpha_controllable = true
         # DC Line Control
     elseif control_code ∈ [4, -4]
-        is_tap_controllable = true
         is_alpha_controllable = true
         # Asymmetric Active Power Control
     elseif control_code ∈ [5, -5]
-        is_tap_controllable = true
         is_alpha_controllable = true
     elseif control_code == -99
-        @warn "Can't determine control objective for the transformer from the $(control_flag) field for $d \
-              Will attempt to infer control objective from shift and tap fields."
+        @warn "Can't determine control objective for the transformer from the $(control_flag) field for $d. Will attempt to infer control objective from non-zero shift field."
         if d["shift"] != 0.0
             is_alpha_controllable = true
         end 
-        if (tap != 0.0) && (tap != 1.0)
-            is_tap_controllable = true
-        end
     else
         error(d)
     end
-    return is_tap_controllable, is_alpha_controllable
+    return is_alpha_controllable
 end
 
 function get_three_winding_transformer_type(d::Dict)
@@ -1829,12 +1816,12 @@ function get_three_winding_transformer_type(d::Dict)
     _add_vector_control_group(d, "secondary_phase_shift_angle", "secondary_group_number")
     _add_vector_control_group(d, "tertiary_phase_shift_angle", "tertiary_group_number")
     # NOTE: with current three winding transformer type hierarchy, tap controllable and not controllable three winding transformers are Transformer3W
-    _, primary_is_alpha_controllable =
-        _determine_control_modes(d, "COD1", "primary_turns_ratio")
-    _, secondary_is_alpha_controllable =
-        _determine_control_modes(d, "COD2", "secondary_turns_ratio")
-    _, tertiary_is_alpha_controllable =
-        _determine_control_modes(d, "COD3", "tertiary_turns_ratio")
+    primary_is_alpha_controllable =
+        _determine_control_mode(d, "COD1", "primary_turns_ratio")
+    secondary_is_alpha_controllable =
+        _determine_control_mode(d, "COD2", "secondary_turns_ratio")
+    tertiary_is_alpha_controllable =
+        _determine_control_mode(d, "COD3", "tertiary_turns_ratio")
     if d["primary_group_number"] == WindingGroupNumber.UNDEFINED ||
        d["secondary_group_number"] == WindingGroupNumber.UNDEFINED ||
        d["tertiary_group_number"] == WindingGroupNumber.UNDEFINED ||

@@ -314,7 +314,7 @@ end
     file_dir = joinpath(base_dir, "test_data", "modified_14bus_system.raw")
     sys = System(file_dir)
 
-    @test isempty(get_components(Transformer2W, sys)) 
+    @test isempty(get_components(Transformer2W, sys))
     tr2w_1 = get_component(TapTransformer, sys, "BUS 110-BUS 109-i_1")
     suppl_attr_tr2w_1 = only(get_supplemental_attributes(tr2w_1))
     @test get_table_number(suppl_attr_tr2w_1) == 3
