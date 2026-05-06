@@ -19,7 +19,6 @@ const SIEMENS = u"S"
 
 """
 Accepted target-unit argument for unit-aware getters/setters: a Unitful unit
-(e.g. `MW`, `kV`), a relative per-unit marker (`DU`, `SU`, `NU`), or `Float64`
-(fast path returning a bare `Float64` in system base).
+(e.g. `MW`, `kV`) or a relative per-unit marker (`DU`, `SU`, `NU`).
 """
-const UnitArg = Union{Unitful.Units, IS.AbstractRelativeUnit, Type{Float64}}
+const UnitArg = Union{Unitful.Units, IS.AbstractRelativeUnit}

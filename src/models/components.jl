@@ -12,26 +12,35 @@ field: the device base equals the system base.
 _get_base_power(c::Component) = _get_system_base_power(c)
 
 """
-Unit-aware `base_power` accessor. Unlike most field accessors, storage is in
-MVA (natural units), not device-base per-unit — so conversion is bespoke.
+Unit-aware `base_power` accessor returning a bare number. Unlike most field
+accessors, storage is in MVA (natural units), not device-base per-unit — so
+conversion is bespoke. For the unit-bearing value see [`get_base_power_unitful`](@ref).
 """
-get_base_power(c::Component, ::NaturalUnit) = _get_base_power(c) * MVA
-get_base_power(c::Component, u::Unitful.Units) =
+get_base_power(c::Component, u) = IS._strip_units(get_base_power_unitful(c, u))
+
+"""
+Unit-aware `base_power` accessor returning a unit-bearing quantity. See
+[`get_base_power`](@ref) for a bare number.
+"""
+get_base_power_unitful(c::Component, ::NaturalUnit) = _get_base_power(c) * MVA
+get_base_power_unitful(c::Component, u::Unitful.Units) =
     Unitful.uconvert(u, _get_base_power(c) * MVA)
-get_base_power(c::Component, ::SystemBaseUnit) =
+get_base_power_unitful(c::Component, ::SystemBaseUnit) =
     (_get_base_power(c) / _get_system_base_power(c)) * SU
-get_base_power(c::Component, ::DeviceBaseUnit) = 1.0 * DU
-get_base_power(c::Component, ::Type{Float64})::Float64 =
-    _get_base_power(c) / _get_system_base_power(c)
+get_base_power_unitful(c::Component, ::DeviceBaseUnit) = 1.0 * DU
 
 IS.display_units_arg(::typeof(get_base_power), ::Type{<:Component}) = NU
+IS.display_units_arg(::typeof(get_base_power_unitful), ::Type{<:Component}) = NU
+
+# Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
+IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
 
 #######################################################
 # Units-aware get_value / set_value
 #
 # Fields are stored internally in device base (DU). The 4-arg `get_value`
-# converts from DU to a requested target (e.g., MW, SU, Float64). The 3-arg
-# form delegates to the 4-arg with DEFAULT_UNITS (= SU, a RelativeQuantity
+# converts from DU to a requested target (e.g., MW, SU). The 3-arg form
+# delegates to the 4-arg with DEFAULT_UNITS (= SU, a RelativeQuantity
 # carrying its unit in its type).
 #######################################################
 
@@ -39,8 +48,9 @@ IS.display_units_arg(::typeof(get_base_power), ::Type{<:Component}) = NU
     get_value(c::Component, field::Val, conversion_unit::Val, units) -> value
 
 Get `c`'s field value, converting from device-base storage to `units`.
-Returns a `RelativeQuantity` (for DU/SU targets), a `Unitful.Quantity` (for
-natural units like MW), or a bare `Float64` (when `units === Float64`).
+Returns a `RelativeQuantity` (for DU/SU targets) or a `Unitful.Quantity` (for
+natural units like MW). Public getters wrap this in `_strip_units` for the
+bare-number form, with `_unitful` companions returning the wrapped value.
 """
 function get_value(c::Component, ::Val{T}, conversion_unit, units) where {T}
     value = Base.getproperty(c, T)
@@ -92,6 +102,14 @@ function _convert_from_device_base(
     return value * (_get_base_power(c) / base_voltage^2) * u"S"
 end
 
+# ---- DU → NU (route to the conversion_unit's natural Unitful unit) ----
+_convert_from_device_base(c::Component, v::Float64, cu::Val{:mva}, ::NaturalUnit) =
+    _convert_from_device_base(c, v, cu, MW)
+_convert_from_device_base(c::Component, v::Number, cu::Val{:ohm}, ::NaturalUnit) =
+    _convert_from_device_base(c, v, cu, OHMS)
+_convert_from_device_base(c::Component, v::Number, cu::Val{:siemens}, ::NaturalUnit) =
+    _convert_from_device_base(c, v, cu, SIEMENS)
+
 # ---- DU → DU (identity; no system info needed) ----
 _convert_from_device_base(::Component, value::Number, ::Val, ::DeviceBaseUnit) =
     value * DU
@@ -113,26 +131,6 @@ function _convert_from_device_base(
     c::T, value::Number, ::Val{:siemens}, ::SystemBaseUnit,
 ) where {T <: Branch}
     return (value * (_get_base_power(c) / _get_system_base_power(c))) * SU
-end
-
-# ---- DU → Float64 (fast path: raw SU-scaled number, no unit wrapper) ----
-# Use when callers know they want system-base and will form Vector{Float64}.
-function _convert_from_device_base(
-    c::Component, value::Float64, ::Val{:mva}, ::Type{Float64},
-)::Float64
-    return value * (_get_base_power(c) / _get_system_base_power(c))
-end
-
-function _convert_from_device_base(
-    c::T, value::Float64, ::Val{:ohm}, ::Type{Float64},
-)::Float64 where {T <: Branch}
-    return value * (_get_system_base_power(c) / _get_base_power(c))
-end
-
-function _convert_from_device_base(
-    c::T, value::Float64, ::Val{:siemens}, ::Type{Float64},
-)::Float64 where {T <: Branch}
-    return value * (_get_base_power(c) / _get_system_base_power(c))
 end
 
 # ---- Generic fallback: any Unitful target for :mva ----
@@ -324,21 +322,25 @@ _get_winding_base_power(
     _get_base_power_13(c)
 
 # Public unit-aware winding base_power accessors for ThreeWindingTransformer.
+# Bare-number `$pub` plus unit-bearing `$pub_unitful` companion.
 for (pub, priv) in (
     (:get_base_power_12, :_get_base_power_12),
     (:get_base_power_23, :_get_base_power_23),
     (:get_base_power_13, :_get_base_power_13),
 )
+    pub_unitful = Symbol(pub, :_unitful)
     @eval begin
-        $pub(c::ThreeWindingTransformer, ::NaturalUnit) = $priv(c) * MVA
-        $pub(c::ThreeWindingTransformer, u::Unitful.Units) =
+        $pub(c::ThreeWindingTransformer, u) = IS._strip_units($pub_unitful(c, u))
+
+        $pub_unitful(c::ThreeWindingTransformer, ::NaturalUnit) = $priv(c) * MVA
+        $pub_unitful(c::ThreeWindingTransformer, u::Unitful.Units) =
             Unitful.uconvert(u, $priv(c) * MVA)
-        $pub(c::ThreeWindingTransformer, ::SystemBaseUnit) =
+        $pub_unitful(c::ThreeWindingTransformer, ::SystemBaseUnit) =
             ($priv(c) / _get_system_base_power(c)) * SU
-        $pub(c::ThreeWindingTransformer, ::DeviceBaseUnit) = 1.0 * DU
-        $pub(c::ThreeWindingTransformer, ::Type{Float64})::Float64 =
-            $priv(c) / _get_system_base_power(c)
+        $pub_unitful(c::ThreeWindingTransformer, ::DeviceBaseUnit) = 1.0 * DU
+
         IS.display_units_arg(::typeof($pub), ::Type{<:ThreeWindingTransformer}) = NU
+        IS.display_units_arg(::typeof($pub_unitful), ::Type{<:ThreeWindingTransformer}) = NU
     end
 end
 

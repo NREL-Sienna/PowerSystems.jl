@@ -454,13 +454,19 @@ Unitless system base power (MVA) — internal anchor for unit conversion.
 _get_base_power(sys::System) = sys.units_settings.base_value
 
 """
-Return the system's base power in the requested units (e.g. `NU`, `MW`, `SU`).
+Return the system's base power as a bare number in the requested units (e.g.
+`NU`, `MW`, `SU`). For the unit-bearing value see [`get_base_power_unitful`](@ref).
 """
-get_base_power(sys::System, ::NaturalUnit) = _get_base_power(sys) * MVA
-get_base_power(sys::System, u::Unitful.Units) =
+get_base_power(sys::System, u) = IS._strip_units(get_base_power_unitful(sys, u))
+
+"""
+Return the system's base power as a unit-bearing quantity. See
+[`get_base_power`](@ref) for a bare number.
+"""
+get_base_power_unitful(sys::System, ::NaturalUnit) = _get_base_power(sys) * MVA
+get_base_power_unitful(sys::System, u::Unitful.Units) =
     Unitful.uconvert(u, _get_base_power(sys) * MVA)
-get_base_power(sys::System, ::SystemBaseUnit) = 1.0 * SU
-get_base_power(sys::System, ::Type{Float64})::Float64 = _get_base_power(sys)
+get_base_power_unitful(sys::System, ::SystemBaseUnit) = 1.0 * SU
 
 """
 Return the system's frequency.

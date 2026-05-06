@@ -121,7 +121,7 @@ function SimplifiedSingleCageInductionMachine(::Nothing)
         H=0,
         A=0.0,
         B=0.0,
-        base_power=100,
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end

@@ -206,25 +206,40 @@ get_name(value::TwoTerminalVSCLine) = value.name
 get_available(value::TwoTerminalVSCLine) = value.available
 """Get [`TwoTerminalVSCLine`](@ref) `arc`."""
 get_arc(value::TwoTerminalVSCLine) = value.arc
-"""Get [`TwoTerminalVSCLine`](@ref) `active_power_flow`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_flow(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
+get_active_power_flow(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
+get_active_power_flow_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
-"""Get [`TwoTerminalVSCLine`](@ref) `rating`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+"""Get [`TwoTerminalVSCLine`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
-"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_from`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_limits_from(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_limits_from), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_from` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_from_unitful`](@ref)."""
+get_active_power_limits_from(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits_from), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_from` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits_from`](@ref)."""
+get_active_power_limits_from_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_limits_from), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_from), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
-"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_to`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_limits_to(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_limits_to), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_from_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_to` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_to_unitful`](@ref)."""
+get_active_power_limits_to(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits_to), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `active_power_limits_to` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits_to`](@ref)."""
+get_active_power_limits_to_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:active_power_limits_to), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_to), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_to_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
 """Get [`TwoTerminalVSCLine`](@ref) `g`."""
 get_g(value::TwoTerminalVSCLine) = value.g
 """Get [`TwoTerminalVSCLine`](@ref) `dc_current`."""
 get_dc_current(value::TwoTerminalVSCLine) = value.dc_current
-"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_from`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_from(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_from), Val(:mva), units)
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_from` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_from_unitful`](@ref)."""
+get_reactive_power_from(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_from), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_from` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_from`](@ref)."""
+get_reactive_power_from_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_from), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_from), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_from_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
 """Get [`TwoTerminalVSCLine`](@ref) `dc_voltage_control_from`."""
 get_dc_voltage_control_from(value::TwoTerminalVSCLine) = value.dc_voltage_control_from
 """Get [`TwoTerminalVSCLine`](@ref) `ac_voltage_control_from`."""
@@ -237,19 +252,28 @@ get_ac_setpoint_from(value::TwoTerminalVSCLine) = value.ac_setpoint_from
 get_converter_loss_from(value::TwoTerminalVSCLine) = value.converter_loss_from
 """Get [`TwoTerminalVSCLine`](@ref) `max_dc_current_from`."""
 get_max_dc_current_from(value::TwoTerminalVSCLine) = value.max_dc_current_from
-"""Get [`TwoTerminalVSCLine`](@ref) `rating_from`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating_from(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating_from), Val(:mva), units)
+"""Get [`TwoTerminalVSCLine`](@ref) `rating_from` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_from_unitful`](@ref)."""
+get_rating_from(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_from), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `rating_from` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_from`](@ref)."""
+get_rating_from_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating_from), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating_from), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
-"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_limits_from(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating_from_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_from_unitful`](@ref)."""
+get_reactive_power_limits_from(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits_from), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_from` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits_from`](@ref)."""
+get_reactive_power_limits_from_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_limits_from), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_from), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_from_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
 """Get [`TwoTerminalVSCLine`](@ref) `power_factor_weighting_fraction_from`."""
 get_power_factor_weighting_fraction_from(value::TwoTerminalVSCLine) = value.power_factor_weighting_fraction_from
 """Get [`TwoTerminalVSCLine`](@ref) `voltage_limits_from`."""
 get_voltage_limits_from(value::TwoTerminalVSCLine) = value.voltage_limits_from
-"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_to`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_to(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_to), Val(:mva), units)
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_to` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_to_unitful`](@ref)."""
+get_reactive_power_to(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_to), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_to` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_to`](@ref)."""
+get_reactive_power_to_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_to), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_to), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_to_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
 """Get [`TwoTerminalVSCLine`](@ref) `dc_voltage_control_to`."""
 get_dc_voltage_control_to(value::TwoTerminalVSCLine) = value.dc_voltage_control_to
 """Get [`TwoTerminalVSCLine`](@ref) `ac_voltage_control_to`."""
@@ -262,12 +286,18 @@ get_ac_setpoint_to(value::TwoTerminalVSCLine) = value.ac_setpoint_to
 get_converter_loss_to(value::TwoTerminalVSCLine) = value.converter_loss_to
 """Get [`TwoTerminalVSCLine`](@ref) `max_dc_current_to`."""
 get_max_dc_current_to(value::TwoTerminalVSCLine) = value.max_dc_current_to
-"""Get [`TwoTerminalVSCLine`](@ref) `rating_to`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating_to(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating_to), Val(:mva), units)
+"""Get [`TwoTerminalVSCLine`](@ref) `rating_to` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_to_unitful`](@ref)."""
+get_rating_to(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_to), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `rating_to` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_to`](@ref)."""
+get_rating_to_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:rating_to), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating_to), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
-"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_limits_to(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating_to_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_to_unitful`](@ref)."""
+get_reactive_power_limits_to(value::TwoTerminalVSCLine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits_to), Val(:mva), units))
+"""Get [`TwoTerminalVSCLine`](@ref) `reactive_power_limits_to` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits_to`](@ref)."""
+get_reactive_power_limits_to_unitful(value::TwoTerminalVSCLine, units) = get_value(value, Val(:reactive_power_limits_to), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_to), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_to_unitful), ::Type{ TwoTerminalVSCLine }) = InfrastructureSystems.SU
 """Get [`TwoTerminalVSCLine`](@ref) `power_factor_weighting_fraction_to`."""
 get_power_factor_weighting_fraction_to(value::TwoTerminalVSCLine) = value.power_factor_weighting_fraction_to
 """Get [`TwoTerminalVSCLine`](@ref) `voltage_limits_to`."""

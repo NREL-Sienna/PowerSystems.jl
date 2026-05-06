@@ -227,21 +227,20 @@ end
     raw_active = gen.active_power
 
     P_mw = get_active_power(gen, MW)
-    @test P_mw isa Unitful.Quantity
-    @test Unitful.ustrip(P_mw) ≈ raw_active * device_base
+    @test P_mw isa Float64
+    @test P_mw ≈ raw_active * device_base
+    @test get_active_power_unitful(gen, MW) isa Unitful.Quantity
+    @test Unitful.ustrip(get_active_power_unitful(gen, MW)) ≈ raw_active * device_base
 
     P_du = get_active_power(gen, DU)
-    @test P_du isa RelativeQuantity
-    @test ustrip(P_du) ≈ raw_active
+    @test P_du isa Float64
+    @test P_du ≈ raw_active
+    @test get_active_power_unitful(gen, DU) isa RelativeQuantity
 
     P_su = get_active_power(gen, SU)
-    @test P_su isa RelativeQuantity
-    @test ustrip(P_su) ≈ raw_active * device_base / system_base
-
-    # Float64 fast path: returns bare Float64 in system base
-    P_f64 = get_active_power(gen, Float64)
-    @test P_f64 isa Float64
-    @test P_f64 ≈ raw_active * device_base / system_base
+    @test P_su isa Float64
+    @test P_su ≈ raw_active * device_base / system_base
+    @test get_active_power_unitful(gen, SU) isa RelativeQuantity
 end
 
 @testset "Test explicit units setters" begin
@@ -646,7 +645,7 @@ end
     @test IS.compare_values(gen1, gen2)
     @test IS.compare_values(sys1, sys2)
 
-    set_active_power!(gen1, get_active_power(gen1, DU) + 0.1 * DU)
+    set_active_power!(gen1, get_active_power_unitful(gen1, DU) + 0.1 * DU)
     @test(
         @test_logs(
             (:error, r"not match"),

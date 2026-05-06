@@ -115,7 +115,7 @@ function CSVGN1(::Nothing)
         Vmax=0,
         Vmin=0,
         CBase=0,
-        base_power=100,
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end

@@ -111,24 +111,36 @@ get_name(value::ExponentialLoad) = value.name
 get_available(value::ExponentialLoad) = value.available
 """Get [`ExponentialLoad`](@ref) `bus`."""
 get_bus(value::ExponentialLoad) = value.bus
-"""Get [`ExponentialLoad`](@ref) `active_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power(value::ExponentialLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`ExponentialLoad`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::ExponentialLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`ExponentialLoad`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::ExponentialLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
-"""Get [`ExponentialLoad`](@ref) `reactive_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power(value::ExponentialLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
+"""Get [`ExponentialLoad`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::ExponentialLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`ExponentialLoad`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::ExponentialLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
 """Get [`ExponentialLoad`](@ref) `α`."""
 get_α(value::ExponentialLoad) = value.α
 """Get [`ExponentialLoad`](@ref) `β`."""
 get_β(value::ExponentialLoad) = value.β
 
 _get_base_power(value::ExponentialLoad) = value.base_power
-"""Get [`ExponentialLoad`](@ref) `max_active_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_max_active_power(value::ExponentialLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
+"""Get [`ExponentialLoad`](@ref) `max_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_active_power_unitful`](@ref)."""
+get_max_active_power(value::ExponentialLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_active_power), Val(:mva), units))
+"""Get [`ExponentialLoad`](@ref) `max_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_active_power`](@ref)."""
+get_max_active_power_unitful(value::ExponentialLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_active_power), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
-"""Get [`ExponentialLoad`](@ref) `max_reactive_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_max_reactive_power(value::ExponentialLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power_unitful), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
+"""Get [`ExponentialLoad`](@ref) `max_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_reactive_power_unitful`](@ref)."""
+get_max_reactive_power(value::ExponentialLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_reactive_power), Val(:mva), units))
+"""Get [`ExponentialLoad`](@ref) `max_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_reactive_power`](@ref)."""
+get_max_reactive_power_unitful(value::ExponentialLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power_unitful), ::Type{ ExponentialLoad }) = InfrastructureSystems.SU
 """Get [`ExponentialLoad`](@ref) `conformity`."""
 get_conformity(value::ExponentialLoad) = value.conformity
 """Get [`ExponentialLoad`](@ref) `services`."""

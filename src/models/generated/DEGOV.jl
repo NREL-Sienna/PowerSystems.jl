@@ -25,14 +25,14 @@ This file is auto-generated. Do not edit.
 Parameters Woodward Diesel Governor Model. DEGOV in PowerWorld
 
 # Arguments
-- `T1::Float64`: Governor mechanism time constant, validation range: `(eps(), 100)`
-- `T2::Float64`: Turbine power time constant, validation range: `(eps(), 100)`
-- `T3::Float64`: Turbine exhaust temperature time constant, validation range: `(eps(), 100)`
-- `K::Float64`: Governor gain (reciprocal of droop), validation range: `(eps(), 100)`
-- `T4::Float64`: Governor lead time constant, validation range: `(eps(), 100)`
-- `T5::Float64`: Governor lag time constant, validation range: `(eps(), 100)`
-- `T6::Float64`: Actuator time constant, validation range: `(eps(), 100)`
-- `Td::Float64`: Engine time delay, validation range: `(eps(), 100)`
+- `T1::Float64`: Governor mechanism time constant, validation range: `(eps(), 100.0)`
+- `T2::Float64`: Turbine power time constant, validation range: `(eps(), 100.0)`
+- `T3::Float64`: Turbine exhaust temperature time constant, validation range: `(eps(), 100.0)`
+- `K::Float64`: Governor gain (reciprocal of droop), validation range: `(eps(), 100.0)`
+- `T4::Float64`: Governor lead time constant, validation range: `(eps(), 100.0)`
+- `T5::Float64`: Governor lag time constant, validation range: `(eps(), 100.0)`
+- `T6::Float64`: Actuator time constant, validation range: `(eps(), 100.0)`
+- `Td::Float64`: Engine time delay, validation range: `(eps(), 100.0)`
 - `P_ref::Float64`: (default: `1.0`) Reference Load Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the DEGOV model are:

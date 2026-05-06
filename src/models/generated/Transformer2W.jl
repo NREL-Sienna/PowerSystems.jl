@@ -124,38 +124,62 @@ end
 get_name(value::Transformer2W) = value.name
 """Get [`Transformer2W`](@ref) `available`."""
 get_available(value::Transformer2W) = value.available
-"""Get [`Transformer2W`](@ref) `active_power_flow`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_flow(value::Transformer2W, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
+"""Get [`Transformer2W`](@ref) `active_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_flow_unitful`](@ref)."""
+get_active_power_flow(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow), Val(:mva), units))
+"""Get [`Transformer2W`](@ref) `active_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow`](@ref)."""
+get_active_power_flow_unitful(value::Transformer2W, units) = get_value(value, Val(:active_power_flow), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow), ::Type{ Transformer2W }) = InfrastructureSystems.SU
-"""Get [`Transformer2W`](@ref) `reactive_power_flow`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_flow(value::Transformer2W, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+"""Get [`Transformer2W`](@ref) `reactive_power_flow` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_flow_unitful`](@ref)."""
+get_reactive_power_flow(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_flow), Val(:mva), units))
+"""Get [`Transformer2W`](@ref) `reactive_power_flow` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_flow`](@ref)."""
+get_reactive_power_flow_unitful(value::Transformer2W, units) = get_value(value, Val(:reactive_power_flow), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_flow_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
 """Get [`Transformer2W`](@ref) `arc`."""
 get_arc(value::Transformer2W) = value.arc
-"""Get [`Transformer2W`](@ref) `r`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_r(value::Transformer2W, units) = get_value(value, Val(:r), Val(:ohm), units)
+"""Get [`Transformer2W`](@ref) `r` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_r_unitful`](@ref)."""
+get_r(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:r), Val(:ohm), units))
+"""Get [`Transformer2W`](@ref) `r` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_r`](@ref)."""
+get_r_unitful(value::Transformer2W, units) = get_value(value, Val(:r), Val(:ohm), units)
 InfrastructureSystems.display_units_arg(::typeof(get_r), ::Type{ Transformer2W }) = InfrastructureSystems.SU
-"""Get [`Transformer2W`](@ref) `x`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_x(value::Transformer2W, units) = get_value(value, Val(:x), Val(:ohm), units)
+InfrastructureSystems.display_units_arg(::typeof(get_r_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+"""Get [`Transformer2W`](@ref) `x` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_x_unitful`](@ref)."""
+get_x(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:x), Val(:ohm), units))
+"""Get [`Transformer2W`](@ref) `x` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_x`](@ref)."""
+get_x_unitful(value::Transformer2W, units) = get_value(value, Val(:x), Val(:ohm), units)
 InfrastructureSystems.display_units_arg(::typeof(get_x), ::Type{ Transformer2W }) = InfrastructureSystems.SU
-"""Get [`Transformer2W`](@ref) `primary_shunt`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_primary_shunt(value::Transformer2W, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
+InfrastructureSystems.display_units_arg(::typeof(get_x_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+"""Get [`Transformer2W`](@ref) `primary_shunt` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_primary_shunt_unitful`](@ref)."""
+get_primary_shunt(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:primary_shunt), Val(:siemens), units))
+"""Get [`Transformer2W`](@ref) `primary_shunt` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_primary_shunt`](@ref)."""
+get_primary_shunt_unitful(value::Transformer2W, units) = get_value(value, Val(:primary_shunt), Val(:siemens), units)
 InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt), ::Type{ Transformer2W }) = InfrastructureSystems.SU
-"""Get [`Transformer2W`](@ref) `rating`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating(value::Transformer2W, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_primary_shunt_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+"""Get [`Transformer2W`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`Transformer2W`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::Transformer2W, units) = get_value(value, Val(:rating), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
 
 _get_base_power(value::Transformer2W) = value.base_power
 """Get [`Transformer2W`](@ref) `base_voltage_primary`."""
 get_base_voltage_primary(value::Transformer2W) = value.base_voltage_primary
 """Get [`Transformer2W`](@ref) `base_voltage_secondary`."""
 get_base_voltage_secondary(value::Transformer2W) = value.base_voltage_secondary
-"""Get [`Transformer2W`](@ref) `rating_b`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating_b(value::Transformer2W, units) = get_value(value, Val(:rating_b), Val(:mva), units)
+"""Get [`Transformer2W`](@ref) `rating_b` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_b_unitful`](@ref)."""
+get_rating_b(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_b), Val(:mva), units))
+"""Get [`Transformer2W`](@ref) `rating_b` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_b`](@ref)."""
+get_rating_b_unitful(value::Transformer2W, units) = get_value(value, Val(:rating_b), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating_b), ::Type{ Transformer2W }) = InfrastructureSystems.SU
-"""Get [`Transformer2W`](@ref) `rating_c`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_rating_c(value::Transformer2W, units) = get_value(value, Val(:rating_c), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating_b_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+"""Get [`Transformer2W`](@ref) `rating_c` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_c_unitful`](@ref)."""
+get_rating_c(value::Transformer2W, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating_c), Val(:mva), units))
+"""Get [`Transformer2W`](@ref) `rating_c` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating_c`](@ref)."""
+get_rating_c_unitful(value::Transformer2W, units) = get_value(value, Val(:rating_c), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_rating_c), ::Type{ Transformer2W }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_c_unitful), ::Type{ Transformer2W }) = InfrastructureSystems.SU
 """Get [`Transformer2W`](@ref) `winding_group_number`."""
 get_winding_group_number(value::Transformer2W) = value.winding_group_number
 """Get [`Transformer2W`](@ref) `services`."""

@@ -600,6 +600,10 @@ export UnitCategory,
 export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
 export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
 export ustrip
+# Hand-written unit-bearing companions for `exclude_getter` descriptor entries
+# (their bare-number counterparts get exported via generated/includes.jl).
+export get_base_power_unitful
+export get_base_power_12_unitful, get_base_power_23_unitful, get_base_power_13_unitful
 
 # ComponentSelector
 export ComponentSelector

@@ -81,17 +81,17 @@ end
     @test get_active_power(
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
         DU,
-    ) == 0.10 * DU
+    ) == 0.10
     @test get_active_power(
         get_component(InterruptiblePowerLoad, sys2, "IloadBus"),
         DU,
-    ) == 0.10 * DU
+    ) == 0.10
     @test get_active_power_limits(
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
         DU,
-    ).min == 0.03 * DU
+    ).min == 0.03
     @test get_active_power_limits(
         get_component(ShiftablePowerLoad, sys2, "ShiftableLoadBus4"),
         DU,
-    ).max == 0.10 * DU
+    ).max == 0.10
 end

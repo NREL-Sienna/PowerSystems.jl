@@ -101,20 +101,32 @@ get_name(value::PowerLoad) = value.name
 get_available(value::PowerLoad) = value.available
 """Get [`PowerLoad`](@ref) `bus`."""
 get_bus(value::PowerLoad) = value.bus
-"""Get [`PowerLoad`](@ref) `active_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power(value::PowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`PowerLoad`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::PowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`PowerLoad`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::PowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ PowerLoad }) = InfrastructureSystems.SU
-"""Get [`PowerLoad`](@ref) `reactive_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power(value::PowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ PowerLoad }) = InfrastructureSystems.SU
+"""Get [`PowerLoad`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::PowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`PowerLoad`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::PowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ PowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ PowerLoad }) = InfrastructureSystems.SU
 
 _get_base_power(value::PowerLoad) = value.base_power
-"""Get [`PowerLoad`](@ref) `max_active_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_max_active_power(value::PowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
+"""Get [`PowerLoad`](@ref) `max_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_active_power_unitful`](@ref)."""
+get_max_active_power(value::PowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_active_power), Val(:mva), units))
+"""Get [`PowerLoad`](@ref) `max_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_active_power`](@ref)."""
+get_max_active_power_unitful(value::PowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_active_power), ::Type{ PowerLoad }) = InfrastructureSystems.SU
-"""Get [`PowerLoad`](@ref) `max_reactive_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_max_reactive_power(value::PowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power_unitful), ::Type{ PowerLoad }) = InfrastructureSystems.SU
+"""Get [`PowerLoad`](@ref) `max_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_reactive_power_unitful`](@ref)."""
+get_max_reactive_power(value::PowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_reactive_power), Val(:mva), units))
+"""Get [`PowerLoad`](@ref) `max_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_reactive_power`](@ref)."""
+get_max_reactive_power_unitful(value::PowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power), ::Type{ PowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power_unitful), ::Type{ PowerLoad }) = InfrastructureSystems.SU
 """Get [`PowerLoad`](@ref) `conformity`."""
 get_conformity(value::PowerLoad) = value.conformity
 """Get [`PowerLoad`](@ref) `services`."""

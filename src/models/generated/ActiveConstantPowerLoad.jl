@@ -160,7 +160,7 @@ function ActiveConstantPowerLoad(::Nothing)
         kiv=0,
         kpc=0,
         kic=0,
-        base_power=100,
+        base_power=100.0,
         ext=Dict{String, Any}(),
     )
 end

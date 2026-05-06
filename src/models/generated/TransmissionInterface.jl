@@ -64,9 +64,12 @@ end
 get_name(value::TransmissionInterface) = value.name
 """Get [`TransmissionInterface`](@ref) `available`."""
 get_available(value::TransmissionInterface) = value.available
-"""Get [`TransmissionInterface`](@ref) `active_power_flow_limits`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_flow_limits(value::TransmissionInterface, units) = get_value(value, Val(:active_power_flow_limits), Val(:mva), units)
+"""Get [`TransmissionInterface`](@ref) `active_power_flow_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_flow_limits_unitful`](@ref)."""
+get_active_power_flow_limits(value::TransmissionInterface, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_flow_limits), Val(:mva), units))
+"""Get [`TransmissionInterface`](@ref) `active_power_flow_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_flow_limits`](@ref)."""
+get_active_power_flow_limits_unitful(value::TransmissionInterface, units) = get_value(value, Val(:active_power_flow_limits), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_limits), ::Type{ TransmissionInterface }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_flow_limits_unitful), ::Type{ TransmissionInterface }) = InfrastructureSystems.SU
 """Get [`TransmissionInterface`](@ref) `violation_penalty`."""
 get_violation_penalty(value::TransmissionInterface) = value.violation_penalty
 """Get [`TransmissionInterface`](@ref) `direction_mapping`."""

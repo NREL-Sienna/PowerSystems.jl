@@ -88,9 +88,12 @@ get_name(value::VariableReserveNonSpinning) = value.name
 get_available(value::VariableReserveNonSpinning) = value.available
 """Get [`VariableReserveNonSpinning`](@ref) `time_frame`."""
 get_time_frame(value::VariableReserveNonSpinning) = value.time_frame
-"""Get [`VariableReserveNonSpinning`](@ref) `requirement`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_requirement(value::VariableReserveNonSpinning, units) = get_value(value, Val(:requirement), Val(:mva), units)
+"""Get [`VariableReserveNonSpinning`](@ref) `requirement` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_requirement_unitful`](@ref)."""
+get_requirement(value::VariableReserveNonSpinning, units) = InfrastructureSystems._strip_units(get_value(value, Val(:requirement), Val(:mva), units))
+"""Get [`VariableReserveNonSpinning`](@ref) `requirement` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_requirement`](@ref)."""
+get_requirement_unitful(value::VariableReserveNonSpinning, units) = get_value(value, Val(:requirement), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_requirement), ::Type{ VariableReserveNonSpinning }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_requirement_unitful), ::Type{ VariableReserveNonSpinning }) = InfrastructureSystems.SU
 """Get [`VariableReserveNonSpinning`](@ref) `sustained_time`."""
 get_sustained_time(value::VariableReserveNonSpinning) = value.sustained_time
 """Get [`VariableReserveNonSpinning`](@ref) `max_output_fraction`."""

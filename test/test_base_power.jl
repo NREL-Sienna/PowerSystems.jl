@@ -44,40 +44,86 @@ end
     # 1-arg form is gone — public getter requires explicit units.
     @test_throws MethodError get_base_power(gen)
 
-    bp_nu = get_base_power(gen, NU)
+    # Bare-number getter returns Float64 in the requested unit; companion
+    # `_unitful` keeps the Unitful/RelativeQuantity wrapper.
+    @test get_base_power(gen, NU) isa Float64
+    @test get_base_power(gen, NU) ≈ device_base
+    bp_nu = get_base_power_unitful(gen, NU)
     @test bp_nu isa Unitful.Quantity
     @test Unitful.ustrip(bp_nu) ≈ device_base
     # Not double-wrapped: no `device_base * MVA * MVA`.
     @test Unitful.unit(bp_nu) == Unitful.unit(1.0 * MVA)
 
-    bp_mw = get_base_power(gen, MW)
+    @test get_base_power(gen, MW) isa Float64
+    @test get_base_power(gen, MW) ≈ device_base
+    bp_mw = get_base_power_unitful(gen, MW)
     @test bp_mw isa Unitful.Quantity
     @test Unitful.ustrip(MW, bp_mw) ≈ device_base
 
-    bp_su = get_base_power(gen, SU)
+    @test get_base_power(gen, SU) isa Float64
+    @test get_base_power(gen, SU) ≈ device_base / system_base
+    bp_su = get_base_power_unitful(gen, SU)
     @test bp_su isa RelativeQuantity
     @test ustrip(bp_su) ≈ device_base / system_base
 
     # DU is self-referential: base_power in device-base pu is always 1.
-    bp_du = get_base_power(gen, DU)
+    @test get_base_power(gen, DU) == 1.0
+    bp_du = get_base_power_unitful(gen, DU)
     @test bp_du isa RelativeQuantity
     @test ustrip(bp_du) == 1.0
 
-    # Float64 fast path returns bare Float64 in system base (like other getters).
-    bp_f64 = get_base_power(gen, Float64)
-    @test bp_f64 isa Float64
-    @test bp_f64 ≈ device_base / system_base
-
     # Components with no base_power field fall back to system base, so DU == SU == 1.
     bus = first(get_components(ACBus, sys))
-    @test ustrip(get_base_power(bus, SU)) ≈ 1.0
-    @test Unitful.ustrip(get_base_power(bus, NU)) ≈ system_base
+    @test get_base_power(bus, SU) ≈ 1.0
+    @test get_base_power(bus, NU) ≈ system_base
+    @test get_base_power_unitful(bus, NU) isa Unitful.Quantity
 
-    # System-level unitful getter mirrors the component version.
+    # System-level getter mirrors the component version.
     @test_throws MethodError get_base_power(sys)
-    @test Unitful.ustrip(get_base_power(sys, NU)) ≈ system_base
-    @test ustrip(get_base_power(sys, SU)) == 1.0
-    @test get_base_power(sys, Float64) ≈ system_base
+    @test get_base_power(sys, NU) ≈ system_base
+    @test get_base_power_unitful(sys, NU) isa Unitful.Quantity
+    @test get_base_power(sys, SU) == 1.0
+    @test get_base_power_unitful(sys, SU) isa RelativeQuantity
+end
+
+@testset "Generated getters: bare vs _unitful, NU path" begin
+    sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
+    gen = get_component(ThermalStandard, sys, "322_CT_6")
+    set_base_power!(gen, 250.0)
+    device_base = PSY._get_base_power(gen)            # 250 MVA
+    system_base = PSY._get_base_power(sys)            # 100 MVA
+    p_du = PSY.get_value(gen, Val(:active_power), Val(:mva), DU) |> ustrip
+
+    # Plain Float64 across all unit args.
+    @test get_active_power(gen, NU) isa Float64
+    @test get_active_power(gen, NU) ≈ p_du * device_base
+    @test get_active_power(gen, MW) isa Float64
+    @test get_active_power(gen, MW) ≈ p_du * device_base
+    @test get_active_power(gen, SU) isa Float64
+    @test get_active_power(gen, SU) ≈ p_du * device_base / system_base
+    @test get_active_power(gen, DU) isa Float64
+    @test get_active_power(gen, DU) ≈ p_du
+
+    # `_unitful` companions retain wrappers.
+    p_nu_u = get_active_power_unitful(gen, NU)
+    @test p_nu_u isa Unitful.Quantity
+    @test Unitful.unit(p_nu_u) == Unitful.unit(1.0 * MW)
+    @test Unitful.ustrip(MW, p_nu_u) ≈ p_du * device_base
+
+    @test get_active_power_unitful(gen, MW) isa Unitful.Quantity
+    @test get_active_power_unitful(gen, SU) isa RelativeQuantity
+    @test get_active_power_unitful(gen, DU) isa RelativeQuantity
+
+    # Compound NamedTuple field (MinMax): bare strips per-element, unitful keeps.
+    lim = get_active_power_limits(gen, NU)
+    @test lim.min isa Float64 && lim.max isa Float64
+    lim_u = get_active_power_limits_unitful(gen, NU)
+    @test lim_u.min isa Unitful.Quantity && lim_u.max isa Unitful.Quantity
+
+    # Nothing-valued field: both forms pass nothing through.
+    set_ramp_limits!(gen, nothing)
+    @test get_ramp_limits(gen, NU) === nothing
+    @test get_ramp_limits_unitful(gen, NU) === nothing
 end
 
 # TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers

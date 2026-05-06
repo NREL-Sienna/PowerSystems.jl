@@ -121,18 +121,30 @@ get_name(value::Source) = value.name
 get_available(value::Source) = value.available
 """Get [`Source`](@ref) `bus`."""
 get_bus(value::Source) = value.bus
-"""Get [`Source`](@ref) `active_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power(value::Source, units) = get_value(value, Val(:active_power), Val(:mva), units)
+"""Get [`Source`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::Source, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`Source`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::Source, units) = get_value(value, Val(:active_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ Source }) = InfrastructureSystems.SU
-"""Get [`Source`](@ref) `reactive_power`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power(value::Source, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ Source }) = InfrastructureSystems.SU
+"""Get [`Source`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::Source, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`Source`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::Source, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ Source }) = InfrastructureSystems.SU
-"""Get [`Source`](@ref) `active_power_limits`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_active_power_limits(value::Source, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ Source }) = InfrastructureSystems.SU
+"""Get [`Source`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+get_active_power_limits(value::Source, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
+"""Get [`Source`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
+get_active_power_limits_unitful(value::Source, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ Source }) = InfrastructureSystems.SU
-"""Get [`Source`](@ref) `reactive_power_limits`. The `units` argument is required (e.g. `SU`, `DU`, `MW`, or `Float64`)."""
-get_reactive_power_limits(value::Source, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ Source }) = InfrastructureSystems.SU
+"""Get [`Source`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+get_reactive_power_limits(value::Source, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+"""Get [`Source`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
+get_reactive_power_limits_unitful(value::Source, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
 InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ Source }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ Source }) = InfrastructureSystems.SU
 """Get [`Source`](@ref) `R_th`."""
 get_R_th(value::Source) = value.R_th
 """Get [`Source`](@ref) `X_th`."""
