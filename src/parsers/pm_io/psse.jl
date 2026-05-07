@@ -583,8 +583,19 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         for load in pti_data["LOAD"]
             sub_data = Dict{String, Any}()
             sub_data["load_bus"] = pop!(load, "I")
-            sub_data["pd"] = pop!(load, "PL")
-            sub_data["qd"] = pop!(load, "QL")
+            dgenp = 0.0
+            dgenq = 0.0
+            dgenm = 0.0
+            if pm_data["source_version"] == "35"
+                dgenp = pop!(load, "DGENP", 0.0)
+                dgenq = pop!(load, "DGENQ", 0.0)
+                dgenm = pop!(load, "DGENM", 0.0)
+            end
+
+            # PSS(R)E models distributed generation as negative demand on the load record.
+            # Net active/reactive demand seen by PF should be gross load minus DGEN.
+            sub_data["pd"] = pop!(load, "PL") - dgenp
+            sub_data["qd"] = pop!(load, "QL") - dgenq
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
@@ -601,6 +612,9 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"]["LOADTYPE"] = ""
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
+                sub_data["ext"]["DGENP"] = dgenp
+                sub_data["ext"]["DGENQ"] = dgenq
+                sub_data["ext"]["DGENM"] = dgenm
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
