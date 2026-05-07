@@ -686,9 +686,9 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
-
+            modsw = switched_shunt["MODSW"]
             sub_data["ext"] = Dict{String, Any}(
-                "MODSW" => switched_shunt["MODSW"],
+                "MODSW" => modsw,
                 "ADJM" => switched_shunt["ADJM"],
                 "RMPCT" => switched_shunt["RMPCT"],
                 "RMIDNT" => switched_shunt["RMIDNT"],
@@ -723,6 +723,12 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["initial_status"] = ones(Int, length(sub_data["y_increment"]))
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
+            end
+
+            if modsw ∈ (0, 2)
+                # In fixed/continuous mode, BINIT is the total shunt admittance.
+                # Keep Y_increase but zero all initial states to avoid double counting.
+                sub_data["initial_status"] = zeros(Int, length(sub_data["y_increment"]))
             end
 
             sub_data["index"] = length(pm_data["switched_shunt"]) + 1
