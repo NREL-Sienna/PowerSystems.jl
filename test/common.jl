@@ -23,6 +23,29 @@ end
 
 struct NonexistentComponent <: StaticInjection end
 
+"""Build a minimal `System` + `ThermalStandard` with the requested device base
+so unit-conversion tests don't depend on PSB-built fixtures."""
+function _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    sys = System(system_base)
+    bus = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, bus)
+    gen = ThermalStandard(;
+        name = "g1", available = true, status = true, bus = bus,
+        active_power = 0.5, reactive_power = 0.1, rating = 1.0,
+        active_power_limits = (min = 0.0, max = 1.0),
+        reactive_power_limits = (min = -1.0, max = 1.0),
+        ramp_limits = nothing,
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = device_base,
+    )
+    add_component!(sys, gen)
+    return sys, gen
+end
+
 """Return the first component of type component_type that matches the name of other."""
 function get_component_by_name(sys::System, component_type, other::Component)
     for component in get_components(component_type, sys)
@@ -234,6 +257,8 @@ function create_system_with_outages()
     return sys
 end
 
+# NOTE: This helper builds `test_RTS_GMLC_sys` which depends on PSY.PowerSystemTableData
+# (removed in PSY 6). All callers are currently disabled until PSB no longer requires PSY parsers.
 function create_system_with_subsystems()
     sys = PSB.build_system(
         PSITestSystems,
@@ -343,7 +368,7 @@ function validate_serialization(
         to_json(sys, path; force = true)
 
         data = open(path, "r") do io
-            JSON3.read(io)
+            JSON.parse(io; dicttype = Dict{String, Any})
         end
         @test data["data_format_version"] == PSY.DATA_FORMAT_VERSION
 

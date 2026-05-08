@@ -10,7 +10,7 @@ For complex values:
   {"value": {"re": 0.01, "im": 0.1}, "unit": "SU"}
 =#
 
-import JSON3
+import JSON
 import StructTypes
 
 # ============================================================
@@ -116,7 +116,8 @@ end
 
 Deserialize from a JSON string.
 """
-deserialize_quantity(s::AbstractString) = deserialize_quantity(JSON3.read(s, Dict))
+deserialize_quantity(s::AbstractString) =
+    deserialize_quantity(JSON.parse(s; dicttype = Dict{String, Any}))
 
 # Parse a JSON value into a numeric type
 _parse_value(v::AbstractDict) = Complex(v["re"], v["im"])

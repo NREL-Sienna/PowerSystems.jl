@@ -183,11 +183,11 @@ end
 
 @testset "Serialization: JSON string round-trip" begin
     q = 0.3SU
-    json = JSON3.write(PSY.serialize_quantity(q))
+    json = JSON.json(PSY.serialize_quantity(q))
     @test PSY.deserialize_quantity(json) == q
 
     q = 30.0MW
-    json = JSON3.write(PSY.serialize_quantity(q))
+    json = JSON.json(PSY.serialize_quantity(q))
     @test PSY.deserialize_quantity(json) ≈ q
 end
 
