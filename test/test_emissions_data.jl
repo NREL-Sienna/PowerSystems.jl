@@ -81,6 +81,46 @@
             basis = EmissionBasis.POWER_OUTPUT,
             energy_unit = EnergyUnit.MMBTU,
         )
+
+        # NaN and Inf values
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = NaN,
+            basis = EmissionBasis.FUEL_INPUT,
+        )
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = Inf,
+            basis = EmissionBasis.FUEL_INPUT,
+        )
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+            start_up_adder = NaN,
+        )
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+            gwp = Inf,
+        )
+
+        # Setter validation for NaN/Inf
+        e = EmissionsData(;
+            name = "setter_test",
+            pollutant = PollutantType.CO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+        )
+        @test_throws ArgumentError set_emission_rate!(e, NaN)
+        @test_throws ArgumentError set_emission_rate!(e, Inf)
+        @test_throws ArgumentError set_start_up_adder!(e, NaN)
+        @test_throws ArgumentError set_gwp!(e, Inf)
     end
 
     @testset "Default energy_unit selection" begin
@@ -187,26 +227,26 @@
             add_supplemental_attribute!(sys, t2, co2)
         end
 
-        path = mktempdir()
-        json_path = joinpath(path, "test_emissions.json")
-        to_json(sys, json_path)
+        mktempdir() do path
+            json_path = joinpath(path, "test_emissions.json")
+            to_json(sys, json_path)
 
-        sys2 = System(json_path)
-        thermals2 = collect(get_components(ThermalStandard, sys2))
-        t1_name = get_name(t1)
-        t2_name = get_name(t2)
-        t1_2 = get_component(ThermalStandard, sys2, t1_name)
-        t2_2 = get_component(ThermalStandard, sys2, t2_name)
+            sys2 = System(json_path)
+            t1_name = get_name(t1)
+            t2_name = get_name(t2)
+            t1_2 = get_component(ThermalStandard, sys2, t1_name)
+            t2_2 = get_component(ThermalStandard, sys2, t2_name)
 
-        attrs1 = collect(get_supplemental_attributes(EmissionsData, t1_2))
-        attrs2 = collect(get_supplemental_attributes(EmissionsData, t2_2))
-        @test length(attrs1) == 1
-        @test length(attrs2) == 1
-        @test get_emission_rate(attrs1[1]) == 117.6
-        @test get_start_up_adder(attrs1[1]) == 3.5
-        @test get_pollutant(attrs1[1]) == PollutantType.CO2
-        # Same attribute instance (by UUID)
-        @test IS.get_uuid(attrs1[1]) == IS.get_uuid(attrs2[1])
+            attrs1 = collect(get_supplemental_attributes(EmissionsData, t1_2))
+            attrs2 = collect(get_supplemental_attributes(EmissionsData, t2_2))
+            @test length(attrs1) == 1
+            @test length(attrs2) == 1
+            @test get_emission_rate(attrs1[1]) == 117.6
+            @test get_start_up_adder(attrs1[1]) == 3.5
+            @test get_pollutant(attrs1[1]) == PollutantType.CO2
+            # Same attribute instance (by UUID)
+            @test IS.get_uuid(attrs1[1]) == IS.get_uuid(attrs2[1])
+        end
     end
 
     @testset "Multiple pollutants on one component" begin

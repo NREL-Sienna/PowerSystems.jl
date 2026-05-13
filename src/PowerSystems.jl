@@ -893,7 +893,6 @@ include("models/supplemental_setters.jl")
 # Supplemental attributes
 include("contingencies.jl")
 include("outages.jl")
-include("emissions_enums.jl")
 include("emissions_data.jl")
 
 # Definitions of PowerSystem

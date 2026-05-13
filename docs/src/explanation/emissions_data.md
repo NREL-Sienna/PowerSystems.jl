@@ -14,11 +14,11 @@ struct definitions.
 
 ```julia
 using PowerSystems
+using PowerSystemCaseBuilder
 
-# Build or load a system
-sys = System(100.0)
-
-# ... add buses, generators, etc. ...
+# Load a test system with thermal generators
+sys = build_system(PSITestSystems, "c_sys5_uc")
+thermals = collect(get_components(ThermalStandard, sys))
 
 # Create emissions attributes
 co2 = EmissionsData(;
@@ -37,12 +37,9 @@ nox = EmissionsData(;
 )
 
 # Attach to generators — the same CO2 attribute is shared
-ccgt1 = get_component(ThermalStandard, sys, "CCGT1")
-ccgt2 = get_component(ThermalStandard, sys, "CCGT2")
-
-add_supplemental_attribute!(sys, ccgt1, co2)
-add_supplemental_attribute!(sys, ccgt2, co2)  # shared instance
-add_supplemental_attribute!(sys, ccgt1, nox)
+add_supplemental_attribute!(sys, thermals[1], co2)
+add_supplemental_attribute!(sys, thermals[2], co2)  # shared instance
+add_supplemental_attribute!(sys, thermals[1], nox)
 ```
 
 ## Start-Up Adder

@@ -33,6 +33,19 @@ mutable struct EmissionsData <: SupplementalAttribute
     internal::InfrastructureSystemsInternal
 end
 
+# Validation helpers (shared between constructor and setters)
+function _validate_nonneg_finite(val::Real, field::String)
+    if !isfinite(val) || val < 0.0
+        throw(ArgumentError("$field must be finite and >= 0.0, got $val"))
+    end
+end
+
+function _validate_pos_finite(val::Real, field::String)
+    if !isfinite(val) || val <= 0.0
+        throw(ArgumentError("$field must be finite and > 0.0, got $val"))
+    end
+end
+
 """
     EmissionsData(; name, pollutant, emission_rate, basis, start_up_adder=0.0, mass_unit=MassUnit.LB, energy_unit=<depends on basis>, gwp=1.0, available=true, ext=Dict{String,Any}(), internal=InfrastructureSystemsInternal())
 
@@ -51,20 +64,9 @@ function EmissionsData(;
     ext::Dict{String, Any} = Dict{String, Any}(),
     internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
-    # Validate emission_rate
-    emission_rate < 0.0 && throw(
-        ArgumentError("emission_rate must be >= 0.0, got $emission_rate"),
-    )
-
-    # Validate start_up_adder
-    start_up_adder < 0.0 && throw(
-        ArgumentError("start_up_adder must be >= 0.0, got $start_up_adder"),
-    )
-
-    # Validate gwp
-    gwp <= 0.0 && throw(
-        ArgumentError("gwp must be > 0.0, got $gwp"),
-    )
+    _validate_nonneg_finite(emission_rate, "emission_rate")
+    _validate_nonneg_finite(start_up_adder, "start_up_adder")
+    _validate_pos_finite(gwp, "gwp")
 
     # Default energy_unit based on basis
     if energy_unit === nothing
@@ -137,14 +139,14 @@ get_internal(value::EmissionsData) = value.internal
 
 """Set [`EmissionsData`](@ref) `emission_rate`."""
 function set_emission_rate!(value::EmissionsData, val::Real)
-    val < 0.0 && throw(ArgumentError("emission_rate must be >= 0.0, got $val"))
+    _validate_nonneg_finite(val, "emission_rate")
     value.emission_rate = Float64(val)
     return
 end
 
 """Set [`EmissionsData`](@ref) `start_up_adder`."""
 function set_start_up_adder!(value::EmissionsData, val::Real)
-    val < 0.0 && throw(ArgumentError("start_up_adder must be >= 0.0, got $val"))
+    _validate_nonneg_finite(val, "start_up_adder")
     value.start_up_adder = Float64(val)
     return
 end
@@ -157,7 +159,7 @@ end
 
 """Set [`EmissionsData`](@ref) `gwp`."""
 function set_gwp!(value::EmissionsData, val::Real)
-    val <= 0.0 && throw(ArgumentError("gwp must be > 0.0, got $val"))
+    _validate_pos_finite(val, "gwp")
     value.gwp = Float64(val)
     return
 end
