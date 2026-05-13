@@ -1,0 +1,66 @@
+# [Emissions Data](@id emissions_data)
+
+## Motivation
+
+`EmissionsData` is a [`SupplementalAttribute`](@ref supplemental_attributes) that pairs a
+pollutant identity (CO2, NOx, SO2, etc.) with a numerical emission rate. By modeling
+emissions as a supplemental attribute rather than a field on each generator type, a single
+`EmissionsData` instance can be shared across multiple components (one-to-many attachment).
+This avoids data duplication when several units at the same plant share the same emission
+profile and allows emissions metadata to be added or removed without changing the component
+struct definitions.
+
+## Example
+
+```julia
+using PowerSystems
+
+# Build or load a system
+sys = System(100.0)
+
+# ... add buses, generators, etc. ...
+
+# Create emissions attributes
+co2 = EmissionsData(;
+    name = "co2_ccgt",
+    pollutant = PollutantType.CO2,
+    emission_rate = 117.6,    # lb/MMBtu
+    basis = EmissionBasis.FUEL_INPUT,
+)
+
+nox = EmissionsData(;
+    name = "nox_ccgt",
+    pollutant = PollutantType.NOX,
+    emission_rate = 0.01,     # lb/MMBtu (steady-state)
+    basis = EmissionBasis.FUEL_INPUT,
+    start_up_adder = 5.0,     # 5 lb per cold start
+)
+
+# Attach to generators — the same CO2 attribute is shared
+ccgt1 = get_component(ThermalStandard, sys, "CCGT1")
+ccgt2 = get_component(ThermalStandard, sys, "CCGT2")
+
+add_supplemental_attribute!(sys, ccgt1, co2)
+add_supplemental_attribute!(sys, ccgt2, co2)  # shared instance
+add_supplemental_attribute!(sys, ccgt1, nox)
+```
+
+## Start-Up Adder
+
+The `start_up_adder` field captures the transient pollutant pulse that occurs during a cold
+or warm start before combustion controls and post-combustion controls reach steady state.
+The adder is expressed in `mass_unit` per start event. How it is multiplied by start events
+is the responsibility of the consumer (e.g., a future PowerSimulations.jl integration will
+tie it to the start binary variable in the unit commitment formulation).
+
+## Scope and Future Work
+
+The following features are out of scope for this version and tracked in follow-up issues:
+
+- Time-varying emission rates (time series support)
+- Hot/warm/cold split of the start-up adder
+- `EmissionsCap` and `EmissionsPrice` supplemental attribute types
+- Heat-rate-dependent piecewise rates
+- Removal rate / pollution control fraction
+- PowerSimulations.jl integration
+- Parser support (CSV, Matpower, PSS/E)

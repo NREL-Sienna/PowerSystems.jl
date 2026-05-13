@@ -330,6 +330,23 @@ export get_impedance_correction_curve
 export get_transformer_winding
 export get_transformer_control_mode
 
+# Emissions Data
+export EmissionsData
+export PollutantType
+export EmissionBasis
+export MassUnit
+export EnergyUnit
+export get_pollutant
+export get_emission_rate
+export get_basis
+export get_start_up_adder
+export get_mass_unit
+export get_energy_unit
+export get_gwp
+export set_emission_rate!
+export set_start_up_adder!
+export set_gwp!
+
 export Service
 export AbstractReserve
 export Reserve
@@ -876,6 +893,8 @@ include("models/supplemental_setters.jl")
 # Supplemental attributes
 include("contingencies.jl")
 include("outages.jl")
+include("emissions_enums.jl")
+include("emissions_data.jl")
 
 # Definitions of PowerSystem
 include("base.jl")
