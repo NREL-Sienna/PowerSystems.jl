@@ -73,4 +73,3 @@ Enumeration of energy units for emissions rate denominator.
 - `GJ = 2`: Gigajoules
 - `MWH = 3`: Megawatt-hours
 """ EnergyUnit
-
