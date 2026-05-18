@@ -19067,7 +19067,15 @@
                 },
                 {
                     "name": "V_ref0",
+<<<<<<< HEAD
                     "comment": "User defined reference. If `0`, [`PowerSimulationsDynamics.jl`](https://sienna-platform.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage",
+=======
+<<<<<<< HEAD
+                    "comment": "User defined reference. If 0, [`PowerSimulationsDynamics.jl`](https://sienna-platform.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage",
+=======
+                    "comment": "User defined reference. If `0`, [`PowerSimulationsDynamics.jl`](https://nrel-sienna.github.io/PowerSimulationsDynamics.jl/stable/) initializes to initial terminal voltage",
+>>>>>>> b9313910a0 (pushing my WIP so I can rebase with main again)
+>>>>>>> 2a416bd4f1 (pushing my WIP so I can rebase with main again)
                     "null_value": 0,
                     "data_type": "Float64",
                     "valid_range": {
