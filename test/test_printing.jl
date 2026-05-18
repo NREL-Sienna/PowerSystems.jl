@@ -115,6 +115,65 @@ end
 #     )
 # end
 
+@testset "Test show units: attached vs detached component" begin
+    # device_base=250, system_base=100, active_power=0.5 (stored in DU) gives
+    # three distinguishable numeric values across the unit systems:
+    #   DU: 0.5, SU: 1.25, NU: 125.0
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    io = IOBuffer()
+    show(io, "text/plain", gen)
+    attached_out = String(take!(io))
+    @test occursin("active_power: 1.25", attached_out)
+    @test !occursin("active_power: 125.0", attached_out)
+    @test !occursin("active_power: 0.5", attached_out)
+
+    bus = first(get_components(ACBus, sys))
+    detached = ThermalStandard(;
+        name = "detached", available = true, status = true, bus = bus,
+        active_power = 0.5, reactive_power = 0.1, rating = 1.0,
+        active_power_limits = (min = 0.0, max = 1.0),
+        reactive_power_limits = (min = -1.0, max = 1.0),
+        ramp_limits = nothing,
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = 250.0,
+    )
+    io = IOBuffer()
+    @test_logs (:warn, r"not attached to a System") show(io, "text/plain", detached)
+    detached_out = String(take!(io))
+    @test occursin("active_power: 125.0", detached_out)
+    @test !occursin("active_power: 1.25", detached_out)
+    @test !occursin("active_power: 0.5", detached_out)
+end
+
+@testset "Test detached component: SU getter/setter errors, DU/NU OK" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    bus = first(get_components(ACBus, sys))
+    detached = ThermalStandard(;
+        name = "detached", available = true, status = true, bus = bus,
+        active_power = 0.5, reactive_power = 0.1, rating = 1.0,
+        active_power_limits = (min = 0.0, max = 1.0),
+        reactive_power_limits = (min = -1.0, max = 1.0),
+        ramp_limits = nothing,
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = 250.0,
+    )
+
+    # Getters: SU errors, DU/NU work.
+    @test_throws Exception get_active_power(detached, SU)
+    @test get_active_power(detached, DU) ≈ 0.5
+    @test get_active_power(detached, NU) ≈ 125.0
+    @test_throws Exception get_active_power_unitful(detached, SU)
+    @test get_active_power_unitful(detached, DU) isa RelativeQuantity
+    @test get_active_power_unitful(detached, NU) isa Unitful.Quantity
+
+    # Setters: SU errors, DU/NU work.
+    @test_throws Exception set_active_power!(detached, 1.0 * SU)
+    set_active_power!(detached, 0.4 * DU)
+    @test get_active_power(detached, DU) ≈ 0.4
+    set_active_power!(detached, 100.0 * MW)
+    @test get_active_power(detached, NU) ≈ 100.0
+end
+
 @testset "Test printing of non-PowerSystems struct" begin
     struct MyComponent <: Component
         name::String

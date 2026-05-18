@@ -3,7 +3,7 @@
 # Getters for unit-bearing fields declare their display-units choice via the
 # `IS.display_units_arg` trait (set by the struct-generator template, default
 # `missing` for plain getters). Prefer the trait's unit (typically `SU`),
-# falling back to `DU` if the component isn't system-attached.
+# falling back to `NU` if the component isn't system-attached.
 function _show_accessor_value(getter_func::Function, ist::Component)
     arg = IS.display_units_arg(getter_func, typeof(ist))
     ismissing(arg) && return getter_func(ist)
@@ -11,7 +11,7 @@ function _show_accessor_value(getter_func::Function, ist::Component)
         return getter_func(ist, arg)
     catch err
         err isa ErrorException && occursin("not attached", err.msg) || rethrow()
-        return getter_func(ist, DU)
+        return getter_func(ist, NU)
     end
 end
 
@@ -87,51 +87,40 @@ function Base.show(io::IO, ist::Component)
 end
 
 function Base.show(io::IO, ::MIME"text/plain", ist::Component)
-    default_units = false
     if !has_units_setting(ist)
-        print(io, "\n")
         @warn(
-            "SystemUnitSetting not defined, using NATURAL_UNITS for displaying device specification."
+            "Component is not attached to a System; displaying in natural units."
         )
-        set_units_setting!(
-            ist,
-            SystemUnitsSettings(100.0, UNIT_SYSTEM_MAPPING["NATURAL_UNITS"]),
-        )
-        default_units = true
     end
-    try
-        print(io, summary(ist), ":")
-        for name in fieldnames(typeof(ist))
-            obj = getproperty(ist, name)
-            getter_name = Symbol("get_$name")
-            if (obj isa InfrastructureSystemsInternal) && !default_units
+    print(io, summary(ist), ":")
+    for name in fieldnames(typeof(ist))
+        obj = getproperty(ist, name)
+        getter_name = Symbol("get_$name")
+        if obj isa InfrastructureSystemsInternal
+            if !isnothing(obj.units_info)
                 print(io, "\n   ")
                 show(io, MIME"text/plain"(), obj.units_info)
-                continue
-            elseif obj isa InfrastructureSystemsType ||
-                   obj isa Vector{<:InfrastructureSystemsComponent}
-                val = summary(getproperty(ist, name))
-            elseif hasproperty(PowerSystems, getter_name)
-                getter_func = getproperty(PowerSystems, getter_name)
-                val = _show_accessor_value(getter_func, ist)
-            else
-                val = getproperty(ist, name)
             end
-            print(io, "\n   ", name, ": ", val)
+            continue
+        elseif obj isa InfrastructureSystemsType ||
+               obj isa Vector{<:InfrastructureSystemsComponent}
+            val = summary(getproperty(ist, name))
+        elseif hasproperty(PowerSystems, getter_name)
+            getter_func = getproperty(PowerSystems, getter_name)
+            val = _show_accessor_value(getter_func, ist)
+        else
+            val = getproperty(ist, name)
         end
-        print(
-            io,
-            "\n   ",
-            "has_supplemental_attributes",
-            ": ",
-            string(has_supplemental_attributes(ist)),
-        )
-        print(io, "\n   ", "has_time_series", ": ", string(has_time_series(ist)))
-    finally
-        if default_units
-            set_units_setting!(ist, nothing)
-        end
+        print(io, "\n   ", name, ": ", val)
     end
+    print(
+        io,
+        "\n   ",
+        "has_supplemental_attributes",
+        ": ",
+        string(has_supplemental_attributes(ist)),
+    )
+    print(io, "\n   ", "has_time_series", ": ", string(has_time_series(ist)))
     return
 end
 
