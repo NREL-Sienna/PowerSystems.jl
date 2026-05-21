@@ -258,8 +258,6 @@ set_reactive_power_limits!(value::HybridSystem, val) = value.reactive_power_limi
 """Set [`HybridSystem`](@ref) `interconnection_efficiency`."""
 set_interconnection_efficiency!(value::HybridSystem, val) =
     value.interconnection_rating = val
-"""Set [`HybridSystem`](@ref) `base_power`."""
-set_base_power!(value::HybridSystem, val) = value.base_power = val
 """Set [`HybridSystem`](@ref) `operation_cost`."""
 set_operation_cost!(value::HybridSystem, val) = value.operation_cost = val
 """Set [`HybridSystem`](@ref) `services`."""

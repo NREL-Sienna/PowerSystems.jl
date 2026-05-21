@@ -230,8 +230,6 @@ set_tap!(value::PhaseShiftingTransformer, val) = value.tap = val
 set_α!(value::PhaseShiftingTransformer, val) = value.α = val
 """Set [`PhaseShiftingTransformer`](@ref) `rating`."""
 set_rating!(value::PhaseShiftingTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`PhaseShiftingTransformer`](@ref) `base_power`."""
-set_base_power!(value::PhaseShiftingTransformer, val) = value.base_power = val
 """Set [`PhaseShiftingTransformer`](@ref) `base_voltage_primary`."""
 set_base_voltage_primary!(value::PhaseShiftingTransformer, val) = value.base_voltage_primary = val
 """Set [`PhaseShiftingTransformer`](@ref) `base_voltage_secondary`."""

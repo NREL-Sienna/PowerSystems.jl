@@ -164,8 +164,6 @@ set_reactive_power!(value::ExponentialLoad, val) = value.reactive_power = set_va
 set_α!(value::ExponentialLoad, val) = value.α = val
 """Set [`ExponentialLoad`](@ref) `β`."""
 set_β!(value::ExponentialLoad, val) = value.β = val
-"""Set [`ExponentialLoad`](@ref) `base_power`."""
-set_base_power!(value::ExponentialLoad, val) = value.base_power = val
 """Set [`ExponentialLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::ExponentialLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`ExponentialLoad`](@ref) `max_reactive_power`."""

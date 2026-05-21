@@ -228,8 +228,6 @@ set_rating!(value::HydroTurbine, val) = value.rating = set_value(value, Val(:rat
 set_active_power_limits!(value::HydroTurbine, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
 """Set [`HydroTurbine`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::HydroTurbine, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
-"""Set [`HydroTurbine`](@ref) `base_power`."""
-set_base_power!(value::HydroTurbine, val) = value.base_power = val
 """Set [`HydroTurbine`](@ref) `operation_cost`."""
 set_operation_cost!(value::HydroTurbine, val) = value.operation_cost = val
 """Set [`HydroTurbine`](@ref) `powerhouse_elevation`."""

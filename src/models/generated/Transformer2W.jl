@@ -205,8 +205,6 @@ set_x!(value::Transformer2W, val) = value.x = set_value(value, Val(:x), val, Val
 set_primary_shunt!(value::Transformer2W, val) = value.primary_shunt = set_value(value, Val(:primary_shunt), val, Val(:siemens))
 """Set [`Transformer2W`](@ref) `rating`."""
 set_rating!(value::Transformer2W, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`Transformer2W`](@ref) `base_power`."""
-set_base_power!(value::Transformer2W, val) = value.base_power = val
 """Set [`Transformer2W`](@ref) `base_voltage_primary`."""
 set_base_voltage_primary!(value::Transformer2W, val) = value.base_voltage_primary = val
 """Set [`Transformer2W`](@ref) `base_voltage_secondary`."""

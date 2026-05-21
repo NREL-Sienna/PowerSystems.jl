@@ -232,8 +232,6 @@ get_internal(value::StandardLoad) = value.internal
 set_available!(value::StandardLoad, val) = value.available = val
 """Set [`StandardLoad`](@ref) `bus`."""
 set_bus!(value::StandardLoad, val) = value.bus = val
-"""Set [`StandardLoad`](@ref) `base_power`."""
-set_base_power!(value::StandardLoad, val) = value.base_power = val
 """Set [`StandardLoad`](@ref) `constant_active_power`."""
 set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `constant_reactive_power`."""

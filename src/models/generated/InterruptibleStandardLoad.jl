@@ -239,8 +239,6 @@ get_internal(value::InterruptibleStandardLoad) = value.internal
 set_available!(value::InterruptibleStandardLoad, val) = value.available = val
 """Set [`InterruptibleStandardLoad`](@ref) `bus`."""
 set_bus!(value::InterruptibleStandardLoad, val) = value.bus = val
-"""Set [`InterruptibleStandardLoad`](@ref) `base_power`."""
-set_base_power!(value::InterruptibleStandardLoad, val) = value.base_power = val
 """Set [`InterruptibleStandardLoad`](@ref) `operation_cost`."""
 set_operation_cost!(value::InterruptibleStandardLoad, val) = value.operation_cost = val
 """Set [`InterruptibleStandardLoad`](@ref) `conformity`."""

@@ -545,12 +545,6 @@ set_α_primary!(value::PhaseShiftingTransformer3W, val) = value.α_primary = val
 set_α_secondary!(value::PhaseShiftingTransformer3W, val) = value.α_secondary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `α_tertiary`."""
 set_α_tertiary!(value::PhaseShiftingTransformer3W, val) = value.α_tertiary = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `base_power_12`."""
-set_base_power_12!(value::PhaseShiftingTransformer3W, val) = value.base_power_12 = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `base_power_23`."""
-set_base_power_23!(value::PhaseShiftingTransformer3W, val) = value.base_power_23 = val
-"""Set [`PhaseShiftingTransformer3W`](@ref) `base_power_13`."""
-set_base_power_13!(value::PhaseShiftingTransformer3W, val) = value.base_power_13 = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `base_voltage_primary`."""
 set_base_voltage_primary!(value::PhaseShiftingTransformer3W, val) = value.base_voltage_primary = val
 """Set [`PhaseShiftingTransformer3W`](@ref) `base_voltage_secondary`."""

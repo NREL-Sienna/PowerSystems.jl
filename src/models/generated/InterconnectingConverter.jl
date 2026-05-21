@@ -158,8 +158,6 @@ set_active_power!(value::InterconnectingConverter, val) = value.active_power = s
 set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
-"""Set [`InterconnectingConverter`](@ref) `base_power`."""
-set_base_power!(value::InterconnectingConverter, val) = value.base_power = val
 """Set [`InterconnectingConverter`](@ref) `dc_current`."""
 set_dc_current!(value::InterconnectingConverter, val) = value.dc_current = val
 """Set [`InterconnectingConverter`](@ref) `max_dc_current`."""

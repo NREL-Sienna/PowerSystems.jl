@@ -240,8 +240,6 @@ set_kiv!(value::ActiveConstantPowerLoad, val) = value.kiv = val
 set_kpc!(value::ActiveConstantPowerLoad, val) = value.kpc = val
 """Set [`ActiveConstantPowerLoad`](@ref) `kic`."""
 set_kic!(value::ActiveConstantPowerLoad, val) = value.kic = val
-"""Set [`ActiveConstantPowerLoad`](@ref) `base_power`."""
-set_base_power!(value::ActiveConstantPowerLoad, val) = value.base_power = val
 """Set [`ActiveConstantPowerLoad`](@ref) `ext`."""
 set_ext!(value::ActiveConstantPowerLoad, val) = value.ext = val
 """Set [`ActiveConstantPowerLoad`](@ref) `P_ref`."""

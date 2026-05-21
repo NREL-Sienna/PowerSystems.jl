@@ -429,7 +429,5 @@ set_Pfa_ref!(value::GenericDER, val) = value.Pfa_ref = val
 set_Q_ref!(value::GenericDER, val) = value.Q_ref = val
 """Set [`GenericDER`](@ref) `P_ref`."""
 set_P_ref!(value::GenericDER, val) = value.P_ref = val
-"""Set [`GenericDER`](@ref) `base_power`."""
-set_base_power!(value::GenericDER, val) = value.base_power = val
 """Set [`GenericDER`](@ref) `ext`."""
 set_ext!(value::GenericDER, val) = value.ext = val

@@ -255,8 +255,6 @@ set_efficiency!(value::EnergyReservoirStorage, val) = value.efficiency = val
 set_reactive_power!(value::EnergyReservoirStorage, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
 """Set [`EnergyReservoirStorage`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::EnergyReservoirStorage, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
-"""Set [`EnergyReservoirStorage`](@ref) `base_power`."""
-set_base_power!(value::EnergyReservoirStorage, val) = value.base_power = val
 """Set [`EnergyReservoirStorage`](@ref) `operation_cost`."""
 set_operation_cost!(value::EnergyReservoirStorage, val) = value.operation_cost = val
 """Set [`EnergyReservoirStorage`](@ref) `conversion_factor`."""

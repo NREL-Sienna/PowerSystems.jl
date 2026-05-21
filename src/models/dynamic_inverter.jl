@@ -252,8 +252,6 @@ get_P_ref(value::DynamicInverter) =
 get_V_ref(value::DynamicInverter) =
     get_V_ref(get_reactive_power_control(get_outer_control(value)))
 
-set_base_power!(value::DynamicInverter, val) = value.base_power = val
-
 function _calc_n_states(
     converter,
     outer_control,

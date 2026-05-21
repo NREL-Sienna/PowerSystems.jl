@@ -172,8 +172,6 @@ set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power
 set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val
 """Set [`RenewableDispatch`](@ref) `operation_cost`."""
 set_operation_cost!(value::RenewableDispatch, val) = value.operation_cost = val
-"""Set [`RenewableDispatch`](@ref) `base_power`."""
-set_base_power!(value::RenewableDispatch, val) = value.base_power = val
 """Set [`RenewableDispatch`](@ref) `services`."""
 set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""

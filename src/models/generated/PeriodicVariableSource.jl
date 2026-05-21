@@ -141,7 +141,5 @@ set_internal_angle_bias!(value::PeriodicVariableSource, val) = value.internal_an
 set_internal_angle_frequencies!(value::PeriodicVariableSource, val) = value.internal_angle_frequencies = val
 """Set [`PeriodicVariableSource`](@ref) `internal_angle_coefficients`."""
 set_internal_angle_coefficients!(value::PeriodicVariableSource, val) = value.internal_angle_coefficients = val
-"""Set [`PeriodicVariableSource`](@ref) `base_power`."""
-set_base_power!(value::PeriodicVariableSource, val) = value.base_power = val
 """Set [`PeriodicVariableSource`](@ref) `ext`."""
 set_ext!(value::PeriodicVariableSource, val) = value.ext = val

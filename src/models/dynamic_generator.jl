@@ -150,8 +150,6 @@ get_internal(device::DynamicGenerator) = device.internal
 get_V_ref(value::DynamicGenerator) = get_V_ref(get_avr(value))
 get_P_ref(value::DynamicGenerator) = get_P_ref(get_prime_mover(value))
 
-set_base_power!(value::DynamicGenerator, val) = value.base_power = val
-
 function _calc_n_states(machine, shaft, avr, prime_mover, pss)
     return get_n_states(machine) +
            get_n_states(shaft) +

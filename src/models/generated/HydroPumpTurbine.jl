@@ -288,8 +288,6 @@ set_powerhouse_elevation!(value::HydroPumpTurbine, val) = value.powerhouse_eleva
 set_ramp_limits!(value::HydroPumpTurbine, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroPumpTurbine`](@ref) `time_limits`."""
 set_time_limits!(value::HydroPumpTurbine, val) = value.time_limits = val
-"""Set [`HydroPumpTurbine`](@ref) `base_power`."""
-set_base_power!(value::HydroPumpTurbine, val) = value.base_power = val
 """Set [`HydroPumpTurbine`](@ref) `status`."""
 set_status!(value::HydroPumpTurbine, val) = value.status = val
 """Set [`HydroPumpTurbine`](@ref) `time_at_status`."""

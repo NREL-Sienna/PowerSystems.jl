@@ -127,6 +127,67 @@ end
     @test get_ramp_limits_unitful(gen, NU) === nothing
 end
 
+@testset "Unit-aware set_base_power!" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    system_base = PSY._get_base_power(sys)
+
+    # Bare Float64 — stored as MVA.
+    set_base_power!(gen, 75.0)
+    @test PSY._get_base_power(gen) ≈ 75.0
+    @test get_base_power(gen, MVA) ≈ 75.0
+
+    # Unitful.Quantity in MW (MVA and MW share dimensions; storage is MVA).
+    set_base_power!(gen, 80.0 * MW)
+    @test PSY._get_base_power(gen) ≈ 80.0
+
+    # Unitful.Quantity in MVA.
+    set_base_power!(gen, 90.0 * MVA)
+    @test PSY._get_base_power(gen) ≈ 90.0
+
+    # System-base per-unit: multiplied by the system base.
+    set_base_power!(gen, 0.5 * SU)
+    @test PSY._get_base_power(gen) ≈ 0.5 * system_base
+
+    # Round-trip through the getter.
+    set_base_power!(gen, 1.25 * SU)
+    @test get_base_power(gen, SU) ≈ 1.25
+
+    # Device base is rejected: 1.0 DU carries no information.
+    @test_throws ErrorException set_base_power!(gen, 1.0 * DU)
+    @test_throws ErrorException set_base_power!(gen, 0.5 * DU)
+
+    # Dimensionally wrong inputs fail at conversion time.
+    @test_throws Unitful.DimensionError set_base_power!(gen, 1.0 * kV)
+end
+
+@testset "Unit-aware set_base_power_{12,23,13}! on ThreeWindingTransformer" begin
+    system_base = 100.0
+    xfmr = Transformer3W(nothing)
+    # Stand in for system attachment: set units_info so SU dispatch can read the
+    # system base without building a full three-bus star-topology system.
+    IS.get_internal(xfmr).units_info =
+        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+
+    for (setter, getter, internal) in (
+        (set_base_power_12!, get_base_power_12, PSY._get_base_power_12),
+        (set_base_power_23!, get_base_power_23, PSY._get_base_power_23),
+        (set_base_power_13!, get_base_power_13, PSY._get_base_power_13),
+    )
+        setter(xfmr, 75.0);
+        @test internal(xfmr) ≈ 75.0
+        setter(xfmr, 80.0 * MW);
+        @test internal(xfmr) ≈ 80.0
+        setter(xfmr, 90.0 * MVA);
+        @test internal(xfmr) ≈ 90.0
+        setter(xfmr, 0.5 * SU);
+        @test internal(xfmr) ≈ 0.5 * system_base
+        setter(xfmr, 1.25 * SU);
+        @test getter(xfmr, SU) ≈ 1.25
+        @test_throws ErrorException setter(xfmr, 1.0 * DU)
+        @test_throws Unitful.DimensionError setter(xfmr, 1.0 * kV)
+    end
+end
+
 # TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
 # (PSB.build_system uses PSY.PowerSystemTableData internally).
 # @testset "Test adding component with zero base power" begin

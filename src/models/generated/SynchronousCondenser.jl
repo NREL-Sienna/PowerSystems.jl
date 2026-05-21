@@ -139,8 +139,6 @@ set_reactive_power!(value::SynchronousCondenser, val) = value.reactive_power = s
 set_rating!(value::SynchronousCondenser, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::SynchronousCondenser, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
-"""Set [`SynchronousCondenser`](@ref) `base_power`."""
-set_base_power!(value::SynchronousCondenser, val) = value.base_power = val
 """Set [`SynchronousCondenser`](@ref) `active_power_losses`."""
 set_active_power_losses!(value::SynchronousCondenser, val) = value.active_power_losses = set_value(value, Val(:active_power_losses), val, Val(:mva))
 """Set [`SynchronousCondenser`](@ref) `services`."""

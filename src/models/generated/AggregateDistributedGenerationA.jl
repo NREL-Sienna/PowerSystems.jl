@@ -420,7 +420,5 @@ set_ω_ref!(value::AggregateDistributedGenerationA, val) = value.ω_ref = val
 set_Q_ref!(value::AggregateDistributedGenerationA, val) = value.Q_ref = val
 """Set [`AggregateDistributedGenerationA`](@ref) `P_ref`."""
 set_P_ref!(value::AggregateDistributedGenerationA, val) = value.P_ref = val
-"""Set [`AggregateDistributedGenerationA`](@ref) `base_power`."""
-set_base_power!(value::AggregateDistributedGenerationA, val) = value.base_power = val
 """Set [`AggregateDistributedGenerationA`](@ref) `ext`."""
 set_ext!(value::AggregateDistributedGenerationA, val) = value.ext = val

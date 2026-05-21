@@ -221,8 +221,6 @@ set_primary_shunt!(value::TapTransformer, val) = value.primary_shunt = set_value
 set_tap!(value::TapTransformer, val) = value.tap = val
 """Set [`TapTransformer`](@ref) `rating`."""
 set_rating!(value::TapTransformer, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
-"""Set [`TapTransformer`](@ref) `base_power`."""
-set_base_power!(value::TapTransformer, val) = value.base_power = val
 """Set [`TapTransformer`](@ref) `base_voltage_primary`."""
 set_base_voltage_primary!(value::TapTransformer, val) = value.base_voltage_primary = val
 """Set [`TapTransformer`](@ref) `base_voltage_secondary`."""

@@ -532,12 +532,6 @@ set_x_23!(value::Transformer3W, val) = value.x_23 = set_value(value, Val(:x_23),
 set_r_13!(value::Transformer3W, val) = value.r_13 = set_value(value, Val(:r_13), val, Val(:ohm))
 """Set [`Transformer3W`](@ref) `x_13`."""
 set_x_13!(value::Transformer3W, val) = value.x_13 = set_value(value, Val(:x_13), val, Val(:ohm))
-"""Set [`Transformer3W`](@ref) `base_power_12`."""
-set_base_power_12!(value::Transformer3W, val) = value.base_power_12 = val
-"""Set [`Transformer3W`](@ref) `base_power_23`."""
-set_base_power_23!(value::Transformer3W, val) = value.base_power_23 = val
-"""Set [`Transformer3W`](@ref) `base_power_13`."""
-set_base_power_13!(value::Transformer3W, val) = value.base_power_13 = val
 """Set [`Transformer3W`](@ref) `base_voltage_primary`."""
 set_base_voltage_primary!(value::Transformer3W, val) = value.base_voltage_primary = val
 """Set [`Transformer3W`](@ref) `base_voltage_secondary`."""

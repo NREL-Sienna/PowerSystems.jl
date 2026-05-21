@@ -157,8 +157,6 @@ set_reactive_power!(value::InterruptiblePowerLoad, val) = value.reactive_power =
 set_max_active_power!(value::InterruptiblePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`InterruptiblePowerLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::InterruptiblePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
-"""Set [`InterruptiblePowerLoad`](@ref) `base_power`."""
-set_base_power!(value::InterruptiblePowerLoad, val) = value.base_power = val
 """Set [`InterruptiblePowerLoad`](@ref) `operation_cost`."""
 set_operation_cost!(value::InterruptiblePowerLoad, val) = value.operation_cost = val
 """Set [`InterruptiblePowerLoad`](@ref) `conformity`."""

@@ -222,8 +222,6 @@ set_reactive_power_limits!(value::ThermalStandard, val) = value.reactive_power_l
 set_ramp_limits!(value::ThermalStandard, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`ThermalStandard`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalStandard, val) = value.operation_cost = val
-"""Set [`ThermalStandard`](@ref) `base_power`."""
-set_base_power!(value::ThermalStandard, val) = value.base_power = val
 """Set [`ThermalStandard`](@ref) `time_limits`."""
 set_time_limits!(value::ThermalStandard, val) = value.time_limits = val
 """Set [`ThermalStandard`](@ref) `must_run`."""

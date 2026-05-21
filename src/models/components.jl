@@ -29,8 +29,31 @@ get_base_power_unitful(c::Component, ::SystemBaseUnit) =
     (_get_base_power(c) / _get_system_base_power(c)) * SU
 get_base_power_unitful(c::Component, ::DeviceBaseUnit) = 1.0 * DU
 
+"""
+Set `base_power` (stored as a bare MVA `Float64`).
+
+Accepts:
+- `Float64` — interpreted as MVA.
+- `Unitful.Quantity` of power — converted to MW.
+- [`RelativeQuantity`](@ref) in `SU` (system base) — multiplied by the system base.
+
+Setting in device base (`DU`) is rejected: device base is, by definition,
+`1.0 pu` of itself, so the value carries no information.
+"""
+set_base_power!(c::Component, val::Float64) = (c.base_power = val)
+set_base_power!(c::Component, val::Unitful.Quantity) =
+    (c.base_power = Unitful.ustrip(MVA, val))
+set_base_power!(c::Component, val::RelativeQuantity{<:Any, SystemBaseUnit}) =
+    (c.base_power = IS.ustrip(val) * _get_system_base_power(c))
+set_base_power!(::Component, ::RelativeQuantity{<:Any, DeviceBaseUnit}) =
+    error(
+        "Setting base_power in device base (DU) is ambiguous: device base is " *
+        "1.0 pu of itself by construction. Pass MVA, MW, or SU instead.",
+    )
+
 IS.display_units_arg(::typeof(get_base_power), ::Type{<:Component}) = NU
 IS.display_units_arg(::typeof(get_base_power_unitful), ::Type{<:Component}) = NU
+IS.display_units_arg(::typeof(set_base_power!), ::Type{<:Component}) = NU
 
 # Make `_strip_units` work for Unitful quantities; IS doesn't depend on Unitful.
 IS._strip_units(q::Unitful.Quantity) = Unitful.ustrip(q)
@@ -323,12 +346,13 @@ _get_winding_base_power(
 
 # Public unit-aware winding base_power accessors for ThreeWindingTransformer.
 # Bare-number `$pub` plus unit-bearing `$pub_unitful` companion.
-for (pub, priv) in (
-    (:get_base_power_12, :_get_base_power_12),
-    (:get_base_power_23, :_get_base_power_23),
-    (:get_base_power_13, :_get_base_power_13),
+for (pub, priv, field) in (
+    (:get_base_power_12, :_get_base_power_12, :base_power_12),
+    (:get_base_power_23, :_get_base_power_23, :base_power_23),
+    (:get_base_power_13, :_get_base_power_13, :base_power_13),
 )
     pub_unitful = Symbol(pub, :_unitful)
+    setter = Symbol(:set_, field, :!)
     @eval begin
         $pub(c::ThreeWindingTransformer, u) = IS._strip_units($pub_unitful(c, u))
 
@@ -339,8 +363,20 @@ for (pub, priv) in (
             ($priv(c) / _get_system_base_power(c)) * SU
         $pub_unitful(c::ThreeWindingTransformer, ::DeviceBaseUnit) = 1.0 * DU
 
+        $setter(c::ThreeWindingTransformer, val::Float64) = (c.$field = val)
+        $setter(c::ThreeWindingTransformer, val::Unitful.Quantity) =
+            (c.$field = Unitful.ustrip(u"MW", val))
+        $setter(c::ThreeWindingTransformer, val::RelativeQuantity{<:Any, SystemBaseUnit}) =
+            (c.$field = IS.ustrip(val) * _get_system_base_power(c))
+        $setter(::ThreeWindingTransformer, ::RelativeQuantity{<:Any, DeviceBaseUnit}) =
+            error(
+                "Setting " * $(string(field)) * " in device base (DU) is ambiguous: " *
+                "device base is 1.0 pu of itself by construction. Pass MVA, MW, or SU instead.",
+            )
+
         IS.display_units_arg(::typeof($pub), ::Type{<:ThreeWindingTransformer}) = NU
         IS.display_units_arg(::typeof($pub_unitful), ::Type{<:ThreeWindingTransformer}) = NU
+        IS.display_units_arg(::typeof($setter), ::Type{<:ThreeWindingTransformer}) = NU
     end
 end
 

@@ -258,8 +258,6 @@ set_start_time_limits!(value::ThermalMultiStart, val) = value.start_time_limits 
 set_start_types!(value::ThermalMultiStart, val) = value.start_types = val
 """Set [`ThermalMultiStart`](@ref) `operation_cost`."""
 set_operation_cost!(value::ThermalMultiStart, val) = value.operation_cost = val
-"""Set [`ThermalMultiStart`](@ref) `base_power`."""
-set_base_power!(value::ThermalMultiStart, val) = value.base_power = val
 """Set [`ThermalMultiStart`](@ref) `services`."""
 set_services!(value::ThermalMultiStart, val) = value.services = val
 """Set [`ThermalMultiStart`](@ref) `time_at_status`."""

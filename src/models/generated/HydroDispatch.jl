@@ -208,8 +208,6 @@ set_reactive_power_limits!(value::HydroDispatch, val) = value.reactive_power_lim
 set_ramp_limits!(value::HydroDispatch, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroDispatch`](@ref) `time_limits`."""
 set_time_limits!(value::HydroDispatch, val) = value.time_limits = val
-"""Set [`HydroDispatch`](@ref) `base_power`."""
-set_base_power!(value::HydroDispatch, val) = value.base_power = val
 """Set [`HydroDispatch`](@ref) `status`."""
 set_status!(value::HydroDispatch, val) = value.status = val
 """Set [`HydroDispatch`](@ref) `time_at_status`."""

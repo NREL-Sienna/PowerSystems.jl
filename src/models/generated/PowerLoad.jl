@@ -146,8 +146,6 @@ set_bus!(value::PowerLoad, val) = value.bus = val
 set_active_power!(value::PowerLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`PowerLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::PowerLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`PowerLoad`](@ref) `base_power`."""
-set_base_power!(value::PowerLoad, val) = value.base_power = val
 """Set [`PowerLoad`](@ref) `max_active_power`."""
 set_max_active_power!(value::PowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`PowerLoad`](@ref) `max_reactive_power`."""
