@@ -1,19 +1,21 @@
 """
-    EmissionsData(; name, pollutant, emission_rate, basis, ...)
+    EmissionsData(; name, pollutant, emission_rate, basis, energy_unit, ...)
 
 A [`SupplementalAttribute`](@ref) describing the emission of a single pollutant from a
-host component. Combines pollutant identity (CO2, NOx, etc.) with a numerical
-emission rate. One `EmissionsData` instance can be attached to one or many
-components via [`add_supplemental_attribute!`](@ref).
+host component. Combines pollutant identity (CO2, NOx, etc.) with an emission rate
+expressed as a [`FunctionData`](@ref) (supporting linear, quadratic, or piecewise
+relationships between fuel consumption / power output and emissions). One `EmissionsData`
+instance can be attached to one or many components via [`add_supplemental_attribute!`](@ref).
 
 # Arguments
 - `name::String`: Identifier for this emissions attribute.
 - `pollutant::PollutantType`: Scoped enum (CO2, CO2E, CH4, N2O, NOX, SO2, PM25, PM10, HG, HAP, CUSTOM).
-- `emission_rate::Float64`: Numerical steady-state rate. Interpretation depends on `basis`.
-- `basis::EmissionBasis`: FUEL_INPUT (mass per MMBtu or GJ) or POWER_OUTPUT (mass per MWh).
+- `emission_rate::IS.FunctionData`: Emission rate function (e.g., `LinearFunctionData`).
+    A convenience constructor accepts a `Real` scalar, which is wrapped in a `LinearFunctionData`.
+- `basis::EmissionBasis`: FUEL_INPUT (mass per unit of heat input) or POWER_OUTPUT (mass per unit of electrical output).
+- `energy_unit::EnergyUnit`: Energy unit for the rate denominator (MMBTU, GJ, or MWH). Must be consistent with `basis`.
 - `start_up_adder::Float64`: (default: `0.0`) Per-start emission pulse, in `mass_unit`.
-- `mass_unit::MassUnit`: (default: `MassUnit.LB`) KG, LB, SHORT_TON, METRIC_TON.
-- `energy_unit::EnergyUnit`: (default depends on `basis`) MMBTU or GJ when basis = FUEL_INPUT, MWH when basis = POWER_OUTPUT.
+- `mass_unit::MassUnit`: (default: `MassUnit.KG`) KG, LB, SHORT_TON, METRIC_TON.
 - `gwp::Float64`: (default: `1.0`) GWP100 multiplier for CO2-equivalent reporting.
 - `available::Bool`: (default: `true`) Whether this attribute is active.
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) Extra metadata dictionary.
@@ -22,7 +24,7 @@ components via [`add_supplemental_attribute!`](@ref).
 mutable struct EmissionsData <: SupplementalAttribute
     name::String
     pollutant::PollutantType
-    emission_rate::Float64
+    emission_rate::IS.FunctionData
     basis::EmissionBasis
     start_up_adder::Float64
     mass_unit::MassUnit
@@ -46,38 +48,7 @@ function _validate_pos_finite(val::Real, field::String)
     end
 end
 
-"""
-    EmissionsData(; name, pollutant, emission_rate, basis, start_up_adder=0.0, mass_unit=MassUnit.LB, energy_unit=<depends on basis>, gwp=1.0, available=true, ext=Dict{String,Any}(), internal=InfrastructureSystemsInternal())
-
-Construct an [`EmissionsData`](@ref) with validation.
-"""
-function EmissionsData(;
-    name::AbstractString,
-    pollutant::PollutantType,
-    emission_rate::Real,
-    basis::EmissionBasis,
-    start_up_adder::Real = 0.0,
-    mass_unit::MassUnit = MassUnit.LB,
-    energy_unit::Union{EnergyUnit, Nothing} = nothing,
-    gwp::Real = 1.0,
-    available::Bool = true,
-    ext::Dict{String, Any} = Dict{String, Any}(),
-    internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
-)
-    _validate_nonneg_finite(emission_rate, "emission_rate")
-    _validate_nonneg_finite(start_up_adder, "start_up_adder")
-    _validate_pos_finite(gwp, "gwp")
-
-    # Default energy_unit based on basis
-    if energy_unit === nothing
-        energy_unit = if basis == EmissionBasis.FUEL_INPUT
-            EnergyUnit.MMBTU
-        else
-            EnergyUnit.MWH
-        end
-    end
-
-    # Validate basis/energy_unit combination
+function _validate_basis_energy_unit(basis::EmissionBasis, energy_unit::EnergyUnit)
     if basis == EmissionBasis.FUEL_INPUT
         if energy_unit != EnergyUnit.MMBTU && energy_unit != EnergyUnit.GJ
             throw(
@@ -95,11 +66,48 @@ function EmissionsData(;
             )
         end
     end
+end
+
+"""
+    EmissionsData(; name, pollutant, emission_rate, basis, energy_unit, ...)
+
+Construct an [`EmissionsData`](@ref) with validation.
+
+`emission_rate` can be any `IS.FunctionData` subtype (e.g., `LinearFunctionData`,
+`QuadraticFunctionData`, `PiecewiseLinearData`) or a scalar `Real` value (which is
+automatically wrapped in a `LinearFunctionData`).
+"""
+function EmissionsData(;
+    name::AbstractString,
+    pollutant::PollutantType,
+    emission_rate::Union{Real, IS.FunctionData},
+    basis::EmissionBasis,
+    energy_unit::EnergyUnit,
+    start_up_adder::Real = 0.0,
+    mass_unit::MassUnit = MassUnit.KG,
+    gwp::Real = 1.0,
+    available::Bool = true,
+    ext::Dict{String, Any} = Dict{String, Any}(),
+    internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
+)
+    _validate_nonneg_finite(start_up_adder, "start_up_adder")
+    _validate_pos_finite(gwp, "gwp")
+
+    # Validate basis/energy_unit combination
+    _validate_basis_energy_unit(basis, energy_unit)
+
+    # Convert scalar to LinearFunctionData
+    if emission_rate isa Real
+        _validate_nonneg_finite(emission_rate, "emission_rate")
+        rate = LinearFunctionData(Float64(emission_rate))
+    else
+        rate = emission_rate
+    end
 
     return EmissionsData(
         String(name),
         pollutant,
-        Float64(emission_rate),
+        rate,
         basis,
         Float64(start_up_adder),
         mass_unit,
@@ -137,10 +145,16 @@ get_ext(value::EmissionsData) = value.ext
 """Get [`EmissionsData`](@ref) `internal`."""
 get_internal(value::EmissionsData) = value.internal
 
-"""Set [`EmissionsData`](@ref) `emission_rate`."""
+"""Set [`EmissionsData`](@ref) `emission_rate` with a `FunctionData`."""
+function set_emission_rate!(value::EmissionsData, val::IS.FunctionData)
+    value.emission_rate = val
+    return
+end
+
+"""Set [`EmissionsData`](@ref) `emission_rate` with a scalar (wraps in `LinearFunctionData`)."""
 function set_emission_rate!(value::EmissionsData, val::Real)
     _validate_nonneg_finite(val, "emission_rate")
-    value.emission_rate = Float64(val)
+    value.emission_rate = LinearFunctionData(Float64(val))
     return
 end
 
