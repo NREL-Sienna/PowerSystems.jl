@@ -4,7 +4,7 @@
 
 `EmissionsData` is a [`SupplementalAttribute`](@ref supplemental_attributes) that pairs a
 pollutant identity (CO2, NOx, SO2, etc.) with an emission rate expressed as a
-[`FunctionData`](@ref) object. This supports both constant (linear) rates and nonlinear
+[`ValueCurve`](@ref). This supports both constant rates and nonlinear
 relationships between fuel consumption / power output and emissions. By modeling
 emissions as a supplemental attribute rather than a field on each generator type, a single
 `EmissionsData` instance can be shared across multiple components (one-to-many attachment).
@@ -22,7 +22,7 @@ using PowerSystemCaseBuilder
 sys = build_system(PSITestSystems, "c_sys5_uc")
 thermals = collect(get_components(ThermalStandard, sys))
 
-# Create a constant-rate emissions attribute (scalar wraps into LinearFunctionData)
+# Create a constant-rate emissions attribute (scalar wraps into IncrementalCurve)
 co2 = EmissionsData(;
     name = "co2_ccgt",
     pollutant = PollutantType.CO2,
@@ -31,11 +31,11 @@ co2 = EmissionsData(;
     energy_unit = EnergyUnit.MMBTU,
 )
 
-# Create an emissions attribute with a nonlinear (quadratic) rate
+# Create an emissions attribute with a linearly varying incremental rate
 nox = EmissionsData(;
     name = "nox_ccgt",
     pollutant = PollutantType.NOX,
-    emission_rate = QuadraticFunctionData(0.001, 0.01, 0.0),  # nonlinear
+    emission_rate = IncrementalCurve(LinearFunctionData(0.001, 0.01), nothing, nothing),
     basis = EmissionBasis.FUEL_INPUT,
     energy_unit = EnergyUnit.MMBTU,
     start_up_adder = 5.0,     # 5 kg per cold start
@@ -47,17 +47,19 @@ add_supplemental_attribute!(sys, thermals[2], co2)  # shared instance
 add_supplemental_attribute!(sys, thermals[1], nox)
 ```
 
-## Emission Rate as FunctionData
+## Emission Rate as ValueCurve
 
-The `emission_rate` field accepts any `FunctionData` subtype:
+The `emission_rate` field accepts any [`ValueCurve`](@ref) subtype, typically an
+[`IncrementalCurve`](@ref) representing the emission rate (pollutant per unit of
+fuel or power):
 
-- **`LinearFunctionData(slope)`** — constant emission rate (the convenience scalar constructor uses this)
-- **`QuadraticFunctionData(a, b, c)`** — quadratic relationship
-- **`PiecewiseLinearData(points)`** — piecewise linear curve
+- **`IncrementalCurve(LinearFunctionData(0, rate), ...)`** — constant emission rate
+- **`IncrementalCurve(LinearFunctionData(slope, intercept), ...)`** — linearly varying rate
+- **`IncrementalCurve(PiecewiseStepData(...), ...)`** — piecewise step rate (`PiecewiseIncrementalCurve`)
 
-When constructing with a scalar `Real` value, the rate is automatically wrapped in a
-`LinearFunctionData`. This makes simple constant-rate cases ergonomic while supporting
-complex nonlinear relationships for advanced use cases.
+When constructing with a scalar `Real` value, the rate is automatically wrapped in an
+`IncrementalCurve` with constant rate. This makes simple constant-rate cases ergonomic
+while supporting complex nonlinear relationships for advanced use cases.
 
 ## Start-Up Adder
 

@@ -1,4 +1,7 @@
 @testset "EmissionsData" begin
+    # Helper to create the expected IncrementalCurve for a constant rate
+    _const_rate(r) = IS.IncrementalCurve(LinearFunctionData(0.0, r), nothing, nothing)
+
     @testset "Construction smoke test" begin
         co2 = EmissionsData(;
             name = "co2_fuel",
@@ -9,7 +12,7 @@
         )
         @test get_name(co2) == "co2_fuel"
         @test get_pollutant(co2) == PollutantType.CO2
-        @test get_emission_rate(co2) == LinearFunctionData(117.6)
+        @test get_emission_rate(co2) == _const_rate(117.6)
         @test get_basis(co2) == EmissionBasis.FUEL_INPUT
         @test get_start_up_adder(co2) == 0.0
         @test get_mass_unit(co2) == MassUnit.KG
@@ -25,7 +28,7 @@
             energy_unit = EnergyUnit.MMBTU,
             start_up_adder = 5.0,
         )
-        @test get_emission_rate(nox) == LinearFunctionData(0.01)
+        @test get_emission_rate(nox) == _const_rate(0.01)
         @test get_start_up_adder(nox) == 5.0
 
         so2 = EmissionsData(;
@@ -40,20 +43,26 @@
         @test get_mass_unit(so2) == MassUnit.LB
     end
 
-    @testset "Construction with FunctionData" begin
-        # QuadraticFunctionData for nonlinear emission rates
-        quad_rate = QuadraticFunctionData(0.001, 0.5, 0.0)
-        co2_quad = EmissionsData(;
-            name = "co2_quad",
+    @testset "Construction with ValueCurve" begin
+        # IncrementalCurve with linearly varying rate
+        linear_rate = IS.IncrementalCurve(
+            LinearFunctionData(0.001, 0.5), nothing, nothing,
+        )
+        co2_linear = EmissionsData(;
+            name = "co2_linear",
             pollutant = PollutantType.CO2,
-            emission_rate = quad_rate,
+            emission_rate = linear_rate,
             basis = EmissionBasis.FUEL_INPUT,
             energy_unit = EnergyUnit.MMBTU,
         )
-        @test get_emission_rate(co2_quad) == quad_rate
+        @test get_emission_rate(co2_linear) == linear_rate
 
-        # PiecewiseLinearData
-        pw_rate = PiecewiseLinearData([(0.0, 0.0), (100.0, 50.0), (200.0, 120.0)])
+        # PiecewiseIncrementalCurve for step-wise rates
+        pw_rate = IS.IncrementalCurve(
+            PiecewiseStepData([0.0, 100.0, 200.0], [50.0, 60.0]),
+            0.0,
+            nothing,
+        )
         co2_pw = EmissionsData(;
             name = "co2_piecewise",
             pollutant = PollutantType.CO2,
@@ -195,7 +204,7 @@
         add_supplemental_attribute!(sys, thermal, co2)
         attrs = collect(get_supplemental_attributes(EmissionsData, thermal))
         @test length(attrs) == 1
-        @test get_emission_rate(attrs[1]) == LinearFunctionData(117.6)
+        @test get_emission_rate(attrs[1]) == _const_rate(117.6)
 
         remove_supplemental_attribute!(sys, thermal, co2)
         attrs = collect(get_supplemental_attributes(EmissionsData, thermal))
@@ -228,16 +237,16 @@
         @test length(attrs2) == 1
         @test attrs1[1] === attrs2[1]  # same object
 
-        # Modify shared attribute with scalar (wraps in LinearFunctionData)
+        # Modify shared attribute with scalar (wraps in IncrementalCurve)
         set_emission_rate!(co2, 200.0)
-        @test get_emission_rate(attrs1[1]) == LinearFunctionData(200.0)
-        @test get_emission_rate(attrs2[1]) == LinearFunctionData(200.0)
+        @test get_emission_rate(attrs1[1]) == _const_rate(200.0)
+        @test get_emission_rate(attrs2[1]) == _const_rate(200.0)
 
-        # Modify shared attribute with FunctionData
-        quad = QuadraticFunctionData(0.01, 1.0, 0.0)
-        set_emission_rate!(co2, quad)
-        @test get_emission_rate(attrs1[1]) == quad
-        @test get_emission_rate(attrs2[1]) == quad
+        # Modify shared attribute with ValueCurve
+        linear_curve = IS.IncrementalCurve(LinearFunctionData(0.01, 1.0), nothing, nothing)
+        set_emission_rate!(co2, linear_curve)
+        @test get_emission_rate(attrs1[1]) == linear_curve
+        @test get_emission_rate(attrs2[1]) == linear_curve
 
         set_start_up_adder!(co2, 10.0)
         @test get_start_up_adder(attrs1[1]) == 10.0
@@ -279,7 +288,7 @@
             attrs2 = collect(get_supplemental_attributes(EmissionsData, t2_2))
             @test length(attrs1) == 1
             @test length(attrs2) == 1
-            @test get_emission_rate(attrs1[1]) == LinearFunctionData(117.6)
+            @test get_emission_rate(attrs1[1]) == _const_rate(117.6)
             @test get_start_up_adder(attrs1[1]) == 3.5
             @test get_pollutant(attrs1[1]) == PollutantType.CO2
             # Same attribute instance (by UUID)

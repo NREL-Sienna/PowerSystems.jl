@@ -3,15 +3,16 @@
 
 A [`SupplementalAttribute`](@ref) describing the emission of a single pollutant from a
 host component. Combines pollutant identity (CO2, NOx, etc.) with an emission rate
-expressed as a [`FunctionData`](@ref) (supporting linear, quadratic, or piecewise
+expressed as a [`ValueCurve`](@ref) (supporting constant, linear, or piecewise
 relationships between fuel consumption / power output and emissions). One `EmissionsData`
 instance can be attached to one or many components via [`add_supplemental_attribute!`](@ref).
 
 # Arguments
 - `name::String`: Identifier for this emissions attribute.
 - `pollutant::PollutantType`: Scoped enum (CO2, CO2E, CH4, N2O, NOX, SO2, PM25, PM10, HG, HAP, CUSTOM).
-- `emission_rate::IS.FunctionData`: Emission rate function (e.g., `LinearFunctionData`).
-    A convenience constructor accepts a `Real` scalar, which is wrapped in a `LinearFunctionData`.
+- `emission_rate::ValueCurve`: Emission rate as a [`ValueCurve`](@ref), typically an
+    [`IncrementalCurve`](@ref). A convenience constructor accepts a `Real` scalar, which
+    is wrapped in an `IncrementalCurve` with constant rate.
 - `basis::EmissionBasis`: FUEL_INPUT (mass per unit of heat input) or POWER_OUTPUT (mass per unit of electrical output).
 - `energy_unit::EnergyUnit`: Energy unit for the rate denominator (MMBTU, GJ, or MWH). Must be consistent with `basis`.
 - `start_up_adder::Float64`: (default: `0.0`) Per-start emission pulse, in `mass_unit`.
@@ -24,7 +25,7 @@ instance can be attached to one or many components via [`add_supplemental_attrib
 mutable struct EmissionsData <: SupplementalAttribute
     name::String
     pollutant::PollutantType
-    emission_rate::IS.FunctionData
+    emission_rate::IS.ValueCurve
     basis::EmissionBasis
     start_up_adder::Float64
     mass_unit::MassUnit
@@ -73,14 +74,14 @@ end
 
 Construct an [`EmissionsData`](@ref) with validation.
 
-`emission_rate` can be any `IS.FunctionData` subtype (e.g., `LinearFunctionData`,
-`QuadraticFunctionData`, `PiecewiseLinearData`) or a scalar `Real` value (which is
-automatically wrapped in a `LinearFunctionData`).
+`emission_rate` can be any [`ValueCurve`](@ref) (e.g., `IncrementalCurve`,
+`InputOutputCurve`) or a scalar `Real` value (which is automatically wrapped in an
+`IncrementalCurve` with constant rate).
 """
 function EmissionsData(;
     name::AbstractString,
     pollutant::PollutantType,
-    emission_rate::Union{Real, IS.FunctionData},
+    emission_rate::Union{Real, IS.ValueCurve},
     basis::EmissionBasis,
     energy_unit::EnergyUnit,
     start_up_adder::Real = 0.0,
@@ -96,10 +97,14 @@ function EmissionsData(;
     # Validate basis/energy_unit combination
     _validate_basis_energy_unit(basis, energy_unit)
 
-    # Convert scalar to LinearFunctionData
+    # Convert scalar to IncrementalCurve with constant rate
     if emission_rate isa Real
         _validate_nonneg_finite(emission_rate, "emission_rate")
-        rate = LinearFunctionData(Float64(emission_rate))
+        rate = IS.IncrementalCurve(
+            LinearFunctionData(0.0, Float64(emission_rate)),
+            nothing,
+            nothing,
+        )
     else
         rate = emission_rate
     end
@@ -145,16 +150,17 @@ get_ext(value::EmissionsData) = value.ext
 """Get [`EmissionsData`](@ref) `internal`."""
 get_internal(value::EmissionsData) = value.internal
 
-"""Set [`EmissionsData`](@ref) `emission_rate` with a `FunctionData`."""
-function set_emission_rate!(value::EmissionsData, val::IS.FunctionData)
+"""Set [`EmissionsData`](@ref) `emission_rate` with a [`ValueCurve`](@ref)."""
+function set_emission_rate!(value::EmissionsData, val::IS.ValueCurve)
     value.emission_rate = val
     return
 end
 
-"""Set [`EmissionsData`](@ref) `emission_rate` with a scalar (wraps in `LinearFunctionData`)."""
+"""Set [`EmissionsData`](@ref) `emission_rate` with a scalar (wraps in `IncrementalCurve` with constant rate)."""
 function set_emission_rate!(value::EmissionsData, val::Real)
     _validate_nonneg_finite(val, "emission_rate")
-    value.emission_rate = LinearFunctionData(Float64(val))
+    value.emission_rate =
+        IS.IncrementalCurve(LinearFunctionData(0.0, Float64(val)), nothing, nothing)
     return
 end
 
