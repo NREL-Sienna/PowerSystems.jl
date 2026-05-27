@@ -188,6 +188,49 @@ end
     end
 end
 
+@testset "Unit-aware get_base_power_{12,23,13} on ThreeWindingTransformer" begin
+    system_base = 100.0
+    device_base = 250.0
+    xfmr = Transformer3W(nothing)
+    IS.get_internal(xfmr).units_info =
+        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+
+    for (setter, getter, getter_unitful) in (
+        (set_base_power_12!, get_base_power_12, get_base_power_12_unitful),
+        (set_base_power_23!, get_base_power_23, get_base_power_23_unitful),
+        (set_base_power_13!, get_base_power_13, get_base_power_13_unitful),
+    )
+        setter(xfmr, device_base)
+
+        # Bare getter returns Float64 in the requested unit.
+        @test getter(xfmr, NU) isa Float64
+        @test getter(xfmr, NU) ≈ device_base
+        @test getter(xfmr, MW) ≈ device_base
+        @test getter(xfmr, MVA) ≈ device_base
+        @test getter(xfmr, SU) isa Float64
+        @test getter(xfmr, SU) ≈ device_base / system_base
+        # DU is self-referential: per-winding base in its own device base is 1.
+        @test getter(xfmr, DU) == 1.0
+
+        # `_unitful` companions keep the wrapper.
+        bp_nu = getter_unitful(xfmr, NU)
+        @test bp_nu isa Unitful.Quantity
+        @test Unitful.unit(bp_nu) == Unitful.unit(1.0 * MVA)
+        @test Unitful.ustrip(bp_nu) ≈ device_base
+
+        @test getter_unitful(xfmr, MW) isa Unitful.Quantity
+        @test Unitful.ustrip(MW, getter_unitful(xfmr, MW)) ≈ device_base
+
+        bp_su = getter_unitful(xfmr, SU)
+        @test bp_su isa RelativeQuantity
+        @test ustrip(bp_su) ≈ device_base / system_base
+
+        bp_du = getter_unitful(xfmr, DU)
+        @test bp_du isa RelativeQuantity
+        @test ustrip(bp_du) == 1.0
+    end
+end
+
 # TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
 # (PSB.build_system uses PSY.PowerSystemTableData internally).
 # @testset "Test adding component with zero base power" begin
