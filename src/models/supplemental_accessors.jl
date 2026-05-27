@@ -28,7 +28,8 @@ _remove_aggregration_topology!(bus::ACBus, ::Area) = bus.area = nothing
 """
 Generic method to calculate the susceptance of [`ACTransmission`](@ref) devices.
 """
-get_series_susceptance(b::ACTransmission) = 1 / get_x(b)
+get_series_susceptance(b::ACTransmission, units::IS.AbstractUnitSystem) =
+    1 / get_x(b, units)
 
 """
 Returns the series susceptance of a controllable 2-winding transformer (e.g., [`TapTransformer`](@ref), [`PhaseShiftingTransformer`](@ref)) following the convention
@@ -37,13 +38,19 @@ In the case of phase shifter transformers the angle is ignored.
 
 See also: [`get_series_susceptances`](@ref) for 3-winding transformers
 """
-function get_series_susceptance(b::Union{TapTransformer, PhaseShiftingTransformer})
-    y = 1 / get_x(b)
+function get_series_susceptance(
+    b::Union{TapTransformer, PhaseShiftingTransformer},
+    units::IS.AbstractUnitSystem,
+)
+    y = 1 / get_x(b, units)
     y_a = y / (get_tap(b))
     return y_a
 end
 
-function get_series_susceptance(::Union{PhaseShiftingTransformer3W, Transformer3W})
+function get_series_susceptance(
+    ::Union{PhaseShiftingTransformer3W, Transformer3W},
+    ::IS.AbstractUnitSystem,
+)
     throw(
         ArgumentError(
             "get_series_susceptance not implemented for multi-winding transformers, use get_series_susceptances instead",
@@ -58,10 +65,10 @@ The phase shift angles are ignored in the susceptance calculation.
 
 See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::Transformer3W)) for [`Transformer3W`](@ref)
 """
-function get_series_susceptances(b::PhaseShiftingTransformer3W)
-    y1 = 1 / get_x_primary(b)
-    y2 = 1 / get_x_secondary(b)
-    y3 = 1 / get_x_tertiary(b)
+function get_series_susceptances(b::PhaseShiftingTransformer3W, units::IS.AbstractUnitSystem)
+    y1 = 1 / get_x_primary(b, units)
+    y2 = 1 / get_x_secondary(b, units)
+    y3 = 1 / get_x_tertiary(b, units)
 
     y1_a = y1 / get_primary_turns_ratio(b)
     y2_a = y2 / get_secondary_turns_ratio(b)
@@ -77,10 +84,10 @@ in power systems to define susceptance as the inverse of the imaginary part of t
 
 See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::PhaseShiftingTransformer3W)) for [`PhaseShiftingTransformer3W`](@ref)
 """
-function get_series_susceptances(b::Transformer3W)
-    Z1s = get_r_primary(b) + get_x_primary(b) * 1im
-    Z2s = get_r_secondary(b) + get_x_secondary(b) * 1im
-    Z3s = get_r_tertiary(b) + get_x_tertiary(b) * 1im
+function get_series_susceptances(b::Transformer3W, units::IS.AbstractUnitSystem)
+    Z1s = get_r_primary(b, units) + get_x_primary(b, units) * 1im
+    Z2s = get_r_secondary(b, units) + get_x_secondary(b, units) * 1im
+    Z3s = get_r_tertiary(b, units) + get_x_tertiary(b, units) * 1im
 
     b1s = imag(1 / Z1s)
     b2s = imag(1 / Z2s)
@@ -157,7 +164,8 @@ end
 Calculate the series admittance of a [`ACTransmission`](@ref) as the inverse of the complex impedance.
 Returns 1/(R + jX) where R is resistance and X is reactance.
 """
-get_series_admittance(b::ACTransmission) = 1 / (get_r(b) + get_x(b) * 1im)
+get_series_admittance(b::ACTransmission, units::IS.AbstractUnitSystem) =
+    1 / (get_r(b, units) + get_x(b, units) * 1im)
 
 """
 Calculate the series admittance of a [`PhaseShiftingTransformer`](@ref) accounting for the tap ratio.
@@ -168,9 +176,9 @@ The phase angle α affects the admittance matrix construction but not the series
 
 See also: [`get_series_susceptance`](@ref)
 """
-function get_series_admittance(b::PhaseShiftingTransformer)
+function get_series_admittance(b::PhaseShiftingTransformer, units::IS.AbstractUnitSystem)
     tap = get_tap(b)
-    Z_series = get_r(b) + get_x(b) * 1im
+    Z_series = get_r(b, units) + get_x(b, units) * 1im
     return 1 / (tap * Z_series)
 end
 
@@ -182,9 +190,9 @@ Y = 1/(tap * (R + jX)).
 
 See also: [`get_series_susceptance`](@ref)
 """
-function get_series_admittance(b::TapTransformer)
+function get_series_admittance(b::TapTransformer, units::IS.AbstractUnitSystem)
     tap = get_tap(b)
-    Z_series = get_r(b) + get_x(b) * 1im
+    Z_series = get_r(b, units) + get_x(b, units) * 1im
     return 1 / (tap * Z_series)
 end
 
@@ -197,16 +205,16 @@ The phase shift angles affect the admittance matrix construction but not the ser
 
 See also: [`get_series_admittance`](@ref) for 2-winding transformers
 """
-function get_series_admittances(b::PhaseShiftingTransformer3W)
+function get_series_admittances(b::PhaseShiftingTransformer3W, units::IS.AbstractUnitSystem)
     # Get the turns ratios for each winding
     tap_primary = get_primary_turns_ratio(b)
     tap_secondary = get_secondary_turns_ratio(b)
     tap_tertiary = get_tertiary_turns_ratio(b)
 
     # Calculate series impedances
-    Z1 = get_r_primary(b) + get_x_primary(b) * 1im
-    Z2 = get_r_secondary(b) + get_x_secondary(b) * 1im
-    Z3 = get_r_tertiary(b) + get_x_tertiary(b) * 1im
+    Z1 = get_r_primary(b, units) + get_x_primary(b, units) * 1im
+    Z2 = get_r_secondary(b, units) + get_x_secondary(b, units) * 1im
+    Z3 = get_r_tertiary(b, units) + get_x_tertiary(b, units) * 1im
 
     # Calculate admittances accounting for turns ratios (consistent with susceptance pattern)
     Y1 = 1 / (tap_primary * Z1)
@@ -216,7 +224,10 @@ function get_series_admittances(b::PhaseShiftingTransformer3W)
     return (Y1, Y2, Y3)
 end
 
-function get_series_admittance(::Union{PhaseShiftingTransformer3W, Transformer3W})
+function get_series_admittance(
+    ::Union{PhaseShiftingTransformer3W, Transformer3W},
+    ::IS.AbstractUnitSystem,
+)
     throw(
         ArgumentError(
             "get_series_admittance not implemented for multi-winding transformers, use get_series_admittances instead.",
