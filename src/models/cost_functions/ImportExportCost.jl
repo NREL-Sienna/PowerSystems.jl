@@ -32,6 +32,8 @@ function ImportExportCost(;
     energy_export_weekly_limit = INFINITE_BOUND,
     ancillary_service_offers = Vector{Service}(),
 )
+    import_offer_curves = something(import_offer_curves, ZERO_OFFER_CURVE)
+    export_offer_curves = something(export_offer_curves, ZERO_OFFER_CURVE)
     U_imp = typeof(get_power_units(import_offer_curves))
     U_exp = typeof(get_power_units(export_offer_curves))
     U_imp === U_exp || throw(
