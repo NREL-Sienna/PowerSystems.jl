@@ -231,6 +231,60 @@ end
     end
 end
 
+@testset "Unit-aware winding impedance/admittance getters on ThreeWindingTransformer" begin
+    # Regression guard for a silent units bug. The winding getters must honor the
+    # explicit `units` argument. Previously `get_r_primary(c, SU)` fell through to
+    # the generic `Branch` conversion, which divides by the component-wide
+    # `_get_base_power`; a 3W transformer has no single `base_power`, so that fell
+    # back to the *system* base, collapsing the SU multiplier to 1.0. The getter
+    # then returned device-base values for every unit system, and Ybus came out
+    # scaled by system_base/winding_base. The bug is invisible unless the winding
+    # base differs from the system base, so we set them deliberately apart — and
+    # use distinct per-winding bases to also catch a wrong-winding base selection.
+    system_base = 100.0
+    xfmr = Transformer3W(nothing)
+    IS.get_internal(xfmr).units_info =
+        PSY.SystemUnitsSettings(system_base, IS.UnitSystem.SYSTEM_BASE)
+
+    set_base_power_12!(xfmr, 15.0)
+    set_base_power_23!(xfmr, 20.0)
+    set_base_power_13!(xfmr, 25.0)
+    set_base_voltage_primary!(xfmr, 230.0)
+    set_base_voltage_secondary!(xfmr, 138.0)
+    set_base_voltage_tertiary!(xfmr, 69.0)
+
+    # (device-base field, getter, stored DU value, winding base power, base voltage)
+    cases = (
+        (:r_primary, get_r_primary, 0.01, 15.0, 230.0),
+        (:x_primary, get_x_primary, 0.10, 15.0, 230.0),
+        (:r_secondary, get_r_secondary, 0.02, 20.0, 138.0),
+        (:x_secondary, get_x_secondary, 0.20, 20.0, 138.0),
+        (:r_tertiary, get_r_tertiary, 0.03, 25.0, 69.0),
+        (:x_tertiary, get_x_tertiary, 0.30, 25.0, 69.0),
+    )
+    for (field, getter, dev_val, base_power, base_voltage) in cases
+        setproperty!(xfmr, field, dev_val)  # seed device-base storage directly
+
+        @test getter(xfmr, DU) ≈ dev_val
+        # System base: Z_su = Z_du * (system_base / winding_base).
+        @test getter(xfmr, SU) ≈ dev_val * (system_base / base_power)
+        # The units argument must change the result (the bug made SU == DU).
+        @test getter(xfmr, SU) != getter(xfmr, DU)
+        # Natural units (Ω): Z_nu = Z_du * (V² / winding_base).
+        @test getter(xfmr, NU) ≈ dev_val * (base_voltage^2 / base_power)
+        # Cross-unit invariant: the physical Ω value is independent of which unit
+        # system it is read through (this fails outright if `units` is ignored).
+        @test getter(xfmr, NU) ≈ getter(xfmr, SU) * (base_voltage^2 / system_base)
+    end
+
+    # Shunt susceptance (primary winding, Siemens): Y_su = Y_du * (winding_base / system_base).
+    setproperty!(xfmr, :b, 0.05)
+    @test get_b(xfmr, DU) ≈ 0.05
+    @test get_b(xfmr, SU) ≈ 0.05 * (15.0 / system_base)
+    @test get_b(xfmr, SU) != get_b(xfmr, DU)
+    @test get_b(xfmr, NU) ≈ 0.05 * (15.0 / 230.0^2)
+end
+
 # TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
 # (PSB.build_system uses PSY.PowerSystemTableData internally).
 # @testset "Test adding component with zero base power" begin

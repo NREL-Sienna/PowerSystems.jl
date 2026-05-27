@@ -220,3 +220,55 @@ end
 
 # --- nothing passthrough ---
 convert_units(::Any, ::Nothing, ::UnitCategory, ::Any, ::Any) = nothing
+
+# ============================================================
+# Multi-winding components (e.g. three-winding transformers)
+#
+# Each winding carries its own device base power and base voltage, so the
+# single-base functions above cannot be used. A `winding` token selects the
+# per-winding bases; downstream implements the two-argument interface:
+#   - _get_device_base_power(c, winding) → Float64 (MVA)
+#   - get_base_voltage(c, winding)       → Float64 (kV)
+# Winding fields are stored in device base, so only DU-source conversions are
+# provided.
+# ============================================================
+
+base_value(c, ::PowerCategory, winding) = _get_device_base_power(c, winding)
+base_value(c, ::ImpedanceCategory, winding) =
+    get_base_voltage(c, winding)^2 / _get_device_base_power(c, winding)
+base_value(c, ::AdmittanceCategory, winding) =
+    _get_device_base_power(c, winding) / get_base_voltage(c, winding)^2
+
+system_base_value(c, ::PowerCategory, ::Any) = _get_system_base_power(c)
+system_base_value(c, ::ImpedanceCategory, winding) =
+    get_base_voltage(c, winding)^2 / _get_system_base_power(c)
+system_base_value(c, ::AdmittanceCategory, winding) =
+    _get_system_base_power(c) / get_base_voltage(c, winding)^2
+
+# DU → natural units (any Unitful target)
+convert_units(c, v::Number, cat::UnitCategory, ::DeviceBaseUnit, units::Units, winding) =
+    uconvert(units, v * base_value(c, cat, winding) * natural_unit(cat))
+
+# DU → SU
+function convert_units(
+    c,
+    v::Number,
+    cat::UnitCategory,
+    ::DeviceBaseUnit,
+    ::SystemBaseUnit,
+    winding,
+)
+    ratio = base_value(c, cat, winding) / system_base_value(c, cat, winding)
+    return (v * ratio) * SU
+end
+
+# DU → DU (identity)
+convert_units(::Any, v::Number, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit, ::Any) =
+    v * DU
+
+# DU → NU (route through the category's natural unit)
+convert_units(c, v::Number, cat::UnitCategory, du::DeviceBaseUnit, ::NaturalUnit, winding) =
+    convert_units(c, v, cat, du, natural_unit(cat), winding)
+
+# nothing passthrough
+convert_units(::Any, ::Nothing, ::UnitCategory, ::Any, ::Any, ::Any) = nothing

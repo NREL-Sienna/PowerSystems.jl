@@ -413,136 +413,31 @@ function _get_winding_base_voltage(
     return base_voltage
 end
 
-# DEVICE_BASE
-function _get_multiplier(
-    ::ThreeWindingTransformer,
-    ::Any,
-    ::Val{IS.UnitSystem.DEVICE_BASE},
-    ::Float64,
-    ::Any,
-)
-    return 1.0
-end
-
-###########
-## Power ##
-###########
-
-# SYSTEM_BASE
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.SYSTEM_BASE},
-    base_mva::Float64,
-    ::Val{:mva},
-)
-    return _get_winding_base_power(c, field) / base_mva
-end
-
-# NATURAL_UNITS
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.NATURAL_UNITS},
-    base_mva::Float64,
-    ::Val{:mva},
-)
-    return _get_winding_base_power(c, field)
-end
-
-############
-### Ohms ###
-############
-
-# SYSTEM_BASE
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.SYSTEM_BASE},
-    base_mva::Float64,
-    ::Val{:ohm},
-)
-    return base_mva / _get_winding_base_power(c, field)
-end
-
-# NATURAL_UNITS
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.NATURAL_UNITS},
-    base_mva::Float64,
-    ::Val{:ohm},
-)
-    return _get_winding_base_voltage(c, field)^2 / _get_winding_base_power(c, field)
-end
-
-#############
-## Siemens ##
-#############
-
-# SYSTEM_BASE
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.SYSTEM_BASE},
-    base_mva::Float64,
-    ::Val{:siemens},
-)
-    return _get_winding_base_power(c, field) / base_mva
-end
-
-# NATURAL_UNITS
-function _get_multiplier(
-    c::ThreeWindingTransformer,
-    field::Any,
-    ::Val{IS.UnitSystem.NATURAL_UNITS},
-    base_mva::Float64,
-    ::Val{:siemens},
-)
-    return _get_winding_base_power(c, field) / _get_winding_base_voltage(c, field)^2
-end
-
-function _t3w_get_value(
+# Units-aware get_value for three-winding transformers. Each winding pair carries
+# its own MVA and kV base, so the component-wide `_get_base_power`/`get_base_voltage`
+# used by the generic `Branch` conversion are wrong here. We route through the
+# `convert_units` engine instead, passing the field as the winding token; the engine
+# pulls the per-winding bases from the accessors below. Dispatch is on the requested
+# `units` type (not the system's mutable unit setting), keeping the hot path type-stable.
+function get_value(
     c::ThreeWindingTransformer,
     field::Val{T},
-    conversion_unit,
+    conversion_unit::Val,
+    units::IS.AbstractUnitSystem,
 ) where {T}
-    value = Base.getproperty(c, T)
-    if isnothing(value)
-        return nothing
-    end
-    settings = get_internal(c).units_info
-    if isnothing(settings)
-        return value
-    end
-    unit_system = settings.unit_system
-    base_mva = settings.base_value
-    multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
-    return value * multiplier
+    return convert_units(
+        c, Base.getproperty(c, T), _unit_category(conversion_unit), DU, units, field,
+    )
 end
 
-get_value(c::ThreeWindingTransformer, field::Val{T}, conversion_unit::Val) where {T} =
-    _t3w_get_value(c, field, conversion_unit)
+# Physical category implied by a field's conversion unit.
+_unit_category(::Val{:mva}) = POWER
+_unit_category(::Val{:ohm}) = IMPEDANCE
+_unit_category(::Val{:siemens}) = ADMITTANCE
 
-function _t3w_set_value(
-    c::ThreeWindingTransformer,
-    field,
-    val::Float64,
-    conversion_unit,
-)
-    settings = get_internal(c).units_info
-    if isnothing(settings)
-        return val
-    end
-    unit_system = settings.unit_system
-    base_mva = settings.base_value
-    multiplier = _get_multiplier(c, field, Val(unit_system), base_mva, conversion_unit)
-    return val / multiplier
-end
-
-set_value(c::ThreeWindingTransformer, field, val::Float64, cu::Val{:mva}) =
-    _t3w_set_value(c, field, val, cu)
-set_value(c::ThreeWindingTransformer, field, val::Float64, cu::Val{:ohm}) =
-    _t3w_set_value(c, field, val, cu)
-set_value(c::ThreeWindingTransformer, field, val::Float64, cu::Val{:siemens}) =
-    _t3w_set_value(c, field, val, cu)
+# Per-winding base accessors consumed by `convert_units`. The field doubles as the
+# winding token: it selects which winding's base power and base voltage apply.
+_get_device_base_power(c::ThreeWindingTransformer, field::Val) =
+    _get_winding_base_power(c, field)
+get_base_voltage(c::ThreeWindingTransformer, field::Val) =
+    _get_winding_base_voltage(c, field)
