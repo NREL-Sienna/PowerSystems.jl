@@ -296,6 +296,89 @@
         end
     end
 
+    @testset "JSON round trip with ValueCurve variants" begin
+        sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_forecasts = false)
+        thermals = collect(get_components(ThermalStandard, sys))
+        t1 = thermals[1]
+        t2 = thermals[2]
+
+        # Linear varying emission rate
+        linear_rate = IS.IncrementalCurve(
+            LinearFunctionData(0.001, 0.5), nothing, nothing,
+        )
+        nox = EmissionsData(;
+            name = "nox_linear_json",
+            pollutant = PollutantType.NOX,
+            emission_rate = linear_rate,
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.GJ,
+            mass_unit = MassUnit.LB,
+            start_up_adder = 2.5,
+            gwp = 1.0,
+        )
+
+        # Piecewise step emission rate
+        pw_rate = IS.IncrementalCurve(
+            PiecewiseStepData([0.0, 100.0, 200.0], [50.0, 60.0]),
+            0.0,
+            nothing,
+        )
+        so2 = EmissionsData(;
+            name = "so2_piecewise_json",
+            pollutant = PollutantType.SO2,
+            emission_rate = pw_rate,
+            basis = EmissionBasis.POWER_OUTPUT,
+            energy_unit = EnergyUnit.MWH,
+            mass_unit = MassUnit.METRIC_TON,
+            gwp = 2.5,
+        )
+
+        begin_supplemental_attributes_update(sys) do
+            add_supplemental_attribute!(sys, t1, nox)
+            add_supplemental_attribute!(sys, t1, so2)
+            add_supplemental_attribute!(sys, t2, nox)
+        end
+
+        mktempdir() do path
+            json_path = joinpath(path, "test_emissions_curves.json")
+            to_json(sys, json_path)
+
+            sys2 = System(json_path)
+            t1_name = get_name(t1)
+            t2_name = get_name(t2)
+            t1_2 = get_component(ThermalStandard, sys2, t1_name)
+            t2_2 = get_component(ThermalStandard, sys2, t2_name)
+
+            # Check t1 has both attributes
+            attrs_t1 = collect(get_supplemental_attributes(EmissionsData, t1_2))
+            @test length(attrs_t1) == 2
+
+            # Find the NOX and SO2 attributes
+            nox_attr = first(a for a in attrs_t1 if get_pollutant(a) == PollutantType.NOX)
+            so2_attr = first(a for a in attrs_t1 if get_pollutant(a) == PollutantType.SO2)
+
+            # Verify NOX linear rate round-tripped
+            @test get_emission_rate(nox_attr) == linear_rate
+            @test get_basis(nox_attr) == EmissionBasis.FUEL_INPUT
+            @test get_energy_unit(nox_attr) == EnergyUnit.GJ
+            @test get_mass_unit(nox_attr) == MassUnit.LB
+            @test get_start_up_adder(nox_attr) == 2.5
+
+            # Verify SO2 piecewise rate round-tripped
+            @test get_emission_rate(so2_attr) == pw_rate
+            @test get_basis(so2_attr) == EmissionBasis.POWER_OUTPUT
+            @test get_energy_unit(so2_attr) == EnergyUnit.MWH
+            @test get_mass_unit(so2_attr) == MassUnit.METRIC_TON
+            @test get_gwp(so2_attr) == 2.5
+
+            # Verify shared NOX attribute on t2
+            attrs_t2 = collect(get_supplemental_attributes(EmissionsData, t2_2))
+            nox_t2 = first(a for a in attrs_t2 if get_pollutant(a) == PollutantType.NOX)
+            @test IS.get_uuid(nox_attr) == IS.get_uuid(nox_t2)
+            @test get_emission_rate(nox_t2) == linear_rate
+        end
+    end
+
     @testset "Multiple pollutants on one component" begin
         sys = PSB.build_system(PSITestSystems, "c_sys5_uc"; add_forecasts = false)
         thermal = first(get_components(ThermalStandard, sys))
