@@ -20,7 +20,7 @@ UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
 Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 
 [sources]
-InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "lk/units-domain-agnostic-is4"}
+InfrastructureSystems = {url = "https://github.com/Sienna-Platform/InfrastructureSystems.jl.git", rev = "IS4"}
 PowerSystemCaseBuilder = {url = "https://github.com/NREL-Sienna/PowerSystemCaseBuilder.jl", rev = "psy6"}
 
 [compat]
