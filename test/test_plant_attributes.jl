@@ -852,19 +852,20 @@ include("common.jl")
         add_supplemental_attribute!(sys, ct_gen, cc_block; hrsg_number = 1)
         add_supplemental_attribute!(sys, ca_gen, cc_block; hrsg_number = 1)
 
-        # Adding the same CT again should throw
+        # Adding the same CT to the same hrsg should throw
         @test_throws IS.ArgumentError add_supplemental_attribute!(
             sys, ct_gen, cc_block; hrsg_number = 1,
         )
-        @test_throws IS.ArgumentError add_supplemental_attribute!(
+        # Adding to a different hrsg should not throw
+        add_supplemental_attribute!(
             sys, ct_gen, cc_block; hrsg_number = 2,
         )
-
         # Adding the same CA again should throw
         @test_throws IS.ArgumentError add_supplemental_attribute!(
             sys, ca_gen, cc_block; hrsg_number = 1,
         )
-        @test_throws IS.ArgumentError add_supplemental_attribute!(
+        # Adding to a different hrsg should not throw
+        add_supplemental_attribute!(
             sys, ca_gen, cc_block; hrsg_number = 2,
         )
 
@@ -873,12 +874,12 @@ include("common.jl")
         hrsg_ca_map = get_hrsg_ca_map(cc_block)
         ct_hrsg_map = get_ct_hrsg_map(cc_block)
         ca_hrsg_map = get_ca_hrsg_map(cc_block)
-        @test length(hrsg_ct_map) == 1
+        @test length(hrsg_ct_map) == 2
         @test length(hrsg_ct_map[1]) == 1
-        @test length(hrsg_ca_map) == 1
+        @test length(hrsg_ca_map) == 2
         @test length(hrsg_ca_map[1]) == 1
-        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1]
-        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1]
+        @test ct_hrsg_map[IS.get_uuid(ct_gen)] == [1, 2]
+        @test ca_hrsg_map[IS.get_uuid(ca_gen)] == [1, 2]
     end
 
     @testset "Multiple plants per generator" begin
