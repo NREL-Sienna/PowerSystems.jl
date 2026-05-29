@@ -97,7 +97,7 @@ function InterconnectingConverter(::Nothing)
         active_power=0.0,
         rating=0.0,
         active_power_limits=(min=0.0, max=0.0),
-        base_power=100,
+        base_power=100.0,
         reactive_power_limits=nothing,
         dc_current=0.0,
         max_dc_current=0.0,

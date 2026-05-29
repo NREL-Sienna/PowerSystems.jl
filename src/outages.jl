@@ -34,6 +34,9 @@ get_internal(x::Outage) = x.internal
 # Public API for monitored_components accepts UUIDs or Devices interchangeably.
 _as_uuid(uuid::Base.UUID) = uuid
 _as_uuid(device::Device) = IS.get_uuid(device)
+# During JSON deserialization a UUID arrives as its serialized form
+# (`Dict("value" => "...")`); reconstruct it via the IS deserializer.
+_as_uuid(data::AbstractDict) = IS.deserialize(Base.UUID, data)
 
 """
 Get the set of [`Device`](@ref) UUIDs whose post-contingency state should be modeled

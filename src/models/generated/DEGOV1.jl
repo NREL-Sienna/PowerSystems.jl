@@ -29,17 +29,17 @@ Parameters Woodward Diesel Governor Model. DEGOV1 in PSSE
 
 # Arguments
 - `droop_flag::Int`: Droop control Flag. 0 for throttle feedback and 1 for electric power feedback, validation range: `(0, 1)`
-- `T1::Float64`: Governor mechanism time constant in s, validation range: `(0, 100)`
-- `T2::Float64`: Turbine power time constant in s, validation range: `(0, 100)`
-- `T3::Float64`: Turbine exhaust temperature time constant in s, validation range: `(0, 100)`
-- `K::Float64`: Governor gain for actuator, validation range: `(0, 100)`
-- `T4::Float64`: Governor lead time constant in s, validation range: `(0, 100)`
-- `T5::Float64`: Governor lag time constant in s, validation range: `(0, 100)`
-- `T6::Float64`: Actuator time constant in s, validation range: `(0, 100)`
-- `Td::Float64`: Engine time delay in s, validation range: `(0, 100)`
+- `T1::Float64`: Governor mechanism time constant in s, validation range: `(0, 100.0)`
+- `T2::Float64`: Turbine power time constant in s, validation range: `(0, 100.0)`
+- `T3::Float64`: Turbine exhaust temperature time constant in s, validation range: `(0, 100.0)`
+- `K::Float64`: Governor gain for actuator, validation range: `(0, 100.0)`
+- `T4::Float64`: Governor lead time constant in s, validation range: `(0, 100.0)`
+- `T5::Float64`: Governor lag time constant in s, validation range: `(0, 100.0)`
+- `T6::Float64`: Actuator time constant in s, validation range: `(0, 100.0)`
+- `Td::Float64`: Engine time delay in s, validation range: `(0, 100.0)`
 - `T_lim::Tuple{Float64, Float64}`: Operational control limits on actuator (T_min, T_max)
-- `R::Float64`: Steady state droop parameter, validation range: `(0, 100)`
-- `Te::Float64`: Power transducer time constant in s, validation range: `(0, 100)`
+- `R::Float64`: Steady state droop parameter, validation range: `(0, 100.0)`
+- `Te::Float64`: Power transducer time constant in s, validation range: `(0, 100.0)`
 - `P_ref::Float64`: (default: `1.0`) Reference Load Set-point (pu), validation range: `(0, nothing)`
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) of the DEGOV1 model depends on the droop flag
