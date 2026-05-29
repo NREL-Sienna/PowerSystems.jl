@@ -83,15 +83,15 @@ System(; kwargs...)
 - `unit_system::String`: (Default = `"SYSTEM_BASE"`) Set the unit system for
     [per-unitization](@ref per_unit) while getting and setting data (`"SYSTEM_BASE"`,
         `"DEVICE_BASE"`, or `"NATURAL_UNITS"`)
-- `bus_name_formatter`: A function that takes a [`Bus`](@ref) and returns a string to use as the bus name when [parsing PSSe or Matpower files](@ref pm_data).
-- `load_name_formatter`: A function that takes an [`ElectricLoad`](@ref) and returns a string to use as the load names when [parsing PSSe or Matpower files](@ref pm_data).
-- `loadzone_name_formatter`: A function that takes a [`LoadZone`](@ref) and returns a string to use as the load zone name when [parsing PSSe or Matpower files](@ref pm_data).
-- `gen_name_formatter`: A function that takes a [`Generator`](@ref) and returns a string to use as the generator name when [parsing PSSe or Matpower files](@ref pm_data).
-- `shunt_name_formatter`: A function that takes the fixed shunt data and returns a string to use as the [`FixedAdmittance`](@ref) name when [parsing PSSe or Matpower files](@ref pm_data).
-- `branch_name_formatter`: A function that takes a [`Branch`](@ref) and returns a string to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
+- `bus_name_formatter`: A function that takes a `Dict` of bus data (with keys like `"name"` and `"index"`) and returns a `String` to use as the bus name when [parsing PSSe or Matpower files](@ref pm_data).
+- `load_name_formatter`: A function that takes a `Dict` of load data (with key `"source_id"`) and returns a `String` to use as the load name when [parsing PSSe or Matpower files](@ref pm_data).
+- `loadzone_name_formatter`: A function that takes a load zone identifier (typically an `Int`) and returns a `String` to use as the load zone name when [parsing PSSe or Matpower files](@ref pm_data).
+- `gen_name_formatter`: A function that takes a `Dict` of generator data and returns a `String` to use as the generator name when [parsing PSSe or Matpower files](@ref pm_data).
+- `shunt_name_formatter`: A function that takes a `Dict` of shunt data and returns a `String` to use as the [`FixedAdmittance`](@ref) name when [parsing PSSe or Matpower files](@ref pm_data).
+- `branch_name_formatter`: A function that takes a `Dict` of branch data, a from-bus (`ACBus`), and a to-bus (`ACBus`), and returns a `String` to use as the branch name when [parsing PSSe or Matpower files](@ref pm_data).
 - `pm_data_corrections::Bool`: A function that applies the correction to the data from [`PowerModels.jl`](https://lanl-ansi.github.io/PowerModels.jl/stable/).
 - `import_all::Bool`: A boolean flag to indicate whether to import all available data when [parsing PSSe or Matpower files](@ref pm_data). The additional data will be stored in the `ext` dictionary and can be retrieved using [`get_ext`](@ref)
-- `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
+- `internal::IS.InfrastructureSystemsInternal`: Internal structure for [`InfrastructureSystems.jl`](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/). This is used only during JSON de-seralization, do not pass it when building a `System` manually.
 
 By default, time series data is stored in an HDF5 file in the tmp file system to prevent
 large datasets from overwhelming system memory (see [Data Storage](@ref)).
@@ -1222,6 +1222,11 @@ function remove_components!(::Type{T}, sys::System) where {T <: Component}
     return remove_components!(sys, T)
 end
 
+"""
+Remove all components of type `T` from the system.
+
+Throws `ArgumentError` if the type is not stored.
+"""
 function remove_components!(sys::System, ::Type{T}) where {T <: Component}
     components = IS.remove_components!(T, sys.data)
     for component in components
@@ -1230,6 +1235,9 @@ function remove_components!(sys::System, ::Type{T}) where {T <: Component}
     return components
 end
 
+"""
+Remove all components of type `T` that match `filter_func` from the system.
+"""
 function remove_components!(
     filter_func::Function,
     sys::System,
@@ -1473,6 +1481,10 @@ function get_contributing_devices(sys::System, service::TransmissionInterface)
     return [x for x in get_components(Branch, sys) if has_service(x, service)]
 end
 
+"""
+Container associating a [`Service`](@ref) with the [`Device`](@ref) components that
+contribute to it.
+"""
 struct ServiceContributingDevices
     service::Service
     contributing_devices::Vector{Device}
@@ -1574,6 +1586,10 @@ function get_connected_tail_reservoirs(sys::System, turbine::T) where {T <: Hydr
     ]
 end
 
+"""
+Container associating a hydro turbine with its connected [`Device`](@ref) components
+(e.g., [`HydroReservoir`](@ref) units).
+"""
 struct TurbineConnectedDevices
     turbine::HydroUnit
     connected_devices::Vector{Device}
@@ -1856,29 +1872,39 @@ Return the compression settings used for system data such as time series arrays.
 get_compression_settings(sys::System) = IS.get_compression_settings(sys.data)
 
 """
-Return the initial times for all forecasts.
+Return the initial times for all forecasts. Use `resolution` and/or `interval` keyword
+arguments to filter when multiple forecast groups exist.
 """
-get_forecast_initial_times(sys::System) = IS.get_forecast_initial_times(sys.data)
+get_forecast_initial_times(sys::System; kwargs...) =
+    IS.get_forecast_initial_times(sys.data; kwargs...)
 
 """
-Return the window count for all forecasts.
+Return the window count for all forecasts. Use `resolution` and/or `interval` keyword
+arguments to filter when multiple forecast groups exist.
 """
-get_forecast_window_count(sys::System) = IS.get_forecast_window_count(sys.data)
+get_forecast_window_count(sys::System; kwargs...) =
+    IS.get_forecast_window_count(sys.data; kwargs...)
 
 """
-Return the horizon for all forecasts.
+Return the horizon for all forecasts. Use `resolution` and/or `interval` keyword
+arguments to filter when multiple forecast groups exist.
 """
-get_forecast_horizon(sys::System) = IS.get_forecast_horizon(sys.data)
+get_forecast_horizon(sys::System; kwargs...) =
+    IS.get_forecast_horizon(sys.data; kwargs...)
 
 """
-Return the initial_timestamp for all forecasts.
+Return the initial timestamp for all forecasts. Use `resolution` and/or `interval` keyword
+arguments to filter when multiple forecast groups exist.
 """
-get_forecast_initial_timestamp(sys::System) = IS.get_forecast_initial_timestamp(sys.data)
+get_forecast_initial_timestamp(sys::System; kwargs...) =
+    IS.get_forecast_initial_timestamp(sys.data; kwargs...)
 
 """
-Return the interval for all forecasts.
+Return the forecast interval. Use `resolution` and/or `interval` keyword arguments to
+select which forecast group to query when multiple exist.
 """
-get_forecast_interval(sys::System) = IS.get_forecast_interval(sys.data)
+get_forecast_interval(sys::System; kwargs...) =
+    IS.get_forecast_interval(sys.data; kwargs...)
 
 """
 Return a sorted Vector of distinct resolutions for all time series of the given type
@@ -1890,7 +1916,7 @@ get_time_series_resolutions(
 ) = IS.get_time_series_resolutions(sys.data; time_series_type = time_series_type)
 
 """
-Return an iterator of time series in order of initial time.
+Return an iterator of time series attached to components in the system.
 
 Note that passing a filter function can be much slower than the other filtering parameters
 because it reads time series data from media.
@@ -1898,10 +1924,12 @@ because it reads time series data from media.
 Call `collect` on the result to get an array.
 
 # Arguments
-- `data::SystemData`: system
+- `sys::System`: system
 - `filter_func = nothing`: Only return time series for which this returns true.
 - `type = nothing`: Only return time series with this type.
 - `name = nothing`: Only return time series matching this value.
+- `resolution = nothing`: Only return time series matching this resolution.
+- `interval = nothing`: Only return time series matching this interval.
 
 # Examples
 ```julia
@@ -1917,8 +1945,24 @@ function IS.get_time_series_multiple(
     filter_func = nothing;
     type = nothing,
     name = nothing,
+    resolution = nothing,
+    interval = nothing,
 )
-    return get_time_series_multiple(sys.data, filter_func; type = type, name = name)
+    Channel{TimeSeriesData}() do channel
+        for component in
+            IS.iterate_components_with_time_series(sys.data; time_series_type = type)
+            for time_series in get_time_series_multiple(
+                component,
+                filter_func;
+                type = type,
+                name = name,
+                resolution = resolution,
+                interval = interval,
+            )
+                put!(channel, time_series)
+            end
+        end
+    end
 end
 
 """
@@ -1935,14 +1979,29 @@ end
 
 """
 Remove the time series data for a component or supplemental attribute and time series type.
+
+Use `resolution`, `interval`, and `features` keyword arguments to disambiguate when multiple
+time series of the same type and name exist with different resolutions, intervals, or
+user-defined feature tags.
 """
 function remove_time_series!(
     sys::System,
     ::Type{T},
     owner::Union{Component, SupplementalAttribute},
-    name::String,
+    name::String;
+    resolution::Union{Nothing, Dates.Period} = nothing,
+    interval::Union{Nothing, Dates.Period} = nothing,
+    features...,
 ) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(sys.data, T, owner, name)
+    return IS.remove_time_series!(
+        sys.data,
+        T,
+        owner,
+        name;
+        resolution = resolution,
+        interval = interval,
+        features...,
+    )
 end
 
 """
@@ -1956,8 +2015,13 @@ most time series instances then consider using `clear_time_series!`. It
 will delete the HDF5 file and create a new one. PowerSystems has plans to
 automate this type of workflow.
 """
-function remove_time_series!(sys::System, ::Type{T}) where {T <: TimeSeriesData}
-    return IS.remove_time_series!(sys.data, T)
+function remove_time_series!(
+    sys::System,
+    ::Type{T};
+    resolution::Union{Nothing, Dates.Period} = nothing,
+    interval::Union{Nothing, Dates.Period} = nothing,
+) where {T <: TimeSeriesData}
+    return IS.remove_time_series!(sys.data, T; resolution = resolution, interval = interval)
 end
 
 """
@@ -1969,8 +2033,10 @@ when actual forecasts are unavailable, without unnecessarily duplicating data.
 
 If all `SingleTimeSeries` instances cannot be transformed then none will be.
 
-Any existing `DeterministicSingleTimeSeries` forecasts will be deleted even if the inputs are
-invalid.
+By default, any existing `DeterministicSingleTimeSeries` forecasts will be deleted before the
+transform (`delete_existing = true`). Set `delete_existing = false` to preserve existing
+`DeterministicSingleTimeSeries`; entries with matching name, resolution, features, horizon,
+and interval are skipped, allowing multiple calls with different resolutions to coexist.
 
 # Arguments
 - `sys::System`: System containing the components.
@@ -1978,12 +2044,15 @@ invalid.
 - `interval::Dates.Period`: desired [interval](@ref I) between forecast [windows](@ref W)
 - `resolution::Union{Nothing, Dates.Period} = nothing`: If set, only transform time series
    with this resolution.
+- `delete_existing::Bool = true`: If `true`, delete all existing
+   `DeterministicSingleTimeSeries` before transforming.
 """
 function transform_single_time_series!(
     sys::System,
     horizon::Dates.Period,
     interval::Dates.Period;
     resolution::Union{Nothing, Dates.Period} = nothing,
+    delete_existing::Bool = true,
 )
     IS.transform_single_time_series!(
         sys.data,
@@ -1991,6 +2060,7 @@ function transform_single_time_series!(
         horizon,
         interval;
         resolution = resolution,
+        delete_existing = delete_existing,
     )
     return
 end
@@ -2005,6 +2075,28 @@ function add_supplemental_attribute!(
     attribute::IS.SupplementalAttribute,
 )
     return IS.add_supplemental_attribute!(sys.data, component, attribute)
+end
+
+function add_supplemental_attribute!(
+    sys::System,
+    component::Component,
+    outage::Outage,
+)
+    if get_runchecks(sys)
+        for uuid in get_monitored_components(outage)
+            comp = IS.get_component(sys, uuid)  # throws ArgumentError on miss
+            if !(comp isa Device)
+                throw(
+                    ArgumentError(
+                        "monitored_components on $(typeof(outage)) references UUID " *
+                        "$(uuid), which resolves to $(typeof(comp)); only " *
+                        "Device subtypes are allowed",
+                    ),
+                )
+            end
+        end
+    end
+    return IS.add_supplemental_attribute!(sys.data, component, outage)
 end
 
 """
@@ -2343,6 +2435,12 @@ function check_component(sys::System, component::Component)
     return
 end
 
+"""
+Check that all AC transmission [`Line`](@ref) and [`MonitoredLine`](@ref) components
+have valid rate values relative to the system base power.
+
+Returns `true` if all values are valid, `false` otherwise.
+"""
 function check_ac_transmission_rate_values(sys::System)
     is_valid = true
     base_power = get_base_power(sys)
@@ -2355,6 +2453,11 @@ function check_ac_transmission_rate_values(sys::System)
     return is_valid
 end
 
+"""
+Serialize a [System](@ref) instance. Returns a `Dict{String, Any}`
+of the form `Dict("data_format_version" => "1.0", "field1" => serialize(sys.field1), ...)`,
+which can then be written to a JSON3 file.
+"""
 function IS.serialize(sys::T) where {T <: System}
     data = Dict{String, Any}()
     data["data_format_version"] = DATA_FORMAT_VERSION
@@ -2370,6 +2473,9 @@ function IS.serialize(sys::T) where {T <: System}
     return data
 end
 
+"""
+Deserialize a [System](@ref) instance from a JSON3 file; the reverse of [`IS.serialize`](@ref).
+"""
 function IS.deserialize(
     ::Type{System},
     filename::AbstractString;

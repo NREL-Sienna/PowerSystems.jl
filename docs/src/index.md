@@ -15,13 +15,13 @@ CurrentModule = PowerSystems
 `PowerSystems.jl` is part of the National Laboratory of the Rockies'
 [Sienna ecosystem](https://www.nlr.gov/analysis/sienna.html), an open source framework for
 scheduling problems and dynamic simulations for power systems. The Sienna ecosystem can be
-[found on github](https://github.com/NREL-Sienna/Sienna). It contains three applications:
+[found on github](https://github.com/Sienna-Platform/Sienna). It contains three applications:
 
-  - [Sienna\Data](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennadata) enables
+  - [Sienna\Data](https://github.com/Sienna-Platform/Sienna?tab=readme-ov-file#siennadata) enables
     efficient data input, analysis, and transformation
-  - [Sienna\Ops](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennaops) enables
+  - [Sienna\Ops](https://github.com/Sienna-Platform/Sienna?tab=readme-ov-file#siennaops) enables
     enables system scheduling simulations by formulating and solving optimization problems
-  - [Sienna\Dyn](https://github.com/NREL-Sienna/Sienna?tab=readme-ov-file#siennadyn) enables
+  - [Sienna\Dyn](https://github.com/Sienna-Platform/Sienna?tab=readme-ov-file#siennadyn) enables
     system transient analysis including small signal stability and full system dynamic
     simulations
 
@@ -66,13 +66,13 @@ framework.
 
 ## Installation and Quick Links
 
-  - [Sienna installation page](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
+  - [Sienna installation page](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/how-to/install/):
     Instructions to install `PowerSystems.jl` and other Sienna packages
 
 !!! note
 
-    `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/) as a utility library. Many methods are re-exported from `InfrastructureSystems.jl`.
+    `PowerSystems.jl` uses [`InfrastructureSystems.jl`](https://sienna-platform.github.io/InfrastructureSystems.jl/stable/) as a utility library. Many methods are re-exported from `InfrastructureSystems.jl`.
     For most users there is no need to import `InfrastructureSystems.jl`.
 
-  - [Sienna Documentation Hub](https://nrel-sienna.github.io/Sienna/SiennaDocs/docs/build/index.html):
+  - [Sienna Documentation Hub](https://sienna-platform.github.io/Sienna/SiennaDocs/docs/build/index.html):
     Links to other Sienna packages' documentation

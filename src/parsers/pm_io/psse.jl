@@ -583,8 +583,19 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
         for load in pti_data["LOAD"]
             sub_data = Dict{String, Any}()
             sub_data["load_bus"] = pop!(load, "I")
-            sub_data["pd"] = pop!(load, "PL")
-            sub_data["qd"] = pop!(load, "QL")
+            dgenp = 0.0
+            dgenq = 0.0
+            dgenm = 0.0
+            if pm_data["source_version"] == "35"
+                dgenp = pop!(load, "DGENP", 0.0)
+                dgenq = pop!(load, "DGENQ", 0.0)
+                dgenm = pop!(load, "DGENM", 0.0)
+            end
+
+            # PSS(R)E models distributed generation as negative demand on the load record.
+            # Net active/reactive demand seen by PF should be gross load minus DGEN.
+            sub_data["pd"] = pop!(load, "PL") - dgenp
+            sub_data["qd"] = pop!(load, "QL") - dgenq
             sub_data["pi"] = pop!(load, "IP")
             sub_data["qi"] = pop!(load, "IQ")
             sub_data["py"] = pop!(load, "YP")
@@ -601,6 +612,9 @@ function _psse2pm_load!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["ext"]["LOADTYPE"] = ""
             elseif pm_data["source_version"] == "35"
                 sub_data["ext"]["LOADTYPE"] = pop!(load, "LOADTYPE", "")
+                sub_data["ext"]["DGENP"] = dgenp
+                sub_data["ext"]["DGENQ"] = dgenq
+                sub_data["ext"]["DGENM"] = dgenm
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
             end
@@ -686,9 +700,9 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sort(collect(keys(step_numbers)); by = x -> parse(Int, x[2:end]))
             sub_data["step_number"] = [step_numbers[k] for k in step_numbers_sorted]
             sub_data["step_number"] = sub_data["step_number"][sub_data["step_number"] .!= 0]
-
+            modsw = switched_shunt["MODSW"]
             sub_data["ext"] = Dict{String, Any}(
-                "MODSW" => switched_shunt["MODSW"],
+                "MODSW" => modsw,
                 "ADJM" => switched_shunt["ADJM"],
                 "RMPCT" => switched_shunt["RMPCT"],
                 "RMIDNT" => switched_shunt["RMIDNT"],
@@ -723,6 +737,13 @@ function _psse2pm_shunt!(pm_data::Dict, pti_data::Dict, import_all::Bool)
                 sub_data["initial_status"] = ones(Int, length(sub_data["y_increment"]))
             else
                 error("Unsupported PSS(R)E source version: $(pm_data["source_version"])")
+            end
+
+            if modsw ∈ (0, 1, 2)
+                # For fixed/discrete/continuous modes used for PF comparison,
+                # BINIT is treated as the total shunt admittance.
+                # Keep Y_increase but zero all initial states to avoid double counting.
+                sub_data["initial_status"] = zeros(Int, length(sub_data["y_increment"]))
             end
 
             sub_data["index"] = length(pm_data["switched_shunt"]) + 1
@@ -1981,7 +2002,15 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     pm_data["breaker"] = []
     pm_data["switch"] = []
     mapping = Dict('@' => ("breaker", 1), '*' => ("switch", 0))
-    mapping_v35 = Dict(2 => "breaker", 3 => "switch")
+    # PSS(R)E v35 STYPE values:
+    # 1 - Generic connector, 2 - Circuit breaker, 3 - Disconnect switch.
+    # Generic connectors are stored in the "switch" list and distinguished via
+    # discrete_branch_type = OTHER (2).
+    mapping_v35 = Dict(
+        1 => ("switch", 2),
+        2 => ("breaker", 1),
+        3 => ("switch", 0),
+    )
 
     # Always check for legacy entries in PSSe 35 for switches and breakers set as @ or *
     if haskey(pti_data, "SWITCHES_AS_BRANCHES")
@@ -2012,9 +2041,15 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
     if haskey(pti_data, "SWITCHING DEVICE")
         if pm_data["source_version"] == "35"
             for switching_device in pti_data["SWITCHING DEVICE"]
-                device_type = get(mapping_v35, switching_device["STYPE"], "other")
-                discrete_branch_type =
-                    device_type == "breaker" ? 1 : (device_type == "switch" ? 0 : 2)
+                stype = get(switching_device, "STYPE", nothing)
+                type_mapping = get(mapping_v35, stype, nothing)
+
+                if isnothing(type_mapping)
+                    @warn "Unsupported SWITCHING DEVICE STYPE=$(stype). Skipping entry."
+                    continue
+                end
+
+                device_type, discrete_branch_type = type_mapping
 
                 sub_data = _build_switch_breaker_sub_data(
                     pm_data,
@@ -2025,7 +2060,7 @@ function _psse2pm_switch_breaker!(pm_data::Dict, pti_data::Dict, import_all::Boo
                 )
 
                 if import_all
-                    _import_remaining_keys!(sub_data, branch)
+                    _import_remaining_keys!(sub_data, switching_device)
                 end
 
                 branch_isolated_bus_modifications!(pm_data, sub_data)

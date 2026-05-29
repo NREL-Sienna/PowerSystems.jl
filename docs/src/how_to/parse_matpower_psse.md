@@ -33,7 +33,7 @@ In PowerSystems v5, we have implemented the following conventions for parsing PS
     ' base. See [`Transformer per unit transformations`](@ref transformers_pu) for additional details.
   - **Transformer's Susceptance**: When reading from Matpower we split the transformer's susceptance evenly between the `from` and `to` ends to make it a closer approximation to the model in PSSe.
   - **Tap transformer settings automated fix**: When the tap values in the RAW file are not withing the ranges defined in the same entry, PSSe performs a correction to the data. However, this correction isn't stored back in the file. The tap correction is done internally and is not exported from PSSE. Changes are not reflected in the exported file.PowerSystems.jl will correct the tap setting **and change the field in the transformer struct.**
-  - **Reading and Storing Multi-Section Line Data**: `PowerSystems.jl` does not have a explicit multi-section line object. These devices are parsed as individual lines and the "dummy buses" are added to the system. The additional data is stored in the [`Line`](@ref) `ext` field. Further network reductions are performed using [`PowerNetworkMatrices.jl`](https://nrel-sienna.github.io/PowerNetworkMatrices.jl/stable/).
+  - **Reading and Storing Multi-Section Line Data**: `PowerSystems.jl` does not have a explicit multi-section line object. These devices are parsed as individual lines and the "dummy buses" are added to the system. The additional data is stored in the [`Line`](@ref) `ext` field. Further network reductions are performed using [`PowerNetworkMatrices.jl`](https://sienna-platform.github.io/PowerNetworkMatrices.jl/stable/).
   - **Reading [`GeographicInfo`](@ref) data from substations (PSSe v35 only)**: If the file contains a substation section. The coordinates will be automatically loaded as a [`GeographicInfo`](@ref) attribute and assigned to the relevant buses.
   - **Use [`InterruptibleStandardLoad`](@ref) (PSSe v35 only)**: In newer versions of PSSe there is a flag for interruptible. Since PowerSystems.jl already has structures to model controllable load like [`InterruptiblePowerLoad`](@ref) and [`ShiftablePowerLoad`](@ref) a new type is used when parsing from PSSe to account of the interruptible behavior in economic modeling.
   - **Treatment of conforming and non-conforming flags**: See the section [`Conforming and Non-Conforming Loads`](@ref conf_loads). PowerSystems.jl uses an enum to represent this data but it does not implement specific models for this behavior.
@@ -45,7 +45,7 @@ In PowerSystems v5, we have implemented the following conventions for parsing PS
 
   - Managing the new format for rate data. In the old PSSe versions, there was Rate A, Rate B and Rate C. However, in newer versions there are 12 possible rates open to intepretation by the modeler. it can still be interpreted as A, B or C rates or a rate per month. PSSe doesn't provide any metada to interpret the rating bands provided.
   - Detecting motor loads modeled as generators. Same as with the case for the negative loads, motors are known to be modeled as machines with negative injections (i.e., loads) to match modeling them in transient studies as machines.
-  - Automated transformer direction swaping. See [`this issue`](https://github.com/NREL-Sienna/PowerSystems.jl/issues/1423)
+  - Automated transformer direction swaping. See [`this issue`](https://github.com/Sienna-Platform/PowerSystems.jl/issues/1423)
   - Parsing outage data.
 
 ### See also:

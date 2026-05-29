@@ -34,8 +34,10 @@ Private = false
 ```@autodocs
 Modules = [PowerSystems]
 Pages   = ["outages.jl",
+           "contingencies.jl",
            "impedance_correction.jl",
-           "plant_attribute.jl"
+           "plant_attribute.jl",
+           "emissions_data.jl"
            ]
 Public = true
 Private = false
@@ -119,7 +121,7 @@ Filter = t -> t ∉ [System]
 
 ## Advanced Component Selection
 
-The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://nrel-sienna.github.io/PowerAnalytics.jl/stable/).
+The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://sienna-platform.github.io/PowerAnalytics.jl/stable/).
 
 ```@autodocs
 Modules = [IS]
@@ -144,7 +146,8 @@ Filter  = t -> !(t isa AbstractString) && nameof(t) in names(PowerSystems) && ge
 
 ```@autodocs
 Modules = [PowerSystems]
-Pages   = ["supplemental_accessors.jl"]
+Pages   = ["supplemental_accessors.jl",
+           "supplemental_setters.jl"]
 Public = true
 Private = false
 ```
@@ -166,7 +169,8 @@ Pages = ["parsers/power_system_table_data.jl",
          "parsers/power_models_data.jl",
          "parsers/TAMU_data.jl",
          "parsers/psse_dynamic_data.jl",
-         "parsers/pm_io/common.jl"]
+         "parsers/pm_io/common.jl",
+         "parsers/im_io/matlab.jl"]
 Public = true
 Private = false
 Filter = t -> t ∉ [System]

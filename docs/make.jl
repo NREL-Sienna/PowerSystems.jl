@@ -4,14 +4,12 @@ using Literate
 using DocumenterInterLinks
 using DocumenterMermaid
 
-# UPDATE FOR CURRENT MODULE NAME HERE
-const _DOCS_BASE_URL = "https://nrel-sienna.github.io/PowerSystems.jl/stable"
 
 links = InterLinks(
-    "InfrastructureSystems" => "https://nrel-sienna.github.io/InfrastructureSystems.jl/stable/",
+    "InfrastructureSystems" => "https://sienna-platform.github.io/InfrastructureSystems.jl/stable/",
     # Sometimes IS docstrings @extref to PSY, and sometimes those IS docstrings are included
     # in the PSY reference, so we can have PSY @extref-ing to itself:
-    "PowerSystems" => "https://nrel-sienna.github.io/PowerSystems.jl/stable/",
+    "PowerSystems" => "https://sienna-platform.github.io/PowerSystems.jl/stable/",
 )
 
 # This is a fallback for the docstrings that are referenced within IS docstrings
@@ -77,6 +75,7 @@ pages = OrderedDict(
             "explanation/dynamic_data.md",
             "explanation/supplemental_attributes.md",
             "explanation/plant_attributes.md",
+            "explanation/emissions_data.md",
             ],
         "Model Library" => Any[],
         "Reference" =>
@@ -198,7 +197,7 @@ makedocs(
 )
 
 deploydocs(
-    repo = "github.com/NREL-Sienna/PowerSystems.jl.git",
+    repo = "github.com/Sienna-Platform/PowerSystems.jl.git",
     target = "build",
     branch = "gh-pages",
     devbranch = "main",
