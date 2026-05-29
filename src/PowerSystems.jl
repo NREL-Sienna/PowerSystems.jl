@@ -546,7 +546,6 @@ export set_name!
 export get_component_uuids
 export get_description
 export set_description!
-export get_base_power
 export get_frequency
 export get_frequency_droop
 export set_units_base_system!
@@ -620,6 +619,20 @@ export StructDefinition
 export generate_struct_file
 export generate_struct_files
 export UnitSystem # internal.jl
+# Unit types for explicit units in getters/setters
+export MW, Mvar, MVA, kV, OHMS, SIEMENS
+export DU, SU, NU, DeviceBaseUnit, SystemBaseUnit, NaturalUnit
+export AbstractRelativeUnit, RelativeQuantity
+export UnitCategory,
+    PowerCategory, ImpedanceCategory, AdmittanceCategory,
+    VoltageCategory, CurrentCategory
+export POWER, IMPEDANCE, ADMITTANCE, VOLTAGE, CURRENT
+export natural_unit, base_value, system_base_value, convert_units, DEFAULT_UNITS
+export ustrip
+# Hand-written unit-bearing companions for `exclude_getter` descriptor entries
+# (their bare-number counterparts get exported via generated/includes.jl).
+export get_base_power_unitful
+export get_base_power_12_unitful, get_base_power_23_unitful, get_base_power_13_unitful
 
 # ComponentSelector
 export ComponentSelector
@@ -652,6 +665,22 @@ import DataStructures: OrderedDict, SortedDict
 import JSON
 import Base.to_index
 import PrettyTables
+import Unitful
+using Unitful: @u_str, @unit, Quantity, Units, uconvert
+import StructTypes
+
+# Relative-unit primitives live in IS; PSY re-exports them for downstream
+# packages so that `PSY.DU`, `PSY.RelativeQuantity`, etc. keep working.
+import InfrastructureSystems:
+    AbstractRelativeUnit,
+    DeviceBaseUnit,
+    SystemBaseUnit,
+    NaturalUnit,
+    RelativeQuantity,
+    DU,
+    SU,
+    NU,
+    ustrip
 
 # Import InfrastructureSystems both as full module name (needed for internal macros like @forward)
 # and with alias for convenient usage throughout the codebase
@@ -848,6 +877,11 @@ include("utils/logging.jl")
 include("utils/IO/base_checks.jl")
 include("utils/generate_struct_files.jl")
 
+# Units machinery (formerly PowerSystemsUnits.jl)
+include("units/types.jl")
+include("units/conversions.jl")
+include("units/serialization.jl")
+
 include("definitions.jl")
 include("models/static_models.jl")
 include("models/dynamic_models.jl")
@@ -951,5 +985,9 @@ precompile(
     IS.build_static_tuple,
     (TupleTimeSeries{StartUpStages}, ThermalStandard, Dates.DateTime),
 )
+
+function __init__()
+    Unitful.register(PowerSystems)
+end
 
 end # module

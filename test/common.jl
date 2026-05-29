@@ -1,4 +1,14 @@
 import InfrastructureSystems
+import Unitful
+
+# Strip unit wrappers so accessor return values can be compared against the
+# raw struct field type. Compound values (NamedTuple of units) are unwrapped
+# element-wise.
+_unwrap_units(x) = x
+_unwrap_units(x::RelativeQuantity) = ustrip(x)
+_unwrap_units(x::Unitful.Quantity) = Unitful.ustrip(x)
+_unwrap_units(x::NamedTuple) = map(_unwrap_units, x)
+
 mutable struct TestDevice <: Device
     name::String
 end
@@ -12,6 +22,29 @@ mutable struct TestInjector <: StaticInjection
 end
 
 struct NonexistentComponent <: StaticInjection end
+
+"""Build a minimal `System` + `ThermalStandard` with the requested device base
+so unit-conversion tests don't depend on PSB-built fixtures."""
+function _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    sys = System(system_base)
+    bus = ACBus(;
+        number = 1, name = "b1", available = true,
+        bustype = ACBusTypes.REF, angle = 0.0, magnitude = 1.0,
+        voltage_limits = (min = 0.9, max = 1.1), base_voltage = 138.0,
+    )
+    add_component!(sys, bus)
+    gen = ThermalStandard(;
+        name = "g1", available = true, status = true, bus = bus,
+        active_power = 0.5, reactive_power = 0.1, rating = 1.0,
+        active_power_limits = (min = 0.0, max = 1.0),
+        reactive_power_limits = (min = -1.0, max = 1.0),
+        ramp_limits = nothing,
+        operation_cost = ThermalGenerationCost(nothing),
+        base_power = device_base,
+    )
+    add_component!(sys, gen)
+    return sys, gen
+end
 
 """Return the first component of type component_type that matches the name of other."""
 function get_component_by_name(sys::System, component_type, other::Component)
@@ -268,8 +301,17 @@ function test_accessors(component)
             end
         end
 
-        val = func(component)
-        @test val isa field_type
+        # Unit-aware getters are tagged via `display_units_arg`. For unattached
+        # test components, call with `DU` (device base) so the SU conversion
+        # path — which needs system attachment — is skipped.
+        val = if ismissing(IS.display_units_arg(func, ps_type))
+            func(component)
+        else
+            func(component, DU)
+        end
+        # Getters now wrap values (e.g. `0.5 SU` instead of raw `0.5`), so
+        # compare the unwrapped value's type to `field_type`.
+        @test _unwrap_units(val) isa field_type
         try
             if typeof(val) == Float64 || typeof(val) == Int
                 if !isnan(val)

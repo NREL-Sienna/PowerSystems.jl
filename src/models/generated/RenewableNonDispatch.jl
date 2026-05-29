@@ -103,18 +103,30 @@ get_name(value::RenewableNonDispatch) = value.name
 get_available(value::RenewableNonDispatch) = value.available
 """Get [`RenewableNonDispatch`](@ref) `bus`."""
 get_bus(value::RenewableNonDispatch) = value.bus
-"""Get [`RenewableNonDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableNonDispatch) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`RenewableNonDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableNonDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`RenewableNonDispatch`](@ref) `rating`."""
-get_rating(value::RenewableNonDispatch) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`RenewableNonDispatch`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`RenewableNonDispatch`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
+"""Get [`RenewableNonDispatch`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`RenewableNonDispatch`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
+"""Get [`RenewableNonDispatch`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::RenewableNonDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`RenewableNonDispatch`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::RenewableNonDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ RenewableNonDispatch }) = InfrastructureSystems.SU
 """Get [`RenewableNonDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableNonDispatch) = value.prime_mover_type
 """Get [`RenewableNonDispatch`](@ref) `power_factor`."""
 get_power_factor(value::RenewableNonDispatch) = value.power_factor
-"""Get [`RenewableNonDispatch`](@ref) `base_power`."""
-get_base_power(value::RenewableNonDispatch) = value.base_power
+
+_get_base_power(value::RenewableNonDispatch) = value.base_power
 """Get [`RenewableNonDispatch`](@ref) `services`."""
 get_services(value::RenewableNonDispatch) = value.services
 """Get [`RenewableNonDispatch`](@ref) `dynamic_injector`."""
@@ -138,8 +150,6 @@ set_rating!(value::RenewableNonDispatch, val) = value.rating = set_value(value, 
 set_prime_mover_type!(value::RenewableNonDispatch, val) = value.prime_mover_type = val
 """Set [`RenewableNonDispatch`](@ref) `power_factor`."""
 set_power_factor!(value::RenewableNonDispatch, val) = value.power_factor = val
-"""Set [`RenewableNonDispatch`](@ref) `base_power`."""
-set_base_power!(value::RenewableNonDispatch, val) = value.base_power = val
 """Set [`RenewableNonDispatch`](@ref) `services`."""
 set_services!(value::RenewableNonDispatch, val) = value.services = val
 """Set [`RenewableNonDispatch`](@ref) `ext`."""

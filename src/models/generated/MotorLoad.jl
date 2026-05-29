@@ -106,18 +106,38 @@ get_name(value::MotorLoad) = value.name
 get_available(value::MotorLoad) = value.available
 """Get [`MotorLoad`](@ref) `bus`."""
 get_bus(value::MotorLoad) = value.bus
-"""Get [`MotorLoad`](@ref) `active_power`."""
-get_active_power(value::MotorLoad) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`MotorLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::MotorLoad) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`MotorLoad`](@ref) `base_power`."""
-get_base_power(value::MotorLoad) = value.base_power
-"""Get [`MotorLoad`](@ref) `rating`."""
-get_rating(value::MotorLoad) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`MotorLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::MotorLoad) = get_value(value, Val(:max_active_power), Val(:mva))
-"""Get [`MotorLoad`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::MotorLoad) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`MotorLoad`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::MotorLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`MotorLoad`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::MotorLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+"""Get [`MotorLoad`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::MotorLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`MotorLoad`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::MotorLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+
+_get_base_power(value::MotorLoad) = value.base_power
+"""Get [`MotorLoad`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::MotorLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`MotorLoad`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::MotorLoad, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+"""Get [`MotorLoad`](@ref) `max_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_active_power_unitful`](@ref)."""
+get_max_active_power(value::MotorLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_active_power), Val(:mva), units))
+"""Get [`MotorLoad`](@ref) `max_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_active_power`](@ref)."""
+get_max_active_power_unitful(value::MotorLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power_unitful), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+"""Get [`MotorLoad`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+get_reactive_power_limits(value::MotorLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+"""Get [`MotorLoad`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
+get_reactive_power_limits_unitful(value::MotorLoad, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ MotorLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ MotorLoad }) = InfrastructureSystems.SU
 """Get [`MotorLoad`](@ref) `motor_technology`."""
 get_motor_technology(value::MotorLoad) = value.motor_technology
 """Get [`MotorLoad`](@ref) `services`."""
@@ -137,8 +157,6 @@ set_bus!(value::MotorLoad, val) = value.bus = val
 set_active_power!(value::MotorLoad, val) = value.active_power = set_value(value, Val(:active_power), val, Val(:mva))
 """Set [`MotorLoad`](@ref) `reactive_power`."""
 set_reactive_power!(value::MotorLoad, val) = value.reactive_power = set_value(value, Val(:reactive_power), val, Val(:mva))
-"""Set [`MotorLoad`](@ref) `base_power`."""
-set_base_power!(value::MotorLoad, val) = value.base_power = val
 """Set [`MotorLoad`](@ref) `rating`."""
 set_rating!(value::MotorLoad, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`MotorLoad`](@ref) `max_active_power`."""
