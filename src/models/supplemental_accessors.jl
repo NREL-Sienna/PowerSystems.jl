@@ -65,7 +65,10 @@ The phase shift angles are ignored in the susceptance calculation.
 
 See also: [`get_series_susceptance`](@ref) for 2-winding transformers and [`get_series_susceptances`](@ref get_series_susceptances(b::Transformer3W)) for [`Transformer3W`](@ref)
 """
-function get_series_susceptances(b::PhaseShiftingTransformer3W, units::IS.AbstractUnitSystem)
+function get_series_susceptances(
+    b::PhaseShiftingTransformer3W,
+    units::IS.AbstractUnitSystem,
+)
     y1 = 1 / get_x_primary(b, units)
     y2 = 1 / get_x_secondary(b, units)
     y3 = 1 / get_x_tertiary(b, units)
@@ -307,30 +310,30 @@ function get_max_storage_level(reservoir::HydroReservoir)
 end
 
 """
-Get the flow limits from source [`Area`](@ref) to destination [`Area`](@ref) for an [`AreaInterchange`](@ref).
+Get the flow limits from source [`Area`](@ref) to destination [`Area`](@ref) for an [`AreaInterchange`](@ref), in the specified `units`.
 """
-function get_from_to_flow_limit(a::AreaInterchange)
-    return get_flow_limits(a).from_to
+function get_from_to_flow_limit(a::AreaInterchange, units)
+    return get_flow_limits(a, units).from_to
 end
 """
-Get the flow limits from destination [`Area`](@ref) to source [`Area`](@ref) for an [`AreaInterchange`](@ref).
+Get the flow limits from destination [`Area`](@ref) to source [`Area`](@ref) for an [`AreaInterchange`](@ref), in the specified `units`.
 """
-function get_to_from_flow_limit(a::AreaInterchange)
-    return get_flow_limits(a).to_from
-end
-
-"""
-Get the minimum active power flow limit for a [`TransmissionInterface`](@ref).
-"""
-function get_min_active_power_flow_limit(tx::TransmissionInterface)
-    return get_active_power_flow_limits(tx).min
+function get_to_from_flow_limit(a::AreaInterchange, units)
+    return get_flow_limits(a, units).to_from
 end
 
 """
-Get the maximum active power flow limit for a [`TransmissionInterface`](@ref).
+Get the minimum active power flow limit for a [`TransmissionInterface`](@ref), in the specified `units`.
 """
-function get_max_active_power_flow_limit(tx::TransmissionInterface)
-    return get_active_power_flow_limits(tx).max
+function get_min_active_power_flow_limit(tx::TransmissionInterface, units)
+    return get_active_power_flow_limits(tx, units).min
+end
+
+"""
+Get the maximum active power flow limit for a [`TransmissionInterface`](@ref), in the specified `units`.
+"""
+function get_max_active_power_flow_limit(tx::TransmissionInterface, units)
+    return get_active_power_flow_limits(tx, units).max
 end
 
 """

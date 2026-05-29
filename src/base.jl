@@ -536,15 +536,18 @@ function get_units_base(system::System)
 end
 
 """
-A "context manager" that sets the [`System`](@ref)'s [units base](@ref per_unit) to the
-given value, executes the function, then sets the units base back.
+A "context manager" that temporarily sets the [`System`](@ref)'s [units base](@ref per_unit)
+setting to the given value, executes the function, then restores the previous setting.
+
+Note that the unit-aware getters and setters take their units explicitly (e.g.
+`get_active_power(gen, NU)`); this setting only affects code that reads the system's
+configured units base via [`get_units_base`](@ref).
 
 # Examples
 ```julia
-active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-    get_active_power(gen)
+with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+    get_units_base(sys)  # "NATURAL_UNITS" within the block; restored afterward
 end
-# now active_power_mw is in natural units no matter what units base the system is in
 ```
 """
 function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String})
@@ -571,15 +574,18 @@ function _set_units_base!(c::Component, settings::UnitSystem)
 end
 
 """
-A "context manager" that sets the [`Component`](@ref)'s [units base](@ref per_unit) to the
-given value, executes the function, then sets the units base back.
+A "context manager" that temporarily sets the [`Component`](@ref)'s [units base](@ref per_unit)
+setting to the given value, executes the function, then restores the previous setting.
+
+Note that the unit-aware getters and setters take their units explicitly (e.g.
+`get_active_power(component, NU)`); this setting only affects code that reads the
+component's configured units base.
 
 # Examples
 ```julia
-active_power_mw = with_units_base(component, UnitSystem.NATURAL_UNITS) do
-    get_active_power(component)
+with_units_base(component, UnitSystem.NATURAL_UNITS) do
+    get_units_setting(component)  # carries NATURAL_UNITS within the block; restored afterward
 end
-# now active_power_mw is in natural units no matter what units base the system is in
 ```
 """
 function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
