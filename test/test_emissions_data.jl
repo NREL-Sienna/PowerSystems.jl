@@ -93,14 +93,25 @@
             start_up_adder = -0.5,
         )
 
-        # Zero gwp
+        # Zero gwp is allowed (e.g. a pollutant excluded from CO2-equivalent accounting)
+        zero_gwp = EmissionsData(;
+            name = "zero_gwp",
+            pollutant = PollutantType.SO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+            gwp = 0.0,
+        )
+        @test get_gwp(zero_gwp) == 0.0
+
+        # Negative gwp is rejected
         @test_throws ArgumentError EmissionsData(;
             name = "bad",
             pollutant = PollutantType.CO2,
             emission_rate = 1.0,
             basis = EmissionBasis.FUEL_INPUT,
             energy_unit = EnergyUnit.MMBTU,
-            gwp = 0.0,
+            gwp = -1.0,
         )
 
         # MWH with FUEL_INPUT
@@ -165,6 +176,103 @@
         @test_throws ArgumentError set_emission_rate!(e, Inf)
         @test_throws ArgumentError set_start_up_adder!(e, NaN)
         @test_throws ArgumentError set_gwp!(e, Inf)
+    end
+
+    @testset "ValueCurve emission_rate validation" begin
+        # Negative constant rate (rate at zero input < 0)
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = IS.IncrementalCurve(
+                LinearFunctionData(0.0, -5.0), nothing, nothing,
+            ),
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+        )
+
+        # Non-finite slope
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.CO2,
+            emission_rate = IS.IncrementalCurve(
+                LinearFunctionData(Inf, 1.0), nothing, nothing,
+            ),
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+        )
+
+        # Negative piecewise step rate
+        @test_throws ArgumentError EmissionsData(;
+            name = "bad",
+            pollutant = PollutantType.SO2,
+            emission_rate = IS.IncrementalCurve(
+                PiecewiseStepData([0.0, 100.0, 200.0], [50.0, -10.0]),
+                0.0,
+                nothing,
+            ),
+            basis = EmissionBasis.POWER_OUTPUT,
+            energy_unit = EnergyUnit.MWH,
+        )
+
+        # A decreasing-but-non-negative-at-origin linear rate is allowed
+        ok = EmissionsData(;
+            name = "ok",
+            pollutant = PollutantType.NOX,
+            emission_rate = IS.IncrementalCurve(
+                LinearFunctionData(-0.001, 5.0), nothing, nothing,
+            ),
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+        )
+        @test get_emission_rate(ok) ==
+              IS.IncrementalCurve(LinearFunctionData(-0.001, 5.0), nothing, nothing)
+
+        # Setter rejects an invalid ValueCurve too
+        e = EmissionsData(;
+            name = "setter_curve",
+            pollutant = PollutantType.CO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+        )
+        @test_throws ArgumentError set_emission_rate!(
+            e,
+            IS.IncrementalCurve(LinearFunctionData(0.0, -1.0), nothing, nothing),
+        )
+    end
+
+    @testset "Validated setters for enum fields" begin
+        e = EmissionsData(;
+            name = "setters",
+            pollutant = PollutantType.CO2,
+            emission_rate = 1.0,
+            basis = EmissionBasis.FUEL_INPUT,
+            energy_unit = EnergyUnit.MMBTU,
+        )
+
+        set_pollutant!(e, PollutantType.NOX)
+        @test get_pollutant(e) == PollutantType.NOX
+
+        set_mass_unit!(e, MassUnit.LB)
+        @test get_mass_unit(e) == MassUnit.LB
+
+        # Valid energy_unit change within FUEL_INPUT (MMBTU -> GJ)
+        set_energy_unit!(e, EnergyUnit.GJ)
+        @test get_energy_unit(e) == EnergyUnit.GJ
+
+        # Individual setters enforce the basis/energy_unit invariant
+        @test_throws ArgumentError set_basis!(e, EmissionBasis.POWER_OUTPUT)
+        @test_throws ArgumentError set_energy_unit!(e, EnergyUnit.MWH)
+
+        # Combined setter is the supported way to switch basis + energy_unit atomically
+        set_basis_and_energy_unit!(e, EmissionBasis.POWER_OUTPUT, EnergyUnit.MWH)
+        @test get_basis(e) == EmissionBasis.POWER_OUTPUT
+        @test get_energy_unit(e) == EnergyUnit.MWH
+
+        # Combined setter still rejects an inconsistent pair
+        @test_throws ArgumentError set_basis_and_energy_unit!(
+            e, EmissionBasis.FUEL_INPUT, EnergyUnit.MWH,
+        )
     end
 
     @testset "Default mass_unit is KG" begin

@@ -346,6 +346,11 @@ export get_gwp
 export set_emission_rate!
 export set_start_up_adder!
 export set_gwp!
+export set_pollutant!
+export set_mass_unit!
+export set_basis!
+export set_energy_unit!
+export set_basis_and_energy_unit!
 
 export Service
 export AbstractReserve

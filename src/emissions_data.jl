@@ -43,12 +43,6 @@ function _validate_nonneg_finite(val::Real, field::String)
     end
 end
 
-function _validate_pos_finite(val::Real, field::String)
-    if !isfinite(val) || val <= 0.0
-        throw(ArgumentError("$field must be finite and > 0.0, got $val"))
-    end
-end
-
 function _validate_basis_energy_unit(basis::EmissionBasis, energy_unit::EnergyUnit)
     if basis == EmissionBasis.FUEL_INPUT
         if energy_unit != EnergyUnit.MMBTU && energy_unit != EnergyUnit.GJ
@@ -66,8 +60,62 @@ function _validate_basis_energy_unit(basis::EmissionBasis, energy_unit::EnergyUn
                 ),
             )
         end
+    else
+        throw(
+            ArgumentError(
+                "unhandled EmissionBasis $basis; update _validate_basis_energy_unit",
+            ),
+        )
     end
 end
+
+# Emission-rate helpers (shared between constructor and setters)
+
+"""Wrap a scalar emission rate in a constant-rate `IncrementalCurve` after validation."""
+function _emission_rate_curve(val::Real)
+    _validate_nonneg_finite(val, "emission_rate")
+    return IS.IncrementalCurve(LinearFunctionData(0.0, Float64(val)), nothing, nothing)
+end
+
+"""
+Validate that an `emission_rate` [`ValueCurve`](@ref) holds only finite coefficients and
+non-negative rate values (the rate at zero input and every tabulated rate must be `>= 0`).
+"""
+function _validate_emission_rate_curve(curve::IS.ValueCurve)
+    _validate_emission_rate_function_data(get_function_data(curve))
+    return
+end
+
+function _validate_emission_rate_function_data(fd::LinearFunctionData)
+    _validate_nonneg_finite(get_constant_term(fd), "emission_rate (rate at zero input)")
+    isfinite(get_proportional_term(fd)) || throw(
+        ArgumentError(
+            "emission_rate slope must be finite, got $(get_proportional_term(fd))",
+        ),
+    )
+    return
+end
+
+function _validate_emission_rate_function_data(fd::QuadraticFunctionData)
+    _validate_nonneg_finite(get_constant_term(fd), "emission_rate (rate at zero input)")
+    for term in (get_proportional_term(fd), get_quadratic_term(fd))
+        isfinite(term) ||
+            throw(ArgumentError("emission_rate coefficients must be finite, got $term"))
+    end
+    return
+end
+
+function _validate_emission_rate_function_data(
+    fd::Union{PiecewiseLinearData, PiecewiseStepData},
+)
+    for r in get_y_coords(fd)
+        _validate_nonneg_finite(r, "emission_rate")
+    end
+    return
+end
+
+# Safe fallback for any future FunctionData subtype not enumerated above.
+_validate_emission_rate_function_data(::IS.FunctionData) = nothing
 
 """
     EmissionsData(; name, pollutant, emission_rate, basis, energy_unit, ...)
@@ -92,20 +140,16 @@ function EmissionsData(;
     internal::InfrastructureSystemsInternal = InfrastructureSystemsInternal(),
 )
     _validate_nonneg_finite(start_up_adder, "start_up_adder")
-    _validate_pos_finite(gwp, "gwp")
+    _validate_nonneg_finite(gwp, "gwp")
 
     # Validate basis/energy_unit combination
     _validate_basis_energy_unit(basis, energy_unit)
 
-    # Convert scalar to IncrementalCurve with constant rate
+    # Normalize emission_rate to a validated ValueCurve
     if emission_rate isa Real
-        _validate_nonneg_finite(emission_rate, "emission_rate")
-        rate = IS.IncrementalCurve(
-            LinearFunctionData(0.0, Float64(emission_rate)),
-            nothing,
-            nothing,
-        )
+        rate = _emission_rate_curve(emission_rate)
     else
+        _validate_emission_rate_curve(emission_rate)
         rate = emission_rate
     end
 
@@ -152,15 +196,14 @@ get_internal(value::EmissionsData) = value.internal
 
 """Set [`EmissionsData`](@ref) `emission_rate` with a [`ValueCurve`](@ref)."""
 function set_emission_rate!(value::EmissionsData, val::IS.ValueCurve)
+    _validate_emission_rate_curve(val)
     value.emission_rate = val
     return
 end
 
 """Set [`EmissionsData`](@ref) `emission_rate` with a scalar (wraps in `IncrementalCurve` with constant rate)."""
 function set_emission_rate!(value::EmissionsData, val::Real)
-    _validate_nonneg_finite(val, "emission_rate")
-    value.emission_rate =
-        IS.IncrementalCurve(LinearFunctionData(0.0, Float64(val)), nothing, nothing)
+    value.emission_rate = _emission_rate_curve(val)
     return
 end
 
@@ -179,7 +222,54 @@ end
 
 """Set [`EmissionsData`](@ref) `gwp`."""
 function set_gwp!(value::EmissionsData, val::Real)
-    _validate_pos_finite(val, "gwp")
+    _validate_nonneg_finite(val, "gwp")
     value.gwp = Float64(val)
+    return
+end
+
+"""Set [`EmissionsData`](@ref) `pollutant`."""
+function set_pollutant!(value::EmissionsData, val::PollutantType)
+    value.pollutant = val
+    return
+end
+
+"""Set [`EmissionsData`](@ref) `mass_unit`."""
+function set_mass_unit!(value::EmissionsData, val::MassUnit)
+    value.mass_unit = val
+    return
+end
+
+"""
+Set [`EmissionsData`](@ref) `basis`, validating it against the current `energy_unit`. To
+switch between FUEL_INPUT and POWER_OUTPUT (which also requires changing `energy_unit`),
+use [`set_basis_and_energy_unit!`](@ref) instead.
+"""
+function set_basis!(value::EmissionsData, val::EmissionBasis)
+    _validate_basis_energy_unit(val, value.energy_unit)
+    value.basis = val
+    return
+end
+
+"""Set [`EmissionsData`](@ref) `energy_unit`, validating it against the current `basis`."""
+function set_energy_unit!(value::EmissionsData, val::EnergyUnit)
+    _validate_basis_energy_unit(value.basis, val)
+    value.energy_unit = val
+    return
+end
+
+"""
+Set [`EmissionsData`](@ref) `basis` and `energy_unit` together, validating the combination.
+This is the supported way to retarget an attribute between FUEL_INPUT and POWER_OUTPUT,
+since neither field can be changed individually without transiently violating the
+basis/energy_unit invariant.
+"""
+function set_basis_and_energy_unit!(
+    value::EmissionsData,
+    basis::EmissionBasis,
+    energy_unit::EnergyUnit,
+)
+    _validate_basis_energy_unit(basis, energy_unit)
+    value.basis = basis
+    value.energy_unit = energy_unit
     return
 end

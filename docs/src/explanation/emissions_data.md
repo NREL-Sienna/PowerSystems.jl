@@ -53,9 +53,9 @@ The `emission_rate` field accepts any [`ValueCurve`](@ref) subtype, typically an
 [`IncrementalCurve`](@ref) representing the emission rate (pollutant per unit of
 fuel or power):
 
-- **`IncrementalCurve(LinearFunctionData(0, rate), ...)`** — constant emission rate
-- **`IncrementalCurve(LinearFunctionData(slope, intercept), ...)`** — linearly varying rate
-- **`IncrementalCurve(PiecewiseStepData(...), ...)`** — piecewise step rate (`PiecewiseIncrementalCurve`)
+  - **`IncrementalCurve(LinearFunctionData(0, rate), ...)`** — constant emission rate
+  - **`IncrementalCurve(LinearFunctionData(slope, intercept), ...)`** — linearly varying rate
+  - **`IncrementalCurve(PiecewiseStepData(...), ...)`** — piecewise step rate (`PiecewiseIncrementalCurve`)
 
 When constructing with a scalar `Real` value, the rate is automatically wrapped in an
 `IncrementalCurve` with constant rate. This makes simple constant-rate cases ergonomic
@@ -73,9 +73,9 @@ tie it to the start binary variable in the unit commitment formulation).
 
 The following features are out of scope for this version and tracked in follow-up issues:
 
-- Time-varying emission rates (time series support)
-- Hot/warm/cold split of the start-up adder
-- `EmissionsCap` and `EmissionsPrice` supplemental attribute types
-- Removal rate / pollution control fraction
-- PowerSimulations.jl integration
-- Parser support (CSV, Matpower, PSS/E, RTS data format)
+  - Time-varying emission rates (time series support)
+  - Hot/warm/cold split of the start-up adder
+  - `EmissionsCap` and `EmissionsPrice` supplemental attribute types
+  - Removal rate / pollution control fraction
+  - PowerSimulations.jl integration
+  - Parser support (CSV, Matpower, PSS/E, RTS data format)
