@@ -116,16 +116,32 @@ get_available(value::InterconnectingConverter) = value.available
 get_bus(value::InterconnectingConverter) = value.bus
 """Get [`InterconnectingConverter`](@ref) `dc_bus`."""
 get_dc_bus(value::InterconnectingConverter) = value.dc_bus
-"""Get [`InterconnectingConverter`](@ref) `active_power`."""
-get_active_power(value::InterconnectingConverter) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`InterconnectingConverter`](@ref) `rating`."""
-get_rating(value::InterconnectingConverter) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`InterconnectingConverter`](@ref) `active_power_limits`."""
-get_active_power_limits(value::InterconnectingConverter) = get_value(value, Val(:active_power_limits), Val(:mva))
-"""Get [`InterconnectingConverter`](@ref) `base_power`."""
-get_base_power(value::InterconnectingConverter) = value.base_power
-"""Get [`InterconnectingConverter`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::InterconnectingConverter) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`InterconnectingConverter`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::InterconnectingConverter, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`InterconnectingConverter`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::InterconnectingConverter, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+"""Get [`InterconnectingConverter`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::InterconnectingConverter, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`InterconnectingConverter`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::InterconnectingConverter, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+"""Get [`InterconnectingConverter`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+get_active_power_limits(value::InterconnectingConverter, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
+"""Get [`InterconnectingConverter`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
+get_active_power_limits_unitful(value::InterconnectingConverter, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+
+_get_base_power(value::InterconnectingConverter) = value.base_power
+"""Get [`InterconnectingConverter`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+get_reactive_power_limits(value::InterconnectingConverter, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+"""Get [`InterconnectingConverter`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
+get_reactive_power_limits_unitful(value::InterconnectingConverter, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ InterconnectingConverter }) = InfrastructureSystems.SU
 """Get [`InterconnectingConverter`](@ref) `dc_current`."""
 get_dc_current(value::InterconnectingConverter) = value.dc_current
 """Get [`InterconnectingConverter`](@ref) `max_dc_current`."""
@@ -153,8 +169,6 @@ set_active_power!(value::InterconnectingConverter, val) = value.active_power = s
 set_rating!(value::InterconnectingConverter, val) = value.rating = set_value(value, Val(:rating), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `active_power_limits`."""
 set_active_power_limits!(value::InterconnectingConverter, val) = value.active_power_limits = set_value(value, Val(:active_power_limits), val, Val(:mva))
-"""Set [`InterconnectingConverter`](@ref) `base_power`."""
-set_base_power!(value::InterconnectingConverter, val) = value.base_power = val
 """Set [`InterconnectingConverter`](@ref) `reactive_power_limits`."""
 set_reactive_power_limits!(value::InterconnectingConverter, val) = value.reactive_power_limits = set_value(value, Val(:reactive_power_limits), val, Val(:mva))
 """Set [`InterconnectingConverter`](@ref) `dc_current`."""
