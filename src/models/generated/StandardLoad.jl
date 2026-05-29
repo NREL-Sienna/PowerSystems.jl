@@ -143,32 +143,80 @@ get_name(value::StandardLoad) = value.name
 get_available(value::StandardLoad) = value.available
 """Get [`StandardLoad`](@ref) `bus`."""
 get_bus(value::StandardLoad) = value.bus
-"""Get [`StandardLoad`](@ref) `base_power`."""
-get_base_power(value::StandardLoad) = value.base_power
-"""Get [`StandardLoad`](@ref) `constant_active_power`."""
-get_constant_active_power(value::StandardLoad) = get_value(value, Val(:constant_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `constant_reactive_power`."""
-get_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:constant_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `impedance_active_power`."""
-get_impedance_active_power(value::StandardLoad) = get_value(value, Val(:impedance_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `impedance_reactive_power`."""
-get_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:impedance_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `current_active_power`."""
-get_current_active_power(value::StandardLoad) = get_value(value, Val(:current_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `current_reactive_power`."""
-get_current_reactive_power(value::StandardLoad) = get_value(value, Val(:current_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_constant_active_power`."""
-get_max_constant_active_power(value::StandardLoad) = get_value(value, Val(:max_constant_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_constant_reactive_power`."""
-get_max_constant_reactive_power(value::StandardLoad) = get_value(value, Val(:max_constant_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_impedance_active_power`."""
-get_max_impedance_active_power(value::StandardLoad) = get_value(value, Val(:max_impedance_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_impedance_reactive_power`."""
-get_max_impedance_reactive_power(value::StandardLoad) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_current_active_power`."""
-get_max_current_active_power(value::StandardLoad) = get_value(value, Val(:max_current_active_power), Val(:mva))
-"""Get [`StandardLoad`](@ref) `max_current_reactive_power`."""
-get_max_current_reactive_power(value::StandardLoad) = get_value(value, Val(:max_current_reactive_power), Val(:mva))
+
+_get_base_power(value::StandardLoad) = value.base_power
+"""Get [`StandardLoad`](@ref) `constant_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_constant_active_power_unitful`](@ref)."""
+get_constant_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `constant_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_constant_active_power`](@ref)."""
+get_constant_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:constant_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_constant_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_constant_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `constant_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_constant_reactive_power_unitful`](@ref)."""
+get_constant_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:constant_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `constant_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_constant_reactive_power`](@ref)."""
+get_constant_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:constant_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_constant_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_constant_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `impedance_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_impedance_active_power_unitful`](@ref)."""
+get_impedance_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `impedance_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_impedance_active_power`](@ref)."""
+get_impedance_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:impedance_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_impedance_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_impedance_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `impedance_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_impedance_reactive_power_unitful`](@ref)."""
+get_impedance_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:impedance_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `impedance_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_impedance_reactive_power`](@ref)."""
+get_impedance_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:impedance_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_impedance_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_impedance_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `current_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_current_active_power_unitful`](@ref)."""
+get_current_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `current_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_current_active_power`](@ref)."""
+get_current_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:current_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_current_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_current_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `current_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_current_reactive_power_unitful`](@ref)."""
+get_current_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:current_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `current_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_current_reactive_power`](@ref)."""
+get_current_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:current_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_current_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_current_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_constant_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_constant_active_power_unitful`](@ref)."""
+get_max_constant_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_constant_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_constant_active_power`](@ref)."""
+get_max_constant_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_constant_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_constant_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_constant_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_constant_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_constant_reactive_power_unitful`](@ref)."""
+get_max_constant_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_constant_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_constant_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_constant_reactive_power`](@ref)."""
+get_max_constant_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_constant_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_constant_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_constant_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_impedance_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_impedance_active_power_unitful`](@ref)."""
+get_max_impedance_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_impedance_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_impedance_active_power`](@ref)."""
+get_max_impedance_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_impedance_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_impedance_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_impedance_reactive_power_unitful`](@ref)."""
+get_max_impedance_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_impedance_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_impedance_reactive_power`](@ref)."""
+get_max_impedance_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_impedance_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_impedance_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_current_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_current_active_power_unitful`](@ref)."""
+get_max_current_active_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_active_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_current_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_current_active_power`](@ref)."""
+get_max_current_active_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_current_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_current_active_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_current_active_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+"""Get [`StandardLoad`](@ref) `max_current_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_current_reactive_power_unitful`](@ref)."""
+get_max_current_reactive_power(value::StandardLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_current_reactive_power), Val(:mva), units))
+"""Get [`StandardLoad`](@ref) `max_current_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_current_reactive_power`](@ref)."""
+get_max_current_reactive_power_unitful(value::StandardLoad, units) = get_value(value, Val(:max_current_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_current_reactive_power), ::Type{ StandardLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_current_reactive_power_unitful), ::Type{ StandardLoad }) = InfrastructureSystems.SU
 """Get [`StandardLoad`](@ref) `conformity`."""
 get_conformity(value::StandardLoad) = value.conformity
 """Get [`StandardLoad`](@ref) `services`."""
@@ -184,8 +232,6 @@ get_internal(value::StandardLoad) = value.internal
 set_available!(value::StandardLoad, val) = value.available = val
 """Set [`StandardLoad`](@ref) `bus`."""
 set_bus!(value::StandardLoad, val) = value.bus = val
-"""Set [`StandardLoad`](@ref) `base_power`."""
-set_base_power!(value::StandardLoad, val) = value.base_power = val
 """Set [`StandardLoad`](@ref) `constant_active_power`."""
 set_constant_active_power!(value::StandardLoad, val) = value.constant_active_power = set_value(value, Val(:constant_active_power), val, Val(:mva))
 """Set [`StandardLoad`](@ref) `constant_reactive_power`."""

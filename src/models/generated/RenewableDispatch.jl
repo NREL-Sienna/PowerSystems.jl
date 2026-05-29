@@ -113,22 +113,38 @@ get_name(value::RenewableDispatch) = value.name
 get_available(value::RenewableDispatch) = value.available
 """Get [`RenewableDispatch`](@ref) `bus`."""
 get_bus(value::RenewableDispatch) = value.bus
-"""Get [`RenewableDispatch`](@ref) `active_power`."""
-get_active_power(value::RenewableDispatch) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`RenewableDispatch`](@ref) `reactive_power`."""
-get_reactive_power(value::RenewableDispatch) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`RenewableDispatch`](@ref) `rating`."""
-get_rating(value::RenewableDispatch) = get_value(value, Val(:rating), Val(:mva))
+"""Get [`RenewableDispatch`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::RenewableDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`RenewableDispatch`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::RenewableDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+"""Get [`RenewableDispatch`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::RenewableDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`RenewableDispatch`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+"""Get [`RenewableDispatch`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::RenewableDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`RenewableDispatch`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::RenewableDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
 """Get [`RenewableDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::RenewableDispatch) = value.prime_mover_type
-"""Get [`RenewableDispatch`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::RenewableDispatch) = get_value(value, Val(:reactive_power_limits), Val(:mva))
+"""Get [`RenewableDispatch`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+get_reactive_power_limits(value::RenewableDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+"""Get [`RenewableDispatch`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
+get_reactive_power_limits_unitful(value::RenewableDispatch, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ RenewableDispatch }) = InfrastructureSystems.SU
 """Get [`RenewableDispatch`](@ref) `power_factor`."""
 get_power_factor(value::RenewableDispatch) = value.power_factor
 """Get [`RenewableDispatch`](@ref) `operation_cost`."""
 get_operation_cost(value::RenewableDispatch) = value.operation_cost
-"""Get [`RenewableDispatch`](@ref) `base_power`."""
-get_base_power(value::RenewableDispatch) = value.base_power
+
+_get_base_power(value::RenewableDispatch) = value.base_power
 """Get [`RenewableDispatch`](@ref) `services`."""
 get_services(value::RenewableDispatch) = value.services
 """Get [`RenewableDispatch`](@ref) `dynamic_injector`."""
@@ -156,8 +172,6 @@ set_reactive_power_limits!(value::RenewableDispatch, val) = value.reactive_power
 set_power_factor!(value::RenewableDispatch, val) = value.power_factor = val
 """Set [`RenewableDispatch`](@ref) `operation_cost`."""
 set_operation_cost!(value::RenewableDispatch, val) = value.operation_cost = val
-"""Set [`RenewableDispatch`](@ref) `base_power`."""
-set_base_power!(value::RenewableDispatch, val) = value.base_power = val
 """Set [`RenewableDispatch`](@ref) `services`."""
 set_services!(value::RenewableDispatch, val) = value.services = val
 """Set [`RenewableDispatch`](@ref) `ext`."""

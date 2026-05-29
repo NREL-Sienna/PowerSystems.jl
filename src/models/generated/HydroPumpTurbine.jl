@@ -179,36 +179,68 @@ get_name(value::HydroPumpTurbine) = value.name
 get_available(value::HydroPumpTurbine) = value.available
 """Get [`HydroPumpTurbine`](@ref) `bus`."""
 get_bus(value::HydroPumpTurbine) = value.bus
-"""Get [`HydroPumpTurbine`](@ref) `active_power`."""
-get_active_power(value::HydroPumpTurbine) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`HydroPumpTurbine`](@ref) `reactive_power`."""
-get_reactive_power(value::HydroPumpTurbine) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`HydroPumpTurbine`](@ref) `rating`."""
-get_rating(value::HydroPumpTurbine) = get_value(value, Val(:rating), Val(:mva))
-"""Get [`HydroPumpTurbine`](@ref) `active_power_limits`."""
-get_active_power_limits(value::HydroPumpTurbine) = get_value(value, Val(:active_power_limits), Val(:mva))
-"""Get [`HydroPumpTurbine`](@ref) `reactive_power_limits`."""
-get_reactive_power_limits(value::HydroPumpTurbine) = get_value(value, Val(:reactive_power_limits), Val(:mva))
-"""Get [`HydroPumpTurbine`](@ref) `active_power_limits_pump`."""
-get_active_power_limits_pump(value::HydroPumpTurbine) = get_value(value, Val(:active_power_limits_pump), Val(:mva))
+"""Get [`HydroPumpTurbine`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+"""Get [`HydroPumpTurbine`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+"""Get [`HydroPumpTurbine`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+get_rating(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
+get_rating_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:rating), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+"""Get [`HydroPumpTurbine`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+get_active_power_limits(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
+get_active_power_limits_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+"""Get [`HydroPumpTurbine`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+get_reactive_power_limits(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
+get_reactive_power_limits_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+"""Get [`HydroPumpTurbine`](@ref) `active_power_limits_pump` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_pump_unitful`](@ref)."""
+get_active_power_limits_pump(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits_pump), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `active_power_limits_pump` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits_pump`](@ref)."""
+get_active_power_limits_pump_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:active_power_limits_pump), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_pump), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_pump_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
 """Get [`HydroPumpTurbine`](@ref) `outflow_limits`."""
 get_outflow_limits(value::HydroPumpTurbine) = value.outflow_limits
 """Get [`HydroPumpTurbine`](@ref) `powerhouse_elevation`."""
 get_powerhouse_elevation(value::HydroPumpTurbine) = value.powerhouse_elevation
-"""Get [`HydroPumpTurbine`](@ref) `ramp_limits`."""
-get_ramp_limits(value::HydroPumpTurbine) = get_value(value, Val(:ramp_limits), Val(:mva))
+"""Get [`HydroPumpTurbine`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
+get_ramp_limits(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:ramp_limits), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `ramp_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_ramp_limits`](@ref)."""
+get_ramp_limits_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:ramp_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
 """Get [`HydroPumpTurbine`](@ref) `time_limits`."""
 get_time_limits(value::HydroPumpTurbine) = value.time_limits
-"""Get [`HydroPumpTurbine`](@ref) `base_power`."""
-get_base_power(value::HydroPumpTurbine) = value.base_power
+
+_get_base_power(value::HydroPumpTurbine) = value.base_power
 """Get [`HydroPumpTurbine`](@ref) `status`."""
 get_status(value::HydroPumpTurbine) = value.status
 """Get [`HydroPumpTurbine`](@ref) `time_at_status`."""
 get_time_at_status(value::HydroPumpTurbine) = value.time_at_status
 """Get [`HydroPumpTurbine`](@ref) `operation_cost`."""
 get_operation_cost(value::HydroPumpTurbine) = value.operation_cost
-"""Get [`HydroPumpTurbine`](@ref) `active_power_pump`."""
-get_active_power_pump(value::HydroPumpTurbine) = get_value(value, Val(:active_power_pump), Val(:mva))
+"""Get [`HydroPumpTurbine`](@ref) `active_power_pump` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_pump_unitful`](@ref)."""
+get_active_power_pump(value::HydroPumpTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_pump), Val(:mva), units))
+"""Get [`HydroPumpTurbine`](@ref) `active_power_pump` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_pump`](@ref)."""
+get_active_power_pump_unitful(value::HydroPumpTurbine, units) = get_value(value, Val(:active_power_pump), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_pump), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_pump_unitful), ::Type{ HydroPumpTurbine }) = InfrastructureSystems.SU
 """Get [`HydroPumpTurbine`](@ref) `efficiency`."""
 get_efficiency(value::HydroPumpTurbine) = value.efficiency
 """Get [`HydroPumpTurbine`](@ref) `transition_time`."""
@@ -256,8 +288,6 @@ set_powerhouse_elevation!(value::HydroPumpTurbine, val) = value.powerhouse_eleva
 set_ramp_limits!(value::HydroPumpTurbine, val) = value.ramp_limits = set_value(value, Val(:ramp_limits), val, Val(:mva))
 """Set [`HydroPumpTurbine`](@ref) `time_limits`."""
 set_time_limits!(value::HydroPumpTurbine, val) = value.time_limits = val
-"""Set [`HydroPumpTurbine`](@ref) `base_power`."""
-set_base_power!(value::HydroPumpTurbine, val) = value.base_power = val
 """Set [`HydroPumpTurbine`](@ref) `status`."""
 set_status!(value::HydroPumpTurbine, val) = value.status = val
 """Set [`HydroPumpTurbine`](@ref) `time_at_status`."""

@@ -449,9 +449,24 @@ Return a user-modifiable dictionary to store extra information.
 get_ext(sys::System) = IS.get_ext(sys.internal)
 
 """
-Return the system's base power.
+Unitless system base power (MVA) — internal anchor for unit conversion.
 """
-get_base_power(sys::System) = sys.units_settings.base_value
+_get_base_power(sys::System) = sys.units_settings.base_value
+
+"""
+Return the system's base power as a bare number in the requested units (e.g.
+`NU`, `MW`, `SU`). For the unit-bearing value see [`get_base_power_unitful`](@ref).
+"""
+get_base_power(sys::System, u) = IS._strip_units(get_base_power_unitful(sys, u))
+
+"""
+Return the system's base power as a unit-bearing quantity. See
+[`get_base_power`](@ref) for a bare number.
+"""
+get_base_power_unitful(sys::System, ::NaturalUnit) = _get_base_power(sys) * MVA
+get_base_power_unitful(sys::System, u::Unitful.Units) =
+    Unitful.uconvert(u, _get_base_power(sys) * MVA)
+get_base_power_unitful(sys::System, ::SystemBaseUnit) = 1.0 * SU
 
 """
 Return the system's frequency.
@@ -521,15 +536,18 @@ function get_units_base(system::System)
 end
 
 """
-A "context manager" that sets the [`System`](@ref)'s [units base](@ref per_unit) to the
-given value, executes the function, then sets the units base back.
+A "context manager" that temporarily sets the [`System`](@ref)'s [units base](@ref per_unit)
+setting to the given value, executes the function, then restores the previous setting.
+
+Note that the unit-aware getters and setters take their units explicitly (e.g.
+`get_active_power(gen, NU)`); this setting only affects code that reads the system's
+configured units base via [`get_units_base`](@ref).
 
 # Examples
 ```julia
-active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-    get_active_power(gen)
+with_units_base(sys, UnitSystem.NATURAL_UNITS) do
+    get_units_base(sys)  # "NATURAL_UNITS" within the block; restored afterward
 end
-# now active_power_mw is in natural units no matter what units base the system is in
 ```
 """
 function with_units_base(f::Function, sys::System, units::Union{UnitSystem, String})
@@ -556,15 +574,18 @@ function _set_units_base!(c::Component, settings::UnitSystem)
 end
 
 """
-A "context manager" that sets the [`Component`](@ref)'s [units base](@ref per_unit) to the
-given value, executes the function, then sets the units base back.
+A "context manager" that temporarily sets the [`Component`](@ref)'s [units base](@ref per_unit)
+setting to the given value, executes the function, then restores the previous setting.
+
+Note that the unit-aware getters and setters take their units explicitly (e.g.
+`get_active_power(component, NU)`); this setting only affects code that reads the
+component's configured units base.
 
 # Examples
 ```julia
-active_power_mw = with_units_base(component, UnitSystem.NATURAL_UNITS) do
-    get_active_power(component)
+with_units_base(component, UnitSystem.NATURAL_UNITS) do
+    get_units_setting(component)  # carries NATURAL_UNITS within the block; restored afterward
 end
-# now active_power_mw is in natural units no matter what units base the system is in
 ```
 """
 function with_units_base(f::Function, c::Component, units::Union{UnitSystem, String})
@@ -2341,7 +2362,7 @@ Returns `true` if all values are valid, `false` otherwise.
 """
 function check_ac_transmission_rate_values(sys::System)
     is_valid = true
-    base_power = get_base_power(sys)
+    base_power = _get_base_power(sys)
     for line in
         Iterators.flatten((get_components(Line, sys), get_components(MonitoredLine, sys)))
         if !check_rating_values(line, base_power)
@@ -2942,7 +2963,7 @@ end
 
 function handle_component_addition!(sys::System, dyn_injector::DynamicInjection; kwargs...)
     static_injector = kwargs[:static_injector]
-    static_base_power = get_base_power(static_injector)
+    static_base_power = _get_base_power(static_injector)
     set_base_power!(dyn_injector, static_base_power)
     set_dynamic_injector!(static_injector, dyn_injector)
     return
@@ -3261,15 +3282,17 @@ function convert_component!(
     new_type::Type{StandardLoad};
     kwargs...,
 )
+    # Raw device-base values: struct fields are stored in device base (Float64);
+    # we copy the underlying field directly to avoid SU-conversion round-tripping.
     new_load = new_type(;
         name = get_name(old_load),
         available = get_available(old_load),
         bus = get_bus(old_load),
-        base_power = get_base_power(old_load),
-        constant_active_power = get_active_power(old_load),
-        constant_reactive_power = get_reactive_power(old_load),
-        max_constant_active_power = get_max_active_power(old_load),
-        max_constant_reactive_power = get_max_active_power(old_load),
+        base_power = _get_base_power(old_load),
+        constant_active_power = old_load.active_power,
+        constant_reactive_power = old_load.reactive_power,
+        max_constant_active_power = old_load.max_active_power,
+        max_constant_reactive_power = old_load.max_active_power,
         conformity = get_conformity(old_load),
         dynamic_injector = get_dynamic_injector(old_load),
         internal = _copy_internal_for_conversion(old_load),

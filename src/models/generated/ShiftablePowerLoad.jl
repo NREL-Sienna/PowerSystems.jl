@@ -111,18 +111,38 @@ get_name(value::ShiftablePowerLoad) = value.name
 get_available(value::ShiftablePowerLoad) = value.available
 """Get [`ShiftablePowerLoad`](@ref) `bus`."""
 get_bus(value::ShiftablePowerLoad) = value.bus
-"""Get [`ShiftablePowerLoad`](@ref) `active_power`."""
-get_active_power(value::ShiftablePowerLoad) = get_value(value, Val(:active_power), Val(:mva))
-"""Get [`ShiftablePowerLoad`](@ref) `active_power_limits`."""
-get_active_power_limits(value::ShiftablePowerLoad) = get_value(value, Val(:active_power_limits), Val(:mva))
-"""Get [`ShiftablePowerLoad`](@ref) `reactive_power`."""
-get_reactive_power(value::ShiftablePowerLoad) = get_value(value, Val(:reactive_power), Val(:mva))
-"""Get [`ShiftablePowerLoad`](@ref) `max_active_power`."""
-get_max_active_power(value::ShiftablePowerLoad) = get_value(value, Val(:max_active_power), Val(:mva))
-"""Get [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
-get_max_reactive_power(value::ShiftablePowerLoad) = get_value(value, Val(:max_reactive_power), Val(:mva))
-"""Get [`ShiftablePowerLoad`](@ref) `base_power`."""
-get_base_power(value::ShiftablePowerLoad) = value.base_power
+"""Get [`ShiftablePowerLoad`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+get_active_power(value::ShiftablePowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
+"""Get [`ShiftablePowerLoad`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
+get_active_power_unitful(value::ShiftablePowerLoad, units) = get_value(value, Val(:active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+"""Get [`ShiftablePowerLoad`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+get_active_power_limits(value::ShiftablePowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
+"""Get [`ShiftablePowerLoad`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
+get_active_power_limits_unitful(value::ShiftablePowerLoad, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+"""Get [`ShiftablePowerLoad`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+get_reactive_power(value::ShiftablePowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
+"""Get [`ShiftablePowerLoad`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
+get_reactive_power_unitful(value::ShiftablePowerLoad, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+"""Get [`ShiftablePowerLoad`](@ref) `max_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_active_power_unitful`](@ref)."""
+get_max_active_power(value::ShiftablePowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_active_power), Val(:mva), units))
+"""Get [`ShiftablePowerLoad`](@ref) `max_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_active_power`](@ref)."""
+get_max_active_power_unitful(value::ShiftablePowerLoad, units) = get_value(value, Val(:max_active_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_active_power_unitful), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+"""Get [`ShiftablePowerLoad`](@ref) `max_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_max_reactive_power_unitful`](@ref)."""
+get_max_reactive_power(value::ShiftablePowerLoad, units) = InfrastructureSystems._strip_units(get_value(value, Val(:max_reactive_power), Val(:mva), units))
+"""Get [`ShiftablePowerLoad`](@ref) `max_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_max_reactive_power`](@ref)."""
+get_max_reactive_power_unitful(value::ShiftablePowerLoad, units) = get_value(value, Val(:max_reactive_power), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_max_reactive_power_unitful), ::Type{ ShiftablePowerLoad }) = InfrastructureSystems.SU
+
+_get_base_power(value::ShiftablePowerLoad) = value.base_power
 """Get [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""
 get_load_balance_time_horizon(value::ShiftablePowerLoad) = value.load_balance_time_horizon
 """Get [`ShiftablePowerLoad`](@ref) `operation_cost`."""
@@ -150,8 +170,6 @@ set_reactive_power!(value::ShiftablePowerLoad, val) = value.reactive_power = set
 set_max_active_power!(value::ShiftablePowerLoad, val) = value.max_active_power = set_value(value, Val(:max_active_power), val, Val(:mva))
 """Set [`ShiftablePowerLoad`](@ref) `max_reactive_power`."""
 set_max_reactive_power!(value::ShiftablePowerLoad, val) = value.max_reactive_power = set_value(value, Val(:max_reactive_power), val, Val(:mva))
-"""Set [`ShiftablePowerLoad`](@ref) `base_power`."""
-set_base_power!(value::ShiftablePowerLoad, val) = value.base_power = val
 """Set [`ShiftablePowerLoad`](@ref) `load_balance_time_horizon`."""
 set_load_balance_time_horizon!(value::ShiftablePowerLoad, val) = value.load_balance_time_horizon = val
 """Set [`ShiftablePowerLoad`](@ref) `operation_cost`."""

@@ -573,6 +573,12 @@ const POWER_SYSTEM_STRUCT_DESCRIPTOR_FILE =
 
 const DEFAULT_SYSTEM_FREQUENCY = 60.0
 
+const DEFAULT_BASE_MVA = 100.0
+# Accumulator type for MW-sum helpers in system_checks.jl. Bare `Float64`
+# because unit-aware getters now return bare numbers; the `MW` arg merely
+# selects the unit basis (see `_sum_or_zero`).
+const MW_ACCUMULATOR_TYPE = Float64
+
 const INFINITE_TIME = 1e4
 const START_COST = 1e8
 const INFINITE_COST = 1e8

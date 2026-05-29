@@ -229,72 +229,43 @@ end
     )
 end
 
-# TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
-# (PSB.build_system uses PSY.PowerSystemTableData internally for test_RTS_GMLC_sys).
-# @testset "Test system units" begin
-#     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-#     set_units_base_system!(sys, "DEVICE_BASE")
-#     @test get_units_base(sys) == "DEVICE_BASE"
-#     set_units_base_system!(sys, "SYSTEM_BASE")
-#     @test get_units_base(sys) == "SYSTEM_BASE"
-#
-#     gen = get_component(ThermalStandard, sys, "322_CT_6")
-#     active_power_mw = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-#         get_active_power(gen)
-#     end
-#     @test get_units_base(sys) == "SYSTEM_BASE"
-#     set_units_base_system!(sys, UnitSystem.NATURAL_UNITS)
-#     @test active_power_mw == get_active_power(gen)
-# end
+# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
+# `322_CT_6`, but PSB isn't compatible with the new units API yet.
+@testset "Test explicit units API" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    device_base = PSY._get_base_power(gen)
+    system_base = PSY._get_base_power(sys)
+    raw_active = gen.active_power
 
-# TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
-# (PSB.build_system uses PSY.PowerSystemTableData internally for test_RTS_GMLC_sys).
-# @testset "Test with_units_base on component" begin
-#     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-#     set_units_base_system!(sys, "SYSTEM_BASE")
-#     gen = get_component(ThermalStandard, sys, "322_CT_6")
-#     base_power = get_base_power(sys)
-#
-#     # Component shares system's units_settings initially
-#     @test sys.units_settings === PSY.get_internal(gen).units_info
-#
-#     # with_units_base on component should work and preserve reference after
-#     P_pu = get_active_power(gen)
-#     P_natural = with_units_base(gen, "NATURAL_UNITS") do
-#         get_active_power(gen)
-#     end
-#     @test P_natural ≈ P_pu * base_power
-#
-#     # Reference should be preserved after with_units_base(component, ...)
-#     @test sys.units_settings === PSY.get_internal(gen).units_info
-#
-#     # System-level with_units_base should still work after component-level call
-#     P_natural_via_sys = with_units_base(sys, UnitSystem.NATURAL_UNITS) do
-#         get_active_power(gen)
-#     end
-#     @test P_natural ≈ P_natural_via_sys
-# end
+    P_mw = get_active_power(gen, MW)
+    @test P_mw isa Float64
+    @test P_mw ≈ raw_active * device_base
+    @test get_active_power_unitful(gen, MW) isa Unitful.Quantity
+    @test Unitful.ustrip(get_active_power_unitful(gen, MW)) ≈ raw_active * device_base
 
-# TODO: re-enable once PowerSystemCaseBuilder no longer relies on PSY parsers
-# (PSB.build_system uses PSY.PowerSystemTableData internally for test_RTS_GMLC_sys).
-# @testset "Test with_units_base on component removed during block" begin
-#     sys = PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys"; add_forecasts = false)
-#     set_units_base_system!(sys, "SYSTEM_BASE")
-#     line = first(get_components(Line, sys))
-#
-#     # Component shares system's units_settings initially
-#     @test sys.units_settings === PSY.get_internal(line).units_info
-#
-#     # Remove component during with_units_base block
-#     @test_throws ErrorException begin
-#         with_units_base(line, "NATURAL_UNITS") do
-#             remove_component!(sys, line)
-#         end
-#     end
-#
-#     # After removal, units_info should be nothing (not restored to system's)
-#     @test isnothing(PSY.get_internal(line).units_info)
-# end
+    P_du = get_active_power(gen, DU)
+    @test P_du isa Float64
+    @test P_du ≈ raw_active
+    @test get_active_power_unitful(gen, DU) isa RelativeQuantity
+
+    P_su = get_active_power(gen, SU)
+    @test P_su isa Float64
+    @test P_su ≈ raw_active * device_base / system_base
+    @test get_active_power_unitful(gen, SU) isa RelativeQuantity
+end
+
+# Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
+# `322_CT_6`, but PSB isn't compatible with the new units API yet.
+@testset "Test explicit units setters" begin
+    sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
+    device_base = PSY._get_base_power(gen)
+
+    set_active_power!(gen, 50.0 * MW)
+    @test gen.active_power ≈ 50.0 / device_base
+
+    set_active_power!(gen, 0.6 * DU)
+    @test gen.active_power ≈ 0.6
+end
 
 @testset "Test add_time_series multiple components" begin
     sys = System(100.0)

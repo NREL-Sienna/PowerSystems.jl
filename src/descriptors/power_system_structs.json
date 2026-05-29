@@ -1014,6 +1014,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -1203,6 +1205,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -1381,6 +1385,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -1723,6 +1729,8 @@
                 },
                 {
                     "name": "base_power_12",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -1734,6 +1742,8 @@
                 },
                 {
                     "name": "base_power_23",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -1745,6 +1755,8 @@
                 },
                 {
                     "name": "base_power_13",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -2236,6 +2248,8 @@
                 },
                 {
                     "name": "base_power_12",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-secondary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -2247,6 +2261,8 @@
                 },
                 {
                     "name": "base_power_23",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for secondary-tertiary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -2258,6 +2274,8 @@
                 },
                 {
                     "name": "base_power_13",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit) for primary-tertiary windings.",
                     "null_value": "0.0",
                     "data_type": "Float64",
@@ -3244,6 +3262,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -3322,6 +3342,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -3548,6 +3570,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -3875,6 +3899,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -3979,6 +4005,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -4082,6 +4110,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -4300,6 +4330,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -4456,6 +4488,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 100.0,
                     "data_type": "Float64",
@@ -4618,6 +4652,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 100.0,
                     "data_type": "Float64",
@@ -4773,6 +4809,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the load (MVA) for [per unitization](@ref per_unit)",
                     "internal_default": "100.0",
                     "data_type": "Float64"
@@ -4944,6 +4982,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 100.0,
                     "data_type": "Float64",
@@ -5075,6 +5115,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the converter in MVA",
                     "null_value": 100.0,
                     "data_type": "Float64",
@@ -5250,6 +5292,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 100.0,
                     "data_type": "Float64",
@@ -5409,6 +5453,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -5549,6 +5595,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -5816,6 +5864,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6139,6 +6189,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6251,6 +6303,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6396,6 +6450,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6533,6 +6589,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6739,6 +6797,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -6937,6 +6997,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": "100.0",
                     "data_type": "Float64",
@@ -19585,6 +19647,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
@@ -19723,6 +19787,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base Power in MVA",
                     "null_value": 0,
                     "data_type": "Float64",
@@ -19846,6 +19912,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the source (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
@@ -20239,6 +20307,8 @@
                 },
                 {
                     "name": "base_power",
+                    "exclude_getter": true,
+                    "exclude_setter": true,
                     "comment": "Base power of the unit (MVA) for [per unitization](@ref per_unit)",
                     "null_value": 0,
                     "data_type": "Float64",
