@@ -250,7 +250,7 @@ Return the max reactive power for a device with explicit units specified.
 """
 function get_max_reactive_power(d::T, units) where {T <: StaticInjection}
     limits = get_reactive_power_limits(d, units)
-    isnothing(limits) && return Inf * units
+    isnothing(limits) && return Inf
     return limits.max
 end
 
