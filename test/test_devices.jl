@@ -108,8 +108,34 @@ end
     @test supports_active_power(ShiftablePowerLoad(nothing)) == true
     @test supports_active_power(HybridSystem(nothing)) == true
     @test supports_active_power(SynchronousCondenser(nothing)) == false
-    @test supports_active_power(FixedAdmittance(nothing)) == false
-    @test supports_active_power(SwitchedAdmittance(nothing)) == false
+    @test supports_active_power(FixedAdmittance(nothing)) == false  # Y = 0
+    @test supports_active_power(
+        FixedAdmittance(; name = "fa_g", available = true, bus = ACBus(nothing),
+            Y = 1.0 + 0.0im),
+    ) == true
+    @test supports_active_power(
+        FixedAdmittance(; name = "fa_b", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 1.0im),
+    ) == false
+    # Below ZERO_ADMITTANCE_THRESHOLD (1e-4): treated as no support.
+    @test supports_active_power(
+        FixedAdmittance(; name = "fa_tiny", available = true, bus = ACBus(nothing),
+            Y = 1e-6 + 1e-6im),
+    ) == false
+    @test supports_active_power(SwitchedAdmittance(nothing)) == false  # Y = 0, no blocks
+    @test supports_active_power(
+        SwitchedAdmittance(; name = "sa_g", available = true, bus = ACBus(nothing),
+            Y = 1.0 + 0.0im),
+    ) == true
+    # Zero base Y, but a switchable block adds real (active) admittance.
+    @test supports_active_power(
+        SwitchedAdmittance(; name = "sa_gstep", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 0.0im, number_of_steps = [2], Y_increase = [1.0 + 0.0im]),
+    ) == true
+    @test supports_active_power(
+        SwitchedAdmittance(; name = "sa_bstep", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 0.0im, number_of_steps = [2], Y_increase = [0.0 + 1.0im]),
+    ) == false
 
     # FACTSControlDevice active power depends on control_mode (true only for NML)
     @test supports_active_power(FACTSControlDevice(nothing)) == false
@@ -132,8 +158,34 @@ end
     @test supports_reactive_power(EnergyReservoirStorage(nothing)) == true
     @test supports_reactive_power(HybridSystem(nothing)) == true
     @test supports_reactive_power(InterconnectingConverter(nothing)) == false
-    @test supports_reactive_power(FixedAdmittance(nothing)) == false
-    @test supports_reactive_power(SwitchedAdmittance(nothing)) == true
+    @test supports_reactive_power(FixedAdmittance(nothing)) == false  # Y = 0
+    @test supports_reactive_power(
+        FixedAdmittance(; name = "fa_b2", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 1.0im),
+    ) == true
+    @test supports_reactive_power(
+        FixedAdmittance(; name = "fa_g2", available = true, bus = ACBus(nothing),
+            Y = 1.0 + 0.0im),
+    ) == false
+    @test supports_reactive_power(
+        FixedAdmittance(; name = "fa_tiny2", available = true, bus = ACBus(nothing),
+            Y = 1e-6 + 1e-6im),
+    ) == false
+    @test supports_reactive_power(SwitchedAdmittance(nothing)) == false  # Y = 0, no blocks
+    @test supports_reactive_power(
+        SwitchedAdmittance(; name = "sa_b", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 1.0im),
+    ) == true
+    # Zero base Y, but a switchable block adds susceptance (reactive).
+    @test supports_reactive_power(
+        SwitchedAdmittance(; name = "sa_bstep2", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 0.0im, number_of_steps = [2], Y_increase = [0.0 + 1.0im]),
+    ) == true
+    # A block with steps but a below-threshold increment does not count.
+    @test supports_reactive_power(
+        SwitchedAdmittance(; name = "sa_tinystep", available = true, bus = ACBus(nothing),
+            Y = 0.0 + 0.0im, number_of_steps = [2], Y_increase = [0.0 + 1e-6im]),
+    ) == false
 
     # FACTSControlDevice reactive power depends on control_mode
     @test supports_reactive_power(FACTSControlDevice(nothing)) == false
