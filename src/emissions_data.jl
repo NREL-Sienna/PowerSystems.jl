@@ -1,7 +1,7 @@
 """
     EmissionsData(; name, pollutant, emission_rate, basis, energy_unit, ...)
 
-A [`SupplementalAttribute`](@ref) describing the emission of a single pollutant from a
+A [`SupplementalAttribute`](@ref supplemental_attributes) describing the emission of a single pollutant from a
 host component. Combines pollutant identity (CO2, NOx, etc.) with an emission rate
 expressed as a [`ValueCurve`](@ref) (supporting constant, linear, or piecewise
 relationships between fuel consumption / power output and emissions). One `EmissionsData`
