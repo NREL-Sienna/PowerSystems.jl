@@ -102,7 +102,7 @@ IEEE 421.5 2016 PSS2C IEEE Dual-Input Stabilizer Model
 	x_p18: 4th lead-lag, 
 	x_p19: washout block for compensated frequency,
 - `n_states::Int`: (**Do not modify.**) IEEEST has 19 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 19 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct PSS2C <: PSS
@@ -195,7 +195,7 @@ mutable struct PSS2C <: PSS
     states::Vector{Symbol}
     "(**Do not modify.**) IEEEST has 19 states"
     n_states::Int
-    "(**Do not modify.**) IEEEST has 19 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) IEEEST has 19 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

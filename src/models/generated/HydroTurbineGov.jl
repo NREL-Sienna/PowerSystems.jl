@@ -47,7 +47,7 @@ Hydro Turbine-Governor
 	x_g3: gate opening, 
 	x_g4: turbine flow
 - `n_states::Int`: (**Do not modify.**) HYGOV has 4 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) HYGOV has 4 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) HYGOV has 4 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct HydroTurbineGov <: TurbineGov
@@ -85,7 +85,7 @@ mutable struct HydroTurbineGov <: TurbineGov
     states::Vector{Symbol}
     "(**Do not modify.**) HYGOV has 4 states"
     n_states::Int
-    "(**Do not modify.**) HYGOV has 4 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) HYGOV has 4 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

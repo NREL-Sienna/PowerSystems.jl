@@ -62,7 +62,7 @@ IEEE Stabilizing Model PSS.
 	x_p6: T3/T4 lead-lag integrator, 
 	:x_p7 last integer,
 - `n_states::Int`: (**Do not modify.**) IEEEST has 7 states
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 7 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) IEEEST has 7 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct IEEEST <: PSS
@@ -115,7 +115,7 @@ mutable struct IEEEST <: PSS
     states::Vector{Symbol}
     "(**Do not modify.**) IEEEST has 7 states"
     n_states::Int
-    "(**Do not modify.**) IEEEST has 7 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) IEEEST has 7 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal

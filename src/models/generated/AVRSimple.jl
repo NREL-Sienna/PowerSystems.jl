@@ -25,7 +25,7 @@ i.e. an integrator controller on EMF
 - `states::Vector{Symbol}`: (**Do not modify.**) The [states](@ref S) are:
 	Vf: field voltage
 - `n_states::Int`: (**Do not modify.**) Fixed AVR has 1 [state](@ref S)
-- `states_types::Vector{StateTypes}`: (**Do not modify.**) Simple AVR has 1 [differential](@ref states_list) [states](@ref S)
+- `states_types::Vector{StateTypes}`: (**Do not modify.**) Simple AVR has 1 [differential](@ref StateTypes) [states](@ref S)
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct AVRSimple <: AVR
@@ -40,7 +40,7 @@ mutable struct AVRSimple <: AVR
     states::Vector{Symbol}
     "(**Do not modify.**) Fixed AVR has 1 [state](@ref S)"
     n_states::Int
-    "(**Do not modify.**) Simple AVR has 1 [differential](@ref states_list) [states](@ref S)"
+    "(**Do not modify.**) Simple AVR has 1 [differential](@ref StateTypes) [states](@ref S)"
     states_types::Vector{StateTypes}
     "(**Do not modify.**) PowerSystems.jl internal reference"
     internal::InfrastructureSystemsInternal
