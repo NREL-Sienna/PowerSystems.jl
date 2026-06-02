@@ -27,6 +27,18 @@ end
 
 supports_services(::DynamicInjection) = false
 get_states(::DynamicInjection) = Vector{Symbol}()
+
+# `states` and `n_states` are fixed structural properties of dynamic components, marked
+# `exclude_setter` ("Do not modify") in the struct descriptors so no per-struct setters are
+# generated. The struct generator still exports the public `set_states!`/`set_n_states!`
+# names, so define them here to reject mutation rather than leave the exports undefined.
+set_states!(::Union{DynamicComponent, DynamicInjection}, ::Any) = throw(
+    ArgumentError("`states` is a fixed property of dynamic components and cannot be set"),
+)
+set_n_states!(::Union{DynamicComponent, DynamicInjection}, ::Any) = throw(
+    ArgumentError("`n_states` is a fixed property of dynamic components and cannot be set"),
+)
+
 """
     Default implementation of get_state_types for dynamic components. Assumes all states are
     Differential

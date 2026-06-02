@@ -170,7 +170,6 @@ export DynamicInjection
 export DynamicGenerator
 
 export DynamicInverter
-export DynamicBranch
 export HybridSystem
 
 export GenericDER
@@ -936,7 +935,6 @@ include("models/RoundRotorExponential.jl")
 include("models/RoundRotorQuadratic.jl")
 include("models/SalientPoleExponential.jl")
 include("models/SalientPoleQuadratic.jl")
-include("models/dynamic_branch.jl")
 
 include("impedance_correction.jl")
 include("models/supplemental_constructors.jl")
