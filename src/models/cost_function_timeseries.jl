@@ -130,8 +130,8 @@ end
 Retrieve the variable cost bid for a `StaticInjection` device with a `MarketBidCost`. If any
 of the relevant fields (`incremental_offer_curves`, `incremental_initial_input`,
 `no_load_cost`) are time series, the user may specify `start_time` and `len` and the
-function returns a `TimeArray` of `CostCurve{PiecewiseIncrementalCurve}`s; if the field is
-not a time series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}`.
+function returns a `TimeArray` of `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`s; if the field is
+not a time series, the function returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`.
 """
 function get_variable_cost(
     device::StaticInjection,
@@ -194,8 +194,8 @@ Retrieve the incremental variable cost bid for a `StaticInjection` device with a
 `MarketBidCost`. If any of the relevant fields (`incremental_offer_curves`,
 `incremental_initial_input`, `no_load_cost`) are time series, the user may specify
 `start_time` and `len` and the function returns a `TimeArray` of
-`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
-returns a single `CostCurve{PiecewiseIncrementalCurve}`.
+`[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`s; if the field is not a time series, the function
+returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`.
 """
 function get_incremental_variable_cost(
     device::StaticInjection,
@@ -216,8 +216,8 @@ Retrieve the decremental variable cost bid for a `StaticInjection` device with a
 `MarketBidCost`. If any of the relevant fields (`decremental_offer_curves`,
 `decremental_initial_input`, `no_load_cost`) are time series, the user may specify
 `start_time` and `len` and the function returns a `TimeArray` of
-`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
-returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+`[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`s; if the field is not a time series, the function
+returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 function get_decremental_variable_cost(
     device::StaticInjection,
@@ -280,8 +280,8 @@ end
 Retrieve the import variable cost bid for a `StaticInjection` device with an
 `ImportExportCost`. If `import_offer_curves` is a time series, the user may specify
 `start_time` and `len` and the function returns a `TimeArray` of
-`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
-returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+`[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`s; if the field is not a time series, the function
+returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 function get_import_variable_cost(
     device::StaticInjection,
@@ -301,8 +301,8 @@ end
 Retrieve the export variable cost bid for a `StaticInjection` device with an
 `ImportExportCost`. If `export_offer_curves` is a time series, the user may specify
 `start_time` and `len` and the function returns a `TimeArray` of
-`CostCurve{PiecewiseIncrementalCurve}`s; if the field is not a time series, the function
-returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+`[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}`s; if the field is not a time series, the function
+returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 function get_export_variable_cost(
     device::StaticInjection,
@@ -407,8 +407,8 @@ end
 """
 Retrieve the `incremental_offer_curves` for a `StaticInjection` device with a
 `MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
-and the function returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time
-series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+and the function returns a `TimeArray` of `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`s; if the field is not a time
+series, the function returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 get_incremental_offer_curves(
     device::StaticInjection,
@@ -422,8 +422,8 @@ get_incremental_offer_curves(
 """
 Retrieve the `decremental_offer_curves` for a `StaticInjection` device with a
 `MarketBidCost`. If this field is a time series, the user may specify `start_time` and `len`
-and the function returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time
-series, the function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+and the function returns a `TimeArray` of `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`s; if the field is not a time
+series, the function returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 get_decremental_offer_curves(
     device::StaticInjection,
@@ -437,8 +437,8 @@ get_decremental_offer_curves(
 """
 Retrieve the `import_offer_curves` for a `StaticInjection` device with a `ImportExportCost`.
 If this field is a time series, the user may specify `start_time` and `len` and the function
-returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time series, the
-function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+returns a `TimeArray` of `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`s; if the field is not a time series, the
+function returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 get_import_offer_curves(
     device::StaticInjection,
@@ -451,8 +451,8 @@ get_import_offer_curves(
 """
 Retrieve the `export_offer_curves` for a `StaticInjection` device with a `ImportExportCost`.
 If this field is a time series, the user may specify `start_time` and `len` and the function
-returns a `TimeArray` of `PiecewiseStepData`s; if the field is not a time series, the
-function returns a single `CostCurve{PiecewiseIncrementalCurve}` or `nothing`.
+returns a `TimeArray` of `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`s; if the field is not a time series, the
+function returns a single `[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}` or `nothing`.
 """
 get_export_offer_curves(
     device::StaticInjection,
@@ -568,8 +568,8 @@ Set the incremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
-  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  [`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}},`: the data. If using a time series, must be of eltype
+  `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
   not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data. Must be NATURAL_UNITS.
 """
@@ -621,8 +621,8 @@ Set the incremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
-  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  [`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}},`: the data. If using a time series, must be of eltype
+  `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
   not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
@@ -643,8 +643,8 @@ Set the decremental variable cost bid for a `StaticInjection` device with a `Mar
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
 - `time_series_data::Union{Nothing, IS.TimeSeriesData,
-  CostCurve{PiecewiseIncrementalCurve}},`: the data. If using a time series, must be of eltype
-  `PiecewiseStepData`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
+  [`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}},`: the data. If using a time series, must be of eltype
+  `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`. `PiecewiseIncrementalCurve` is only accepted for single CostCurve and
   not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
@@ -686,8 +686,8 @@ Set the import variable cost bid for a `StaticInjection` device with an `ImportE
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
-- `data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}}`: the data. 
-  If using a time series, must be of eltype `PiecewiseStepData`. `PiecewiseIncrementalCurve` 
+- `data::Union{Nothing, IS.TimeSeriesData, [`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}}`: the data. 
+  If using a time series, must be of eltype `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`. `PiecewiseIncrementalCurve` 
   is only accepted for single CostCurve and not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
@@ -733,8 +733,8 @@ Set the export variable cost bid for a `StaticInjection` device with an `ImportE
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::StaticInjection`: Static injection device
-- `data::Union{Nothing, IS.TimeSeriesData, CostCurve{PiecewiseIncrementalCurve}}`: the data. 
-  If using a time series, must be of eltype `PiecewiseStepData`. `PiecewiseIncrementalCurve` 
+- `data::Union{Nothing, IS.TimeSeriesData, [`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}}`: the data. 
+  If using a time series, must be of eltype `[`PiecewiseStepData`](@extref InfrastructureSystems.PiecewiseStepData)`. `PiecewiseIncrementalCurve` 
   is only accepted for single CostCurve and not accepted for time series data.
 - `power_units::UnitSystem`: Units to be used for data.
 """
@@ -798,7 +798,7 @@ Adds fixed energy market bids to the ReserveDemandCurve.
 # Arguments
 - `sys::System`: PowerSystem System
 - `component::ReserveDemandCurve`: the curve
-- `time_series_data::CostCurve{PiecewiseIncrementalCurve}
+- `time_series_data::[`CostCurve`](@ref){[`PiecewiseIncrementalCurve`](@ref)}
 """
 function set_variable_cost!(
     ::System,
