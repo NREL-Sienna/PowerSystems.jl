@@ -47,7 +47,7 @@ details on why direct field access is discouraged.
 
 ## The abstract type hierarchy
 
-The hierarchy is rooted at `InfrastructureSystemsType`. The subtypes most relevant to
+The hierarchy is rooted at [`InfrastructureSystemsType`](@ref). The subtypes most relevant to
 `PowerSystems.jl` users are:
 
   - [`System`](@ref): the top-level data container that holds all [`Component`](@ref)s
@@ -70,8 +70,8 @@ The hierarchy is rooted at `InfrastructureSystemsType`. The subtypes most releva
         services from devices reflects the fact that a service is a requirement that
         *devices contribute to*, rather than a physical component itself.
 
-  - `DeviceParameter`: [`struct`](@ref S)s that carry data describing
-    the dynamic or economic characteristics of a `Device`, such as cost function curves or
+  - [`DeviceParameter`](@ref): [`struct`](@ref S)s that carry data describing
+    the dynamic or economic characteristics of a [`Device`](@ref), such as cost function curves or
     dynamic machine parameters. Decoupling these from the device [`struct`](@ref S) itself allows the
     same physical device to carry different parameter sets depending on the modeling
     context.
@@ -97,8 +97,8 @@ data requirements:
   - [`HydroGen`](@ref): hydro units, which share properties of both dispatchable and
     resource-constrained generation but have unique reservoir and hydrology constraints.
 
-An optimization formulation written against [`ThermalGen`](@ref) applies to `ThermalStandard`,
-`ThermalMultiStart`, and any user-defined thermal subtype without modification. This is
+An optimization formulation written against [`ThermalGen`](@ref) applies to [`ThermalStandard`](@ref),
+[`ThermalMultiStart`](@ref), and any user-defined thermal subtype without modification. This is
 the intended extension mechanism: new technologies are introduced by defining a concrete
 type under the appropriate abstract supertype.
 
@@ -106,7 +106,7 @@ type under the appropriate abstract supertype.
 
 The `PowerSystems.jl` type hierarchy deliberately provides **abstractions without
 encoding a specific mathematical model** for any component. The [`struct`](@ref S) for a
-`ThermalStandard` generator holds the data describing that unit; it does not prescribe
+[`ThermalStandard`](@ref) generator holds the data describing that unit; it does not prescribe
 how the unit should be represented in a particular simulation. The mathematical
 formulation is entirely the responsibility of the downstream tool.
 
