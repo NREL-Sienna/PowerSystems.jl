@@ -51,9 +51,7 @@ mutable struct SEXS <: AVR
     V_ref::Float64
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}
-    "(**Do not modify.**) The [states](@ref S) are:
-	Vf: Voltage field,
-	Vr: Lead-lag state"
+    "(**Do not modify.**) The [states](@ref S) are:	Vf: Voltage field,	Vr: Lead-lag state"
     states::Vector{Symbol}
     "(**Do not modify.**) SEXS has 2 states"
     n_states::Int
