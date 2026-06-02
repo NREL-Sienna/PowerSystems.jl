@@ -65,7 +65,7 @@ abstract type AbstractReserve <: Service end
     Reserve{T <: ReserveDirection}
 
 Abstract parametric type for all reserve products, parameterized on direction
-`T <: `[`ReserveDirection`](@ref).
+`T <: ReserveDirection` (see [`ReserveDirection`](@ref)).
 
 Use the direction subtypes [`ReserveUp`](@ref), [`ReserveDown`](@ref), or
 [`ReserveSymmetric`](@ref) to specify the direction of the reserve product, e.g.,
