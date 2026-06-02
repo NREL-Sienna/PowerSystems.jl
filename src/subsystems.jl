@@ -146,31 +146,24 @@ end
 """
 Remove a component from all subsystems it belongs to.
 """
-remove_component_from_subsystems!(
-    sys::System,
-    component::Component,
-) = remove_component_from_subsystems!(sys.data, component)
+remove_component_from_subsystems!(sys::System, component::Component) =
+    remove_component_from_subsystems!(sys.data, component)
 
 """
 Return true if the component is assigned to the subsystem.
 
 See also: [`is_assigned_to_subsystem`](@ref), [`get_subsystem_components`](@ref), [`add_component_to_subsystem!`](@ref)
 """
-has_component(
-    sys::System,
-    subsystem_name::AbstractString,
-    component::Component,
-) = IS.has_component(sys.data, subsystem_name, component)
+has_component(sys::System, subsystem_name::AbstractString, component::Component) =
+    IS.has_component(sys.data, subsystem_name, component)
 
 """
 Return a `Vector` of subsystem name strings that contain the component.
 
 See also: [`is_assigned_to_subsystem`](@ref), [`add_component_to_subsystem!`](@ref)
 """
-get_assigned_subsystems(
-    sys::System,
-    component::Component,
-) = IS.get_assigned_subsystems(sys.data, component)
+get_assigned_subsystems(sys::System, component::Component) =
+    IS.get_assigned_subsystems(sys.data, component)
 
 """
 Return true if the component is assigned to any subsystem.
@@ -198,13 +191,6 @@ Return the UUIDs of all components in the given subsystem.
 """
 get_component_uuids(sys::System, subsystem_name::AbstractString) =
     IS.get_component_uuids(sys.data, subsystem_name)
-
-function check_subsystems(sys::System)
-    for component in get_components(Component, sys)
-        check_subsystems(sys, component)
-    end
-    return
-end
 
 function check_subsystems(sys::System, component::Component)
     _check_arc_consistency(sys, component)
@@ -242,10 +228,7 @@ function _check_branch_consistency(sys::System, branch::Branch)
     _check_subsystem_assignments(sys, branch, get_arc(branch), msg; symmetric_diff = true)
 end
 
-function _check_branch_consistency(
-    sys::System,
-    branch::ThreeWindingTransformer,
-)
+function _check_branch_consistency(sys::System, branch::ThreeWindingTransformer)
     msg = "A branch must be assigned to the same subystems as its arc."
     arcs = [
         get_primary_star_arc(branch),
