@@ -60,13 +60,10 @@ Attributes can include time series data like weather patterns and planned outage
 
 This design changes how you build power system models:
 
-**Build in layers**: Start with electrical models, then add contextual information separately.
-
-**Reuse data**: Geographic info and weather patterns can be applied to multiple systems.
-
-**Work in teams**: Different people can work on electrical models and contextual data independently.
-
-**Easy updates**: Change outage schedules or weather data without touching electrical models.
+  - **Build in layers**: Start with electrical models, then add contextual information separately.
+  - **Reuse data**: Geographic info and weather patterns can be applied to multiple systems.
+  - **Work in teams**: Different people can work on electrical models and contextual data independently.
+  - **Easy updates**: Change outage schedules or weather data without touching electrical models.
 
 ## Compared to Other Approaches
 
