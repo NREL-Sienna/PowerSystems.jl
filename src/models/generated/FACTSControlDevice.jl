@@ -27,8 +27,8 @@ Most often used in AC power flow studies as a control of voltage and, active and
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `bus::ACBus`: Sending end bus number
-- `control_mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)
-- `voltage_setpoint::Float64`: Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
+- `control_mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref FACTSOperationModes)
+- `voltage_setpoint::Float64`: Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
 - `max_shunt_current::Float64`: Maximum shunt current at the sending end bus; entered in MVA at unity voltage.
 - `reactive_power_required::Float64`: Total MVAr required to hold voltage at sending bus, in %.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
@@ -43,9 +43,9 @@ mutable struct FACTSControlDevice <: StaticInjection
     available::Bool
     "Sending end bus number"
     bus::ACBus
-    "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)"
+    "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref FACTSOperationModes)"
     control_mode::Union{Nothing, FACTSOperationModes}
-    "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))."
+    "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit))."
     voltage_setpoint::Float64
     "Maximum shunt current at the sending end bus; entered in MVA at unity voltage."
     max_shunt_current::Float64

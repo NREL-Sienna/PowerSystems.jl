@@ -38,7 +38,7 @@ For hydro generators with an upper reservoir, see [`HydroReservoir`](@ref)
 - `active_power::Float64`: Initial active power set point of the unit in MW. For power flow, this is the steady state operating point of the system. For production cost modeling, this may or may not be used as the initial starting point for the solver, depending on the solver used
 - `reactive_power::Float64`: Initial reactive power set point of the unit (MVAR), validation range: `reactive_power_limits`
 - `rating::Float64`: Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power, validation range: `(0, nothing)`
-- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)
 - `active_power_limits::MinMax`: Minimum and maximum stable active power levels (MW), validation range: `(0, nothing)`
 - `reactive_power_limits::Union{Nothing, MinMax}`: Minimum and maximum reactive power limits. Set to `Nothing` if not applicable
 - `ramp_limits::Union{Nothing, UpDown}`: ramp up and ramp down limits in MW/min, validation range: `(0, nothing)`
@@ -65,7 +65,7 @@ mutable struct HydroDispatch <: HydroGen
     reactive_power::Float64
     "Maximum AC side output power rating of the unit. Stored in per unit of the device and not to be confused with base_power"
     rating::Float64
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)"
     prime_mover_type::PrimeMovers
     "Minimum and maximum stable active power levels (MW)"
     active_power_limits::MinMax

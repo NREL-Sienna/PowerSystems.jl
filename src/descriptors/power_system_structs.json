@@ -238,12 +238,12 @@
                 {
                     "null_value": "false",
                     "name": "available",
-                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)",
+                    "comment": "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref ACBusTypes)",
                     "data_type": "Bool"
                 },
                 {
                     "name": "bustype",
-                    "comment": "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)",
+                    "comment": "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref ACBusTypes)",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, ACBusTypes}"
                 },
@@ -1074,7 +1074,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1263,7 +1263,7 @@
                 },
                 {
                     "name": "control_objective",
-                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for power flow calculations. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -1900,21 +1900,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -2399,21 +2399,21 @@
                 },
                 {
                     "name": "control_objective_primary",
-                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 1. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_secondary",
-                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 2. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
                 },
                 {
                     "name": "control_objective_tertiary",
-                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref xtf_crtl)",
+                    "comment": "Control objective for the tap changer for winding 3. See [`TransformerControlObjective`](@ref TransformerControlObjective)",
                     "data_type": "TransformerControlObjective",
                     "null_value": "TransformerControlObjective.UNDEFINED",
                     "default": "TransformerControlObjective.UNDEFINED"
@@ -3261,7 +3261,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref LoadConformity).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -3339,7 +3339,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref LoadConformity).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -3631,13 +3631,13 @@
                 },
                 {
                     "name": "control_mode",
-                    "comment": "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref factsmodes_list)",
+                    "comment": "Control mode. Used to describe the behavior of the control device. [Options are listed here.](@ref FACTSOperationModes)",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, FACTSOperationModes}"
                 },
                 {
                     "name": "voltage_setpoint",
-                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref acbustypes_list) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
+                    "comment": "Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).",
                     "internal_default": "1.0",
                     "data_type": "Float64"
                 },
@@ -3902,7 +3902,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref LoadConformity).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -4020,7 +4020,7 @@
                 },
             {
                     "name": "motor_technology",
-                    "comment": "AC Motor type. Options are listed [here](@ref motor_list)",
+                    "comment": "AC Motor type. Options are listed [here](@ref MotorLoadTechnology)",
                     "null_value": "MotorLoadTechnology.UNDETERMINED",
                     "data_type": "MotorLoadTechnology",
                     "default": "MotorLoadTechnology.UNDETERMINED"
@@ -4201,7 +4201,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref LoadConformity).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -4327,7 +4327,7 @@
                 },
                 {
                     "name": "conformity",
-                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref loadconform_list).",
+                    "comment": "Indicates whether the specified load is conforming or non-conforming. Options are [listed here](@ref LoadConformity).",
                     "data_type": "LoadConformity",
                     "default": "LoadConformity.UNDEFINED"
                 },
@@ -5366,7 +5366,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.HY",
                     "data_type": "PrimeMovers"
                 },
@@ -5648,7 +5648,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
                     "default": "PrimeMovers.HY"
@@ -5909,7 +5909,7 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
                     "default": "PrimeMovers.PS"
@@ -5965,7 +5965,7 @@
                 },
                 {
                     "name": "storage_level_limits",
-                    "comment": "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`",
+                    "comment": "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref ReservoirDataType) selected for `level_data_type`",
                     "null_value": "(min=0.0, max=0.0)",
                     "data_type": "MinMax"
                 },
@@ -5983,13 +5983,13 @@
                 },
                 {
                     "name": "inflow",
-                    "comment": "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "comment": "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
                 {
                     "name": "outflow",
-                    "comment": "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).",
+                    "comment": "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
@@ -6117,13 +6117,13 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
                 {
                     "name": "reactive_power_limits",
-                    "comment": "Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref acbustypes_list) bus. Set to `nothing` if not applicable",
+                    "comment": "Minimum and maximum reactive power limits, used in some production cost model simulations and in power flow if the unit is connected to a [`PV`](@ref ACBusTypes) bus. Set to `nothing` if not applicable",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, MinMax}",
                     "needs_conversion": true,
@@ -6131,7 +6131,7 @@
                 },
                 {
                     "name": "power_factor",
-                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref ACBusTypes) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6243,13 +6243,13 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
                 {
                     "name": "power_factor",
-                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref acbustypes_list) bus",
+                    "comment": "Power factor [0, 1] set-point, used in some production cost modeling and in load flow if the unit is connected to a [`PQ`](@ref ACBusTypes) bus",
                     "null_value": "1.0",
                     "data_type": "Float64",
                     "valid_range": {
@@ -6435,14 +6435,14 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers",
                     "default": "PrimeMovers.OT"
                 },
                 {
                     "name": "fuel",
-                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)",
+                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref ThermalFuels)",
                     "null_value": "ThermalFuels.OTHER",
                     "data_type": "ThermalFuels",
                     "default": "ThermalFuels.OTHER"
@@ -6661,13 +6661,13 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.OT",
                     "data_type": "PrimeMovers"
                 },
                 {
                     "name": "fuel",
-                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)",
+                    "comment": "Prime mover fuel according to EIA 923. Options are listed [here](@ref ThermalFuels)",
                     "null_value": "ThermalFuels.OTHER",
                     "data_type": "ThermalFuels"
                 },
@@ -6828,13 +6828,13 @@
                 },
                 {
                     "name": "prime_mover_type",
-                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)",
+                    "comment": "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)",
                     "null_value": "PrimeMovers.BA",
                     "data_type": "PrimeMovers"
                 },
                 {
                     "name": "storage_technology_type",
-                    "comment": "Storage Technology Complementary to EIA 923. Options are listed [here](@ref storagetech_list)",
+                    "comment": "Storage Technology Complementary to EIA 923. Options are listed [here](@ref StorageTech)",
                     "null_value": "StorageTech.OTHER_CHEM",
                     "data_type": "StorageTech"
                 },

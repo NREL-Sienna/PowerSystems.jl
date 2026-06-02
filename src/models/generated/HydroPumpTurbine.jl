@@ -64,7 +64,7 @@ A hydropower pumped turbine that needs to have two [`HydroReservoir`](@ref)s att
 - `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
 - `must_run::Bool`: (default: `false`) Whether the unit must run (i.e., cannot be curtailed)
-- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.PS`) Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -119,7 +119,7 @@ mutable struct HydroPumpTurbine <: HydroUnit
     conversion_factor::Float64
     "Whether the unit must run (i.e., cannot be curtailed)"
     must_run::Bool
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)"
     prime_mover_type::PrimeMovers
     "Services that this device contributes to"
     services::Vector{Service}

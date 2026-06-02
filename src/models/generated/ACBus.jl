@@ -25,8 +25,8 @@ An AC bus
 # Arguments
 - `number::Int`: A unique bus identification number (positive integer)
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
-- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)
-- `bustype::Union{Nothing, ACBusTypes}`: Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)
+- `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref ACBusTypes)
+- `bustype::Union{Nothing, ACBusTypes}`: Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref ACBusTypes)
 - `angle::Union{Nothing, Float64}`: angle of the bus in radians
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
@@ -41,9 +41,9 @@ mutable struct ACBus <: Bus
     number::Int
     "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
     name::String
-    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref acbustypes_list)"
+    "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations. This field should not be confused with the ISOLATED enum value (@ref ACBusTypes)"
     available::Bool
-    "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref acbustypes_list)"
+    "Used to describe the connectivity and behavior of this bus. [Options are listed here.](@ref ACBusTypes)"
     bustype::Union{Nothing, ACBusTypes}
     "angle of the bus in radians"
     angle::Union{Nothing, Float64}

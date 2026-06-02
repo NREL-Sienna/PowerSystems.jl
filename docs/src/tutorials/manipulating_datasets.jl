@@ -45,7 +45,7 @@ typeof(solitude)
 
 get_fuel(solitude)
 
-# You can see a [`ThermalFuels`](@ref tf_list) option returned.
+# You can see a [`ThermalFuels`](@ref ThermalFuels) option returned.
 # To recap, [`get_component`](@ref) will return a component object, but we can use a specific `get_*` function to return the data in a particular field.
 # !!! warning
 #     Using the "dot" access to get a field value from a component is actively discouraged, use `get_*` functions instead.
@@ -58,7 +58,7 @@ get_fuel(solitude)
 set_fuel!(solitude, ThermalFuels.NATURAL_GAS)
 
 # We can use [`show_components`](@ref) again to check that the `Solitude` `fuel` has been
-# updated to [`ThermalFuels.NATURAL_GAS`](@ref tf_list):
+# updated to [`ThermalFuels.NATURAL_GAS`](@ref ThermalFuels):
 
 show_components(ThermalStandard, sys, [:fuel])
 

@@ -48,8 +48,8 @@ This is a standard representation with options to include a minimum up time, min
 - `base_power::Float64`: Base power of the unit (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
 - `time_limits::Union{Nothing, UpDown}`: (default: `nothing`) Minimum up and Minimum down time limits in hours, validation range: `(0, nothing)`
 - `must_run::Bool`: (default: `false`) Set to `true` if the unit is must run
-- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.OT`) Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)
-- `fuel::ThermalFuels`: (default: `ThermalFuels.OTHER`) Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.OT`) Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)
+- `fuel::ThermalFuels`: (default: `ThermalFuels.OTHER`) Prime mover fuel according to EIA 923. Options are listed [here](@ref ThermalFuels)
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `time_at_status::Float64`: (default: `INFINITE_TIME`) Time (e.g., `Hours(6)`) the generator has been on or off, as indicated by `status`
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -85,9 +85,9 @@ mutable struct ThermalStandard <: ThermalGen
     time_limits::Union{Nothing, UpDown}
     "Set to `true` if the unit is must run"
     must_run::Bool
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref pm_list)"
+    "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)"
     prime_mover_type::PrimeMovers
-    "Prime mover fuel according to EIA 923. Options are listed [here](@ref tf_list)"
+    "Prime mover fuel according to EIA 923. Options are listed [here](@ref ThermalFuels)"
     fuel::ThermalFuels
     "Services that this device contributes to"
     services::Vector{Service}

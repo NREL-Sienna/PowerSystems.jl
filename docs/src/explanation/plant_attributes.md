@@ -66,7 +66,7 @@ combustion turbines (CTs) and steam turbines through the Heat Recovery Steam Gen
 The `CombinedCycleConfiguration` enum describes the plant layout. Combined cycle plants are
 typically described using a "CTs x STs" notation (e.g., 2x1 means two combustion turbines
 feeding one steam turbine through a Heat Recovery Steam Generator). However, the EIA
-[prime mover codes](@ref pm_list) employ CT and CA to distinguish between the combustion
+[prime mover codes](@ref PrimeMovers) employ CT and CA to distinguish between the combustion
 turbine units and the steam portion of the combined cycle respectively.
 
 ```@raw html
@@ -93,7 +93,7 @@ Represents combined cycle generation when each unit represents a specific config
 an aggregate heat rate. Unlike [`CombinedCycleBlock`](@ref), which models the CT/CA relationship
 through the HRSG, the fractional representation uses **operation exclusion groups** to define
 which units can operate simultaneously. Only generators with the `CC` (CC, combined cycle)
-[prime mover type](@ref pm_list) can be added.
+[prime mover type](@ref PrimeMovers) can be added.
 
 | Field                             | Type                         | Description                                              |
 |:--------------------------------- |:---------------------------- |:-------------------------------------------------------- |

@@ -31,11 +31,11 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`
+- `storage_level_limits::MinMax`: Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref ReservoirDataType) selected for `level_data_type`
 - `initial_level::Float64`: Initial level of the reservoir relative to the `storage_level_limits.max`.
 - `spillage_limits::Union{Nothing, MinMax}`: Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed.
-- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
-- `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`).
+- `inflow::Float64`: Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).
+- `outflow::Float64`: Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`).
 - `level_targets::Union{Nothing, Float64}`: Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`.
 - `intake_elevation::Float64`: Height of the intake of the reservoir, towards the downstream turbines, in meters above the sea level.
 - `head_to_volume_factor::ValueCurve`: Head to volume relationship for the reservoir.
@@ -52,15 +52,15 @@ mutable struct HydroReservoir <: Device
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref  hydroreservoir_list) selected for `level_data_type`"
+    "Storage level limits for the reservoir in m^3, m, or MWh, based on the [`ReservoirDataType`](@ref ReservoirDataType) selected for `level_data_type`"
     storage_level_limits::MinMax
     "Initial level of the reservoir relative to the `storage_level_limits.max`."
     initial_level::Float64
     "Amount of water allowed to be spilled from the reservoir. If nothing, infinite spillage is allowed."
     spillage_limits::Union{Nothing, MinMax}
-    "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`)."
+    "Amount of water refilling the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`)."
     inflow::Float64
-    "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref hydroreservoir_list)`.ENERGY`)."
+    "Amount of water naturally going out of the reservoir in m^3/h or MW (if `level_data_type` is [`ReservoirDataType`](@ref ReservoirDataType)`.ENERGY`)."
     outflow::Float64
     "Reservoir level targets at the end of a simulation as a fraction of the `storage_level_limits.max`."
     level_targets::Union{Nothing, Float64}

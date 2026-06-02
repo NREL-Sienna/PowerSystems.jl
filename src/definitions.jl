@@ -49,22 +49,17 @@ etc.), convert degrees to radians first (e.g., `θ * π/180`) if the unit is `DE
 
 IS.@scoped_enum(ACBusTypes, PQ = 1, PV = 2, REF = 3, ISOLATED = 4, SLACK = 5,)
 @doc"
-ACBusTypes
-
 Enumeration of AC power system bus types (MATPOWER Table B-1).
 Each variant corresponds to a standard bus classification used in power flow
 and steady-state network models. Set on an [`ACBus`](@ref) via the `bustype` field.
 
-- `PQ` (1): Load bus — active (P) and reactive (Q) power injections are specified;
-    the bus voltage magnitude and angle are solved by the power-flow algorithm.
-- `PV` (2): Generator bus — active power (P) and voltage magnitude (V) are
-    specified; reactive power (Q) and voltage angle are solved.
-- `REF` (3): Reference bus — provides a named reference for the system voltage
-    angle; often used interchangeably with `SLACK` but kept separate for clarity.
-- `ISOLATED` (4): Isolated bus — not connected to the main network; typically
-    excluded from the global power-flow solution.
-- `SLACK` (5): Slack bus — balances system active and reactive power mismatch and
-    sets the reference voltage angle (typically one per connected network).
+| Name       | Description                                                |
+|:---------- |:---------------------------------------------------------- |
+| `ISOLATED` | Disconnected from network                                  |
+| `PQ`       | Active and reactive power defined (load bus)               |
+| `PV`       | Active power and voltage magnitude defined (generator bus) |
+| `REF`      | Reference bus (θ = 0)                                      |
+| `SLACK`    | Slack bus                                                  |
 
 # Notes
 - Numeric values follow the MATPOWER convention for bus type codes.
@@ -83,18 +78,16 @@ IS.@scoped_enum(
     UNDEFINED = 2,
 )
 @doc"
-LoadConformity
-
 WECC-defined enumeration for load conformity classification used in dynamic modeling.
 
 Load conformity indicates whether a load follows system voltage and frequency variations
 according to WECC modeling standards:
 
-- `NON_CONFORMING` (0): Load that does not respond predictably to voltage and frequency
-    changes, typically representing constant power loads or loads with complex controls.
-- `CONFORMING` (1): Load that responds predictably to voltage and frequency variations,
-    following standard load modeling practices for dynamic studies.
-- `UNDEFINED` (2): Load conformity status is not specified or unknown.
+| Name             | Description                                                       |
+|:---------------- |:----------------------------------------------------------------- |
+| `NON_CONFORMING` | Non-conforming load                                               |
+| `CONFORMING`     | Conforming load                                                   |
+| `UNDEFINED`      | Undefined or unknown whether load is conforming or non-conforming |
 
 # See Also
 - [`MotorLoadTechnology`](@ref): Related enumeration for motor load technology
@@ -109,15 +102,14 @@ IS.@scoped_enum(
     BYP = 2, # Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM.
 )
 @doc"
-FACTSOperationModes
-
 Enumeration of operational modes for FACTS (Flexible AC Transmission System) devices,
 as defined in the PSS/E POM v33 Manual.
 
-- `OOS` (0): Out-of-service — both Series and Shunt links are open.
-- `NML` (1): Normal operation — both Series and Shunt links are active.
-- `BYP` (2): Bypass mode — Series link is bypassed (acts as a zero-impedance line)
-    and Shunt link operates as a STATCOM.
+| Name  | Description                                                                                     |
+|:----- |:----------------------------------------------------------------------------------------------- |
+| `OOS` | Out-Of-Service (i.e., Series and Shunt links open)                                              |
+| `NML` | Normal mode of operation, where Series and Shunt links are operating                            |
+| `BYP` | Series link is bypassed (i.e., like a zero impedance line) and Shunt link operates as a STATCOM |
 
 # References
 - PSS/E Power Operations Manual v33, FACTS device specification.
@@ -260,26 +252,25 @@ IS.@scoped_enum(
     ASYMMETRIC_ACTIVE_POWER_FLOW = 5,
 )
 @doc"
-    TransformerControlObjective
-
 Enumeration of transformer control objectives based on PSS/E COD1 and COD2 fields.
 
 This enumeration defines the control modes for transformer tap changers and phase shifters
 as specified in the PSS/E-35 manual.
 
-# Values
-- `UNDEFINED = -99`: Undefined control objective
-- `VOLTAGE_DISABLED = -1`: Voltage control disabled
-- `REACTIVE_POWER_FLOW_DISABLED = -2`: Reactive power flow control disabled
-- `ACTIVE_POWER_FLOW_DISABLED = -3`: Active power flow control disabled
-- `CONTROL_OF_DC_LINE_DISABLED = -4`: DC line control disabled
-- `ASYMMETRIC_ACTIVE_POWER_FLOW_DISABLED = -5`: Asymmetric active power flow control disabled
-- `FIXED = 0`: Fixed tap position (no automatic control)
-- `VOLTAGE = 1`: Voltage magnitude control at controlled bus
-- `REACTIVE_POWER_FLOW = 2`: Reactive power flow control through the transformer
-- `ACTIVE_POWER_FLOW = 3`: Active power flow control through the transformer
-- `CONTROL_OF_DC_LINE = 4`: Control of DC transmission line
-- `ASYMMETRIC_ACTIVE_POWER_FLOW = 5`: Asymmetric active power flow control
+| Name                                    | Description                                                               |
+|:--------------------------------------- |:------------------------------------------------------------------------- |
+| `UNDEFINED`                             | Undefined                                                                 |
+| `VOLTAGE_DISABLED`                      | Has voltage control capabilities, which are disabled                      |
+| `REACTIVE_POWER_FLOW_DISABLED`          | Has reactive power flow control capabilities, which are disabled          |
+| `ACTIVE_POWER_FLOW_DISABLED`            | Has active power flow control capabilities, which are disabled            |
+| `CONTROL_OF_DC_LINE_DISABLED`           | Has capabilities to control a DC line quantity, which are disabled        |
+| `ASYMMETRIC_ACTIVE_POWER_FLOW_DISABLED` | Has asymmetric active power flow control capabilities, which are disabled |
+| `FIXED`                                 | Fixed tap and fixed phase shift                                           |
+| `VOLTAGE`                               | Voltage control                                                           |
+| `REACTIVE_POWER_FLOW`                   | Reactive power flow control                                               |
+| `ACTIVE_POWER_FLOW`                     | Active power flow control                                                 |
+| `CONTROL_OF_DC_LINE`                    | Control of a DC line quantity                                             |
+| `ASYMMETRIC_ACTIVE_POWER_FLOW`          | Asymmetric active power flow control                                      |
 
 # Notes
 Negative values indicate disabled control modes, while positive values represent active
@@ -294,15 +285,13 @@ IS.@scoped_enum(
     UNDETERMINED = 3,
 )
 @doc"
-MotorLoadTechnology
-
 Enumeration of motor load technology types used in power system dynamic load modeling.
 
-- `INDUCTION` (1): Induction motor, commonly used for general-purpose industrial
-    applications.
-- `SYNCHRONOUS` (2): Synchronous motor, used for constant-speed or power-factor
-    correction applications.
-- `UNDETERMINED` (3): Motor technology type is not specified or unknown.
+| Name           | Description                                  |
+|:-------------- |:-------------------------------------------- |
+| `INDUCTION`    | Induction motor                              |
+| `SYNCHRONOUS`  | Synchronous motor                            |
+| `UNDETERMINED` | Type is not specified or unknown             |
 
 # See Also
 - [`LoadConformity`](@ref): Related enumeration for load conformity classification.
@@ -335,8 +324,6 @@ IS.@scoped_enum(
     WS = 23,  # Wind Turbine, Offshore
 )
 @doc"
-PrimeMovers
-
 Enumeration of prime mover types used in electric power generation, as defined by the
 U.S. Energy Information Administration (EIA) Form 923 instructions.
 
@@ -346,6 +333,32 @@ electric generators or provide mechanical energy for other purposes.
 # Notes
 `PVe` is used for photovoltaic systems, renamed from the EIA code `PV` to avoid a
 naming conflict with [`ACBusTypes`](@ref) `PV`.
+
+| Name  | Description                                                                                            |
+|:----- |:------------------------------------------------------------------------------------------------------ |
+| `BA`  | Energy Storage, Battery                                                                                |
+| `BT`  | Turbines Used in a Binary Cycle (including those used for geothermal applications)                     |
+| `CA`  | Combined-Cycle – Steam Part                                                                            |
+| `CC`  | Combined-Cycle - Aggregated Plant *augmentation of EIA                                                 |
+| `CE`  | Energy Storage, Compressed Air                                                                         |
+| `CP`  | Energy Storage, Concentrated Solar Power                                                               |
+| `CS`  | Combined-Cycle Single-Shaft Combustion turbine and steam turbine share a single generator              |
+| `CT`  | Combined-Cycle Combustion Turbine Part                                                                 |
+| `ES`  | Energy Storage, Other                                                                                  |
+| `FC`  | Fuel Cell                                                                                              |
+| `FW`  | Energy Storage, Flywheel                                                                               |
+| `GT`  | Combustion (Gas) Turbine (including jet engine design)                                                 |
+| `HA`  | Hydrokinetic, Axial Flow Turbine                                                                       |
+| `HB`  | Hydrokinetic, Wave Buoy                                                                                |
+| `HK`  | Hydrokinetic, Other                                                                                    |
+| `HY`  | Hydraulic Turbine (including turbines associated with delivery of water by pipeline)                   |
+| `IC`  | Internal Combustion (diesel, piston, reciprocating) Engine                                             |
+| `PS`  | Energy Storage, Reversible Hydraulic Turbine (Pumped Storage)                                          |
+| `OT`  | Other                                                                                                  |
+| `ST`  | Steam Turbine (including nuclear, geothermal and solar steam; does not include combined-cycle turbine) |
+| `PVe` | Photovoltaic (*Note*: renamed from EIA `PV` to avoid conflict with `ACBusTypes.PV`)                  |
+| `WT`  | Wind Turbine, Onshore                                                                                  |
+| `WS`  | Wind Turbine, Offshore                                                                                 |
 
 # References
 - [EIA Form 923 Instructions](https://www.eia.gov/survey/form/eia_923/instructions.pdf)
@@ -394,13 +407,49 @@ IS.@scoped_enum(
 )
 
 @doc"
-ThermalFuels
-
 Enumeration of thermal fuel types, using EIA Form 923 fuel codes for standardized
 reporting of fuel consumption in electric power generation.
 
 Categories include: coal and coal-derived fuels, petroleum products, natural gas, nuclear,
 biomass and waste-derived fuels, geothermal, and other thermal energy sources.
+
+| Name                                                                                                                               | EIA Fuel Code | Description                                                                                                                         |
+|:---------------------------------------------------------------------------------------------------------------------------------- |:------------- |:----------------------------------------------------------------------------------------------------------------------------------- |
+| `ANTHRACITE_COAL`                                                                                                                  | ANT           | Anthracite Coal                                                                                                                     |
+| `BITUMINOUS_COAL`                                                                                                                  | BIT           | Bituminous Coal                                                                                                                     |
+| `LIGNITE_COAL`                                                                                                                     | LIG           | Lignite Coal                                                                                                                        |
+| `SUBBITUMINOUS_COAL`                                                                                                               | SUB           | Subbituminous Coal                                                                                                                  |
+| `WASTE_COAL`                                                                                                                       | WC            | Waste/Other Coal (including anthracite culm, bituminous gob, fine coal, lignite waste, waste coal)                                  |
+| `REFINED_COAL`                                                                                                                     | RC            | Refined Coal (a coal product that improves heat content and reduces emissions; excludes coal processed by coal preparation plants) |
+| `SYNTHESIS_GAS_COAL`                                                                                                               | SGC           | Coal-Derived Synthesis Gas                                                                                                          |
+| `DISTILLATE_FUEL_OIL`                                                                                                              | DFO           | Distillate Fuel Oil (including diesel, No. 1, No. 2, and No. 4 fuel oils)                                                           |
+| `JET_FUEL`                                                                                                                         | JF            | Jet Fuel                                                                                                                            |
+| `KEROSENE`                                                                                                                         | KER           | Kerosene                                                                                                                            |
+| `PETROLEUM_COKE`                                                                                                                   | PC            | Petroleum Coke                                                                                                                      |
+| `RESIDUAL_FUEL_OIL`                                                                                                                | RFO           | Residual Fuel Oil (including No. 5 and No. 6 fuel oils, and bunker C fuel oil)                                                      |
+| `PROPANE`                                                                                                                          | PG            | Propane, gaseous                                                                                                                    |
+| `SYNTHESIS_GAS_PETROLEUM_COKE`                                                                                                     | SGP           | Petroleum Coke Derived Synthesis Gas                                                                                                |
+| `WASTE_OIL`                                                                                                                        | WO            | Waste/Other Oil (including crude oil, liquid butane, liquid propane, naphtha, oil waste, re-refined motor oil, sludge oil, tar oil) |
+| `BLASTE_FURNACE_GAS`                                                                                                               | BFG           | Blast Furnace Gas                                                                                                                   |
+| `NATURAL_GAS`                                                                                                                      | NG            | Natural Gas                                                                                                                         |
+| `OTHER_GAS`                                                                                                                        | OG            | Other Gas                                                                                                                           |
+| `AG_BYPRODUCT`                                                                                                                     | AB            | Agricultural By-products                                                                                                            |
+| `MUNICIPAL_WASTE`                                                                                                                  | MSW           | Municipal Solid Waste                                                                                                               |
+| `OTHER_BIOMASS_SOLIDS`                                                                                                             | OBS           | Other Biomass Solids                                                                                                                |
+| `WOOD_WASTE_SOLIDS`                                                                                                                | WDS           | Wood/Wood Waste Solids (including paper, pellets, railroad ties, utility poles, wood chips, bark, and wood waste solids)            |
+| `OTHER_BIOMASS_LIQUIDS`                                                                                                            | OBL           | Other Biomass Liquids                                                                                                               |
+| `SLUDGE_WASTE`                                                                                                                     | SLW           | Sludge Waste                                                                                                                        |
+| `BLACK_LIQUOR`                                                                                                                     | BLQ           | Black Liquor                                                                                                                        |
+| `WOOD_WASTE_LIQUIDS`                                                                                                               | WDL           | Wood Waste Liquids excluding Black Liquor (includes red liquor, sludge wood, spent sulfite liquor, and other wood-based liquids)    |
+| `LANDFILL_GAS`                                                                                                                     | LFG           | Landfill Gas                                                                                                                        |
+| `OTHEHR_BIOMASS_GAS`                                                                                                               | OBG           | Other Biomass Gas (includes digester gas, methane, and other biomass gasses)                                                        |
+| `NUCLEAR`                                                                                                                          | NUC           | Nuclear Uranium, Plutonium, Thorium                                                                                                 |
+| `WASTE_HEAT`                                                                                                                       | WH            | Waste heat not directly attributed to a fuel source                                                                                 |
+| `TIREDERIVED_FUEL`                                                                                                                 | TDF           | Tire-derived Fuels                                                                                                                  |
+| `COAL`*                                                                                                                            | N/A           | General Coal Fuels                                                                                                                  |
+| `GEOTHERMAL`*                                                                                                                      | GEO           | Geothermal Fuels                                                                                                                    |
+| `OTHER`                                                                                                                            | OTH           | Other type of fuel                                                                                                                  |
+| *Asterisk denotes fuel codes not directly from the current EIA 923 form but kept for compatibility with older versions of the form |               |                                                                                                                                     |
 
 # Notes
 `COAL` (general coal) and `GEOTHERMAL` codes are not directly from the current EIA 923
@@ -430,21 +479,21 @@ IS.@scoped_enum(
     OTHER_THERM = 11, # Thermal Storage
 )
 @doc"
-StorageTech
-
 Enumeration of energy storage technologies used in power system modeling.
 
-- `PTES` (1): Pumped thermal energy storage.
-- `LIB` (2): Lithium-ion battery.
-- `LAB` (3): Lead-acid battery.
-- `FLWB` (4): Redox flow battery.
-- `SIB` (5): Sodium-ion battery.
-- `ZIB` (6): Zinc-ion battery.
-- `HGS` (7): Hydrogen gas storage.
-- `LAES` (8): Liquid air energy storage.
-- `OTHER_CHEM` (9): Other chemical storage technologies.
-- `OTHER_MECH` (10): Other mechanical storage technologies.
-- `OTHER_THERM` (11): Other thermal storage technologies.
+| Name          | Description                   |
+|:------------- |:----------------------------- |
+| `PTES`        | Pumped thermal energy storage |
+| `LIB`         | LiON Battery                  |
+| `LAB`         | Lead Acid Battery             |
+| `FLWB`        | Redox Flow Battery            |
+| `SIB`         | Sodium Ion Battery            |
+| `ZIB`         | Zinc Ion Battery              |
+| `HGS`         | Hydrogen Gas Storage          |
+| `LAES`        | Liquid Air Storage            |
+| `OTHER_CHEM`  | Other Chemical Storage        |
+| `OTHER_MECH`  | Other Mechanical Storage      |
+| `OTHER_THERM` | Other Thermal Storage         |
 
 # See Also
 - [`EnergyReservoirStorage`](@ref): Storage component using this enumeration.
@@ -505,15 +554,14 @@ IS.@scoped_enum(
     ENERGY = 4,
 )
 @doc"
-ReservoirDataType
-
 Enumeration of the quantity type used to represent the state of a [`HydroReservoir`](@ref).
 
-- `USABLE_VOLUME` (1): Volume available for operations and dispatch (active storage),
-    typically in cubic meters (m³).
-- `TOTAL_VOLUME` (2): Total reservoir volume including dead and active storage, in m³.
-- `HEAD` (3): Hydraulic head or water surface elevation relative to a datum, in meters (m).
-- `ENERGY` (4): Stored or deliverable energy associated with the reservoir, in MWh or GWh.
+| Name            | Units | Description                                                                                                                                                              |
+|:--------------- |:----- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `USABLE_VOLUME` | m^3   | The volume of water that can be stored for levels between the penstock intake and the top reservoir level                                                                |
+| `TOTAL_VOLUME`  | m^3   | The total volume of the reservoir considering a total depletion of the water levels. This unit system usually requires the specification of a valid minimum volume level |
+| `HEAD`          | m     | The difference in elevations between the top water levels. It requires a valid conversion constant to go from head to potential energy stored.                           |
+| `ENERGY`        | MWh   | Uses energy units in MWh to approximate the water storage as a generic energy reservoir.                                                                                 |
 
 # See Also
 - [`ReservoirLocation`](@ref): Enumeration of reservoir location relative to the turbine.

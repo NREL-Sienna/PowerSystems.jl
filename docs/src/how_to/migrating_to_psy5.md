@@ -73,7 +73,7 @@ The new [`HydroReservoir`](@ref) is also used by the new [`HydroPumpTurbine`](@r
 ## Updates to fuel categories
 
 The fuel categories available in form EIA-923 have been expanded, the old categories are still
-valid and the expanded list can be explored in the documentation [`ThermalFuels`](@ref tf_list)
+valid and the expanded list can be explored in the documentation [`ThermalFuels`](@ref ThermalFuels)
 
 ## Updates to Transformers
 
