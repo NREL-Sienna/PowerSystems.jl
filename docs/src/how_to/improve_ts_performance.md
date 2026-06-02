@@ -55,7 +55,7 @@ sys = System(
 ## Adding Timeseries To The System
 
 In order to optimize the storage of time series data, time series can be shared
-across devices to avoid duplication. If the same [forecast](@ref "Forecasts") applies to multiple
+across devices to avoid duplication. If the same [`Forecast`](@ref) applies to multiple
 components then can call `add_time_series!`, passing the collection of
 components that share the time series data.
 Time series data can also be shared on a component level. Suppose a time series array applies to

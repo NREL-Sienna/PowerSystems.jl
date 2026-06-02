@@ -43,7 +43,7 @@ get_name.(gens_2)
 
 # !!! tip
 
-# The get_name. command may look like a way to use `.` to access the fields of a component, which is method actively discouraged by the Sienna team, however it is a [broadcast function](https://blog.glcs.io/broadcasting) in Julia.
+# The get_name. command may look like a way to use `.` to access the fields of a component, which is method actively discouraged by the Sienna team, however it is a [broadcast function](https://blog.glcs.io/broadcasting) in Julia. Using `.` access on the fields of a component bypasses Sienna's built-in [per-unit](@ref per_unit) handling and will return unexpected results. 
 
 ## Export a subsystem as a new `System`
 
