@@ -917,30 +917,41 @@ function add_supplemental_attribute!(
     hrsg_number::Int,
 )
     uuid = IS.get_uuid(component)
-    if haskey(attribute.ct_hrsg_map, uuid) || haskey(attribute.ca_hrsg_map, uuid)
+    if haskey(attribute.ct_hrsg_map, uuid) && hrsg_number in attribute.ct_hrsg_map[uuid] ||
+       haskey(attribute.ca_hrsg_map, uuid) && hrsg_number in attribute.ca_hrsg_map[uuid]
         throw(
             IS.ArgumentError(
-                "Generator $(get_name(component)) is already part of block $(get_name(attribute))",
+                "Generator $(get_name(component)) is already part of block $(get_name(attribute)) with $(hrsg_number)",
             ),
         )
     end
     prime_mover = get_prime_mover_type(component)
     if prime_mover == PrimeMovers.CT
-        IS.add_supplemental_attribute!(sys.data, component, attribute)
         if haskey(attribute.hrsg_ct_map, hrsg_number)
             push!(attribute.hrsg_ct_map[hrsg_number], uuid)
         else
             attribute.hrsg_ct_map[hrsg_number] = [uuid]
         end
-        attribute.ct_hrsg_map[uuid] = [hrsg_number]
+        if haskey(attribute.ct_hrsg_map, uuid)
+            # We assume that IS has already has the association
+            push!(attribute.ct_hrsg_map[uuid], hrsg_number)
+        else
+            IS.add_supplemental_attribute!(sys.data, component, attribute)
+            attribute.ct_hrsg_map[uuid] = [hrsg_number]
+        end
     elseif prime_mover == PrimeMovers.CA
-        IS.add_supplemental_attribute!(sys.data, component, attribute)
         if haskey(attribute.hrsg_ca_map, hrsg_number)
             push!(attribute.hrsg_ca_map[hrsg_number], uuid)
         else
             attribute.hrsg_ca_map[hrsg_number] = [uuid]
         end
-        attribute.ca_hrsg_map[uuid] = [hrsg_number]
+        if haskey(attribute.ca_hrsg_map, uuid)
+            # We assume that IS has already has the association
+            push!(attribute.ca_hrsg_map[uuid], hrsg_number)
+        else
+            IS.add_supplemental_attribute!(sys.data, component, attribute)
+            attribute.ca_hrsg_map[uuid] = [hrsg_number]
+        end
     else
         throw(
             IS.ArgumentError(
@@ -1030,14 +1041,13 @@ function add_supplemental_attribute!(
 )
     uuid = IS.get_uuid(component)
     # Check if already in any exclusion group
-    for (_, uuids) in attribute.operation_exclusion_map
-        if uuid in uuids
-            throw(
-                IS.ArgumentError(
-                    "Generator $(get_name(component)) is already part of plant $(get_name(attribute))",
-                ),
-            )
-        end
+    if haskey(attribute.inverse_operation_exclusion_map, uuid)
+        throw(
+            IS.ArgumentError(
+                "Generator $(get_name(component)) is already part of plant $(get_name(attribute)) \
+                under exclusion group $(attribute.inverse_operation_exclusion_map[uuid])",
+            ),
+        )
     end
     prime_mover = get_prime_mover_type(component)
     if prime_mover != PrimeMovers.CC
@@ -1078,25 +1088,19 @@ function remove_supplemental_attribute!(
     attribute::CombinedCycleFractional,
 )
     uuid = IS.get_uuid(component)
-    found = false
-    for (group, _) in attribute.operation_exclusion_map
-        if uuid in attribute.operation_exclusion_map[group]
-            filter!(x -> x != uuid, attribute.operation_exclusion_map[group])
-            if isempty(attribute.operation_exclusion_map[group])
-                delete!(attribute.operation_exclusion_map, group)
-            end
-            found = true
-            break
-        end
-    end
-    if !found
+    if !haskey(attribute.inverse_operation_exclusion_map, uuid)
         throw(
             IS.ArgumentError(
                 "Generator $(get_name(component)) is not part of plant $(get_name(attribute))",
             ),
         )
     end
+    group = attribute.inverse_operation_exclusion_map[uuid]
     delete!(attribute.inverse_operation_exclusion_map, uuid)
+    filter!(x -> x != uuid, attribute.operation_exclusion_map[group])
+    if isempty(attribute.operation_exclusion_map[group])
+        delete!(attribute.operation_exclusion_map, group)
+    end
     IS.remove_supplemental_attribute!(sys.data, component, attribute)
     return
 end

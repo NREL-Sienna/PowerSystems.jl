@@ -158,9 +158,9 @@ See also: [`supports_services` for `Device`](@ref supports_services(::Device)),
 supports_services(::HydroReservoir) = false
 
 """
-Remove a turbine from a hydro reservoir.
+Remove a hydro turbine from a hydro reservoir.
 
-Throws `ArgumentError` if the turbine is not attached to the reservoir.
+Throws `ArgumentError` if the hydro turbine is not attached to the reservoir.
 
 # Arguments
 - `reservoir::HydroReservoir`: The hydro reservoir.
@@ -168,7 +168,7 @@ Throws `ArgumentError` if the turbine is not attached to the reservoir.
 
 See also: [`clear_turbines!`](@ref), [`has_upstream_turbine`](@ref), [`has_downstream_turbine`](@ref)
 """
-function remove_turbine!(reservoir::HydroReservoir, device::HydroTurbine)
+function remove_turbine!(reservoir::HydroReservoir, device::HydroUnit)
     if !_remove_turbine!(reservoir, device)
         throw(
             ArgumentError(
