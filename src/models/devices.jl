@@ -2,8 +2,8 @@
 Add a [`Service`](@ref) to a [`Device`](@ref) without checking that both are attached to the same [`System`](@ref).
 
 # Arguments
-- `device::Device`: The device to which the service is added.
-- `service::Service`: The service to add.
+- `device::`[`Device`](@ref): The device to which the service is added.
+- `service::`[`Service`](@ref): The service to add.
 
 See also: [`add_service!`](@ref)
 """
@@ -45,8 +45,8 @@ Remove a service from a device.
 Throws `ArgumentError` if the service is not attached to the device.
 
 # Arguments
-- `device::Device`: The device from which to remove the service.
-- `service::Service`: The service to remove.
+- `device::`[`Device`](@ref): The device from which to remove the service.
+- `service::`[`Service`](@ref): The service to remove.
 
 See also: [`clear_services!`](@ref), [`has_service`](@ref)
 """
@@ -64,8 +64,8 @@ end
 Return true if the service is attached to the device.
 
 # Arguments
-- `device::Device`: The device.
-- `service::Service`: The service to check.
+- `device::`[`Device`](@ref): The device.
+- `service::`[`Service`](@ref): The service to check.
 
 See also: [`has_service` by type](@ref has_service(::Device, ::Type{T}) where {T <: Service})
 """
@@ -85,7 +85,7 @@ Return true if a service of type `T` is attached to the device.
 Returns `false` immediately if the device does not support services.
 
 # Arguments
-- `device::Device`: The device.
+- `device::`[`Device`](@ref): The device.
 - `T::Type{<:Service}`: The service type to check for.
 
 See also: [`has_service` by instance](@ref has_service(::Device, ::Service))
@@ -133,7 +133,7 @@ Remove all services attached to the device.
 This is a no-op if the device does not support services.
 
 # Arguments
-- `device::Device`: The device.
+- `device::`[`Device`](@ref): The device.
 
 See also: [`remove_service!`](@ref), [`get_services`](@ref)
 """
@@ -163,8 +163,8 @@ Remove a hydro turbine from a hydro reservoir.
 Throws `ArgumentError` if the hydro turbine is not attached to the reservoir.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
-- `device::HydroTurbine`: The turbine to remove.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
+- `device::`[`HydroTurbine`](@ref): The turbine to remove.
 
 See also: [`clear_turbines!`](@ref), [`has_upstream_turbine`](@ref), [`has_downstream_turbine`](@ref)
 """
@@ -182,8 +182,8 @@ end
 Return true if `turbine` is among the upstream turbines of `reservoir`.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
-- `turbine::HydroUnit`: The turbine to check.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
+- `turbine::`[`HydroUnit`](@ref): The turbine to check.
 
 See also: [`has_upstream_turbine` for any turbine](@ref has_upstream_turbine(::HydroReservoir)), [`get_upstream_turbines`](@ref)
 """
@@ -201,8 +201,8 @@ end
 Return true if `turbine` is among the downstream turbines of `reservoir`.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
-- `turbine::HydroUnit`: The turbine to check.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
+- `turbine::`[`HydroUnit`](@ref): The turbine to check.
 
 See also: [`has_downstream_turbine` for any turbine](@ref has_downstream_turbine(::HydroReservoir)), [`get_downstream_turbines`](@ref)
 """
@@ -220,7 +220,7 @@ end
 Return true if any upstream hydro unit is attached to the reservoir.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
 
 See also: [`has_upstream_turbine` for a specific turbine](@ref has_upstream_turbine(::HydroReservoir, ::HydroUnit))
 """
@@ -232,7 +232,7 @@ end
 Return true if any downstream hydro unit is attached to the reservoir.
 
 # Arguments
-- `reservoir::HydroReservoir`: The hydro reservoir.
+- `reservoir::`[`HydroReservoir`](@ref): The hydro reservoir.
 
 See also: [`has_downstream_turbine` for a specific turbine](@ref has_downstream_turbine(::HydroReservoir, ::HydroUnit))
 """
@@ -281,7 +281,7 @@ Remove all turbines attached to the hydro reservoir.
 Clears both upstream and downstream turbine associations from the reservoir.
 
 # Arguments
-- `device::HydroReservoir`: The hydro reservoir.
+- `device::`[`HydroReservoir`](@ref): The hydro reservoir.
 
 See also: [`get_upstream_turbines`](@ref), [`get_downstream_turbines`](@ref)
 """
