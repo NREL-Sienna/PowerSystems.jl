@@ -30,8 +30,8 @@ sys = System(100.0)
 # ## Adding Buses
 # We'll start by creating some buses. By referring to the documentation for
 # [ACBus](@ref), notice that we need define some basic data, including the bus's
-# unique identifier and name, base voltage, and whether it's a [load, generator,
-# or reference bus](@ref ACBusTypes).
+# unique identifier and name, base voltage, and whether it's a load, generator,
+# or reference bus ([`ACBusTypes`](@ref)).
 # Let's start with a reference bus:
 
 bus1 = ACBus(;
@@ -47,8 +47,8 @@ bus1 = ACBus(;
 
 # This bus is on a 230 kV AC transmission network, with an allowable voltage range of
 # 0.9 to 1.05 p.u. We are assuming it is currently operating at 1.0 p.u. voltage and
-# an angle of 0 radians. Notice that we've defined this bus as [reference bus or slack
-# bus](@ref ACBusTypes), where it will be used for balancing power flow in power
+# an angle of 0 radians. Notice that we've defined this bus as a [`ACBusTypes`](@ref)`.REF` reference
+# (slack) bus, where it will be used for balancing power flow in power
 # flow studies.
 # Let's add this bus to our [`System`](@ref) with [`add_component!`](@ref add_component!(sys::System, component::Component; kwargs...)):
 
@@ -75,7 +75,7 @@ bus2 = ACBus(;
     base_voltage = 230.0,
 );
 
-# Notice that we've defined this bus with [power and voltage variables](@ref ACBusTypes),
+# Notice that we've defined this bus with power and voltage variables ([`ACBusTypes`](@ref)`.PV`),
 # suitable for power flow studies.
 # Let's also add this to our [`System`](@ref):
 
@@ -162,7 +162,7 @@ solar = RenewableDispatch(;
 );
 
 # Note that we've used a generic [renewable generator](@ref RenewableDispatch) to model
-# solar, but we can specify that it is solar through the [prime mover](@ref PrimeMovers).
+# solar, but we can specify that it is solar through the [`PrimeMovers`](@ref) code `PVe`.
 # Finally, we'll also add a 30 MW gas [thermal generator](@ref ThermalStandard) to `bus1`
 # because a slack bus require a controllable generator component:
 

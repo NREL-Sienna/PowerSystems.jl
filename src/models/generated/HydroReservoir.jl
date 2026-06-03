@@ -43,7 +43,7 @@ See [How to Define Hydro Generators with Reservoirs](@ref hydro_resv) for suppor
 - `downstream_turbines::Vector{HydroUnit}`: (default: `Device[]`) Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units.
 - `upstream_reservoirs::Vector{Device}`: (default: `Device[]`) Vector of [Device](@ref)(s) reservoirs that are immediately upstream of this reservoir. This reservoir receives the spillage flow from upstream_reservoirs.
 - `operation_cost::HydroReservoirCost`: (default: `HydroReservoirCost(nothing)`) [`OperationalCost`](@ref) of reservoir.
-- `level_data_type::ReservoirDataType`: (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir level data type. See [ReservoirDataType](@ref) for reference.
+- `level_data_type::ReservoirDataType`: (default: `ReservoirDataType.USABLE_VOLUME`) Reservoir level data type. See [`ReservoirDataType`](@ref).
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
@@ -76,7 +76,7 @@ mutable struct HydroReservoir <: Device
     upstream_reservoirs::Vector{Device}
     "[`OperationalCost`](@ref) of reservoir."
     operation_cost::HydroReservoirCost
-    "Reservoir level data type. See [ReservoirDataType](@ref) for reference."
+    "Reservoir level data type. See [`ReservoirDataType`](@ref)."
     level_data_type::ReservoirDataType
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}

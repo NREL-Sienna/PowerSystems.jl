@@ -47,7 +47,7 @@ show_components(ThermalStandard, threebus_sys, [:bus])
 
 slack_bus = first(get_components(x -> get_bustype(x) == ACBusTypes.REF, Bus, threebus_sys))
 
-# Notice we filtered by the [bus type](@ref ACBusTypes) to get the bus(es) we wanted.
+# Notice we filtered by [`ACBusTypes`](@ref) to get the bus(es) we wanted.
 # Next, manually define a [`Source`](@ref):
 
 inf_source = Source(;

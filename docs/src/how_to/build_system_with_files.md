@@ -208,9 +208,9 @@ with the convention used in the `Bus Number` column of `Buses.csv`.
 
 Read in the contents of the CSV file `Thermal_Gens.csv` to a data frame and
 customize the parameter names based on the column names in your CSV file.  Note
-that the [`PrimeMovers`](@ref PrimeMovers) in the `thermal_gens` data frame are
+that [`PrimeMovers`](@ref) in the `thermal_gens` data frame are
 consistent with EIA Form 923, and the `Fuel Type` column data are consistent
-with the [`ThermalFuels`](@ref ThermalFuels) naming convention.
+with the [`ThermalFuels`](@ref) naming convention.
 
 ```julia
 thermal_gens = CSV.read("MyData/Thermal_Gens.csv", DataFrame)
@@ -275,7 +275,7 @@ In this example the [`ThermalGenerationCost`](@ref) constructor is defined by a
 [`FuelCurve`](@ref). We are also assuming that the data needed to build each
 [`FuelCurve`](@ref) can be found in two separate CSV files. The first,
 `Thermal_Gens.csv`, has already been defined in the previous step. The second,
-`Thermal_Fuel_Rates.csv`, contains information regarding each [`FuelType`](@ref ThermalFuels) and its cost:
+`Thermal_Fuel_Rates.csv`, contains information regarding each [`ThermalFuels`](@ref) fuel type and its cost:
 
 | Fuel Type    | Fuel Price | CO2 rate | NOX rate | SO2 rate |
 |:------------ |:---------- |:-------- |:-------- |:-------- |
@@ -345,7 +345,7 @@ For more information regarding thermal cost functions please visit
 The following section demonstrates how to add solar generators and their time
 series to a [`System`](@ref). However, if you desire to add other
 [`RenewableDispatch`](@ref) generator types, such as wind, the process is exactly the
-same, with changing the [prime mover type](@ref PrimeMovers) from `PrimeMovers.PVe` to
+same, with changing [`PrimeMovers`](@ref) from `PrimeMovers.PVe` to
 `PrimeMovers.WT`.
 
 We assume the data needed to build each solar powered

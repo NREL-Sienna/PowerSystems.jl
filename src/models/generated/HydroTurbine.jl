@@ -51,7 +51,7 @@ A hydropower generator that must have a [`HydroReservoir`](@ref) attached, suita
 - `efficiency::Float64`: (default: `1.0`) Turbine efficiency [0, 1.0], validation range: `(0, 1)`
 - `turbine_type::HydroTurbineType`: (default: `HydroTurbineType.UNKNOWN`) Type of the turbine
 - `conversion_factor::Float64`: (default: `1.0`) Conversion factor from flow/volume to energy: m^3 -> p.u-hr
-- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)
+- `prime_mover_type::PrimeMovers`: (default: `PrimeMovers.HY`) Prime mover technology according to EIA 923. See [`PrimeMovers`](@ref).
 - `travel_time::Union{Nothing, Float64}`: (default: `nothing`) Downstream (from reservoir into turbine) travel time in hours.
 - `services::Vector{Service}`: (default: `Device[]`) Services that this device contributes to
 - `dynamic_injector::Union{Nothing, DynamicInjection}`: (default: `nothing`) corresponding dynamic injection device
@@ -93,7 +93,7 @@ mutable struct HydroTurbine <: HydroUnit
     turbine_type::HydroTurbineType
     "Conversion factor from flow/volume to energy: m^3 -> p.u-hr"
     conversion_factor::Float64
-    "Prime mover technology according to EIA 923. Options are listed [here](@ref PrimeMovers)"
+    "Prime mover technology according to EIA 923. See [`PrimeMovers`](@ref)."
     prime_mover_type::PrimeMovers
     "Downstream (from reservoir into turbine) travel time in hours."
     travel_time::Union{Nothing, Float64}

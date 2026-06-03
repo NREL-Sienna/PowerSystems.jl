@@ -7,7 +7,7 @@ these four quantities are specified at each bus — the other two are determined
 solver. The [`ACBusTypes`](@ref) of a bus declares which two quantities are known, and therefore
 shapes how the power flow problem is formulated across the whole network.
 
-`PowerSystems.jl` supports five [`ACBusTypes`](@ref)s, [listed here](@ref ACBusTypes). The
+`PowerSystems.jl` supports five [`ACBusTypes`](@ref). The
 choice of bus type for each bus in a dataset has a direct effect on solver behavior,
 convergence, and the interpretation of results.
 
