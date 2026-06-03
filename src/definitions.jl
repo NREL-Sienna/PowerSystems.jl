@@ -525,7 +525,7 @@ IS.@scoped_enum(StateTypes, Differential = 1, Algebraic = 2, Hybrid = 3,)
 @doc"
 StateTypes
 
-Enumeration of state variable types for dynamic components.
+Categorization of state variable types for dynamic components.
 
 - `Differential` (1): State governed by a differential equation (evolves continuously
     in time).
@@ -537,15 +537,6 @@ Enumeration of state variable types for dynamic components.
 - [`DynamicComponent`](@ref): Abstract base type whose states are classified by this
     enumeration.
 " StateTypes
-
-@doc """
-Categorization of dynamic state variables.
-
-# Values
-- `Differential`: State governed by a differential equation
-- `Algebraic`: State governed by an algebraic constraint
-- `Hybrid`: State with both differential and algebraic aspects
-""" StateTypes
 
 IS.@scoped_enum(
     ReservoirDataType,
@@ -644,17 +635,6 @@ Enumeration describing the physical layout of a combined cycle power plant.
 - [`CombinedCycleBlock`](@ref): Plant attribute for combined cycle block-level configurations.
 - [`CombinedCycleFractional`](@ref): Plant attribute for combined cycle fractional configurations.
 " CombinedCycleConfigurationModule.CombinedCycleConfiguration
-
-@doc """
-Configuration types for combined cycle power plants.
-
-# Values
-- `SingleShaftCombustionSteam`: Single-shaft arrangement with one combustion and one steam turbine
-- `SeparateShaftCombustionSteam`: Separate shafts for combustion and steam turbines
-- `DoubleCombustionOneSteam`: Two combustion turbines feeding one steam turbine
-- `TripleCombustionOneSteam`: Three combustion turbines feeding one steam turbine
-- `Other`: Other combined cycle configuration
-""" CombinedCycleConfiguration
 
 const PS_MAX_LOG = parse(Int, get(ENV, "PS_MAX_LOG", "50"))
 const DEFAULT_BASE_MVA = 100.0
