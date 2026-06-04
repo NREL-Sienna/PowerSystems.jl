@@ -31,6 +31,13 @@ Private = false
 ## Supplemental Attributes
 
 ```@autodocs
+Modules = [IS]
+Pages   = ["InfrastructureSystems.jl"]
+Order = [:type]
+Filter = t -> nameof(t) in names(PowerSystems) && nameof(t) == :SupplementalAttribute
+```
+
+```@autodocs
 Modules = [PowerSystems]
 Pages   = ["outages.jl",
            "contingencies.jl",
@@ -57,6 +64,7 @@ Modules = [IS]
 Pages   = ["production_variable_cost_curve.jl",
             "cost_aliases.jl",
             "value_curve.jl",
+            "function_data/function_data.jl",
            ]
 Order = [:type, :function]
 Filter = t -> nameof(t) in names(PowerSystems)

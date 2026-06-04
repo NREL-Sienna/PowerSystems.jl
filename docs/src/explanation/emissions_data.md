@@ -2,12 +2,12 @@
 
 ## Motivation
 
-`EmissionsData` is a [`SupplementalAttribute`](@ref supplemental_attributes) that pairs a
+[`EmissionsData`](@ref) is a [`SupplementalAttribute`](@ref) that pairs a
 pollutant identity (CO2, NOx, SO2, etc.) with an emission rate expressed as a
 [`ValueCurve`](@ref). This supports both constant rates and nonlinear
 relationships between fuel consumption / power output and emissions. By modeling
 emissions as a supplemental attribute rather than a field on each generator type, a single
-`EmissionsData` instance can be shared across multiple components (one-to-many attachment).
+[`EmissionsData`](@ref) instance can be shared across multiple components (one-to-many attachment).
 This avoids data duplication when several units at the same plant share the same emission
 profile and allows emissions metadata to be added or removed without changing the component
 struct definitions.
