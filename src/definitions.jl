@@ -28,9 +28,14 @@ single_start_up_to_stages(start_up::Real) =
 
 IS.@scoped_enum(GeneratorCostModels, PIECEWISE_LINEAR = 1, POLYNOMIAL = 2,)
 @doc"
-    GeneratorCostModel
+    GeneratorCostModels
 
 Enumeration representing different cost models for generators in power system analysis.
+
+| Value               | Description                           |
+|:------------------ |:------------------------------------- |
+| `PIECEWISE_LINEAR` | Piecewise linear cost representation  |
+| `POLYNOMIAL`       | Polynomial cost representation        |
 " GeneratorCostModels
 
 IS.@scoped_enum(AngleUnits, DEGREES = 1, RADIANS = 2,)
@@ -39,8 +44,10 @@ AngleUnits
 
 Enumeration of angular measurement units used throughout PowerSystems.jl.
 
-- `DEGREES` (1): Angles expressed in degrees.
-- `RADIANS` (2): Angles expressed in radians.
+| Value      | Description                 |
+|:--------- |:--------------------------- |
+| `DEGREES` | Angles expressed in degrees |
+| `RADIANS` | Angles expressed in radians |
 
 # Notes
 When performing trigonometric calculations with Julia's built-in functions (`sin`, `cos`,
@@ -53,7 +60,7 @@ Enumeration of AC power system bus types (MATPOWER Table B-1).
 Each variant corresponds to a standard bus classification used in power flow
 and steady-state network models. Set on an [`ACBus`](@ref) via the `bustype` field.
 
-| Name       | Description                                                |
+| Value       | Description                                                |
 |:---------- |:---------------------------------------------------------- |
 | `ISOLATED` | Disconnected from network                                  |
 | `PQ`       | Active and reactive power defined (load bus)               |
@@ -83,7 +90,7 @@ WECC-defined enumeration for load conformity classification used in dynamic mode
 Load conformity indicates whether a load follows system voltage and frequency variations
 according to WECC modeling standards:
 
-| Name             | Description                                                       |
+| Value             | Description                                                       |
 |:---------------- |:----------------------------------------------------------------- |
 | `NON_CONFORMING` | Non-conforming load                                               |
 | `CONFORMING`     | Conforming load                                                   |
@@ -105,7 +112,7 @@ IS.@scoped_enum(
 Enumeration of operational modes for FACTS (Flexible AC Transmission System) devices,
 as defined in the PSS/E POM v33 Manual.
 
-| Name  | Description                                                                                     |
+| Value  | Description                                                                                     |
 |:----- |:----------------------------------------------------------------------------------------------- |
 | `OOS` | Out-Of-Service (i.e., Series and Shunt links open)                                              |
 | `NML` | Normal mode of operation, where Series and Shunt links are operating                            |
@@ -126,10 +133,11 @@ DiscreteControlledBranchType
 
 Enumeration of discrete controlled branch device types.
 
-- `SWITCH` (0): Switching device that can be opened or closed to connect or isolate a
-    circuit segment.
-- `BREAKER` (1): Circuit breaker capable of interrupting fault current.
-- `OTHER` (2): Other discrete branch device not covered by the above categories.
+| Value       | Description                                                              |
+|:---------- |:------------------------------------------------------------------------ |
+| `SWITCH`   | Switching device that can be opened or closed to connect or isolate a circuit segment |
+| `BREAKER`  | Circuit breaker capable of interrupting fault current                    |
+| `OTHER`    | Other discrete branch device not covered by the above categories         |
 
 # See Also
 - [`DiscreteControlledACBranch`](@ref): Branch type that uses this enumeration.
@@ -148,8 +156,10 @@ DiscreteControlledBranchStatus
 Enumeration describing the controlled (commanded) status of a branch device such as a
 breaker or switch. Used with [`DiscreteControlledACBranch`](@ref).
 
-- `OPEN` (0): The device is open (non-conducting).
-- `CLOSED` (1): The device is closed (conducting).
+| Value     | Description                          |
+|:-------- |:------------------------------------ |
+| `OPEN`   | The device is open (non-conducting)  |
+| `CLOSED` | The device is closed (conducting)    |
 
 # Notes
 Represents the intended or commanded state used by control and protection logic; it may
@@ -169,14 +179,12 @@ WindingCategory
 Enumeration of transformer winding roles used to interpret a
 [`ImpedanceCorrectionData`](@ref) (Transformer Impedance Correction Table) association.
 
-- `TR2W_WINDING` (0): The winding of a two-winding transformer connected to an
-    [`ImpedanceCorrectionData`](@ref).
-- `PRIMARY_WINDING` (1): Primary winding of a three-winding transformer connected to an
-    [`ImpedanceCorrectionData`](@ref).
-- `SECONDARY_WINDING` (2): Secondary winding of a three-winding transformer connected to
-    an [`ImpedanceCorrectionData`](@ref).
-- `TERTIARY_WINDING` (3): Tertiary winding of a three-winding transformer connected to an
-    [`ImpedanceCorrectionData`](@ref).
+| Value                | Description                                                                 |
+|:------------------- |:--------------------------------------------------------------------------- |
+| `TR2W_WINDING`      | Winding of a two-winding transformer connected to [`ImpedanceCorrectionData`](@ref) |
+| `PRIMARY_WINDING`   | Primary winding of a three-winding transformer connected to [`ImpedanceCorrectionData`](@ref) |
+| `SECONDARY_WINDING` | Secondary winding of a three-winding transformer connected to [`ImpedanceCorrectionData`](@ref) |
+| `TERTIARY_WINDING`  | Tertiary winding of a three-winding transformer connected to [`ImpedanceCorrectionData`](@ref) |
 
 # See Also
 - [`ImpedanceCorrectionTransformerControlMode`](@ref): Enumeration of control modes used
@@ -199,13 +207,15 @@ WindingGroupNumber
 Enumeration of transformer winding group numbers representing the phase displacement
 between primary and secondary windings of three-phase transformers, per IEC 60076-1.
 
-- `UNDEFINED` (-99): Winding group not specified.
-- `GROUP_0` (0): 0° phase displacement (e.g., Yy0, Dd0, Dz0).
-- `GROUP_1` (1): −30° phase displacement (e.g., Dy1, Yd1, Yz1).
-- `GROUP_5` (5): −150° phase displacement (e.g., Dy5, Yd5, Yz5).
-- `GROUP_6` (6): 180° phase displacement (e.g., Yy6, Dd6, Dz6).
-- `GROUP_7` (7): 150° phase displacement (e.g., Dy7, Yd7, Yz7).
-- `GROUP_11` (11): 30° phase displacement (e.g., Dy11, Yd11, Yz11).
+| Value        | Description                                           |
+|:----------- |:----------------------------------------------------- |
+| `UNDEFINED` | Winding group not specified                           |
+| `GROUP_0`   | 0° phase displacement (e.g., Yy0, Dd0, Dz0)           |
+| `GROUP_1`   | −30° phase displacement (e.g., Dy1, Yd1, Yz1)         |
+| `GROUP_5`   | −150° phase displacement (e.g., Dy5, Yd5, Yz5)       |
+| `GROUP_6`   | 180° phase displacement (e.g., Yy6, Dd6, Dz6)       |
+| `GROUP_7`   | 150° phase displacement (e.g., Dy7, Yd7, Yz7)        |
+| `GROUP_11`  | 30° phase displacement (e.g., Dy11, Yd11, Yz11)      |
 
 # Notes
 - Phase displacement is measured from primary to secondary winding; positive angles
@@ -227,10 +237,10 @@ ImpedanceCorrectionTransformerControlMode
 Enumeration of control modes for impedance correction in transformers, as defined
 in the PSS/E transformer control specifications.
 
-- `PHASE_SHIFT_ANGLE` (1): Impedance correction is applied as a function of the phase
-    shift angle. Used for phase-shifting transformers that control active power flow.
-- `TAP_RATIO` (2): Impedance correction is applied as a function of the tap ratio.
-    Used for tap-changing transformers that control voltage magnitude.
+| Value                 | Description                                                                 |
+|:-------------------- |:--------------------------------------------------------------------------- |
+| `PHASE_SHIFT_ANGLE`  | Impedance correction as a function of phase shift angle (phase-shifting transformers) |
+| `TAP_RATIO`          | Impedance correction as a function of tap ratio (tap-changing transformers) |
 
 # See Also
 - [`ImpedanceCorrectionData`](@ref): Supplemental attribute that uses this control mode.
@@ -257,7 +267,7 @@ Enumeration of transformer control objectives based on PSS/E COD1 and COD2 field
 This enumeration defines the control modes for transformer tap changers and phase shifters
 as specified in the PSS/E-35 manual.
 
-| Name                                    | Description                                                               |
+| Value                                    | Description                                                               |
 |:--------------------------------------- |:------------------------------------------------------------------------- |
 | `UNDEFINED`                             | Undefined                                                                 |
 | `VOLTAGE_DISABLED`                      | Has voltage control capabilities, which are disabled                      |
@@ -287,7 +297,7 @@ IS.@scoped_enum(
 @doc"
 Enumeration of motor load technology types used in power system dynamic load modeling.
 
-| Name           | Description                                  |
+| Value           | Description                                  |
 |:-------------- |:-------------------------------------------- |
 | `INDUCTION`    | Induction motor                              |
 | `SYNCHRONOUS`  | Synchronous motor                            |
@@ -334,7 +344,7 @@ electric generators or provide mechanical energy for other purposes.
 `PVe` is used for photovoltaic systems, renamed from the EIA code `PV` to avoid a
 naming conflict with [`ACBusTypes`](@ref) `PV`.
 
-| Name  | Description                                                                                            |
+| Value  | Description                                                                                            |
 |:----- |:------------------------------------------------------------------------------------------------------ |
 | `BA`  | Energy Storage, Battery                                                                                |
 | `BT`  | Turbines Used in a Binary Cycle (including those used for geothermal applications)                     |
@@ -413,7 +423,7 @@ reporting of fuel consumption in electric power generation.
 Categories include: coal and coal-derived fuels, petroleum products, natural gas, nuclear,
 biomass and waste-derived fuels, geothermal, and other thermal energy sources.
 
-| Name                                                                                                                               | EIA Fuel Code | Description                                                                                                                         |
+| Value                                                                                                                               | EIA Fuel Code | Description                                                                                                                         |
 |:---------------------------------------------------------------------------------------------------------------------------------- |:------------- |:----------------------------------------------------------------------------------------------------------------------------------- |
 | `ANTHRACITE_COAL`                                                                                                                  | ANT           | Anthracite Coal                                                                                                                     |
 | `BITUMINOUS_COAL`                                                                                                                  | BIT           | Bituminous Coal                                                                                                                     |
@@ -482,7 +492,7 @@ IS.@scoped_enum(
 @doc"
 Enumeration of energy storage technologies used in power system modeling.
 
-| Name          | Description                   |
+| Value          | Description                   |
 |:------------- |:----------------------------- |
 | `PTES`        | Pumped thermal energy storage |
 | `LIB`         | LiON Battery                  |
@@ -511,13 +521,15 @@ PumpHydroStatus
 
 Operating status of a pumped‑storage hydro unit.
 
-Values
-- OFF = 0: Unit is idle — neither generating nor pumping.
-- GEN = 1: Generating mode (turbine operation), producing active power.
-- PUMP = -1: Pumping mode, consuming active power to store energy.
+| Value   | Description                                                      |
+|:------ |:---------------------------------------------------------------- |
+| `OFF`  | Unit is idle — neither generating nor pumping                    |
+| `GEN`  | Generating mode (turbine operation), producing active power      |
+| `PUMP` | Pumping mode, consuming active power to store energy             |
 
-Notes
-- The sign of the value reflects the net direction of active power (positive = generation, negative = pumping).
+# Notes
+- Integer values are 0, 1, and -1 respectively; the sign reflects net active power direction
+  (positive = generation, negative = pumping).
 - Intended for use in scheduling, dispatch, and state-tracking of pumped‑storage units.
 " PumpHydroStatus
 
@@ -527,11 +539,11 @@ StateTypes
 
 Categorization of state variable types for dynamic components.
 
-- `Differential` (1): State governed by a differential equation (evolves continuously
-    in time).
-- `Algebraic` (2): State determined by an algebraic constraint (no time derivative).
-- `Hybrid` (3): State that can behave as either differential or algebraic depending on
-    operating conditions.
+| Value          | Description                                                                    |
+|:------------- |:------------------------------------------------------------------------------ |
+| `Differential` | State governed by a differential equation (evolves continuously in time)      |
+| `Algebraic`   | State determined by an algebraic constraint (no time derivative)               |
+| `Hybrid`      | State that can behave as differential or algebraic depending on operating conditions |
 
 # See Also
 - [`DynamicComponent`](@ref): Abstract base type whose states are classified by this
@@ -548,7 +560,7 @@ IS.@scoped_enum(
 @doc"
 Enumeration of the quantity type used to represent the state of a [`HydroReservoir`](@ref).
 
-| Name            | Units | Description                                                                                                                                                              |
+| Value            | Units | Description                                                                                                                                                              |
 |:--------------- |:----- |:------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `USABLE_VOLUME` | m^3   | The volume of water that can be stored for levels between the penstock intake and the top reservoir level                                                                |
 | `TOTAL_VOLUME`  | m^3   | The total volume of the reservoir considering a total depletion of the water levels. This unit system usually requires the specification of a valid minimum volume level |
@@ -578,16 +590,18 @@ HydroTurbineType
 Enumeration of hydroelectric turbine designs, used to classify hydro generating units
 by operating head range and flow characteristics.
 
-- `UNKNOWN` (0): Turbine type is not specified.
-- `PELTON` (1): Impulse turbine for high-head, low-flow sites.
-- `FRANCIS` (2): Reaction turbine, widely used for medium-head applications.
-- `KAPLAN` (3): Adjustable-blade propeller turbine for low-head, high-flow sites.
-- `TURGO` (4): Impulse turbine similar to Pelton but suitable for higher flow rates.
-- `CROSSFLOW` (5): Banki-Michell (crossflow) impulse turbine, robust for small hydro.
-- `BULB` (6): Compact Kaplan variant for low-head run-of-river plants.
-- `DERIAZ` (7): Diagonal flow reaction turbine with variable pitch blades.
-- `PROPELLER` (8): Fixed-blade propeller turbine.
-- `OTHER` (9): Placeholder for less common or custom turbine designs.
+| Value        | Description                                                         |
+|:----------- |:------------------------------------------------------------------- |
+| `UNKNOWN`   | Turbine type is not specified                                       |
+| `PELTON`    | Impulse turbine for high-head, low-flow sites                       |
+| `FRANCIS`   | Reaction turbine, widely used for medium-head applications          |
+| `KAPLAN`    | Adjustable-blade propeller turbine for low-head, high-flow sites    |
+| `TURGO`     | Impulse turbine similar to Pelton but suitable for higher flow rates |
+| `CROSSFLOW` | Banki-Michell (crossflow) impulse turbine, robust for small hydro   |
+| `BULB`      | Compact Kaplan variant for low-head run-of-river plants             |
+| `DERIAZ`    | Diagonal flow reaction turbine with variable pitch blades           |
+| `PROPELLER` | Fixed-blade propeller turbine                                       |
+| `OTHER`     | Placeholder for less common or custom turbine designs               |
 
 # See Also
 - [`HydroTurbine`](@ref): Hydro generator component using this enumeration.
@@ -604,8 +618,10 @@ ReservoirLocation
 Enumeration representing the location of a [`HydroReservoir`](@ref) relative to its
 associated turbine unit.
 
-- `HEAD` (1): The reservoir is located upstream of the turbine (higher elevation).
-- `TAIL` (2): The reservoir is located downstream of the turbine (lower elevation).
+| Value   | Description                                                        |
+|:------ |:------------------------------------------------------------------ |
+| `HEAD` | Reservoir located upstream of the turbine (higher elevation)       |
+| `TAIL` | Reservoir located downstream of the turbine (lower elevation)    |
 
 # See Also
 - [`ReservoirDataType`](@ref): Enumeration of the quantity used to represent reservoir
@@ -625,11 +641,13 @@ IS.@scoped_enum(
 
 Enumeration describing the physical layout of a combined cycle power plant.
 
-- `SingleShaftCombustionSteam` (1): Single combustion turbine on a common shaft with one steam turbine.
-- `SeparateShaftCombustionSteam` (2): One combustion turbine and one steam turbine on separate shafts.
-- `DoubleCombustionOneSteam` (3): Two combustion turbines exhausting into one steam turbine.
-- `TripleCombustionOneSteam` (4): Three combustion turbines exhausting into one steam turbine.
-- `Other` (5): Any other combined cycle configuration not covered by the above values.
+| Value                           | Description                                                          |
+|:------------------------------ |:-------------------------------------------------------------------- |
+| `SingleShaftCombustionSteam`   | Single combustion turbine on a common shaft with one steam turbine   |
+| `SeparateShaftCombustionSteam` | One combustion turbine and one steam turbine on separate shafts      |
+| `DoubleCombustionOneSteam`     | Two combustion turbines exhausting into one steam turbine            |
+| `TripleCombustionOneSteam`     | Three combustion turbines exhausting into one steam turbine          |
+| `Other`                        | Any other combined cycle configuration not covered by the above values |
 
 # See Also
 - [`CombinedCycleBlock`](@ref): Plant attribute for combined cycle block-level configurations.
@@ -686,18 +704,19 @@ IS.@scoped_enum(
 @doc """
 Enumeration of pollutant types for emissions tracking.
 
-# Values
-- `CO2 = 1`: Carbon dioxide
-- `CO2E = 2`: Carbon dioxide equivalent
-- `CH4 = 3`: Methane
-- `N2O = 4`: Nitrous oxide
-- `NOX = 10`: Nitrogen oxides
-- `SO2 = 11`: Sulfur dioxide
-- `PM25 = 20`: Particulate matter (2.5 μm)
-- `PM10 = 21`: Particulate matter (10 μm)
-- `HG = 30`: Mercury
-- `HAP = 40`: Hazardous air pollutants
-- `CUSTOM = 99`: User-defined pollutant
+| Value     | Description                        |
+|:-------- |:---------------------------------- |
+| `CO2`    | Carbon dioxide                     |
+| `CO2E`   | Carbon dioxide equivalent          |
+| `CH4`    | Methane                            |
+| `N2O`    | Nitrous oxide                      |
+| `NOX`    | Nitrogen oxides                    |
+| `SO2`    | Sulfur dioxide                     |
+| `PM25`   | Particulate matter (2.5 μm)        |
+| `PM10`   | Particulate matter (10 μm)         |
+| `HG`     | Mercury                            |
+| `HAP`    | Hazardous air pollutants           |
+| `CUSTOM` | User-defined pollutant             |
 """ PollutantType
 
 IS.@scoped_enum(
@@ -708,9 +727,10 @@ IS.@scoped_enum(
 @doc """
 Enumeration of emission rate basis types.
 
-# Values
-- `FUEL_INPUT = 1`: Mass per unit of heat input (e.g., lb/MMBtu, kg/GJ)
-- `POWER_OUTPUT = 2`: Mass per unit of electrical output (e.g., lb/MWh, kg/MWh)
+| Value            | Description                                                    |
+|:--------------- |:-------------------------------------------------------------- |
+| `FUEL_INPUT`    | Mass per unit of heat input (e.g., lb/MMBtu, kg/GJ)            |
+| `POWER_OUTPUT`  | Mass per unit of electrical output (e.g., lb/MWh, kg/MWh)      |
 """ EmissionBasis
 
 IS.@scoped_enum(
@@ -723,11 +743,12 @@ IS.@scoped_enum(
 @doc """
 Enumeration of mass units for emissions.
 
-# Values
-- `KG = 1`: Kilograms
-- `LB = 2`: Pounds
-- `SHORT_TON = 3`: Short tons (2000 lb)
-- `METRIC_TON = 4`: Metric tons (1000 kg)
+| Value          | Description              |
+|:------------- |:------------------------ |
+| `KG`          | Kilograms                |
+| `LB`          | Pounds                   |
+| `SHORT_TON`   | Short tons (2000 lb)     |
+| `METRIC_TON`  | Metric tons (1000 kg)    |
 """ MassUnit
 
 IS.@scoped_enum(
@@ -739,8 +760,9 @@ IS.@scoped_enum(
 @doc """
 Enumeration of energy units for emissions rate denominator.
 
-# Values
-- `MMBTU = 1`: Million British thermal units
-- `GJ = 2`: Gigajoules
-- `MWH = 3`: Megawatt-hours
+| Value    | Description                  |
+|:------- |:---------------------------- |
+| `MMBTU` | Million British thermal units |
+| `GJ`    | Gigajoules                   |
+| `MWH`   | Megawatt-hours               |
 """ EnergyUnit
