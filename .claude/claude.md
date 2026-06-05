@@ -42,7 +42,6 @@ Core component models and definitions:
 - `static_models.jl` -- static component definitions
 - `dynamic_generator.jl` -- dynamic generator models
 - `dynamic_inverter.jl` -- dynamic inverter models
-- `dynamic_branch.jl` -- dynamic branch models
 - `dynamic_loads.jl` -- dynamic load models
 - `HybridSystem.jl` -- hybrid renewable + storage systems
 - `serialization.jl` -- component serialization

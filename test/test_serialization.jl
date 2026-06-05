@@ -31,15 +31,8 @@
 
 @testset "Test JSON serialization of dynamic inverter" begin
     sys = PSB.build_system(PSB.PSYTestSystems, "dynamic_inverter_sys")
-
-    # Add a dynamic branch to test that code.
-    branch = collect(get_components(Branch, sys))[1]
-    dynamic_branch = DynamicBranch(branch)
-    add_component!(sys, dynamic_branch)
     _, result = validate_serialization(sys)
     @test result
-
-    test_accessors(dynamic_branch)
 end
 
 @testset "Test JSON serialization of StaticGroupReserve" begin

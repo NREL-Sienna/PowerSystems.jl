@@ -2590,7 +2590,6 @@ function deserialize_components!(sys::System, raw)
     )
     deserialize_and_add!(; include_types = [HydroReservoir])
     deserialize_and_add!(; include_types = [Branch])
-    deserialize_and_add!(; include_types = [DynamicBranch])
     deserialize_and_add!(; include_types = [ConstantReserveGroup, DynamicInjection])
     deserialize_and_add!(; skip_types = [StaticInjectionSubsystem])
     deserialize_and_add!()
@@ -2612,19 +2611,6 @@ Allow types to implement handling of special cases during deserialization.
 - `::Type`: The type of the component.
 """
 handle_deserialization_special_cases!(component::Dict, ::Type{<:Component}) = nothing
-
-# TODO DT: Do I need to handle this in the new format upgrade?
-#function handle_deserialization_special_cases!(component::Dict, ::Type{DynamicBranch})
-#    # IS handles deserialization of supplemental attribues in each component.
-#    # In this case the DynamicBranch's composed branch is not part of the system and so
-#    # IS will not handle it. It can never attributes.
-#    if !isempty(component["branch"]["supplemental_attributes_container"])
-#        error(
-#            "Bug: serialized DynamicBranch.branch has supplemental attributes: $component",
-#        )
-#    end
-#    return
-#end
 
 # This function does an iterative union find to handle the ordering of the reservoir chains
 function _handle_hydro_reservoirs_deserialization_special_cases(
@@ -2831,11 +2817,6 @@ function check_attached_buses(
     return
 end
 
-function check_attached_buses(sys::System, component::DynamicBranch)
-    check_attached_buses(sys, get_branch(component))
-    return
-end
-
 function check_attached_buses(sys::System, component::Arc)
     throw_if_not_attached(get_from(component), sys)
     throw_if_not_attached(get_to(component), sys)
@@ -2911,16 +2892,6 @@ function check_component_addition(
     return
 end
 
-function check_component_addition(sys::System, dyn_branch::DynamicBranch; kwargs...)
-    if !_is_deserialization_in_progress(sys)
-        throw_if_not_attached(dyn_branch.branch, sys)
-    end
-    arc = get_arc(dyn_branch)
-    throw_if_not_attached(get_from(arc), sys)
-    throw_if_not_attached(get_to(arc), sys)
-    return
-end
-
 function check_component_addition(sys::System, dyn_injector::DynamicInjection; kwargs...)
     if _is_deserialization_in_progress(sys)
         # Ordering of component addition makes these checks impossible.
@@ -2974,12 +2945,6 @@ end
 
 function handle_component_addition!(sys::System, component::Branch; kwargs...)
     _handle_branch_addition_common!(sys, component)
-    return
-end
-
-function handle_component_addition!(sys::System, component::DynamicBranch; kwargs...)
-    _handle_branch_addition_common!(sys, component)
-    remove_component!(sys, component.branch)
     return
 end
 

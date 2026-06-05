@@ -122,9 +122,6 @@ deserialization process doesn't know what concrete type to construct.
 
 *Solution*: Encode the concrete type into the serialized dictionary as a string.
 
-*Example*:  `serialize` and `deserialize` methods for `DynamicBranch` in
-`src/models/dynamic_branch.jl`.
-
 **Problem**: Similar to above in that a field is defined as an abstract type
 but the struct is parameterized on the actual concrete type.
 

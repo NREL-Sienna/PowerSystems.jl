@@ -276,56 +276,19 @@ dynamic_inv = DynamicInverter(;
 
 add_component!(threebus_sys, dynamic_inv, gen_103)
 
-# Both generators have now been updated with dynamic data. Let's complete the [`System`](@ref)
-# updates by adding dynamic lines.
+# Both generators have now been updated with dynamic data.
 
-# ## Adding Dynamic Lines
-# !!! warning
-#     A [`System`](@ref) must have at least two buses and one branch to run a dynamic simulation in
-#     [`PowerSimulationsDynamics.jl`](https://sienna-platform.github.io/PowerSimulationsDynamics.jl/stable/).
-# Let's review the AC branches currently in the system:
-
-get_components(ACBranch, threebus_sys)
-
-# Notice that we have three static [`Line`](@ref) components.
-# Let's also print the first line to review its format:
-
-first(get_components(Line, threebus_sys))
-
-# See that these components do not have the fields for dynamic modeling, such as fields for
-# different [states](@ref S).
-# Let's update that by cycling through these lines and using [`DynamicBranch`](@ref) to extend
-# each static line with the necessary fields:
-
-for l in get_components(Line, threebus_sys)
-    ## create a dynamic branch
-    dyn_branch = DynamicBranch(l)
-    ## add dynamic branch to the system, replacing the static branch
-    add_component!(threebus_sys, dyn_branch)
-end
-
-# Take a look at the AC branches in the system again:
-
-branches = get_components(ACBranch, threebus_sys)
-
-# Notice that now there are 3 [`DynamicBranch`](@ref) components instead of the `Line` components.
-# Let's take a look by printing the first one:
-
-first(branches)
-
-# Observe that this is a wrapper around the static data, with the additional states
-# data for dynamic modeling.
 # Finally, let's print the [`System`](@ref) again to summarize our additions:
 
 threebus_sys
 
-# Verify that the additions were successful, with an added voltage [`Source`](@ref), [`DynamicBranch`](@ref)es
-# replacing the static [`Line`](@ref), and two new dynamic components with the generator and inverter models.
+# Verify that the additions were successful, with an added voltage [`Source`](@ref) and two new
+# dynamic components with the generator and inverter models.
 
 # ## Next Steps
 # In this tutorial, you have updated a static system with a second dynamic data layer.
 # The data you added can enable a phasor-based simulation using the dynamic generator, or
-# a more complex EMT simulation with the additional dynamic inverter and dynamic lines.
+# a more complex EMT simulation with the additional dynamic inverter.
 # Next, you might like to:
 #   - Read more about the static and dynamic data layers and the dynamic data format in
 #     [Dynamic Devices](@ref).
