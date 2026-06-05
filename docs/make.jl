@@ -14,10 +14,20 @@ links = InterLinks(
 
 # This is a fallback for the docstrings that are referenced within IS docstrings
 fallbacks = ExternalFallbacks(
+    "add_supplemental_attribute!" => "@extref InfrastructureSystems.add_supplemental_attribute!",
+    "remove_supplemental_attribute!" => "@extref InfrastructureSystems.remove_supplemental_attribute!",
     "ComponentContainer" => "@extref InfrastructureSystems.ComponentContainer",
+    "ComponentUUIDs" => "@extref InfrastructureSystems.ComponentUUIDs",
     "InfrastructureSystemsComponent" => "@extref InfrastructureSystems.InfrastructureSystemsComponent",
     "InfrastructureSystemsInternal" => "@extref InfrastructureSystems.InfrastructureSystemsInternal",
     "PiecewiseLinearData" => "@extref InfrastructureSystems.PiecewiseLinearData",
+    "SupplementalAttributeAssociations" => "@extref InfrastructureSystems.SupplementalAttributeAssociations",
+    "SupplementalAttributeManager" => "@extref InfrastructureSystems.SupplementalAttributeManager",
+    "SystemData" => "@extref InfrastructureSystems.SystemData",
+    "TimeSeriesManager" => "@extref InfrastructureSystems.TimeSeriesManager",
+    "TimeSeriesMetadata" => "@extref InfrastructureSystems.TimeSeriesMetadata",
+    "TimeSeriesStorage" => "@extref InfrastructureSystems.TimeSeriesStorage",
+    "get_uuid" => "@extref InfrastructureSystems.get_uuid",
 )
 
 # This is commented out because the output is not user-friendly. Deliberation on how to best
