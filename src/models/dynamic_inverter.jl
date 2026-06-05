@@ -1,10 +1,3 @@
-"""
-    InverterComponent
-
-Abstract type for all sub-components used to compose a [`DynamicInverter`](@ref) device.
-
-See also: [`DynamicComponent`](@ref), [`DynamicInverter`](@ref)
-"""
 abstract type InverterComponent <: DynamicComponent end
 
 """
