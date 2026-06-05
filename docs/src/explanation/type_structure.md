@@ -47,8 +47,8 @@ details on why direct field access is discouraged.
 
 ## The abstract type hierarchy
 
-The hierarchy is rooted at [`InfrastructureSystemsType`](@ref). The subtypes most relevant to
-`PowerSystems.jl` users are:
+For the complete hierarchy, see the [Type Tree](@ref "Type Tree"). The branches below
+highlight the types most relevant to `PowerSystems.jl` users:
 
   - [`System`](@ref): the top-level data container that holds all [`Component`](@ref)s
     and their associated time series data. See the [System](@ref system_doc) explanation
@@ -70,11 +70,18 @@ The hierarchy is rooted at [`InfrastructureSystemsType`](@ref). The subtypes mos
         services from devices reflects the fact that a service is a requirement that
         *devices contribute to*, rather than a physical component itself.
 
-  - [`DeviceParameter`](@ref): [`struct`](@ref S)s that carry data describing
+  - [`DeviceParameter`](@extref InfrastructureSystems.DeviceParameter): [`struct`](@ref S)s that carry data describing
     the dynamic or economic characteristics of a [`Device`](@ref), such as cost function curves or
     dynamic machine parameters. Decoupling these from the device [`struct`](@ref S) itself allows the
     same physical device to carry different parameter sets depending on the modeling
     context.
+
+  - [`SupplementalAttribute`](@ref): contextual data linked to [`Component`](@ref)s, such as
+    location, outage schedules, plant groupings, or emissions, that sits outside each
+    component's electrical definition. Separating attributes from [`Component`](@ref)s
+    reflects the fact that this metadata is often shared across many devices or updated on
+    a different schedule than network equipment data. See
+    [About Supplemental Attributes](@ref supplemental_attributes_explanation).
 
   - [`TimeSeriesData`](@ref): the abstract supertype for all time-varying data associated
     with components:
