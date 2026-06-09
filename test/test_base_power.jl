@@ -42,11 +42,12 @@ end
     system_base = PSY._get_base_power(sys)
     @test device_base != system_base
 
-    # 1-arg form is gone — public getter requires explicit units.
-    @test_throws MethodError get_base_power(gen)
+    # base_power is always natural units: the 1-arg form returns the stored MVA.
+    @test get_base_power(gen) isa Float64
+    @test get_base_power(gen) ≈ device_base
 
     # Bare-number getter returns Float64 in the requested unit; companion
-    # `_unitful` keeps the Unitful/RelativeQuantity wrapper.
+    # `_unitful` keeps the Unitful wrapper.
     @test get_base_power(gen, NU) isa Float64
     @test get_base_power(gen, NU) ≈ device_base
     bp_nu = get_base_power_unitful(gen, NU)
@@ -54,6 +55,8 @@ end
     @test Unitful.ustrip(bp_nu) ≈ device_base
     # Not double-wrapped: no `device_base * MVA * MVA`.
     @test Unitful.unit(bp_nu) == Unitful.unit(1.0 * MVA)
+    # 1-arg unitful form mirrors `(c, NU)`.
+    @test get_base_power_unitful(gen) ≈ bp_nu
 
     @test get_base_power(gen, MW) isa Float64
     @test get_base_power(gen, MW) ≈ device_base
@@ -61,30 +64,29 @@ end
     @test bp_mw isa Unitful.Quantity
     @test Unitful.ustrip(MW, bp_mw) ≈ device_base
 
-    @test get_base_power(gen, SU) isa Float64
-    @test get_base_power(gen, SU) ≈ device_base / system_base
-    bp_su = get_base_power_unitful(gen, SU)
-    @test bp_su isa RelativeQuantity
-    @test ustrip(bp_su) ≈ device_base / system_base
+    @test get_base_power(gen, MVA) ≈ device_base
 
-    # DU is self-referential: base_power in device-base pu is always 1.
-    @test get_base_power(gen, DU) == 1.0
-    bp_du = get_base_power_unitful(gen, DU)
-    @test bp_du isa RelativeQuantity
-    @test ustrip(bp_du) == 1.0
+    # Per-unit bases are circular for base_power and are rejected.
+    @test_throws ArgumentError get_base_power(gen, SU)
+    @test_throws ArgumentError get_base_power_unitful(gen, SU)
+    @test_throws ArgumentError get_base_power(gen, DU)
+    @test_throws ArgumentError get_base_power_unitful(gen, DU)
+    # Non-power units fail dimensionally.
+    @test_throws Unitful.DimensionError get_base_power(gen, kV)
 
-    # Components with no base_power field fall back to system base, so DU == SU == 1.
+    # Components with no base_power field fall back to the system base.
     bus = first(get_components(ACBus, sys))
-    @test get_base_power(bus, SU) ≈ 1.0
+    @test get_base_power(bus) ≈ system_base
     @test get_base_power(bus, NU) ≈ system_base
     @test get_base_power_unitful(bus, NU) isa Unitful.Quantity
+    @test_throws ArgumentError get_base_power(bus, SU)
 
     # System-level getter mirrors the component version.
-    @test_throws MethodError get_base_power(sys)
+    @test get_base_power(sys) ≈ system_base
     @test get_base_power(sys, NU) ≈ system_base
     @test get_base_power_unitful(sys, NU) isa Unitful.Quantity
-    @test get_base_power(sys, SU) == 1.0
-    @test get_base_power_unitful(sys, SU) isa RelativeQuantity
+    @test_throws ArgumentError get_base_power(sys, SU)
+    @test_throws ArgumentError get_base_power_unitful(sys, SU)
 end
 
 # Used to build via `PSB.build_system(PSITestSystems, "test_RTS_GMLC_sys")` and pull
@@ -131,10 +133,10 @@ end
     sys, gen = _sys_with_thermal(; system_base = 100.0, device_base = 250.0)
     system_base = PSY._get_base_power(sys)
 
-    # Bare Float64 — stored as MVA.
+    # Bare Float64 — interpreted and stored as MVA.
     set_base_power!(gen, 75.0)
     @test PSY._get_base_power(gen) ≈ 75.0
-    @test get_base_power(gen, MVA) ≈ 75.0
+    @test get_base_power(gen) ≈ 75.0
 
     # Unitful.Quantity in MW (MVA and MW share dimensions; storage is MVA).
     set_base_power!(gen, 80.0 * MW)
@@ -144,17 +146,11 @@ end
     set_base_power!(gen, 90.0 * MVA)
     @test PSY._get_base_power(gen) ≈ 90.0
 
-    # System-base per-unit: multiplied by the system base.
-    set_base_power!(gen, 0.5 * SU)
-    @test PSY._get_base_power(gen) ≈ 0.5 * system_base
-
-    # Round-trip through the getter.
-    set_base_power!(gen, 1.25 * SU)
-    @test get_base_power(gen, SU) ≈ 1.25
-
-    # Device base is rejected: 1.0 DU carries no information.
-    @test_throws ErrorException set_base_power!(gen, 1.0 * DU)
-    @test_throws ErrorException set_base_power!(gen, 0.5 * DU)
+    # Per-unit bases are circular for base_power and are rejected.
+    @test_throws ArgumentError set_base_power!(gen, 0.5 * SU)
+    @test_throws ArgumentError set_base_power!(gen, 1.25 * SU)
+    @test_throws ArgumentError set_base_power!(gen, 1.0 * DU)
+    @test_throws ArgumentError set_base_power!(gen, 0.5 * DU)
 
     # Dimensionally wrong inputs fail at conversion time.
     @test_throws Unitful.DimensionError set_base_power!(gen, 1.0 * kV)
