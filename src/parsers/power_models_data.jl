@@ -1205,9 +1205,23 @@ function get_branch_type_matpower(
 
     _add_vector_control_group(d, "shift", "group_number")
 
+    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || tap == 0.0
+    is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
+
     if d["group_number"] == WindingGroupNumber.UNDEFINED
+        # Degenerate PST: no recognisable shift → demote
+        if is_zero_shift
+            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $(is_identity_tap ? "Transformer2W" : "TapTransformer")" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return is_identity_tap ? Transformer2W : TapTransformer
+        end
         return PhaseShiftingTransformer
     elseif tap != 1.0
+        if is_identity_tap
+            @warn "TapTransformer with near-identity tap ($(tap)) normalised to Transformer2W" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return Transformer2W
+        end
         return TapTransformer
     else
         return Transformer2W
@@ -1223,6 +1237,7 @@ function get_branch_type_psse(
 
     is_transformer = d["transformer"]
     tap = d["tap"]
+    shift = get(d, "shift", 0.0)
 
     if !is_transformer
         if (tap != 0.0) && (tap != 1.0)
@@ -1236,10 +1251,26 @@ function get_branch_type_psse(
 
     _add_vector_control_group(d, "shift", "group_number")
     is_tap_controllable, is_alpha_controllable = _determine_control_modes(d, "COD1", "tap")
+
+    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || tap == 0.0
+    is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
+
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
+        # Degenerate PST: controllable but shift is effectively zero → demote
+        if is_zero_shift && !is_alpha_controllable
+            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $(is_identity_tap ? "Transformer2W" : "TapTransformer")" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return is_identity_tap ? Transformer2W : TapTransformer
+        end
         return PhaseShiftingTransformer
     elseif (is_tap_controllable || (tap != 1.0)) &&
            d["group_number"] != WindingGroupNumber.UNDEFINED
+        # Normalise TapTransformers whose tap is effectively 1.0 to Transformer2W
+        if is_identity_tap
+            @warn "TapTransformer with near-identity tap ($(tap)) normalised to Transformer2W" _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            return Transformer2W
+        end
         return TapTransformer
     elseif !is_tap_controllable && d["group_number"] != WindingGroupNumber.UNDEFINED
         return Transformer2W
@@ -1248,15 +1279,47 @@ function get_branch_type_psse(
     end
 end
 
+function _normalized_arc_key(f_bus::Int, t_bus::Int)
+    return f_bus <= t_bus ? (f_bus, t_bus) : (t_bus, f_bus)
+end
+
+function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
+    overrides = Dict{Tuple{Int, Int}, DataType}()
+    if !haskey(data, "branch") || get(data, "source_type", "") != "pti"
+        return overrides
+    end
+
+    branch_types_by_arc = Dict{Tuple{Int, Int}, Set{DataType}}()
+    for d in values(data["branch"])
+        arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
+        branch_type = get_branch_type_psse(d)
+        push!(get!(branch_types_by_arc, arc_key, Set{DataType}()), branch_type)
+    end
+
+    for (arc_key, branch_types) in branch_types_by_arc
+        if length(branch_types) > 1 &&
+           all(t -> t in (Transformer2W, TapTransformer), branch_types)
+            overrides[arc_key] = TapTransformer
+            @warn "Normalizing mixed parallel transformer types on arc $(arc_key[1])-$(arc_key[2]) to TapTransformer for parser consistency." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        end
+    end
+
+    return overrides
+end
+
 function make_branch(
     name::String,
     d::Dict,
     bus_f::ACBus,
     bus_t::ACBus,
     source_type::String;
+    branch_type_override::Union{DataType, Nothing} = nothing,
     kwargs...,
 )
-    if source_type == "matpower"
+    if !isnothing(branch_type_override)
+        branch_type = branch_type_override
+    elseif source_type == "matpower"
         branch_type = get_branch_type_matpower(d)
     elseif source_type == "pti"
         branch_type = get_branch_type_psse(d)
@@ -1693,11 +1756,14 @@ function read_branch!(
     _get_name = get(kwargs, :branch_name_formatter, nothing)
     ict_instances = _impedance_correction_table_lookup(data)
     branch_pair_counts = Dict{Tuple{String, String}, Int}()
+    branch_type_overrides = _collect_parallel_branch_type_overrides(data)
 
     source_type = data["source_type"]
     for d in values(data["branch"])
         bus_f = bus_number_to_bus[d["f_bus"]]
         bus_t = bus_number_to_bus[d["t_bus"]]
+        arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
+        branch_type_override = get(branch_type_overrides, arc_key, nothing)
         name = if isnothing(_get_name)
             if source_type == "pti"
                 _get_pm_branch_name_with_counter!(d, bus_f, bus_t, branch_pair_counts)
@@ -1707,7 +1773,15 @@ function read_branch!(
         else
             _get_name(d, bus_f, bus_t)
         end
-        value = make_branch(name, d, bus_f, bus_t, source_type; kwargs...)
+        value = make_branch(
+            name,
+            d,
+            bus_f,
+            bus_t,
+            source_type;
+            branch_type_override = branch_type_override,
+            kwargs...,
+        )
 
         if !isnothing(value)
             add_component!(sys, value; skip_validation = SKIP_PM_VALIDATION)

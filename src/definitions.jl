@@ -579,6 +579,14 @@ const PARSER_TAP_RATIO_CORRECTION_TOL = 1e-5
 
 const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
 
+# Tap-ratio tolerance below which a TapTransformer
+# can be considered electrically equivalent to a Transformer2W
+const IDENTITY_TAP_TOL = 1e-4
+
+# Phase-angle shift tolerance (radians) below which a PhaseShiftingTransformer can be
+# considered to have no real shift and is equivalent to TapTransformer/Transformer2W.
+const ZERO_ANGLE_SHIFT_TOL = 1e-6
+
 const WINDING_NAMES = Dict(
     WindingCategory.PRIMARY_WINDING => "primary",
     WindingCategory.SECONDARY_WINDING => "secondary",
