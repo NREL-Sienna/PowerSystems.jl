@@ -204,18 +204,26 @@ get_storage(value::HybridSystem) = value.storage
 get_renewable_unit(value::HybridSystem) = value.renewable_unit
 """Get [`HybridSystem`](@ref) `interconnection_rating`."""
 get_interconnection_rating(value::HybridSystem, units) =
-    get_value(value, Val(:interconnection_rating), Val(:mva), units)
+    InfrastructureSystems._strip_units(
+        get_value(value, Val(:interconnection_rating), Val(:mva), units),
+    )
 """get [`HybridSystem`](@ref) interconnection impedance"""
 get_interconnection_impedance(value::HybridSystem) = value.interconnection_impedance
 """Get [`HybridSystem`](@ref) `input_active_power_limits`."""
 get_input_active_power_limits(value::HybridSystem, units) =
-    get_value(value, Val(:input_active_power_limits), Val(:mva), units)
+    InfrastructureSystems._strip_units(
+        get_value(value, Val(:input_active_power_limits), Val(:mva), units),
+    )
 """Get [`HybridSystem`](@ref) `output_active_power_limits`."""
 get_output_active_power_limits(value::HybridSystem, units) =
-    get_value(value, Val(:output_active_power_limits), Val(:mva), units)
+    InfrastructureSystems._strip_units(
+        get_value(value, Val(:output_active_power_limits), Val(:mva), units),
+    )
 """Get [`HybridSystem`](@ref) `reactive_power_limits`."""
 get_reactive_power_limits(value::HybridSystem, units) =
-    get_value(value, Val(:reactive_power_limits), Val(:mva), units)
+    InfrastructureSystems._strip_units(
+        get_value(value, Val(:reactive_power_limits), Val(:mva), units),
+    )
 """get [`HybridSystem`](@ref) interconnection efficiency"""
 get_interconnection_efficiency(value::HybridSystem) = value.interconnection_efficiency
 """Get [`HybridSystem`](@ref) `base_power`."""
