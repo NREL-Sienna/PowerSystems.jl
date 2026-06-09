@@ -401,12 +401,13 @@ function _get_components(value::HybridSystem)
     return components
 end
 
-function set_units_setting!(value::HybridSystem, settings::SystemUnitsSettings)
+function set_units_setting!(value::HybridSystem, settings::Union{SystemUnitsSettings, Nothing})
     set_units_info!(get_internal(value), settings)
     for component in _get_components(value)
         set_units_info!(get_internal(component), settings)
     end
     return
+end
 end
 
 """
@@ -421,12 +422,12 @@ subcomponents = collect(get_subcomponents(hybrid_sys))
 ```
 """
 function get_subcomponents(hybrid::HybridSystem)
-    Channel() do channel
-        for field in (:thermal_unit, :electric_load, :storage, :renewable_unit)
-            subcomponent = getfield(hybrid, field)
-            if subcomponent !== nothing
-                put!(channel, subcomponent)
-            end
-        end
-    end
+    return (
+        sc for sc in (
+            hybrid.thermal_unit,
+            hybrid.electric_load,
+            hybrid.storage,
+            hybrid.renewable_unit,
+        ) if sc !== nothing
+    )
 end
