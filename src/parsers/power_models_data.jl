@@ -1288,6 +1288,29 @@ function _is_near_zero_impedance_line(d::Dict)
            abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
 end
 
+function _is_active_pti_branch(d::Dict)
+    return get(d, "br_status", 0) == 1
+end
+
+function _expected_discrete_state(d::Dict, bus_f::ACBus, bus_t::ACBus)
+    available = d["br_status"] == 1
+    if get_bustype(bus_f) == ACBusTypes.ISOLATED ||
+       get_bustype(bus_t) == ACBusTypes.ISOLATED
+        available = false
+    end
+    status = if available
+        DiscreteControlledBranchStatus.CLOSED
+    else
+        DiscreteControlledBranchStatus.OPEN
+    end
+    return available, status
+end
+
+function _is_active_discrete_branch(br::DiscreteControlledACBranch)
+    return get_available(br) &&
+           get_branch_status(br) == DiscreteControlledBranchStatus.CLOSED
+end
+
 function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
     overrides = Dict{Tuple{Int, Int}, DataType}()
     if !haskey(data, "branch") || get(data, "source_type", "") != "pti"
@@ -1298,6 +1321,7 @@ function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
     has_line_by_arc = Dict{Tuple{Int, Int}, Bool}()
     line_near_zero_by_arc = Dict{Tuple{Int, Int}, Bool}()
     for d in values(data["branch"])
+        _is_active_pti_branch(d) || continue
         arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
         branch_type = get_branch_type_psse(d)
         push!(get!(branch_types_by_arc, arc_key, Set{DataType}()), branch_type)
@@ -1338,6 +1362,7 @@ end
 function _collect_existing_discrete_arc_keys(sys::System)
     arc_keys = Set{Tuple{Int, Int}}()
     for br in get_components(DiscreteControlledACBranch, sys)
+        _is_active_discrete_branch(br) || continue
         arc = get_arc(br)
         from_num = get_number(get_from(arc))
         to_num = get_number(get_to(arc))
@@ -1805,6 +1830,7 @@ function read_branch!(
         branch_type_override = get(branch_type_overrides, arc_key, nothing)
         if isnothing(branch_type_override) &&
            source_type == "pti" &&
+           _is_active_pti_branch(d) &&
            (arc_key in existing_discrete_arc_keys)
             inferred_branch_type = get_branch_type_psse(d)
             if inferred_branch_type == Line && _is_near_zero_impedance_line(d)
@@ -1825,9 +1851,27 @@ function read_branch!(
 
         if branch_type_override == DiscreteControlledACBranch &&
            has_component(DiscreteControlledACBranch, sys, name)
-            @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because DiscreteControlledACBranch '$name' already exists." _group =
-                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
-            continue
+            existing = get_component(DiscreteControlledACBranch, sys, name)
+            existing_arc = get_arc(existing)
+            existing_arc_key = _normalized_arc_key(
+                get_number(get_from(existing_arc)),
+                get_number(get_to(existing_arc)),
+            )
+            expected_available, expected_status = _expected_discrete_state(d, bus_f, bus_t)
+
+            if existing_arc_key == arc_key &&
+               get_available(existing) == expected_available &&
+               get_branch_status(existing) == expected_status
+                @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because equivalent DiscreteControlledACBranch '$name' already exists (same arc and operating state)." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+                continue
+            else
+                throw(
+                    DataFormatError(
+                        "Name collision for DiscreteControlledACBranch '$name' on arc $(arc_key[1])-$(arc_key[2]) with non-equivalent operating state. Existing available=$(get_available(existing)), status=$(get_branch_status(existing)); expected available=$expected_available, status=$expected_status.",
+                    ),
+                )
+            end
         end
 
         value = make_branch(
