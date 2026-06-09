@@ -578,6 +578,7 @@ const PSSE_PARSER_TAP_RATIO_LBOUND = 0.5
 const PARSER_TAP_RATIO_CORRECTION_TOL = 1e-5
 
 const ZERO_IMPEDANCE_REACTANCE_THRESHOLD = 1e-4
+const ZERO_IMPEDANCE_RESISTANCE_THRESHOLD = 1e-6
 
 # Tap-ratio tolerance below which a TapTransformer
 # can be considered electrically equivalent to a Transformer2W

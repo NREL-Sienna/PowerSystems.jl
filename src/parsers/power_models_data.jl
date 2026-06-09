@@ -1283,6 +1283,11 @@ function _normalized_arc_key(f_bus::Int, t_bus::Int)
     return f_bus <= t_bus ? (f_bus, t_bus) : (t_bus, f_bus)
 end
 
+function _is_near_zero_impedance_line(d::Dict)
+    return abs(d["br_r"]) <= ZERO_IMPEDANCE_RESISTANCE_THRESHOLD &&
+           abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+end
+
 function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
     overrides = Dict{Tuple{Int, Int}, DataType}()
     if !haskey(data, "branch") || get(data, "source_type", "") != "pti"
@@ -1290,10 +1295,19 @@ function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
     end
 
     branch_types_by_arc = Dict{Tuple{Int, Int}, Set{DataType}}()
+    has_line_by_arc = Dict{Tuple{Int, Int}, Bool}()
+    line_near_zero_by_arc = Dict{Tuple{Int, Int}, Bool}()
     for d in values(data["branch"])
         arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
         branch_type = get_branch_type_psse(d)
         push!(get!(branch_types_by_arc, arc_key, Set{DataType}()), branch_type)
+
+        if branch_type == Line
+            has_line_by_arc[arc_key] = true
+            is_near_zero = _is_near_zero_impedance_line(d)
+            line_near_zero_by_arc[arc_key] =
+                get(line_near_zero_by_arc, arc_key, true) && is_near_zero
+        end
     end
 
     for (arc_key, branch_types) in branch_types_by_arc
@@ -1302,10 +1316,34 @@ function _collect_parallel_branch_type_overrides(data::Dict{String, Any})
             overrides[arc_key] = TapTransformer
             @warn "Normalizing mixed parallel transformer types on arc $(arc_key[1])-$(arc_key[2]) to TapTransformer for parser consistency." _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+        elseif length(branch_types) > 1 &&
+               all(t -> t in (Line, DiscreteControlledACBranch), branch_types)
+            all_lines_near_zero =
+                get(has_line_by_arc, arc_key, false) &&
+                get(line_near_zero_by_arc, arc_key, false)
+            if all_lines_near_zero
+                overrides[arc_key] = DiscreteControlledACBranch
+                @warn "Normalizing mixed parallel Line/DiscreteControlledACBranch on near-zero-impedance arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            else
+                @warn "Keeping mixed parallel Line/DiscreteControlledACBranch on arc $(arc_key[1])-$(arc_key[2]) because at least one Line has non-negligible impedance." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            end
         end
     end
 
     return overrides
+end
+
+function _collect_existing_discrete_arc_keys(sys::System)
+    arc_keys = Set{Tuple{Int, Int}}()
+    for br in get_components(DiscreteControlledACBranch, sys)
+        arc = get_arc(br)
+        from_num = get_number(get_from(arc))
+        to_num = get_number(get_to(arc))
+        push!(arc_keys, _normalized_arc_key(from_num, to_num))
+    end
+    return arc_keys
 end
 
 function make_branch(
@@ -1757,6 +1795,7 @@ function read_branch!(
     ict_instances = _impedance_correction_table_lookup(data)
     branch_pair_counts = Dict{Tuple{String, String}, Int}()
     branch_type_overrides = _collect_parallel_branch_type_overrides(data)
+    existing_discrete_arc_keys = _collect_existing_discrete_arc_keys(sys)
 
     source_type = data["source_type"]
     for d in values(data["branch"])
@@ -1764,6 +1803,16 @@ function read_branch!(
         bus_t = bus_number_to_bus[d["t_bus"]]
         arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
         branch_type_override = get(branch_type_overrides, arc_key, nothing)
+        if isnothing(branch_type_override) &&
+           source_type == "pti" &&
+           (arc_key in existing_discrete_arc_keys)
+            inferred_branch_type = get_branch_type_psse(d)
+            if inferred_branch_type == Line && _is_near_zero_impedance_line(d)
+                branch_type_override = DiscreteControlledACBranch
+                @warn "Normalizing near-zero-impedance Line on arc $(arc_key[1])-$(arc_key[2]) to DiscreteControlledACBranch because a parallel switch/breaker arc already exists." _group =
+                    IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            end
+        end
         name = if isnothing(_get_name)
             if source_type == "pti"
                 _get_pm_branch_name_with_counter!(d, bus_f, bus_t, branch_pair_counts)
@@ -1773,6 +1822,14 @@ function read_branch!(
         else
             _get_name(d, bus_f, bus_t)
         end
+
+        if branch_type_override == DiscreteControlledACBranch &&
+           has_component(DiscreteControlledACBranch, sys, name)
+            @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because DiscreteControlledACBranch '$name' already exists." _group =
+                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
+            continue
+        end
+
         value = make_branch(
             name,
             d,
