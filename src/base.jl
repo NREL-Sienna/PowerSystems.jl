@@ -510,7 +510,8 @@ _set_units_base!(system::System, settings::String) =
     _set_units_base!(system::System, UNIT_SYSTEM_MAPPING[uppercase(settings)])
 
 """
-Sets the units base for the getter functions on the devices. It modifies the behavior of all getter functions
+Set the system's stored [units base](@ref per_unit) setting. This is system
+metadata only; the unit-aware getters and setters take their units explicitly.
 
 # Examples
 ```julia
@@ -529,7 +530,7 @@ end
 _get_units_base(system::System) = system.units_settings.unit_system
 
 """
-Get the system's [unit base](@ref per_unit))
+Get the system's stored [units base](@ref per_unit) setting.
 """
 function get_units_base(system::System)
     return string(_get_units_base(system))

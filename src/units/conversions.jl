@@ -68,16 +68,26 @@ natural_unit(::AdmittanceCategory) = u"S"
 natural_unit(::VoltageCategory) = u"kV"
 natural_unit(::CurrentCategory) = u"kA"
 
+# Voltage-dependent base values must fail loudly when the base voltage is
+# unset; a silent fallback would mislabel the returned number.
+function _checked_base_voltage(c)
+    base_voltage = get_base_voltage(c)
+    isnothing(base_voltage) && error("Base voltage is not defined for $(summary(c)).")
+    return base_voltage
+end
+
 """
     base_value(component, category) → Float64
 
 1.0 DU of this category = `base_value(c, cat)` natural units.
 """
 base_value(c, ::PowerCategory) = _get_device_base_power(c)
-base_value(c, ::ImpedanceCategory) = get_base_voltage(c)^2 / _get_device_base_power(c)
-base_value(c, ::AdmittanceCategory) = _get_device_base_power(c) / get_base_voltage(c)^2
-base_value(c, ::VoltageCategory) = get_base_voltage(c)
-base_value(c, ::CurrentCategory) = _get_device_base_power(c) / get_base_voltage(c)
+base_value(c, ::ImpedanceCategory) =
+    _checked_base_voltage(c)^2 / _get_device_base_power(c)
+base_value(c, ::AdmittanceCategory) =
+    _get_device_base_power(c) / _checked_base_voltage(c)^2
+base_value(c, ::VoltageCategory) = _checked_base_voltage(c)
+base_value(c, ::CurrentCategory) = _get_device_base_power(c) / _checked_base_voltage(c)
 
 """
     system_base_value(component, category) → Float64
@@ -86,21 +96,19 @@ base_value(c, ::CurrentCategory) = _get_device_base_power(c) / get_base_voltage(
 """
 system_base_value(c, ::PowerCategory) = _get_system_base_power(c)
 system_base_value(c, ::ImpedanceCategory) =
-    get_base_voltage(c)^2 / _get_system_base_power(c)
+    _checked_base_voltage(c)^2 / _get_system_base_power(c)
 system_base_value(c, ::AdmittanceCategory) =
-    _get_system_base_power(c) / get_base_voltage(c)^2
-system_base_value(c, ::VoltageCategory) = get_base_voltage(c)
-system_base_value(c, ::CurrentCategory) = _get_system_base_power(c) / get_base_voltage(c)
+    _get_system_base_power(c) / _checked_base_voltage(c)^2
+system_base_value(c, ::VoltageCategory) = _checked_base_voltage(c)
+system_base_value(c, ::CurrentCategory) =
+    _get_system_base_power(c) / _checked_base_voltage(c)
 
 # DU→SU ratio (voltage cancels, only power bases needed)
-_du_to_su_ratio(c, ::PowerCategory) = _get_device_base_power(c) / _get_system_base_power(c)
+_du_to_su_ratio(c, ::Union{PowerCategory, AdmittanceCategory, CurrentCategory}) =
+    _get_device_base_power(c) / _get_system_base_power(c)
 _du_to_su_ratio(c, ::ImpedanceCategory) =
     _get_system_base_power(c) / _get_device_base_power(c)
-_du_to_su_ratio(c, ::AdmittanceCategory) =
-    _get_device_base_power(c) / _get_system_base_power(c)
 _du_to_su_ratio(::Any, ::VoltageCategory) = 1.0
-_du_to_su_ratio(c, ::CurrentCategory) =
-    _get_system_base_power(c) / _get_device_base_power(c)
 
 # ============================================================
 # Default units for 1-arg getters (downstream convention)
@@ -134,6 +142,9 @@ function convert_units(c, value::Number, cat::UnitCategory, ::DeviceBaseUnit, un
     return uconvert(units, natural)
 end
 
+# Relative↔relative conversions go through the power-only ratio: the voltage
+# terms in base_value/system_base_value cancel exactly, so fetching them would
+# be wasted work (and would wrongly require a base voltage to be defined).
 function convert_units(
     c,
     value::Number,
@@ -141,8 +152,7 @@ function convert_units(
     ::DeviceBaseUnit,
     ::SystemBaseUnit,
 )
-    ratio = base_value(c, cat) / system_base_value(c, cat)
-    return (value * ratio) * SU
+    return (value * _du_to_su_ratio(c, cat)) * SU
 end
 
 convert_units(::Any, value::Number, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit) =
@@ -182,8 +192,7 @@ function convert_units(
     ::SystemBaseUnit,
     ::DeviceBaseUnit,
 )
-    ratio = system_base_value(c, cat) / base_value(c, cat)
-    return (value * ratio) * DU
+    return (value / _du_to_su_ratio(c, cat)) * DU
 end
 
 convert_units(::Any, value::Number, ::UnitCategory, ::SystemBaseUnit, ::SystemBaseUnit) =
@@ -221,54 +230,7 @@ end
 # --- nothing passthrough ---
 convert_units(::Any, ::Nothing, ::UnitCategory, ::Any, ::Any) = nothing
 
-# ============================================================
-# Multi-winding components (e.g. three-winding transformers)
-#
-# Each winding carries its own device base power and base voltage, so the
-# single-base functions above cannot be used. A `winding` token selects the
-# per-winding bases; downstream implements the two-argument interface:
-#   - _get_device_base_power(c, winding) → Float64 (MVA)
-#   - get_base_voltage(c, winding)       → Float64 (kV)
-# Winding fields are stored in device base, so only DU-source conversions are
-# provided.
-# ============================================================
-
-base_value(c, ::PowerCategory, winding) = _get_device_base_power(c, winding)
-base_value(c, ::ImpedanceCategory, winding) =
-    get_base_voltage(c, winding)^2 / _get_device_base_power(c, winding)
-base_value(c, ::AdmittanceCategory, winding) =
-    _get_device_base_power(c, winding) / get_base_voltage(c, winding)^2
-
-system_base_value(c, ::PowerCategory, ::Any) = _get_system_base_power(c)
-system_base_value(c, ::ImpedanceCategory, winding) =
-    get_base_voltage(c, winding)^2 / _get_system_base_power(c)
-system_base_value(c, ::AdmittanceCategory, winding) =
-    _get_system_base_power(c) / get_base_voltage(c, winding)^2
-
-# DU → natural units (any Unitful target)
-convert_units(c, v::Number, cat::UnitCategory, ::DeviceBaseUnit, units::Units, winding) =
-    uconvert(units, v * base_value(c, cat, winding) * natural_unit(cat))
-
-# DU → SU
-function convert_units(
-    c,
-    v::Number,
-    cat::UnitCategory,
-    ::DeviceBaseUnit,
-    ::SystemBaseUnit,
-    winding,
-)
-    ratio = base_value(c, cat, winding) / system_base_value(c, cat, winding)
-    return (v * ratio) * SU
-end
-
-# DU → DU (identity)
-convert_units(::Any, v::Number, ::UnitCategory, ::DeviceBaseUnit, ::DeviceBaseUnit, ::Any) =
-    v * DU
-
-# DU → NU (route through the category's natural unit)
-convert_units(c, v::Number, cat::UnitCategory, du::DeviceBaseUnit, ::NaturalUnit, winding) =
-    convert_units(c, v, cat, du, natural_unit(cat), winding)
-
-# nothing passthrough
-convert_units(::Any, ::Nothing, ::UnitCategory, ::Any, ::Any, ::Any) = nothing
+# Multi-winding components (e.g. three-winding transformers) do not need a
+# separate conversion family: a per-winding *base provider* view (see
+# `WindingBase` in `src/models/components.jl`) implements the same three
+# interface functions, so the full engine above works per-winding.

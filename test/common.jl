@@ -1,5 +1,8 @@
 import InfrastructureSystems
 import Unitful
+# PSY no longer exports `ustrip`; Unitful's generic handles both quantity kinds
+# (PSY extends it for `RelativeQuantity`).
+using Unitful: ustrip
 
 # Strip unit wrappers so accessor return values can be compared against the
 # raw struct field type. Compound values (NamedTuple of units) are unwrapped

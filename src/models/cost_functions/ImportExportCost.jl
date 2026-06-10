@@ -55,10 +55,9 @@ function ImportExportCost(::Nothing)
     ImportExportCost()
 end
 
-# Claude:
 # Deserialization compatibility: import_offer_curves and export_offer_curves were
-# serialized as Nothing in older PSY versions. Substitute ZERO_OFFER_CURVE for each
-# Nothing field so that stale JSON files can still be loaded under PSY6.
+# serialized as Nothing in older PSY versions. The kwarg constructor substitutes
+# ZERO_OFFER_CURVE for Nothing and validates the shared unit system.
 function ImportExportCost(
     import_offer_curves::Union{Nothing, CostCurve{PiecewiseIncrementalCurve}},
     export_offer_curves::Union{Nothing, CostCurve{PiecewiseIncrementalCurve}},
@@ -66,12 +65,12 @@ function ImportExportCost(
     energy_export_weekly_limit::Float64,
     ancillary_service_offers::Vector{<:Service},
 )
-    ImportExportCost(
-        something(import_offer_curves, ZERO_OFFER_CURVE),
-        something(export_offer_curves, ZERO_OFFER_CURVE),
-        energy_import_weekly_limit,
-        energy_export_weekly_limit,
-        ancillary_service_offers,
+    ImportExportCost(;
+        import_offer_curves = import_offer_curves,
+        export_offer_curves = export_offer_curves,
+        energy_import_weekly_limit = energy_import_weekly_limit,
+        energy_export_weekly_limit = energy_export_weekly_limit,
+        ancillary_service_offers = ancillary_service_offers,
     )
 end
 
@@ -102,10 +101,14 @@ set_energy_import_weekly_limit!(value::ImportExportCost, val) =
 set_energy_export_weekly_limit!(value::ImportExportCost, val) =
     value.energy_export_weekly_limit = val
 
+# `initial_input` and `input_at_zero` are `Union{Nothing, Float64}`; an unset
+# offset means "no offset", which qualifies the same as an explicit zero.
+_iszero_or_nothing(x) = isnothing(x) || iszero(x)
+
 function is_import_export_curve(curve::ProductionVariableCostCurve)
     return (curve isa IS.AnyCostCurve{PiecewiseIncrementalCurve}) &&
-           iszero(get_initial_input(get_value_curve(curve))) &&
-           iszero(get_input_at_zero(get_value_curve(curve))) &&
+           _iszero_or_nothing(get_initial_input(get_value_curve(curve))) &&
+           _iszero_or_nothing(get_input_at_zero(get_value_curve(curve))) &&
            iszero(first(get_x_coords(get_value_curve(curve))))
 end
 

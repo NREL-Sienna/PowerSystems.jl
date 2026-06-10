@@ -21,4 +21,8 @@ const SIEMENS = u"S"
 Accepted target-unit argument for unit-aware getters/setters: a Unitful unit
 (e.g. `MW`, `kV`) or a relative per-unit marker (`DU`, `SU`, `NU`).
 """
-const UnitArg = Union{Unitful.Units, IS.AbstractRelativeUnit}
+const UnitArg = Union{Unitful.Units, IS.AbstractUnitSystem}
+
+# One public strip generic for both quantity kinds: Unitful's `ustrip` works on
+# `RelativeQuantity` too (IS deliberately does not define its own `ustrip`).
+Unitful.ustrip(q::IS.RelativeQuantity) = IS._strip_units(q)

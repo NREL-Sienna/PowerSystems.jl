@@ -11,7 +11,6 @@ For complex values:
 =#
 
 import JSON
-import StructTypes
 
 # ============================================================
 # Unit string ↔ type mapping
@@ -67,13 +66,13 @@ end
 Serialize a RelativeQuantity to a Dict suitable for JSON.
 """
 function serialize_quantity(q::RelativeQuantity{T, U}) where {T <: Real, U}
-    return Dict("value" => q.value, "unit" => unit_to_string(q.unit))
+    return Dict("value" => q.value, "unit" => unit_to_string(U()))
 end
 
 function serialize_quantity(q::RelativeQuantity{T, U}) where {T <: Complex, U}
     return Dict(
         "value" => Dict("re" => real(q.value), "im" => imag(q.value)),
-        "unit" => unit_to_string(q.unit),
+        "unit" => unit_to_string(U()),
     )
 end
 

@@ -126,17 +126,26 @@ function get_base_voltage(line::Union{Line, MonitoredLine})
 end
 
 """
-Select the value with fewer significant figures (the "rounder" number).
-Uses trailing zeros after stripping the decimal point as a proxy.
+Select the value with fewer significant figures (the "rounder" number),
+comparing the coarsest decimal granularity at which each value is exactly
+representable. Purely numeric — this sits on conversion paths, so no string
+round-trips.
 """
 function _select_fewer_significant_figures(a::Float64, b::Float64)
-    sa = rstrip(string(a), '0')
-    sb = rstrip(string(b), '0')
-    la = length(sa)
-    lb = length(sb)
-    la < lb && return a
-    lb < la && return b
+    ga = _decimal_granularity(a)
+    gb = _decimal_granularity(b)
+    ga < gb && return a
+    gb < ga && return b
     return max(a, b)
+end
+
+# Smallest digit count `d` such that `round(v; digits = d) == v`; lower means
+# coarser (rounder) numbers.
+function _decimal_granularity(v::Float64)
+    for d in -6:10
+        round(v; digits = d) == v && return d
+    end
+    return 11
 end
 
 """

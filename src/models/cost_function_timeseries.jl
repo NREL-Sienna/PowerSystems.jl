@@ -1,18 +1,4 @@
 # VALIDATORS
-function _validate_market_bid_cost(cost, context)
-    (cost isa MarketBidCost || cost isa MarketBidTimeSeriesCost) || throw(
-        ArgumentError(
-            "Expected MarketBidCost or MarketBidTimeSeriesCost for $context, got $(typeof(cost))",
-        ))
-end
-
-function _validate_import_export_cost(cost, context)
-    (cost isa ImportExportCost || cost isa ImportExportTimeSeriesCost) || throw(
-        ArgumentError(
-            "Expected ImportExportCost or ImportExportTimeSeriesCost for $context, got $(typeof(cost))",
-        ))
-end
-
 function _validate_reserve_demand_curve(
     cost::CostCurve{PiecewiseIncrementalCurve, U},
     name::String,
@@ -88,17 +74,33 @@ get_decremental_variable_cost(::StaticInjection, cost::MarketBidCost; kwargs...)
 # ── TIME-SERIES MarketBidTimeSeriesCost GETTERS ─────────────────────────────
 
 """
-Resolve a time-series-backed `CostCurve` to a static `CostCurve{PiecewiseIncrementalCurve}`
-at the given `start_time`.
+Resolve a time-series-backed `CostCurve` over a window of `len` timesteps,
+returning a `Vector` of static `CostCurve`s (one storage read per
+time-series-backed field for the whole window). With `len = nothing`, resolve
+a single timestep and return one static `CostCurve`.
 """
 function _resolve_ts_cost_curve(
     component::Component,
     curve::CostCurve{TimeSeriesPiecewiseIncrementalCurve, U},
     start_time::Dates.DateTime,
+    len::Int,
 ) where {U <: IS.AbstractUnitSystem}
-    static_vc = IS.build_static_curve(get_value_curve(curve), component, start_time)
-    return CostCurve(static_vc, get_power_units(curve), get_vom_cost(curve))
+    static_vcs = IS.build_static_curves(get_value_curve(curve), component, start_time, len)
+    power_units = get_power_units(curve)
+    vom_cost = get_vom_cost(curve)
+    return [CostCurve(vc, power_units, vom_cost) for vc in static_vcs]
 end
+
+_resolve_ts_cost_curve(component::Component, curve, start_time::Dates.DateTime) =
+    only(_resolve_ts_cost_curve(component, curve, start_time, 1))
+_resolve_ts_cost_curve(component::Component, curve, start_time::Dates.DateTime, ::Nothing) =
+    _resolve_ts_cost_curve(component, curve, start_time)
+
+# Same len-arity dispatch for curves resolved directly through IS.
+_build_static(curve, device, start_time, ::Nothing) =
+    IS.build_static_curve(curve, device, start_time)
+_build_static(curve, device, start_time, len::Int) =
+    IS.build_static_curves(curve, device, start_time, len)
 
 """
 Retrieve the variable cost for a `StaticInjection` device with a
@@ -113,7 +115,7 @@ function get_variable_cost(
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
     return _resolve_ts_cost_curve(
-        device, get_incremental_offer_curves(cost), start_time)
+        device, get_incremental_offer_curves(cost), start_time, len)
 end
 
 get_incremental_variable_cost(
@@ -132,7 +134,7 @@ function get_decremental_variable_cost(
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
     return _resolve_ts_cost_curve(
-        device, get_decremental_offer_curves(cost), start_time)
+        device, get_decremental_offer_curves(cost), start_time, len)
 end
 
 # ── STATIC ImportExportCost GETTERS ─────────────────────────────────────────
@@ -154,7 +156,7 @@ function get_import_variable_cost(
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for ImportExportTimeSeriesCost"))
     return _resolve_ts_cost_curve(
-        device, get_import_offer_curves(cost), start_time)
+        device, get_import_offer_curves(cost), start_time, len)
 end
 
 function get_export_variable_cost(
@@ -166,7 +168,7 @@ function get_export_variable_cost(
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for ImportExportTimeSeriesCost"))
     return _resolve_ts_cost_curve(
-        device, get_export_offer_curves(cost), start_time)
+        device, get_export_offer_curves(cost), start_time, len)
 end
 
 # ── START-UP / SHUT-DOWN / NO-LOAD GETTERS (time-series variants) ──────────
@@ -179,7 +181,7 @@ function get_no_load_cost(
 )
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
-    return IS.build_static_curve(get_no_load_cost(cost), device, start_time)
+    return _build_static(get_no_load_cost(cost), device, start_time, len)
 end
 
 function get_shut_down(
@@ -190,7 +192,7 @@ function get_shut_down(
 )
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for MarketBidTimeSeriesCost"))
-    return IS.build_static_curve(get_shut_down(cost), device, start_time)
+    return _build_static(get_shut_down(cost), device, start_time, len)
 end
 
 function get_start_up(
@@ -216,7 +218,7 @@ function get_variable_cost(
 )
     isnothing(start_time) &&
         throw(ArgumentError("start_time is required for ReserveDemandTimeSeriesCurve"))
-    return _resolve_ts_cost_curve(service, get_variable(service), start_time)
+    return _resolve_ts_cost_curve(service, get_variable(service), start_time, len)
 end
 
 # ── Helpers for FuelCurve and service bids (still use _process_get_cost) ──
@@ -377,8 +379,97 @@ function _check_power_units(
     end
 end
 
+# Offer-curve fields pin the cost's unit-system parameter `U`, so changing
+# units requires rebuilding the cost object rather than mutating the field.
+# `_replace_offer_curve` is the single chokepoint for the static-curve setters:
+# it validates the cost kind and slot, re-tags the sibling placeholder curve,
+# and returns the rebuilt cost.
+
+# A placeholder offer curve carries no information (all-zero slopes with
+# zero-or-unset offsets), so re-tagging it to a new unit system is lossless.
+_is_placeholder_offer(curve::CostCurve) =
+    all(iszero, get_slopes(get_value_curve(curve))) &&
+    _iszero_or_nothing(get_initial_input(get_value_curve(curve))) &&
+    _iszero_or_nothing(get_input_at_zero(get_value_curve(curve)))
+
+_retag_placeholder(curve::CostCurve, ::Type{U}) where {U <: IS.AbstractUnitSystem} =
+    if _is_placeholder_offer(curve)
+        CostCurve(get_value_curve(curve), U(), get_vom_cost(curve))
+    else
+        curve
+    end
+
+_throw_wrong_offer_slot(cost, slot) = throw(
+    ArgumentError("cannot set the $slot offer curve on a $(nameof(typeof(cost)))"),
+)
+
+function _replace_offer_curve(
+    cost::MarketBidCost,
+    slot::Symbol,
+    data::CostCurve{PiecewiseIncrementalCurve, U},
+) where {U <: IS.AbstractUnitSystem}
+    slot in (:incremental, :decremental) || _throw_wrong_offer_slot(cost, slot)
+    inc = if slot === :incremental
+        data
+    else
+        _retag_placeholder(get_incremental_offer_curves(cost), U)
+    end
+    dec = if slot === :decremental
+        data
+    else
+        _retag_placeholder(get_decremental_offer_curves(cost), U)
+    end
+    return MarketBidCost(;
+        no_load_cost = get_no_load_cost(cost),
+        start_up = get_start_up(cost),
+        shut_down = get_shut_down(cost),
+        incremental_offer_curves = inc,
+        decremental_offer_curves = dec,
+        ancillary_service_offers = get_ancillary_service_offers(cost),
+    )
+end
+
+function _replace_offer_curve(
+    cost::ImportExportCost,
+    slot::Symbol,
+    data::CostCurve{PiecewiseIncrementalCurve, U},
+) where {U <: IS.AbstractUnitSystem}
+    slot in (:import, :export) || _throw_wrong_offer_slot(cost, slot)
+    imp = slot === :import ? data : _retag_placeholder(get_import_offer_curves(cost), U)
+    exp = slot === :export ? data : _retag_placeholder(get_export_offer_curves(cost), U)
+    return ImportExportCost(;
+        import_offer_curves = imp,
+        export_offer_curves = exp,
+        energy_import_weekly_limit = get_energy_import_weekly_limit(cost),
+        energy_export_weekly_limit = get_energy_export_weekly_limit(cost),
+        ancillary_service_offers = get_ancillary_service_offers(cost),
+    )
+end
+
+_replace_offer_curve(
+    cost::Union{MarketBidTimeSeriesCost, ImportExportTimeSeriesCost},
+    ::Symbol,
+    ::CostCurve,
+) = throw(
+    ArgumentError(
+        "the component's operation cost is $(typeof(cost)); static-curve " *
+        "setters cannot modify a time-series-backed cost — replace the " *
+        "operation cost instead",
+    ),
+)
+
+_replace_offer_curve(cost, slot::Symbol, ::CostCurve) = throw(
+    ArgumentError(
+        "cannot set a $slot offer curve on an operation cost of type $(typeof(cost))",
+    ),
+)
+
 """
 Set the variable cost for a `StaticInjection` device with a `MarketBidCost`.
+
+The component's `MarketBidCost` is rebuilt with the unit system of `data`;
+a placeholder (all-zero) decremental curve is re-tagged to match, while a
+real decremental curve in a different unit system raises an `ArgumentError`.
 """
 function set_variable_cost!(
     ::System,
@@ -386,10 +477,11 @@ function set_variable_cost!(
     data::CostCurve{PiecewiseIncrementalCurve, U},
     power_units::IS.AbstractUnitSystem,
 ) where {U <: IS.AbstractUnitSystem}
-    market_bid_cost = get_operation_cost(component)
-    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
     _check_power_units(data, power_units)
-    set_incremental_offer_curves!(market_bid_cost, data)
+    set_operation_cost!(
+        component,
+        _replace_offer_curve(get_operation_cost(component), :incremental, data),
+    )
     return
 end
 
@@ -417,10 +509,11 @@ function set_decremental_variable_cost!(
     data::CostCurve{PiecewiseIncrementalCurve, U},
     power_units::IS.AbstractUnitSystem,
 ) where {U <: IS.AbstractUnitSystem}
-    market_bid_cost = get_operation_cost(component)
-    _validate_market_bid_cost(market_bid_cost, "get_operation_cost(component)")
     _check_power_units(data, power_units)
-    set_decremental_offer_curves!(market_bid_cost, data)
+    set_operation_cost!(
+        component,
+        _replace_offer_curve(get_operation_cost(component), :decremental, data),
+    )
     return
 end
 
@@ -430,10 +523,11 @@ function set_import_variable_cost!(
     data::CostCurve{PiecewiseIncrementalCurve, U},
     power_units::IS.AbstractUnitSystem,
 ) where {U <: IS.AbstractUnitSystem}
-    import_export_cost = get_operation_cost(component)
-    _validate_import_export_cost(import_export_cost, "get_operation_cost(component)")
     _check_power_units(data, power_units)
-    set_import_offer_curves!(import_export_cost, data)
+    set_operation_cost!(
+        component,
+        _replace_offer_curve(get_operation_cost(component), :import, data),
+    )
     return
 end
 
@@ -443,10 +537,11 @@ function set_export_variable_cost!(
     data::CostCurve{PiecewiseIncrementalCurve, U},
     power_units::IS.AbstractUnitSystem,
 ) where {U <: IS.AbstractUnitSystem}
-    import_export_cost = get_operation_cost(component)
-    _validate_import_export_cost(import_export_cost, "get_operation_cost(component)")
     _check_power_units(data, power_units)
-    set_export_offer_curves!(import_export_cost, data)
+    set_operation_cost!(
+        component,
+        _replace_offer_curve(get_operation_cost(component), :export, data),
+    )
     return
 end
 
