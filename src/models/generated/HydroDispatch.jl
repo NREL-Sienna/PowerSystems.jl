@@ -131,44 +131,44 @@ get_name(value::HydroDispatch) = value.name
 get_available(value::HydroDispatch) = value.available
 """Get [`HydroDispatch`](@ref) `bus`."""
 get_bus(value::HydroDispatch) = value.bus
-"""Get [`HydroDispatch`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+"""Get [`HydroDispatch`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
 get_active_power(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
 get_active_power_unitful(value::HydroDispatch, units) = get_value(value, Val(:active_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-"""Get [`HydroDispatch`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+"""Get [`HydroDispatch`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
 get_reactive_power(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
 get_reactive_power_unitful(value::HydroDispatch, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-"""Get [`HydroDispatch`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+"""Get [`HydroDispatch`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
 get_rating(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::HydroDispatch, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
 """Get [`HydroDispatch`](@ref) `prime_mover_type`."""
 get_prime_mover_type(value::HydroDispatch) = value.prime_mover_type
-"""Get [`HydroDispatch`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+"""Get [`HydroDispatch`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
 get_active_power_limits(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
 get_active_power_limits_unitful(value::HydroDispatch, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-"""Get [`HydroDispatch`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+"""Get [`HydroDispatch`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
 get_reactive_power_limits(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
 get_reactive_power_limits_unitful(value::HydroDispatch, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-"""Get [`HydroDispatch`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+"""Get [`HydroDispatch`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
 get_ramp_limits(value::HydroDispatch, units) = InfrastructureSystems._strip_units(get_value(value, Val(:ramp_limits), Val(:mva), units))
 """Get [`HydroDispatch`](@ref) `ramp_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_ramp_limits`](@ref)."""
 get_ramp_limits_unitful(value::HydroDispatch, units) = get_value(value, Val(:ramp_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{ HydroDispatch }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{HydroDispatch}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{HydroDispatch}) = InfrastructureSystems.SU
 """Get [`HydroDispatch`](@ref) `time_limits`."""
 get_time_limits(value::HydroDispatch) = value.time_limits
 

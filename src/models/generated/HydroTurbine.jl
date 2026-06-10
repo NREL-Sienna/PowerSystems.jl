@@ -149,48 +149,48 @@ get_name(value::HydroTurbine) = value.name
 get_available(value::HydroTurbine) = value.available
 """Get [`HydroTurbine`](@ref) `bus`."""
 get_bus(value::HydroTurbine) = value.bus
-"""Get [`HydroTurbine`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
+"""Get [`HydroTurbine`](@ref) `active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_unitful`](@ref)."""
 get_active_power(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power`](@ref)."""
 get_active_power_unitful(value::HydroTurbine, units) = get_value(value, Val(:active_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-"""Get [`HydroTurbine`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_active_power), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+"""Get [`HydroTurbine`](@ref) `reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_unitful`](@ref)."""
 get_reactive_power(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power`](@ref)."""
 get_reactive_power_unitful(value::HydroTurbine, units) = get_value(value, Val(:reactive_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-"""Get [`HydroTurbine`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_rating_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+"""Get [`HydroTurbine`](@ref) `rating` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_rating_unitful`](@ref)."""
 get_rating(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:rating), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `rating` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_rating`](@ref)."""
 get_rating_unitful(value::HydroTurbine, units) = get_value(value, Val(:rating), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-"""Get [`HydroTurbine`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_rating), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_rating_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+"""Get [`HydroTurbine`](@ref) `active_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_active_power_limits_unitful`](@ref)."""
 get_active_power_limits(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:active_power_limits), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `active_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_active_power_limits`](@ref)."""
 get_active_power_limits_unitful(value::HydroTurbine, units) = get_value(value, Val(:active_power_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-"""Get [`HydroTurbine`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_active_power_limits_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+"""Get [`HydroTurbine`](@ref) `reactive_power_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_reactive_power_limits_unitful`](@ref)."""
 get_reactive_power_limits(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:reactive_power_limits), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `reactive_power_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_reactive_power_limits`](@ref)."""
 get_reactive_power_limits_unitful(value::HydroTurbine, units) = get_value(value, Val(:reactive_power_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_reactive_power_limits_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
 
 _get_base_power(value::HydroTurbine) = value.base_power
 """Get [`HydroTurbine`](@ref) `operation_cost`."""
 get_operation_cost(value::HydroTurbine) = value.operation_cost
 """Get [`HydroTurbine`](@ref) `powerhouse_elevation`."""
 get_powerhouse_elevation(value::HydroTurbine) = value.powerhouse_elevation
-"""Get [`HydroTurbine`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
+"""Get [`HydroTurbine`](@ref) `ramp_limits` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_ramp_limits_unitful`](@ref)."""
 get_ramp_limits(value::HydroTurbine, units) = InfrastructureSystems._strip_units(get_value(value, Val(:ramp_limits), Val(:mva), units))
 """Get [`HydroTurbine`](@ref) `ramp_limits` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_ramp_limits`](@ref)."""
 get_ramp_limits_unitful(value::HydroTurbine, units) = get_value(value, Val(:ramp_limits), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{ HydroTurbine }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits), ::Type{HydroTurbine}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_ramp_limits_unitful), ::Type{HydroTurbine}) = InfrastructureSystems.SU
 """Get [`HydroTurbine`](@ref) `time_limits`."""
 get_time_limits(value::HydroTurbine) = value.time_limits
 """Get [`HydroTurbine`](@ref) `outflow_limits`."""

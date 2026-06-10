@@ -66,12 +66,12 @@ end
 get_name(value::ConstantReserveGroup) = value.name
 """Get [`ConstantReserveGroup`](@ref) `available`."""
 get_available(value::ConstantReserveGroup) = value.available
-"""Get [`ConstantReserveGroup`](@ref) `requirement` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_requirement_unitful`](@ref)."""
+"""Get [`ConstantReserveGroup`](@ref) `requirement` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_requirement_unitful`](@ref)."""
 get_requirement(value::ConstantReserveGroup, units) = InfrastructureSystems._strip_units(get_value(value, Val(:requirement), Val(:mva), units))
 """Get [`ConstantReserveGroup`](@ref) `requirement` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_requirement`](@ref)."""
 get_requirement_unitful(value::ConstantReserveGroup, units) = get_value(value, Val(:requirement), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_requirement), ::Type{ ConstantReserveGroup }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_requirement_unitful), ::Type{ ConstantReserveGroup }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_requirement), ::Type{ConstantReserveGroup{T}}) where {T <: ReserveDirection} = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_requirement_unitful), ::Type{ConstantReserveGroup{T}}) where {T <: ReserveDirection} = InfrastructureSystems.SU
 """Get [`ConstantReserveGroup`](@ref) `ext`."""
 get_ext(value::ConstantReserveGroup) = value.ext
 """Get [`ConstantReserveGroup`](@ref) `contributing_services`."""

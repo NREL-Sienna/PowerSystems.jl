@@ -57,18 +57,18 @@ end
 
 """Get [`LoadZone`](@ref) `name`."""
 get_name(value::LoadZone) = value.name
-"""Get [`LoadZone`](@ref) `peak_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_peak_active_power_unitful`](@ref)."""
+"""Get [`LoadZone`](@ref) `peak_active_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_peak_active_power_unitful`](@ref)."""
 get_peak_active_power(value::LoadZone, units) = InfrastructureSystems._strip_units(get_value(value, Val(:peak_active_power), Val(:mva), units))
 """Get [`LoadZone`](@ref) `peak_active_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_peak_active_power`](@ref)."""
 get_peak_active_power_unitful(value::LoadZone, units) = get_value(value, Val(:peak_active_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_peak_active_power), ::Type{ LoadZone }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_peak_active_power_unitful), ::Type{ LoadZone }) = InfrastructureSystems.SU
-"""Get [`LoadZone`](@ref) `peak_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`, `MW`). For the unit-bearing value see [`get_peak_reactive_power_unitful`](@ref)."""
+InfrastructureSystems.display_units_arg(::typeof(get_peak_active_power), ::Type{LoadZone}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_peak_active_power_unitful), ::Type{LoadZone}) = InfrastructureSystems.SU
+"""Get [`LoadZone`](@ref) `peak_reactive_power` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_peak_reactive_power_unitful`](@ref)."""
 get_peak_reactive_power(value::LoadZone, units) = InfrastructureSystems._strip_units(get_value(value, Val(:peak_reactive_power), Val(:mva), units))
 """Get [`LoadZone`](@ref) `peak_reactive_power` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_peak_reactive_power`](@ref)."""
 get_peak_reactive_power_unitful(value::LoadZone, units) = get_value(value, Val(:peak_reactive_power), Val(:mva), units)
-InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power), ::Type{ LoadZone }) = InfrastructureSystems.SU
-InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power_unitful), ::Type{ LoadZone }) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power), ::Type{LoadZone}) = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_peak_reactive_power_unitful), ::Type{LoadZone}) = InfrastructureSystems.SU
 """Get [`LoadZone`](@ref) `ext`."""
 get_ext(value::LoadZone) = value.ext
 """Get [`LoadZone`](@ref) `internal`."""

@@ -26,7 +26,7 @@ This reserve product includes online generators that can respond right away afte
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
 - `time_frame::Float64`: the saturation time_frame in minutes to provide reserve contribution, validation range: `(0, nothing)`
-- `requirement::Float64`: the required quantity of the product should be scaled by a TimeSeriesData
+- `requirement::Float64`: the required quantity of the product in p.u. ([`SYSTEM_BASE`](@ref per_unit)), to be scaled by a TimeSeriesData
 - `sustained_time::Float64`: (default: `3600.0`) the time in seconds reserve contribution must sustained at a specified level, validation range: `(0, nothing)`
 - `max_output_fraction::Float64`: (default: `1.0`) the maximum fraction of each device's output that can be assigned to the service, validation range: `(0, 1)`
 - `max_participation_factor::Float64`: (default: `1.0`) the maximum portion [0, 1.0] of the reserve that can be contributed per device, validation range: `(0, 1)`
@@ -41,7 +41,7 @@ mutable struct VariableReserve{T <: ReserveDirection} <: Reserve{T}
     available::Bool
     "the saturation time_frame in minutes to provide reserve contribution"
     time_frame::Float64
-    "the required quantity of the product should be scaled by a TimeSeriesData"
+    "the required quantity of the product in p.u. ([`SYSTEM_BASE`](@ref per_unit)), to be scaled by a TimeSeriesData"
     requirement::Float64
     "the time in seconds reserve contribution must sustained at a specified level"
     sustained_time::Float64
@@ -86,8 +86,12 @@ get_name(value::VariableReserve) = value.name
 get_available(value::VariableReserve) = value.available
 """Get [`VariableReserve`](@ref) `time_frame`."""
 get_time_frame(value::VariableReserve) = value.time_frame
-"""Get [`VariableReserve`](@ref) `requirement`."""
-get_requirement(value::VariableReserve) = value.requirement
+"""Get [`VariableReserve`](@ref) `requirement` as a bare number in the requested `units` (e.g. `SU`, `DU`; domain-provided units such as `MW` are also accepted when the owning domain package has registered a `_strip_units` method for the returned quantity type). Returns a bare number only when such a method is registered; otherwise returns the quantity wrapper. For the unit-bearing value see [`get_requirement_unitful`](@ref)."""
+get_requirement(value::VariableReserve, units) = InfrastructureSystems._strip_units(get_value(value, Val(:requirement), Val(:mva), units))
+"""Get [`VariableReserve`](@ref) `requirement` as a unit-bearing quantity in the requested `units` (e.g. `SU`, `DU`, `MW`). For a bare number see [`get_requirement`](@ref)."""
+get_requirement_unitful(value::VariableReserve, units) = get_value(value, Val(:requirement), Val(:mva), units)
+InfrastructureSystems.display_units_arg(::typeof(get_requirement), ::Type{VariableReserve{T}}) where {T <: ReserveDirection} = InfrastructureSystems.SU
+InfrastructureSystems.display_units_arg(::typeof(get_requirement_unitful), ::Type{VariableReserve{T}}) where {T <: ReserveDirection} = InfrastructureSystems.SU
 """Get [`VariableReserve`](@ref) `sustained_time`."""
 get_sustained_time(value::VariableReserve) = value.sustained_time
 """Get [`VariableReserve`](@ref) `max_output_fraction`."""
@@ -106,7 +110,7 @@ set_available!(value::VariableReserve, val) = value.available = val
 """Set [`VariableReserve`](@ref) `time_frame`."""
 set_time_frame!(value::VariableReserve, val) = value.time_frame = val
 """Set [`VariableReserve`](@ref) `requirement`."""
-set_requirement!(value::VariableReserve, val) = value.requirement = val
+set_requirement!(value::VariableReserve, val) = value.requirement = set_value(value, Val(:requirement), val, Val(:mva))
 """Set [`VariableReserve`](@ref) `sustained_time`."""
 set_sustained_time!(value::VariableReserve, val) = value.sustained_time = val
 """Set [`VariableReserve`](@ref) `max_output_fraction`."""
