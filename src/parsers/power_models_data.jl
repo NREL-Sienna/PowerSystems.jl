@@ -1265,8 +1265,8 @@ function get_branch_type_psse(
         return PhaseShiftingTransformer
     elseif (is_tap_controllable || (tap != 1.0)) &&
            d["group_number"] != WindingGroupNumber.UNDEFINED
-        # Normalise TapTransformers whose tap is effectively 1.0 to Transformer2W
-        if is_identity_tap
+        # Consider tap control capability when converting component
+        if is_identity_tap && !is_tap_controllable
             @warn "TapTransformer with near-identity tap ($(tap)) normalised to Transformer2W" _group =
                 IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             return Transformer2W
@@ -1430,7 +1430,7 @@ function _make_switch_from_zero_impedance_line(
     else
         status_value = DiscreteControlledBranchStatus.OPEN
     end
-    @warn "Branch $name has zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
+    @warn "Branch $name has zero or near-zero impedance and available = $available_value; converting to a DiscreteControlledACBranch of type SWITCH with available = $available_value and branch_status = $status_value"
     return DiscreteControlledACBranch(;
         name = name,
         available = Bool(available_value),
@@ -1828,6 +1828,16 @@ function read_branch!(
         bus_t = bus_number_to_bus[d["t_bus"]]
         arc_key = _normalized_arc_key(d["f_bus"], d["t_bus"])
         branch_type_override = get(branch_type_overrides, arc_key, nothing)
+        # The arc-level DiscreteControlledACBranch override was determined from active,
+        # near-zero Lines only.  Do not apply it to inactive or non-near-zero Lines:
+        # converting them would lose their impedance data and silently turn a real line
+        # into an ideal switch if it were ever re-activated.
+        if !isnothing(branch_type_override) &&
+           branch_type_override == DiscreteControlledACBranch &&
+           source_type == "pti" &&
+           !(_is_active_pti_branch(d) && _is_near_zero_impedance_line(d))
+            branch_type_override = nothing
+        end
         if isnothing(branch_type_override) &&
            source_type == "pti" &&
            _is_active_pti_branch(d) &&
