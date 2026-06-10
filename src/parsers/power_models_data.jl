@@ -1231,7 +1231,7 @@ end
 function get_branch_type_psse(
     d::Dict,
 )
-    if d["br_r"] == 0.0 && d["br_x"] == 0.0
+    if !d["transformer"] && d["br_r"] == 0.0 && d["br_x"] == 0.0
         return DiscreteControlledACBranch
     end
 
