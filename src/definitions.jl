@@ -588,6 +588,11 @@ const IDENTITY_TAP_TOL = 1e-4
 # considered to have no real shift and is equivalent to TapTransformer/Transformer2W.
 const ZERO_ANGLE_SHIFT_TOL = 1e-6
 
+# Absolute threshold below which a shunt admittance component (conductance or
+# susceptance) is treated as zero for capability detection, so negligible
+# admittances do not force their host bus to be kept during network reduction.
+const ZERO_ADMITTANCE_THRESHOLD = 1e-4
+
 const WINDING_NAMES = Dict(
     WindingCategory.PRIMARY_WINDING => "primary",
     WindingCategory.SECONDARY_WINDING => "secondary",
