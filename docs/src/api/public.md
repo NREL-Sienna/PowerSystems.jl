@@ -28,6 +28,13 @@ Public = true
 Private = false
 ```
 
+```@autodocs
+Modules = [IS]
+Pages   = ["internal.jl"]
+Order = [:type]
+Filter = t -> typeof(t) !== Union && applicable(nameof, typeof(t)) && nameof(t) in names(PowerSystems) && nameof(t) == :UnitSystem
+```
+
 ## Supplemental Attributes
 
 ```@autodocs
