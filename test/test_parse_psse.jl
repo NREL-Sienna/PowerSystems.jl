@@ -643,14 +643,26 @@ end
     @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
 
     # Non-alpha-controllable (COD1=0) PST with near-zero shift and identity tap → Transformer2W
-    d = _psse_branch_dict(; tap = 1.0, shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2, COD1 = 0)
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 0,
+    )
     @test PowerSystems.get_branch_type_psse(d) == Transformer2W
 
     # Non-alpha-controllable PST with near-zero shift but non-identity tap → TapTransformer
-    d = _psse_branch_dict(; tap = 1.05, shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2, COD1 = 0)
+    d = _psse_branch_dict(;
+        tap = 1.05,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 0,
+    )
     @test PowerSystems.get_branch_type_psse(d) == TapTransformer
 
     # Alpha-controllable (COD1=3) PST with near-zero shift must NOT be demoted
-    d = _psse_branch_dict(; tap = 1.0, shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2, COD1 = 3)
+    d = _psse_branch_dict(;
+        tap = 1.0,
+        shift = PowerSystems.ZERO_ANGLE_SHIFT_TOL / 2,
+        COD1 = 3,
+    )
     @test PowerSystems.get_branch_type_psse(d) == PhaseShiftingTransformer
 end
