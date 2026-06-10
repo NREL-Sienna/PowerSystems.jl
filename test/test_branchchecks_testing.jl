@@ -178,3 +178,114 @@ end
         PowerSystems.sanitize_angle_limits!(bad_angle_limits)
     )
 end
+
+@testset "Negative branch rating fails validation cleanly" begin
+    # Two buses at equal base voltage so the endpoint-voltage check passes and
+    # validation reaches correct_rate_limits!.
+    bus_from = ACBus(
+        1, "from", true, ACBusTypes.REF, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    bus_to = ACBus(
+        2, "to", true, ACBusTypes.PQ, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    sys = System(100.0; runchecks = false)
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    neg_line = Line(
+        "negline",
+        true,
+        0.0,
+        0.0,
+        Arc(; from = bus_from, to = bus_to),
+        0.01,
+        0.1,
+        (from = 0.00356, to = 0.00356),
+        -1.0,                       # negative rating
+        (min = -pi / 2, max = pi / 2),
+    )
+    add_component!(sys, neg_line)
+
+    # An IS.MultiLogger is enabled at Error and rethrows log-record-generation
+    # errors (catch_exceptions(::MultiLogger) == false), exactly like the loggers
+    # Sienna test suites install. Under such a logger the previous `$(rating)`
+    # typo raised UndefVarError instead of the intended IS.InvalidValue. A
+    # NullLogger would *not* catch this regression because Julia never evaluates a
+    # disabled log message.
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue PowerSystems.check_component(sys, neg_line)
+    end
+end
+
+@testset "line_rating_calculation uses to-side minimum voltage" begin
+    # Asymmetric endpoint voltage limits expose whether the to-side minimum
+    # voltage is read from the correct bus.
+    bus_from = ACBus(
+        1, "from", true, ACBusTypes.REF, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    bus_to = ACBus(
+        2, "to", true, ACBusTypes.PQ, 0, 1.0, (min = 0.5, max = 1.05), 230,
+        nothing, nothing,
+    )
+    line = Line(
+        "l",
+        true,
+        0.0,
+        0.0,
+        Arc(; from = bus_from, to = bus_to),
+        0.01,
+        0.1,
+        (from = 0.00356, to = 0.00356),
+        100.0,
+        (min = -0.2, max = 0.3),
+    )
+
+    r, x = 0.01, 0.1
+    g = r / (r^2 + x^2)
+    b = -x / (r^2 + x^2)
+    y_mag = sqrt(g^2 + b^2)
+    fr_vmin, to_vmin = 0.9, 0.5
+    theta_max = 0.3
+    c_max = sqrt(fr_vmin^2 + to_vmin^2 - 2 * fr_vmin * to_vmin * cos(theta_max))
+    expected = y_mag * max(fr_vmin, to_vmin) * c_max
+
+    @test PowerSystems.line_rating_calculation(line) ≈ expected
+end
+
+@testset "Negative transformer rating fails validation cleanly" begin
+    bus_from = ACBus(
+        1, "from", true, ACBusTypes.REF, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    bus_to = ACBus(
+        2, "to", true, ACBusTypes.PQ, 0, 1.0, (min = 0.9, max = 1.05), 230,
+        nothing, nothing,
+    )
+    sys = System(100.0; runchecks = false)
+    add_component!(sys, bus_from)
+    add_component!(sys, bus_to)
+    # rating_b has no descriptor valid_range, so only the PSY-level guard can
+    # reject a negative secondary rating.
+    xfrm = Transformer2W(;
+        name = "negxfrm",
+        available = true,
+        active_power_flow = 0.0,
+        reactive_power_flow = 0.0,
+        arc = Arc(; from = bus_from, to = bus_to),
+        r = 0.01,
+        x = 0.1,
+        primary_shunt = 0.0,
+        rating = 1.0,
+        base_power = 100.0,
+        rating_b = -1.0,            # negative secondary rating
+    )
+    add_component!(sys, xfrm)
+
+    test_logger = IS.MultiLogger([ConsoleLogger(devnull, Logging.Error)])
+    Logging.with_logger(test_logger) do
+        @test_throws IS.InvalidValue PowerSystems.check_component(sys, xfrm)
+    end
+end
