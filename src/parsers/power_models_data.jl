@@ -1205,7 +1205,7 @@ function get_branch_type_matpower(
 
     _add_vector_control_group(d, "shift", "group_number")
 
-    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || tap == 0.0
+    is_identity_tap = abs(tap - 1.0) <= IDENTITY_TAP_TOL || iszero(tap)
     is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
 
     if d["group_number"] == WindingGroupNumber.UNDEFINED
@@ -1231,7 +1231,7 @@ end
 function get_branch_type_psse(
     d::Dict,
 )
-    if d["br_r"] == 0.0 && d["br_x"] == 0.0
+    if _is_near_zero_impedance_line(d)
         return DiscreteControlledACBranch
     end
 
@@ -1256,10 +1256,8 @@ function get_branch_type_psse(
     is_zero_shift = abs(shift) <= ZERO_ANGLE_SHIFT_TOL
 
     if d["group_number"] == WindingGroupNumber.UNDEFINED || is_alpha_controllable
-        # Degenerate PST: controllable but shift is effectively zero → demote
+        # Degenerate PST: unrecognized vector group with near-zero shift → demote
         if is_zero_shift && !is_alpha_controllable
-            @warn "PhaseShiftingTransformer with near-zero shift ($(rad2deg(shift))°) normalised to $(is_identity_tap ? "Transformer2W" : "TapTransformer")" _group =
-                IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
             return is_identity_tap ? Transformer2W : TapTransformer
         end
         return PhaseShiftingTransformer
@@ -1284,8 +1282,8 @@ function _normalized_arc_key(f_bus::Int, t_bus::Int)
 end
 
 function _is_near_zero_impedance_line(d::Dict)
-    return abs(d["br_r"]) <= ZERO_IMPEDANCE_RESISTANCE_THRESHOLD &&
-           abs(d["br_x"]) <= ZERO_IMPEDANCE_REACTANCE_THRESHOLD
+    return abs(d["br_r"]) < ZERO_IMPEDANCE_RESISTANCE_THRESHOLD &&
+           abs(d["br_x"]) < ZERO_IMPEDANCE_REACTANCE_THRESHOLD
 end
 
 function _is_active_pti_branch(d::Dict)
@@ -1369,6 +1367,29 @@ function _collect_existing_discrete_arc_keys(sys::System)
         push!(arc_keys, _normalized_arc_key(from_num, to_num))
     end
     return arc_keys
+end
+
+# Return the first existing DiscreteControlledACBranch on `arc_key` whose
+# available/branch_status match the expected values, or `nothing` if none exists.
+function _find_equivalent_discrete_on_arc(
+    sys::System,
+    arc_key::Tuple{Int, Int},
+    expected_available::Bool,
+    expected_status,
+)
+    for br in get_components(DiscreteControlledACBranch, sys)
+        br_arc = get_arc(br)
+        br_arc_key = _normalized_arc_key(
+            get_number(get_from(br_arc)),
+            get_number(get_to(br_arc)),
+        )
+        if br_arc_key == arc_key &&
+           get_available(br) == expected_available &&
+           get_branch_status(br) == expected_status
+            return br
+        end
+    end
+    return nothing
 end
 
 function make_branch(
@@ -1859,26 +1880,32 @@ function read_branch!(
             _get_name(d, bus_f, bus_t)
         end
 
-        if branch_type_override == DiscreteControlledACBranch &&
-           has_component(DiscreteControlledACBranch, sys, name)
-            existing = get_component(DiscreteControlledACBranch, sys, name)
-            existing_arc = get_arc(existing)
-            existing_arc_key = _normalized_arc_key(
-                get_number(get_from(existing_arc)),
-                get_number(get_to(existing_arc)),
-            )
+        if branch_type_override == DiscreteControlledACBranch
             expected_available, expected_status = _expected_discrete_state(d, bus_f, bus_t)
 
-            if existing_arc_key == arc_key &&
-               get_available(existing) == expected_available &&
-               get_branch_status(existing) == expected_status
-                @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because equivalent DiscreteControlledACBranch '$name' already exists (same arc and operating state)." _group =
+            # Arc-key scan: catches duplicates regardless of name (e.g. a @BRANCH zero-impedance
+            # record that physically duplicates a switch parsed from the @SWITCH section).
+            arc_match = _find_equivalent_discrete_on_arc(
+                sys, arc_key, expected_available, expected_status,
+            )
+            if !isnothing(arc_match)
+                @warn "Skipping near-zero-impedance Line normalization on arc $(arc_key[1])-$(arc_key[2]) because equivalent DiscreteControlledACBranch '$(get_name(arc_match))' already exists (same arc and operating state)." _group =
                     IS.LOG_GROUP_PARSING maxlog = PS_MAX_LOG
                 continue
-            else
+            end
+
+            # Name-collision guard: a DiscreteControlledACBranch with this exact name already
+            # exists but on a different arc or with a different state — this is a data error.
+            if has_component(DiscreteControlledACBranch, sys, name)
+                existing = get_component(DiscreteControlledACBranch, sys, name)
+                existing_arc = get_arc(existing)
+                existing_arc_key = _normalized_arc_key(
+                    get_number(get_from(existing_arc)),
+                    get_number(get_to(existing_arc)),
+                )
                 throw(
                     DataFormatError(
-                        "Name collision for DiscreteControlledACBranch '$name' on arc $(arc_key[1])-$(arc_key[2]) with non-equivalent operating state. Existing available=$(get_available(existing)), status=$(get_branch_status(existing)); expected available=$expected_available, status=$expected_status.",
+                        "Name collision for DiscreteControlledACBranch '$name': a component with this name already exists on arc $(existing_arc_key[1])-$(existing_arc_key[2]) (available=$(get_available(existing)), status=$(get_branch_status(existing))), which differs from the incoming arc $(arc_key[1])-$(arc_key[2]) (expected available=$expected_available, status=$expected_status).",
                     ),
                 )
             end
