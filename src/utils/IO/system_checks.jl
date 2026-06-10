@@ -145,7 +145,7 @@ function check_parallel_branch_type_consistency(sys::System)
     # Arc key → [(branch_name, type_string)]
     arc_entries = Dict{Tuple{Int, Int}, Vector{Tuple{String, String}}}()
     for branch in get_components(ACBranch, sys)
-        branch isa ThreeWindingTransformer && continue
+        hasmethod(get_arc, Tuple{typeof(branch)}) || continue
         arc = get_arc(branch)
         from_num = get_number(get_from(arc))
         to_num = get_number(get_to(arc))
