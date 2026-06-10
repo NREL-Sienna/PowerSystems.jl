@@ -133,6 +133,12 @@ Private = false
 Filter = t -> t ∉ [System]
 ```
 
+```@autodocs
+Modules = [IS]
+Pages   = ["utils/generate_struct_files.jl"]
+Filter = t -> !(t isa AbstractString) && typeof(t) !== Union && applicable(nameof, typeof(t)) && nameof(t) in names(PowerSystems)
+```
+
 ## Advanced Component Selection
 
 The primary way to retrieve components in PowerSystems.jl is with the [`get_components`](@ref) and similar `get_*` methods above. The following `ComponentSelector` interface offers advanced, repeatable component selection primarily for multi-scenario post-processing analytics. See [`PowerAnalytics.jl`](https://sienna-platform.github.io/PowerAnalytics.jl/stable/).
