@@ -30,7 +30,7 @@ An `ExponentialLoad` models active power as P = P0 * V^α and reactive power as 
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus that this component is connected to
+- `bus::ACBus`: The [`ACBus`](@ref) that this component is connected to
 - `active_power::Float64`: Active power coefficient, P0 (MW)
 - `reactive_power::Float64`: Reactive power coefficient, Q0 (MVAR)
 - `α::Float64`: Exponent relating voltage dependency for active power. 0 = constant power only, 1 = constant current only, and 2 = constant impedance only, validation range: `(0, nothing)`
@@ -49,7 +49,7 @@ mutable struct ExponentialLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus that this component is connected to"
+    "The [`ACBus`](@ref) that this component is connected to"
     bus::ACBus
     "Active power coefficient, P0 (MW)"
     active_power::Float64

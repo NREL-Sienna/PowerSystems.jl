@@ -39,7 +39,7 @@ This is suitable for modeling storage charging and discharging with average effi
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus that this component is connected to
+- `bus::ACBus`: The [`ACBus`](@ref) that this component is connected to
 - `prime_mover_type::PrimeMovers`: Prime mover technology according to EIA 923. See [`PrimeMovers`](@ref).
 - `storage_technology_type::StorageTech`: Storage Technology Complementary to EIA 923. See [`StorageTech`](@ref).
 - `storage_capacity::Float64`: Maximum storage capacity (can be in units of, e.g., MWh for batteries or liters for hydrogen). When in MWh, this value divided by base_power (MVA) gives an approximate duration in hours, assuming unity power factor. For understanding this relationship, see [per unitization](@ref per_unit), validation range: `(0, nothing)`
@@ -67,7 +67,7 @@ mutable struct EnergyReservoirStorage <: Storage
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus that this component is connected to"
+    "The [`ACBus`](@ref) that this component is connected to"
     bus::ACBus
     "Prime mover technology according to EIA 923. See [`PrimeMovers`](@ref)."
     prime_mover_type::PrimeMovers

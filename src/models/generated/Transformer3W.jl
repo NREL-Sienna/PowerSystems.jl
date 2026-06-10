@@ -69,7 +69,7 @@ The model uses an equivalent star model with a star (hidden) bus. The user must 
 - `primary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a primary bus `to` the star bus
 - `secondary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a secondary bus `to` the star bus
 - `tertiary_star_arc::Arc`: An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus
-- `star_bus::ACBus`: Star (hidden) Bus that this component (equivalent model) is connected to
+- `star_bus::ACBus`: Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to
 - `active_power_flow_primary::Float64`: Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)
 - `reactive_power_flow_primary::Float64`: Initial condition of reactive power flow through the transformer primary side to star (hidden) bus (MW)
 - `active_power_flow_secondary::Float64`: Initial condition of active power flow through the transformer secondary side to star (hidden) bus (MW)
@@ -127,7 +127,7 @@ mutable struct Transformer3W <: ThreeWindingTransformer
     secondary_star_arc::Arc
     "An [`Arc`](@ref) defining this transformer `from` a tertiary bus `to` the star bus"
     tertiary_star_arc::Arc
-    "Star (hidden) Bus that this component (equivalent model) is connected to"
+    "Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to"
     star_bus::ACBus
     "Initial condition of active power flow through the transformer primary side to star (hidden) bus (MW)"
     active_power_flow_primary::Float64

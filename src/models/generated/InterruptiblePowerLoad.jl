@@ -29,7 +29,7 @@ A [static](@ref S) power load that can be compensated for temporary or continuou
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus that this component is connected to
+- `bus::ACBus`: The [`ACBus`](@ref) that this component is connected to
 - `active_power::Float64`: Initial steady state active power demand (MW)
 - `reactive_power::Float64`: Initial steady state reactive power demand (MVAR)
 - `max_active_power::Float64`: Maximum active power (MW) that this load can demand
@@ -47,7 +47,7 @@ mutable struct InterruptiblePowerLoad <: ControllableLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus that this component is connected to"
+    "The [`ACBus`](@ref) that this component is connected to"
     bus::ACBus
     "Initial steady state active power demand (MW)"
     active_power::Float64

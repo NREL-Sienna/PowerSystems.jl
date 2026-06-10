@@ -32,7 +32,7 @@ This model uses a proportional–integral–derivative (PID) control to simulate
 - `K_i::Float64`: PID Integral Constant
 - `K_d::Float64`: PID Derivative Constant
 - `delta_t::Float64`: PID Discretization period [Seconds]
-- `area::Union{Nothing, Area}`: (default: `nothing`) the area controlled by the AGC
+- `area::Union{Nothing, Area}`: (default: `nothing`) the [`Area`](@ref) controlled by the [`AGC`](@ref)
 - `initial_ace::Float64`: (default: `0.0`) Initial condition for ACE
 - `reserves::Vector{Reserve}`: (default: `Device[]`) Reserves that this device contributes to
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
@@ -53,7 +53,7 @@ mutable struct AGC <: Service
     K_d::Float64
     "PID Discretization period [Seconds]"
     delta_t::Float64
-    "the area controlled by the AGC"
+    "the [`Area`](@ref) controlled by the [`AGC`](@ref)"
     area::Union{Nothing, Area}
     "Initial condition for ACE"
     initial_ace::Float64

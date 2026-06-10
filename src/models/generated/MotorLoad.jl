@@ -29,7 +29,7 @@ This load consumes a set amount of power (set by `active_power` for a power flow
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `MotorLoad`) must have unique names, but components of different types (e.g., `MotorLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Bus that this component is connected to
+- `bus::ACBus`: The [`ACBus`](@ref) that this component is connected to
 - `active_power::Float64`: Initial steady-state active power demand (MW). A positive value indicates power consumption.
 - `reactive_power::Float64`: Initial steady-state reactive power demand (MVAR). A positive value indicates reactive power consumption.
 - `base_power::Float64`: Base power (MVA) for [per unitization](@ref per_unit), validation range: `(0.0001, nothing)`
@@ -47,7 +47,7 @@ mutable struct MotorLoad <: StaticLoad
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Bus that this component is connected to"
+    "The [`ACBus`](@ref) that this component is connected to"
     bus::ACBus
     "Initial steady-state active power demand (MW). A positive value indicates power consumption."
     active_power::Float64

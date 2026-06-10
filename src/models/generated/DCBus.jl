@@ -18,24 +18,24 @@ This file is auto-generated. Do not edit.
         internal::InfrastructureSystemsInternal
     end
 
-A DC bus
+A [`DCBus`](@ref)
 
 # Arguments
 - `number::Int`: A unique bus identification number (positive integer)
-- `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
+- `name::String`: Name of the component. Components of the same type (e.g., [`PowerLoad`](@ref)) must have unique names, but components of different types (e.g., [`PowerLoad`](@ref) and [`DCBus`](@ref)) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations.
 - `magnitude::Union{Nothing, Float64}`: voltage as a multiple of `base_voltage`, validation range: `voltage_limits`
 - `voltage_limits::Union{Nothing, MinMax}`: limits on the voltage variation as multiples of `base_voltage`
 - `base_voltage::Union{Nothing, Float64}`: the base voltage in kV, validation range: `(0, nothing)`
-- `area::Union{Nothing, Area}`: (default: `nothing`) the area containing the DC bus
-- `load_zone::Union{Nothing, LoadZone}`: (default: `nothing`) the load zone containing the DC bus
+- `area::Union{Nothing, Area}`: (default: `nothing`) the [`Area`](@ref) containing the DC bus
+- `load_zone::Union{Nothing, LoadZone}`: (default: `nothing`) the [`LoadZone`](@ref) containing the DC bus
 - `ext::Dict{String, Any}`: (default: `Dict{String, Any}()`) An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation.
 - `internal::InfrastructureSystemsInternal`: (**Do not modify.**) PowerSystems.jl internal reference
 """
 mutable struct DCBus <: Bus
     "A unique bus identification number (positive integer)"
     number::Int
-    "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name"
+    "Name of the component. Components of the same type (e.g., [`PowerLoad`](@ref)) must have unique names, but components of different types (e.g., [`PowerLoad`](@ref) and [`DCBus`](@ref)) can have the same name"
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations."
     available::Bool
@@ -45,9 +45,9 @@ mutable struct DCBus <: Bus
     voltage_limits::Union{Nothing, MinMax}
     "the base voltage in kV"
     base_voltage::Union{Nothing, Float64}
-    "the area containing the DC bus"
+    "the [`Area`](@ref) containing the DC bus"
     area::Union{Nothing, Area}
-    "the load zone containing the DC bus"
+    "the [`LoadZone`](@ref) containing the DC bus"
     load_zone::Union{Nothing, LoadZone}
     "An [*ext*ra dictionary](@ref additional_fields) for users to add metadata that are not used in simulation."
     ext::Dict{String, Any}

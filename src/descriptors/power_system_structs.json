@@ -102,7 +102,7 @@
                 {
                     "name": "services",
                     "data_type": "Vector{Service}",
-                    "comment": "Service interfaces that this device contributes to",
+                    "comment": "[`Service`](@ref) interfaces that this device contributes to",
                     "null_value": "Service[]",
                     "default": "Service[]"
                 },
@@ -218,7 +218,7 @@
         },
         {
             "struct_name": "ACBus",
-            "docstring": "An AC bus",
+            "docstring": "An [`ACBus`](@ref)",
             "inner_constructor_check": "check_bus_params",
             "fields": [
                 {
@@ -232,7 +232,7 @@
                     "null_value": "init",
                     "name": "name",
                     "exclude_setter": true,
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "comment": "Name of the component. Components of the same type (e.g., [`PowerLoad`](@ref)) must have unique names, but components of different types (e.g., [`PowerLoad`](@ref) and [`ACBus`](@ref)) can have the same name",
                     "data_type": "String"
                 },
                 {
@@ -243,7 +243,7 @@
                 },
                 {
                     "name": "bustype",
-                    "comment": "Used to describe the connectivity and behavior of this bus. See [`ACBusTypes`](@ref).",
+                    "comment": "The [`ACBusTypes`](@ref) of this bus, describing its connectivity and behavior",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, ACBusTypes}"
                 },
@@ -280,14 +280,14 @@
                 },
                 {
                     "name": "area",
-                    "comment": "the area containing the bus",
+                    "comment": "the [`Area`](@ref) containing the bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Area}",
                     "default": "nothing"
                 },
                 {
                     "name": "load_zone",
-                    "comment": "the load zone containing the bus",
+                    "comment": "the [`LoadZone`](@ref) containing the bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, LoadZone}",
                     "default": "nothing"
@@ -311,7 +311,7 @@
         },
         {
             "struct_name": "DCBus",
-            "docstring": "A DC bus",
+            "docstring": "A [`DCBus`](@ref)",
             "fields": [
                 {
                     "name": "number",
@@ -323,7 +323,7 @@
                     "null_value": "init",
                     "name": "name",
                     "exclude_setter": true,
-                    "comment": "Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name",
+                    "comment": "Name of the component. Components of the same type (e.g., [`PowerLoad`](@ref)) must have unique names, but components of different types (e.g., [`PowerLoad`](@ref) and [`DCBus`](@ref)) can have the same name",
                     "data_type": "String"
                 },
                 {
@@ -359,14 +359,14 @@
                 },
                 {
                     "name": "area",
-                    "comment": "the area containing the DC bus",
+                    "comment": "the [`Area`](@ref) containing the DC bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, Area}",
                     "default": "nothing"
                 },
                 {
                     "name": "load_zone",
-                    "comment": "the load zone containing the DC bus",
+                    "comment": "the [`LoadZone`](@ref) containing the DC bus",
                     "null_value": "nothing",
                     "data_type": "Union{Nothing, LoadZone}",
                     "default": "nothing"
@@ -1500,7 +1500,7 @@
                 },
                 {
                     "name": "star_bus",
-                    "comment": "Star (hidden) Bus that this component (equivalent model) is connected to",
+                    "comment": "Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -1980,7 +1980,7 @@
                 },
                 {
                     "name": "star_bus",
-                    "comment": "Star (hidden) Bus that this component (equivalent model) is connected to",
+                    "comment": "Star (hidden) [`ACBus`](@ref) that this component (equivalent model) is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3206,7 +3206,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3316,7 +3316,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3502,7 +3502,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3625,7 +3625,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Sending end bus number",
+                    "comment": "The sending-end [`ACBus`](@ref)",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3704,7 +3704,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3765,7 +3765,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3853,7 +3853,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -3957,7 +3957,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -4076,7 +4076,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -4256,7 +4256,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -5015,7 +5015,7 @@
         },
         {
             "struct_name": "InterconnectingConverter",
-            "docstring": "Interconnecting Power Converter (IPC) for transforming power from an ACBus to a DCBus",
+            "docstring": "Interconnecting Power Converter (IPC) for transforming power from an [`ACBus`](@ref) to a [`DCBus`](@ref)",
             "fields": [
                 {
                     "null_value": "init",
@@ -5032,13 +5032,13 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus on the AC side of this converter",
+                    "comment": "The [`ACBus`](@ref) on the AC side of this converter",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
                 {
                     "name": "dc_bus",
-                    "comment": "Bus on the DC side of this converter",
+                    "comment": "The [`DCBus`](@ref) on the DC side of this converter",
                     "null_value": "DCBus(nothing)",
                     "data_type": "DCBus"
                 },
@@ -5329,7 +5329,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -5499,7 +5499,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -5711,7 +5711,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6016,14 +6016,14 @@
                     "null_value": "Device[]",
                     "data_type": "Vector{HydroUnit}",
                     "default": "Device[]",
-                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
+                    "comment": "Vector of [`HydroUnit`](@ref)(s) that are immediately upstream of this reservoir. This reservoir is the tail reservoir for these units, and their flow goes into this reservoir."
                 },
                 {
                     "name": "downstream_turbines",
                     "null_value": "Device[]",
                     "data_type": "Vector{HydroUnit}",
                     "default": "Device[]",
-                    "comment": "Vector of [HydroUnit](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
+                    "comment": "Vector of [`HydroUnit`](@ref)(s) that are immediately downstream of this reservoir. This reservoir is the head reservoir for these units, and its feed flow into these units."
                 },
                 {
                     "name": "upstream_reservoirs",
@@ -6082,7 +6082,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6208,7 +6208,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6326,7 +6326,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6505,7 +6505,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6622,7 +6622,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -6822,7 +6822,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },
@@ -7403,7 +7403,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
+                    "comment": "the required quantity of the product should be scaled by a [`TimeSeriesData`](@ref)",
                     "null_value": "0.0",
                     "data_type": "Float64"
                 },
@@ -7502,7 +7502,7 @@
                 },
                 {
                     "name": "requirement",
-                    "comment": "the required quantity of the product should be scaled by a TimeSeriesData",
+                    "comment": "the required quantity of the product should be scaled by a [`TimeSeriesData`](@ref)",
                     "null_value": "0.0",
                     "data_type": "Float64",
                     "needs_conversion": true,
@@ -7622,7 +7622,7 @@
                 },
                 {
                     "name": "area",
-                    "comment": "the area controlled by the AGC",
+                    "comment": "the [`Area`](@ref) controlled by the [`AGC`](@ref)",
                     "null_value": "Area(nothing)",
                     "data_type": "Union{Nothing, Area}",
                     "default": "nothing"
@@ -19737,7 +19737,7 @@
                 },
                 {
                     "name": "bus",
-                    "comment": "Bus that this component is connected to",
+                    "comment": "The [`ACBus`](@ref) that this component is connected to",
                     "null_value": "ACBus(nothing)",
                     "data_type": "ACBus"
                 },

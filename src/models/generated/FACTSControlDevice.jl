@@ -26,7 +26,7 @@ Most often used in AC power flow studies as a control of voltage and, active and
 # Arguments
 - `name::String`: Name of the component. Components of the same type (e.g., `PowerLoad`) must have unique names, but components of different types (e.g., `PowerLoad` and `ACBus`) can have the same name
 - `available::Bool`: Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations
-- `bus::ACBus`: Sending end bus number
+- `bus::ACBus`: The sending-end [`ACBus`](@ref)
 - `control_mode::Union{Nothing, FACTSOperationModes}`: Control mode. Used to describe the behavior of the control device. See [`FACTSOperationModes`](@ref).
 - `voltage_setpoint::Float64`: Voltage setpoint at the sending end bus, it has to be a [`PV`](@ref ACBusTypes) bus, in p.u. ([`SYSTEM_BASE`](@ref per_unit)).
 - `max_shunt_current::Float64`: Maximum shunt current at the sending end bus; entered in MVA at unity voltage.
@@ -41,7 +41,7 @@ mutable struct FACTSControlDevice <: StaticInjection
     name::String
     "Indicator of whether the component is connected and online (`true`) or disconnected, offline, or down (`false`). Unavailable components are excluded during simulations"
     available::Bool
-    "Sending end bus number"
+    "The sending-end [`ACBus`](@ref)"
     bus::ACBus
     "Control mode. Used to describe the behavior of the control device. See [`FACTSOperationModes`](@ref)."
     control_mode::Union{Nothing, FACTSOperationModes}
